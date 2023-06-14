@@ -3,19 +3,13 @@
  */
 
 import * as utils from "../internal/utils";
-import { Accounts } from "./accounts";
 import { Auth } from "./auth";
-import { Balances } from "./balances";
 import { Ledger } from "./ledger";
-import { Logs } from "./logs";
 import * as operations from "./models/operations";
 import * as shared from "./models/shared";
 import { Orchestration } from "./orchestration";
 import { Payments } from "./payments";
 import { Search } from "./search";
-import { Server } from "./server";
-import { Stats } from "./stats";
-import { Transactions } from "./transactions";
 import { Wallets } from "./wallets";
 import { Webhooks } from "./webhooks";
 import axios from "axios";
@@ -70,17 +64,11 @@ export type SDKProps = {
  *
  */
 export class SDK {
-  public accounts: Accounts;
   public auth: Auth;
-  public balances: Balances;
   public ledger: Ledger;
-  public logs: Logs;
   public orchestration: Orchestration;
   public payments: Payments;
   public search: Search;
-  public server: Server;
-  public stats: Stats;
-  public transactions: Transactions;
   public wallets: Wallets;
   public webhooks: Webhooks;
 
@@ -88,7 +76,7 @@ export class SDK {
   public _securityClient: AxiosInstance;
   public _serverURL: string;
   private _language = "typescript";
-  private _sdkVersion = "0.7.2";
+  private _sdkVersion = "v0.1.0";
   private _genVersion = "2.31.0";
   private _globals: any;
 
@@ -109,15 +97,6 @@ export class SDK {
       this._securityClient = this._defaultClient;
     }
 
-    this.accounts = new Accounts(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
     this.auth = new Auth(
       this._defaultClient,
       this._securityClient,
@@ -127,25 +106,7 @@ export class SDK {
       this._genVersion
     );
 
-    this.balances = new Balances(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
     this.ledger = new Ledger(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.logs = new Logs(
       this._defaultClient,
       this._securityClient,
       this._serverURL,
@@ -173,33 +134,6 @@ export class SDK {
     );
 
     this.search = new Search(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.server = new Server(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.stats = new Stats(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.transactions = new Transactions(
       this._defaultClient,
       this._securityClient,
       this._serverURL,

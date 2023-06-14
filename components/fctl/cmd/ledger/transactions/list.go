@@ -82,7 +82,7 @@ func NewListCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			response, err := ledgerClient.Transactions.ListTransactions(
+			response, err := ledgerClient.Ledger.ListTransactions(
 				cmd.Context(),
 				operations.ListTransactionsRequest{
 					Account:     fctl.Ptr(fctl.GetString(cmd, accountFlag)),

@@ -23,7 +23,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolorum") {{
+                .setSecurity(new Security("mollitia") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -38,17 +38,19 @@ public class Application {
                     add("quickstart"),
                     add("quickstart"),
                 }};
-                pageSize = 846409L;
+                pageSize = 221262L;
                 policy = "OR";
                 raw = new java.util.HashMap<String, Object>() {{
-                    put("rerum", "dicta");
-                    put("magnam", "cumque");
-                    put("facere", "ea");
-                    put("aliquid", "laborum");
+                    put("odit", "nemo");
+                    put("quasi", "iure");
+                    put("doloribus", "debitis");
+                    put("eius", "maxime");
                 }};
                 sort = "txid:asc";
-                target = "accusamus";
+                target = "deleniti";
                 terms = new String[]{{
+                    add("destination=central_bank1"),
+                    add("destination=central_bank1"),
                     add("destination=central_bank1"),
                 }};
             }};            
@@ -82,7 +84,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("occaecati") {{
+                .setSecurity(new Security("in") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();

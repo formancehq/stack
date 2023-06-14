@@ -27,7 +27,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Transactions.CreateTransaction(
+			response, err := Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -54,7 +54,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Transactions.GetTransaction(
+			response, err := Client().Ledger.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -105,7 +105,7 @@ var _ = Given("some empty environment", func() {
 				},
 			}))
 
-			accResponse, err := Client().Accounts.GetAccount(
+			accResponse, err := Client().Ledger.GetAccount(
 				TestContext(),
 				operations.GetAccountRequest{
 					Address: "alice",
@@ -251,7 +251,7 @@ type GenericOpenAPIError interface {
 var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
-			response, err := Client().Transactions.CreateTransaction(
+			response, err := Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -289,7 +289,7 @@ var _ = Given("some empty environment", func() {
 			response *operations.CreateTransactionResponse
 		)
 		createTransaction := func() {
-			response, err = Client().Transactions.CreateTransaction(
+			response, err = Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),

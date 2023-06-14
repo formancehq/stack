@@ -59,7 +59,7 @@ func NewSetMetadataCommand() *cobra.Command {
 				Txid:        transactionID,
 				RequestBody: metadata,
 			}
-			response, err := ledgerClient.Transactions.AddMetadataOnTransaction(cmd.Context(), request)
+			response, err := ledgerClient.Ledger.AddMetadataOnTransaction(cmd.Context(), request)
 			if err != nil {
 				return err
 			}

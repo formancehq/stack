@@ -18,7 +18,7 @@ var _ = Given("some empty environment", func() {
 		)
 		BeforeEach(func() {
 			// Create a transaction
-			response, err := Client().Transactions.CreateTransaction(
+			response, err := Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -42,7 +42,7 @@ var _ = Given("some empty environment", func() {
 			rsp = response.CreateTransactionResponse
 
 			// Check existence on api
-			getResponse, err := Client().Transactions.GetTransaction(
+			getResponse, err := Client().Ledger.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -57,7 +57,7 @@ var _ = Given("some empty environment", func() {
 				"foo": "bar",
 			}
 
-			response, err := Client().Transactions.AddMetadataOnTransaction(
+			response, err := Client().Ledger.AddMetadataOnTransaction(
 				TestContext(),
 				operations.AddMetadataOnTransactionRequest{
 					RequestBody: metadata,
@@ -73,7 +73,7 @@ var _ = Given("some empty environment", func() {
 				"foo": "bar",
 			}
 			BeforeEach(func() {
-				response, err := Client().Transactions.AddMetadataOnTransaction(
+				response, err := Client().Ledger.AddMetadataOnTransaction(
 					TestContext(),
 					operations.AddMetadataOnTransactionRequest{
 						RequestBody: metadata,
@@ -86,7 +86,7 @@ var _ = Given("some empty environment", func() {
 			})
 			It("should eventually be available on api", func() {
 				// Check existence on api
-				response, err := Client().Transactions.GetTransaction(
+				response, err := Client().Ledger.GetTransaction(
 					TestContext(),
 					operations.GetTransactionRequest{
 						Ledger: "default",

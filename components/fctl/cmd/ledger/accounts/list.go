@@ -51,7 +51,7 @@ func NewListCommand() *cobra.Command {
 				Ledger:   fctl.GetString(cmd, internal.LedgerFlag),
 				Metadata: metadata,
 			}
-			rsp, err := ledgerClient.Accounts.ListAccounts(cmd.Context(), request)
+			rsp, err := ledgerClient.Ledger.ListAccounts(cmd.Context(), request)
 			if err != nil {
 				return err
 			}

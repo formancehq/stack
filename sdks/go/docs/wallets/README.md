@@ -49,7 +49,7 @@ func main() {
             Amount: formance.Int64(100),
             Final: formance.Bool(true),
         },
-        HoldID: "rerum",
+        HoldID: "omnis",
     })
     if err != nil {
         log.Fatal(err)
@@ -89,11 +89,11 @@ func main() {
     ctx := context.Background()
     res, err := s.Wallets.CreateBalance(ctx, operations.CreateBalanceRequest{
         CreateBalanceRequest: &shared.CreateBalanceRequest{
-            ExpiresAt: types.MustTimeFromString("2022-09-14T10:27:07.590Z"),
-            Name: "Irving Jenkins",
-            Priority: formance.Int64(881104),
+            ExpiresAt: types.MustTimeFromString("2022-12-24T23:52:02.245Z"),
+            Name: "Megan Rau",
+            Priority: formance.Int64(290077),
         },
-        ID: "395efb9b-a88f-43a6-a997-074ba4469b6e",
+        ID: "69b6e214-1959-4890-afa5-63e2516fe4c8",
     })
     if err != nil {
         log.Fatal(err)
@@ -131,9 +131,11 @@ func main() {
     ctx := context.Background()
     res, err := s.Wallets.CreateWallet(ctx, shared.CreateWalletRequest{
         Metadata: map[string]string{
-            "architecto": "magnam",
+            "in": "architecto",
+            "architecto": "repudiandae",
+            "ullam": "expedita",
         },
-        Name: "Miriam Hermann",
+        Name: "Kristie Spencer",
     })
     if err != nil {
         log.Fatal(err)
@@ -173,25 +175,22 @@ func main() {
     res, err := s.Wallets.CreditWallet(ctx, operations.CreditWalletRequest{
         CreditWalletRequest: &shared.CreditWalletRequest{
             Amount: shared.Monetary{
-                Amount: 574325,
+                Amount: 868126,
                 Asset: "accusantium",
             },
-            Balance: formance.String("mollitia"),
+            Balance: formance.String("consequuntur"),
             Metadata: map[string]string{
-                "mollitia": "ad",
-                "eum": "dolor",
-                "necessitatibus": "odit",
-                "nemo": "quasi",
+                "natus": "magni",
+                "sunt": "quo",
+                "illum": "pariatur",
             },
-            Reference: formance.String("iure"),
+            Reference: formance.String("maxime"),
             Sources: []shared.Subject{
-                shared.Subject{},
-                shared.Subject{},
                 shared.Subject{},
                 shared.Subject{},
             },
         },
-        ID: "e4c8b711-e5b7-4fd2-ad02-8921cddc6926",
+        ID: "92601fb5-76b0-4d5f-8d30-c5fbb2587053",
     })
     if err != nil {
         log.Fatal(err)
@@ -231,23 +230,20 @@ func main() {
     res, err := s.Wallets.DebitWallet(ctx, operations.DebitWalletRequest{
         DebitWalletRequest: &shared.DebitWalletRequest{
             Amount: shared.Monetary{
-                Amount: 33222,
-                Asset: "ab",
+                Amount: 179490,
+                Asset: "perferendis",
             },
             Balances: []string{
-                "quidem",
-                "ipsam",
-                "voluptate",
-                "autem",
+                "minus",
             },
-            Description: formance.String("nam"),
+            Description: formance.String("quam"),
             Destination: &shared.Subject{},
             Metadata: map[string]string{
-                "pariatur": "nemo",
+                "vero": "nostrum",
             },
             Pending: formance.Bool(false),
         },
-        ID: "f0d30c5f-bb25-4870-9320-2c73d5fe9b90",
+        ID: "fe9b90c2-8909-4b3f-a49a-8d9cbf486333",
     })
     if err != nil {
         log.Fatal(err)
@@ -284,8 +280,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Wallets.GetBalance(ctx, operations.GetBalanceRequest{
-        BalanceName: "porro",
-        ID: "28909b3f-e49a-48d9-8bf4-8633323f9b77",
+        BalanceName: "qui",
+        ID: "3f9b77f3-a410-4067-8ebf-69280d1ba77a",
     })
     if err != nil {
         log.Fatal(err)
@@ -322,7 +318,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Wallets.GetHold(ctx, operations.GetHoldRequest{
-        HoldID: "reiciendis",
+        HoldID: "deleniti",
     })
     if err != nil {
         log.Fatal(err)
@@ -361,10 +357,12 @@ func main() {
     res, err := s.Wallets.GetHolds(ctx, operations.GetHoldsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Metadata: map[string]string{
-            "dolorum": "numquam",
+            "necessitatibus": "distinctio",
+            "asperiores": "nihil",
+            "ipsum": "voluptate",
         },
-        PageSize: formance.Int64(85295),
-        WalletID: formance.String("ipsa"),
+        PageSize: formance.Int64(663078),
+        WalletID: formance.String("saepe"),
     })
     if err != nil {
         log.Fatal(err)
@@ -400,8 +398,8 @@ func main() {
     ctx := context.Background()
     res, err := s.Wallets.GetTransactions(ctx, operations.GetTransactionsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(56418),
-        WalletID: formance.String("iure"),
+        PageSize: formance.Int64(263322),
+        WalletID: formance.String("aspernatur"),
     })
     if err != nil {
         log.Fatal(err)
@@ -438,7 +436,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Wallets.GetWallet(ctx, operations.GetWalletRequest{
-        ID: "74ebf692-80d1-4ba7-ba89-ebf737ae4203",
+        ID: "03ce5e6a-95d8-4a0d-846c-e2af7a73cf3b",
     })
     if err != nil {
         log.Fatal(err)
@@ -475,7 +473,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Wallets.GetWalletSummary(ctx, operations.GetWalletSummaryRequest{
-        ID: "ce5e6a95-d8a0-4d44-ace2-af7a73cf3be4",
+        ID: "e453f870-b326-4b5a-b342-9cdb1a8422bb",
     })
     if err != nil {
         log.Fatal(err)
@@ -512,7 +510,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Wallets.ListBalances(ctx, operations.ListBalancesRequest{
-        ID: "53f870b3-26b5-4a73-829c-db1a8422bb67",
+        ID: "679d2322-715b-4f0c-bb1e-31b8b90f3443",
     })
     if err != nil {
         log.Fatal(err)
@@ -551,12 +549,12 @@ func main() {
     res, err := s.Wallets.ListWallets(ctx, operations.ListWalletsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Metadata: map[string]string{
-            "temporibus": "qui",
-            "neque": "fugit",
-            "magni": "odio",
+            "architecto": "quae",
+            "aut": "quas",
+            "itaque": "consequatur",
         },
-        Name: formance.String("Marion Reichert DDS"),
-        PageSize: formance.Int64(746994),
+        Name: formance.String("Marcos Schaden"),
+        PageSize: formance.Int64(703495),
     })
     if err != nil {
         log.Fatal(err)
@@ -595,12 +593,12 @@ func main() {
     res, err := s.Wallets.UpdateWallet(ctx, operations.UpdateWalletRequest{
         RequestBody: &operations.UpdateWalletRequestBody{
             Metadata: map[string]string{
-                "et": "saepe",
-                "ipsum": "veritatis",
-                "nobis": "quos",
+                "qui": "quae",
+                "laudantium": "odio",
+                "occaecati": "voluptatibus",
             },
         },
-        ID: "b90f3443-a110-48e0-adcf-4b921879fce9",
+        ID: "ce953f73-ef7f-4bc7-abd7-4dd39c0f5d2c",
     })
     if err != nil {
         log.Fatal(err)
@@ -637,7 +635,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Wallets.VoidHold(ctx, operations.VoidHoldRequest{
-        HoldID: "quis",
+        HoldID: "maiores",
     })
     if err != nil {
         log.Fatal(err)

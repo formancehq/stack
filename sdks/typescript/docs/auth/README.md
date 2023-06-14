@@ -39,8 +39,8 @@ const sdk = new SDK({
 });
 
 sdk.auth.addScopeToClient({
-  clientId: "molestiae",
-  scopeId: "minus",
+  clientId: "corrupti",
+  scopeId: "provident",
 }).then((res: AddScopeToClientResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -65,8 +65,8 @@ const sdk = new SDK({
 });
 
 sdk.auth.addTransientScope({
-  scopeId: "placeat",
-  transientScopeId: "voluptatum",
+  scopeId: "distinctio",
+  transientScopeId: "quibusdam",
 }).then((res: AddTransientScopeResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -91,23 +91,23 @@ const sdk = new SDK({
 });
 
 sdk.auth.createClient({
-  description: "iusto",
+  description: "unde",
   metadata: {
-    "nisi": "recusandae",
-    "temporibus": "ab",
-    "quis": "veritatis",
+    "corrupti": "illum",
+    "vel": "error",
+    "deserunt": "suscipit",
+    "iure": "magnam",
   },
-  name: "Christopher Hills",
+  name: "Larry Windler",
   postLogoutRedirectUris: [
-    "odit",
-    "at",
-    "at",
-    "maiores",
+    "minus",
+    "placeat",
   ],
   public: false,
   redirectUris: [
-    "quod",
-    "quod",
+    "iusto",
+    "excepturi",
+    "nisi",
   ],
   trusted: false,
 }).then((res: CreateClientResponse) => {
@@ -134,11 +134,12 @@ const sdk = new SDK({
 });
 
 sdk.auth.createScope({
-  label: "esse",
+  label: "recusandae",
   metadata: {
-    "porro": "dolorum",
-    "dicta": "nam",
-    "officia": "occaecati",
+    "ab": "quis",
+    "veritatis": "deserunt",
+    "perferendis": "ipsam",
+    "repellendus": "sapiente",
   },
 }).then((res: CreateScopeResponse) => {
   if (res.statusCode == 200) {
@@ -166,11 +167,14 @@ const sdk = new SDK({
 sdk.auth.createSecret({
   createSecretRequest: {
     metadata: {
-      "deleniti": "hic",
+      "odit": "at",
+      "at": "maiores",
+      "molestiae": "quod",
+      "quod": "esse",
     },
-    name: "Everett Breitenberg",
+    name: "Miss Lowell Parisian",
   },
-  clientId: "modi",
+  clientId: "occaecati",
 }).then((res: CreateSecretResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -195,7 +199,7 @@ const sdk = new SDK({
 });
 
 sdk.auth.deleteClient({
-  clientId: "qui",
+  clientId: "fugit",
 }).then((res: DeleteClientResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -220,7 +224,7 @@ const sdk = new SDK({
 });
 
 sdk.auth.deleteScope({
-  scopeId: "impedit",
+  scopeId: "deleniti",
 }).then((res: DeleteScopeResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -245,8 +249,8 @@ const sdk = new SDK({
 });
 
 sdk.auth.deleteScopeFromClient({
-  clientId: "cum",
-  scopeId: "esse",
+  clientId: "hic",
+  scopeId: "optio",
 }).then((res: DeleteScopeFromClientResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -271,8 +275,8 @@ const sdk = new SDK({
 });
 
 sdk.auth.deleteSecret({
-  clientId: "ipsum",
-  secretId: "excepturi",
+  clientId: "totam",
+  secretId: "beatae",
 }).then((res: DeleteSecretResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -297,8 +301,8 @@ const sdk = new SDK({
 });
 
 sdk.auth.deleteTransientScope({
-  scopeId: "aspernatur",
-  transientScopeId: "perferendis",
+  scopeId: "commodi",
+  transientScopeId: "molestiae",
 }).then((res: DeleteTransientScopeResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -415,7 +419,7 @@ const sdk = new SDK({
 });
 
 sdk.auth.readClient({
-  clientId: "ad",
+  clientId: "modi",
 }).then((res: ReadClientResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -440,7 +444,7 @@ const sdk = new SDK({
 });
 
 sdk.auth.readScope({
-  scopeId: "natus",
+  scopeId: "qui",
 }).then((res: ReadScopeResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -465,7 +469,7 @@ const sdk = new SDK({
 });
 
 sdk.auth.readUser({
-  userId: "sed",
+  userId: "impedit",
 }).then((res: ReadUserResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -491,23 +495,26 @@ const sdk = new SDK({
 
 sdk.auth.updateClient({
   updateClientRequest: {
-    description: "iste",
+    description: "cum",
     metadata: {
-      "natus": "laboriosam",
+      "ipsum": "excepturi",
+      "aspernatur": "perferendis",
     },
-    name: "Elias Parker",
+    name: "Faye Cormier",
     postLogoutRedirectUris: [
-      "iure",
+      "laboriosam",
+      "hic",
       "saepe",
-      "quidem",
     ],
     public: false,
     redirectUris: [
-      "ipsa",
+      "in",
+      "corporis",
+      "iste",
     ],
     trusted: false,
   },
-  clientId: "reiciendis",
+  clientId: "iure",
 }).then((res: UpdateClientResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -533,14 +540,14 @@ const sdk = new SDK({
 
 sdk.auth.updateScope({
   updateScopeRequest: {
-    label: "est",
+    label: "saepe",
     metadata: {
-      "laborum": "dolores",
-      "dolorem": "corporis",
-      "explicabo": "nobis",
+      "architecto": "ipsa",
+      "reiciendis": "est",
+      "mollitia": "laborum",
     },
   },
-  scopeId: "enim",
+  scopeId: "dolores",
 }).then((res: UpdateScopeResponse) => {
   if (res.statusCode == 200) {
     // handle response

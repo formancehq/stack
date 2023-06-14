@@ -39,8 +39,8 @@ s = sdk.SDK(
 )
 
 req = operations.AddScopeToClientRequest(
-    client_id='molestiae',
-    scope_id='minus',
+    client_id='corrupti',
+    scope_id='provident',
 )
 
 res = s.auth.add_scope_to_client(req)
@@ -66,8 +66,8 @@ s = sdk.SDK(
 )
 
 req = operations.AddTransientScopeRequest(
-    scope_id='placeat',
-    transient_scope_id='voluptatum',
+    scope_id='distinctio',
+    transient_scope_id='quibusdam',
 )
 
 res = s.auth.add_transient_scope(req)
@@ -93,23 +93,23 @@ s = sdk.SDK(
 )
 
 req = shared.CreateClientRequest(
-    description='iusto',
+    description='unde',
     metadata={
-        "nisi": 'recusandae',
-        "temporibus": 'ab',
-        "quis": 'veritatis',
+        "corrupti": 'illum',
+        "vel": 'error',
+        "deserunt": 'suscipit',
+        "iure": 'magnam',
     },
-    name='Christopher Hills',
+    name='Larry Windler',
     post_logout_redirect_uris=[
-        'odit',
-        'at',
-        'at',
-        'maiores',
+        'minus',
+        'placeat',
     ],
     public=False,
     redirect_uris=[
-        'quod',
-        'quod',
+        'iusto',
+        'excepturi',
+        'nisi',
     ],
     trusted=False,
 )
@@ -137,11 +137,12 @@ s = sdk.SDK(
 )
 
 req = shared.CreateScopeRequest(
-    label='esse',
+    label='recusandae',
     metadata={
-        "porro": 'dolorum',
-        "dicta": 'nam',
-        "officia": 'occaecati',
+        "ab": 'quis',
+        "veritatis": 'deserunt',
+        "perferendis": 'ipsam',
+        "repellendus": 'sapiente',
     },
 )
 
@@ -170,11 +171,14 @@ s = sdk.SDK(
 req = operations.CreateSecretRequest(
     create_secret_request=shared.CreateSecretRequest(
         metadata={
-            "deleniti": 'hic',
+            "odit": 'at',
+            "at": 'maiores',
+            "molestiae": 'quod',
+            "quod": 'esse',
         },
-        name='Everett Breitenberg',
+        name='Miss Lowell Parisian',
     ),
-    client_id='modi',
+    client_id='occaecati',
 )
 
 res = s.auth.create_secret(req)
@@ -200,7 +204,7 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteClientRequest(
-    client_id='qui',
+    client_id='fugit',
 )
 
 res = s.auth.delete_client(req)
@@ -226,7 +230,7 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteScopeRequest(
-    scope_id='impedit',
+    scope_id='deleniti',
 )
 
 res = s.auth.delete_scope(req)
@@ -252,8 +256,8 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteScopeFromClientRequest(
-    client_id='cum',
-    scope_id='esse',
+    client_id='hic',
+    scope_id='optio',
 )
 
 res = s.auth.delete_scope_from_client(req)
@@ -279,8 +283,8 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteSecretRequest(
-    client_id='ipsum',
-    secret_id='excepturi',
+    client_id='totam',
+    secret_id='beatae',
 )
 
 res = s.auth.delete_secret(req)
@@ -306,8 +310,8 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteTransientScopeRequest(
-    scope_id='aspernatur',
-    transient_scope_id='perferendis',
+    scope_id='commodi',
+    transient_scope_id='molestiae',
 )
 
 res = s.auth.delete_transient_scope(req)
@@ -425,7 +429,7 @@ s = sdk.SDK(
 )
 
 req = operations.ReadClientRequest(
-    client_id='ad',
+    client_id='modi',
 )
 
 res = s.auth.read_client(req)
@@ -451,7 +455,7 @@ s = sdk.SDK(
 )
 
 req = operations.ReadScopeRequest(
-    scope_id='natus',
+    scope_id='qui',
 )
 
 res = s.auth.read_scope(req)
@@ -477,7 +481,7 @@ s = sdk.SDK(
 )
 
 req = operations.ReadUserRequest(
-    user_id='sed',
+    user_id='impedit',
 )
 
 res = s.auth.read_user(req)
@@ -504,23 +508,26 @@ s = sdk.SDK(
 
 req = operations.UpdateClientRequest(
     update_client_request=shared.UpdateClientRequest(
-        description='iste',
+        description='cum',
         metadata={
-            "natus": 'laboriosam',
+            "ipsum": 'excepturi',
+            "aspernatur": 'perferendis',
         },
-        name='Elias Parker',
+        name='Faye Cormier',
         post_logout_redirect_uris=[
-            'iure',
+            'laboriosam',
+            'hic',
             'saepe',
-            'quidem',
         ],
         public=False,
         redirect_uris=[
-            'ipsa',
+            'in',
+            'corporis',
+            'iste',
         ],
         trusted=False,
     ),
-    client_id='reiciendis',
+    client_id='iure',
 )
 
 res = s.auth.update_client(req)
@@ -547,14 +554,14 @@ s = sdk.SDK(
 
 req = operations.UpdateScopeRequest(
     update_scope_request=shared.UpdateScopeRequest(
-        label='est',
+        label='saepe',
         metadata={
-            "laborum": 'dolores',
-            "dolorem": 'corporis',
-            "explicabo": 'nobis',
+            "architecto": 'ipsa',
+            "reiciendis": 'est',
+            "mollitia": 'laborum',
         },
     ),
-    scope_id='enim',
+    scope_id='dolores',
 )
 
 res = s.auth.update_scope(req)

@@ -35,27 +35,15 @@ class SDK
 		'https://{organization}.sandbox.formance.cloud',
 	];
   	
-	public Accounts $accounts;
-	
 	public Auth $auth;
 	
-	public Balances $balances;
-	
 	public Ledger $ledger;
-	
-	public Logs $logs;
 	
 	public Orchestration $orchestration;
 	
 	public Payments $payments;
 	
 	public Search $search;
-	
-	public Server $server;
-	
-	public Stats $stats;
-	
-	public Transactions $transactions;
 	
 	public Wallets $wallets;
 	
@@ -67,7 +55,7 @@ class SDK
 	private ?Models\Shared\Security $_security;
 	private string $_serverUrl;
 	private string $_language = 'php';
-	private string $_sdkVersion = '0.0.1';
+	private string $_sdkVersion = 'v0.1.0';
 	private string $_genVersion = '2.31.0';
 
 	/**
@@ -114,15 +102,6 @@ class SDK
 			$this->_serverUrl = $this::SERVERS[0];
 		}
 		
-		$this->accounts = new Accounts(
-			$this->_defaultClient,
-			$this->_securityClient,
-			$this->_serverUrl,
-			$this->_language,
-			$this->_sdkVersion,
-			$this->_genVersion
-		);
-		
 		$this->auth = new Auth(
 			$this->_defaultClient,
 			$this->_securityClient,
@@ -132,25 +111,7 @@ class SDK
 			$this->_genVersion
 		);
 		
-		$this->balances = new Balances(
-			$this->_defaultClient,
-			$this->_securityClient,
-			$this->_serverUrl,
-			$this->_language,
-			$this->_sdkVersion,
-			$this->_genVersion
-		);
-		
 		$this->ledger = new Ledger(
-			$this->_defaultClient,
-			$this->_securityClient,
-			$this->_serverUrl,
-			$this->_language,
-			$this->_sdkVersion,
-			$this->_genVersion
-		);
-		
-		$this->logs = new Logs(
 			$this->_defaultClient,
 			$this->_securityClient,
 			$this->_serverUrl,
@@ -178,33 +139,6 @@ class SDK
 		);
 		
 		$this->search = new Search(
-			$this->_defaultClient,
-			$this->_securityClient,
-			$this->_serverUrl,
-			$this->_language,
-			$this->_sdkVersion,
-			$this->_genVersion
-		);
-		
-		$this->server = new Server(
-			$this->_defaultClient,
-			$this->_securityClient,
-			$this->_serverUrl,
-			$this->_language,
-			$this->_sdkVersion,
-			$this->_genVersion
-		);
-		
-		$this->stats = new Stats(
-			$this->_defaultClient,
-			$this->_securityClient,
-			$this->_serverUrl,
-			$this->_language,
-			$this->_sdkVersion,
-			$this->_genVersion
-		);
-		
-		$this->transactions = new Transactions(
 			$this->_defaultClient,
 			$this->_securityClient,
 			$this->_serverUrl,

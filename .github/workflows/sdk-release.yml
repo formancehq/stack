@@ -6,53 +6,19 @@ on:
 
 jobs:
   Sdk:
-    name: 'Generate and publish sdks'
+    name: 'Publish sdks'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: [ go, php, python, typescript, java ]
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Install Task
-        uses: arduino/setup-task@v1
+      - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Update SDKS
-        run: |
-          set -x;
-          task openapi:sdk:build;
-          [ "$(git diff)" == "" ] || {
-            echo "OpenAPI spec computation give changes, please update SDKS before push code";
-            git diff;
-            exit 1;
-          }
-          task openapi:sdk:generate:all;
-          [ "$(git diff)" == "" ] || {
-            echo "OpenAPI code generation give changes, please update SDKS before push code";
-            git diff;
-            exit 1;
-          }
-      - name: Publish SDKs
-        uses: speakeasy-api/sdk-generation-action/.github/workflows/sdk-publish.yaml@v14
-        with:
-          create_release: true
-          publish_python: true
-          publish_typescript: true
-          publish_java: true
-          publish_php: true
-        secrets:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          speakeasy_api_key: ${{ secrets.SPEAKEASY_API_KEY }}
-          pypi_token: ${{secrets.PYPI_TOKEN}}
-          npm_token: ${{secrets.NPM_TOKEN}}
-          packagist_username: ${{secrets.PACKAGIST_USERNAME}}
-          packagist_token: ${{secrets.PACKAGIST_TOKEN}}
-          ossrh_username: ${{secrets.OSSRH_USERNAME}}
-          ossrh_password: ${{secrets.OSSRH_PASSWORD}}
+          commit_message: Upgrade Release to ${{ github.event.release.tag_name }}
+          branch: main
+          repository: ./sdks/${{ matrix.sdk }}
+          commit_user_name: NumaryBot
+          commit_user_email: support@numary.com

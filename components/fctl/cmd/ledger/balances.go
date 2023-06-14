@@ -40,7 +40,7 @@ func NewBalancesCommand() *cobra.Command {
 				return err
 			}
 
-			response, err := client.Balances.GetBalances(
+			response, err := client.Ledger.GetBalances(
 				cmd.Context(),
 				operations.GetBalancesRequest{
 					Address: fctl.Ptr(fctl.GetString(cmd, addressFlag)),

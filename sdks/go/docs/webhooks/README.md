@@ -241,6 +241,9 @@ func main() {
         Endpoint: "https://example.com",
         EventTypes: []string{
             "TYPE1",
+            "TYPE1",
+            "TYPE1",
+            "TYPE1",
         },
         Secret: formance.String("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"),
     })
