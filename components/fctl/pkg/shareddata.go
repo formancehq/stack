@@ -39,5 +39,5 @@ func ShareStoreToJson() ([]byte, error) {
 	}
 
 	// Marshal to JSON then print to stdout
-	return json.MarshalIndent(sharedStore.data, "", "  ")
+	return json.Marshal(sharedStore.data)
 }
