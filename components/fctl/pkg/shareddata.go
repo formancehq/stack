@@ -13,9 +13,13 @@ type SharedStore struct {
 
 	// Those data are not printed in the json output
 	additionnalData map[string]interface{}
+	//additionnalKeyType 	map[string]
+
 }
 
-var sharedStore = &SharedStore{}
+var sharedStore = &SharedStore{
+	additionnalData: make(map[string]interface{}),
+}
 
 // GetSharedData returns the shared data store
 func GetSharedData() interface{} {
@@ -37,8 +41,11 @@ func SetSharedData(data interface{}, profile *Profile, config *Config, additionn
 	sharedStore.additionnalData = additionnalData
 }
 
-func GetSharedAdditionnalData(key string) interface{} {
+func SetSharedAdditionnalData(key string, value interface{}) {
+	sharedStore.additionnalData[key] = value
+}
 
+func GetSharedAdditionnalData(key string) interface{} {
 	return sharedStore.additionnalData[key]
 }
 
