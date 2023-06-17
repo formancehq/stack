@@ -170,7 +170,7 @@ func createStackCommand(cmd *cobra.Command, args []string) error {
 	fctl.SetSharedData(&StackCreate{
 		Stack:    stackResponse.Data,
 		Versions: versions.GetVersionsResponse,
-	}, profile, nil)
+	}, profile, nil, nil)
 
 	return nil
 }
