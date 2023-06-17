@@ -88,7 +88,7 @@ func deleteCommand(cmd *cobra.Command, args []string) error {
 	fctl.SetSharedData(&DeletedStack{
 		Stack:  stack,
 		Status: "OK",
-	}, nil, nil)
+	}, nil, nil, nil)
 
 	return nil
 }

@@ -33,11 +33,12 @@ func versionCommand(cmd *cobra.Command, args []string) error {
 		Commit:    "-",
 	}
 
-	fctl.SetSharedData(version, nil, nil)
+	fctl.SetSharedData(version, nil, nil, nil)
 
 	return nil
 }
 
+// TODO: This need to use the ui.NewListModel
 func view(cmd *cobra.Command, args []string) error {
 	data := fctl.GetSharedData().(*VersionStruct)
 

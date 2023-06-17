@@ -56,7 +56,7 @@ func listCommand(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	fctl.SetSharedData(rsp.Data, profile, cfg)
+	fctl.SetSharedData(rsp.Data, profile, cfg, nil)
 	return nil
 }
 

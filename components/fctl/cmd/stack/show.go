@@ -99,7 +99,7 @@ func showCommand(cmd *cobra.Command, args []string) error {
 	fctl.SetSharedData(&StackInformation{
 		Stack:    stack,
 		Versions: versions.GetVersionsResponse,
-	}, nil, cfg)
+	}, nil, cfg, nil)
 
 	return nil
 

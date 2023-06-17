@@ -70,7 +70,7 @@ func restoreCommand(cmd *cobra.Command, args []string) error {
 	fctl.SetSharedData(&RestoreStackInformation{
 		Stack:    response.Data,
 		Versions: versions.GetVersionsResponse,
-	}, profile, cfg)
+	}, profile, cfg, nil)
 
 	return nil
 }
