@@ -51,9 +51,8 @@ func GetSharedAdditionnalData(key string) interface{} {
 
 func ShareStoreToJson() ([]byte, error) {
 	if (sharedStore.data) == nil {
-		errors.New("no data to marshal")
+		return nil, errors.New("no data to marshal")
 	}
 
-	// Marshal to JSON then print to stdout
 	return json.Marshal(sharedStore.data)
 }
