@@ -186,7 +186,7 @@ func WrapOutputPostRunE(fn func(cmd *cobra.Command, args []string) error) Comman
 		cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
 			flags := GetString(cmd, OutputFlag)
 
-			if flags == "table" {
+			if flags == "plain" {
 				return fn(cmd, args)
 			}
 
