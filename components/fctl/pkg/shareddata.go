@@ -3,6 +3,7 @@ package fctl
 import (
 	"encoding/json"
 
+	"github.com/TylerBrock/colorjson"
 	"github.com/pkg/errors"
 )
 
@@ -49,10 +50,37 @@ func GetSharedAdditionnalData(key string) interface{} {
 	return sharedStore.additionnalData[key]
 }
 
+type ExportedData struct {
+	Data interface{} `json:"data"`
+}
+
 func ShareStoreToJson() ([]byte, error) {
 	if (sharedStore.data) == nil {
 		return nil, errors.New("no data to marshal")
 	}
 
-	return json.Marshal(sharedStore.data)
+	// Inject into export struct
+	export := ExportedData{
+		Data: sharedStore.data,
+	}
+
+	// Marshal to JSON then print to stdout
+	s, err := json.Marshal(export)
+	if err != nil {
+		return nil, err
+	}
+
+	raw := make(map[string]any)
+	if err := json.Unmarshal(s, &raw); err == nil {
+		f := colorjson.NewFormatter()
+		f.Indent = 2
+		colorized, err := f.Marshal(raw)
+		if err != nil {
+			panic(err)
+		}
+		return colorized, nil
+	} else {
+		return s, nil
+	}
+
 }
