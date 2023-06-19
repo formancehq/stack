@@ -114,7 +114,7 @@ var _ = Given("some empty environment", func() {
 			response, err = Client().Balances.GetBalances(
 				TestContext(),
 				operations.GetBalancesRequest{
-					Address: ptr("foo:f.*"),
+					Address: ptr(".*:foo"),
 					Ledger:  "default",
 				},
 			)
