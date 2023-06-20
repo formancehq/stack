@@ -37,7 +37,7 @@ func NewShowCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			response, err := ledgerClient.Accounts.GetAccount(cmd.Context(), operations.GetAccountRequest{
+			response, err := ledgerClient.Ledger.GetAccount(cmd.Context(), operations.GetAccountRequest{
 				Address: args[0],
 				Ledger:  ledger,
 			})

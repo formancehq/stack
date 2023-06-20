@@ -17,7 +17,7 @@
 ### Gradle
 
 ```groovy
-implementation 'com.formance.formance_sdk:formance-sdk:0.0.1'
+implementation 'com.formance.formance_sdk:formance-sdk-java:v0.1.0'
 ```
 <!-- End SDK Installation -->
 
@@ -59,13 +59,6 @@ public class Application {
 
 * [getVersions](docs/sdk/README.md#getversions) - Show stack version information
 
-### [accounts](docs/accounts/README.md)
-
-* [addMetadataToAccount](docs/accounts/README.md#addmetadatatoaccount) - Add metadata to an account
-* [countAccounts](docs/accounts/README.md#countaccounts) - Count the accounts from a ledger
-* [getAccount](docs/accounts/README.md#getaccount) - Get account by its address
-* [listAccounts](docs/accounts/README.md#listaccounts) - List accounts from a ledger
-
 ### [auth](docs/auth/README.md)
 
 * [addScopeToClient](docs/auth/README.md#addscopetoclient) - Add scope to client
@@ -88,18 +81,24 @@ public class Application {
 * [updateClient](docs/auth/README.md#updateclient) - Update client
 * [updateScope](docs/auth/README.md#updatescope) - Update scope
 
-### [balances](docs/balances/README.md)
-
-* [getBalances](docs/balances/README.md#getbalances) - Get the balances from a ledger's account
-* [getBalancesAggregated](docs/balances/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
-
 ### [ledger](docs/ledger/README.md)
 
+* [addMetadataOnTransaction](docs/ledger/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
+* [addMetadataToAccount](docs/ledger/README.md#addmetadatatoaccount) - Add metadata to an account
+* [countAccounts](docs/ledger/README.md#countaccounts) - Count the accounts from a ledger
+* [countTransactions](docs/ledger/README.md#counttransactions) - Count the transactions from a ledger
+* [createTransaction](docs/ledger/README.md#createtransaction) - Create a new transaction to a ledger
+* [getAccount](docs/ledger/README.md#getaccount) - Get account by its address
+* [getBalances](docs/ledger/README.md#getbalances) - Get the balances from a ledger's account
+* [getBalancesAggregated](docs/ledger/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
+* [getInfo](docs/ledger/README.md#getinfo) - Show server information
 * [getLedgerInfo](docs/ledger/README.md#getledgerinfo) - Get information about a ledger
-
-### [logs](docs/logs/README.md)
-
-* [listLogs](docs/logs/README.md#listlogs) - List the logs from a ledger
+* [getTransaction](docs/ledger/README.md#gettransaction) - Get transaction from a ledger by its ID
+* [listAccounts](docs/ledger/README.md#listaccounts) - List accounts from a ledger
+* [listLogs](docs/ledger/README.md#listlogs) - List the logs from a ledger
+* [listTransactions](docs/ledger/README.md#listtransactions) - List transactions from a ledger
+* [readStats](docs/ledger/README.md#readstats) - Get statistics from a ledger
+* [revertTransaction](docs/ledger/README.md#reverttransaction) - Revert a ledger transaction by its ID
 
 ### [orchestration](docs/orchestration/README.md)
 
@@ -138,23 +137,6 @@ public class Application {
 
 * [search](docs/search/README.md#search) - Search
 * [searchgetServerInfo](docs/search/README.md#searchgetserverinfo) - Get server info
-
-### [server](docs/server/README.md)
-
-* [getInfo](docs/server/README.md#getinfo) - Show server information
-
-### [stats](docs/stats/README.md)
-
-* [readStats](docs/stats/README.md#readstats) - Get statistics from a ledger
-
-### [transactions](docs/transactions/README.md)
-
-* [addMetadataOnTransaction](docs/transactions/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
-* [countTransactions](docs/transactions/README.md#counttransactions) - Count the transactions from a ledger
-* [createTransaction](docs/transactions/README.md#createtransaction) - Create a new transaction to a ledger
-* [getTransaction](docs/transactions/README.md#gettransaction) - Get transaction from a ledger by its ID
-* [listTransactions](docs/transactions/README.md#listtransactions) - List transactions from a ledger
-* [revertTransaction](docs/transactions/README.md#reverttransaction) - Revert a ledger transaction by its ID
 
 ### [wallets](docs/wallets/README.md)
 

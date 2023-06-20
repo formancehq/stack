@@ -4,7 +4,7 @@ generation:
   singleTagPerOp: true
   telemetryEnabled: false
 go:
-  version: ""
+  version: v0.1.0
   author: Formance
   maxMethodParams: 0
   packageName: github.com/formancehq/formance-sdk-go

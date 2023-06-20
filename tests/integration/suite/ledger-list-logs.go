@@ -26,7 +26,7 @@ var _ = Given("some empty environment", func() {
 			}
 		)
 		BeforeEach(func() {
-			response, err := Client().Transactions.CreateTransaction(
+			response, err := Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -47,7 +47,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			response, err = Client().Transactions.CreateTransaction(
+			response, err = Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -68,7 +68,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			addMetadataResponse, err := Client().Accounts.AddMetadataToAccount(
+			addMetadataResponse, err := Client().Ledger.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: m2,
@@ -80,7 +80,7 @@ var _ = Given("some empty environment", func() {
 			Expect(addMetadataResponse.StatusCode).To(Equal(204))
 		})
 		It("should be listed on api with ListLogs", func() {
-			response, err := Client().Logs.ListLogs(
+			response, err := Client().Ledger.ListLogs(
 				TestContext(),
 				operations.ListLogsRequest{
 					Ledger: "default",
@@ -148,7 +148,7 @@ var _ = Given("some empty environment", func() {
 		})
 		It("should be listed on api with ListLogs using time filters", func() {
 			st := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			response, err := Client().Logs.ListLogs(
+			response, err := Client().Ledger.ListLogs(
 				TestContext(),
 				operations.ListLogsRequest{
 					Ledger:    "default",
@@ -192,7 +192,7 @@ var _ = Given("some empty environment", func() {
 			}))
 
 			et := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			response, err = Client().Logs.ListLogs(
+			response, err = Client().Ledger.ListLogs(
 				TestContext(),
 				operations.ListLogsRequest{
 					EndTime: &et,
@@ -260,7 +260,7 @@ var _ = Given("some environment with accounts", func() {
 			for i := 0; i < int(accountCounts); i++ {
 				now := time.Now().Round(time.Millisecond).UTC()
 
-				response, err := Client().Transactions.CreateTransaction(
+				response, err := Client().Ledger.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						PostTransaction: shared.PostTransaction{
@@ -307,7 +307,7 @@ var _ = Given("some environment with accounts", func() {
 				rsp *shared.LogsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Logs.ListLogs(
+				response, err := Client().Ledger.ListLogs(
 					TestContext(),
 					operations.ListLogsRequest{
 						Ledger:   "default",
@@ -331,7 +331,7 @@ var _ = Given("some environment with accounts", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Logs.ListLogs(
+					response, err := Client().Ledger.ListLogs(
 						TestContext(),
 						operations.ListLogsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -353,7 +353,7 @@ var _ = Given("some environment with accounts", func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Logs.ListLogs(
+						response, err := Client().Ledger.ListLogs(
 							TestContext(),
 							operations.ListLogsRequest{
 								Cursor: rsp.Cursor.Previous,

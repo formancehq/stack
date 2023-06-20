@@ -27,7 +27,7 @@ var _ = Given("some empty environment", func() {
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
-			response, err := Client().Accounts.AddMetadataToAccount(
+			response, err := Client().Ledger.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata1,
@@ -38,7 +38,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			response, err = Client().Accounts.AddMetadataToAccount(
+			response, err = Client().Ledger.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata2,
@@ -49,7 +49,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			createTransactionResponse, err := Client().Transactions.CreateTransaction(
+			createTransactionResponse, err := Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -71,7 +71,7 @@ var _ = Given("some empty environment", func() {
 			Expect(createTransactionResponse.StatusCode).To(Equal(200))
 		})
 		It("should be countable on api", func() {
-			response, err := Client().Accounts.CountAccounts(
+			response, err := Client().Ledger.CountAccounts(
 				TestContext(),
 				operations.CountAccountsRequest{
 					Ledger: "default",
@@ -83,7 +83,7 @@ var _ = Given("some empty environment", func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 		})
 		It("should be listed on api", func() {
-			response, err := Client().Accounts.ListAccounts(
+			response, err := Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -109,7 +109,7 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 		It("should be listed on api using address filters", func() {
-			response, err := Client().Accounts.ListAccounts(
+			response, err := Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Address: ptr("foo:.*"),
@@ -130,10 +130,10 @@ var _ = Given("some empty environment", func() {
 				Metadata: metadata2,
 			}))
 
-			response, err = Client().Accounts.ListAccounts(
+			response, err = Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
-					Address: ptr("foo:f.*"),
+					Address: ptr(".*:foo"),
 					Ledger:  "default",
 				},
 			)
@@ -148,7 +148,7 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 		It("should be listed on api using balance filters", func() {
-			response, err := Client().Accounts.ListAccounts(
+			response, err := Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Balance:         ptr(int64(90)),
@@ -171,7 +171,7 @@ var _ = Given("some empty environment", func() {
 			}))
 
 			// Default operator should be gte
-			response, err = Client().Accounts.ListAccounts(
+			response, err = Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Balance: ptr(int64(90)),
@@ -189,7 +189,7 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 		It("should be listed on api using metadata filters", func() {
-			response, err := Client().Accounts.ListAccounts(
+			response, err := Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -214,7 +214,7 @@ var _ = Given("some empty environment", func() {
 var _ = Given("some empty environment", func() {
 	When("counting and listing accounts empty", func() {
 		It("should be countable on api even if empty", func() {
-			response, err := Client().Accounts.CountAccounts(
+			response, err := Client().Ledger.CountAccounts(
 				TestContext(),
 				operations.CountAccountsRequest{
 					Ledger: "default",
@@ -227,7 +227,7 @@ var _ = Given("some empty environment", func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api even if empty", func() {
-			response, err := Client().Accounts.ListAccounts(
+			response, err := Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -256,7 +256,7 @@ var _ = Given("some environment with accounts", func() {
 					"id": fmt.Sprintf("%d", i),
 				}
 
-				response, err := Client().Accounts.AddMetadataToAccount(
+				response, err := Client().Ledger.AddMetadataToAccount(
 					TestContext(),
 					operations.AddMetadataToAccountRequest{
 						RequestBody: m,
@@ -281,7 +281,7 @@ var _ = Given("some environment with accounts", func() {
 				rsp *shared.AccountsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Accounts.ListAccounts(
+				response, err := Client().Ledger.ListAccounts(
 					TestContext(),
 					operations.ListAccountsRequest{
 						Ledger:   "default",
@@ -302,7 +302,7 @@ var _ = Given("some environment with accounts", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Accounts.ListAccounts(
+					response, err := Client().Ledger.ListAccounts(
 						TestContext(),
 						operations.ListAccountsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -321,7 +321,7 @@ var _ = Given("some environment with accounts", func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Accounts.ListAccounts(
+						response, err := Client().Ledger.ListAccounts(
 							TestContext(),
 							operations.ListAccountsRequest{
 								Ledger: "default",

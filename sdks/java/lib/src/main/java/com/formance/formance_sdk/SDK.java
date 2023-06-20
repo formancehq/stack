@@ -42,17 +42,11 @@ public class SDK {
 	};
 	
   	
-    public Accounts accounts;
     public Auth auth;
-    public Balances balances;
     public Ledger ledger;
-    public Logs logs;
     public Orchestration orchestration;
     public Payments payments;
     public Search search;
-    public Server server;
-    public Stats stats;
-    public Transactions transactions;
     public Wallets wallets;
     public Webhooks webhooks;	
 
@@ -61,7 +55,7 @@ public class SDK {
 	private com.formance.formance_sdk.models.shared.Security _security;
 	private String _serverUrl;
 	private String _language = "java";
-	private String _sdkVersion = "0.0.1";
+	private String _sdkVersion = "v0.1.0";
 	private String _genVersion = "2.31.0";
 	/**
 	 * The Builder class allows the configuration of a new instance of the SDK.
@@ -165,15 +159,6 @@ public class SDK {
 
 		
 		
-		this.accounts = new Accounts(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
 		this.auth = new Auth(
 			this._defaultClient,
 			this._securityClient,
@@ -183,25 +168,7 @@ public class SDK {
 			this._genVersion
 		);
 		
-		this.balances = new Balances(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
 		this.ledger = new Ledger(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.logs = new Logs(
 			this._defaultClient,
 			this._securityClient,
 			this._serverUrl,
@@ -229,33 +196,6 @@ public class SDK {
 		);
 		
 		this.search = new Search(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.server = new Server(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.stats = new Stats(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.transactions = new Transactions(
 			this._defaultClient,
 			this._securityClient,
 			this._serverUrl,

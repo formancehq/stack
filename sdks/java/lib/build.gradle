@@ -41,17 +41,17 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.formance'
             artifactId = 'formance-sdk'
-            version = '0.0.1'
+            version = 'v0.1.0'
 
             from components.java
 
             pom {
-                name = 'My Company Java SDK'
-                description = 'SDK enabling Java developers to easily integrate with the My Company API.'
-                url = 'https://github.com/owner/repo'
+                name = 'Formance Java SDK'
+                description = 'SDK enabling Java developers to easily integrate with the Formance API.'
+                url = 'https://github.com/formancehq/formance-sdk-java'
                 scm {
-                    url = 'github.com/owner/repo'
-                    connection = 'scm:git:ssh://git@github.com/owner/repo.git'
+                    url = 'github.com/formancehq/formance-sdk-java'
+                    connection = 'scm:git:ssh://git@github.com/formancehq/formance-sdk-java.git'
                 }
                 licenses {
                     license {
@@ -61,14 +61,14 @@ publishing {
                 }
                 developers {
                     developer {
-                        name = 'My Company'
-                        organization = 'My Company'
+                        name = 'Formance'
+                        organization = 'Formance'
                         email = 'info@mycompany.com'
                     }
                 }
                 organization {
-                    name = 'My Company'
-                    url = 'www.mycompany.com'
+                    name = 'Formance'
+                    url = 'www.formance.com'
                 }
             }
         }

@@ -39,7 +39,7 @@ func NewStatsCommand() *cobra.Command {
 			request := operations.ReadStatsRequest{
 				Ledger: fctl.GetString(cmd, internal.LedgerFlag),
 			}
-			response, err := ledgerClient.Stats.ReadStats(cmd.Context(), request)
+			response, err := ledgerClient.Ledger.ReadStats(cmd.Context(), request)
 			if err != nil {
 				return err
 			}

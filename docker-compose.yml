@@ -14,7 +14,7 @@ services:
       LOG_LEVEL: "debug"
 
   gateway:
-    image: "ghcr.io/formancehq/gateway:latest"
+    image: "ghcr.io/formancehq/gateway:v0.1.7"
     network_mode: service:auth-dex
     environment:
       OTEL_SERVICE_NAME: "gateway"
@@ -42,7 +42,7 @@ services:
       - "8080:8080"
 
   auth:
-    image: "ghcr.io/formancehq/auth:latest"
+    image: "ghcr.io/formancehq/auth:v0.4.3"
     restart: always
     network_mode: service:auth-dex
     command: serve
@@ -62,7 +62,7 @@ services:
       - ./config/auth/config.yaml:/config.yaml
 
   control:
-    image: "ghcr.io/formancehq/control:1195d382ab72c28c8819e200e2ba0e0ea0623f8d"
+    image: "ghcr.io/formancehq/control:v1.7.0"
     restart: always
     network_mode: service:gateway
     environment:
@@ -80,19 +80,6 @@ services:
       - 6222:6222
       - 8222:8222
     command: --js
-#  nats:
-#    image: docker.io/bitnami/nats:2
-##    healthcheck:
-##      test: curl -s -f -k http://localhost:8222/varz >/dev/null || exit 1
-##      interval: 30s
-##      timeout: 10s
-##      retries: 5
-#    environment:
-#      NATS_ENABLE_AUTH: false
-#    ports:
-#      - '4222:4222'
-#      - '6222:6222'
-#      - '8222:8222'
 
   postgres:
     image: "postgres:13-alpine"
@@ -114,23 +101,23 @@ services:
       - ./config/postgres:/docker-entrypoint-initdb.d
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:latest"
+    image: "ghcr.io/formancehq/ledger:v1.10.0"
     restart: always
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      STORAGE_DRIVER: "postgres"
-      STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger?sslmode=disable"
-      SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
-      PUBLISHER_NATS_ENABLED: "true"
-      PUBLISHER_NATS_URL: "nats:4222"
-      PUBLISHER_TOPIC_MAPPING: "*:ledger"
-      OTEL_METRICS: "true"
-      OTEL_METRICS_RUNTIME: "true"
+      NUMARY_STORAGE_DRIVER: "postgres"
+      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger?sslmode=disable"
+      NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
+      NUMARY_PUBLISHER_NATS_ENABLED: "true"
+      NUMARY_PUBLISHER_NATS_URL: "nats:4222"
+      NUMARY_PUBLISHER_TOPIC_MAPPING: "*:ledger"
+      NUMARY_OTEL_METRICS: "true"
+      NUMARY_OTEL_METRICS_RUNTIME: "true"
 
   wallets:
-    image: "ghcr.io/formancehq/wallets:latest"
+    image: "ghcr.io/formancehq/wallets:v0.4.2"
     restart: always
     depends_on:
       postgres:
@@ -227,7 +214,7 @@ services:
       ES_INDICES: "formance"
 
   webhooks:
-    image: "ghcr.io/formancehq/webhooks:latest"
+    image: "ghcr.io/formancehq/webhooks:v0.6.6"
     restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
@@ -241,7 +228,7 @@ services:
       STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/webhooks?sslmode=disable"
 
   webhooks-worker:
-    image: "ghcr.io/formancehq/webhooks:latest"
+    image: "ghcr.io/formancehq/webhooks:v0.6.6"
     command: worker
     restart: always
     healthcheck:

@@ -37,15 +37,16 @@ try {
         'quickstart',
         'quickstart',
     ];
-    $request->pageSize = 916723;
+    $request->pageSize = 725255;
     $request->policy = 'OR';
     $request->raw = [
-        'repudiandae' => 'sint',
+        'blanditiis' => 'deleniti',
+        'sapiente' => 'amet',
+        'deserunt' => 'nisi',
     ];
     $request->sort = 'txid:asc';
-    $request->target = 'veritatis';
+    $request->target = 'vel';
     $request->terms = [
-        'destination=central_bank1',
         'destination=central_bank1',
         'destination=central_bank1',
         'destination=central_bank1',

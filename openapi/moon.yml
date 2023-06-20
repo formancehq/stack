@@ -1,4 +1,4 @@
-type: 'tool'
+type: 'library'
 language: 'javascript'
 
 tasks:

@@ -1,6 +1,9 @@
 type: 'tool'
 language: 'go'
 
+dependsOn:
+    - 'openapi'
+
 workspace:
     inheritedTasks:
         exclude: ['lint', 'test']

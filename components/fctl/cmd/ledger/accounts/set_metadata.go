@@ -54,7 +54,7 @@ func NewSetMetadataCommand() *cobra.Command {
 				Address:     address,
 				RequestBody: metadata,
 			}
-			response, err := ledgerClient.Accounts.AddMetadataToAccount(cmd.Context(), request)
+			response, err := ledgerClient.Ledger.AddMetadataToAccount(cmd.Context(), request)
 			if err != nil {
 				return err
 			}

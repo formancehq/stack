@@ -32,7 +32,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.cancelEvent({
-  instanceID: "culpa",
+  instanceID: "quae",
 }).then((res: CancelEventResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -58,18 +58,18 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.createWorkflow({
-  name: "Darrin Brakus",
+  name: "Alison Mann",
   stages: [
     {
-      "repellat": "mollitia",
+      "rem": "voluptates",
+      "quasi": "repudiandae",
+      "sint": "veritatis",
     },
     {
-      "numquam": "commodi",
-      "quam": "molestiae",
-      "velit": "error",
-    },
-    {
-      "quis": "vitae",
+      "incidunt": "enim",
+      "consequatur": "est",
+      "quibusdam": "explicabo",
+      "deserunt": "distinctio",
     },
   ],
 }).then((res: CreateWorkflowResponse) => {
@@ -97,7 +97,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstance({
-  instanceID: "laborum",
+  instanceID: "quibusdam",
 }).then((res: GetInstanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -123,7 +123,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstanceHistory({
-  instanceID: "animi",
+  instanceID: "labore",
 }).then((res: GetInstanceHistoryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -149,8 +149,8 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstanceStageHistory({
-  instanceID: "enim",
-  number: 138183,
+  instanceID: "modi",
+  number: 183191,
 }).then((res: GetInstanceStageHistoryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -176,7 +176,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getWorkflow({
-  flowId: "quo",
+  flowId: "aliquid",
 }).then((res: GetWorkflowResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -203,7 +203,7 @@ const sdk = new SDK({
 
 sdk.orchestration.listInstances({
   running: false,
-  workflowID: "sequi",
+  workflowID: "cupiditate",
 }).then((res: ListInstancesResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -278,13 +278,12 @@ const sdk = new SDK({
 
 sdk.orchestration.runWorkflow({
   requestBody: {
-    "ipsam": "id",
-    "possimus": "aut",
-    "quasi": "error",
-    "temporibus": "laborum",
+    "perferendis": "magni",
+    "assumenda": "ipsam",
+    "alias": "fugit",
   },
   wait: false,
-  workflowID: "quasi",
+  workflowID: "dolorum",
 }).then((res: RunWorkflowResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -311,9 +310,9 @@ const sdk = new SDK({
 
 sdk.orchestration.sendEvent({
   requestBody: {
-    name: "Jan Thiel",
+    name: "Eddie Prosacco",
   },
-  instanceID: "voluptatibus",
+  instanceID: "delectus",
 }).then((res: SendEventResponse) => {
   if (res.statusCode == 200) {
     // handle response

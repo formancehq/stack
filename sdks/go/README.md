@@ -1,4 +1,4 @@
-# github.com/formancehq/formance-sdk-go
+# github.com/formancehq/sdk-go
 
 <!-- Start SDK Installation -->
 ## SDK Installation
@@ -46,13 +46,6 @@ func main() {
 
 * [GetVersions](docs/formance/README.md#getversions) - Show stack version information
 
-### [Accounts](docs/accounts/README.md)
-
-* [AddMetadataToAccount](docs/accounts/README.md#addmetadatatoaccount) - Add metadata to an account
-* [CountAccounts](docs/accounts/README.md#countaccounts) - Count the accounts from a ledger
-* [GetAccount](docs/accounts/README.md#getaccount) - Get account by its address
-* [ListAccounts](docs/accounts/README.md#listaccounts) - List accounts from a ledger
-
 ### [Auth](docs/auth/README.md)
 
 * [AddScopeToClient](docs/auth/README.md#addscopetoclient) - Add scope to client
@@ -75,18 +68,24 @@ func main() {
 * [UpdateClient](docs/auth/README.md#updateclient) - Update client
 * [UpdateScope](docs/auth/README.md#updatescope) - Update scope
 
-### [Balances](docs/balances/README.md)
-
-* [GetBalances](docs/balances/README.md#getbalances) - Get the balances from a ledger's account
-* [GetBalancesAggregated](docs/balances/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
-
 ### [Ledger](docs/ledger/README.md)
 
+* [AddMetadataOnTransaction](docs/ledger/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
+* [AddMetadataToAccount](docs/ledger/README.md#addmetadatatoaccount) - Add metadata to an account
+* [CountAccounts](docs/ledger/README.md#countaccounts) - Count the accounts from a ledger
+* [CountTransactions](docs/ledger/README.md#counttransactions) - Count the transactions from a ledger
+* [CreateTransaction](docs/ledger/README.md#createtransaction) - Create a new transaction to a ledger
+* [GetAccount](docs/ledger/README.md#getaccount) - Get account by its address
+* [GetBalances](docs/ledger/README.md#getbalances) - Get the balances from a ledger's account
+* [GetBalancesAggregated](docs/ledger/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
+* [GetInfo](docs/ledger/README.md#getinfo) - Show server information
 * [GetLedgerInfo](docs/ledger/README.md#getledgerinfo) - Get information about a ledger
-
-### [Logs](docs/logs/README.md)
-
-* [ListLogs](docs/logs/README.md#listlogs) - List the logs from a ledger
+* [GetTransaction](docs/ledger/README.md#gettransaction) - Get transaction from a ledger by its ID
+* [ListAccounts](docs/ledger/README.md#listaccounts) - List accounts from a ledger
+* [ListLogs](docs/ledger/README.md#listlogs) - List the logs from a ledger
+* [ListTransactions](docs/ledger/README.md#listtransactions) - List transactions from a ledger
+* [ReadStats](docs/ledger/README.md#readstats) - Get statistics from a ledger
+* [RevertTransaction](docs/ledger/README.md#reverttransaction) - Revert a ledger transaction by its ID
 
 ### [Orchestration](docs/orchestration/README.md)
 
@@ -125,23 +124,6 @@ func main() {
 
 * [Search](docs/search/README.md#search) - Search
 * [SearchgetServerInfo](docs/search/README.md#searchgetserverinfo) - Get server info
-
-### [Server](docs/server/README.md)
-
-* [GetInfo](docs/server/README.md#getinfo) - Show server information
-
-### [Stats](docs/stats/README.md)
-
-* [ReadStats](docs/stats/README.md#readstats) - Get statistics from a ledger
-
-### [Transactions](docs/transactions/README.md)
-
-* [AddMetadataOnTransaction](docs/transactions/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
-* [CountTransactions](docs/transactions/README.md#counttransactions) - Count the transactions from a ledger
-* [CreateTransaction](docs/transactions/README.md#createtransaction) - Create a new transaction to a ledger
-* [GetTransaction](docs/transactions/README.md#gettransaction) - Get transaction from a ledger by its ID
-* [ListTransactions](docs/transactions/README.md#listtransactions) - List transactions from a ledger
-* [RevertTransaction](docs/transactions/README.md#reverttransaction) - Revert a ledger transaction by its ID
 
 ### [Wallets](docs/wallets/README.md)
 

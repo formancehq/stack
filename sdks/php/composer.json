@@ -1,5 +1,5 @@
 {
-  "name": "formance/stack",
+  "name": "formance-sdk-php",
   "type": "library",
   "autoload": {
     "psr-4": {

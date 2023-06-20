@@ -57,17 +57,11 @@ func Float64(f float64) *float64 { return &f }
 // and standard method from web, mobile and desktop applications.
 // <SecurityDefinitions />
 type Formance struct {
-	Accounts      *accounts
 	Auth          *auth
-	Balances      *balances
 	Ledger        *ledger
-	Logs          *logs
 	Orchestration *orchestration
 	Payments      *payments
 	Search        *search
-	Server        *server
-	Stats         *stats
-	Transactions  *transactions
 	Wallets       *wallets
 	Webhooks      *webhooks
 
@@ -119,7 +113,7 @@ func WithSecurity(security shared.Security) SDKOption {
 func New(opts ...SDKOption) *Formance {
 	sdk := &Formance{
 		_language:   "go",
-		_sdkVersion: "",
+		_sdkVersion: "v0.1.0",
 		_genVersion: "2.31.0",
 	}
 	for _, opt := range opts {
@@ -142,15 +136,6 @@ func New(opts ...SDKOption) *Formance {
 		sdk._serverURL = ServerList[0]
 	}
 
-	sdk.Accounts = newAccounts(
-		sdk._defaultClient,
-		sdk._securityClient,
-		sdk._serverURL,
-		sdk._language,
-		sdk._sdkVersion,
-		sdk._genVersion,
-	)
-
 	sdk.Auth = newAuth(
 		sdk._defaultClient,
 		sdk._securityClient,
@@ -160,25 +145,7 @@ func New(opts ...SDKOption) *Formance {
 		sdk._genVersion,
 	)
 
-	sdk.Balances = newBalances(
-		sdk._defaultClient,
-		sdk._securityClient,
-		sdk._serverURL,
-		sdk._language,
-		sdk._sdkVersion,
-		sdk._genVersion,
-	)
-
 	sdk.Ledger = newLedger(
-		sdk._defaultClient,
-		sdk._securityClient,
-		sdk._serverURL,
-		sdk._language,
-		sdk._sdkVersion,
-		sdk._genVersion,
-	)
-
-	sdk.Logs = newLogs(
 		sdk._defaultClient,
 		sdk._securityClient,
 		sdk._serverURL,
@@ -206,33 +173,6 @@ func New(opts ...SDKOption) *Formance {
 	)
 
 	sdk.Search = newSearch(
-		sdk._defaultClient,
-		sdk._securityClient,
-		sdk._serverURL,
-		sdk._language,
-		sdk._sdkVersion,
-		sdk._genVersion,
-	)
-
-	sdk.Server = newServer(
-		sdk._defaultClient,
-		sdk._securityClient,
-		sdk._serverURL,
-		sdk._language,
-		sdk._sdkVersion,
-		sdk._genVersion,
-	)
-
-	sdk.Stats = newStats(
-		sdk._defaultClient,
-		sdk._securityClient,
-		sdk._serverURL,
-		sdk._language,
-		sdk._sdkVersion,
-		sdk._genVersion,
-	)
-
-	sdk.Transactions = newTransactions(
 		sdk._defaultClient,
 		sdk._securityClient,
 		sdk._serverURL,
