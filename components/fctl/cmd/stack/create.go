@@ -3,7 +3,6 @@ package stack
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
 	"github.com/formancehq/fctl/membershipclient"
@@ -25,6 +24,16 @@ type StackCreate struct {
 	Versions *shared.GetVersionsResponse
 }
 
+type StackCreateController struct {
+	store *fctl.SharedStore
+}
+
+func NewStackCreateController() *StackCreateController {
+	return &StackCreateController{
+		store: fctl.NewSharedStore(),
+	}
+}
+
 func NewCreateCommand() *cobra.Command {
 	return fctl.NewMembershipCommand("create [name]",
 		fctl.WithShortDescription("Create a new stack"),
@@ -33,48 +42,29 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
 		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
 		fctl.WithBoolFlag(nowaitFlag, false, "Not wait stack availability"),
-		fctl.WithRunE(createStackCommand),
-		fctl.WrapOutputPostRunE(viewStackCreate),
+		fctl.WithController(NewStackCreateController()),
+		// fctl.WrapOutputPostRunE(viewStackCreate),
 	)
 }
-
-func waitStackReady(cmd *cobra.Command, profile *fctl.Profile, stack *membershipclient.Stack) error {
-	baseUrlStr := profile.ServicesBaseUrl(stack).String()
-	authServerUrl := fmt.Sprintf("%s/api/auth", baseUrlStr)
-	for {
-		req, err := http.NewRequestWithContext(cmd.Context(), http.MethodGet,
-			fmt.Sprintf(authServerUrl+"/.well-known/openid-configuration"), nil)
-		if err != nil {
-			return err
-		}
-		rsp, err := fctl.GetHttpClient(cmd, map[string][]string{}).Do(req)
-		if err == nil && rsp.StatusCode == http.StatusOK {
-			break
-		}
-		select {
-		case <-cmd.Context().Done():
-			return cmd.Context().Err()
-		case <-time.After(time.Second):
-		}
-	}
-	return nil
+func (c *StackCreateController) GetStore() *fctl.SharedStore {
+	return c.store
 }
 
-func createStackCommand(cmd *cobra.Command, args []string) error {
+func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	protected := !fctl.GetBool(cmd, unprotectFlag)
@@ -88,7 +78,7 @@ func createStackCommand(cmd *cobra.Command, args []string) error {
 	} else {
 		name, err = pterm.DefaultInteractiveTextInput.WithMultiLine(false).Show("Enter a name")
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -96,7 +86,7 @@ func createStackCommand(cmd *cobra.Command, args []string) error {
 	if region == "" {
 		regions, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
 		if err != nil {
-			return errors.Wrap(err, "listing regions")
+			return nil, errors.Wrap(err, "listing regions")
 		}
 
 		var options []string
@@ -115,7 +105,7 @@ func createStackCommand(cmd *cobra.Command, args []string) error {
 		printer := pterm.DefaultInteractiveSelect.WithOptions(options)
 		selectedOption, err := printer.Show("Please select a region")
 		if err != nil {
-			return err
+			return nil, err
 		}
 		for i := 0; i < len(options); i++ {
 			if selectedOption == options[i] {
@@ -131,7 +121,7 @@ func createStackCommand(cmd *cobra.Command, args []string) error {
 		RegionID: region,
 	}).Execute()
 	if err != nil {
-		return errors.Wrap(err, "creating stack")
+		return nil, errors.Wrap(err, "creating stack")
 	}
 
 	profile := fctl.GetCurrentProfile(cmd, cfg)
@@ -139,15 +129,15 @@ func createStackCommand(cmd *cobra.Command, args []string) error {
 	if !fctl.GetBool(cmd, nowaitFlag) {
 		spinner, err := pterm.DefaultSpinner.Start("Waiting services availability")
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		if err := waitStackReady(cmd, profile, stackResponse.Data); err != nil {
-			return err
+			return nil, err
 		}
 
 		if err := spinner.Stop(); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -156,28 +146,28 @@ func createStackCommand(cmd *cobra.Command, args []string) error {
 
 	stackClient, err := fctl.NewStackClient(cmd, cfg, stackResponse.Data)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	versions, err := stackClient.GetVersions(cmd.Context())
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if versions.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
+		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	fctl.SetSharedData(&StackCreate{
+	c.store.SetData(&StackCreate{
 		Stack:    stackResponse.Data,
 		Versions: versions.GetVersionsResponse,
-	}, profile, nil, nil)
+	}).SetProfile(profile)
 
-	return nil
+	return c, nil
 }
 
-func viewStackCreate(cmd *cobra.Command, args []string) error {
+func (c *StackCreateController) Render(cmd *cobra.Command, args []string) error {
 
-	data := fctl.GetSharedData().(*StackCreate)
+	data := c.store.GetData().(*StackCreate)
 
-	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetSharedProfile(), data.Stack, data.Versions)
+	return internal.PrintStackInformation(cmd.OutOrStdout(), c.store.GetProfile(), data.Stack, data.Versions)
 }
