@@ -10,21 +10,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type OutputDeleteWebhook struct {
+type DeleteWebhookStore struct {
 	Success bool `json:"success"`
 }
 
 type DeleteWebhookController struct {
-	store *fctl.SharedStore
+	store  *DeleteWebhookStore
+	config *fctl.Config
+}
+
+var _ fctl.Controller[*DeleteWebhookStore] = (*DeleteWebhookController)(nil)
+
+func NewDefaultDeleteWebhookStore() *DeleteWebhookStore {
+	return &DeleteWebhookStore{
+		Success: true,
+	}
 }
 
 func NewDeleteWebhookController() *DeleteWebhookController {
 	return &DeleteWebhookController{
-		store: fctl.NewSharedStore(),
+		store:  NewDefaultDeleteWebhookStore(),
+		config: nil,
 	}
 }
 
-func (c *DeleteWebhookController) GetStore() *fctl.SharedStore {
+func (c *DeleteWebhookController) GetStore() *DeleteWebhookStore {
 	return c.store
 }
 
@@ -69,12 +79,9 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	output := &OutputDeleteWebhook{
-		Success: response.StatusCode == 200,
-	}
+	c.store.Success = response.StatusCode == 200
 
-	c.store.SetData(output)
-	c.store.SetConfig(cfg)
+	c.config = cfg
 
 	return c, nil
 }
@@ -91,7 +98,6 @@ func NewDeleteCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithAliases("del"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController(NewDeleteWebhookController()),
-		// fctl.WrapOutputPostRunE(DisplayDeleteCommand),
+		fctl.WithController[*DeleteWebhookStore](NewDeleteWebhookController()),
 	)
 }

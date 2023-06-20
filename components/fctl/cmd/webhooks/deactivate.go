@@ -10,20 +10,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type OutputDesactivateWebhook struct {
+type DesactivateWebhookStore struct {
 	Success bool `json:"success"`
 }
 
 type DesactivateWebhookController struct {
-	store *fctl.SharedStore
+	store *DesactivateWebhookStore
 }
 
-func NewDesactivateWebhook() *DesactivateWebhookController {
-	return &DesactivateWebhookController{
-		store: fctl.NewSharedStore(),
+var _ fctl.Controller[*DesactivateWebhookStore] = (*DesactivateWebhookController)(nil)
+
+func NewDefaultDesactivateWebhookStore() *DesactivateWebhookStore {
+	return &DesactivateWebhookStore{
+		Success: true,
 	}
 }
-func (c *DesactivateWebhookController) GetStore() *fctl.SharedStore {
+
+func NewDesactivateWebhookController() *DesactivateWebhookController {
+	return &DesactivateWebhookController{
+		store: NewDefaultDesactivateWebhookStore(),
+	}
+}
+func (c *DesactivateWebhookController) GetStore() *DesactivateWebhookStore {
 	return c.store
 }
 
@@ -60,9 +68,7 @@ func (c *DesactivateWebhookController) Run(cmd *cobra.Command, args []string) (f
 		return nil, errors.Wrap(err, "deactivating config")
 	}
 
-	out := &OutputDesactivateWebhook{
-		Success: !response.ConfigResponse.Data.Active,
-	}
+	c.store.Success = !response.ConfigResponse.Data.Active
 
 	// Check if there is an error
 	if response.ErrorResponse != nil {
@@ -73,8 +79,6 @@ func (c *DesactivateWebhookController) Run(cmd *cobra.Command, args []string) (f
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
-
-	c.store.SetData(out)
 
 	return c, nil
 }
@@ -92,6 +96,6 @@ func NewDeactivateCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithAliases("deac"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController(NewDesactivateWebhook()),
+		fctl.WithController[*DesactivateWebhookStore](NewDesactivateWebhookController()),
 	)
 }

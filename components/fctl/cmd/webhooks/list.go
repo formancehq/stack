@@ -13,31 +13,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type OutputListWebhook struct {
+type ListWebhookStore struct {
 	Webhooks []shared.WebhooksConfig `json:"webhooks"`
 }
-type ListWebhook struct {
-	store *fctl.SharedStore
+type ListWebhookController struct {
+	store *ListWebhookStore
 }
 
-func NewListCommand() *cobra.Command {
-	return fctl.NewCommand("list",
-		fctl.WithShortDescription("List all configs"),
-		fctl.WithAliases("ls", "l"),
-		fctl.WithController(NewListWebhook()),
-	)
-}
+var _ fctl.Controller[*ListWebhookStore] = (*ListWebhookController)(nil)
 
-func NewListWebhook() *ListWebhook {
-	return &ListWebhook{
-		store: fctl.NewSharedStore(),
+func NewDefaultListWebhookStore() *ListWebhookStore {
+	return &ListWebhookStore{
+		Webhooks: []shared.WebhooksConfig{},
 	}
 }
-func (c *ListWebhook) GetStore() *fctl.SharedStore {
+
+func NewListWebhookController() *ListWebhookController {
+	return &ListWebhookController{
+		store: NewDefaultListWebhookStore(),
+	}
+}
+func (c *ListWebhookController) GetStore() *ListWebhookStore {
 	return c.store
 }
 
-func (c *ListWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
@@ -72,30 +72,19 @@ func (c *ListWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable, e
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	output := &OutputListWebhook{
-		Webhooks: response.ConfigsResponse.Cursor.Data,
-	}
-
-	c.GetStore().SetData(output)
-
-	fmt.Println("controller", "list")
+	c.store.Webhooks = response.ConfigsResponse.Cursor.Data
 
 	return c, nil
 }
 
-func (c *ListWebhook) Render(cmd *cobra.Command, args []string) error {
-	Data, ok := c.GetStore().GetData().(*OutputListWebhook)
-	if !ok {
-		return fmt.Errorf("invalid output data")
-	}
-
+func (c *ListWebhookController) Render(cmd *cobra.Command, args []string) error {
 	// TODO: WebhooksConfig is missing ?
 	if err := pterm.DefaultTable.
 		WithHasHeader(true).
 		WithWriter(cmd.OutOrStdout()).
 		WithData(
 			fctl.Prepend(
-				fctl.Map(Data.Webhooks,
+				fctl.Map(c.store.Webhooks,
 					func(src shared.WebhooksConfig) []string {
 						return []string{
 							src.ID,
@@ -112,4 +101,12 @@ func (c *ListWebhook) Render(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "rendering table")
 	}
 	return nil
+}
+
+func NewListCommand() *cobra.Command {
+	return fctl.NewCommand("list",
+		fctl.WithShortDescription("List all configs"),
+		fctl.WithAliases("ls", "l"),
+		fctl.WithController[*ListWebhookStore](NewListWebhookController()),
+	)
 }

@@ -14,26 +14,48 @@ import (
 
 var errStackNotFound = errors.New("stack not found")
 
-type StackInformation struct {
+type StackShowStore struct {
 	Stack    *membershipclient.Stack     `json:"stack"`
 	Versions *shared.GetVersionsResponse `json:"versions"`
 }
 
-type StackShow struct {
-	store *fctl.SharedStore
+type StackShowController struct {
+	store  *StackShowStore
+	config *fctl.Config
 }
 
-func (c *StackShow) GetStore() *fctl.SharedStore {
-	return c.store
-}
+var _ fctl.Controller[*StackShowStore] = (*StackShowController)(nil)
 
-func NewStackShow() *StackShow {
-	return &StackShow{
-		store: fctl.NewSharedStore(),
+func NewDefaultStackShowStore() *StackShowStore {
+	return &StackShowStore{
+		Stack:    &membershipclient.Stack{},
+		Versions: &shared.GetVersionsResponse{},
 	}
 }
 
-func (c *StackShow) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func NewStackShowController() *StackShowController {
+	return &StackShowController{
+		store: NewDefaultStackShowStore(),
+	}
+}
+
+func NewShowCommand() *cobra.Command {
+	var stackNameFlag = "name"
+
+	return fctl.NewMembershipCommand("show (<stack-id> | --name=<stack-name>)",
+		fctl.WithAliases("s", "sh"),
+		fctl.WithShortDescription("Show stack"),
+		fctl.WithArgs(cobra.MaximumNArgs(1)),
+		fctl.WithStringFlag(stackNameFlag, "", ""),
+		fctl.WithController[*StackShowStore](NewStackShowController()),
+	)
+}
+
+func (c *StackShowController) GetStore() *StackShowStore {
+	return c.store
+}
+
+func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	var stackNameFlag = "name"
 
 	cfg, err := fctl.GetConfig(cmd)
@@ -97,30 +119,14 @@ func (c *StackShow) Run(cmd *cobra.Command, args []string) (fctl.Renderable, err
 		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	c.store.SetData(&StackInformation{
-		Stack:    stack,
-		Versions: versions.GetVersionsResponse,
-	})
-
-	c.store.SetConfig(cfg)
+	c.store.Stack = stack
+	c.store.Versions = versions.GetVersionsResponse
+	c.config = cfg
 
 	return c, nil
 
 }
 
-func (c *StackShow) Render(cmd *cobra.Command, args []string) error {
-	data := c.store.GetData().(*StackInformation)
-	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, c.store.GetConfig()), data.Stack, data.Versions)
-}
-
-func NewShowCommand() *cobra.Command {
-	var stackNameFlag = "name"
-
-	return fctl.NewMembershipCommand("show (<stack-id> | --name=<stack-name>)",
-		fctl.WithAliases("s", "sh"),
-		fctl.WithShortDescription("Show stack"),
-		fctl.WithArgs(cobra.MaximumNArgs(1)),
-		fctl.WithStringFlag(stackNameFlag, "", ""),
-		fctl.WithController(NewStackShow()),
-	)
+func (c *StackShowController) Render(cmd *cobra.Command, args []string) error {
+	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, c.config), c.store.Stack, c.store.Versions)
 }

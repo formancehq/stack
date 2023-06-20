@@ -1,4 +1,4 @@
-package cmd
+package ui
 
 import (
 	"fmt"
@@ -6,22 +6,30 @@ import (
 	"runtime"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-type UiOutput struct {
+type UiStruct struct {
 	UIUrl        string `json:"stack_url"`
 	FoundBrowser bool   `json:"browser_found"`
 }
 
-type Ui struct {
-	store *fctl.SharedStore
+type UiController struct {
+	store *UiStruct
 }
 
-func NewUi() *Ui {
-	return &Ui{
-		store: fctl.NewSharedStore(),
+var _ fctl.Controller[*UiStruct] = (*UiController)(nil)
+
+func NewDefaultUiStore() *UiStruct {
+	return &UiStruct{
+		UIUrl:        "",
+		FoundBrowser: false,
+	}
+}
+
+func NewUiController() *UiController {
+	return &UiController{
+		store: NewDefaultUiStore(),
 	}
 }
 
@@ -43,11 +51,11 @@ func openUrl(url string) error {
 	args = append(args, url)
 	return exec.Command(cmd, args...).Start()
 }
-func (c *Ui) GetStore() *fctl.SharedStore {
+func (c *UiController) GetStore() *UiStruct {
 	return c.store
 }
 
-func (c *Ui) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *UiController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -67,37 +75,26 @@ func (c *Ui) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	profile := fctl.GetCurrentProfile(cmd, cfg)
 	stackUrl := profile.ServicesBaseUrl(stack)
 
-	ui := UiOutput{
-		UIUrl:        stackUrl.String(),
-		FoundBrowser: false,
+	c.store.UIUrl = stackUrl.String()
+
+	if err := openUrl(c.store.UIUrl); err != nil {
+		c.store.FoundBrowser = true
 	}
 
-	if err := openUrl(ui.UIUrl); err != nil {
-		ui.FoundBrowser = true
-	}
-
-	c.GetStore().SetData(ui)
-	// fctl.SetSharedData(ui, profile, cfg, nil)
 	return c, nil
 }
 
-func (c *Ui) Render(cmd *cobra.Command, args []string) error {
+func (c *UiController) Render(cmd *cobra.Command, args []string) error {
 
-	ui, ok := c.GetStore().GetData().(UiOutput)
-	if !ok {
-		return errors.New("invalid output")
-	}
-
-	fmt.Println("Opening url: ", ui.UIUrl)
+	fmt.Println("Opening url: ", c.store.UIUrl)
 
 	return nil
 }
 
-func NewUICommand() *cobra.Command {
+func NewCommand() *cobra.Command {
 	return fctl.NewStackCommand("ui",
 		fctl.WithShortDescription("Open UI"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithController(NewUi()),
-		// fctl.WrapOutputPostRunE(DisplayOutput),
+		fctl.WithController[*UiStruct](NewUiController()),
 	)
 }

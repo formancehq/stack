@@ -179,7 +179,7 @@ func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOption
 	}
 }
 
-func WithController(c Controller) CommandOptionFn {
+func WithController[T any](c Controller[T]) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
 			renderable, err := c.Run(cmd, args)
