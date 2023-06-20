@@ -15,17 +15,29 @@ type VersionStruct struct {
 	BuildDate string `json:"buildDate" yaml:"buildDate"`
 	Commit    string `json:"commit" yaml:"commit"`
 }
+type VersionController struct {
+	store *fctl.SharedStore
+}
+
+func NewVersion() *VersionController {
+	return &VersionController{
+		store: fctl.NewSharedStore(),
+	}
+}
 
 func NewVersionCommand() *cobra.Command {
 	return fctl.NewCommand("version",
 		fctl.WithShortDescription("Get version"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithRunE(versionCommand),
-		fctl.WrapOutputPostRunE(view),
+		fctl.WithController(NewVersion()),
 	)
 }
 
-func versionCommand(cmd *cobra.Command, args []string) error {
+func (c *VersionController) GetStore() *fctl.SharedStore {
+	return c.store
+}
+
+func (c *VersionController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	version := &VersionStruct{
 		Version:   "develop",
@@ -33,14 +45,14 @@ func versionCommand(cmd *cobra.Command, args []string) error {
 		Commit:    "-",
 	}
 
-	fctl.SetSharedData(version, nil, nil, nil)
+	c.GetStore().SetData(version)
 
-	return nil
+	return c, nil
 }
 
 // TODO: This need to use the ui.NewListModel
-func view(cmd *cobra.Command, args []string) error {
-	data := fctl.GetSharedData().(*VersionStruct)
+func (c *VersionController) Render(cmd *cobra.Command, args []string) error {
+	data := c.GetStore().GetData().(*VersionStruct)
 
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("Version"), data.Version})
