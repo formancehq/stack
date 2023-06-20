@@ -8,7 +8,8 @@ import (
 )
 
 type ProfilesShowStore struct {
-	Profile *fctl.Profile `json:"profile"`
+	MembershipURI       string `json:"membership_uri"`
+	DefaultOrganization string `json:"default_organization"`
 }
 type ProfilesShowController struct {
 	store *ProfilesShowStore
@@ -18,7 +19,8 @@ var _ fctl.Controller[*ProfilesShowStore] = (*ProfilesShowController)(nil)
 
 func NewDefaultProfilesShowStore() *ProfilesShowStore {
 	return &ProfilesShowStore{
-		Profile: &fctl.Profile{},
+		MembershipURI:       "",
+		DefaultOrganization: "",
 	}
 }
 
@@ -44,7 +46,8 @@ func (c *ProfilesShowController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, errors.New("not found")
 	}
 
-	c.store.Profile = p
+	c.store.DefaultOrganization = p.GetDefaultOrganization()
+	c.store.MembershipURI = p.GetMembershipURI()
 
 	return c, nil
 }
@@ -52,8 +55,8 @@ func (c *ProfilesShowController) Run(cmd *cobra.Command, args []string) (fctl.Re
 func (c *ProfilesShowController) Render(cmd *cobra.Command, args []string) error {
 
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("Membership URI"), c.store.Profile.GetMembershipURI()})
-	tableData = append(tableData, []string{pterm.LightCyan("Default organization"), c.store.Profile.GetDefaultOrganization()})
+	tableData = append(tableData, []string{pterm.LightCyan("Membership URI"), c.store.MembershipURI})
+	tableData = append(tableData, []string{pterm.LightCyan("Default organization"), c.store.DefaultOrganization})
 	return pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
