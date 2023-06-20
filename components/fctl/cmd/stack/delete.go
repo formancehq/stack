@@ -8,17 +8,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type DeletedStack struct {
+type DeletedStackStore struct {
 	Stack  *membershipclient.Stack `json:"stack"`
 	Status string                  `json:"status"`
 }
 type StackDeleteController struct {
-	store *fctl.SharedStore
+	store *DeletedStackStore
+}
+
+var _ fctl.Controller[*DeletedStackStore] = (*StackDeleteController)(nil)
+
+func NewDefaultDeletedStackStore() *DeletedStackStore {
+	return &DeletedStackStore{
+		Stack:  &membershipclient.Stack{},
+		Status: "",
+	}
 }
 
 func NewStackDeleteController() *StackDeleteController {
 	return &StackDeleteController{
-		store: fctl.NewSharedStore(),
+		store: NewDefaultDeletedStackStore(),
 	}
 }
 
@@ -32,10 +41,10 @@ func NewDeleteCommand() *cobra.Command {
 		fctl.WithAliases("del", "d"),
 		fctl.WithArgs(cobra.MaximumNArgs(1)),
 		fctl.WithStringFlag(stackNameFlag, "", "Stack to remove"),
-		fctl.WithController(NewStackDeleteController()),
+		fctl.WithController[*DeletedStackStore](NewStackDeleteController()),
 	)
 }
-func (c *StackDeleteController) GetStore() *fctl.SharedStore {
+func (c *StackDeleteController) GetStore() *DeletedStackStore {
 	return c.store
 }
 
@@ -96,10 +105,8 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, errors.Wrap(err, "deleting stack")
 	}
 
-	c.store.SetData(&DeletedStack{
-		Stack:  stack,
-		Status: "OK",
-	})
+	c.store.Stack = stack
+	c.store.Status = "OK"
 
 	return c, nil
 }
