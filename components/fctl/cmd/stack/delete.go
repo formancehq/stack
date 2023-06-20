@@ -12,6 +12,15 @@ type DeletedStack struct {
 	Stack  *membershipclient.Stack `json:"stack"`
 	Status string                  `json:"status"`
 }
+type StackDeleteController struct {
+	store *fctl.SharedStore
+}
+
+func NewStackDeleteController() *StackDeleteController {
+	return &StackDeleteController{
+		store: fctl.NewSharedStore(),
+	}
+}
 
 func NewDeleteCommand() *cobra.Command {
 	const (
@@ -23,48 +32,50 @@ func NewDeleteCommand() *cobra.Command {
 		fctl.WithAliases("del", "d"),
 		fctl.WithArgs(cobra.MaximumNArgs(1)),
 		fctl.WithStringFlag(stackNameFlag, "", "Stack to remove"),
-		fctl.WithRunE(deleteCommand),
-		fctl.WrapOutputPostRunE(viewDelete),
+		fctl.WithController(NewStackDeleteController()),
 	)
 }
+func (c *StackDeleteController) GetStore() *fctl.SharedStore {
+	return c.store
+}
 
-func deleteCommand(cmd *cobra.Command, args []string) error {
+func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	const (
 		stackNameFlag = "name"
 	)
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
-		return errors.Wrap(err, "searching default organization")
+		return nil, errors.Wrap(err, "searching default organization")
 	}
 
 	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var stack *membershipclient.Stack
 	if len(args) == 1 {
 		if fctl.GetString(cmd, stackNameFlag) != "" {
-			return errors.New("need either an id of a name specified using --name flag")
+			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
 
 		rsp, _, err := apiClient.DefaultApi.ReadStack(cmd.Context(), organization, args[0]).Execute()
 		if err != nil {
-			return err
+			return nil, err
 		}
 		stack = rsp.Data
 	} else {
 		if fctl.GetString(cmd, stackNameFlag) == "" {
-			return errors.New("need either an id of a name specified using --name flag")
+			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
 		stacks, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
 		if err != nil {
-			return errors.Wrap(err, "listing stacks")
+			return nil, errors.Wrap(err, "listing stacks")
 		}
 		for _, s := range stacks.Data {
 			if s.Name == fctl.GetString(cmd, stackNameFlag) {
@@ -74,26 +85,26 @@ func deleteCommand(cmd *cobra.Command, args []string) error {
 		}
 	}
 	if stack == nil {
-		return errors.New("Stack not found")
+		return nil, errors.New("Stack not found")
 	}
 
 	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete stack '%s'", stack.Name) {
-		return fctl.ErrMissingApproval
+		return nil, fctl.ErrMissingApproval
 	}
 
 	if _, err := apiClient.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id).Execute(); err != nil {
-		return errors.Wrap(err, "deleting stack")
+		return nil, errors.Wrap(err, "deleting stack")
 	}
 
-	fctl.SetSharedData(&DeletedStack{
+	c.store.SetData(&DeletedStack{
 		Stack:  stack,
 		Status: "OK",
-	}, nil, nil, nil)
+	})
 
-	return nil
+	return c, nil
 }
 
-func viewDelete(cmd *cobra.Command, args []string) error {
+func (c *StackDeleteController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Stack deleted.")
 	return nil
 }

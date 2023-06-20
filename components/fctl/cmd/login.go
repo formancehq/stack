@@ -52,18 +52,29 @@ type LoginOutput struct {
 	BrowserURL string        `json:"browser_url"`
 	Success    bool          `json:"success"`
 }
+type LoginController struct {
+	store *fctl.SharedStore
+}
 
-func loginCommand(cmd *cobra.Command, args []string) error {
+func (c *LoginController) GetStore() *fctl.SharedStore {
+	return c.store
+}
+func NewLoginController() *LoginController {
+	return &LoginController{
+		store: fctl.NewSharedStore(),
+	}
+}
+func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	profile := fctl.GetCurrentProfile(cmd, cfg)
 	membershipUri, err := cmd.Flags().GetString(fctl.MembershipURIFlag)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if membershipUri == "" {
 		membershipUri = profile.GetMembershipURI()
@@ -71,7 +82,7 @@ func loginCommand(cmd *cobra.Command, args []string) error {
 
 	relyingParty, err := fctl.GetAuthRelyingParty(fctl.GetHttpClient(cmd, map[string][]string{}), membershipUri)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	loginOutput := &LoginOutput{
@@ -85,17 +96,17 @@ func loginCommand(cmd *cobra.Command, args []string) error {
 
 	// Other relying error not related to browser
 	if err != nil && err.Error() != "error_opening_browser" {
-		return err
+		return nil, err
 	}
 
 	// Browser not found
 	if err != nil && err.Error() == "error_opening_browser" {
-		url, ok := fctl.GetSharedAdditionnalData("browser_url").(string)
-		if !ok {
-			return err
-		}
+		// url, ok := fctl.GetSharedAdditionnalData("browser_url").(string)
+		// if !ok {
+		// 	return err
+		// }
 
-		loginOutput.BrowserURL = url
+		// loginOutput.BrowserURL = url
 	} else {
 		loginOutput.Success = true
 	}
@@ -106,14 +117,14 @@ func loginCommand(cmd *cobra.Command, args []string) error {
 	currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
 
 	cfg.SetCurrentProfile(currentProfileName, profile)
-	fctl.SetSharedData(loginOutput, profile, cfg, nil)
+	// fctl.SetSharedData(loginOutput, profile, cfg, nil)
 
-	return cfg.Persist()
+	return c, cfg.Persist()
 }
 
-func displayLoginResult(cmd *cobra.Command, args []string) error {
+func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
 
-	data := fctl.GetSharedData().(*LoginOutput)
+	data := c.store.GetData().(*LoginOutput)
 
 	fmt.Println("Please enter the following code on your browser:", data.DeviceCode)
 	fmt.Println("Link:", data.LoginURI)
@@ -137,7 +148,6 @@ func NewLoginCommand() *cobra.Command {
 		fctl.WithHiddenFlag(fctl.MembershipURIFlag),
 		fctl.WithShortDescription("Login"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithRunE(loginCommand),
-		fctl.WrapOutputPostRunE(displayLoginResult),
+		fctl.WithController(NewLoginController()),
 	)
 }
