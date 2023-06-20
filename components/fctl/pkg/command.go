@@ -1,8 +1,6 @@
 package fctl
 
 import (
-	"fmt"
-
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"
@@ -181,27 +179,29 @@ func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOption
 	}
 }
 
-func WrapOutputPostRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
+func WithController(c Controller) CommandOptionFn {
 	return func(cmd *cobra.Command) {
-		cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
-			flags := GetString(cmd, OutputFlag)
+		cmd.RunE = func(cmd *cobra.Command, args []string) error {
+			renderable, err := c.Run(cmd, args)
 
-			if flags == "plain" {
-				return fn(cmd, args)
+			// If the controller return an argument error, we want to print the usage
+			// of the command instead of the error message.
+			// if errors.Is(err, ErrArgument) {
+			// 	_ = cmd.help()
+			// 	return nil
+			// }
+
+			if err != nil {
+				return err
 			}
 
-			switch flags {
-			case "json":
-				// Marshal to JSON then print to stdout
-				data, err := ShareStoreToJson()
-				if (err) != nil {
-					return err
-				}
-				fmt.Println(string(data))
-				return nil
+			err = WithRender(cmd, args, c, renderable)
+
+			if err != nil {
+				return err
 			}
 
-			return cmd.Help()
+			return nil
 		}
 	}
 }

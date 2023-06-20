@@ -10,29 +10,47 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func RunDeleteCommand(cmd *cobra.Command, args []string) error {
+type OutputDeleteWebhook struct {
+	Success bool `json:"success"`
+}
+
+type DeleteWebhookController struct {
+	store *fctl.SharedStore
+}
+
+func NewDeleteWebhookController() *DeleteWebhookController {
+	return &DeleteWebhookController{
+		store: fctl.NewSharedStore(),
+	}
+}
+
+func (c *DeleteWebhookController) GetStore() *fctl.SharedStore {
+	return c.store
+}
+
+func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return errors.Wrap(err, "fctl.GetConfig")
+		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
 
 	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete a webhook") {
-		return fctl.ErrMissingApproval
+		return nil, fctl.ErrMissingApproval
 	}
 
 	webhookClient, err := fctl.NewStackClient(cmd, cfg, stack)
 	if err != nil {
-		return errors.Wrap(err, "creating stack client")
+		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	request := operations.DeleteConfigRequest{
@@ -40,31 +58,28 @@ func RunDeleteCommand(cmd *cobra.Command, args []string) error {
 	}
 	response, err := webhookClient.Webhooks.DeleteConfig(cmd.Context(), request)
 	if err != nil {
-		return errors.Wrap(err, "deleting config")
+		return nil, errors.Wrap(err, "deleting config")
 	}
 
 	if response.ErrorResponse != nil {
-		return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
-		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	output := &OutputDeleteWebhook{
 		Success: response.StatusCode == 200,
 	}
 
-	fctl.SetSharedData(output, nil, cfg, nil)
+	c.store.SetData(output)
+	c.store.SetConfig(cfg)
 
-	return nil
+	return c, nil
 }
 
-type OutputDeleteWebhook struct {
-	Success bool `json:"success"`
-}
-
-func DisplayDeleteCommand(cmd *cobra.Command, args []string) error {
+func (c *DeleteWebhookController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config deleted successfully")
 
 	return nil
@@ -76,7 +91,7 @@ func NewDeleteCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithAliases("del"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithRunE(RunDeleteCommand),
-		fctl.WrapOutputPostRunE(DisplayDeleteCommand),
+		fctl.WithController(NewDeleteWebhookController()),
+		// fctl.WrapOutputPostRunE(DisplayDeleteCommand),
 	)
 }
