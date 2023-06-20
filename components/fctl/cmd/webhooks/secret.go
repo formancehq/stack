@@ -11,24 +11,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ChangeSecretOutput struct {
+type ChangeSecretStore struct {
 	Secret string `json:"secret"`
 	ID     string `json:"id"`
 }
 
-type ChangeSecretWebhook struct {
-	store *fctl.SharedStore
+type ChangeSecretWebhookController struct {
+	store *ChangeSecretStore
 }
 
-func NewChangeSecretWebhook() *ChangeSecretWebhook {
-	return &ChangeSecretWebhook{
-		store: fctl.NewSharedStore(),
+var _ fctl.Controller[*ChangeSecretStore] = (*ChangeSecretWebhookController)(nil)
+
+func NewDefaultChangeSecretStore() *ChangeSecretStore {
+	return &ChangeSecretStore{
+		Secret: "",
+		ID:     "",
 	}
 }
-func (c *ChangeSecretWebhook) GetStore() *fctl.SharedStore {
+func NewChangeSecretWebhookController() *ChangeSecretWebhookController {
+	return &ChangeSecretWebhookController{
+		store: NewDefaultChangeSecretStore(),
+	}
+}
+func (c *ChangeSecretWebhookController) GetStore() *ChangeSecretStore {
 	return c.store
 }
-func (c *ChangeSecretWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ChangeSecretWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
@@ -77,24 +85,15 @@ func (c *ChangeSecretWebhook) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	output := &ChangeSecretOutput{
-		Secret: response.ConfigResponse.Data.Secret,
-		ID:     response.ConfigResponse.Data.ID,
-	}
-
-	c.GetStore().SetData(output)
+	c.store.ID = response.ConfigResponse.Data.ID
+	c.store.Secret = response.ConfigResponse.Data.Secret
 
 	return c, nil
 }
 
-func (c *ChangeSecretWebhook) Render(cmd *cobra.Command, args []string) error {
-	Data, ok := c.GetStore().GetData().(*ChangeSecretOutput)
-	if !ok {
-		return errors.New("unable to get shared data")
-	}
-
+func (c *ChangeSecretWebhookController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
-		"Config '%s' updated successfully with new secret", Data.ID)
+		"Config '%s' updated successfully with new secret", c.store.ID)
 	return nil
 }
 
@@ -104,7 +103,6 @@ func NewChangeSecretCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithAliases("cs"),
 		fctl.WithArgs(cobra.RangeArgs(1, 2)),
-		fctl.WithController(NewChangeSecretWebhook()),
-		// fctl.WrapOutputPostRunE(DisplayWebhooks),
+		fctl.WithController[*ChangeSecretStore](NewChangeSecretWebhookController()),
 	)
 }

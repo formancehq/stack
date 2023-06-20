@@ -10,23 +10,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type OutputActivateWebhook struct {
+type ActivateWebhookStore struct {
 	Success bool `json:"success"`
 }
-type ActivateWebhook struct {
-	store *fctl.SharedStore
+type ActivateWebhookController struct {
+	store *ActivateWebhookStore
 }
 
-func NewActivateWebhookController() *ActivateWebhook {
-	return &ActivateWebhook{
-		store: fctl.NewSharedStore(),
+func NewDefaultVersionStore() *ActivateWebhookStore {
+	return &ActivateWebhookStore{
+		Success: true,
 	}
 }
-func (c *ActivateWebhook) GetStore() *fctl.SharedStore {
+func NewActivateWebhookController() *ActivateWebhookController {
+	return &ActivateWebhookController{
+		store: NewDefaultVersionStore(),
+	}
+}
+func (c *ActivateWebhookController) GetStore() *ActivateWebhookStore {
 	return c.store
 }
 
-func (c *ActivateWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
@@ -67,16 +72,10 @@ func (c *ActivateWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	out := &OutputActivateWebhook{
-		Success: response.StatusCode == 200,
-	}
-
-	c.store.SetData(out)
-
 	return c, nil
 }
 
-func (*ActivateWebhook) Render(cmd *cobra.Command, args []string) error {
+func (*ActivateWebhookController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config activated successfully")
 
 	return nil
@@ -88,6 +87,6 @@ func NewActivateCommand() *cobra.Command {
 		fctl.WithAliases("ac", "a"),
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController(NewActivateWebhookController()),
+		fctl.WithController[*ActivateWebhookStore](NewActivateWebhookController()),
 	)
 }

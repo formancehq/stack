@@ -19,18 +19,27 @@ const (
 	nowaitFlag    = "no-wait"
 )
 
-type StackCreate struct {
+type StackCreateStore struct {
 	Stack    *membershipclient.Stack
 	Versions *shared.GetVersionsResponse
 }
 
 type StackCreateController struct {
-	store *fctl.SharedStore
+	store   *StackCreateStore
+	profile *fctl.Profile
 }
 
+var _ fctl.Controller[*StackCreateStore] = (*StackCreateController)(nil)
+
+func NewDefaultStackCreateStore() *StackCreateStore {
+	return &StackCreateStore{
+		Stack:    &membershipclient.Stack{},
+		Versions: &shared.GetVersionsResponse{},
+	}
+}
 func NewStackCreateController() *StackCreateController {
 	return &StackCreateController{
-		store: fctl.NewSharedStore(),
+		store: NewDefaultStackCreateStore(),
 	}
 }
 
@@ -42,11 +51,10 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
 		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
 		fctl.WithBoolFlag(nowaitFlag, false, "Not wait stack availability"),
-		fctl.WithController(NewStackCreateController()),
-		// fctl.WrapOutputPostRunE(viewStackCreate),
+		fctl.WithController[*StackCreateStore](NewStackCreateController()),
 	)
 }
-func (c *StackCreateController) GetStore() *fctl.SharedStore {
+func (c *StackCreateController) GetStore() *StackCreateStore {
 	return c.store
 }
 
@@ -157,17 +165,13 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	c.store.SetData(&StackCreate{
-		Stack:    stackResponse.Data,
-		Versions: versions.GetVersionsResponse,
-	}).SetProfile(profile)
+	c.store.Stack = stackResponse.Data
+	c.store.Versions = versions.GetVersionsResponse
+	c.profile = profile
 
 	return c, nil
 }
 
 func (c *StackCreateController) Render(cmd *cobra.Command, args []string) error {
-
-	data := c.store.GetData().(*StackCreate)
-
-	return internal.PrintStackInformation(cmd.OutOrStdout(), c.store.GetProfile(), data.Stack, data.Versions)
+	return internal.PrintStackInformation(cmd.OutOrStdout(), c.profile, c.store.Stack, c.store.Versions)
 }

@@ -15,20 +15,32 @@ const (
 	secretFlag = "secret"
 )
 
-type CreateWebhook struct {
-	store *fctl.SharedStore
+type CreateWebhookController struct {
+	store *CreateWebhookStore
 }
 
-func NewCreateWebhook() *CreateWebhook {
-	return &CreateWebhook{
-		store: fctl.NewSharedStore(),
+type CreateWebhookStore struct {
+	Webhook shared.WebhooksConfig `json:"webhook"`
+}
+
+var _ fctl.Controller[*CreateWebhookStore] = (*CreateWebhookController)(nil)
+
+func NewDefaultCreateWebhookStore() *CreateWebhookStore {
+	return &CreateWebhookStore{
+		Webhook: shared.WebhooksConfig{},
 	}
 }
-func (c *CreateWebhook) GetStore() *fctl.SharedStore {
+
+func NewCreateWebhookController() *CreateWebhookController {
+	return &CreateWebhookController{
+		store: NewDefaultCreateWebhookStore(),
+	}
+}
+func (c *CreateWebhookController) GetStore() *CreateWebhookStore {
 	return c.store
 }
 
-func (c *CreateWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *CreateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
@@ -77,20 +89,12 @@ func (c *CreateWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	out := &CreateWebhookOutput{
-		Webhook: response.ConfigResponse.Data,
-	}
-
-	c.store.SetData(out)
+	c.store.Webhook = response.ConfigResponse.Data
 
 	return c, nil
 }
 
-type CreateWebhookOutput struct {
-	Webhook shared.WebhooksConfig `json:"webhook"`
-}
-
-func (c *CreateWebhook) Render(cmd *cobra.Command, args []string) error {
+func (c *CreateWebhookController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config created successfully")
 	return nil
 }
@@ -103,6 +107,6 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.MinimumNArgs(2)),
 		fctl.WithStringFlag(secretFlag, "", "Bring your own webhooks signing secret. If not passed or empty, a secret is automatically generated. The format is a string of bytes of size 24, base64 encoded. (larger size after encoding)"),
-		fctl.WithController(NewCreateWebhook()),
+		fctl.WithController[*CreateWebhookStore](NewCreateWebhookController()),
 	)
 }

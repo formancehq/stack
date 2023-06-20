@@ -1,15 +1,11 @@
-package cmd
+package login
 
 import (
-	"context"
 	"fmt"
-	"net/url"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/oidc"
 )
 
 type Dialog interface {
@@ -21,30 +17,7 @@ func (fn DialogFn) DisplayURIAndCode(uri, code string) {
 	fn(uri, code)
 }
 
-func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*oidc.Tokens, error) {
-	deviceCode, err := rp.GetDeviceCode(ctx, relyingParty)
-	if err != nil {
-		return nil, err
-	}
-
-	uri, err := url.Parse(deviceCode.GetVerificationUri())
-	if err != nil {
-		panic(err)
-	}
-	query := uri.Query()
-	query.Set("user_code", deviceCode.GetUserCode())
-	uri.RawQuery = query.Encode()
-
-	dialog.DisplayURIAndCode(deviceCode.GetVerificationUri(), deviceCode.GetUserCode())
-
-	if err := fctl.Open(uri.String()); err != nil {
-		return nil, err
-	}
-
-	return rp.PollDeviceCode(ctx, deviceCode.GetDeviceCode(), deviceCode.GetInterval(), relyingParty)
-}
-
-type LoginOutput struct {
+type LoginStore struct {
 	profile    *fctl.Profile `json:"-"`
 	DeviceCode string        `json:"device_code"`
 	LoginURI   string        `json:"login_uri"`
@@ -52,15 +25,24 @@ type LoginOutput struct {
 	Success    bool          `json:"success"`
 }
 type LoginController struct {
-	store *fctl.SharedStore
+	store *LoginStore
 }
 
-func (c *LoginController) GetStore() *fctl.SharedStore {
+func NewDefaultLoginStore() *LoginStore {
+	return &LoginStore{
+		profile:    nil,
+		DeviceCode: "",
+		LoginURI:   "",
+		BrowserURL: "",
+		Success:    false,
+	}
+}
+func (c *LoginController) GetStore() *LoginStore {
 	return c.store
 }
 func NewLoginController() *LoginController {
 	return &LoginController{
-		store: fctl.NewSharedStore(),
+		store: NewDefaultLoginStore(),
 	}
 }
 func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
@@ -84,13 +66,11 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 		return nil, err
 	}
 
-	loginOutput := &LoginOutput{
-		profile: profile,
-	}
+	c.store.profile = profile
 
 	ret, err := LogIn(cmd.Context(), DialogFn(func(uri, code string) {
-		loginOutput.DeviceCode = code
-		loginOutput.LoginURI = uri
+		c.store.DeviceCode = code
+		c.store.LoginURI = uri
 	}), relyingParty)
 
 	// Other relying error not related to browser
@@ -107,7 +87,7 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 
 		// loginOutput.BrowserURL = url
 	} else {
-		loginOutput.Success = true
+		c.store.Success = true
 	}
 
 	profile.SetMembershipURI(membershipUri)
@@ -123,17 +103,15 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 
 func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
 
-	data := c.store.GetData().(*LoginOutput)
+	fmt.Println("Please enter the following code on your browser:", c.store.DeviceCode)
+	fmt.Println("Link:", c.store.LoginURI)
 
-	fmt.Println("Please enter the following code on your browser:", data.DeviceCode)
-	fmt.Println("Link:", data.LoginURI)
-
-	if !data.Success && data.BrowserURL != "" {
-		fmt.Printf("Unable to find a browser, please open the following link: %s", data.BrowserURL)
+	if !c.store.Success && c.store.BrowserURL != "" {
+		fmt.Printf("Unable to find a browser, please open the following link: %s", c.store.BrowserURL)
 		return nil
 	}
 
-	if data.Success {
+	if c.store.Success {
 		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
 	}
 
@@ -141,12 +119,12 @@ func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
 
 }
 
-func NewLoginCommand() *cobra.Command {
+func NewCommand() *cobra.Command {
 	return fctl.NewCommand("login",
 		fctl.WithStringFlag(fctl.MembershipURIFlag, "", "service url"),
 		fctl.WithHiddenFlag(fctl.MembershipURIFlag),
 		fctl.WithShortDescription("Login"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithController(NewLoginController()),
+		fctl.WithController[*LoginStore](NewLoginController()),
 	)
 }

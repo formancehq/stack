@@ -12,17 +12,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type RestoreStackInformation struct {
+type StackRestoreStore struct {
 	Stack    *membershipclient.Stack     `json:"stack"`
 	Versions *shared.GetVersionsResponse `json:"versions"`
 }
-type StackRestore struct {
-	store *fctl.SharedStore
+type StackRestoreController struct {
+	store  *StackRestoreStore
+	config *fctl.Config
 }
 
-func NewStackRestoreController() *StackRestore {
-	return &StackRestore{
-		store: fctl.NewSharedStore(),
+var _ fctl.Controller[*StackRestoreStore] = (*StackRestoreController)(nil)
+
+func NewDefaultVersionStore() *StackRestoreStore {
+	return &StackRestoreStore{
+		Stack:    &membershipclient.Stack{},
+		Versions: &shared.GetVersionsResponse{},
+	}
+}
+
+func NewStackRestoreController() *StackRestoreController {
+	return &StackRestoreController{
+		store: NewDefaultVersionStore(),
 	}
 }
 
@@ -33,14 +43,14 @@ func NewRestoreStackCommand() *cobra.Command {
 		fctl.WithShortDescription("Restore a deleted stack"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithStringFlag(stackNameFlag, "", ""),
-		fctl.WithController(NewStackRestoreController()),
+		fctl.WithController[*StackRestoreStore](NewStackRestoreController()),
 	)
 }
-func (c *StackRestore) GetStore() *fctl.SharedStore {
+func (c *StackRestoreController) GetStore() *StackRestoreStore {
 	return c.store
 }
 
-func (c *StackRestore) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -83,18 +93,13 @@ func (c *StackRestore) Run(cmd *cobra.Command, args []string) (fctl.Renderable, 
 		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	c.store.SetData(&RestoreStackInformation{
-		Stack:    response.Data,
-		Versions: versions.GetVersionsResponse,
-	})
-
-	c.store.SetConfig(cfg)
+	c.store.Stack = response.Data
+	c.store.Versions = versions.GetVersionsResponse
+	c.config = cfg
 
 	return c, nil
 }
 
-func (c *StackRestore) Render(cmd *cobra.Command, args []string) error {
-	data := c.store.GetData().(*RestoreStackInformation)
-
-	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, c.store.GetConfig()), data.Stack, data.Versions)
+func (c *StackRestoreController) Render(cmd *cobra.Command, args []string) error {
+	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, c.config), c.store.Stack, c.store.Versions)
 }

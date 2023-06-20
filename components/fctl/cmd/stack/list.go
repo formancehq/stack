@@ -15,13 +15,26 @@ const (
 	deletedFlag = "deleted"
 )
 
+type StackListStore struct {
+	Stacks []membershipclient.Stack `json:"stacks"`
+}
+
 type StackListController struct {
-	store *fctl.SharedStore
+	store   *StackListStore
+	profile *fctl.Profile
+}
+
+var _ fctl.Controller[*StackListStore] = (*StackListController)(nil)
+
+func NewDefaultStackListStore() *StackListStore {
+	return &StackListStore{
+		Stacks: []membershipclient.Stack{},
+	}
 }
 
 func NewStackListController() *StackListController {
 	return &StackListController{
-		store: fctl.NewSharedStore(),
+		store: NewDefaultStackListStore(),
 	}
 }
 
@@ -31,11 +44,11 @@ func NewListCommand() *cobra.Command {
 		fctl.WithShortDescription("List stacks"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithBoolFlag(deletedFlag, false, "Display deleted stacks"),
-		fctl.WithController(NewStackListController()),
+		fctl.WithController[*StackListStore](NewStackListController()),
 		// fctl.WrapOutputPostRunE(view),
 	)
 }
-func (c *StackListController) GetStore() *fctl.SharedStore {
+func (c *StackListController) GetStore() *StackListStore {
 	return c.store
 }
 
@@ -70,20 +83,19 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, nil
 	}
 
-	c.store.SetData(rsp.Data)
-	c.store.SetProfile(profile)
+	c.store.Stacks = rsp.Data
+	c.profile = profile
 
 	return c, nil
 }
 
 func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 
-	sharedStruct := c.store.GetData().([]membershipclient.Stack)
-	tableData := fctl.Map(sharedStruct, func(stack membershipclient.Stack) []string {
+	tableData := fctl.Map(c.store.Stacks, func(stack membershipclient.Stack) []string {
 		data := []string{
 			stack.Id,
 			stack.Name,
-			c.store.GetProfile().ServicesBaseUrl(&stack).String(),
+			c.profile.ServicesBaseUrl(&stack).String(),
 			stack.RegionID,
 		}
 		if fctl.GetBool(cmd, deletedFlag) {
