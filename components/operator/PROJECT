@@ -40,7 +40,16 @@ resources:
   controller: true
   domain: formance.com
   group: components
-  kind: Payments
+  kind: Ledger
+  path: github.com/formancehq/operator/apis/components/v1beta3
+  version: v1beta3
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: formance.com
+  group: components
+  kind: Stargate
   path: github.com/formancehq/operator/apis/components/v1beta3
   version: v1beta3
 - api:

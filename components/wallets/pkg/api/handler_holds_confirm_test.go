@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -24,31 +24,35 @@ func TestHoldsConfirm(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int64{
-				"USD": 100,
+			balances := map[string]*big.Int{
+				"USD": big.NewInt(100),
 			}
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: &balances,
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+				},
+				Balances: balances,
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
-			require.EqualValues(t, sdk.Script{
-				Plain: wallet.BuildConfirmHoldScript(false, "USD"),
-				Vars: map[string]interface{}{
-					"hold": testEnv.Chart().GetHoldAccount(hold.ID),
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
+			require.EqualValues(t, wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
+					Vars: map[string]interface{}{
+						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
-			}, script)
-			return &sdk.ScriptResponse{}, nil
+			}, postTransaction)
+			return &wallet.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -69,37 +73,40 @@ func TestHoldsPartialConfirm(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int64{
-				"USD": 100,
-			}
-			volumes := map[string]map[string]int64{
-				"USD": {
-					"input": 100,
+
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				},
-			}
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: &balances,
-				Volumes:  &volumes,
+				Balances: map[string]*big.Int{
+					"USD": big.NewInt(100),
+				},
+				Volumes: map[string]map[string]*big.Int{
+					"USD": {
+						"input": big.NewInt(100),
+					},
+				},
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
-			require.EqualValues(t, sdk.Script{
-				Plain: wallet.BuildConfirmHoldScript(false, "USD"),
-				Vars: map[string]interface{}{
-					"hold": testEnv.Chart().GetHoldAccount(hold.ID),
-					"amount": map[string]any{
-						"amount": uint64(50),
-						"asset":  "USD",
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
+			require.EqualValues(t, wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
+					Vars: map[string]interface{}{
+						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
+						"amount": map[string]any{
+							"amount": uint64(50),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
-			}, script)
-			return &sdk.ScriptResponse{}, nil
+			}, postTransaction)
+			return &wallet.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -120,22 +127,23 @@ func TestHoldsConfirmWithTooHighAmount(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int64{
-				"USD": 100,
-			}
-			volumes := map[string]map[string]int64{
-				"USD": {
-					"input": 100,
+
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				},
-			}
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: &balances,
-				Volumes:  &volumes,
+				Balances: map[string]*big.Int{
+					"USD": big.NewInt(100),
+				},
+				Volumes: map[string]map[string]*big.Int{
+					"USD": {
+						"input": big.NewInt(100),
+					},
+				},
 			}, nil
 		}),
 	)
@@ -157,22 +165,23 @@ func TestHoldsConfirmWithClosedHold(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int64{
-				"USD": 0,
-			}
-			volumes := map[string]map[string]int64{
-				"USD": {
-					"input": 100,
+
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				},
-			}
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: &balances,
-				Volumes:  &volumes,
+				Balances: map[string]*big.Int{
+					"USD": big.NewInt(0),
+				},
+				Volumes: map[string]map[string]*big.Int{
+					"USD": {
+						"input": big.NewInt(100),
+					},
+				},
 			}, nil
 		}),
 	)
@@ -198,37 +207,40 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int64{
-				"USD": 100,
-			}
-			volumes := map[string]map[string]int64{
-				"USD": {
-					"input": 100,
+
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				},
-			}
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: &balances,
-				Volumes:  &volumes,
+				Balances: map[string]*big.Int{
+					"USD": big.NewInt(100),
+				},
+				Volumes: map[string]map[string]*big.Int{
+					"USD": {
+						"input": big.NewInt(100),
+					},
+				},
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
-			require.EqualValues(t, sdk.Script{
-				Plain: wallet.BuildConfirmHoldScript(true, "USD"),
-				Vars: map[string]interface{}{
-					"hold": testEnv.Chart().GetHoldAccount(hold.ID),
-					"amount": map[string]any{
-						"amount": uint64(50),
-						"asset":  "USD",
+		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
+			require.EqualValues(t, wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildConfirmHoldScript(true, "USD"),
+					Vars: map[string]interface{}{
+						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
+						"amount": map[string]any{
+							"amount": uint64(50),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.ScriptResponse{}, nil
+			return &wallet.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

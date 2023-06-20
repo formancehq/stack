@@ -1,14 +1,17 @@
 package wallets
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
-	"github.com/spf13/cobra"
+	cobra "github.com/spf13/cobra"
 )
 
 func NewCreditWalletCommand() *cobra.Command {
@@ -54,7 +57,7 @@ func NewCreditWalletCommand() *cobra.Command {
 
 			amountStr := args[0]
 			asset := args[1]
-			walletID, err := internal.RetrieveWalletIDFromName(cmd, client)
+			walletID, err := internal.RetrieveWalletID(cmd, client)
 			if err != nil {
 				return err
 			}
@@ -63,7 +66,7 @@ func NewCreditWalletCommand() *cobra.Command {
 				return errors.New("You need to specify wallet id using --id or --name flags")
 			}
 
-			amount, err := strconv.ParseInt(amountStr, 10, 32)
+			amount, err := strconv.ParseUint(amountStr, 10, 64)
 			if err != nil {
 				return errors.Wrap(err, "parsing amount")
 			}
@@ -73,7 +76,7 @@ func NewCreditWalletCommand() *cobra.Command {
 				return err
 			}
 
-			sources := make([]formance.Subject, 0)
+			sources := make([]shared.Subject, 0)
 			for _, sourceStr := range fctl.GetStringSlice(cmd, sourceFlag) {
 				source, err := internal.ParseSubject(sourceStr, cmd, client)
 				if err != nil {
@@ -82,17 +85,29 @@ func NewCreditWalletCommand() *cobra.Command {
 				sources = append(sources, *source)
 			}
 
-			_, err = client.WalletsApi.CreditWallet(cmd.Context(), walletID).CreditWalletRequest(formance.CreditWalletRequest{
-				Amount: formance.Monetary{
-					Asset:  asset,
-					Amount: amount,
+			request := operations.CreditWalletRequest{
+				ID: walletID,
+				CreditWalletRequest: &shared.CreditWalletRequest{
+					Amount: shared.Monetary{
+						Asset:  asset,
+						Amount: int64(amount),
+					},
+					Metadata: metadata,
+					Sources:  sources,
+					Balance:  formance.String(fctl.GetString(cmd, balanceFlag)),
 				},
-				Metadata: metadata,
-				Sources:  sources,
-				Balance:  formance.PtrString(fctl.GetString(cmd, balanceFlag)),
-			}).Execute()
+			}
+			response, err := client.Wallets.CreditWallet(cmd.Context(), request)
 			if err != nil {
-				return err
+				return errors.Wrap(err, "crediting wallet")
+			}
+
+			if response.WalletsErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet credited successfully!")

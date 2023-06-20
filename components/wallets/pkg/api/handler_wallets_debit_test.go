@@ -2,11 +2,14 @@ package api
 
 import (
 	"context"
+	"encoding/json"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -14,28 +17,58 @@ import (
 )
 
 type testCase struct {
-	name               string
-	request            wallet.DebitRequest
-	scriptResult       sdk.ScriptResponse
-	expectedScript     func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script
-	expectedStatusCode int
-	expectedErrorCode  string
+	name                    string
+	request                 wallet.DebitRequest
+	postTransactionError    *apiErrorMock
+	expectedPostTransaction func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction
+	expectedStatusCode      int
+	expectedErrorCode       string
+}
+
+type apiErrorMock struct {
+	ErrorCode    shared.ErrorsEnum `json:"errorCode,omitempty"`
+	ErrorMessage string            `json:"errorMessage,omitempty"`
+	Details      *string           `json:"details,omitempty"`
+}
+
+func (a *apiErrorMock) Model() any {
+	if a == nil {
+		return nil
+	}
+	return shared.ErrorResponse{
+		ErrorCode:    a.ErrorCode,
+		ErrorMessage: a.ErrorMessage,
+		Details:      a.Details,
+	}
+}
+
+func (a *apiErrorMock) Error() string {
+	if a == nil {
+		return ""
+	}
+	by, err := json.Marshal(a)
+	if err != nil {
+		panic(err)
+	}
+	return string(by)
 }
 
 var walletDebitTestCases = []testCase{
 	{
 		name: "nominal",
 		request: wallet.DebitRequest{
-			Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
-				Vars: map[string]interface{}{
-					"destination": wallet.DefaultDebitDest.Identifier,
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Vars: map[string]interface{}{
+						"destination": wallet.DefaultDebitDest.Identifier,
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
@@ -45,17 +78,19 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with custom destination as ledger account",
 		request: wallet.DebitRequest{
-			Amount:      wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewLedgerAccountSubject("account1")),
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
-				Vars: map[string]interface{}{
-					"destination": "account1",
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Vars: map[string]interface{}{
+						"destination": "account1",
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
@@ -65,17 +100,19 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with custom destination as wallet",
 		request: wallet.DebitRequest{
-			Amount:      wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewWalletSubject("wallet1", "")),
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
-				Vars: map[string]interface{}{
-					"destination": testEnv.Chart().GetMainBalanceAccount("wallet1"),
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Vars: map[string]interface{}{
+						"destination": testEnv.Chart().GetMainBalanceAccount("wallet1"),
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
@@ -85,35 +122,34 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with insufficient funds",
 		request: wallet.DebitRequest{
-			Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
-		scriptResult: sdk.ScriptResponse{
-			ErrorCode: func() *sdk.ErrorsEnum {
-				ret := sdk.INSUFFICIENT_FUND
-				return &ret
-			}(),
+		postTransactionError: &apiErrorMock{
+			ErrorCode: shared.ErrorsEnumInsufficientFund,
 		},
 		expectedStatusCode: http.StatusBadRequest,
-		expectedErrorCode:  string(sdk.INSUFFICIENT_FUND),
+		expectedErrorCode:  string(shared.ErrorsEnumInsufficientFund),
 	},
 	{
 		name: "with debit hold",
 		request: wallet.DebitRequest{
-			Amount:  wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:  wallet.NewMonetary(big.NewInt(100), "USD"),
 			Pending: true,
-			Metadata: map[string]any{
+			Metadata: map[string]string{
 				"foo": "bar",
 			},
 			Description: "a first tx",
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
-				Vars: map[string]interface{}{
-					"destination": testEnv.Chart().GetHoldAccount(h.ID),
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Vars: map[string]interface{}{
+						"destination": testEnv.Chart().GetHoldAccount(h.ID),
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(metadata.Metadata{
@@ -126,17 +162,19 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with custom balance as source",
 		request: wallet.DebitRequest{
-			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"secondary"},
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
-				Vars: map[string]interface{}{
-					"destination": "world",
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
+					Vars: map[string]interface{}{
+						"destination": "world",
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
@@ -146,17 +184,24 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with wildcard balance as source",
 		request: wallet.DebitRequest{
-			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"*"},
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
-				Vars: map[string]interface{}{
-					"destination": "world",
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(
+						testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
+						testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
+						testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
+						testEnv.Chart().GetBalanceAccount(walletID, "main"),
+					),
+					Vars: map[string]interface{}{
+						"destination": "world",
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
@@ -166,39 +211,43 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with wildcard plus another source",
 		request: wallet.DebitRequest{
-			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"*", "secondary"},
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
-				Vars: map[string]interface{}{
-					"destination": "world",
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
+					Vars: map[string]interface{}{
+						"destination": "world",
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}
 		},
 		expectedStatusCode: http.StatusBadRequest,
-		expectedErrorCode:  string(sdk.VALIDATION),
+		expectedErrorCode:  string(shared.ErrorErrorCodeValidation),
 	},
 	{
 		name: "with custom balance as destination",
 		request: wallet.DebitRequest{
-			Amount:      wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewWalletSubject("wallet1", "secondary")),
 		},
-		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
-			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
-				Vars: map[string]interface{}{
-					"destination": testEnv.Chart().GetBalanceAccount("wallet1", "secondary"),
-					"amount": map[string]any{
-						"amount": uint64(100),
-						"asset":  "USD",
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Vars: map[string]interface{}{
+						"destination": testEnv.Chart().GetBalanceAccount("wallet1", "secondary"),
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
 					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
@@ -220,34 +269,66 @@ func TestWalletsDebit(t *testing.T) {
 
 			var (
 				testEnv             *testEnv
-				executedScript      sdk.Script
+				postTransaction     wallet.PostTransaction
 				holdAccount         string
-				holdAccountMetadata metadata.Metadata
+				holdAccountMetadata wallet.Metadata
 			)
 			testEnv = newTestEnv(
-				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, m metadata.Metadata) error {
+				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, m wallet.Metadata) error {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					holdAccount = account
 					holdAccountMetadata = m
 					return nil
 				}),
-				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
+				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					require.Equal(t, query.Metadata, wallet.BalancesMetadataFilter(walletID))
-					return &sdk.AccountsCursorResponseCursor{
-						Data: []sdk.Account{{
-							Address: testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
-							Type:    nil,
-							Metadata: wallet.Balance{
-								Name: "secondary",
-							}.LedgerMetadata(walletID),
-						}},
+					return &wallet.AccountsCursorResponseCursor{
+						Data: []wallet.Account{
+							{
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
+								Metadata: wallet.Balance{
+									Name:     "coupon2",
+									Priority: 10,
+								}.LedgerMetadata(walletID),
+							},
+							{
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
+								Metadata: wallet.Balance{
+									Name:      "coupon1",
+									ExpiresAt: ptr(time.Now().Add(5 * time.Second)),
+								}.LedgerMetadata(walletID),
+							},
+							{
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon3"),
+								Metadata: wallet.Balance{
+									Name:      "coupon3",
+									ExpiresAt: ptr(time.Now().Add(-time.Minute)),
+								}.LedgerMetadata(walletID),
+							},
+							{
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
+								Metadata: wallet.Balance{
+									Name: "coupon4",
+								}.LedgerMetadata(walletID),
+							},
+							{
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "main"),
+								Metadata: wallet.Balance{
+									Name: "main",
+								}.LedgerMetadata(walletID),
+							},
+						},
 					}, nil
 				}),
-				WithRunScript(func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResponse, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
-					executedScript = script
-					return &testCase.scriptResult, nil
+					postTransaction = p
+					if testCase.postTransactionError != nil {
+						return nil, testCase.postTransactionError
+					}
+					//nolint:nilnil
+					return nil, nil
 				}),
 			)
 			testEnv.Router().ServeHTTP(rec, req)
@@ -269,9 +350,9 @@ func TestWalletsDebit(t *testing.T) {
 				return
 			}
 
-			if testCase.expectedScript != nil {
-				expectedScript := testCase.expectedScript(testEnv, walletID, hold)
-				require.Equal(t, expectedScript, executedScript)
+			if testCase.expectedPostTransaction != nil {
+				expectedPostTransaction := testCase.expectedPostTransaction(testEnv, walletID, hold)
+				require.Equal(t, expectedPostTransaction, postTransaction)
 			}
 
 			if testCase.request.Pending {

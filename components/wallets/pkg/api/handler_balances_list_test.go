@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -21,14 +21,14 @@ func TestBalancesList(t *testing.T) {
 	walletID := uuid.NewString()
 	var balances []wallet.Balance
 	for i := 0; i < 10; i++ {
-		balances = append(balances, wallet.NewBalance(uuid.NewString()))
+		balances = append(balances, wallet.NewBalance(uuid.NewString(), nil))
 	}
 	const pageSize = 2
 	numberOfPages := int64(len(balances) / pageSize)
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
+		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error) {
 			if query.Cursor != "" {
 				page, err := strconv.ParseInt(query.Cursor, 10, 64)
 				if err != nil {
@@ -36,47 +36,47 @@ func TestBalancesList(t *testing.T) {
 				}
 
 				if page >= numberOfPages-1 {
-					return &sdk.AccountsCursorResponseCursor{}, nil
+					return &wallet.AccountsCursorResponseCursor{}, nil
 				}
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
 				next := fmt.Sprint(page + 1)
-				accounts := make([]sdk.Account, 0)
+				accounts := make([]wallet.Account, 0)
 				for _, balance := range balances[page*pageSize : (page+1)*pageSize] {
-					accounts = append(accounts, sdk.Account{
+					accounts = append(accounts, wallet.Account{
 						Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
 						Metadata: balance.LedgerMetadata(walletID),
 					})
 				}
-				return &sdk.AccountsCursorResponseCursor{
+				return &wallet.AccountsCursorResponseCursor{
 					PageSize: pageSize,
 					HasMore:  hasMore,
-					Previous: &previous,
-					Next:     &next,
+					Previous: previous,
+					Next:     next,
 					Data:     accounts,
 				}, nil
 			}
 
 			require.Equal(t, pageSize, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
-			require.Equal(t, map[string]any{
+			require.Equal(t, metadata.Metadata{
 				wallet.MetadataKeyWalletBalance: wallet.TrueValue,
 				wallet.MetadataKeyWalletID:      walletID,
 			}, query.Metadata)
 
 			hasMore := true
 			next := "1"
-			accounts := make([]sdk.Account, 0)
+			accounts := make([]wallet.Account, 0)
 			for _, balance := range balances[:pageSize] {
-				accounts = append(accounts, sdk.Account{
+				accounts = append(accounts, wallet.Account{
 					Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
 					Metadata: balance.LedgerMetadata(walletID),
 				})
 			}
-			return &sdk.AccountsCursorResponseCursor{
+			return &wallet.AccountsCursorResponseCursor{
 				PageSize: pageSize,
 				HasMore:  hasMore,
-				Next:     &next,
+				Next:     next,
 				Data:     accounts,
 			}, nil
 		}),

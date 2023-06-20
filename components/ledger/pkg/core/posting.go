@@ -3,30 +3,44 @@ package core
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"math/big"
 	"regexp"
 
 	"github.com/pkg/errors"
 )
 
 type Posting struct {
-	Source      string       `json:"source"`
-	Destination string       `json:"destination"`
-	Amount      *MonetaryInt `json:"amount"`
-	Asset       string       `json:"asset"`
+	Source      string   `json:"source"`
+	Destination string   `json:"destination"`
+	Amount      *big.Int `json:"amount"`
+	Asset       string   `json:"asset"`
+}
+
+func (p Posting) hashString(buf *buffer) {
+	buf.writeString(p.Source)
+	buf.writeString(p.Destination)
+	buf.write(p.Amount.Bytes())
+	buf.writeString(p.Asset)
+}
+
+func NewPosting(source string, destination string, asset string, amount *big.Int) Posting {
+	return Posting{
+		Source:      source,
+		Destination: destination,
+		Amount:      amount,
+		Asset:       asset,
+	}
 }
 
 type Postings []Posting
 
-func (ps Postings) Reverse() {
-	if len(ps) == 1 {
-		ps[0].Source, ps[0].Destination = ps[0].Destination, ps[0].Source
-		return
+func (p Postings) Reverse() {
+	for i := range p {
+		p[i].Source, p[i].Destination = p[i].Destination, p[i].Source
 	}
-	for i := len(ps)/2 - 1; i >= 0; i-- {
-		opp := len(ps) - 1 - i
-		ps[i], ps[opp] = ps[opp], ps[i]
-		ps[i].Source, ps[i].Destination = ps[i].Destination, ps[i].Source
-		ps[opp].Source, ps[opp].Destination = ps[opp].Destination, ps[opp].Source
+
+	for i := 0; i < len(p)/2; i++ {
+		p[i], p[len(p)-i-1] = p[len(p)-i-1], p[i]
 	}
 }
 
@@ -61,7 +75,7 @@ func ValidateAddress(addr string) bool {
 
 func (p Postings) Validate() (int, error) {
 	for i, p := range p {
-		if p.Amount.Ltz() {
+		if p.Amount.Cmp(Zero) < 0 {
 			return i, errors.New("negative amount")
 		}
 		if !ValidateAddress(p.Source) {

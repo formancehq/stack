@@ -1,14 +1,19 @@
 package vm
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"sync"
 	"testing"
 
-	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/machine/script/compiler"
-	"github.com/numary/ledger/pkg/machine/vm/program"
+	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/machine/internal"
+	"github.com/formancehq/ledger/pkg/machine/script/compiler"
+	"github.com/formancehq/ledger/pkg/machine/vm/program"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,32 +23,31 @@ const (
 )
 
 type CaseResult struct {
-	Printed  []core.Value
-	Postings []Posting
-	Metadata map[string]core.Value
-	ExitCode byte
-	Error    string
+	Printed       []internal.Value
+	Postings      []Posting
+	Metadata      map[string]internal.Value
+	Error         error
+	ErrorContains string
 }
 
 type TestCase struct {
 	program  *program.Program
-	vars     map[string]core.Value
-	meta     map[string]map[string]core.Value
-	balances map[string]map[string]*core.MonetaryInt
+	vars     map[string]string
+	meta     map[string]metadata.Metadata
+	balances map[string]map[string]*internal.MonetaryInt
 	expected CaseResult
 }
 
 func NewTestCase() TestCase {
 	return TestCase{
-		vars:     make(map[string]core.Value),
-		meta:     make(map[string]map[string]core.Value),
-		balances: make(map[string]map[string]*core.MonetaryInt),
+		vars:     make(map[string]string),
+		meta:     make(map[string]metadata.Metadata),
+		balances: make(map[string]map[string]*internal.MonetaryInt),
 		expected: CaseResult{
-			Printed:  []core.Value{},
+			Printed:  []internal.Value{},
 			Postings: []Posting{},
-			Metadata: make(map[string]core.Value),
-			ExitCode: EXIT_OK,
-			Error:    "",
+			Metadata: make(map[string]internal.Value),
+			Error:    nil,
 		},
 	}
 }
@@ -58,92 +62,83 @@ func (c *TestCase) compile(t *testing.T, code string) {
 }
 
 func (c *TestCase) setVarsFromJSON(t *testing.T, str string) {
-	var jsonVars map[string]json.RawMessage
+	var jsonVars map[string]string
 	err := json.Unmarshal([]byte(str), &jsonVars)
 	require.NoError(t, err)
-	v, err := c.program.ParseVariablesJSON(jsonVars)
-	require.NoError(t, err)
-	c.vars = v
+	c.vars = jsonVars
 }
 
 func (c *TestCase) setBalance(account, asset string, amount int64) {
 	if _, ok := c.balances[account]; !ok {
-		c.balances[account] = make(map[string]*core.MonetaryInt)
+		c.balances[account] = make(map[string]*internal.MonetaryInt)
 	}
-	c.balances[account][asset] = core.NewMonetaryInt(amount)
+	c.balances[account][asset] = internal.NewMonetaryInt(amount)
 }
 
 func test(t *testing.T, testCase TestCase) {
-	testImpl(t, testCase.program, testCase.expected, func(m *Machine) (byte, error) {
-		if err := m.SetVars(testCase.vars); err != nil {
-			return 0, err
+	testImpl(t, testCase.program, testCase.expected, func(m *Machine) error {
+		if err := m.SetVarsFromJSON(testCase.vars); err != nil {
+			return err
 		}
 
-		{
-			ch, err := m.ResolveResources()
-			if err != nil {
-				return 0, err
-			}
-			for req := range ch {
-				if req.Key != "" {
-					val := testCase.meta[req.Account][req.Key]
-					req.Response <- val
-				} else if req.Asset != "" {
-					val := testCase.balances[req.Account][req.Asset]
-					req.Response <- val
-				}
-				if req.Error != nil {
-					return 0, req.Error
-				}
+		store := StaticStore{}
+		for account, balances := range testCase.balances {
+			store[account] = &AccountWithBalances{
+				Account: core.Account{
+					Address:  account,
+					Metadata: testCase.meta[account],
+				},
+				Balances: func() map[string]*big.Int {
+					ret := make(map[string]*big.Int)
+					for asset, balance := range balances {
+						ret[asset] = (*big.Int)(balance)
+					}
+					return ret
+				}(),
 			}
 		}
 
-		{
-			ch, err := m.ResolveBalances()
-			if err != nil {
-				return 0, err
-			}
-			for req := range ch {
-				val := testCase.balances[req.Account][req.Asset]
-				req.Response <- val
-				if req.Error != nil {
-					return 0, req.Error
-				}
-			}
+		_, _, err := m.ResolveResources(context.Background(), store)
+		if err != nil {
+			return err
+		}
+
+		err = m.ResolveBalances(context.Background(), store)
+		if err != nil {
+			return err
 		}
 
 		return m.Execute()
 	})
 }
 
-func testImpl(t *testing.T, prog *program.Program, expected CaseResult, exec func(*Machine) (byte, error)) {
-	printed := []core.Value{}
+func testImpl(t *testing.T, prog *program.Program, expected CaseResult, exec func(*Machine) error) {
+	printed := []internal.Value{}
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	if prog == nil {
-		t.Fatal("no program")
-	}
+	require.NotNil(t, prog)
 
 	m := NewMachine(*prog)
 	m.Debug = DEBUG
-	m.Printer = func(c chan core.Value) {
+	m.Printer = func(c chan internal.Value) {
 		for v := range c {
 			printed = append(printed, v)
 		}
 		wg.Done()
 	}
 
-	exitCode, err := exec(m)
-	require.Equal(t, expected.ExitCode, exitCode)
-	if expected.Error != "" {
-		require.ErrorContains(t, err, expected.Error)
+	err := exec(m)
+	if expected.Error != nil {
+		require.True(t, errors.Is(err, expected.Error), "got wrong error, want: %v, got: %v", expected.Error, err)
+		if expected.ErrorContains != "" {
+			require.ErrorContains(t, err, expected.ErrorContains)
+		}
 	} else {
 		require.NoError(t, err)
 	}
-
-	if exitCode != EXIT_OK {
+	if err != nil {
 		return
 	}
 
@@ -151,7 +146,7 @@ func testImpl(t *testing.T, prog *program.Program, expected CaseResult, exec fun
 		expected.Postings = make([]Posting, 0)
 	}
 	if expected.Metadata == nil {
-		expected.Metadata = make(map[string]core.Value)
+		expected.Metadata = make(map[string]internal.Value)
 	}
 
 	assert.Equalf(t, expected.Postings, m.Postings, "unexpected postings output: %v", m.Postings)
@@ -166,9 +161,9 @@ func TestFail(t *testing.T) {
 	tc := NewTestCase()
 	tc.compile(t, "fail")
 	tc.expected = CaseResult{
-		Printed:  []core.Value{},
+		Printed:  []internal.Value{},
 		Postings: []Posting{},
-		ExitCode: EXIT_FAIL,
+		Error:    ErrScriptFailed,
 	}
 	test(t, tc)
 }
@@ -176,11 +171,11 @@ func TestFail(t *testing.T) {
 func TestPrint(t *testing.T) {
 	tc := NewTestCase()
 	tc.compile(t, "print 29 + 15 - 2")
-	mi := core.MonetaryInt(*big.NewInt(42))
+	mi := internal.MonetaryInt(*big.NewInt(42))
 	tc.expected = CaseResult{
-		Printed:  []core.Value{&mi},
+		Printed:  []internal.Value{&mi},
 		Postings: []Posting{},
-		ExitCode: EXIT_OK,
+		Error:    nil,
 	}
 	test(t, tc)
 }
@@ -193,16 +188,16 @@ func TestSend(t *testing.T) {
 	)`)
 	tc.setBalance("alice", "EUR/2", 100)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "EUR/2",
-				Amount:      core.NewMonetaryInt(100),
+				Amount:      internal.NewMonetaryInt(100),
 				Source:      "alice",
 				Destination: "bob",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -212,27 +207,39 @@ func TestVariables(t *testing.T) {
 	tc.compile(t, `vars {
 		account $rider
 		account $driver
+		string 	$description
+ 		number 	$nb
+ 		asset 	$ass
 	}
-	send [EUR/2 999] (
+	send [$ass 999] (
 		source=$rider
 		destination=$driver
-	)`)
-	tc.vars = map[string]core.Value{
-		"rider":  core.AccountAddress("users:001"),
-		"driver": core.AccountAddress("users:002"),
+	)
+ 	set_tx_meta("description", $description)
+ 	set_tx_meta("ride", $nb)`)
+	tc.vars = map[string]string{
+		"rider":       "users:001",
+		"driver":      "users:002",
+		"description": "midnight ride",
+		"nb":          "1",
+		"ass":         "EUR/2",
 	}
 	tc.setBalance("users:001", "EUR/2", 1000)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "EUR/2",
-				Amount:      core.NewMonetaryInt(999),
+				Amount:      internal.NewMonetaryInt(999),
 				Source:      "users:001",
 				Destination: "users:002",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Metadata: map[string]internal.Value{
+			"description": internal.String("midnight ride"),
+			"ride":        internal.NewMonetaryInt(1),
+		},
+		Error: nil,
 	}
 }
 
@@ -243,8 +250,9 @@ func TestVariablesJSON(t *testing.T) {
 		account $driver
 		string 	$description
 		number 	$nb
+		asset 	$ass
 	}
-	send [EUR/2 999] (
+	send [$ass 999] (
 		source=$rider
 		destination=$driver
 	)
@@ -254,24 +262,25 @@ func TestVariablesJSON(t *testing.T) {
 		"rider": "users:001",
 		"driver": "users:002",
 		"description": "midnight ride",
-		"nb": 1
+		"nb": "1",
+ 		"ass": "EUR/2"
 	}`)
 	tc.setBalance("users:001", "EUR/2", 1000)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "EUR/2",
-				Amount:      core.NewMonetaryInt(999),
+				Amount:      internal.NewMonetaryInt(999),
 				Source:      "users:001",
 				Destination: "users:002",
 			},
 		},
-		Metadata: map[string]core.Value{
-			"description": core.String("midnight ride"),
-			"ride":        core.NewMonetaryInt(1),
+		Metadata: map[string]internal.Value{
+			"description": internal.String("midnight ride"),
+			"ride":        internal.NewMonetaryInt(1),
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -298,22 +307,22 @@ func TestSource(t *testing.T) {
 	tc.setBalance("users:001", "GEM", 3)
 	tc.setBalance("payments:001", "GEM", 12)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(3),
+				Amount:      internal.NewMonetaryInt(3),
 				Source:      "users:001",
 				Destination: "users:002",
 			},
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(12),
+				Amount:      internal.NewMonetaryInt(12),
 				Source:      "payments:001",
 				Destination: "users:002",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -338,28 +347,28 @@ func TestAllocation(t *testing.T) {
 	}`)
 	tc.setBalance("users:001", "GEM", 15)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(13),
+				Amount:      internal.NewMonetaryInt(13),
 				Source:      "users:001",
 				Destination: "users:002",
 			},
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(1),
+				Amount:      internal.NewMonetaryInt(1),
 				Source:      "users:001",
 				Destination: "a",
 			},
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(1),
+				Amount:      internal.NewMonetaryInt(1),
 				Source:      "users:001",
 				Destination: "b",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -382,22 +391,22 @@ func TestDynamicAllocation(t *testing.T) {
 	}`)
 	tc.setBalance("a", "GEM", 15)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(13),
+				Amount:      internal.NewMonetaryInt(13),
 				Source:      "a",
 				Destination: "b",
 			},
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(2),
+				Amount:      internal.NewMonetaryInt(2),
 				Source:      "a",
 				Destination: "c",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -410,16 +419,16 @@ func TestSendAll(t *testing.T) {
 	)`)
 	tc.setBalance("users:001", "USD/2", 17)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "USD/2",
-				Amount:      core.NewMonetaryInt(17),
+				Amount:      internal.NewMonetaryInt(17),
 				Source:      "users:001",
 				Destination: "platform",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -437,22 +446,22 @@ func TestSendAllMulti(t *testing.T) {
 	tc.setBalance("users:001:wallet", "USD/2", 19)
 	tc.setBalance("users:001:credit", "USD/2", 22)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "USD/2",
-				Amount:      core.NewMonetaryInt(19),
+				Amount:      internal.NewMonetaryInt(19),
 				Source:      "users:001:wallet",
 				Destination: "platform",
 			},
 			{
 				Asset:       "USD/2",
-				Amount:      core.NewMonetaryInt(22),
+				Amount:      internal.NewMonetaryInt(22),
 				Source:      "users:001:credit",
 				Destination: "platform",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -479,9 +488,9 @@ func TestInsufficientFunds(t *testing.T) {
 	tc.setBalance("users:001", "GEM", 3)
 	tc.setBalance("payments:001", "GEM", 12)
 	tc.expected = CaseResult{
-		Printed:  []core.Value{},
+		Printed:  []internal.Value{},
 		Postings: []Posting{},
-		ExitCode: EXIT_FAIL_INSUFFICIENT_FUNDS,
+		Error:    ErrInsufficientFund,
 	}
 	test(t, tc)
 }
@@ -497,22 +506,22 @@ func TestWorldSource(t *testing.T) {
 	)`)
 	tc.setBalance("a", "GEM", 1)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(1),
+				Amount:      internal.NewMonetaryInt(1),
 				Source:      "a",
 				Destination: "b",
 			},
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(14),
+				Amount:      internal.NewMonetaryInt(14),
 				Source:      "world",
 				Destination: "b",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -527,21 +536,21 @@ func TestNoEmptyPostings(t *testing.T) {
 		}
 	)`)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "GEM",
-				Amount:      core.NewMonetaryInt(2),
+				Amount:      internal.NewMonetaryInt(2),
 				Source:      "world",
 				Destination: "a",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
 
-func TestNoEmptyPostings2(t *testing.T) {
+func TestEmptyPostings(t *testing.T) {
 	tc := NewTestCase()
 	tc.compile(t, `send [GEM *] (
 		source = @foo
@@ -549,9 +558,16 @@ func TestNoEmptyPostings2(t *testing.T) {
 	)`)
 	tc.setBalance("foo", "GEM", 0)
 	tc.expected = CaseResult{
-		Printed:  []core.Value{},
-		Postings: []Posting{},
-		ExitCode: EXIT_OK,
+		Printed: []internal.Value{},
+		Postings: []Posting{
+			{
+				Source:      "foo",
+				Destination: "bar",
+				Amount:      internal.NewMonetaryInt(0),
+				Asset:       "GEM",
+			},
+		},
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -571,28 +587,28 @@ func TestAllocateDontTakeTooMuch(t *testing.T) {
 	tc.setBalance("users:001", "CREDIT", 100)
 	tc.setBalance("users:002", "CREDIT", 110)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "CREDIT",
-				Amount:      core.NewMonetaryInt(100),
+				Amount:      internal.NewMonetaryInt(100),
 				Source:      "users:001",
 				Destination: "foo",
 			},
 			{
 				Asset:       "CREDIT",
-				Amount:      core.NewMonetaryInt(100),
+				Amount:      internal.NewMonetaryInt(100),
 				Source:      "users:002",
 				Destination: "bar",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
 
 func TestMetadata(t *testing.T) {
-	commission, _ := core.NewPortionSpecific(*big.NewRat(125, 1000))
+	//commission, _ := internal.NewPortionSpecific(*big.NewRat(125, 1000))
 	tc := NewTestCase()
 	tc.compile(t, `vars {
 		account $sale
@@ -609,33 +625,33 @@ func TestMetadata(t *testing.T) {
 	tc.setVarsFromJSON(t, `{
 		"sale": "sales:042"
 	}`)
-	tc.meta = map[string]map[string]core.Value{
+	tc.meta = map[string]metadata.Metadata{
 		"sales:042": {
-			"seller": core.AccountAddress("users:053"),
+			"seller": "users:053",
 		},
 		"users:053": {
-			"commission": *commission,
+			"commission": "12.5%",
 		},
 	}
 	tc.setBalance("sales:042", "EUR/2", 2500)
 	tc.setBalance("users:053", "EUR/2", 500)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "EUR/2",
-				Amount:      core.NewMonetaryInt(88),
+				Amount:      internal.NewMonetaryInt(88),
 				Source:      "sales:042",
 				Destination: "users:053",
 			},
 			{
 				Asset:       "EUR/2",
-				Amount:      core.NewMonetaryInt(12),
+				Amount:      internal.NewMonetaryInt(12),
 				Source:      "sales:042",
 				Destination: "platform",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -653,22 +669,22 @@ func TestTrackBalances(t *testing.T) {
 	)`)
 	tc.setBalance("a", "COIN", 50)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(50),
+				Amount:      internal.NewMonetaryInt(50),
 				Source:      "world",
 				Destination: "a",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(100),
+				Amount:      internal.NewMonetaryInt(100),
 				Source:      "a",
 				Destination: "b",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -686,9 +702,9 @@ func TestTrackBalances2(t *testing.T) {
 	)`)
 	tc.setBalance("a", "COIN", 60)
 	tc.expected = CaseResult{
-		Printed:  []core.Value{},
+		Printed:  []internal.Value{},
 		Postings: []Posting{},
-		ExitCode: EXIT_FAIL_INSUFFICIENT_FUNDS,
+		Error:    ErrInsufficientFund,
 	}
 	test(t, tc)
 }
@@ -708,22 +724,22 @@ func TestTrackBalances3(t *testing.T) {
 	)`)
 	tc.setBalance("foo", "COIN", 2000)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(1000),
+				Amount:      internal.NewMonetaryInt(1000),
 				Source:      "foo",
 				Destination: "bar",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(1000),
+				Amount:      internal.NewMonetaryInt(1000),
 				Source:      "foo",
 				Destination: "bar",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -742,28 +758,28 @@ func TestSourceAllotment(t *testing.T) {
 	tc.setBalance("b", "COIN", 100)
 	tc.setBalance("c", "COIN", 100)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(61),
+				Amount:      internal.NewMonetaryInt(61),
 				Source:      "a",
 				Destination: "d",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(35),
+				Amount:      internal.NewMonetaryInt(35),
 				Source:      "b",
 				Destination: "d",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(4),
+				Amount:      internal.NewMonetaryInt(4),
 				Source:      "c",
 				Destination: "d",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -784,22 +800,22 @@ func TestSourceOverlapping(t *testing.T) {
 	tc.setBalance("a", "COIN", 99)
 	tc.setBalance("b", "COIN", 3)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(3),
+				Amount:      internal.NewMonetaryInt(3),
 				Source:      "b",
 				Destination: "world",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(96),
+				Amount:      internal.NewMonetaryInt(96),
 				Source:      "a",
 				Destination: "world",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -821,44 +837,41 @@ func TestSourceComplex(t *testing.T) {
 		destination = @platform
 	)`)
 	tc.setVarsFromJSON(t, `{
-		"max": {
-			"asset": "COIN",
-			"amount": 120
-		}
+		"max": "COIN 120"
 	}`)
 	tc.setBalance("a", "COIN", 1000)
 	tc.setBalance("b", "COIN", 40)
 	tc.setBalance("c", "COIN", 1000)
 	tc.setBalance("d", "COIN", 1000)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(4),
+				Amount:      internal.NewMonetaryInt(4),
 				Source:      "a",
 				Destination: "platform",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(40),
+				Amount:      internal.NewMonetaryInt(40),
 				Source:      "b",
 				Destination: "platform",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(56),
+				Amount:      internal.NewMonetaryInt(56),
 				Source:      "c",
 				Destination: "platform",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(100),
+				Amount:      internal.NewMonetaryInt(100),
 				Source:      "d",
 				Destination: "platform",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -877,28 +890,28 @@ func TestDestinationComplex(t *testing.T) {
 		}
 	)`)
 	tc.expected = CaseResult{
-		Printed: []core.Value{},
+		Printed: []internal.Value{},
 		Postings: []Posting{
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(20),
+				Amount:      internal.NewMonetaryInt(20),
 				Source:      "world",
 				Destination: "a",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(10),
+				Amount:      internal.NewMonetaryInt(10),
 				Source:      "world",
 				Destination: "b",
 			},
 			{
 				Asset:       "COIN",
-				Amount:      core.NewMonetaryInt(50),
+				Amount:      internal.NewMonetaryInt(50),
 				Source:      "world",
 				Destination: "c",
 			},
 		},
-		ExitCode: EXIT_OK,
+		Error: nil,
 	}
 	test(t, tc)
 }
@@ -922,53 +935,17 @@ func TestNeededBalances(t *testing.T) {
 
 	m := NewMachine(*p)
 
-	err = m.SetVars(map[string]core.Value{
-		"a": core.AccountAddress("a"),
+	err = m.SetVarsFromJSON(map[string]string{
+		"a": "a",
 	})
 	if err != nil {
 		t.Fatalf("did not expect error on SetVars, got: %v", err)
 	}
-	{
-		ch, err := m.ResolveResources()
-		if err != nil {
-			t.Fatalf("did not expect error on ResolveResources, got: %v", err)
-		}
-		for range ch {
-			t.Fatalf("did not expect to need any metadata")
-		}
-	}
+	_, _, err = m.ResolveResources(context.Background(), EmptyStore)
+	require.NoError(t, err)
 
-	expected := map[string]map[string]struct{}{
-		"a": {
-			"GEM": {},
-		},
-		"b": {
-			"GEM": {},
-		},
-	}
-	{
-		ch, err := m.ResolveBalances()
-		if err != nil {
-			t.Fatalf("did not expect error on ResolveBalances, got: %v", err)
-		}
-		for req := range ch {
-			if req.Error != nil {
-				t.Fatalf("did not expect error in balance request: %v", req.Error)
-			}
-			if _, ok := expected[req.Account][req.Asset]; ok {
-				delete(expected[req.Account], req.Asset)
-				if len(expected[req.Account]) == 0 {
-					delete(expected, req.Account)
-				}
-				req.Response <- core.NewMonetaryInt(0)
-			} else {
-				t.Fatalf("did not expect to need %v balance of %v", req.Asset, req.Account)
-			}
-		}
-	}
-	if len(expected) != 0 {
-		t.Fatalf("some balances were not requested: %v", expected)
-	}
+	err = m.ResolveBalances(context.Background(), EmptyStore)
+	require.NoError(t, err)
 }
 
 func TestSetTxMeta(t *testing.T) {
@@ -984,40 +961,28 @@ func TestSetTxMeta(t *testing.T) {
 
 	m := NewMachine(*p)
 
-	{
-		ch, err := m.ResolveResources()
-		require.NoError(t, err)
-		for req := range ch {
-			require.NoError(t, req.Error)
-		}
-	}
-
-	{
-		ch, err := m.ResolveBalances()
-		require.NoError(t, err)
-		for req := range ch {
-			require.NoError(t, req.Error)
-		}
-	}
-
-	exitCode, err := m.Execute()
+	_, _, err = m.ResolveResources(context.Background(), EmptyStore)
 	require.NoError(t, err)
-	require.Equal(t, EXIT_OK, exitCode)
+	err = m.ResolveBalances(context.Background(), EmptyStore)
+	require.NoError(t, err)
 
-	expectedMeta := map[string]json.RawMessage{
-		"aaa": json.RawMessage(`{"type":"account","value":"platform"}`),
-		"bbb": json.RawMessage(`{"type":"asset","value":"GEM"}`),
-		"ccc": json.RawMessage(`{"type":"number","value":45}`),
-		"ddd": json.RawMessage(`{"type":"string","value":"hello"}`),
-		"eee": json.RawMessage(`{"type":"monetary","value":{"asset":"COIN","amount":30}}`),
-		"fff": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"3/20"}}`),
+	err = m.Execute()
+	require.NoError(t, err)
+
+	expectedMeta := map[string]string{
+		"aaa": "platform",
+		"bbb": "GEM",
+		"ccc": "45",
+		"ddd": "hello",
+		"eee": "COIN 30",
+		"fff": "3/20",
 	}
 
 	resMeta := m.GetTxMetaJSON()
 	assert.Equal(t, 6, len(resMeta))
 
 	for key, val := range resMeta {
-		assert.Equal(t, string(expectedMeta[key]), string(val.([]byte)))
+		assert.Equal(t, string(expectedMeta[key]), val)
 	}
 }
 
@@ -1034,44 +999,32 @@ func TestSetAccountMeta(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		{
-			ch, err := m.ResolveResources()
-			require.NoError(t, err)
-			for req := range ch {
-				require.NoError(t, req.Error)
-			}
-		}
-
-		{
-			ch, err := m.ResolveBalances()
-			require.NoError(t, err)
-			for req := range ch {
-				require.NoError(t, req.Error)
-			}
-		}
-
-		exitCode, err := m.Execute()
+		_, _, err = m.ResolveResources(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		require.Equal(t, EXIT_OK, exitCode)
 
-		expectedMeta := map[string]json.RawMessage{
-			"aaa": json.RawMessage(`{"type":"account","value":"platform"}`),
-			"bbb": json.RawMessage(`{"type":"asset","value":"GEM"}`),
-			"ccc": json.RawMessage(`{"type":"number","value":45}`),
-			"ddd": json.RawMessage(`{"type":"string","value":"hello"}`),
-			"eee": json.RawMessage(`{"type":"monetary","value":{"asset":"COIN","amount":30}}`),
-			"fff": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"3/20"}}`),
+		err = m.ResolveBalances(context.Background(), EmptyStore)
+		require.NoError(t, err)
+
+		err = m.Execute()
+		require.NoError(t, err)
+
+		expectedMeta := metadata.Metadata{
+			"aaa": "platform",
+			"bbb": "GEM",
+			"ccc": "45",
+			"ddd": "hello",
+			"eee": "COIN 30",
+			"fff": "3/20",
 		}
 
 		resMeta := m.GetAccountsMetaJSON()
 		assert.Equal(t, 1, len(resMeta))
 
 		for acc, meta := range resMeta {
-			assert.Equal(t, "@platform", acc)
-			m := meta.(map[string][]byte)
-			assert.Equal(t, 6, len(m))
-			for key, val := range m {
-				assert.Equal(t, string(expectedMeta[key]), string(val))
+			assert.Equal(t, "platform", acc)
+			assert.Equal(t, 6, len(meta))
+			for key, val := range meta {
+				assert.Equal(t, expectedMeta[key], val)
 			}
 		}
 	})
@@ -1091,43 +1044,31 @@ func TestSetAccountMeta(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.NoError(t, m.SetVars(map[string]core.Value{
-			"acc": core.AccountAddress("test"),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"acc": "test",
 		}))
 
-		{
-			ch, err := m.ResolveResources()
-			require.NoError(t, err)
-			for req := range ch {
-				require.NoError(t, req.Error)
-			}
-		}
-
-		{
-			ch, err := m.ResolveBalances()
-			require.NoError(t, err)
-			for req := range ch {
-				require.NoError(t, req.Error)
-			}
-		}
-
-		exitCode, err := m.Execute()
+		_, _, err = m.ResolveResources(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		require.Equal(t, EXIT_OK, exitCode)
+
+		err = m.ResolveBalances(context.Background(), EmptyStore)
+		require.NoError(t, err)
+
+		err = m.Execute()
+		require.NoError(t, err)
 
 		expectedMeta := map[string]json.RawMessage{
-			"fees": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"1/100"}}`),
+			"fees": json.RawMessage("1/100"),
 		}
 
 		resMeta := m.GetAccountsMetaJSON()
 		assert.Equal(t, 1, len(resMeta))
 
 		for acc, meta := range resMeta {
-			assert.Equal(t, "@test", acc)
-			m := meta.(map[string][]byte)
-			assert.Equal(t, 1, len(m))
-			for key, val := range m {
-				assert.Equal(t, string(expectedMeta[key]), string(val))
+			assert.Equal(t, "test", acc)
+			assert.Equal(t, 1, len(meta))
+			for key, val := range meta {
+				assert.Equal(t, string(expectedMeta[key]), val)
 			}
 		}
 	})
@@ -1155,22 +1096,22 @@ func TestVariableBalance(t *testing.T) {
 		tc.setBalance("A", "USD/2", 40)
 		tc.setBalance("C", "USD/2", 90)
 		tc.expected = CaseResult{
-			Printed: []core.Value{},
+			Printed: []internal.Value{},
 			Postings: []Posting{
 				{
 					Asset:       "USD/2",
-					Amount:      core.NewMonetaryInt(40),
+					Amount:      internal.NewMonetaryInt(40),
 					Source:      "A",
 					Destination: "B",
 				},
 				{
 					Asset:       "USD/2",
-					Amount:      core.NewMonetaryInt(60),
+					Amount:      internal.NewMonetaryInt(60),
 					Source:      "C",
 					Destination: "D",
 				},
 			},
-			ExitCode: EXIT_OK,
+			Error: nil,
 		}
 		test(t, tc)
 	})
@@ -1181,16 +1122,16 @@ func TestVariableBalance(t *testing.T) {
 		tc.setBalance("A", "USD/2", 400)
 		tc.setBalance("C", "USD/2", 90)
 		tc.expected = CaseResult{
-			Printed: []core.Value{},
+			Printed: []internal.Value{},
 			Postings: []Posting{
 				{
 					Asset:       "USD/2",
-					Amount:      core.NewMonetaryInt(100),
+					Amount:      internal.NewMonetaryInt(100),
 					Source:      "A",
 					Destination: "B",
 				},
 			},
-			ExitCode: EXIT_OK,
+			Error: nil,
 		}
 		test(t, tc)
 	})
@@ -1218,22 +1159,22 @@ func TestVariableBalance(t *testing.T) {
 		tc.setBalance("C", "USD/2", 90)
 		tc.setVarsFromJSON(t, `{"acc": "A"}`)
 		tc.expected = CaseResult{
-			Printed: []core.Value{},
+			Printed: []internal.Value{},
 			Postings: []Posting{
 				{
 					Asset:       "USD/2",
-					Amount:      core.NewMonetaryInt(40),
+					Amount:      internal.NewMonetaryInt(40),
 					Source:      "A",
 					Destination: "B",
 				},
 				{
 					Asset:       "USD/2",
-					Amount:      core.NewMonetaryInt(60),
+					Amount:      internal.NewMonetaryInt(60),
 					Source:      "C",
 					Destination: "D",
 				},
 			},
-			ExitCode: EXIT_OK,
+			Error: nil,
 		}
 		test(t, tc)
 	})
@@ -1245,16 +1186,16 @@ func TestVariableBalance(t *testing.T) {
 		tc.setBalance("C", "USD/2", 90)
 		tc.setVarsFromJSON(t, `{"acc": "A"}`)
 		tc.expected = CaseResult{
-			Printed: []core.Value{},
+			Printed: []internal.Value{},
 			Postings: []Posting{
 				{
 					Asset:       "USD/2",
-					Amount:      core.NewMonetaryInt(100),
+					Amount:      internal.NewMonetaryInt(100),
 					Source:      "A",
 					Destination: "B",
 				},
 			},
-			ExitCode: EXIT_OK,
+			Error: nil,
 		}
 		test(t, tc)
 	})
@@ -1282,34 +1223,34 @@ func TestVariableBalance(t *testing.T) {
 		tc.setBalance("c", "COIN", 1000)
 		tc.setBalance("d", "COIN", 1000)
 		tc.expected = CaseResult{
-			Printed: []core.Value{},
+			Printed: []internal.Value{},
 			Postings: []Posting{
 				{
 					Asset:       "COIN",
-					Amount:      core.NewMonetaryInt(4),
+					Amount:      internal.NewMonetaryInt(4),
 					Source:      "a",
 					Destination: "platform",
 				},
 				{
 					Asset:       "COIN",
-					Amount:      core.NewMonetaryInt(40),
+					Amount:      internal.NewMonetaryInt(40),
 					Source:      "b",
 					Destination: "platform",
 				},
 				{
 					Asset:       "COIN",
-					Amount:      core.NewMonetaryInt(56),
+					Amount:      internal.NewMonetaryInt(56),
 					Source:      "c",
 					Destination: "platform",
 				},
 				{
 					Asset:       "COIN",
-					Amount:      core.NewMonetaryInt(100),
+					Amount:      internal.NewMonetaryInt(100),
 					Source:      "d",
 					Destination: "platform",
 				},
 			},
-			ExitCode: EXIT_OK,
+			Error: nil,
 		}
 		test(t, tc)
 	})
@@ -1327,7 +1268,8 @@ func TestVariableBalance(t *testing.T) {
 		tc.compile(t, script)
 		tc.setBalance("world", "USD/2", -40)
 		tc.expected = CaseResult{
-			Error: "must be non-negative",
+			Error:         ErrNegativeMonetaryAmount,
+			ErrorContains: "must be non-negative",
 		}
 		test(t, tc)
 	})
@@ -1345,41 +1287,48 @@ func TestVariablesParsing(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.NoError(t, m.SetVars(map[string]core.Value{
-			"acc": core.AccountAddress("valid:acc"),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"acc": "valid:acc",
 		}))
 
-		require.Error(t, m.SetVars(map[string]core.Value{
-			"acc": core.AccountAddress("invalid-acc"),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"acc": "invalid-acc",
 		}))
 
-		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"acc": json.RawMessage(`"valid:acc"`),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"acc": "valid:acc",
 		}))
 
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"acc": json.RawMessage(`"invalid-acc"`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"acc": "invalid-acc",
 		}))
 	})
 
-	// TODO: handle properly in ledger v1.10
-	t.Run("account empty string", func(t *testing.T) {
+	t.Run("asset", func(t *testing.T) {
 		p, err := compiler.Compile(`
-			vars {
-				account $acc
-			}
-			set_tx_meta("account", $acc)
-		`)
+ 			vars {
+ 				asset $ass
+ 			}
+ 			set_tx_meta("asset", $ass)
+ 		`)
 		require.NoError(t, err)
 
 		m := NewMachine(*p)
 
-		require.NoError(t, m.SetVars(map[string]core.Value{
-			"acc": core.AccountAddress(""),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"ass": "USD/2",
 		}))
 
-		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"acc": json.RawMessage(`""`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"ass": "USD-2",
+		}))
+
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"ass": "USD/2",
+		}))
+
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"ass": "USD-2",
 		}))
 	})
 
@@ -1394,37 +1343,28 @@ func TestVariablesParsing(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.NoError(t, m.SetVars(map[string]core.Value{
-			"mon": core.Monetary{
-				Asset:  "EUR/2",
-				Amount: core.NewMonetaryInt(100),
-			},
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"mon": "EUR/2 100",
 		}))
 
-		require.Error(t, m.SetVars(map[string]core.Value{
-			"mon": core.Monetary{
-				Asset:  "invalid-asset",
-				Amount: core.NewMonetaryInt(100),
-			},
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"mon": "invalid-asset 100",
 		}))
 
-		require.Error(t, m.SetVars(map[string]core.Value{
-			"mon": core.Monetary{
-				Asset:  "EUR/2",
-				Amount: nil,
-			},
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"mon": "EUR/2",
 		}))
 
-		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"mon": json.RawMessage(`{"asset":"EUR/2","amount":100}`),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"mon": "EUR/2 100",
 		}))
 
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"mon": json.RawMessage(`{"asset":"invalid-asset","amount":100}`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"mon": "invalid-asset 100",
 		}))
 
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"mon": json.RawMessage(`{"asset":"EUR/2","amount":null}`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"mon": "EUR/2 null",
 		}))
 	})
 
@@ -1439,45 +1379,32 @@ func TestVariablesParsing(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.NoError(t, m.SetVars(map[string]core.Value{
-			"por": core.Portion{
-				Remaining: false,
-				Specific:  big.NewRat(1, 2),
-			},
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"por": "1/2",
 		}))
 
-		require.Error(t, m.SetVars(map[string]core.Value{
-			"por": core.Portion{
-				Remaining: false,
-				Specific:  nil,
-			},
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"por": "",
 		}))
 
-		require.Error(t, m.SetVars(map[string]core.Value{
-			"por": core.Portion{
-				Remaining: true,
-				Specific:  big.NewRat(1, 2),
-			},
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"por": "1/2",
 		}))
 
-		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"por": json.RawMessage(`"1/2"`),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"por": "50%",
 		}))
 
-		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"por": json.RawMessage(`"50%"`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"por": "3/2",
 		}))
 
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"por": json.RawMessage(`"3/2"`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"por": "200%",
 		}))
 
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"por": json.RawMessage(`"200%"`),
-		}))
-
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"por": json.RawMessage(`""`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"por": "",
 		}))
 	})
 
@@ -1491,21 +1418,8 @@ func TestVariablesParsing(t *testing.T) {
 		require.NoError(t, err)
 
 		m := NewMachine(*p)
-
-		require.NoError(t, m.SetVars(map[string]core.Value{
-			"str": core.String("valid string"),
-		}))
-
-		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"str": json.RawMessage(`"valid string"`),
-		}))
-
-		require.Error(t, m.SetVars(map[string]core.Value{
-			"str": core.NewMonetaryInt(1),
-		}))
-
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"str": json.RawMessage(`100`),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"str": "valid string",
 		}))
 	})
 
@@ -1520,24 +1434,16 @@ func TestVariablesParsing(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.NoError(t, m.SetVars(map[string]core.Value{
-			"nbr": core.NewMonetaryInt(100),
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"nbr": "100",
 		}))
 
-		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"nbr": json.RawMessage(`100`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"nbr": "string",
 		}))
 
-		require.Error(t, m.SetVars(map[string]core.Value{
-			"nbr": core.String("invalid"),
-		}))
-
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"nbr": json.RawMessage(`"string"`),
-		}))
-
-		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"nbr": json.RawMessage(`nil`),
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"nbr": `nil`,
 		}))
 	})
 
@@ -1553,8 +1459,8 @@ func TestVariablesParsing(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.ErrorContains(t, m.SetVars(map[string]core.Value{
-			"nbr": core.NewMonetaryInt(100),
+		require.ErrorContains(t, m.SetVarsFromJSON(map[string]string{
+			"nbr": "100",
 		}), "missing variable $str")
 	})
 
@@ -1569,9 +1475,9 @@ func TestVariablesParsing(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.ErrorContains(t, m.SetVars(map[string]core.Value{
-			"nbr":  core.NewMonetaryInt(100),
-			"nbr2": core.NewMonetaryInt(100),
+		require.ErrorContains(t, m.SetVarsFromJSON(map[string]string{
+			"nbr":  "100",
+			"nbr2": "100",
 		}), "extraneous variable $nbr2")
 	})
 
@@ -1586,9 +1492,9 @@ func TestVariablesParsing(t *testing.T) {
 
 		m := NewMachine(*p)
 
-		require.ErrorContains(t, m.SetVarsFromJSON(map[string]json.RawMessage{
-			"nbr":  json.RawMessage(`100`),
-			"nbr2": json.RawMessage(`100`),
+		require.ErrorContains(t, m.SetVarsFromJSON(map[string]string{
+			"nbr":  `100`,
+			"nbr2": `100`,
 		}), "extraneous variable $nbr2")
 	})
 }
@@ -1603,18 +1509,175 @@ func TestVariablesErrors(t *testing.T) {
 		destination = @bob
 	)`)
 	tc.setBalance("alice", "COIN", 10)
-	tc.vars = map[string]core.Value{
-		"mon": core.Monetary{
-			Asset:  "COIN",
-			Amount: core.NewMonetaryInt(-1),
-		},
+	tc.vars = map[string]string{
+		"mon": "COIN -1",
 	}
 	tc.expected = CaseResult{
-		Printed:  []core.Value{},
-		Postings: []Posting{},
-		Error:    "negative amount",
+		Printed:       []internal.Value{},
+		Postings:      []Posting{},
+		Error:         ErrInvalidVars,
+		ErrorContains: "negative amount",
 	}
 	test(t, tc)
+}
+
+func TestSetVarsFromJSON(t *testing.T) {
+
+	type testCase struct {
+		name          string
+		script        string
+		expectedError error
+		vars          map[string]string
+	}
+	for _, tc := range []testCase{
+		{
+			name: "missing var",
+			script: `vars {
+				account $dest
+			}
+			send [COIN 99] (
+				source = @world
+				destination = $dest
+			)`,
+			expectedError: fmt.Errorf("missing variable $dest"),
+		},
+		{
+			name: "invalid format for account",
+			script: `vars {
+				account $dest
+			}
+			send [COIN 99] (
+				source = @world
+				destination = $dest
+			)`,
+			vars: map[string]string{
+				"dest": "invalid-acc",
+			},
+			expectedError: fmt.Errorf("invalid JSON value for variable $dest of type account: value invalid-acc: accounts should respect pattern ^[a-zA-Z_]+[a-zA-Z0-9_:]*$"),
+		},
+	} {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			p, err := compiler.Compile(tc.script)
+			require.NoError(t, err)
+
+			m := NewMachine(*p)
+			err = m.SetVarsFromJSON(tc.vars)
+			if tc.expectedError != nil {
+				require.Error(t, err)
+				//TODO(gfyrag): refine error handling of SetVars/ResolveResources/ResolveBalances
+				require.Equal(t, tc.expectedError.Error(), err.Error())
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func TestResolveResources(t *testing.T) {
+
+	type testCase struct {
+		name          string
+		script        string
+		expectedError error
+		vars          map[string]string
+	}
+	for _, tc := range []testCase{
+		{
+			name: "missing metadata",
+			script: `vars {
+				account $sale
+				account $seller = meta($sale, "seller")
+			}
+			send [COIN *] (
+				source = $sale
+				destination = $seller
+			)`,
+			vars: map[string]string{
+				"sale": "sales:042",
+			},
+			expectedError: ErrResourceResolutionMissingMetadata,
+		},
+	} {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			p, err := compiler.Compile(tc.script)
+			require.NoError(t, err)
+
+			m := NewMachine(*p)
+			require.NoError(t, m.SetVarsFromJSON(tc.vars))
+			_, _, err = m.ResolveResources(context.Background(), EmptyStore)
+			if tc.expectedError != nil {
+				require.Error(t, err)
+				require.True(t, errors.Is(err, tc.expectedError))
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestResolveBalances(t *testing.T) {
+
+	type testCase struct {
+		name          string
+		script        string
+		expectedError error
+		vars          map[string]string
+		store         Store
+	}
+	for _, tc := range []testCase{
+		{
+			name: "balance function with negative balance",
+			store: StaticStore{
+				"users:001": &AccountWithBalances{
+					Account: core.Account{
+						Address:  "users:001",
+						Metadata: metadata.Metadata{},
+					},
+					Balances: map[string]*big.Int{
+						"COIN": big.NewInt(-100),
+					},
+				},
+			},
+			script: `
+				vars {
+					monetary $bal = balance(@users:001, COIN)
+				}
+				send $bal (
+					source = @users:001
+					destination = @world
+				)`,
+			expectedError: ErrNegativeMonetaryAmount,
+		},
+	} {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			p, err := compiler.Compile(tc.script)
+			require.NoError(t, err)
+
+			m := NewMachine(*p)
+			require.NoError(t, m.SetVarsFromJSON(tc.vars))
+			_, _, err = m.ResolveResources(context.Background(), EmptyStore)
+			require.NoError(t, err)
+
+			store := tc.store
+			if store == nil {
+				store = EmptyStore
+			}
+
+			err = m.ResolveBalances(context.Background(), store)
+			if tc.expectedError != nil {
+				require.Error(t, err)
+				require.True(t, errors.Is(err, tc.expectedError))
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestMachine(t *testing.T) {
@@ -1632,110 +1695,438 @@ func TestMachine(t *testing.T) {
 		m := NewMachine(*p)
 		m.Debug = true
 
-		err = m.SetVars(map[string]core.Value{
-			"dest": core.AccountAddress("charlie"),
+		err = m.SetVarsFromJSON(map[string]string{
+			"dest": "charlie",
 		})
 		require.NoError(t, err)
 
-		ch1, err := m.ResolveResources()
+		_, _, err := m.ResolveResources(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		for req := range ch1 {
-			require.NoError(t, req.Error)
-		}
 
-		ch2, err := m.ResolveBalances()
+		err = m.ResolveBalances(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		for req := range ch2 {
-			require.NoError(t, req.Error)
-		}
 
-		exitCode, err := m.Execute()
+		err = m.Execute()
 		require.NoError(t, err)
-		require.Equal(t, EXIT_OK, exitCode)
 	})
 
 	t.Run("err resources", func(t *testing.T) {
 		m := NewMachine(*p)
-		exitCode, err := m.Execute()
-		require.ErrorContains(t, err, "resources haven't been initialized")
-		require.Equal(t, byte(0), exitCode)
+		err := m.Execute()
+		require.True(t, errors.Is(err, ErrResourcesNotInitialized))
 	})
 
-	t.Run("err balances nit initialized", func(t *testing.T) {
+	t.Run("err balances not initialized", func(t *testing.T) {
 		m := NewMachine(*p)
 
-		err = m.SetVars(map[string]core.Value{
-			"dest": core.AccountAddress("charlie"),
+		err = m.SetVarsFromJSON(map[string]string{
+			"dest": "charlie",
 		})
 		require.NoError(t, err)
 
-		ch1, err := m.ResolveResources()
+		_, _, err := m.ResolveResources(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		for req := range ch1 {
-			require.NoError(t, req.Error)
-		}
 
-		exitCode, err := m.Execute()
-		require.ErrorContains(t, err, "balances haven't been initialized")
-		require.Equal(t, byte(0), exitCode)
+		err = m.Execute()
+		require.True(t, errors.Is(err, ErrBalancesNotInitialized))
 	})
 
 	t.Run("err resolve resources twice", func(t *testing.T) {
 		m := NewMachine(*p)
 
-		err = m.SetVars(map[string]core.Value{
-			"dest": core.AccountAddress("charlie"),
+		err = m.SetVarsFromJSON(map[string]string{
+			"dest": "charlie",
 		})
 		require.NoError(t, err)
 
-		ch1, err := m.ResolveResources()
+		_, _, err := m.ResolveResources(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		for req := range ch1 {
-			require.NoError(t, req.Error)
-		}
 
-		_, err = m.ResolveResources()
+		_, _, err = m.ResolveResources(context.Background(), EmptyStore)
 		require.ErrorContains(t, err, "tried to call ResolveResources twice")
 	})
 
 	t.Run("err balances before resources", func(t *testing.T) {
 		m := NewMachine(*p)
 
-		_, err := m.ResolveBalances()
+		err := m.ResolveBalances(context.Background(), EmptyStore)
 		require.ErrorContains(t, err, "tried to resolve balances before resources")
 	})
 
 	t.Run("err resolve balances twice", func(t *testing.T) {
 		m := NewMachine(*p)
 
-		err = m.SetVars(map[string]core.Value{
-			"dest": core.AccountAddress("charlie"),
+		err = m.SetVarsFromJSON(map[string]string{
+			"dest": "charlie",
 		})
 		require.NoError(t, err)
 
-		ch1, err := m.ResolveResources()
+		_, _, err := m.ResolveResources(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		for req := range ch1 {
-			require.NoError(t, req.Error)
-		}
 
-		ch2, err := m.ResolveBalances()
+		err = m.ResolveBalances(context.Background(), EmptyStore)
 		require.NoError(t, err)
-		for req := range ch2 {
-			require.NoError(t, req.Error)
-		}
 
-		_, err = m.ResolveBalances()
+		err = m.ResolveBalances(context.Background(), EmptyStore)
 		require.ErrorContains(t, err, "tried to call ResolveBalances twice")
 	})
 
 	t.Run("err missing var", func(t *testing.T) {
 		m := NewMachine(*p)
 
-		ch1, err := m.ResolveResources()
-		require.NoError(t, err)
-		for req := range ch1 {
-			require.ErrorContains(t, req.Error, "missing variable 'dest'")
+		_, _, err := m.ResolveResources(context.Background(), EmptyStore)
+		require.Error(t, err)
+	})
+}
+
+func TestVariableAsset(t *testing.T) {
+	script := `
+ 		vars {
+ 			asset $ass
+ 			monetary $bal = balance(@alice, $ass)
+ 		}
+
+ 		send [$ass 15] (
+ 			source = {
+ 				@alice
+ 				@bob
+ 			}
+ 			destination = @swap
+ 		)
+
+ 		send [$ass *] (
+ 			source = @swap
+ 			destination = {
+ 				max $bal to @alice_2
+ 				remaining to @bob_2
+ 			}
+ 		)`
+
+	tc := NewTestCase()
+	tc.compile(t, script)
+	tc.vars = map[string]string{
+		"ass": "USD",
+	}
+	tc.setBalance("alice", "USD", 10)
+	tc.setBalance("bob", "USD", 10)
+	tc.expected = CaseResult{
+		Printed: []internal.Value{},
+		Postings: []Posting{
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(10),
+				Source:      "alice",
+				Destination: "swap",
+			},
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(5),
+				Source:      "bob",
+				Destination: "swap",
+			},
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(10),
+				Source:      "swap",
+				Destination: "alice_2",
+			},
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(5),
+				Source:      "swap",
+				Destination: "bob_2",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
+func TestSaveFromAccount(t *testing.T) {
+	t.Run("simple", func(t *testing.T) {
+		script := `
+ 			save [USD 10] from @alice
+
+ 			send [USD 30] (
+ 			   source = {
+ 				  @alice
+ 				  @world
+ 			   }
+ 			   destination = @bob
+ 			)`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("alice", "USD", 20)
+		tc.expected = CaseResult{
+			Printed: []internal.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(10),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(20),
+					Source:      "world",
+					Destination: "bob",
+				},
+			},
+			Error: nil,
 		}
+		test(t, tc)
+	})
+
+	t.Run("save all", func(t *testing.T) {
+		script := `
+ 			save [USD *] from @alice
+
+ 			send [USD 30] (
+ 			   source = {
+ 				  @alice
+ 				  @world
+ 			   }
+ 			   destination = @bob
+ 			)`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("alice", "USD", 20)
+		tc.expected = CaseResult{
+			Printed: []internal.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(0),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(30),
+					Source:      "world",
+					Destination: "bob",
+				},
+			},
+			Error: nil,
+		}
+		test(t, tc)
+	})
+
+	t.Run("save more than balance", func(t *testing.T) {
+		script := `
+ 			save [USD 30] from @alice
+
+ 			send [USD 30] (
+ 			   source = {
+ 				  @alice
+ 				  @world
+ 			   }
+ 			   destination = @bob
+ 			)`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("alice", "USD", 20)
+		tc.expected = CaseResult{
+			Printed: []internal.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(0),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(30),
+					Source:      "world",
+					Destination: "bob",
+				},
+			},
+			Error: nil,
+		}
+		test(t, tc)
+	})
+
+	t.Run("with asset var", func(t *testing.T) {
+		script := `
+			vars {
+				asset $ass
+			}
+ 			save [$ass 10] from @alice
+
+ 			send [$ass 30] (
+ 			   source = {
+ 				  @alice
+ 				  @world
+ 			   }
+ 			   destination = @bob
+ 			)`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.vars = map[string]string{
+			"ass": "USD",
+		}
+		tc.setBalance("alice", "USD", 20)
+		tc.expected = CaseResult{
+			Printed: []internal.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(10),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(20),
+					Source:      "world",
+					Destination: "bob",
+				},
+			},
+			Error: nil,
+		}
+		test(t, tc)
+	})
+
+	t.Run("with monetary var", func(t *testing.T) {
+		script := `
+			vars {
+				monetary $mon
+			}
+
+ 			save $mon from @alice
+
+ 			send [USD 30] (
+ 			   source = {
+ 				  @alice
+ 				  @world
+ 			   }
+ 			   destination = @bob
+ 			)`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.vars = map[string]string{
+			"mon": "USD 10",
+		}
+		tc.setBalance("alice", "USD", 20)
+		tc.expected = CaseResult{
+			Printed: []internal.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(10),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(20),
+					Source:      "world",
+					Destination: "bob",
+				},
+			},
+			Error: nil,
+		}
+		test(t, tc)
+	})
+
+	t.Run("multi postings", func(t *testing.T) {
+		script := `
+ 			send [USD 10] (
+ 			   source = @alice
+ 			   destination = @bob
+ 			)
+
+			save [USD 5] from @alice
+
+ 			send [USD 30] (
+ 			   source = {
+ 				  @alice
+ 				  @world
+ 			   }
+ 			   destination = @bob
+ 			)`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("alice", "USD", 20)
+		tc.expected = CaseResult{
+			Printed: []internal.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(10),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(5),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(25),
+					Source:      "world",
+					Destination: "bob",
+				},
+			},
+			Error: nil,
+		}
+		test(t, tc)
+	})
+
+	t.Run("save a different asset", func(t *testing.T) {
+		script := `
+			save [COIN 100] from @alice
+
+ 			send [USD 30] (
+ 			   source = {
+ 				  @alice
+ 				  @world
+ 			   }
+ 			   destination = @bob
+ 			)`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("alice", "COIN", 100)
+		tc.setBalance("alice", "USD", 20)
+		tc.expected = CaseResult{
+			Printed: []internal.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(20),
+					Source:      "alice",
+					Destination: "bob",
+				},
+				{
+					Asset:       "USD",
+					Amount:      internal.NewMonetaryInt(10),
+					Source:      "world",
+					Destination: "bob",
+				},
+			},
+			Error: nil,
+		}
+		test(t, tc)
+	})
+
+	t.Run("negative amount", func(t *testing.T) {
+		script := `
+			vars {
+			  monetary $amt = balance(@A, USD)
+			}
+			save $amt from @A`
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("A", "USD", -100)
+		tc.expected = CaseResult{
+			Printed:  []internal.Value{},
+			Postings: []Posting{},
+			Error:    ErrNegativeMonetaryAmount,
+		}
+		test(t, tc)
 	})
 }

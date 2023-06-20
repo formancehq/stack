@@ -1,7 +1,10 @@
 package instances
 
 import (
+	"fmt"
+
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -31,9 +34,19 @@ func NewStopCommand() *cobra.Command {
 				return errors.Wrap(err, "creating stack client")
 			}
 
-			_, err = client.OrchestrationApi.CancelEvent(cmd.Context(), args[0]).Execute()
+			response, err := client.Orchestration.CancelEvent(cmd.Context(), operations.CancelEventRequest{
+				InstanceID: args[0],
+			})
 			if err != nil {
-				return errors.Wrap(err, "cancelling instance")
+				return err
+			}
+
+			if response.Error != nil {
+				return fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 			}
 
 			return nil

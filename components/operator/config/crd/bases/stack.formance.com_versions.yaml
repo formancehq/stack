@@ -96,6 +96,8 @@ spec:
                 type: string
               search:
                 type: string
+              stargate:
+                type: string
               wallets:
                 type: string
               webhooks:

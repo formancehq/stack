@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
     labels:
-        stack: "true"
+        app.kubernetes.io/service-name: ledger
     name: ledger
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.195
+    clusterIP: 10.0.0.59
     clusterIPs:
-        - 10.0.0.195
+        - 10.0.0.59
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

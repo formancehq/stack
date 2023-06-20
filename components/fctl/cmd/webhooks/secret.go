@@ -1,8 +1,11 @@
 package webhooks
 
 import (
+	"fmt"
+
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -44,19 +47,27 @@ func NewChangeSecretCommand() *cobra.Command {
 				secret = args[1]
 			}
 
-			res, _, err := client.WebhooksApi.
-				ChangeConfigSecret(cmd.Context(), args[0]).
-				ConfigChangeSecret(
-					formance.ConfigChangeSecret{
-						Secret: &secret,
-					}).
-				Execute()
+			response, err := client.Webhooks.
+				ChangeConfigSecret(cmd.Context(), operations.ChangeConfigSecretRequest{
+					ConfigChangeSecret: &shared.ConfigChangeSecret{
+						Secret: secret,
+					},
+					ID: args[0],
+				})
 			if err != nil {
 				return errors.Wrap(err, "changing secret")
 			}
 
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
-				"Config updated successfully with new secret: %s", *res.Data.Secret)
+				"Config '%s' updated successfully with new secret", response.ConfigResponse.Data.ID)
 			return nil
 		}),
 	)

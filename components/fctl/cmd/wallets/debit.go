@@ -1,11 +1,13 @@
 package wallets
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -78,7 +80,7 @@ func NewDebitWalletCommand() *cobra.Command {
 				return errors.Wrap(err, "parsing amount")
 			}
 
-			var destination *formance.Subject
+			var destination *shared.Subject
 			if destinationStr := fctl.GetString(cmd, destinationFlag); destinationStr != "" {
 				destination, err = internal.ParseSubject(destinationStr, cmd, client)
 				if err != nil {
@@ -86,23 +88,34 @@ func NewDebitWalletCommand() *cobra.Command {
 				}
 			}
 
-			hold, _, err := client.WalletsApi.DebitWallet(cmd.Context(), walletID).DebitWalletRequest(formance.DebitWalletRequest{
-				Amount: formance.Monetary{
-					Asset:  asset,
-					Amount: amount,
+			response, err := client.Wallets.DebitWallet(cmd.Context(), operations.DebitWalletRequest{
+				DebitWalletRequest: &shared.DebitWalletRequest{
+					Amount: shared.Monetary{
+						Asset:  asset,
+						Amount: amount,
+					},
+					Pending:     &pending,
+					Metadata:    metadata,
+					Description: &description,
+					Destination: destination,
+					Balances:    fctl.GetStringSlice(cmd, balanceFlag),
 				},
-				Pending:     &pending,
-				Metadata:    metadata,
-				Description: &description,
-				Destination: destination,
-				Balances:    fctl.GetStringSlice(cmd, balanceFlag),
-			}).Execute()
+				ID: walletID,
+			})
 			if err != nil {
-				return errors.Wrap(err, "Debiting wallets")
+				return errors.Wrap(err, "debiting wallet")
 			}
 
-			if hold != nil && hold.Data.Id != "" {
-				pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet debited successfully with hold id '%s'!", hold.Data.Id)
+			if response.WalletsErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			if response != nil && response.DebitWalletResponse.Data.ID != "" {
+				pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet debited successfully with hold id '%s'!", response.DebitWalletResponse.Data.ID)
 			} else {
 				pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet debited successfully!")
 			}

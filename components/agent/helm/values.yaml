@@ -1,0 +1,65 @@
+global:
+  serviceName: agent
+
+image:
+  repository: ghcr.io/formancehq/agent
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Annotations to add to the service account
+  annotations: {}
+
+podAnnotations: {}
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+# runAsUser: 1000
+
+resources:
+   limits:
+     cpu: 100m
+     memory: 128Mi
+   requests:
+     cpu: 100m
+     memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+debug: false
+
+server:
+  address: ""
+  tls:
+    enabled: false
+    insecureSkipVerify: false
+    ca: ""
+
+agent:
+  id: ""
+  baseUrl: http://example.net
+  production: false
+  # Authentication token
+  authentication:
+    mode: token
+    token: "sdfsdf"
+    # OAuth2 mode
+    # mode: bearer
+    # issuer: https://app.formance.cloud
+    # clientSecret: YYY

@@ -17,7 +17,7 @@ func TestWalletsCreate(t *testing.T) {
 
 	createWalletRequest := wallet.CreateRequest{
 		PatchRequest: wallet.PatchRequest{
-			Metadata: map[string]interface{}{
+			Metadata: metadata.Metadata{
 				"foo": "bar",
 			},
 		},
@@ -30,10 +30,10 @@ func TestWalletsCreate(t *testing.T) {
 	var (
 		ledger  string
 		account string
-		md      metadata.Metadata
+		md      wallet.Metadata
 	)
 	testEnv := newTestEnv(
-		WithAddMetadataToAccount(func(ctx context.Context, l, a string, m metadata.Metadata) error {
+		WithAddMetadataToAccount(func(ctx context.Context, l, a string, m wallet.Metadata) error {
 			ledger = l
 			account = a
 			md = m

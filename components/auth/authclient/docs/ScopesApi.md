@@ -31,7 +31,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ScopesApi.AddTransientScope(context.Background(), scopeId, transientScopeId).Execute()
+    r, err := apiClient.ScopesApi.AddTransientScope(context.Background(), scopeId, transientScopeId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `ScopesApi.AddTransientScope``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -54,8 +54,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
-**transientScopeId** | [**interface{}**](.md) | Transient scope ID |
+**scopeId** | [**interface{}**](.md) | Scope ID | 
+**transientScopeId** | [**interface{}**](.md) | Transient scope ID | 
 
 ### Other Parameters
 
@@ -102,7 +102,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func main() {
@@ -131,7 +131,7 @@ Other parameters are passed through a pointer to a apiCreateScopeRequest struct 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **ScopeOptions** |  |
+ **body** | **ScopeOptions** |  | 
 
 ### Return type
 
@@ -168,7 +168,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func main() {
@@ -176,7 +176,7 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ScopesApi.DeleteScope(context.Background(), scopeId).Execute()
+    r, err := apiClient.ScopesApi.DeleteScope(context.Background(), scopeId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `ScopesApi.DeleteScope``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -190,7 +190,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**scopeId** | [**interface{}**](.md) | Scope ID | 
 
 ### Other Parameters
 
@@ -236,7 +236,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func main() {
@@ -245,7 +245,7 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ScopesApi.DeleteTransientScope(context.Background(), scopeId, transientScopeId).Execute()
+    r, err := apiClient.ScopesApi.DeleteTransientScope(context.Background(), scopeId, transientScopeId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `ScopesApi.DeleteTransientScope``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -259,8 +259,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
-**transientScopeId** | [**interface{}**](.md) | Transient scope ID |
+**scopeId** | [**interface{}**](.md) | Scope ID | 
+**transientScopeId** | [**interface{}**](.md) | Transient scope ID | 
 
 ### Other Parameters
 
@@ -307,7 +307,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func main() {
@@ -368,7 +368,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func main() {
@@ -392,7 +392,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**scopeId** | [**interface{}**](.md) | Scope ID | 
 
 ### Other Parameters
 
@@ -438,7 +438,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func main() {
@@ -463,7 +463,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**scopeId** | [**interface{}**](.md) | Scope ID | 
 
 ### Other Parameters
 
@@ -473,7 +473,7 @@ Other parameters are passed through a pointer to a apiUpdateScopeRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **ScopeOptions** |  |
+ **body** | **ScopeOptions** |  | 
 
 ### Return type
 
@@ -491,3 +491,4 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

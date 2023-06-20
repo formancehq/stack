@@ -1,10 +1,55 @@
 package wallet
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"encoding/json"
+	"math/big"
 )
 
-type Account interface {
-	metadata.Owner
-	GetAddress() string
+type Account struct {
+	Address  string   `json:"address"`
+	Metadata Metadata `json:"metadata"`
+}
+
+func (a Account) GetMetadata() map[string]string {
+	return a.Metadata
+}
+
+func (a Account) GetAddress() string {
+	return a.Address
+}
+
+type AccountWithVolumesAndBalances struct {
+	Account
+	Volumes  map[string]map[string]*big.Int `json:"volumes"`
+	Balances map[string]*big.Int            `json:"balances"`
+}
+
+// notes(gfyrag): used to shallow UnmarshalJSON of Account
+func (a *AccountWithVolumesAndBalances) UnmarshalJSON(data []byte) error {
+	account := Account{}
+	if err := json.Unmarshal(data, &account); err != nil {
+		return err
+	}
+	type aux struct {
+		Volumes  map[string]map[string]*big.Int `json:"volumes"`
+		Balances map[string]*big.Int            `json:"balances"`
+	}
+	v := aux{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	*a = AccountWithVolumesAndBalances{
+		Account:  account,
+		Volumes:  v.Volumes,
+		Balances: v.Balances,
+	}
+	return nil
+}
+
+func (a AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]*big.Int {
+	return a.Volumes
+}
+
+func (a AccountWithVolumesAndBalances) GetBalances() map[string]*big.Int {
+	return a.Balances
 }

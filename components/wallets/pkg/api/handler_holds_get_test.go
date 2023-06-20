@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -25,22 +25,23 @@ func TestHoldsGet(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int64{
-				"USD": 50,
-			}
-			volumes := map[string]map[string]int64{
-				"USD": {
-					"input": 100,
+
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				},
-			}
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: &balances,
-				Volumes:  &volumes,
+				Balances: map[string]*big.Int{
+					"USD": big.NewInt(50),
+				},
+				Volumes: map[string]map[string]*big.Int{
+					"USD": {
+						"input": big.NewInt(100),
+					},
+				},
 			}, nil
 		}),
 	)
@@ -52,7 +53,7 @@ func TestHoldsGet(t *testing.T) {
 	readResponse(t, rec, &ret)
 	require.EqualValues(t, wallet.ExpandedDebitHold{
 		DebitHold:      hold,
-		OriginalAmount: *wallet.NewMonetaryInt(100),
-		Remaining:      *wallet.NewMonetaryInt(50),
+		OriginalAmount: big.NewInt(100),
+		Remaining:      big.NewInt(50),
 	}, ret)
 }

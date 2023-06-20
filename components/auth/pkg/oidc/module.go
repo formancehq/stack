@@ -8,8 +8,8 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/gorilla/mux"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/fx"
 )
 
@@ -27,7 +27,7 @@ func Module(privateKey *rsa.PrivateKey, issuer string, staticClients ...auth.Sta
 				return nil, err
 			}
 
-			return NewOpenIDProvider(context.TODO(), storage, issuer, configuration.Issuer, *keySet)
+			return NewOpenIDProvider(storage, issuer, configuration.Issuer, *keySet)
 		}),
 	)
 }

@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: auth
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -28,8 +28,7 @@ spec:
                 app.kubernetes.io/name: auth
         spec:
             containers:
-                - command:
-                    - /main
+                - args:
                     - serve
                   env:
                     - name: POSTGRES_HOST
@@ -37,7 +36,7 @@ spec:
                     - name: POSTGRES_PORT
                       value: "32768"
                     - name: POSTGRES_DATABASE
-                      value: stack1-auth
+                      value: orga1-stack1-auth
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
@@ -86,7 +85,7 @@ spec:
                   image: ghcr.io/formancehq/auth:latest
                   imagePullPolicy: Always
                   livenessProbe:
-                    failureThreshold: 10
+                    failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
                         port: 8080
@@ -100,7 +99,10 @@ spec:
                     - containerPort: 8080
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                   volumeMounts:

@@ -18,18 +18,20 @@ func init() {
 					HasVersionEndpoint:      true,
 					ExposeHTTP:              true,
 					InjectPostgresVariables: true,
-					ListenEnvVar:            "HTTP_BIND_ADDRESS_SERVER",
+					ListenEnvVar:            "LISTEN",
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
-							Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
-							Env:   webhooksEnvVars(resolveContext.Configuration),
+							Image:     modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
+							Env:       webhooksEnvVars(resolveContext.Configuration),
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},
 				{
 					Name:                    "worker",
 					InjectPostgresVariables: true,
-					ListenEnvVar:            "HTTP_BIND_ADDRESS_WORKER",
+					ListenEnvVar:            "LISTEN",
+					Liveness:                modules.LivenessDisable,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
 							Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
@@ -39,8 +41,8 @@ func init() {
 									resolveContext.Stack.GetServiceName("payments"),
 								}, " ")),
 							),
-							Command:  []string{"/usr/bin/webhooks", "worker"},
-							Liveness: modules.LivenessDisable,
+							Args:      []string{"worker"},
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},

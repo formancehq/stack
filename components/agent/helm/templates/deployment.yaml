@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "agent.selectorLabels" . | nindent 6 }}
+  strategy:
+    # Stop before recreate as each agent has an id and the server will not allow the connection if an agent is already connected
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "agent.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Chart.Name }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DEBUG
+              value: "{{.Values.debug}}"
+            - name: SERVER_ADDRESS
+              value: "{{.Values.server.address}}"
+            - name: TLS_ENABLED
+              value: "{{.Values.server.tls.enabled}}"
+            - name: TLS_INSECURE_SKIP_VERIFY
+              value: "{{.Values.server.tls.insecureSkipVerify}}"
+            - name: TLS_CA_CERT
+              value: "{{.Values.server.tls.ca}}"
+            - name: ID
+              value: "{{.Values.agent.id}}"
+            - name: TAG
+              value: "{{range $key, $value := .Values.agent.tags}}{{$key}}={{$value}} {{end}}"
+            - name: AUTHENTICATION_MODE
+              value: "{{ .Values.agent.authentication.mode }}"
+            {{- if eq .Values.agent.authentication.mode "token" }}
+            - name: AUTHENTICATION_TOKEN
+              value: "{{ .Values.agent.authentication.token }}"
+            {{- end }}
+            {{- if eq .Values.agent.authentication.mode "bearer" }}
+            - name: AUTHENTICATION_ISSUER
+              value: "{{ .Values.agent.authentication.issuer }}"
+            - name: AUTHENTICATION_CLIENT_ID
+              value: "{{ .Values.agent.authentication.clientID }}"
+            - name: AUTHENTICATION_CLIENT_SECRET
+              value: "{{ .Values.agent.authentication.clientSecret }}"
+            {{- end }}
+            - name: BASE_URL
+              value: "{{ .Values.agent.baseUrl }}"
+            - name: PRODUCTION
+              value: "{{ .Values.agent.production }}"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

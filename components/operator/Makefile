@@ -104,21 +104,24 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: helm-update
 helm-update: manifests generate
-	cp -pr ./config/crd/bases ./helm/operator/templates/
-	cp -pr ./config/rbac ./helm/operator/templates/
+	rm -rf ./helm/templates/gen
+	mkdir -p ./helm/templates/gen
+	$(KUSTOMIZE) build config/default --output ./helm/templates/gen
+	rm -f ./helm/templates/gen/v1_namespace*.yaml
+	rm -f ./helm/templates/gen/apps_v1_deployment_*.yaml
 
 .PHONY: helm-debug
 helm-debug: helm-update
-	helm template ./helm/operator --debug
-	helm install --create-namespace --namespace formance-operator -f ./helm/operator/values.yaml formance-operator ./helm/operator --dry-run
+	helm template ./helm --debug
+	helm install --create-namespace --namespace formance-operator -f ./helm/values.yaml formance-operator ./helm --dry-run
 
 .PHONY: helm-install
 helm-install: helm-update
-	helm install --create-namespace --namespace formance-operator -f ./helm/operator/values.yaml formance-operator ./helm/operator
+	helm install --create-namespace --namespace formance-operator -f ./helm/values.yaml formance-operator ./helm
 
 .PHONY: helm-local-install
 helm-local-install: helm-update
-	helm install --create-namespace --namespace formance-operator -f ./helm/operator/values.yaml --set image.repository="${IMG}" formance-operator ./helm/operator
+	helm install --create-namespace --namespace formance-operator -f ./helm/values.yaml --set image.repository="${IMG}" formance-operator ./helm
 
 .PHONY: helm-uninstall
 helm-uninstall:
@@ -126,11 +129,11 @@ helm-uninstall:
 
 .PHONY: helm-upgrade
 helm-upgrade: helm-update
-	helm upgrade --namespace formance-operator -f ./helm/operator/values.yaml formance-operator ./helm/operator
+	helm upgrade --namespace formance-operator -f ./helm/values.yaml formance-operator ./helm
 
 .PHONY: helm-local-upgrade
 helm-local-upgrade: helm-update
-	helm upgrade --namespace formance-operator -f ./helm/operator/values.yaml --set image.repository="${IMG}" formance-operator ./helm/operator
+	helm upgrade --namespace formance-operator -f ./helm/values.yaml --set image.repository="${IMG}" formance-operator ./helm
 
 
 ##@ Build Dependencies
@@ -153,7 +156,7 @@ KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/k
 .PHONY: kustomize
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
 $(KUSTOMIZE): $(LOCALBIN)
-	curl -s $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN)
+	test -f $(LOCALBIN)/kustomize || curl -s $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN)
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.

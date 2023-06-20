@@ -24,7 +24,6 @@ import (
 	componentsv1beta1 "github.com/formancehq/operator/apis/components/v1beta1"
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	"github.com/formancehq/operator/internal/controllers/stack"
-	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -51,7 +50,6 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(authcomponentsv1beta1.AddToScheme(scheme))
 	utilruntime.Must(authcomponentsv1beta2.AddToScheme(scheme))
-	utilruntime.Must(traefik.AddToScheme(scheme))
 	utilruntime.Must(benthoscomponentsv1beta2.AddToScheme(scheme))
 	utilruntime.Must(stackv1beta1.AddToScheme(scheme))
 	utilruntime.Must(stackv1beta2.AddToScheme(scheme))

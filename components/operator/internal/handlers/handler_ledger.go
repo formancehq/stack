@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	"golang.org/x/mod/semver"
 )
 
 func init() {
@@ -11,27 +12,62 @@ func init() {
 			return ctx.Configuration.Spec.Services.Ledger.Postgres
 		},
 		Services: func(ctx modules.Context) modules.Services {
-			return modules.Services{{
-				EnvPrefix:               "NUMARY_",
-				ListenEnvVar:            "SERVER_HTTP_BIND_ADDRESS",
-				InjectPostgresVariables: true,
-				HasVersionEndpoint:      true,
-				ExposeHTTP:              true,
-				NeedTopic:               true,
-				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-					env := modules.NewEnv().Append(
-						modules.Env("NUMARY_STORAGE_DRIVER", "postgres"),
-						modules.Env("NUMARY_PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
-					).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger", "NUMARY_")...)
+			isV2 := true
+			ledgerVersion := modules.NormalizeVersion(ctx.Versions.Spec.Ledger)
+			if semver.IsValid(ledgerVersion) {
+				if semver.Compare(ledgerVersion, "v2.0.0") < 0 {
+					isV2 = false
+				}
+			}
 
-					return modules.Container{
-						Image: modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
-						Env: env.Append(
-							modules.Env("NUMARY_STORAGE_POSTGRES_CONN_STRING", "$(NUMARY_POSTGRES_URI)"),
-						),
-					}
-				},
-			}}
+			if isV2 {
+				return modules.Services{{
+					ListenEnvVar:            "BIND",
+					InjectPostgresVariables: true,
+					HasVersionEndpoint:      true,
+					ExposeHTTP:              true,
+					NeedTopic:               true,
+					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						env := modules.NewEnv().Append(
+							modules.Env("STORAGE_DRIVER", "postgres"),
+							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
+						).Append(modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...)
+
+						return modules.Container{
+							Image: modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
+							Env: env.Append(
+								modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
+							),
+						}
+					},
+				}}
+			} else {
+				return modules.Services{{
+					EnvPrefix:               "NUMARY_",
+					ListenEnvVar:            "SERVER_HTTP_BIND_ADDRESS",
+					InjectPostgresVariables: true,
+					HasVersionEndpoint:      true,
+					ExposeHTTP:              true,
+					NeedTopic:               true,
+					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						env := modules.NewEnv().Append(
+							modules.Env("STORAGE_DRIVER", "postgres"),
+							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
+						).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger")...)
+						if resolveContext.Configuration.Spec.Services.Ledger.AllowPastTimestamps {
+							env = env.Append(modules.Env("COMMIT_POLICY", "allow-past-timestamps"))
+						}
+
+						return modules.Container{
+							Resources: modules.ResourceSizeSmall(),
+							Image:     modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
+							Env: env.Append(
+								modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(NUMARY_POSTGRES_URI)"),
+							),
+						}
+					},
+				}}
+			}
 		},
 	})
 }

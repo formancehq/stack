@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -18,7 +17,7 @@ func TestWalletsPatch(t *testing.T) {
 	t.Parallel()
 
 	patchWalletRequest := wallet.PatchRequest{
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			"role": "admin",
 			"foo":  "baz",
 		},
@@ -32,25 +31,27 @@ func TestWalletsPatch(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  account,
-				Metadata: w.LedgerMetadata(),
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  account,
+					Metadata: w.LedgerMetadata(),
+				},
 			}, nil
 		}),
-		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md metadata.Metadata) error {
+		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md wallet.Metadata) error {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
 			require.EqualValues(t, metadata.Metadata{
 				wallet.MetadataKeyWalletID:       w.ID,
 				wallet.MetadataKeyWalletName:     w.Name,
 				wallet.MetadataKeyWalletSpecType: wallet.PrimaryWallet,
-				wallet.MetadataKeyWalletCustomData: metadata.Metadata{
+				wallet.MetadataKeyWalletCustomData: metadata.MarshalValue(metadata.Metadata{
 					"role": "admin",
 					"foo":  "baz",
-				},
+				}),
 				wallet.MetadataKeyBalanceName:   wallet.MainBalance,
 				wallet.MetadataKeyWalletBalance: wallet.TrueValue,
 				wallet.MetadataKeyCreatedAt:     w.CreatedAt.UTC().Format(time.RFC3339Nano),

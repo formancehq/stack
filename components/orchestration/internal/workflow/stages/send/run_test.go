@@ -3,9 +3,10 @@ package send
 import (
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/stretchr/testify/mock"
 	"go.temporal.io/sdk/temporal"
 )
@@ -50,7 +51,7 @@ func TestSendSchemaValidation(t *testing.T) {
 						Ledger: "default",
 					},
 				},
-				Amount: sdk.Monetary{
+				Amount: &shared.Monetary{
 					Amount: 100,
 					Asset:  "USD",
 				},
@@ -88,7 +89,7 @@ func TestSendSchemaValidation(t *testing.T) {
 						Balance: "main",
 					},
 				},
-				Amount: sdk.Monetary{
+				Amount: &shared.Monetary{
 					Asset:  "USD",
 					Amount: 100,
 				},
@@ -108,7 +109,10 @@ var (
 				ID:      "wallet1",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -117,12 +121,14 @@ var (
 					ID: "payment1",
 				}},
 				Returns: []any{
-					&sdk.PaymentResponse{
-						Data: sdk.Payment{
+					&shared.PaymentResponse{
+						Data: shared.Payment{
 							InitialAmount: 100,
 							Asset:         "USD",
-							Provider:      sdk.STRIPE,
-							Status:        sdk.SUCCEEDED,
+							Provider:      shared.ConnectorStripe,
+							Status:        shared.PaymentStatusSucceeded,
+							Scheme:        shared.PaymentSchemeUnknown,
+							Type:          shared.PaymentTypeOther,
 						},
 					}, nil,
 				},
@@ -132,19 +138,20 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
-							Reference: sdk.PtrString(paymentAccountName("payment1")),
+							Reference: ptrString(paymentAccountName("payment1")),
+							Metadata:  metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 			{
@@ -152,21 +159,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 			{
@@ -175,9 +182,9 @@ var (
 					ID: "wallet1",
 				}},
 				Returns: []any{
-					&sdk.GetWalletResponse{
-						Data: sdk.WalletWithBalances{
-							Id:     "wallet1",
+					&shared.GetWalletResponse{
+						Data: shared.WalletWithBalances{
+							ID:     "wallet1",
 							Ledger: "default",
 						},
 					}, nil,
@@ -188,13 +195,20 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "wallet1",
-						Data: sdk.CreditWalletRequest{
-							Amount: *sdk.NewMonetary("USD", 100),
-							Sources: []sdk.Subject{{
-								LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
+						Data: &shared.CreditWalletRequest{
+							Amount: shared.Monetary{
+								Amount: 100,
+								Asset:  "USD",
+							},
+							Sources: []shared.Subject{{
+								LedgerAccountSubject: &shared.LedgerAccountSubject{
+									Identifier: "world",
+									Type:       "ACCOUNT",
+								},
+								Type: shared.SubjectTypeAccount,
 							}},
-							Balance: sdk.PtrString("main"),
-							Metadata: map[string]interface{}{
+							Balance: ptrString("main"),
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
@@ -214,7 +228,10 @@ var (
 				ID:     "foo",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -223,12 +240,14 @@ var (
 					ID: "payment1",
 				}},
 				Returns: []any{
-					&sdk.PaymentResponse{
-						Data: sdk.Payment{
+					&shared.PaymentResponse{
+						Data: shared.Payment{
 							InitialAmount: 100,
 							Asset:         "USD",
-							Provider:      sdk.STRIPE,
-							Status:        sdk.SUCCEEDED,
+							Provider:      shared.ConnectorStripe,
+							Status:        shared.PaymentStatusSucceeded,
+							Scheme:        shared.PaymentSchemeUnknown,
+							Type:          shared.PaymentTypeOther,
 						},
 					}, nil,
 				},
@@ -238,19 +257,20 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
-							Reference: sdk.PtrString(paymentAccountName("payment1")),
+							Reference: ptrString(paymentAccountName("payment1")),
+							Metadata:  metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 			{
@@ -258,21 +278,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 			{
@@ -280,21 +300,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 		},
@@ -309,7 +329,10 @@ var (
 				ID:     "foo",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -318,12 +341,14 @@ var (
 					ID: "payment1",
 				}},
 				Returns: []any{
-					&sdk.PaymentResponse{
-						Data: sdk.Payment{
+					&shared.PaymentResponse{
+						Data: shared.Payment{
 							InitialAmount: 100,
 							Asset:         "USD",
-							Provider:      sdk.STRIPE,
-							Status:        sdk.SUCCEEDED,
+							Provider:      shared.ConnectorStripe,
+							Status:        shared.PaymentStatusSucceeded,
+							Scheme:        shared.PaymentSchemeUnknown,
+							Type:          shared.PaymentTypeOther,
 						},
 					}, nil,
 				},
@@ -333,14 +358,15 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
-							Reference: sdk.PtrString(paymentAccountName("payment1")),
+							Reference: ptrString(paymentAccountName("payment1")),
+							Metadata:  metadata.Metadata{},
 						},
 					},
 				},
@@ -351,21 +377,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 			{
@@ -373,21 +399,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 		},
@@ -403,7 +429,10 @@ var (
 				ID:     "bar",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -411,18 +440,19 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "bar",
 								Source:      "foo",
 							}},
+							Metadata: metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 		},
@@ -438,7 +468,10 @@ var (
 				ID:     "account2",
 				Ledger: "ledger2",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -446,21 +479,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 			{
@@ -468,21 +501,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "account2",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 		},
@@ -498,7 +531,10 @@ var (
 				ID:      "bar",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -506,8 +542,8 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "bar",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
 						Ledger: "default",
 					},
 				}, nil},
@@ -517,12 +553,19 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "bar",
-						Data: sdk.CreditWalletRequest{
-							Amount: *sdk.NewMonetary("USD", 100),
-							Sources: []sdk.Subject{{
-								LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "foo"),
+						Data: &shared.CreditWalletRequest{
+							Amount: shared.Monetary{
+								Amount: 100,
+								Asset:  "USD",
+							},
+							Sources: []shared.Subject{{
+								LedgerAccountSubject: &shared.LedgerAccountSubject{
+									Identifier: "foo",
+									Type:       "ACCOUNT",
+								},
+								Type: shared.SubjectTypeAccount,
 							}},
-							Balance: sdk.PtrString("main"),
+							Balance: ptrString("main"),
 						},
 					},
 				},
@@ -541,7 +584,10 @@ var (
 				ID:      "wallet",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -549,8 +595,8 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "wallet",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
 						Ledger: "ledger2",
 					},
 				}, nil},
@@ -560,21 +606,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 			{
@@ -582,13 +628,20 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "wallet",
-						Data: sdk.CreditWalletRequest{
-							Amount: *sdk.NewMonetary("USD", 100),
-							Sources: []sdk.Subject{{
-								LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
+						Data: &shared.CreditWalletRequest{
+							Amount: shared.Monetary{
+								Amount: 100,
+								Asset:  "USD",
+							},
+							Sources: []shared.Subject{{
+								LedgerAccountSubject: &shared.LedgerAccountSubject{
+									Identifier: "world",
+									Type:       "ACCOUNT",
+								},
+								Type: shared.SubjectTypeAccount,
 							}},
-							Balance: sdk.PtrString("main"),
-							Metadata: map[string]interface{}{
+							Balance: ptrString("main"),
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -609,7 +662,10 @@ var (
 				PSP:      "stripe",
 				Metadata: "stripeConnectID",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -618,10 +674,10 @@ var (
 					Ledger: "default",
 					ID:     "foo",
 				}},
-				Returns: []any{&sdk.AccountResponse{
-					Data: sdk.AccountWithVolumesAndBalances{
+				Returns: []any{&shared.AccountResponse{
+					Data: shared.AccountWithVolumesAndBalances{
 						Address: "foo",
-						Metadata: map[string]interface{}{
+						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",
 						},
 					},
@@ -630,10 +686,10 @@ var (
 			{
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
-					mock.Anything, sdk.StripeTransferRequest{
-						Amount:      sdk.PtrInt64(100),
-						Asset:       sdk.PtrString("USD"),
-						Destination: sdk.PtrString("abcd"),
+					mock.Anything, shared.StripeTransferRequest{
+						Amount:      ptrInt64(100),
+						Asset:       ptrString("USD"),
+						Destination: ptrString("abcd"),
 					},
 				},
 				Returns: []any{nil},
@@ -643,18 +699,19 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "foo",
 							}},
+							Metadata: metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 		},
@@ -670,7 +727,10 @@ var (
 				ID:     "bar",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -678,10 +738,10 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "foo",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
-						Id: "foo",
-						Metadata: map[string]interface{}{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
+						ID: "foo",
+						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",
 						},
 						Ledger: "default",
@@ -693,13 +753,17 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "foo",
-						Data: sdk.DebitWalletRequest{
-							Amount: sdk.Monetary{
+						Data: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: 100,
 							},
-							Destination: &sdk.Subject{
-								LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "bar"),
+							Destination: &shared.Subject{
+								LedgerAccountSubject: &shared.LedgerAccountSubject{
+									Identifier: "bar",
+									Type:       "ACCOUNT",
+								},
+								Type: shared.SubjectTypeAccount,
 							},
 							Balances: []string{"main"},
 						},
@@ -720,7 +784,10 @@ var (
 				ID:     "account",
 				Ledger: "ledger2",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -728,9 +795,9 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "wallet",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
-						Id:     "wallet",
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
+						ID:     "wallet",
 						Ledger: "ledger1",
 					},
 				}, nil},
@@ -740,13 +807,13 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "wallet",
-						Data: sdk.DebitWalletRequest{
-							Amount: sdk.Monetary{
+						Data: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: 100,
 							},
 							Balances: []string{"main"},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
@@ -759,21 +826,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: sdk.PostTransaction{
-							Postings: []sdk.Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      100,
 								Asset:       "USD",
 								Destination: "account",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionsResponse{
-					Data: []sdk.Transaction{{}},
+				Returns: []any{&shared.CreateTransactionResponse{
+					Data: shared.Transaction{},
 				}, nil},
 			},
 		},
@@ -789,7 +856,10 @@ var (
 				ID:      "bar",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -797,8 +867,8 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "foo",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
 						Ledger: "default",
 					},
 				}, nil},
@@ -808,8 +878,8 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "bar",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
 						Ledger: "default",
 					},
 				}, nil},
@@ -819,16 +889,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "bar",
-						Data: sdk.CreditWalletRequest{
-							Amount: *sdk.NewMonetary("USD", 100),
-							Sources: []sdk.Subject{{
-								WalletSubject: &sdk.WalletSubject{
+						Data: &shared.CreditWalletRequest{
+							Amount: shared.Monetary{
+								Asset:  "USD",
+								Amount: 100,
+							},
+							Sources: []shared.Subject{{
+								WalletSubject: &shared.WalletSubject{
 									Type:       "WALLET",
 									Identifier: "foo",
-									Balance:    sdk.PtrString("main"),
+									Balance:    ptrString("main"),
 								},
+								Type: shared.SubjectTypeWallet,
 							}},
-							Balance: sdk.PtrString("main"),
+							Balance:  ptrString("main"),
+							Metadata: map[string]string{},
 						},
 					},
 				},
@@ -847,7 +922,10 @@ var (
 				ID:      "wallet2",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -855,8 +933,8 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "wallet1",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
 						Ledger: "ledger1",
 					},
 				}, nil},
@@ -866,8 +944,8 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "wallet2",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
 						Ledger: "ledger2",
 					},
 				}, nil},
@@ -877,9 +955,12 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "wallet1",
-						Data: sdk.DebitWalletRequest{
-							Amount: *sdk.NewMonetary("USD", 100),
-							Metadata: map[string]interface{}{
+						Data: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
+								Asset:  "USD",
+								Amount: 100,
+							},
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 							Balances: []string{"main"},
@@ -893,10 +974,13 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "wallet2",
-						Data: sdk.CreditWalletRequest{
-							Amount:  *sdk.NewMonetary("USD", 100),
-							Balance: sdk.PtrString("main"),
-							Metadata: map[string]interface{}{
+						Data: &shared.CreditWalletRequest{
+							Amount: shared.Monetary{
+								Asset:  "USD",
+								Amount: 100,
+							},
+							Balance: ptrString("main"),
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -917,7 +1001,10 @@ var (
 				PSP:      "stripe",
 				Metadata: "stripeConnectID",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: &shared.Monetary{
+				Amount: 100,
+				Asset:  "USD",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -925,9 +1012,9 @@ var (
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "foo",
 				}},
-				Returns: []any{&sdk.GetWalletResponse{
-					Data: sdk.WalletWithBalances{
-						Metadata: map[string]interface{}{
+				Returns: []any{&shared.GetWalletResponse{
+					Data: shared.WalletWithBalances{
+						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",
 						},
 					},
@@ -936,10 +1023,10 @@ var (
 			{
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
-					mock.Anything, sdk.StripeTransferRequest{
-						Amount:      sdk.PtrInt64(100),
-						Asset:       sdk.PtrString("USD"),
-						Destination: sdk.PtrString("abcd"),
+					mock.Anything, shared.StripeTransferRequest{
+						Amount:      ptrInt64(100),
+						Asset:       ptrString("USD"),
+						Destination: ptrString("abcd"),
 					},
 				},
 				Returns: []any{nil},
@@ -949,8 +1036,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "foo",
-						Data: sdk.DebitWalletRequest{
-							Amount: sdk.Monetary{
+						Data: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: 100,
 							},
@@ -982,4 +1069,12 @@ var testCases = []stagestesting.WorkflowTestCase[Send]{
 
 func TestSend(t *testing.T) {
 	stagestesting.RunWorkflows(t, testCases...)
+}
+
+func ptrString(s string) *string {
+	return &s
+}
+
+func ptrInt64(i int64) *int64 {
+	return &i
 }

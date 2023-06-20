@@ -53,12 +53,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      NUMARY_STORAGE_DRIVER: "postgres"
-      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
-      NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
-      NUMARY_OTEL_TRACES: "true"
-      NUMARY_OTEL_TRACES_EXPORTER: jaeger
-      NUMARY_OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+      STORAGE_DRIVER: "postgres"
+      STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
+      SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
+      OTEL_TRACES: "true"
+      OTEL_TRACES_EXPORTER: jaeger
+      OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
       OTEL_SERVICE_NAME: ledger
 
   proxy:
@@ -112,21 +112,17 @@ services:
       retries: 30
 
   api:
-    build:
-      dockerfile: reflex.Dockerfile
+    image: golang:1.19-alpine
     entrypoint:
-    - reflex
-    - -r
-    - \.go$$
-    - -s
     - go
     - run
-    - components/orchestration/main.go
+    - main.go
     - serve
+    - --worker
     volumes:
     - ../..:/src
     - build-cache:/go
-    working_dir: /src
+    working_dir: /src/components/orchestration
     ports:
     - "8080:8080/tcp"
     environment:
@@ -153,12 +149,12 @@ services:
     - -s
     - go
     - run
-    - components/orchestration/main.go
+    - main.go
     - worker
     volumes:
     - ../..:/src
     - build-cache:/go
-    working_dir: /src
+    working_dir: /src/components/orchestration
     environment:
       DEBUG: "true"
       OTEL_TRACES: "true"

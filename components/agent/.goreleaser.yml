@@ -1,0 +1,30 @@
+project_name: agent
+includes:
+  - from_file:
+      path: ./../../.goreleaser.default.yaml
+monorepo:
+  tag_prefix: components/agent/
+  dir: ./
+
+builds:
+  - binary: agent
+    id: agent
+    ldflags:
+      - -X github.com/formancehq/agent/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/agent/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/agent/cmd.Commit={{ .ShortCommit }}
+      - -extldflags "-static"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: "{{.ProjectName}}"
+    builds:
+      - agent
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"

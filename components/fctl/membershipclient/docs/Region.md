@@ -4,15 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  |
-**Tags** | **map[string]string** |  |
-**BaseUrl** | **string** |  |
+**Id** | **string** |  | 
+**BaseUrl** | **string** |  | 
+**CreatedAt** | **string** |  | 
+**Active** | **bool** |  | 
+**LastPing** | Pointer to **time.Time** |  | [optional] 
+**Name** | **string** |  | 
 
 ## Methods
 
 ### NewRegion
 
-`func NewRegion(id string, tags map[string]string, baseUrl string, ) *Region`
+`func NewRegion(id string, baseUrl string, createdAt string, active bool, name string, ) *Region`
 
 NewRegion instantiates a new Region object
 This constructor will assign default values to properties that have it defined,
@@ -47,26 +50,6 @@ and a boolean to check if the value has been set.
 SetId sets Id field to given value.
 
 
-### GetTags
-
-`func (o *Region) GetTags() map[string]string`
-
-GetTags returns the Tags field if non-nil, zero value otherwise.
-
-### GetTagsOk
-
-`func (o *Region) GetTagsOk() (*map[string]string, bool)`
-
-GetTagsOk returns a tuple with the Tags field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetTags
-
-`func (o *Region) SetTags(v map[string]string)`
-
-SetTags sets Tags field to given value.
-
-
 ### GetBaseUrl
 
 `func (o *Region) GetBaseUrl() string`
@@ -87,5 +70,92 @@ and a boolean to check if the value has been set.
 SetBaseUrl sets BaseUrl field to given value.
 
 
+### GetCreatedAt
+
+`func (o *Region) GetCreatedAt() string`
+
+GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
+
+### GetCreatedAtOk
+
+`func (o *Region) GetCreatedAtOk() (*string, bool)`
+
+GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCreatedAt
+
+`func (o *Region) SetCreatedAt(v string)`
+
+SetCreatedAt sets CreatedAt field to given value.
+
+
+### GetActive
+
+`func (o *Region) GetActive() bool`
+
+GetActive returns the Active field if non-nil, zero value otherwise.
+
+### GetActiveOk
+
+`func (o *Region) GetActiveOk() (*bool, bool)`
+
+GetActiveOk returns a tuple with the Active field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetActive
+
+`func (o *Region) SetActive(v bool)`
+
+SetActive sets Active field to given value.
+
+
+### GetLastPing
+
+`func (o *Region) GetLastPing() time.Time`
+
+GetLastPing returns the LastPing field if non-nil, zero value otherwise.
+
+### GetLastPingOk
+
+`func (o *Region) GetLastPingOk() (*time.Time, bool)`
+
+GetLastPingOk returns a tuple with the LastPing field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetLastPing
+
+`func (o *Region) SetLastPing(v time.Time)`
+
+SetLastPing sets LastPing field to given value.
+
+### HasLastPing
+
+`func (o *Region) HasLastPing() bool`
+
+HasLastPing returns a boolean if a field has been set.
+
+### GetName
+
+`func (o *Region) GetName() string`
+
+GetName returns the Name field if non-nil, zero value otherwise.
+
+### GetNameOk
+
+`func (o *Region) GetNameOk() (*string, bool)`
+
+GetNameOk returns a tuple with the Name field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetName
+
+`func (o *Region) SetName(v string)`
+
+SetName sets Name field to given value.
+
+
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

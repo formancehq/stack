@@ -62,7 +62,8 @@ const config = {
         debug: Boolean(process.env.DEBUG || process.env.CI),
         specs: [
           {
-            spec: './../openapi/build/generate.json',
+            spec: './openapi/v1.json',
+//            spec: './../openapi/build/generate.json',
             route: '/api/stack/v1.0',
             id: 'stack',
           }

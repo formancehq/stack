@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  |
-**OrganizationId** | **string** |  |
-**UserEmail** | **string** |  |
-**Status** | **string** |  |
-**CreationDate** | **time.Time** |  |
-**UpdatedAt** | Pointer to **time.Time** |  | [optional]
+**Id** | **string** |  | 
+**OrganizationId** | **string** |  | 
+**UserEmail** | **string** |  | 
+**Status** | **string** |  | 
+**CreationDate** | **time.Time** |  | 
+**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
 
 ## Methods
 
@@ -157,3 +157,5 @@ HasUpdatedAt returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -6,6 +6,13 @@ tasks:
   tests:
     cmds:
       - make test
+
   lint:
     cmds:
-    - golangci-lint run -v --fix
+      - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
+
+  helm:
+    cmds:
+      - make kustomize
+      - make controller-gen
+      - make helm-update

@@ -4,7 +4,7 @@
       "inputFile": "./base.yaml"
     },
     {
-      "inputFile": "./../components/auth/swagger.yaml",
+      "inputFile": "./../components/auth/openapi.yaml",
       "pathModification":{
         "prepend": "/api/auth"
       },
@@ -13,7 +13,7 @@
       }
     },
     {
-      "inputFile": "./../components/ledger/pkg/api/controllers/swagger.yaml",
+      "inputFile": "./../components/ledger/openapi.yaml",
       "pathModification":{
         "prepend": "/api/ledger"
       },
@@ -31,7 +31,7 @@
       }
     },
     {
-      "inputFile": "./../components/search/swagger.yaml",
+      "inputFile": "./../components/search/openapi.yaml",
       "pathModification":{
         "prepend": "/api/search"
       },
@@ -40,7 +40,7 @@
       }
     },
     {
-      "inputFile": "./../components/webhooks/pkg/server/openapi.yaml",
+      "inputFile": "./../components/webhooks/openapi.yaml",
       "pathModification":{
         "prepend": "/api/webhooks"
       },
@@ -52,7 +52,7 @@
       }
     },
     {
-      "inputFile": "./../components/wallets/openapi.yml",
+      "inputFile": "./../components/wallets/openapi.yaml",
       "pathModification":{
         "prepend": "/api/wallets"
       },
@@ -64,7 +64,7 @@
       }
     },
     {
-      "inputFile": "./../components/orchestration/openapi.yml",
+      "inputFile": "./../components/orchestration/openapi.yaml",
       "pathModification":{
         "prepend": "/api/orchestration"
       },

@@ -1,0 +1,30 @@
+name: Ledger benchmarks - PR diff
+on:
+  pull_request:
+    types: [ assigned, opened, synchronize, reopened ]
+    paths:
+      - 'components/ledger/**'
+    branches:
+      - main
+
+jobs:
+  benchmarks-sync:
+    uses: ./.github/workflows/_v2_ledger_benchmark.yml
+    with:
+      mode: sync
+  benchmarks-async:
+    uses: ./.github/workflows/_v2_ledger_benchmark.yml
+    with:
+      mode: async
+  benchmarks-sync-diff:
+    uses: ./.github/workflows/_v2_ledger_benchmark_report.yml
+    needs:
+      - benchmarks-sync
+    with:
+      mode: sync
+  benchmarks-async-diff:
+    uses: ./.github/workflows/_v2_ledger_benchmark_report.yml
+    needs:
+      - benchmarks-async
+    with:
+      mode: async

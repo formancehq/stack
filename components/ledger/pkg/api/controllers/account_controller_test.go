@@ -1,588 +1,300 @@
 package controllers_test
 
 import (
-	"context"
-	"encoding/base64"
-	"encoding/json"
-	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
-	"time"
 
+	"github.com/formancehq/ledger/pkg/api/apierrors"
+	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/api/routes"
+	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/ledger/command"
+	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
+	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/numary/ledger/pkg/api"
-	"github.com/numary/ledger/pkg/api/apierrors"
-	"github.com/numary/ledger/pkg/api/controllers"
-	"github.com/numary/ledger/pkg/api/internal"
-	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/ledger"
-	"github.com/numary/ledger/pkg/storage"
-	"github.com/numary/ledger/pkg/storage/sqlstorage"
-	"github.com/stretchr/testify/assert"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/fx"
 )
 
 func TestGetAccounts(t *testing.T) {
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, api *api.API) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				rsp := internal.PostTransaction(t, api, controllers.PostTransaction{
-					Postings: core.Postings{
-						{
-							Source:      "world",
-							Destination: "alice",
-							Amount:      core.NewMonetaryInt(150),
-							Asset:       "USD",
-						},
-					},
-				}, false)
-				require.Equal(t, http.StatusOK, rsp.Result().StatusCode, rsp.Body.String())
+	t.Parallel()
 
-				rsp = internal.PostTransaction(t, api, controllers.PostTransaction{
-					Postings: core.Postings{
-						{
-							Source:      "world",
-							Destination: "bob",
-							Amount:      core.NewMonetaryInt(100),
-							Asset:       "USD",
-						},
-					},
-				}, false)
-				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+	type testCase struct {
+		name              string
+		queryParams       url.Values
+		expectQuery       ledgerstore.AccountsQuery
+		expectStatusCode  int
+		expectedErrorCode string
+	}
 
-				meta := core.Metadata{
-					"roles":     "admin",
-					"accountId": float64(3),
-					"enabled":   "true",
-					"a": map[string]any{
-						"nested": map[string]any{
-							"key": "hello",
-						},
-					},
-				}
-				rsp = internal.PostAccountMetadata(t, api, "bob", meta)
-				require.Equal(t, http.StatusNoContent, rsp.Result().StatusCode)
-
-				rsp = internal.CountAccounts(api, url.Values{})
-				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-				require.Equal(t, "3", rsp.Header().Get("Count"))
-
-				t.Run("all", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					// 3 accounts: world, bob, alice
-					assert.Len(t, cursor.Data, 3)
-					assert.Equal(t, []core.Account{
-						{Address: "world", Metadata: core.Metadata{}},
-						{Address: "bob", Metadata: meta},
-						{Address: "alice", Metadata: core.Metadata{}},
-					}, cursor.Data)
-				})
-
-				t.Run("meta roles", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"metadata[roles]": []string{"admin"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					// 1 accounts: bob
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-				})
-
-				t.Run("meta accountId", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"metadata[accountId]": []string{"3"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					// 1 accounts: bob
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-				})
-
-				t.Run("meta enabled", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"metadata[enabled]": []string{"true"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					// 1 accounts: bob
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-				})
-
-				t.Run("meta nested", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"metadata[a.nested.key]": []string{"hello"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					// 1 accounts: bob
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-				})
-
-				t.Run("meta unknown", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"metadata[unknown]": []string{"key"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 0)
-				})
-
-				t.Run("after", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"after": []string{"bob"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					// 1 accounts: alice
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "alice", string(cursor.Data[0].Address))
-				})
-
-				t.Run("address", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"address": []string{"b.b"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					// 1 accounts: bob
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-				})
-
-				to := sqlstorage.AccPaginationToken{}
-				raw, err := json.Marshal(to)
-				require.NoError(t, err)
-
-				t.Run(fmt.Sprintf("valid empty %s", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyCursor: []string{base64.RawURLEncoding.EncodeToString(raw)},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode, rsp.Body.String())
-				})
-
-				t.Run(fmt.Sprintf("valid empty %s with any other param is forbidden", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyCursor: []string{base64.RawURLEncoding.EncodeToString(raw)},
-						"after":                    []string{"bob"},
-					})
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           fmt.Sprintf("no other query params can be set with '%s'", controllers.QueryKeyCursor),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: fmt.Sprintf("no other query params can be set with '%s'", controllers.QueryKeyCursor),
-					}, err)
-				})
-
-				t.Run(fmt.Sprintf("invalid %s", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyCursor: []string{"invalid"},
-					})
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-					}, err)
-				})
-
-				t.Run(fmt.Sprintf("invalid %s not base64", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyCursor: []string{"\n*@"},
-					})
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-					}, err)
-				})
-
-				t.Run("filter by balance >= 50 with default operator", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance": []string{"50"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 2)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-					assert.Equal(t, "alice", string(cursor.Data[1].Address))
-				})
-
-				t.Run("filter by balance >= 120 with default operator", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance": []string{"120"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "alice", string(cursor.Data[0].Address))
-				})
-
-				t.Run("filter by balance >= 50", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"50"},
-						controllers.QueryKeyBalanceOperator: []string{"gte"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 2)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-					assert.Equal(t, "alice", string(cursor.Data[1].Address))
-				})
-
-				t.Run("filter by balance >= 120", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"120"},
-						controllers.QueryKeyBalanceOperator: []string{"gte"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "alice", string(cursor.Data[0].Address))
-				})
-
-				t.Run("filter by balance > 120", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"120"},
-						controllers.QueryKeyBalanceOperator: []string{"gt"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "alice", string(cursor.Data[0].Address))
-				})
-
-				t.Run("filter by balance < 0", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"0"},
-						controllers.QueryKeyBalanceOperator: []string{"lt"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "world", string(cursor.Data[0].Address))
-				})
-
-				t.Run("filter by balance < 100", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"100"},
-						controllers.QueryKeyBalanceOperator: []string{"lt"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "world", string(cursor.Data[0].Address))
-				})
-
-				t.Run("filter by balance <= 100", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"100"},
-						controllers.QueryKeyBalanceOperator: []string{"lte"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 2)
-					assert.Equal(t, "world", string(cursor.Data[0].Address))
-					assert.Equal(t, "bob", string(cursor.Data[1].Address))
-				})
-
-				t.Run("filter by balance = 100", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"100"},
-						controllers.QueryKeyBalanceOperator: []string{"e"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 1)
-					assert.Equal(t, "bob", string(cursor.Data[0].Address))
-				})
-
-				// test filter by balance != 100
-				t.Run("filter by balance != 100", func(t *testing.T) {
-					rsp = internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"100"},
-						controllers.QueryKeyBalanceOperator: []string{"ne"},
-					})
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Account](t, rsp.Body)
-					assert.Len(t, cursor.Data, 2)
-					assert.Equal(t, "world", string(cursor.Data[0].Address))
-					assert.Equal(t, "alice", string(cursor.Data[1].Address))
-				})
-
-				t.Run("invalid balance", func(t *testing.T) {
-					rsp := internal.GetAccounts(api, url.Values{
-						"balance": []string{"toto"},
-					})
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode)
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           "invalid parameter 'balance', should be a number",
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: "invalid parameter 'balance', should be a number",
-					}, err)
-				})
-
-				t.Run("invalid balance operator", func(t *testing.T) {
-					rsp := internal.GetAccounts(api, url.Values{
-						"balance":                           []string{"100"},
-						controllers.QueryKeyBalanceOperator: []string{"toto"},
-					})
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode)
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           controllers.ErrInvalidBalanceOperator.Error(),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: controllers.ErrInvalidBalanceOperator.Error(),
-					}, err)
-				})
-
-				return nil
+	testCases := []testCase{
+		{
+			name: "nominal",
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithBalanceOperatorFilter("gte"),
+		},
+		{
+			name: "using metadata",
+			queryParams: url.Values{
+				"metadata[roles]": []string{"admin"},
 			},
-		})
-	}))
-}
-
-func TestGetAccountsWithPageSize(t *testing.T) {
-	now := time.Now()
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, api *api.API, driver storage.Driver[ledger.Store]) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				store := internal.GetLedgerStore(t, driver, context.Background())
-
-				for i := 0; i < 3*controllers.MaxPageSize; i++ {
-					require.NoError(t, store.UpdateAccountMetadata(ctx, fmt.Sprintf("accounts:%06d", i), core.Metadata{
-						"foo": []byte("{}"),
-					}, now))
-				}
-
-				t.Run("invalid page size", func(t *testing.T) {
-					rsp := internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyPageSize: []string{"nan"},
-					})
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           controllers.ErrInvalidPageSize.Error(),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: controllers.ErrInvalidPageSize.Error(),
-					}, err)
-				})
-				t.Run("page size over maximum", func(t *testing.T) {
-					httpResponse := internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyPageSize: []string{fmt.Sprintf("%d", 2*controllers.MaxPageSize)},
-					})
-					assert.Equal(t, http.StatusOK, httpResponse.Result().StatusCode, httpResponse.Body.String())
-
-					cursor := internal.DecodeCursorResponse[core.Account](t, httpResponse.Body)
-					assert.Len(t, cursor.Data, controllers.MaxPageSize)
-					assert.Equal(t, cursor.PageSize, controllers.MaxPageSize)
-					assert.NotEmpty(t, cursor.Next)
-					assert.True(t, cursor.HasMore)
-				})
-				t.Run("with page size greater than max count", func(t *testing.T) {
-					httpResponse := internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyPageSize: []string{fmt.Sprintf("%d", controllers.MaxPageSize)},
-						"after":                      []string{fmt.Sprintf("accounts:%06d", controllers.MaxPageSize-100)},
-					})
-					assert.Equal(t, http.StatusOK, httpResponse.Result().StatusCode, httpResponse.Body.String())
-
-					cursor := internal.DecodeCursorResponse[core.Account](t, httpResponse.Body)
-					assert.Len(t, cursor.Data, controllers.MaxPageSize-100)
-					assert.Equal(t, controllers.MaxPageSize, cursor.PageSize)
-					assert.Empty(t, cursor.Next)
-					assert.False(t, cursor.HasMore)
-				})
-				t.Run("with page size lower than max count", func(t *testing.T) {
-					httpResponse := internal.GetAccounts(api, url.Values{
-						controllers.QueryKeyPageSize: []string{fmt.Sprintf("%d", controllers.MaxPageSize/10)},
-					})
-					assert.Equal(t, http.StatusOK, httpResponse.Result().StatusCode, httpResponse.Body.String())
-
-					cursor := internal.DecodeCursorResponse[core.Account](t, httpResponse.Body)
-					assert.Len(t, cursor.Data, controllers.MaxPageSize/10)
-					assert.Equal(t, cursor.PageSize, controllers.MaxPageSize/10)
-					assert.NotEmpty(t, cursor.Next)
-					assert.True(t, cursor.HasMore)
-				})
-
-				return nil
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithBalanceOperatorFilter("gte").
+				WithMetadataFilter(map[string]string{
+					"roles": "admin",
+				}),
+		},
+		{
+			name: "using nested metadata",
+			queryParams: url.Values{
+				"metadata[a.nested.key]": []string{"hello"},
 			},
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithBalanceOperatorFilter("gte").
+				WithMetadataFilter(map[string]string{
+					"a.nested.key": "hello",
+				}),
+		},
+		{
+			name: "using after",
+			queryParams: url.Values{
+				"after": []string{"foo"},
+			},
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithBalanceOperatorFilter("gte").
+				WithAfterAddress("foo").
+				WithMetadataFilter(map[string]string{}),
+		},
+		{
+			name: "using balance with default operator",
+			queryParams: url.Values{
+				"balance": []string{"50"},
+			},
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithBalanceOperatorFilter("gte").
+				WithBalanceFilter("50").
+				WithMetadataFilter(map[string]string{}),
+		},
+		{
+			name: "using balance with specified operator",
+			queryParams: url.Values{
+				"balance":         []string{"50"},
+				"balanceOperator": []string{"gt"},
+			},
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithBalanceOperatorFilter("gt").
+				WithBalanceFilter("50").
+				WithMetadataFilter(map[string]string{}),
+		},
+		{
+			name: "using invalid balance",
+			queryParams: url.Values{
+				"balance": []string{"xxx"},
+			},
+			expectedErrorCode: apierrors.ErrValidation,
+			expectStatusCode:  http.StatusBadRequest,
+		},
+		{
+			name: "using balance with invalid operator",
+			queryParams: url.Values{
+				"balance":         []string{"50"},
+				"balanceOperator": []string{"xxx"},
+			},
+			expectedErrorCode: apierrors.ErrValidation,
+			expectStatusCode:  http.StatusBadRequest,
+		},
+		{
+			name: "using address",
+			queryParams: url.Values{
+				"address": []string{"foo"},
+			},
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithBalanceOperatorFilter("gte").
+				WithAddressFilter("foo").
+				WithMetadataFilter(map[string]string{}),
+		},
+		{
+			name: "using empty cursor",
+			queryParams: url.Values{
+				"cursor": []string{ledgerstore.EncodeCursor(ledgerstore.NewAccountsQuery())},
+			},
+			expectQuery: ledgerstore.NewAccountsQuery(),
+		},
+		{
+			name: "using cursor with other param",
+			queryParams: url.Values{
+				"cursor": []string{ledgerstore.EncodeCursor(ledgerstore.NewAccountsQuery())},
+				"after":  []string{"foo"},
+			},
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+		{
+			name: "using invalid cursor",
+			queryParams: url.Values{
+				"cursor": []string{"XXX"},
+			},
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+		{
+			name: "invalid page size",
+			queryParams: url.Values{
+				"pageSize": []string{"nan"},
+			},
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+		{
+			name: "page size over maximum",
+			queryParams: url.Values{
+				"pageSize": []string{"1000000"},
+			},
+			expectQuery: ledgerstore.NewAccountsQuery().
+				WithPageSize(controllers.MaxPageSize).
+				WithMetadataFilter(map[string]string{}).
+				WithBalanceOperatorFilter("gte"),
+		},
+	}
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+
+			if testCase.expectStatusCode == 0 {
+				testCase.expectStatusCode = http.StatusOK
+			}
+
+			expectedCursor := sharedapi.Cursor[core.Account]{
+				Data: []core.Account{
+					{
+						Address:  "world",
+						Metadata: metadata.Metadata{},
+					},
+				},
+			}
+
+			backend, mockLedger := newTestingBackend(t)
+			if testCase.expectStatusCode < 300 && testCase.expectStatusCode >= 200 {
+				mockLedger.EXPECT().
+					GetAccounts(gomock.Any(), testCase.expectQuery).
+					Return(&expectedCursor, nil)
+			}
+
+			router := routes.NewRouter(backend, nil, nil, metrics.NewNoOpMetricsRegistry())
+
+			req := httptest.NewRequest(http.MethodGet, "/xxx/accounts", nil)
+			rec := httptest.NewRecorder()
+			req.URL.RawQuery = testCase.queryParams.Encode()
+
+			router.ServeHTTP(rec, req)
+
+			require.Equal(t, testCase.expectStatusCode, rec.Code)
+			if testCase.expectStatusCode < 300 && testCase.expectStatusCode >= 200 {
+				cursor := DecodeCursorResponse[core.Account](t, rec.Body)
+				require.Equal(t, expectedCursor, *cursor)
+			} else {
+				err := sharedapi.ErrorResponse{}
+				Decode(t, rec.Body, &err)
+				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
+			}
 		})
-	}))
+	}
 }
 
 func TestGetAccount(t *testing.T) {
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, api *api.API) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				rsp := internal.PostTransaction(t, api, controllers.PostTransaction{
-					Postings: core.Postings{
-						{
-							Source:      "world",
-							Destination: "alice",
-							Amount:      core.NewMonetaryInt(100),
-							Asset:       "USD",
-						},
-					},
-				}, false)
-				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+	t.Parallel()
 
-				rsp = internal.PostAccountMetadata(t, api, "alice",
-					core.Metadata{
-						"foo": json.RawMessage(`"bar"`),
-					})
-				require.Equal(t, http.StatusNoContent, rsp.Result().StatusCode)
+	account := core.AccountWithVolumes{
+		Account: core.Account{
+			Address:  "foo",
+			Metadata: metadata.Metadata{},
+		},
+		Volumes: map[string]core.Volumes{},
+	}
 
-				t.Run("valid address", func(t *testing.T) {
-					rsp = internal.GetAccount(api, "alice")
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					resp, _ := internal.DecodeSingleResponse[core.AccountWithVolumes](t, rsp.Body)
+	backend, mock := newTestingBackend(t)
+	mock.EXPECT().
+		GetAccount(gomock.Any(), "foo").
+		Return(&account, nil)
 
-					assert.EqualValues(t, core.AccountWithVolumes{
-						Account: core.Account{
-							Address: "alice",
-							Metadata: core.Metadata{
-								"foo": "bar",
-							},
-						},
-						Balances: core.AssetsBalances{
-							"USD": core.NewMonetaryInt(100),
-						},
-						Volumes: core.AssetsVolumes{
-							"USD": {
-								Input:  core.NewMonetaryInt(100),
-								Output: core.NewMonetaryInt(0),
-							},
-						},
-					}, resp)
-				})
+	router := routes.NewRouter(backend, nil, nil, metrics.NewNoOpMetricsRegistry())
 
-				t.Run("unknown address", func(t *testing.T) {
-					rsp = internal.GetAccount(api, "bob")
-					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					resp, _ := internal.DecodeSingleResponse[core.AccountWithVolumes](t, rsp.Body)
-					assert.EqualValues(t, core.AccountWithVolumes{
-						Account: core.Account{
-							Address:  "bob",
-							Metadata: core.Metadata{},
-						},
-						Balances: core.AssetsBalances{},
-						Volumes:  core.AssetsVolumes{},
-					}, resp)
-				})
+	req := httptest.NewRequest(http.MethodGet, "/xxx/accounts/foo", nil)
+	rec := httptest.NewRecorder()
 
-				t.Run("invalid address format", func(t *testing.T) {
-					rsp = internal.GetAccount(api, "accounts::alice")
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
+	router.ServeHTTP(rec, req)
 
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           "invalid account address format",
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: "invalid account address format",
-					}, err)
-				})
-
-				return nil
-			},
-		})
-	}))
+	require.Equal(t, http.StatusOK, rec.Code)
+	response, _ := DecodeSingleResponse[core.AccountWithVolumes](t, rec.Body)
+	require.Equal(t, account, response)
 }
 
 func TestPostAccountMetadata(t *testing.T) {
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, api *api.API) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				rsp := internal.PostTransaction(t, api, controllers.PostTransaction{
-					Postings: core.Postings{
-						{
-							Source:      "world",
-							Destination: "alice",
-							Amount:      core.NewMonetaryInt(100),
-							Asset:       "USD",
-						},
-					},
-				}, false)
-				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+	t.Parallel()
 
-				t.Run("valid request", func(t *testing.T) {
-					rsp = internal.PostAccountMetadata(t, api, "alice",
-						core.Metadata{
-							"foo": json.RawMessage(`"bar"`),
-						})
-					assert.Equal(t, http.StatusNoContent, rsp.Result().StatusCode, rsp.Body.String())
-				})
+	type testCase struct {
+		name              string
+		queryParams       url.Values
+		expectStatusCode  int
+		expectedErrorCode string
+		account           string
+		body              any
+	}
 
-				t.Run("unknown account should succeed", func(t *testing.T) {
-					rsp = internal.PostAccountMetadata(t, api, "bob",
-						core.Metadata{
-							"foo": json.RawMessage(`"bar"`),
-						})
-					assert.Equal(t, http.StatusNoContent, rsp.Result().StatusCode, rsp.Body.String())
-				})
-
-				t.Run("invalid address format", func(t *testing.T) {
-					rsp = internal.PostAccountMetadata(t, api, "accounts::alice", core.Metadata{})
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           "invalid account address format",
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: "invalid account address format",
-					}, err)
-				})
-
-				t.Run("invalid metadata format", func(t *testing.T) {
-					rsp = internal.NewRequestOnLedger(t, api, "/accounts/alice/metadata", "invalid")
-					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					assert.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           "invalid metadata format",
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: "invalid metadata format",
-					}, err)
-				})
-
-				return nil
+	testCases := []testCase{
+		{
+			name:    "nominal",
+			account: "world",
+			body: metadata.Metadata{
+				"foo": "bar",
 			},
+		},
+		{
+			name:              "invalid account address format",
+			account:           "invalid-acc",
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+		{
+			name:              "invalid body",
+			account:           "world",
+			body:              "invalid - not an object",
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+	}
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+
+			if testCase.expectStatusCode == 0 {
+				testCase.expectStatusCode = http.StatusNoContent
+			}
+
+			backend, mock := newTestingBackend(t)
+			if testCase.expectStatusCode == http.StatusNoContent {
+				mock.EXPECT().
+					SaveMeta(gomock.Any(), command.Parameters{}, core.MetaTargetTypeAccount, testCase.account, testCase.body).
+					Return(nil)
+			}
+
+			router := routes.NewRouter(backend, nil, nil, metrics.NewNoOpMetricsRegistry())
+
+			req := httptest.NewRequest(http.MethodPost, "/xxx/accounts/"+testCase.account+"/metadata", Buffer(t, testCase.body))
+			rec := httptest.NewRecorder()
+			req.URL.RawQuery = testCase.queryParams.Encode()
+
+			router.ServeHTTP(rec, req)
+
+			require.Equal(t, testCase.expectStatusCode, rec.Code)
+			if testCase.expectStatusCode >= 300 || testCase.expectStatusCode < 200 {
+				err := sharedapi.ErrorResponse{}
+				Decode(t, rec.Body, &err)
+				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
+			}
 		})
-	}))
+	}
 }

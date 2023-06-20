@@ -27,7 +27,7 @@ func NewGeneratePersonalTokenCommand() *cobra.Command {
 				return err
 			}
 
-			token, err := profile.GetStackToken(cmd.Context(), fctl.GetHttpClient(cmd), stack)
+			token, err := profile.GetStackToken(cmd.Context(), fctl.GetHttpClient(cmd, map[string][]string{}), stack)
 			if err != nil {
 				return err
 			}

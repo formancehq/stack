@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: webhooks-worker
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -28,8 +28,7 @@ spec:
                 app.kubernetes.io/name: webhooks-worker
         spec:
             containers:
-                - command:
-                    - /usr/bin/webhooks
+                - args:
                     - worker
                   env:
                     - name: POSTGRES_HOST
@@ -37,7 +36,7 @@ spec:
                     - name: POSTGRES_PORT
                       value: "32768"
                     - name: POSTGRES_DATABASE
-                      value: stack1-webhooks
+                      value: orga1-stack1-webhooks
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
@@ -46,7 +45,7 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: HTTP_BIND_ADDRESS_WORKER
+                    - name: LISTEN
                       value: :0
                     - name: OTEL_TRACES
                       value: "true"
@@ -80,11 +79,14 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: KAFKA_TOPICS
-                      value: stack1-ledger stack1-payments
+                      value: orga1-stack1-ledger orga1-stack1-payments
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   name: webhooks-worker
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst

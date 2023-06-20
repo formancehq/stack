@@ -31,7 +31,7 @@ go run main.go --disable-webhooks
 3. Create a stack
 
 ```sh
-kubectl apply -f garden/example-v1beta2.yaml
+kubectl apply -f garden/example-v1beta3.yaml
 ```
 
 Add an entry for `host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.

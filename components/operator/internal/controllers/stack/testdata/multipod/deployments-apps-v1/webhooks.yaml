@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: webhooks
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_PORT
                       value: "32768"
                     - name: POSTGRES_DATABASE
-                      value: stack1-webhooks
+                      value: orga1-stack1-webhooks
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
@@ -43,7 +43,7 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: HTTP_BIND_ADDRESS_SERVER
+                    - name: LISTEN
                       value: :8080
                     - name: OTEL_TRACES
                       value: "true"
@@ -79,7 +79,7 @@ spec:
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   livenessProbe:
-                    failureThreshold: 10
+                    failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
                         port: 8080
@@ -93,7 +93,10 @@ spec:
                     - containerPort: 8080
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst

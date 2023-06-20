@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	benthosImage = "jeffail/benthos:4.12.1"
+	benthosImage = "public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1"
 )
 
 func init() {
@@ -34,7 +34,7 @@ func init() {
 									resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Host,
 									resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Port,
 									resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.PathPrefix)),
-								modules.Env("OPEN_SEARCH_SCHEME", resolveContext.Stack.Spec.Scheme),
+								modules.Env("OPEN_SEARCH_SCHEME", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Scheme),
 								modules.Env("ES_INDICES", resolveContext.Stack.Name),
 								modules.Env("MAPPING_INIT_DISABLED", "true"),
 							)
@@ -45,8 +45,9 @@ func init() {
 							)
 						}
 						return modules.Container{
-							Env:   env,
-							Image: modules.GetImage("search", resolveContext.Versions.Spec.Search),
+							Env:       env,
+							Image:     modules.GetImage("search", resolveContext.Versions.Spec.Search),
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},
@@ -54,6 +55,7 @@ func init() {
 					Name:       "benthos",
 					Port:       4195,
 					ExposeHTTP: true,
+					Liveness:   modules.LivenessDisable,
 					Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
 						ret := modules.Configs{}
 
@@ -116,8 +118,8 @@ func init() {
 								"--log.level", "trace", "streams",
 								resolveContext.GetConfig("streams").GetMountPath() + "/*.yaml",
 							},
-							Liveness:             modules.LivenessDisable,
 							DisableRollingUpdate: true,
+							Resources:            modules.ResourceSizeSmall(),
 						}
 					},
 					InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {

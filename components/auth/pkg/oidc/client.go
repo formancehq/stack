@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/formancehq/auth/pkg/delegatedauth"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 )
 
 type Client interface {
@@ -15,10 +15,6 @@ type Client interface {
 	GetPostLogoutRedirectUris() []string
 	IsPublic() bool
 	GetScopes() []string
-}
-
-type ClientWithSecrets interface {
-	Client
 	ValidateSecret(secret string) error
 	IsTrusted() bool
 }
@@ -37,6 +33,9 @@ func NewClientFacade(client Client, relyingParty rp.RelyingParty) *clientFacade 
 
 // GetID must return the client_id
 func (c *clientFacade) GetID() string {
+	if c == nil {
+		return ""
+	}
 	return c.Client.GetID()
 }
 
@@ -84,7 +83,7 @@ func (c *clientFacade) GrantTypes() []oidc.GrantType {
 
 // LoginURL will be called to redirect the user (agent) to the login UI
 // you could implement some logic here to redirect the users to different login UIs depending on the client
-func (c *clientFacade) LoginURL(t op.LoginType, id string) string {
+func (c *clientFacade) LoginURL(id string) string {
 	return rp.AuthURL(delegatedauth.DelegatedState{
 		AuthRequestID: id,
 	}.EncodeAsUrlParam(), c.relyingParty)

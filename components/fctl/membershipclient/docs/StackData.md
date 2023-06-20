@@ -4,16 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** | Stack name |
-**Tags** | **map[string]string** |  |
-**Production** | **bool** |  |
-**Metadata** | **map[string]string** |  |
+**Name** | **string** | Stack name | 
+**Metadata** | **map[string]string** |  | 
 
 ## Methods
 
 ### NewStackData
 
-`func NewStackData(name string, tags map[string]string, production bool, metadata map[string]string, ) *StackData`
+`func NewStackData(name string, metadata map[string]string, ) *StackData`
 
 NewStackData instantiates a new StackData object
 This constructor will assign default values to properties that have it defined,
@@ -48,46 +46,6 @@ and a boolean to check if the value has been set.
 SetName sets Name field to given value.
 
 
-### GetTags
-
-`func (o *StackData) GetTags() map[string]string`
-
-GetTags returns the Tags field if non-nil, zero value otherwise.
-
-### GetTagsOk
-
-`func (o *StackData) GetTagsOk() (*map[string]string, bool)`
-
-GetTagsOk returns a tuple with the Tags field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetTags
-
-`func (o *StackData) SetTags(v map[string]string)`
-
-SetTags sets Tags field to given value.
-
-
-### GetProduction
-
-`func (o *StackData) GetProduction() bool`
-
-GetProduction returns the Production field if non-nil, zero value otherwise.
-
-### GetProductionOk
-
-`func (o *StackData) GetProductionOk() (*bool, bool)`
-
-GetProductionOk returns a tuple with the Production field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetProduction
-
-`func (o *StackData) SetProduction(v bool)`
-
-SetProduction sets Production field to given value.
-
-
 ### GetMetadata
 
 `func (o *StackData) GetMetadata() map[string]string`
@@ -110,3 +68,5 @@ SetMetadata sets Metadata field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

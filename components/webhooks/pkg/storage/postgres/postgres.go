@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -23,14 +21,12 @@ type Store struct {
 
 var _ storage.Store = &Store{}
 
-func NewStore() (storage.Store, error) {
+func NewStore(dsn string) (storage.Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	logging.Infof("postgres.NewStore: connecting to '%s'", viper.GetString(flag.StoragePostgresConnString))
-	sqldb := sql.OpenDB(
-		pgdriver.NewConnector(
-			pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))
+	logging.Debugf("postgres.NewStore: connecting to '%s'", dsn)
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName("webhooks")))
 	if err := db.Ping(); err != nil {
@@ -110,7 +106,7 @@ func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active 
 		return webhooks.Config{}, errors.Wrap(err, "selecting one config before updating activation")
 	}
 	if cfg.Active == active {
-		return webhooks.Config{}, storage.ErrConfigNotModified
+		return cfg, storage.ErrConfigNotModified
 	}
 
 	if _, err := s.db.NewUpdate().Model((*webhooks.Config)(nil)).
@@ -135,7 +131,7 @@ func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string) (we
 		return webhooks.Config{}, errors.Wrap(err, "selecting one config before updating secret")
 	}
 	if cfg.Secret == secret {
-		return webhooks.Config{}, storage.ErrConfigNotModified
+		return cfg, storage.ErrConfigNotModified
 	}
 
 	if _, err := s.db.NewUpdate().Model((*webhooks.Config)(nil)).
@@ -226,13 +222,5 @@ func (s Store) InsertOneAttempt(ctx context.Context, att webhooks.Attempt) error
 }
 
 func (s Store) Close(ctx context.Context) error {
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
-	defer cancel()
-	if err := s.db.PingContext(ctx); err == nil {
-		if err := s.db.Close(); err != nil {
-			return errors.Wrap(err, "closing postgres")
-		}
-	}
-
-	return nil
+	return s.db.Close()
 }

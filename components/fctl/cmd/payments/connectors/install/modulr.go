@@ -1,9 +1,12 @@
 package install
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -49,19 +52,25 @@ func NewModulrCommand() *cobra.Command {
 				endpoint = &e
 			}
 
-			_, err = paymentsClient.PaymentsApi.InstallConnector(cmd.Context(), internal.ModulrConnector).
-				ConnectorConfig(formance.ConnectorConfig{
-					ModulrConfig: &formance.ModulrConfig{
-						ApiKey:    args[0],
-						ApiSecret: args[1],
-						Endpoint:  endpoint,
-					},
-				}).
-				Execute()
+			response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+				RequestBody: shared.ModulrConfig{
+					APIKey:    args[0],
+					APISecret: args[1],
+					Endpoint:  endpoint,
+				},
+				Connector: shared.ConnectorModulr,
+			})
+			if err != nil {
+				return errors.Wrap(err, "installing connector")
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector installed!")
 
-			return errors.Wrap(err, "installing connector")
+			return nil
 		}),
 	)
 }

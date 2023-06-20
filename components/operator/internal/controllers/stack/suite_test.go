@@ -13,7 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
-	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -55,7 +54,6 @@ var _ = ginkgo.BeforeSuite(func() {
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths: []string{
 			filepath.Join(filepath.Dir(filename), "..", "..", "..", "config", "crd", "bases"),
-			filepath.Join(filepath.Dir(filename), "..", "..", "..", "internal", "controllers", "stack", "testing", "crd"),
 		},
 		ErrorIfCRDPathMissing: true,
 	}
@@ -66,7 +64,6 @@ var _ = ginkgo.BeforeSuite(func() {
 	gomega.Expect(restConfig).NotTo(gomega.BeNil())
 
 	gomega.Expect(v1beta3.AddToScheme(scheme.Scheme)).To(gomega.Succeed())
-	gomega.Expect(traefik.AddToScheme(scheme.Scheme)).To(gomega.Succeed())
 
 	k8sClient, err = client.New(restConfig, client.Options{Scheme: scheme.Scheme})
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
@@ -132,6 +129,7 @@ func NewDumbVersions() *v1beta3.Versions {
 			Auth:          "latest",
 			Webhooks:      "latest",
 			Wallets:       "latest",
+			Stargate:      "latest",
 			Orchestration: "latest",
 		},
 	}
@@ -149,7 +147,8 @@ func NewDumbConfiguration() *v1beta3.Configuration {
 				},
 				Control: v1beta3.ControlSpec{},
 				Ledger: v1beta3.LedgerSpec{
-					Postgres: NewPostgresConfig(),
+					Postgres:            NewPostgresConfig(),
+					AllowPastTimestamps: true,
 				},
 				Payments: v1beta3.PaymentsSpec{
 					Postgres: NewPostgresConfig(),
@@ -160,7 +159,8 @@ func NewDumbConfiguration() *v1beta3.Configuration {
 				Webhooks: v1beta3.WebhooksSpec{
 					Postgres: NewPostgresConfig(),
 				},
-				Wallets: v1beta3.WalletsSpec{},
+				Stargate: v1beta3.StargateSpec{},
+				Wallets:  v1beta3.WalletsSpec{},
 				Orchestration: v1beta3.OrchestrationSpec{
 					Postgres: NewPostgresConfig(),
 				},

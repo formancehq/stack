@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Organization ID |
-**OwnerId** | **string** | Owner ID |
+**Id** | **string** | Organization ID | 
+**OwnerId** | **string** | Owner ID | 
 
 ## Methods
 
@@ -68,3 +68,5 @@ SetOwnerId sets OwnerId field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

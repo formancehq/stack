@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Version** | **interface{}** |  |
+**Version** | **interface{}** |  | 
 
 ## Methods
 
@@ -57,3 +57,5 @@ SetVersion sets Version field to given value.
 UnsetVersion ensures that no value is present for Version, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -100,14 +100,6 @@ func (fn CommandOptionFn) apply(cmd *cobra.Command) {
 	fn(cmd)
 }
 
-func Options(fn ...CommandOption) CommandOptionFn {
-	return func(cmd *cobra.Command) {
-		for _, fn := range fn {
-			fn.apply(cmd)
-		}
-	}
-}
-
 func WithPersistentStringFlag(name, defaultValue, help string) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.PersistentFlags().String(name, defaultValue, help)
@@ -180,12 +172,6 @@ func WithRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn 
 	}
 }
 
-func WithRun(fn func(cmd *cobra.Command, args []string)) CommandOptionFn {
-	return func(cmd *cobra.Command) {
-		cmd.Run = fn
-	}
-}
-
 func WithChildCommands(cmds ...*cobra.Command) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		for _, child := range cmds {
@@ -197,12 +183,6 @@ func WithChildCommands(cmds ...*cobra.Command) CommandOptionFn {
 func WithShortDescription(v string) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.Short = v
-	}
-}
-
-func WithLongDescription(v string) CommandOptionFn {
-	return func(cmd *cobra.Command) {
-		cmd.Long = v
 	}
 }
 
@@ -244,13 +224,6 @@ func WithSilenceError() CommandOptionFn {
 
 func WithConfirmFlag() CommandOptionFn {
 	return WithBoolFlag(confirmFlag, false, "Confirm action")
-}
-
-func NewStackProtectedCommand(use string, opts ...CommandOption) *cobra.Command {
-	return NewStackCommand(use, append(
-		opts,
-		WithConfirmFlag())...,
-	)
 }
 
 func NewStackCommand(use string, opts ...CommandOption) *cobra.Command {

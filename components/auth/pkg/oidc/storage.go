@@ -3,16 +3,16 @@ package oidc
 import (
 	"context"
 	"crypto/rsa"
-	"errors"
 	"fmt"
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/storage"
 	"github.com/google/uuid"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/pkg/errors"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/text/language"
 	"gopkg.in/square/go-jose.v2"
 )
@@ -50,9 +50,41 @@ type Storage interface {
 }
 
 type signingKey struct {
-	ID        string
-	Algorithm string
-	Key       *rsa.PrivateKey
+	id        string
+	algorithm jose.SignatureAlgorithm
+	key       *rsa.PrivateKey
+}
+
+func (s *signingKey) SignatureAlgorithm() jose.SignatureAlgorithm {
+	return s.algorithm
+}
+
+func (s *signingKey) Key() interface{} {
+	return s.key
+}
+
+func (s *signingKey) ID() string {
+	return s.id
+}
+
+type publicKey struct {
+	signingKey
+}
+
+func (s *publicKey) ID() string {
+	return s.id
+}
+
+func (s *publicKey) Algorithm() jose.SignatureAlgorithm {
+	return s.algorithm
+}
+
+func (s *publicKey) Use() string {
+	return "sig"
+}
+
+func (s *publicKey) Key() interface{} {
+	return &s.key.PublicKey
 }
 
 type Service struct {
@@ -82,23 +114,87 @@ type storageFacade struct {
 	staticClients []auth.StaticClient
 }
 
-func (s *storageFacade) CreateDeviceCode(ctx context.Context, id string, scopes []string, interval, expiresIn int) (op.DeviceCode, error) {
-	panic("not implemented")
+func (s *storageFacade) GetRefreshTokenInfo(ctx context.Context, clientID string, token string) (userID string, tokenID string, err error) {
+	accessToken, err := s.FindAccessToken(ctx, token)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken.UserID, accessToken.ID, nil
 }
 
-func (s *storageFacade) DeviceCodeByUserCode(ctx context.Context, code string) (op.DeviceCode, error) {
-	panic("not implemented")
+func (s *storageFacade) SigningKey(ctx context.Context) (op.SigningKey, error) {
+	return &s.signingKey, nil
 }
 
-func (s *storageFacade) DeviceCodeByDeviceCode(ctx context.Context, code string) (op.DeviceCode, error) {
-	panic("not implemented")
+func (s *storageFacade) SignatureAlgorithms(ctx context.Context) ([]jose.SignatureAlgorithm, error) {
+	return []jose.SignatureAlgorithm{s.signingKey.algorithm}, nil
 }
 
-func (s *storageFacade) DeleteDeviceCode(ctx context.Context, id string) error {
-	panic("not implemented")
+func (s *storageFacade) KeySet(ctx context.Context) ([]op.Key, error) {
+	return []op.Key{&publicKey{s.signingKey}}, nil
 }
 
-func (s *storageFacade) UpdateDeviceCodeLastCheck(ctx context.Context, code op.DeviceCode, now time.Time) error {
+func (s *storageFacade) SetUserinfoFromScopes(ctx context.Context, userinfo *oidc.UserInfo, userID, clientID string, scopes []string) error {
+	return s.setUserinfo(ctx, userinfo, userID, scopes)
+}
+
+func (s *storageFacade) SetUserinfoFromToken(ctx context.Context, userinfo *oidc.UserInfo, tokenID, subject, origin string) error {
+	token, err := s.Storage.FindAccessToken(ctx, tokenID)
+	if err != nil {
+		return err
+	}
+	return s.setUserinfo(ctx, userinfo, token.UserID, token.Scopes)
+}
+
+func (s *storageFacade) SetIntrospectionFromToken(ctx context.Context, introspection *oidc.IntrospectionResponse, tokenID, subject, clientID string) error {
+	token, err := s.Storage.FindAccessToken(ctx, tokenID)
+	if err != nil {
+		return err
+	}
+	ok := false
+	for _, aud := range token.Audience {
+		if aud == clientID {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		client, err := s.findClient(ctx, clientID)
+		if err != nil {
+			return err
+		}
+		ok = client.IsTrusted()
+	}
+	if !ok {
+		return fmt.Errorf("token is not valid for this client")
+	}
+
+	user, err := s.FindUser(ctx, token.UserID)
+	if err != nil {
+		return errors.Wrapf(err, "retrieving user: %s", token.UserID)
+	}
+
+	for _, scope := range token.Scopes {
+		switch scope {
+		case oidc.ScopeOpenID:
+			introspection.Subject = token.UserID
+		case oidc.ScopeEmail:
+			introspection.Email = user.Email
+			introspection.EmailVerified = true // TODO: Get the information
+		case oidc.ScopeProfile:
+			// TODO: Support that
+		case oidc.ScopePhone:
+			// TODO: Support that ?
+		}
+	}
+
+	introspection.Scope = oidc.SpaceDelimitedArray(token.Scopes)
+	introspection.ClientID = token.ApplicationID
+	return nil
+}
+
+func (s *storageFacade) GetKeyByIDAndClientID(ctx context.Context, keyID, clientID string) (*jose.JSONWebKey, error) {
 	panic("not implemented")
 }
 
@@ -246,42 +342,7 @@ func (s *storageFacade) RevokeToken(ctx context.Context, tokenStr string, userID
 	return nil
 }
 
-// GetSigningKey implements the op.Storage interface
-// it will be called when creating the OpenID Provider
-func (s *storageFacade) GetSigningKey(ctx context.Context, keyCh chan<- jose.SigningKey) {
-	//in this example the signing key is a static rsa.PrivateKey and the algorithm used is RS256
-	//you would obviously have a more complex implementation and store / retrieve the key from your database as well
-	//
-	//the idea of the signing key channel is, that you can (with what ever mechanism) rotate your signing key and
-	//switch the key of the signer via this channel
-	keyCh <- jose.SigningKey{
-		Algorithm: jose.SignatureAlgorithm(s.signingKey.Algorithm), //always tell the signer with algorithm to use
-		Key: jose.JSONWebKey{
-			KeyID: s.signingKey.ID, //always give the key an id so, that it will include it in the token header as `kid` claim
-			Key:   s.signingKey.Key,
-		},
-	}
-}
-
-// GetKeySet implements the op.Storage interface
-// it will be called to get the current (public) keys, among others for the keys_endpoint or for validating access_tokens on the userinfo_endpoint, ...
-func (s *storageFacade) GetKeySet(ctx context.Context) (*jose.JSONWebKeySet, error) {
-	//as mentioned above, this example only has a single signing key without key rotation,
-	//so it will directly use its public key
-	//
-	//when using key rotation you typically would store the public keys alongside the private keys in your database
-	//and give both of them an expiration date, with the public key having a longer lifetime (e.g. rotate private key every
-	return &jose.JSONWebKeySet{Keys: []jose.JSONWebKey{
-		{
-			KeyID:     s.signingKey.ID,
-			Algorithm: s.signingKey.Algorithm,
-			Use:       oidc.KeyUseSignature,
-			Key:       &s.signingKey.Key.PublicKey,
-		}},
-	}, nil
-}
-
-func (s *storageFacade) findClient(ctx context.Context, clientID string) (ClientWithSecrets, error) {
+func (s *storageFacade) findClient(ctx context.Context, clientID string) (Client, error) {
 	var client *auth.Client
 	for _, staticClient := range s.staticClients {
 		if staticClient.Id == clientID {
@@ -305,6 +366,7 @@ func (s *storageFacade) GetClientByClientID(ctx context.Context, clientID string
 	if err != nil {
 		return nil, err
 	}
+
 	return NewClientFacade(client, s.relyingParty), nil
 }
 
@@ -318,66 +380,10 @@ func (s *storageFacade) AuthorizeClientIDSecret(ctx context.Context, clientID, c
 	return client.ValidateSecret(clientSecret)
 }
 
-// SetUserinfoFromScopes implements the op.Storage interface
-// it will be called for the creation of an id_token, so we'll just pass it to the private function without any further check
-func (s *storageFacade) SetUserinfoFromScopes(ctx context.Context, userinfo oidc.UserInfoSetter, userID, clientID string, scopes []string) error {
-	return s.setUserinfo(ctx, userinfo, userID, clientID, scopes)
-}
-
-// SetUserinfoFromToken implements the op.Storage interface
-// it will be called for the userinfo endpoint, so we read the token and pass the information from that to the private function
-func (s *storageFacade) SetUserinfoFromToken(ctx context.Context, userinfo oidc.UserInfoSetter, tokenID, subject, origin string) error {
-	token, err := s.Storage.FindAccessToken(ctx, tokenID)
-	if err != nil {
-		return err
-	}
-	return s.setUserinfo(ctx, userinfo, token.UserID, token.ApplicationID, token.Scopes)
-}
-
-// SetIntrospectionFromToken implements the op.Storage interface
-// it will be called for the introspection endpoint, so we read the token and pass the information from that to the private function
-func (s *storageFacade) SetIntrospectionFromToken(ctx context.Context, introspection oidc.IntrospectionResponse, tokenID, subject, clientID string) error {
-	token, err := s.Storage.FindAccessToken(ctx, tokenID)
-	if err != nil {
-		return err
-	}
-	ok := false
-	for _, aud := range token.Audience {
-		if aud == clientID {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		client, err := s.findClient(ctx, clientID)
-		if err != nil {
-			return err
-		}
-		ok = client.IsTrusted()
-	}
-
-	if !ok {
-		return fmt.Errorf("token is not valid for this client")
-	}
-
-	if err := s.setUserinfo(ctx, introspection, subject, clientID, token.Scopes); err != nil {
-		return err
-	}
-	introspection.SetScopes(token.Scopes)
-	introspection.SetClientID(token.ApplicationID)
-	return nil
-}
-
 // GetPrivateClaimsFromScopes implements the op.Storage interface
 // it will be called for the creation of a JWT access token to assert claims for custom scopes
 func (s *storageFacade) GetPrivateClaimsFromScopes(ctx context.Context, userID, clientID string, scopes []string) (claims map[string]interface{}, err error) {
 	return claims, nil
-}
-
-// GetKeyByIDAndUserID implements the op.Storage interface
-// it will be called to validate the signatures of a JWT (JWT Profile Grant and Authentication)
-func (s *storageFacade) GetKeyByIDAndUserID(ctx context.Context, keyID, userID string) (*jose.JSONWebKey, error) {
-	return nil, errors.New("not supported")
 }
 
 // ValidateJWTProfileScopes implements the op.Storage interface
@@ -468,7 +474,7 @@ func (s *storageFacade) saveAccessToken(ctx context.Context, refreshToken *auth.
 }
 
 // setUserinfo sets the info based on the user, scopes and if necessary the clientID
-func (s *storageFacade) setUserinfo(ctx context.Context, userInfo oidc.UserInfoSetter, userID, clientID string, scopes []string) (err error) {
+func (s *storageFacade) setUserinfo(ctx context.Context, userInfo *oidc.UserInfo, userID string, scopes []string) (err error) {
 
 	user, err := s.Storage.FindUser(ctx, userID)
 	if err != nil {
@@ -478,9 +484,10 @@ func (s *storageFacade) setUserinfo(ctx context.Context, userInfo oidc.UserInfoS
 	for _, scope := range scopes {
 		switch scope {
 		case oidc.ScopeOpenID:
-			userInfo.SetSubject(userID)
+			userInfo.Subject = userID
 		case oidc.ScopeEmail:
-			userInfo.SetEmail(user.Email, true) // TODO: Get the information
+			userInfo.Email = user.Email
+			userInfo.EmailVerified = true // TODO: Get the information
 		case oidc.ScopeProfile:
 			// TODO: Support that
 		case oidc.ScopePhone:
@@ -492,6 +499,14 @@ func (s *storageFacade) setUserinfo(ctx context.Context, userInfo oidc.UserInfoS
 
 func (i *storageFacade) AuthRequestByID(ctx context.Context, id string) (op.AuthRequest, error) {
 	return i.FindAuthRequest(ctx, id)
+}
+
+func (s *storageFacade) ClientCredentials(ctx context.Context, clientID, clientSecret string) (op.Client, error) {
+	client, err := s.findClient(ctx, clientID)
+	if err != nil {
+		return nil, err
+	}
+	return NewClientFacade(client, s.relyingParty), client.ValidateSecret(clientSecret)
 }
 
 func (s *storageFacade) ClientCredentialsTokenRequest(ctx context.Context, clientID string, scopes []string) (op.TokenRequest, error) {
@@ -545,14 +560,15 @@ l:
 }
 
 var _ op.Storage = (*storageFacade)(nil)
+var _ op.ClientCredentialsStorage = (*storageFacade)(nil)
 
 func NewStorageFacade(storage Storage, rp rp.RelyingParty, privateKey *rsa.PrivateKey, staticClients ...auth.StaticClient) *storageFacade {
 	return &storageFacade{
 		Storage: storage,
 		signingKey: signingKey{
-			ID:        "id",
-			Algorithm: "RS256",
-			Key:       privateKey,
+			id:        "id",
+			algorithm: "RS256",
+			key:       privateKey,
 		},
 		relyingParty:  rp,
 		staticClients: staticClients,

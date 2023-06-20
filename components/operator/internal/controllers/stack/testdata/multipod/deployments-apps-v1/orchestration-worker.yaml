@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: orchestration-worker
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -28,8 +28,7 @@ spec:
                 app.kubernetes.io/name: orchestration-worker
         spec:
             containers:
-                - command:
-                    - /orchestration
+                - args:
                     - worker
                   env:
                     - name: POSTGRES_HOST
@@ -37,7 +36,7 @@ spec:
                     - name: POSTGRES_PORT
                       value: "32768"
                     - name: POSTGRES_DATABASE
-                      value: stack1-orchestration
+                      value: orga1-stack1-orchestration
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
@@ -72,7 +71,7 @@ spec:
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
-                      value: stack1
+                      value: orga1-stack1
                     - name: TEMPORAL_ADDRESS
                     - name: TEMPORAL_NAMESPACE
                     - name: TEMPORAL_SSL_CLIENT_KEY
@@ -84,7 +83,10 @@ spec:
                   image: ghcr.io/formancehq/orchestration:latest
                   imagePullPolicy: Always
                   name: orchestration-worker
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst

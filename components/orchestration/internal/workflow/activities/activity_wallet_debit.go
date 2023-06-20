@@ -2,31 +2,51 @@ package activities
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
 type DebitWalletRequest struct {
-	ID   string                 `json:"id"`
-	Data sdk.DebitWalletRequest `json:"data"`
+	ID   string                     `json:"id"`
+	Data *shared.DebitWalletRequest `json:"data"`
 }
 
-func (a Activities) DebitWallet(ctx context.Context, request DebitWalletRequest) (*sdk.DebitWalletResponse, error) {
-	ret, _, err := a.client.WalletsApi.
-		DebitWallet(ctx, request.ID).
-		DebitWalletRequest(request.Data).
-		Execute()
+func (a Activities) DebitWallet(ctx context.Context, request DebitWalletRequest) (*shared.DebitWalletResponse, error) {
+	response, err := a.client.Wallets.DebitWallet(
+		ctx,
+		operations.DebitWalletRequest{
+			DebitWalletRequest: request.Data,
+			ID:                 request.ID,
+		},
+	)
 	if err != nil {
-		return nil, openApiErrorToApplicationError(err)
+		return nil, err
 	}
-	return ret, nil
+
+	if response.WalletsErrorResponse != nil {
+		return nil, temporal.NewApplicationError(
+			response.WalletsErrorResponse.ErrorMessage,
+			string(response.WalletsErrorResponse.ErrorCode),
+		)
+	}
+
+	switch response.StatusCode {
+	case http.StatusNoContent, http.StatusCreated:
+		return response.DebitWalletResponse, nil
+	default:
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
 }
 
 var DebitWalletActivity = Activities{}.DebitWallet
 
-func DebitWallet(ctx workflow.Context, id string, request sdk.DebitWalletRequest) (*sdk.Hold, error) {
-	ret := &sdk.DebitWalletResponse{}
+func DebitWallet(ctx workflow.Context, id string, request *shared.DebitWalletRequest) (*shared.Hold, error) {
+	ret := &shared.DebitWalletResponse{}
 	if err := executeActivity(ctx, DebitWalletActivity, ret, DebitWalletRequest{
 		ID:   id,
 		Data: request,

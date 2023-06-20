@@ -72,7 +72,7 @@ data:
                             "amount": this.postings.map_each(p -> if p.asset.contains("/") {
                               [
                                 p.amount,
-                                p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) # amount / pow(10, decimal part of asset)
+                                p.amount / if p.asset.split("/").index(1).number(){ range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) } else { 1 } # amount / pow(10, decimal part of asset)
                               ]
                             } else { [ p.amount ] }).flatten().map_each(v -> "%v".format(v))
                           },
@@ -185,7 +185,7 @@ data:
         pipeline:
           processors:
           - bloblang: |
-              meta ledger = this.payload.ledger
+              meta ledger = this.ledger
               meta batchSize = 100
           - postgres_query:
               service: ledger
@@ -259,7 +259,7 @@ data:
         pipeline:
           processors:
           - bloblang: |
-              meta ledger = this.payload.ledger
+              meta ledger = this.ledger
               meta batchSize = 100
           - postgres_query:
               service: ledger
@@ -329,7 +329,7 @@ data:
         pipeline:
           processors:
           - bloblang: |
-              meta ledger = this.payload.ledger
+              meta ledger = this.ledger
               meta batchSize = 100
           - postgres_query:
               service: ledger
@@ -455,4 +455,4 @@ metadata:
     labels:
         stack: "true"
     name: search-benthos-streams
-    namespace: stack1
+    namespace: orga1-stack1

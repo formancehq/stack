@@ -1,313 +1,212 @@
 package controllers_test
 
 import (
-	"context"
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 	"time"
 
+	"github.com/formancehq/ledger/pkg/api/apierrors"
+	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/api/routes"
+	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
+	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/google/uuid"
-	"github.com/numary/ledger/pkg/api"
-	"github.com/numary/ledger/pkg/api/apierrors"
-	"github.com/numary/ledger/pkg/api/controllers"
-	"github.com/numary/ledger/pkg/api/internal"
-	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/ledger"
-	"github.com/numary/ledger/pkg/storage"
-	"github.com/numary/ledger/pkg/storage/sqlstorage"
-	"github.com/stretchr/testify/assert"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/fx"
 )
 
 func TestGetLedgerInfo(t *testing.T) {
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, h *api.API, driver storage.Driver[ledger.Store]) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				availableMigrations, err := sqlstorage.CollectMigrationFiles(sqlstorage.MigrationsFS)
-				require.NoError(t, err)
+	t.Parallel()
 
-				rsp := internal.GetLedgerInfo(h)
-				assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-				info, ok := internal.DecodeSingleResponse[controllers.Info](t, rsp.Body)
-				assert.Equal(t, true, ok)
+	backend, mock := newTestingBackend(t)
+	router := routes.NewRouter(backend, nil, nil, metrics.NewNoOpMetricsRegistry())
 
-				_, err = uuid.Parse(info.Name)
-				assert.NoError(t, err)
+	migrationInfo := []core.MigrationInfo{
+		{
+			Version: "1",
+			Name:    "init",
+			State:   "ready",
+			Date:    core.Now().Add(-2 * time.Minute).Round(time.Second),
+		},
+		{
+			Version: "2",
+			Name:    "fix",
+			State:   "ready",
+			Date:    core.Now().Add(-time.Minute).Round(time.Second),
+		},
+	}
 
-				assert.Equal(t, len(availableMigrations), len(info.Storage.Migrations))
+	mock.EXPECT().
+		GetMigrationsInfo(gomock.Any()).
+		Return(migrationInfo, nil)
 
-				for _, m := range info.Storage.Migrations {
-					assert.Equal(t, "DONE", m.State)
-					assert.NotEqual(t, "", m.Name)
-					assert.NotEqual(t, time.Time{}, m.Date)
-				}
+	req := httptest.NewRequest(http.MethodGet, "/xxx/_info", nil)
+	rec := httptest.NewRecorder()
 
-				return nil
-			},
-		})
-	}))
+	router.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	info, ok := DecodeSingleResponse[controllers.Info](t, rec.Body)
+	require.True(t, ok)
+
+	require.EqualValues(t, controllers.Info{
+		Name: "xxx",
+		Storage: controllers.StorageInfo{
+			Migrations: migrationInfo,
+		},
+	}, info)
 }
 
 func TestGetStats(t *testing.T) {
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, h *api.API) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				rsp := internal.PostTransaction(t, h, controllers.PostTransaction{
-					Postings: core.Postings{
-						{
-							Source:      "world",
-							Destination: "alice",
-							Amount:      core.NewMonetaryInt(100),
-							Asset:       "USD",
-						},
-					},
-				}, false)
-				assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+	t.Parallel()
 
-				rsp = internal.PostTransaction(t, h, controllers.PostTransaction{
-					Postings: core.Postings{
-						{
-							Source:      "world",
-							Destination: "boc",
-							Amount:      core.NewMonetaryInt(100),
-							Asset:       "USD",
-						},
-					},
-				}, false)
-				assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+	backend, mock := newTestingBackend(t)
+	router := routes.NewRouter(backend, nil, nil, metrics.NewNoOpMetricsRegistry())
 
-				rsp = internal.GetLedgerStats(h)
-				assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+	expectedStats := ledger.Stats{
+		Transactions: 10,
+		Accounts:     5,
+	}
 
-				stats, _ := internal.DecodeSingleResponse[ledger.Stats](t, rsp.Body)
+	mock.EXPECT().
+		Stats(gomock.Any()).
+		Return(expectedStats, nil)
 
-				assert.EqualValues(t, ledger.Stats{
-					Transactions: 2,
-					Accounts:     3,
-				}, stats)
-				return nil
-			},
-		})
-	}))
+	req := httptest.NewRequest(http.MethodGet, "/xxx/stats", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	stats, ok := DecodeSingleResponse[ledger.Stats](t, rec.Body)
+	require.True(t, ok)
+
+	require.EqualValues(t, expectedStats, stats)
 }
 
 func TestGetLogs(t *testing.T) {
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, api *api.API, driver storage.Driver[ledger.Store]) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				now := time.Now().UTC()
-				tx1 := core.ExpandedTransaction{
-					Transaction: core.Transaction{
-						ID: 0,
-						TransactionData: core.TransactionData{
-							Postings: core.Postings{
-								{
-									Source:      "world",
-									Destination: "alice",
-									Amount:      core.NewMonetaryInt(100),
-									Asset:       "USD",
-								},
-							},
-							Timestamp: now.Add(-3 * time.Hour),
-						},
-					},
-				}
-				tx2 := core.ExpandedTransaction{
-					Transaction: core.Transaction{
-						ID: 1,
-						TransactionData: core.TransactionData{
-							Postings: core.Postings{
-								{
-									Source:      "world",
-									Destination: "bob",
-									Amount:      core.NewMonetaryInt(200),
-									Asset:       "USD",
-								},
-							},
-							Timestamp: now.Add(-2 * time.Hour),
-						},
-					},
-				}
-				store := internal.GetLedgerStore(t, driver, ctx)
-				require.NoError(t, store.Commit(context.Background(), tx1, tx2))
+	t.Parallel()
 
-				require.NoError(t, store.UpdateTransactionMetadata(context.Background(),
-					0, core.Metadata{"key": "value"}, time.Now().UTC()))
+	type testCase struct {
+		name              string
+		queryParams       url.Values
+		expectQuery       ledgerstore.LogsQuery
+		expectStatusCode  int
+		expectedErrorCode string
+	}
 
-				require.NoError(t, store.UpdateAccountMetadata(context.Background(),
-					"alice", core.Metadata{"key": "value"}, time.Now().UTC()))
+	now := core.Now()
+	testCases := []testCase{
+		{
+			name:        "nominal",
+			expectQuery: ledgerstore.NewLogsQuery(),
+		},
+		{
+			name: "using start time",
+			queryParams: url.Values{
+				"startTime": []string{now.Format(core.DateFormat)},
+			},
+			expectQuery: ledgerstore.NewLogsQuery().WithStartTimeFilter(now),
+		},
+		{
+			name: "using end time",
+			queryParams: url.Values{
+				"endTime": []string{now.Format(core.DateFormat)},
+			},
+			expectQuery: ledgerstore.NewLogsQuery().WithEndTimeFilter(now),
+		},
+		{
+			name: "using invalid start time",
+			queryParams: url.Values{
+				"startTime": []string{"xxx"},
+			},
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+		{
+			name: "using invalid end time",
+			queryParams: url.Values{
+				"endTime": []string{"xxx"},
+			},
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+		{
+			name: "using empty cursor",
+			queryParams: url.Values{
+				"cursor": []string{ledgerstore.EncodeCursor(ledgerstore.NewLogsQuery())},
+			},
+			expectQuery: ledgerstore.NewLogsQuery(),
+		},
+		{
+			name: "using invalid cursor",
+			queryParams: url.Values{
+				"cursor": []string{"xxx"},
+			},
+			expectStatusCode:  http.StatusBadRequest,
+			expectedErrorCode: apierrors.ErrValidation,
+		},
+	}
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
 
-				var log0Timestamp, log1Timestamp time.Time
-				t.Run("all", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{})
-					require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Log](t, rsp.Body)
-					// all logs
-					require.Len(t, cursor.Data, 4)
-					require.Equal(t, uint64(3), cursor.Data[0].ID)
-					require.Equal(t, uint64(2), cursor.Data[1].ID)
-					require.Equal(t, uint64(1), cursor.Data[2].ID)
-					require.Equal(t, uint64(0), cursor.Data[3].ID)
+			if testCase.expectStatusCode == 0 {
+				testCase.expectStatusCode = http.StatusOK
+			}
 
-					log0Timestamp = cursor.Data[3].Date
-					log1Timestamp = cursor.Data[2].Date
-				})
+			expectedCursor := sharedapi.Cursor[core.PersistedLog]{
+				Data: []core.PersistedLog{
+					*core.NewTransactionLog(core.NewTransaction(), map[string]metadata.Metadata{}).
+						ComputePersistentLog(nil),
+				},
+			}
 
-				t.Run("after", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						"after": []string{"1"},
-					})
-					require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Log](t, rsp.Body)
-					require.Len(t, cursor.Data, 1)
-					require.Equal(t, uint64(0), cursor.Data[0].ID)
-				})
+			backend, mockLedger := newTestingBackend(t)
+			if testCase.expectStatusCode < 300 && testCase.expectStatusCode >= 200 {
+				mockLedger.EXPECT().
+					GetLogs(gomock.Any(), testCase.expectQuery).
+					Return(&expectedCursor, nil)
+			}
 
-				t.Run("invalid after", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						"after": []string{"invalid"},
-					})
-					require.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode)
+			router := routes.NewRouter(backend, nil, nil, metrics.NewNoOpMetricsRegistry())
 
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					require.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           "invalid 'after' query param",
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: "invalid 'after' query param",
-					}, err)
-				})
+			req := httptest.NewRequest(http.MethodGet, "/xxx/logs", nil)
+			rec := httptest.NewRecorder()
+			req.URL.RawQuery = testCase.queryParams.Encode()
 
-				t.Run("time range", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyStartTime: []string{log0Timestamp.Format(time.RFC3339)},
-						controllers.QueryKeyEndTime:   []string{log1Timestamp.Format(time.RFC3339)},
-					})
-					require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Log](t, rsp.Body)
-					require.Len(t, cursor.Data, 1)
-					require.Equal(t, uint64(0), cursor.Data[0].ID)
-				})
+			router.ServeHTTP(rec, req)
 
-				t.Run("only start time", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyStartTime: []string{time.Now().Add(time.Second).Format(time.RFC3339)},
-					})
-					require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Log](t, rsp.Body)
-					require.Len(t, cursor.Data, 0)
-				})
+			require.Equal(t, testCase.expectStatusCode, rec.Code)
+			if testCase.expectStatusCode < 300 && testCase.expectStatusCode >= 200 {
+				cursor := DecodeCursorResponse[core.PersistedLog](t, rec.Body)
 
-				t.Run("only end time", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyEndTime: []string{time.Now().Add(time.Second).Format(time.RFC3339)},
-					})
-					require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
-					cursor := internal.DecodeCursorResponse[core.Log](t, rsp.Body)
-					require.Len(t, cursor.Data, 4)
-				})
-
-				t.Run("invalid start time", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyStartTime: []string{"invalid time"},
-					})
-					require.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode)
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					require.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           controllers.ErrInvalidStartTime.Error(),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: controllers.ErrInvalidStartTime.Error(),
-					}, err)
-				})
-
-				t.Run("invalid end time", func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyEndTime: []string{"invalid time"},
-					})
-					require.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode)
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					require.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           controllers.ErrInvalidEndTime.Error(),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: controllers.ErrInvalidEndTime.Error(),
-					}, err)
-				})
-
-				to := sqlstorage.LogsPaginationToken{}
-				raw, err := json.Marshal(to)
+				cursorData, err := json.Marshal(cursor)
 				require.NoError(t, err)
 
-				t.Run(fmt.Sprintf("valid empty %s", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyCursor: []string{base64.RawURLEncoding.EncodeToString(raw)},
-					})
-					require.Equal(t, http.StatusOK, rsp.Result().StatusCode, rsp.Body.String())
-				})
+				cursorAsMap := make(map[string]any)
+				require.NoError(t, json.Unmarshal(cursorData, &cursorAsMap))
 
-				t.Run(fmt.Sprintf("valid empty %s with any other param is forbidden", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyCursor: []string{base64.RawURLEncoding.EncodeToString(raw)},
-						"after":                    []string{"1"},
-					})
-					require.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
+				expectedCursorData, err := json.Marshal(expectedCursor)
+				require.NoError(t, err)
 
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					require.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           fmt.Sprintf("no other query params can be set with '%s'", controllers.QueryKeyCursor),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: fmt.Sprintf("no other query params can be set with '%s'", controllers.QueryKeyCursor),
-					}, err)
-				})
+				expectedCursorAsMap := make(map[string]any)
+				require.NoError(t, json.Unmarshal(expectedCursorData, &expectedCursorAsMap))
 
-				t.Run(fmt.Sprintf("invalid %s", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyCursor: []string{"invalid"},
-					})
-					require.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					require.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-					}, err)
-				})
-
-				t.Run(fmt.Sprintf("invalid %s not base64", controllers.QueryKeyCursor), func(t *testing.T) {
-					rsp := internal.GetLedgerLogs(api, url.Values{
-						controllers.QueryKeyCursor: []string{"@!/"},
-					})
-					require.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
-
-					err := sharedapi.ErrorResponse{}
-					internal.Decode(t, rsp.Body, &err)
-					require.EqualValues(t, sharedapi.ErrorResponse{
-						ErrorCode:              apierrors.ErrValidation,
-						ErrorMessage:           fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-						ErrorCodeDeprecated:    apierrors.ErrValidation,
-						ErrorMessageDeprecated: fmt.Sprintf("invalid '%s' query param", controllers.QueryKeyCursor),
-					}, err)
-				})
-
-				return nil
-			},
+				require.Equal(t, expectedCursorAsMap, cursorAsMap)
+			} else {
+				err := sharedapi.ErrorResponse{}
+				Decode(t, rec.Body, &err)
+				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
+			}
 		})
-	}))
+	}
 }

@@ -7,25 +7,21 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"testing"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	authoidc "github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
-	"gorm.io/driver/sqlite"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-func init() {
-	_ = os.Setenv(op.OidcDevMode, "true")
-}
 
 func TestVerifyAccessToken(t *testing.T) {
 	mockOIDC, err := mockoidc.Run()
@@ -42,7 +38,10 @@ func TestVerifyAccessToken(t *testing.T) {
 	serverURL := fmt.Sprintf("http://%s", l.Addr().String())
 
 	// Construct our storage
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), &gorm.Config{})
+	postgresDB := pgtesting.NewPostgresDatabase(t)
+	dialector := postgres.Open(postgresDB.ConnString())
+
+	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 	storage := sqlstorage.New(db)
@@ -72,7 +71,7 @@ func TestVerifyAccessToken(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	provider, err := authoidc.NewOpenIDProvider(context.Background(), storageFacade, serverURL, mockOIDC.Issuer(), *keySet)
+	provider, err := authoidc.NewOpenIDProvider(storageFacade, serverURL, mockOIDC.Issuer(), *keySet)
 	require.NoError(t, err)
 
 	ar := &oidc.AuthRequest{

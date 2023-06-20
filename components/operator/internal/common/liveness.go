@@ -29,7 +29,7 @@ func liveness(port int32, path string) *corev1.Probe {
 		TimeoutSeconds:                30,
 		PeriodSeconds:                 2,
 		SuccessThreshold:              1,
-		FailureThreshold:              10,
+		FailureThreshold:              20,
 		TerminationGracePeriodSeconds: pointer.Int64(10),
 	}
 }

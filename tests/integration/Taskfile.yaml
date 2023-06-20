@@ -1,14 +1,37 @@
 version: "3"
 
+vars:
+  PKG: "./suite"
+  RUN: ".*"
+  VERBOSE: "false"
+  PARALLEL: "true"
+  FAILFAST: "false"
+  DEBUG: "false"
+  REPEAT: 0
+
 tasks:
   default:
     cmds:
+      - task: lint
       - task: tests
+
+  lint:
+    cmds:
+      - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
 
   tests:
     deps: [run-docker-compose]
     cmds:
-      - ginkgo -v -p ./suite
+      - >
+        ginkgo --vet ""
+        {{if eq .VERBOSE "true"}}-v{{end}}
+        {{if eq .PARALLEL "true"}}-p{{end}}
+        {{if eq .FAILFAST "true"}}--fail-fast{{end}}
+        --timeout=10m
+        --focus-file "{{.RUN}}"
+        --repeat {{.REPEAT}}
+        {{if eq .DEBUG "true"}}--output-interceptor-mode=none{{end}}
+        {{.PKG}}
 
   run-docker-compose:
     cmds:

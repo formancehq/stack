@@ -6,7 +6,7 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"gorm.io/gorm"
 )
 

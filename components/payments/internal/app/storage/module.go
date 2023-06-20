@@ -6,23 +6,19 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/uptrace/bun/extra/bunotel"
-
-	"github.com/uptrace/bun/dialect/pgdialect"
-
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
-
 	"github.com/uptrace/bun"
-
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bundebug"
+	"github.com/uptrace/bun/extra/bunotel"
 	"go.uber.org/fx"
 )
 
 const dbName = "paymentsDB"
 
-func Module(uri, configEncryptionKey string, output io.Writer) fx.Option {
+func Module(uri, configEncryptionKey string, debug bool, output io.Writer) fx.Option {
 	return fx.Options(
 		fx.Provide(func() (*pgx.ConnConfig, error) {
 			config, err := pgx.ParseConfig(uri)
@@ -36,18 +32,29 @@ func Module(uri, configEncryptionKey string, output io.Writer) fx.Option {
 		fx.Provide(func(config *pgx.ConnConfig) *sql.DB {
 			return stdlib.OpenDB(*config)
 		}),
-
-		fx.Provide(func(client *sql.DB) *Storage {
+		fx.Provide(func(client *sql.DB) *bun.DB {
 			db := bun.NewDB(client, pgdialect.New())
 
 			db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(dbName)))
-			db.AddQueryHook(bundebug.NewQueryHook(
-				bundebug.WithWriter(output),
-			))
 
+			if debug {
+				db.AddQueryHook(bundebug.NewQueryHook(
+					bundebug.WithWriter(output),
+				))
+			}
+
+			return db
+		}),
+		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
+			lc.Append(fx.Hook{
+				OnStop: func(ctx context.Context) error {
+					return db.Close()
+				},
+			})
+		}),
+		fx.Provide(func(db *bun.DB) *Storage {
 			return newStorage(db, configEncryptionKey)
 		}),
-
 		fx.Invoke(func(lc fx.Lifecycle, repo *Storage) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {

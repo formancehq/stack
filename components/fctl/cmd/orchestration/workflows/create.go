@@ -1,8 +1,10 @@
 package workflows
 
 import (
+	"fmt"
+
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -40,20 +42,30 @@ func NewCreateCommand() *cobra.Command {
 				return err
 			}
 
-			config := formance.WorkflowConfig{}
+			config := shared.WorkflowConfig{}
 			if err := yaml.Unmarshal([]byte(script), &config); err != nil {
 				return err
 			}
 
-			res, _, err := client.OrchestrationApi.
-				CreateWorkflow(cmd.Context()).
-				Body(config).
-				Execute()
+			//nolint:gosimple
+			response, err := client.Orchestration.
+				CreateWorkflow(cmd.Context(), shared.CreateWorkflowRequest{
+					Name:   config.Name,
+					Stages: config.Stages,
+				})
 			if err != nil {
-				return errors.Wrap(err, "listing workflows")
+				return err
 			}
 
-			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow created with ID: %s", res.Data.Id)
+			if response.Error != nil {
+				return fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow created with ID: %s", response.CreateWorkflowResponse.Data.ID)
 
 			return nil
 		}),

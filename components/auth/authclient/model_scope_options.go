@@ -19,7 +19,7 @@ var _ MappedNullable = &ScopeOptions{}
 
 // ScopeOptions struct for ScopeOptions
 type ScopeOptions struct {
-	Label    interface{}            `json:"label"`
+	Label interface{} `json:"label"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
@@ -56,7 +56,7 @@ func (o *ScopeOptions) GetLabel() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ScopeOptions) GetLabelOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Label) {
+	if o == nil || IsNil(o.Label) {
 		return nil, false
 	}
 	return &o.Label, true
@@ -80,7 +80,7 @@ func (o *ScopeOptions) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ScopeOptions) GetMetadataOk() (*map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
 	return &o.Metadata, true
@@ -88,7 +88,7 @@ func (o *ScopeOptions) GetMetadataOk() (*map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ScopeOptions) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && IsNil(o.Metadata) {
 		return true
 	}
 
@@ -101,7 +101,7 @@ func (o *ScopeOptions) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ScopeOptions) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -154,3 +154,5 @@ func (v *NullableScopeOptions) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

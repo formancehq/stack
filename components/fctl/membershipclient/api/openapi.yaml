@@ -110,6 +110,33 @@ paths:
           description: List of users
       summary: List users
   /organizations/{organizationId}/users/{userId}:
+    delete:
+      description: |
+        The owner of the organization can remove anyone while each user can leave any organization where it is not owner.
+      operationId: unlinkUserFromOrganization
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: User unlinked from organization
+        "403":
+          description: Not allowed
+        "400":
+          description: Cannot remove the owner of the organization
+      summary: Unlink user from organization
     get:
       operationId: readUser
       parameters:
@@ -135,6 +162,36 @@ paths:
                 $ref: '#/components/schemas/ReadUserResponse'
           description: Read a user
       summary: Read user
+    put:
+      operationId: updateUser
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+          description: Updated user
+      summary: Update user
   /organizations/{organizationId}/billing/portal:
     get:
       operationId: billingPortal
@@ -184,6 +241,14 @@ paths:
         schema:
           type: string
         style: simple
+      - description: Include deleted stacks
+        explode: true
+        in: query
+        name: deleted
+        required: false
+        schema:
+          type: boolean
+        style: form
       responses:
         "200":
           content:
@@ -268,6 +333,76 @@ paths:
                 $ref: '#/components/schemas/ReadStackResponse'
           description: OK
       summary: Read stack
+  /organizations/{organizationId}/stacks/{stackId}/restore:
+    put:
+      operationId: restoreStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackResponse'
+          description: OK
+      summary: Restore stack
+  /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
+    put:
+      operationId: enableStargate
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: OK
+      summary: Enable stargate on a stack
+  /organizations/{organizationId}/stacks/{stackId}/stargate/disable:
+    put:
+      operationId: disableStargate
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: OK
+      summary: Disable stargate on a stack
   /me/invitations:
     get:
       operationId: listInvitations
@@ -378,9 +513,17 @@ paths:
                 $ref: '#/components/schemas/CreateInvitationResponse'
           description: Invitation created
       summary: Create invitation
-  /regions:
+  /organizations/{organizationId}/regions:
     get:
       operationId: listRegions
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -389,8 +532,133 @@ paths:
                 $ref: '#/components/schemas/ListRegionsResponse'
           description: List of the regions
       summary: List regions
+    post:
+      operationId: createPrivateRegion
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrivateRegionRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedPrivateRegionResponse'
+          description: Created region
+      summary: Create a private region
+  /organizations/{organizationId}/regions/{regionId}:
+    delete:
+      operationId: deleteRegion
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Delete a specific region
+      summary: Delete region
+    get:
+      operationId: getRegion
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRegionResponse'
+          description: Get a specific region
+      summary: Get region
+  /me:
+    get:
+      operationId: readConnectedUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUserResponse'
+          description: Read a user
+      summary: Read user
+    put:
+      operationId: updateConnectedUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+          description: Updated user
+      summary: Update user
 components:
   schemas:
+    CreatePrivateRegionRequest:
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      required:
+      - name
+      type: object
+    CreatedPrivateRegionResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/PrivateRegion'
+      required:
+      - data
+    PrivateRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - $ref: '#/components/schemas/PrivateRegion_allOf'
+    PublicRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - $ref: '#/components/schemas/PublicRegion_allOf'
+    AnyRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - $ref: '#/components/schemas/AnyRegion_allOf'
     OrganizationData:
       example:
         name: name
@@ -406,23 +674,10 @@ components:
       - $ref: '#/components/schemas/OrganizationData'
       - $ref: '#/components/schemas/Organization_allOf'
     StackData:
-      example:
-        metadata:
-          key: metadata
-        production: ""
-        name: name
-        tags:
-          key: tags
       properties:
         name:
           description: Stack name
           type: string
-        tags:
-          additionalProperties:
-            type: string
-          type: object
-        production:
-          type: bool
         metadata:
           additionalProperties:
             type: string
@@ -430,8 +685,6 @@ components:
       required:
       - metadata
       - name
-      - production
-      - tags
       type: object
     BillingPortal:
       example:
@@ -457,13 +710,20 @@ components:
       allOf:
       - $ref: '#/components/schemas/StackData'
       - $ref: '#/components/schemas/Stack_allOf'
-    UserData:
+    UpdatableUserData:
+      example:
+        metadata:
+          key: metadata
       properties:
-        email:
-          type: string
-      required:
-      - email
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
       type: object
+    UserData:
+      allOf:
+      - $ref: '#/components/schemas/UserData_allOf'
+      - $ref: '#/components/schemas/UpdatableUserData'
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
@@ -541,7 +801,9 @@ components:
           type: array
       type: object
     CreateStackRequest:
-      $ref: '#/components/schemas/StackData'
+      allOf:
+      - $ref: '#/components/schemas/StackData'
+      - $ref: '#/components/schemas/CreateStackRequest_allOf'
     CreateStackResponse:
       example:
         data: null
@@ -550,6 +812,8 @@ components:
           $ref: '#/components/schemas/Stack'
       type: object
     ReadStackResponse:
+      $ref: '#/components/schemas/CreateStackResponse'
+    RestoreStackResponse:
       $ref: '#/components/schemas/CreateStackResponse'
     ReadUserResponse:
       example:
@@ -636,24 +900,27 @@ components:
       - userEmail
       type: object
     Region:
-      example:
-        baseUrl: baseUrl
-        id: id
-        tags:
-          key: tags
       properties:
         id:
           type: string
-        tags:
-          additionalProperties:
-            type: string
-          type: object
         baseUrl:
           type: string
+        createdAt:
+          format: datetime
+          type: string
+        active:
+          type: boolean
+        lastPing:
+          format: date-time
+          type: string
+        name:
+          type: string
       required:
+      - active
       - baseUrl
+      - createdAt
       - id
-      - tags
+      - name
       type: object
     ListOrganizationExpandedResponse:
       example:
@@ -669,19 +936,24 @@ components:
     ListRegionsResponse:
       example:
         data:
-        - baseUrl: baseUrl
-          id: id
-          tags:
-            key: tags
-        - baseUrl: baseUrl
-          id: id
-          tags:
-            key: tags
+        - null
+        - null
       properties:
         data:
           items:
-            $ref: '#/components/schemas/Region'
+            $ref: '#/components/schemas/AnyRegion'
           type: array
+      required:
+      - data
+      type: object
+    GetRegionResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/AnyRegion'
+      required:
+      - data
       type: object
     ServerInfo:
       example:
@@ -692,6 +964,67 @@ components:
       required:
       - version
       type: object
+    UpdateUserRequest:
+      $ref: '#/components/schemas/UpdatableUserData'
+    UpdateUserResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+      required:
+      - data
+      type: object
+    PrivateRegion_allOf_secret:
+      properties:
+        lastDigits:
+          type: string
+        clear:
+          type: string
+      required:
+      - lastDigits
+      type: object
+      example: null
+    PrivateRegion_allOf:
+      properties:
+        clientID:
+          type: string
+        organizationID:
+          type: string
+        creatorID:
+          type: string
+        secret:
+          $ref: '#/components/schemas/PrivateRegion_allOf_secret'
+      required:
+      - clientID
+      - creatorID
+      - organizationID
+      type: object
+      example: null
+    PublicRegion_allOf:
+      properties:
+        production:
+          type: boolean
+      required:
+      - production
+      type: object
+      example: null
+    AnyRegion_allOf:
+      properties:
+        clientID:
+          type: string
+        organizationID:
+          type: string
+        creator:
+          $ref: '#/components/schemas/User'
+        production:
+          type: boolean
+        public:
+          type: boolean
+      required:
+      - public
+      type: object
+      example: null
     Organization_allOf:
       properties:
         id:
@@ -716,12 +1049,31 @@ components:
         uri:
           description: Base stack uri
           type: string
-        boundRegion:
-          $ref: '#/components/schemas/Region'
+        regionID:
+          description: The region where the stack is installed
+          type: string
+        stargateEnabled:
+          type: boolean
+        deletedAt:
+          format: date-time
+          type: string
       required:
       - id
       - organizationId
+      - regionID
+      - stargateEnabled
       - uri
+      type: object
+      example: null
+    UserData_allOf:
+      properties:
+        email:
+          type: string
+        metadata:
+          additionalProperties: true
+          type: object
+      required:
+      - email
       type: object
       example: null
     User_allOf:
@@ -731,6 +1083,14 @@ components:
           type: string
       required:
       - id
+      type: object
+      example: null
+    CreateStackRequest_allOf:
+      properties:
+        regionID:
+          type: string
+      required:
+      - regionID
       type: object
       example: null
     ListOrganizationExpandedResponse_data_inner_allOf:
