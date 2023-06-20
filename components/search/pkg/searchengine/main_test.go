@@ -101,6 +101,7 @@ func insertTransaction(t *testing.T, ledgerName, id string, when time.Time, tran
 		"ledger": ledgerName,
 		"when":   when,
 		"data":   transaction,
+		"stack":  "",
 	})
 }
 
@@ -110,6 +111,7 @@ func insertAccount(t *testing.T, ledgerName, id string, when time.Time, payload 
 		"ledger": ledgerName,
 		"when":   when,
 		"data":   payload,
+		"stack":  "",
 	})
 }
 
@@ -170,7 +172,7 @@ func TestSearchEngine(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			require.NoError(t, CreateIndex(context.TODO(), openSearchClient, test.name))
-			engine = NewDefaultEngine(openSearchClient, WithESIndex(test.name))
+			engine = NewDefaultEngine(openSearchClient, "", WithESIndex(test.name))
 			test.fn(t)
 		})
 	}

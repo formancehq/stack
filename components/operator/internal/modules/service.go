@@ -292,7 +292,7 @@ type Service struct {
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
 	Liveness                Liveness
-	AuthConfiguration       func(resolveContext PrepareContext) stackv1beta3.ClientConfiguration
+	AuthConfiguration       func(resolveContext ModuleContext) stackv1beta3.ClientConfiguration
 	Configs                 func(resolveContext ServiceInstallContext) Configs
 	Secrets                 func(resolveContext ServiceInstallContext) Secrets
 	Container               func(resolveContext ContainerResolutionContext) Container
@@ -303,7 +303,7 @@ type Service struct {
 	EnvPrefix string
 }
 
-func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
+func (service *Service) Prepare(ctx ModuleContext, serviceName string) {
 	if service.AuthConfiguration != nil {
 		_ = ctx.Stack.GetOrCreateClient(serviceName, service.AuthConfiguration(ctx))
 	}
@@ -452,7 +452,7 @@ func (service Service) containers(ctx ContainerResolutionContext, container Cont
 	}
 }
 
-func (service Service) Install(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) error {
+func (service Service) install(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) error {
 	configHandles, err := service.installConfigs(ctx, deployer, serviceName)
 	if err != nil {
 		return err
@@ -525,6 +525,7 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			// as the gateway is a component like another
 			Env(fmt.Sprintf("%sSTACK_URL", service.EnvPrefix), ctx.Stack.URL()),
 			Env(fmt.Sprintf("%sOTEL_SERVICE_NAME", service.EnvPrefix), serviceName),
+			Env("STACK", ctx.Stack.Name),
 		)
 	}
 

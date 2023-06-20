@@ -50,6 +50,9 @@ func getMapping() Mappings {
 			"ledger": {
 				Type: "keyword",
 			},
+			"stack": {
+				Type: "keyword",
+			},
 			"when": {
 				Type: "date",
 			},

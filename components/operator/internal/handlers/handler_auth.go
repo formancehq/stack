@@ -19,17 +19,21 @@ func init() {
 		Postgres: func(ctx modules.Context) stackv1beta3.PostgresConfig {
 			return ctx.Configuration.Spec.Services.Auth.Postgres
 		},
-		Services: func(ctx modules.Context) modules.Services {
-			return modules.Services{{
-				Secured:                 true,
-				ListenEnvVar:            "LISTEN",
-				ExposeHTTP:              true,
-				Configs:                 resolveAuthConfigs,
-				Secrets:                 resolveAuthSecrets,
-				Container:               resolveAuthContainer,
-				InjectPostgresVariables: true,
-				HasVersionEndpoint:      true,
-			}}
+		Versions: map[string]modules.Version{
+			"v0.0.0": {
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return modules.Services{{
+						Secured:                 true,
+						ListenEnvVar:            "LISTEN",
+						ExposeHTTP:              true,
+						Configs:                 resolveAuthConfigs,
+						Secrets:                 resolveAuthSecrets,
+						Container:               resolveAuthContainer,
+						InjectPostgresVariables: true,
+						HasVersionEndpoint:      true,
+					}}
+				},
+			},
 		},
 	})
 }

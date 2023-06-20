@@ -204,6 +204,7 @@ func startSearch() {
 		"--open-search-username=admin",
 		"--open-search-password=admin",
 		"--bind=0.0.0.0:0",
+		"--stack="+actualTestID,
 		fmt.Sprintf("--es-indices=%s", actualTestID),
 		"--mapping-init-disabled",
 	)

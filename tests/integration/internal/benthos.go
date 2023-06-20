@@ -49,6 +49,7 @@ func startBenthosServer() {
 			"BASIC_AUTH_PASSWORD=admin",
 			fmt.Sprintf("OPENSEARCH_INDEX=%s", actualTestID),
 			fmt.Sprintf("NATS_URL=nats://%s:%s", host, natsPort()),
+			fmt.Sprintf("STACK=%s", actualTestID),
 			fmt.Sprintf("TOPIC_PREFIX=%s-", actualTestID),
 		},
 	})

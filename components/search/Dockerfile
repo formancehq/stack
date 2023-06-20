@@ -2,8 +2,8 @@ FROM golang:1.19-alpine AS builder
 ARG APP_SHA
 ARG VERSION
 WORKDIR /src
-COPY libs/go-libs /src/libs/go-libs
 COPY components/search /src/components/search
+COPY libs/go-libs /src/libs/go-libs
 WORKDIR /src/components/search
 RUN GOOS=linux go build -o search \
     -ldflags="-X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Version=${VERSION} \

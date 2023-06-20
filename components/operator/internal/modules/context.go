@@ -55,11 +55,23 @@ func (ctx ContainerResolutionContext) volumes(serviceName string) []corev1.Volum
 	return ret
 }
 
-type PrepareContext struct {
+type ModuleContext struct {
 	Context
 	PortAllocator PortAllocator
 	Postgres      *stackv1beta3.PostgresConfig
 	Module        string
+}
+
+func (ctx ModuleContext) HasVersionHigherOrEqual(version string) bool {
+	return ctx.Versions.IsHigherOrEqual(ctx.Module, version)
+}
+
+func (ctx ModuleContext) HasVersionHigher(version string) bool {
+	return ctx.Versions.IsHigher(ctx.Module, version)
+}
+
+func (ctx ModuleContext) HasVersionLower(version string) bool {
+	return ctx.Versions.IsLower(ctx.Module, version)
 }
 
 type RegisteredModule struct {
@@ -70,7 +82,7 @@ type RegisteredModule struct {
 type RegisteredModules map[string]RegisteredModule
 
 type ServiceInstallContext struct {
-	PrepareContext
+	ModuleContext
 	RegisteredModules RegisteredModules
 	PodDeployer       PodDeployer
 }

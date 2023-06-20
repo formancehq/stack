@@ -46,6 +46,14 @@ func (d *ResourceDeployer) Deployments(options ...controllerutils.ObjectMutator[
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, options...)
 }
 
+func (d *ResourceDeployer) Migrations(options ...controllerutils.ObjectMutator[*v1beta3.Migration]) *controllerutils.ObjectFactory[*v1beta3.Migration] {
+	options = append(options,
+		CommonOptions[*v1beta3.Migration](d.stack, d.scheme)...,
+	)
+	options = append(options, common.WithReloaderAnnotations[*v1beta3.Migration]())
+	return controllerutils.NewObjectFactory(d.client, d.stack.Name, options...)
+}
+
 func (d *ResourceDeployer) ConfigMaps(options ...controllerutils.ObjectMutator[*corev1.ConfigMap]) *controllerutils.ObjectFactory[*corev1.ConfigMap] {
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
 		CommonOptions[*corev1.ConfigMap](d.stack, d.scheme)...,
