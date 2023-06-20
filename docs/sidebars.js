@@ -466,17 +466,17 @@ const sidebars = {
           items: [
             {
               type: 'doc',
-              id: 'orchestration/index',
+              id: 'flows/index',
               label: 'Introduction',
             },
             {
               type: 'doc',
-              id: 'orchestration/definition',
+              id: 'flows/definition',
               label: 'Workflows definition',
             },
             {
               type: 'doc',
-              id: 'orchestration/execution',
+              id: 'flows/execution',
               label: 'Workflows execution',
             },
             {
@@ -487,17 +487,17 @@ const sidebars = {
               items: [
                 {
                   type: 'doc',
-                  id: 'orchestration/stages/send',
+                  id: 'flows/stages/send',
                   label: 'Send',
                 },
                 {
                   type: 'doc',
-                  id: 'orchestration/stages/wait-event',
+                  id: 'flows/stages/wait-event',
                   label: 'Waiting for events',
                 },
                 {
                   type: 'doc',
-                  id: 'orchestration/stages/wait-delay',
+                  id: 'flows/stages/wait-delay',
                   label: 'Waiting for a delay',
                 }
               ],
@@ -508,17 +508,17 @@ const sidebars = {
               items: [
                 {
                   type: 'doc',
-                  id: 'orchestration/examples/ledger-to-ledger',
+                  id: 'flows/examples/ledger-to-ledger',
                   label: 'Ledger to Ledger',
                 },
                 {
                   type: 'doc',
-                  id: 'orchestration/examples/payment-to-wallet',
+                  id: 'flows/examples/payment-to-wallet',
                   label: 'Payment to Wallet',
                 },
                 {
                   type: 'doc',
-                  id: 'orchestration/examples/stripe-payout',
+                  id: 'flows/examples/stripe-payout',
                   label: 'Ledger to Payout',
                 }
               ],
