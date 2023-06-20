@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -19,6 +20,7 @@ func NewCommand() *cobra.Command {
 		accountVarFlag = "account-var"
 		metadataFlag   = "metadata"
 		referenceFlag  = "reference"
+		timestampFlag  = "timestamp"
 	)
 	return fctl.NewCommand("num -|<filename>",
 		fctl.WithShortDescription("Execute a numscript script on a ledger"),
@@ -29,6 +31,7 @@ func NewCommand() *cobra.Command {
 		fctl.WithStringSliceFlag(portionVarFlag, []string{""}, "Pass a variable of type 'portion'"),
 		fctl.WithStringSliceFlag(accountVarFlag, []string{""}, "Pass a variable of type 'account'"),
 		fctl.WithStringSliceFlag(metadataFlag, []string{""}, "Metadata to use"),
+		fctl.WithStringFlag(timestampFlag, "", "Timestamp to use (format RFC3339)"),
 		fctl.WithStringFlag(referenceFlag, "", "Reference to add to the generated transaction"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
@@ -97,6 +100,17 @@ func NewCommand() *cobra.Command {
 				}
 			}
 
+			timestampStr := fctl.GetString(cmd, timestampFlag)
+			var (
+				timestamp time.Time
+			)
+			if timestampStr != "" {
+				timestamp, err = time.Parse(time.RFC3339Nano, timestampStr)
+				if err != nil {
+					return err
+				}
+			}
+
 			reference := fctl.GetString(cmd, referenceFlag)
 
 			metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, metadataFlag))
@@ -114,6 +128,12 @@ func NewCommand() *cobra.Command {
 						Plain: script,
 						Vars:  vars,
 					},
+					Timestamp: func() *time.Time {
+						if timestamp.IsZero() {
+							return nil
+						}
+						return &timestamp
+					}(),
 				},
 				Ledger: ledger,
 			})
