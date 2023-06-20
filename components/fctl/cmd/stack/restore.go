@@ -12,6 +12,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type RestoreStackInformation struct {
+	Stack    *membershipclient.Stack     `json:"stack"`
+	Versions *shared.GetVersionsResponse `json:"versions"`
+}
+type StackRestore struct {
+	store *fctl.SharedStore
+}
+
+func NewStackRestoreController() *StackRestore {
+	return &StackRestore{
+		store: fctl.NewSharedStore(),
+	}
+}
+
 func NewRestoreStackCommand() *cobra.Command {
 	const stackNameFlag = "name"
 
@@ -19,69 +33,68 @@ func NewRestoreStackCommand() *cobra.Command {
 		fctl.WithShortDescription("Restore a deleted stack"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithStringFlag(stackNameFlag, "", ""),
-		fctl.WithRunE(restoreCommand),
-		fctl.WrapOutputPostRunE(viewRestore),
+		fctl.WithController(NewStackRestoreController()),
 	)
 }
+func (c *StackRestore) GetStore() *fctl.SharedStore {
+	return c.store
+}
 
-func restoreCommand(cmd *cobra.Command, args []string) error {
+func (c *StackRestore) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
-		return errors.Wrap(err, "searching default organization")
+		return nil, errors.Wrap(err, "searching default organization")
 	}
 
 	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	response, _, err := apiClient.DefaultApi.
 		RestoreStack(cmd.Context(), organization, args[0]).
 		Execute()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	profile := fctl.GetCurrentProfile(cmd, cfg)
 
 	if err := waitStackReady(cmd, profile, response.Data); err != nil {
-		return err
+		return nil, err
 	}
 
 	stackClient, err := fctl.NewStackClient(cmd, cfg, response.Data)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	versions, err := stackClient.GetVersions(cmd.Context())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if versions.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
+		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	fctl.SetSharedData(&RestoreStackInformation{
+	c.store.SetData(&RestoreStackInformation{
 		Stack:    response.Data,
 		Versions: versions.GetVersionsResponse,
-	}, profile, cfg, nil)
+	})
 
-	return nil
+	c.store.SetConfig(cfg)
+
+	return c, nil
 }
 
-type RestoreStackInformation struct {
-	Stack    *membershipclient.Stack     `json:"stack"`
-	Versions *shared.GetVersionsResponse `json:"versions"`
-}
+func (c *StackRestore) Render(cmd *cobra.Command, args []string) error {
+	data := c.store.GetData().(*RestoreStackInformation)
 
-func viewRestore(cmd *cobra.Command, args []string) error {
-	data := fctl.GetSharedData().(*RestoreStackInformation)
-
-	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, fctl.GetSharedConfig()), data.Stack, data.Versions)
+	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, c.store.GetConfig()), data.Stack, data.Versions)
 }

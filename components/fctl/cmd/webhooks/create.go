@@ -15,33 +15,46 @@ const (
 	secretFlag = "secret"
 )
 
-func CreateWebhookCommand(cmd *cobra.Command, args []string) error {
+type CreateWebhook struct {
+	store *fctl.SharedStore
+}
+
+func NewCreateWebhook() *CreateWebhook {
+	return &CreateWebhook{
+		store: fctl.NewSharedStore(),
+	}
+}
+func (c *CreateWebhook) GetStore() *fctl.SharedStore {
+	return c.store
+}
+
+func (c *CreateWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return errors.Wrap(err, "fctl.GetConfig")
+		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
 
 	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a webhook") {
-		return fctl.ErrMissingApproval
+		return nil, fctl.ErrMissingApproval
 	}
 
 	client, err := fctl.NewStackClient(cmd, cfg, stack)
 	if err != nil {
-		return errors.Wrap(err, "creating stack client")
+		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	if _, err := url.Parse(args[0]); err != nil {
-		return errors.Wrap(err, "invalid endpoint URL")
+		return nil, errors.Wrap(err, "invalid endpoint URL")
 	}
 
 	secret := fctl.GetString(cmd, secretFlag)
@@ -53,31 +66,31 @@ func CreateWebhookCommand(cmd *cobra.Command, args []string) error {
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "creating config")
+		return nil, errors.Wrap(err, "creating config")
 	}
 
 	if response.ErrorResponse != nil {
-		return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
-		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	output := &CreateWebhookOutput{
+	out := &CreateWebhookOutput{
 		Webhook: response.ConfigResponse.Data,
 	}
 
-	fctl.SetSharedData(output, nil, nil, nil)
+	c.store.SetData(out)
 
-	return nil
+	return c, nil
 }
 
 type CreateWebhookOutput struct {
 	Webhook shared.WebhooksConfig `json:"webhook"`
 }
 
-func DisplayWebhookCommand(cmd *cobra.Command, args []string) error {
+func (c *CreateWebhook) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config created successfully")
 	return nil
 }
@@ -90,7 +103,6 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.MinimumNArgs(2)),
 		fctl.WithStringFlag(secretFlag, "", "Bring your own webhooks signing secret. If not passed or empty, a secret is automatically generated. The format is a string of bytes of size 24, base64 encoded. (larger size after encoding)"),
-		fctl.WithRunE(CreateWebhookCommand),
-		fctl.WrapOutputPostRunE(DisplayWebhookCommand),
+		fctl.WithController(NewCreateWebhook()),
 	)
 }

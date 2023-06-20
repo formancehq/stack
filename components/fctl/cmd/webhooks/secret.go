@@ -11,29 +11,46 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func RunChangeSecret(cmd *cobra.Command, args []string) error {
+type ChangeSecretOutput struct {
+	Secret string `json:"secret"`
+	ID     string `json:"id"`
+}
+
+type ChangeSecretWebhook struct {
+	store *fctl.SharedStore
+}
+
+func NewChangeSecretWebhook() *ChangeSecretWebhook {
+	return &ChangeSecretWebhook{
+		store: fctl.NewSharedStore(),
+	}
+}
+func (c *ChangeSecretWebhook) GetStore() *fctl.SharedStore {
+	return c.store
+}
+func (c *ChangeSecretWebhook) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return errors.Wrap(err, "fctl.GetConfig")
+		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
 
 	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !fctl.CheckStackApprobation(cmd, stack, "You are about to change a webhook secret") {
-		return fctl.ErrMissingApproval
+		return nil, fctl.ErrMissingApproval
 	}
 
 	client, err := fctl.NewStackClient(cmd, cfg, stack)
 	if err != nil {
-		return errors.Wrap(err, "creating stack client")
+		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	secret := ""
@@ -49,15 +66,15 @@ func RunChangeSecret(cmd *cobra.Command, args []string) error {
 			ID: args[0],
 		})
 	if err != nil {
-		return errors.Wrap(err, "changing secret")
+		return nil, errors.Wrap(err, "changing secret")
 	}
 
 	if response.ErrorResponse != nil {
-		return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
-		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	output := &ChangeSecretOutput{
@@ -65,18 +82,13 @@ func RunChangeSecret(cmd *cobra.Command, args []string) error {
 		ID:     response.ConfigResponse.Data.ID,
 	}
 
-	fctl.SetSharedData(output, nil, nil, nil)
+	c.GetStore().SetData(output)
 
-	return nil
+	return c, nil
 }
 
-type ChangeSecretOutput struct {
-	Secret string `json:"secret"`
-	ID     string `json:"id"`
-}
-
-func DisplayWebhooks(cmd *cobra.Command, args []string) error {
-	Data, ok := fctl.GetSharedData().(*ChangeSecretOutput)
+func (c *ChangeSecretWebhook) Render(cmd *cobra.Command, args []string) error {
+	Data, ok := c.GetStore().GetData().(*ChangeSecretOutput)
 	if !ok {
 		return errors.New("unable to get shared data")
 	}
@@ -92,7 +104,7 @@ func NewChangeSecretCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithAliases("cs"),
 		fctl.WithArgs(cobra.RangeArgs(1, 2)),
-		fctl.WithRunE(RunChangeSecret),
-		fctl.WrapOutputPostRunE(DisplayWebhooks),
+		fctl.WithController(NewChangeSecretWebhook()),
+		// fctl.WrapOutputPostRunE(DisplayWebhooks),
 	)
 }

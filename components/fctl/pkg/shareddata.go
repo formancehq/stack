@@ -18,60 +18,70 @@ type SharedStore struct {
 
 }
 
-var sharedStore = &SharedStore{
-	additionnalData: make(map[string]interface{}),
+func NewSharedStore() *SharedStore {
+	return &SharedStore{
+		additionnalData: make(map[string]interface{}),
+	}
 }
 
 // GetSharedData returns the shared data store
-func GetSharedData() interface{} {
-	return sharedStore.data
+func (s *SharedStore) GetData() interface{} {
+	return s.data
 }
 
-func GetSharedProfile() *Profile {
-	return sharedStore.profile
+func (s *SharedStore) GetProfile() *Profile {
+	return s.profile
 }
 
-func GetSharedConfig() *Config {
-	return sharedStore.config
+func (s *SharedStore) GetConfig() *Config {
+	return s.config
 }
 
-func SetSharedData(data interface{}, profile *Profile, config *Config, additionnalData map[string]interface{}) {
-	sharedStore.data = data
-	sharedStore.profile = profile
-	sharedStore.config = config
-	sharedStore.additionnalData = additionnalData
+func (s *SharedStore) SetConfig(c *Config) *SharedStore {
+	s.config = c
+	return s
 }
 
-func SetSharedAdditionnalData(key string, value interface{}) {
-	sharedStore.additionnalData[key] = value
+func (s *SharedStore) SetData(data interface{}) *SharedStore {
+	s.data = data
+	return s
 }
 
-func GetSharedAdditionnalData(key string) interface{} {
-	return sharedStore.additionnalData[key]
+func (s *SharedStore) SetProfile(p *Profile) *SharedStore {
+	s.profile = p
+	return s
+}
+
+func (s *SharedStore) SetAdditionnalData(key string, value interface{}) {
+	s.additionnalData[key] = value
+}
+
+func (s *SharedStore) GetAdditionnalData(key string) interface{} {
+	return s.additionnalData[key]
 }
 
 type ExportedData struct {
 	Data interface{} `json:"data"`
 }
 
-func ShareStoreToJson() ([]byte, error) {
-	if (sharedStore.data) == nil {
+func (s *SharedStore) ToJson() ([]byte, error) {
+	if (s.data) == nil {
 		return nil, errors.New("no data to marshal")
 	}
 
 	// Inject into export struct
 	export := ExportedData{
-		Data: sharedStore.data,
+		Data: s.data,
 	}
 
 	// Marshal to JSON then print to stdout
-	s, err := json.Marshal(export)
+	out, err := json.Marshal(export)
 	if err != nil {
 		return nil, err
 	}
 
 	raw := make(map[string]any)
-	if err := json.Unmarshal(s, &raw); err == nil {
+	if err := json.Unmarshal(out, &raw); err == nil {
 		f := colorjson.NewFormatter()
 		f.Indent = 2
 		colorized, err := f.Marshal(raw)
@@ -80,7 +90,7 @@ func ShareStoreToJson() ([]byte, error) {
 		}
 		return colorized, nil
 	} else {
-		return s, nil
+		return out, nil
 	}
 
 }

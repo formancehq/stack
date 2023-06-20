@@ -10,6 +10,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type UiOutput struct {
+	UIUrl        string `json:"stack_url"`
+	FoundBrowser bool   `json:"browser_found"`
+}
+
+type Ui struct {
+	store *fctl.SharedStore
+}
+
+func NewUi() *Ui {
+	return &Ui{
+		store: fctl.NewSharedStore(),
+	}
+}
+
 func openUrl(url string) error {
 	var (
 		cmd  string
@@ -28,22 +43,25 @@ func openUrl(url string) error {
 	args = append(args, url)
 	return exec.Command(cmd, args...).Start()
 }
+func (c *Ui) GetStore() *fctl.SharedStore {
+	return c.store
+}
 
-func RunUiCommand(cmd *cobra.Command, args []string) error {
+func (c *Ui) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	stack, err := fctl.ResolveStack(cmd, cfg, organization)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	profile := fctl.GetCurrentProfile(cmd, cfg)
@@ -58,19 +76,14 @@ func RunUiCommand(cmd *cobra.Command, args []string) error {
 		ui.FoundBrowser = true
 	}
 
-	fctl.SetSharedData(ui, profile, cfg, nil)
-	return errors.Wrap(err, "opening ui")
-
+	c.GetStore().SetData(ui)
+	// fctl.SetSharedData(ui, profile, cfg, nil)
+	return c, nil
 }
 
-type UiOutput struct {
-	UIUrl        string `json:"stack_url"`
-	FoundBrowser bool   `json:"browser_found"`
-}
+func (c *Ui) Render(cmd *cobra.Command, args []string) error {
 
-func DisplayOutput(cmd *cobra.Command, args []string) error {
-
-	ui, ok := fctl.GetSharedData().(UiOutput)
+	ui, ok := c.GetStore().GetData().(UiOutput)
 	if !ok {
 		return errors.New("invalid output")
 	}
@@ -84,7 +97,7 @@ func NewUICommand() *cobra.Command {
 	return fctl.NewStackCommand("ui",
 		fctl.WithShortDescription("Open UI"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithRunE(RunUiCommand),
-		fctl.WrapOutputPostRunE(DisplayOutput),
+		fctl.WithController(NewUi()),
+		// fctl.WrapOutputPostRunE(DisplayOutput),
 	)
 }
