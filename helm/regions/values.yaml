@@ -1,0 +1,6 @@
+
+operator:
+  enabled: true
+
+agent:
+  enabled: true

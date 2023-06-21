@@ -1,0 +1,14 @@
+type: 'tool'
+language: 'go'
+tasks:
+  docs:
+    command: 'helm-docs --chart-search-root ./../'
+    platform: 'system'
+    inputs:
+      - '**'
+
+  release:
+    command: 'task release'
+    platform: 'system'
+    inputs:
+      - '**'
