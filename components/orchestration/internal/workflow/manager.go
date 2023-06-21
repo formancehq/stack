@@ -118,6 +118,7 @@ func (m *Manager) ListWorkflows(ctx context.Context) ([]Workflow, error) {
 	workflows := make([]Workflow, 0)
 	if err := m.db.NewSelect().
 		Model(&workflows).
+		Where("deleted_at IS NULL").
 		Scan(ctx); err != nil {
 		return nil, err
 	}
