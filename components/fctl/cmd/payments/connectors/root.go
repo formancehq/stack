@@ -13,6 +13,7 @@ func NewConnectorsCommand() *cobra.Command {
 		fctl.WithChildCommands(
 			NewGetConfigCommand(),
 			NewUninstallCommand(),
+			NewListCommand(),
 			install.NewInstallCommand(),
 		),
 	)
