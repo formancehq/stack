@@ -1,20 +1,41 @@
 package connectors
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
+	"github.com/formancehq/fctl/cmd/payments/connectors/views"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 var (
-	connectorsAvailable = []string{"stripe"}
+	connectorsAvailable = []string{internal.StripeConnector} //internal.ModulrConnector, internal.BankingCircleConnector, internal.CurrencyCloudConnector, internal.WiseConnector}
 )
+
+type PaymentsGetConfigStore struct {
+	ConnectorConfig *shared.ConnectorConfigResponse `json:"connector_config"`
+}
+type PaymentsGetConfigController struct {
+	store *PaymentsGetConfigStore
+	args  []string
+}
+
+var _ fctl.Controller[*PaymentsGetConfigStore] = (*PaymentsGetConfigController)(nil)
+
+func NewDefaultPaymentsGetConfigStore() *PaymentsGetConfigStore {
+	return &PaymentsGetConfigStore{}
+}
+
+func NewPaymentsGetConfigController() *PaymentsGetConfigController {
+	return &PaymentsGetConfigController{
+		store: NewDefaultPaymentsGetConfigStore(),
+	}
+}
 
 func NewGetConfigCommand() *cobra.Command {
 	return fctl.NewCommand("get-config <connector-name>",
@@ -22,167 +43,75 @@ func NewGetConfigCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithValidArgs(connectorsAvailable...),
 		fctl.WithShortDescription(fmt.Sprintf("Read a connector config (Connectors available: %s)", connectorsAvailable)),
-		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
-
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return err
-			}
-
-			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-			if err != nil {
-				return err
-			}
-
-			client, err := fctl.NewStackClient(cmd, cfg, stack)
-			if err != nil {
-				return err
-			}
-
-			response, err := client.Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
-				Connector: shared.Connector(args[0]),
-			})
-			if err != nil {
-				return err
-			}
-
-			if response.StatusCode >= 300 {
-				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
-			}
-
-			switch args[0] {
-			case internal.StripeConnector:
-				err = displayStripeConfig(cmd, response.ConnectorConfigResponse)
-			case internal.ModulrConnector:
-				err = displayModulrConfig(cmd, response.ConnectorConfigResponse)
-			case internal.BankingCircleConnector:
-				err = displayBankingCircleConfig(cmd, response.ConnectorConfigResponse)
-			case internal.CurrencyCloudConnector:
-				err = displayCurrencyCloudConfig(cmd, response.ConnectorConfigResponse)
-			case internal.WiseConnector:
-				err = displayWiseConfig(cmd, response.ConnectorConfigResponse)
-			case internal.MangoPayConnector:
-				err = displayMangoPayConfig(cmd, response.ConnectorConfigResponse)
-			case internal.MoneycorpConnector:
-				err = displayMoneycorpConfig(cmd, response.ConnectorConfigResponse)
-			default:
-				pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("Connection unknown.")
-			}
-			return err
-		}),
+		fctl.WithController[*PaymentsGetConfigStore](NewPaymentsGetConfigController()),
 	)
 }
 
-func displayStripeConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config, ok := connectorConfig.Data.(*shared.StripeConfig)
-	if !ok {
-		return errors.New("invalid stripe connector config")
-	}
-
-	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
-
-	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
-		WithData(tableData).
-		Render(); err != nil {
-		return err
-	}
-	return nil
+func (c *PaymentsGetConfigController) GetStore() *PaymentsGetConfigStore {
+	return c.store
 }
 
-func displayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config, ok := connectorConfig.Data.(*shared.ModulrConfig)
-	if !ok {
-		return errors.New("invalid modulr connector config")
+func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+
+	cfg, err := fctl.GetConfig(cmd)
+	if err != nil {
+		return nil, err
 	}
 
-	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
-	tableData = append(tableData, []string{pterm.LightCyan("API secret:"), config.APISecret})
-	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
-		if config.Endpoint == nil {
-			return ""
-		}
-		return *config.Endpoint
-	}()})
-
-	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
-		WithData(tableData).
-		Render(); err != nil {
-		return err
+	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := client.Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
+		Connector: shared.Connector(args[0]),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
+
+	c.args = args
+	c.store.ConnectorConfig = response.ConnectorConfigResponse
+
+	return c, err
+
 }
 
-func displayWiseConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config, ok := connectorConfig.Data.(*shared.WiseConfig)
-	if !ok {
-		return errors.New("invalid wise connector config")
+// TODO: This need to use the ui.NewListModel
+func (c *PaymentsGetConfigController) Render(cmd *cobra.Command, args []string) error {
+	var err error
+
+	switch c.args[0] {
+	case internal.StripeConnector:
+		err = views.DisplayStripeConfig(cmd, c.store.ConnectorConfig)
+	case internal.ModulrConnector:
+		err = views.DisplayModulrConfig(cmd, c.store.ConnectorConfig)
+	case internal.BankingCircleConnector:
+		err = views.DisplayBankingCircleConfig(cmd, c.store.ConnectorConfig)
+	case internal.CurrencyCloudConnector:
+		err = views.DisplayCurrencyCloudConfig(cmd, c.store.ConnectorConfig)
+	case internal.WiseConnector:
+		err = views.DisplayWiseConfig(cmd, c.store.ConnectorConfig)
+	default:
+		pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("Connection unknown.")
 	}
 
-	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
+	return err
 
-	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
-		WithData(tableData).
-		Render(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func displayBankingCircleConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config, ok := connectorConfig.Data.(*shared.BankingCircleConfig)
-	if !ok {
-		return errors.New("invalid banking circle connector config")
-	}
-
-	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("Username:"), config.Username})
-	tableData = append(tableData, []string{pterm.LightCyan("Password:"), config.Password})
-	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), config.Endpoint})
-	tableData = append(tableData, []string{pterm.LightCyan("Authorization endpoint:"), config.AuthorizationEndpoint})
-
-	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
-		WithData(tableData).
-		Render(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func displayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config, ok := connectorConfig.Data.(*shared.CurrencyCloudConfig)
-	if !ok {
-		return errors.New("invalid currency cloud connector config")
-	}
-
-	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
-	tableData = append(tableData, []string{pterm.LightCyan("Login ID:"), config.LoginID})
-	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
-		if config.Endpoint == nil {
-			return ""
-		}
-		return *config.Endpoint
-	}()})
-
-	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
-		WithData(tableData).
-		Render(); err != nil {
-		return err
-	}
-	return nil
 }
 
 func displayMangoPayConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
