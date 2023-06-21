@@ -4,8 +4,8 @@ metadata:
   annotations:
     config.kubernetes.io/origin: |
       path: ../rbac/leader_election_role.yaml
-  name: formance-operator-leader-election-role
-  namespace: formance-operator
+  name: formance-system-leader-election-role
+  namespace: formance-system
 rules:
 - apiGroups:
   - ""

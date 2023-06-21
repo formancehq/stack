@@ -4,7 +4,7 @@ metadata:
   annotations:
     config.kubernetes.io/origin: |
       path: ../rbac/auth_proxy_client_clusterrole.yaml
-  name: formance-operator-metrics-reader
+  name: formance-system-metrics-reader
 rules:
 - nonResourceURLs:
   - /metrics

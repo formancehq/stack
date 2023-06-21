@@ -4,8 +4,8 @@ metadata:
   annotations:
     config.kubernetes.io/origin: |
       path: ../webhook/service.yaml
-  name: formance-operator-webhook-service
-  namespace: formance-operator
+  name: formance-system-webhook-service
+  namespace: formance-system
 spec:
   ports:
   - port: 443

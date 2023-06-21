@@ -102,13 +102,15 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
 
+HELM_DIR ?= ./helm/templates/gen
 .PHONY: helm-update
 helm-update: manifests generate
-	rm -rf ./helm/templates/gen
-	mkdir -p ./helm/templates/gen
-	$(KUSTOMIZE) build config/default --output ./helm/templates/gen
-	rm -f ./helm/templates/gen/v1_namespace*.yaml
-	rm -f ./helm/templates/gen/apps_v1_deployment_*.yaml
+	rm -rf $(HELM_DIR)
+	mkdir -p $(HELM_DIR)
+	$(KUSTOMIZE) build config/default --output $(HELM_DIR)
+	rm -f $(HELM_DIR)/v1_namespace*.yaml
+	rm -f $(HELM_DIR)/apps_v1_deployment_*.yaml
+	rm -f $(HELM_DIR)/apiextensions.k8s.io_v1_customresourcedefinition_*.components.formance.com.yaml
 
 .PHONY: helm-debug
 helm-debug: helm-update

@@ -2,17 +2,17 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: formance-operator/formance-operator-serving-cert
+    cert-manager.io/inject-ca-from: formance-system/formance-system-serving-cert
     config.kubernetes.io/origin: |
       path: ../webhook/manifests.yaml
-  name: formance-operator-mutating-webhook-configuration
+  name: formance-system-mutating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
   - v1
   clientConfig:
     service:
-      name: formance-operator-webhook-service
-      namespace: formance-operator
+      name: formance-system-webhook-service
+      namespace: formance-system
       path: /mutate-stack-formance-com-v1beta3-configuration
   failurePolicy: Fail
   name: mconfiguration.kb.io
@@ -31,8 +31,8 @@ webhooks:
   - v1
   clientConfig:
     service:
-      name: formance-operator-webhook-service
-      namespace: formance-operator
+      name: formance-system-webhook-service
+      namespace: formance-system
       path: /mutate-stack-formance-com-v1beta3-stack
   failurePolicy: Fail
   name: mstacks-v1beta3.kb.io
@@ -51,8 +51,8 @@ webhooks:
   - v1
   clientConfig:
     service:
-      name: formance-operator-webhook-service
-      namespace: formance-operator
+      name: formance-system-webhook-service
+      namespace: formance-system
       path: /mutate-stack-formance-com-v1beta2-stack
   failurePolicy: Fail
   name: mstacks-v1beta2.kb.io
