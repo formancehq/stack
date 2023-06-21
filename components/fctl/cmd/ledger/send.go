@@ -71,7 +71,7 @@ func NewSendCommand() *cobra.Command {
 			}
 
 			reference := fctl.GetString(cmd, referenceFlag)
-			tx, err := internal.CreateTransaction(ledgerClient, cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag), operations.CreateTransactionRequest{
+			tx, err := internal.CreateTransaction(ledgerClient, cmd.Context(), operations.CreateTransactionRequest{
 				PostTransaction: shared.PostTransaction{
 					Metadata: metadata,
 					Postings: []shared.Posting{
