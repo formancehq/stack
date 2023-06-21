@@ -1,5 +1,5 @@
 fail_fast: true
-exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/helm|components/stargate/internal/api|components/operator/helm|devbox.lock
+exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/helm|components/stargate/internal/api|components/operator/helm|devbox.lock|helm
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
@@ -23,7 +23,7 @@ repos:
   hooks:
   - id: moon
     name: moon
-    entry: moon run :lint :test :mod :helm :sync --affected --status=staged
+    entry: moon run :lint :test :mod :helm :sync :docs --affected --status=staged
     language: system
     description: "Runs `moon`"
     require_serial: true

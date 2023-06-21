@@ -1,0 +1,23 @@
+version: "3"
+
+tasks:
+  release:
+    cmds:
+      - task: build
+      - for i in $(ls *.tgz); do helm push $i oci://ghcr.io/formancehq/helm; done
+
+  build:
+    cmds:
+      - task: build:regions
+      - task: build:agent
+      - task: build:operator
+
+  build:regions:
+    cmds:
+      - helm package ./regions
+  build:operator:
+    cmds:
+      - helm package ./operator
+  build:agent:
+    cmds:
+      - helm package ./agent
