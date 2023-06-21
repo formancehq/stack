@@ -1,6 +1,8 @@
 package fctl
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"
@@ -227,19 +229,70 @@ func WithConfirmFlag() CommandOptionFn {
 }
 
 func NewStackCommand(use string, opts ...CommandOption) *cobra.Command {
-	return NewMembershipCommand(use,
+	cmd := NewMembershipCommand(use,
 		append(opts,
 			WithPersistentStringFlag(stackFlag, "", "Specific stack (not required if only one stack is present)"),
 		)...,
 	)
+	cmd.RegisterFlagCompletionFunc("stack", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		cfg, err := GetConfig(cmd)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		profile := GetCurrentProfile(cmd, cfg)
+
+		claims, err := profile.GetUserInfo(cmd)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		selectedOrganization := GetSelectedOrganization(cmd)
+		if selectedOrganization == "" {
+			selectedOrganization = profile.defaultOrganization
+		}
+
+		ret := make([]string, 0)
+		for _, org := range claims.Org {
+			if selectedOrganization != "" && selectedOrganization != org.ID {
+				continue
+			}
+			for _, stack := range org.Stacks {
+				ret = append(ret, fmt.Sprintf("%s\t%s", stack.ID, stack.DisplayName))
+			}
+		}
+
+		return ret, cobra.ShellCompDirectiveDefault
+	})
+	return cmd
 }
 
 func NewMembershipCommand(use string, opts ...CommandOption) *cobra.Command {
-	return NewCommand(use,
+	cmd := NewCommand(use,
 		append(opts,
 			WithPersistentStringFlag(organizationFlag, "", "Selected organization (not required if only one organization is present)"),
 		)...,
 	)
+	cmd.RegisterFlagCompletionFunc("organization", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+		cfg, err := GetConfig(cmd)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		profile := GetCurrentProfile(cmd, cfg)
+
+		claims, err := profile.GetUserInfo(cmd)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		ret := make([]string, 0)
+		for _, org := range claims.Org {
+			ret = append(ret, fmt.Sprintf("%s\t%s", org.ID, org.DisplayName))
+		}
+
+		return ret, cobra.ShellCompDirectiveDefault
+	})
+	return cmd
 }
 
 func NewCommand(use string, opts ...CommandOption) *cobra.Command {
