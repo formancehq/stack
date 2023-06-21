@@ -85,6 +85,9 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		target = defaultTarget
 	}
 
+	if target == "ANY" {
+		target = ""
+	}
 	c.target = target // Save for display
 
 	request := shared.Query{
@@ -102,9 +105,9 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 
 	// "" ou ANY
-	if target == "" || target == defaultTarget {
+	if target == "" {
 		c.store.Response.Data = response.Response.Data
-		return c, err
+		c.store.Response.Cursor = response.Response.Cursor
 	} else {
 		// TRANSACTION, ACCOUNT, ASSET, PAYMENT
 		c.store.Response.Cursor = response.Response.Cursor
@@ -115,14 +118,14 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 
 func (c *SearchController) Render(cmd *cobra.Command, args []string) error {
 	var err error
-
 	// No Data
-	if len(c.store.Response.Cursor.Data) == 0 && len(c.store.Response.Data) == 0 {
+	if (c.store.Response.Cursor != nil && len(c.store.Response.Cursor.Data) == 0) && len(c.store.Response.Data) == 0 {
 		fctl.Section.WithWriter(cmd.OutOrStdout()).Println("No data found")
 		return nil
 	}
+
 	ok := fctl.ContainValue(targets, c.target)
-	// There is data in a cursor
+	// Cursor is initialized & target is valid
 	if ok && c.store.Response.Cursor != nil {
 		//But no data
 		if len(c.store.Response.Cursor.Data) == 0 {
@@ -147,7 +150,8 @@ func (c *SearchController) Render(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	ok = fctl.ContainValue(targets, defaultTarget)
+	ok = defaultTarget == c.target || c.target == ""
+
 	// Any data
 	if len(c.store.Response.Data) > 0 && ok {
 		tableData := make([][]string, 0)
