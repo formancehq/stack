@@ -11,63 +11,84 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type OrchestrationWorkflowsCreateStore struct {
+	WorkflowId string `json:"workflowId"`
+}
+type OrchestrationWorkflowsCreateController struct {
+	store *OrchestrationWorkflowsCreateStore
+}
+
+var _ fctl.Controller[*OrchestrationWorkflowsCreateStore] = (*OrchestrationWorkflowsCreateController)(nil)
+
+func NewDefaultOrchestrationWorkflowsCreateStore() *OrchestrationWorkflowsCreateStore {
+	return &OrchestrationWorkflowsCreateStore{}
+}
+
+func NewOrchestrationWorkflowsCreateController() *OrchestrationWorkflowsCreateController {
+	return &OrchestrationWorkflowsCreateController{
+		store: NewDefaultOrchestrationWorkflowsCreateStore(),
+	}
+}
+
 func NewCreateCommand() *cobra.Command {
 	return fctl.NewCommand("create <file>|-",
 		fctl.WithShortDescription("Create a workflow"),
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return errors.Wrap(err, "retrieving config")
-			}
-
-			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-			if err != nil {
-				return err
-			}
-
-			client, err := fctl.NewStackClient(cmd, cfg, stack)
-			if err != nil {
-				return errors.Wrap(err, "creating stack client")
-			}
-
-			script, err := fctl.ReadFile(cmd, stack, args[0])
-			if err != nil {
-				return err
-			}
-
-			config := shared.WorkflowConfig{}
-			if err := yaml.Unmarshal([]byte(script), &config); err != nil {
-				return err
-			}
-
-			//nolint:gosimple
-			response, err := client.Orchestration.
-				CreateWorkflow(cmd.Context(), shared.CreateWorkflowRequest{
-					Name:   config.Name,
-					Stages: config.Stages,
-				})
-			if err != nil {
-				return err
-			}
-
-			if response.Error != nil {
-				return fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
-			}
-
-			if response.StatusCode >= 300 {
-				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
-			}
-
-			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow created with ID: %s", response.CreateWorkflowResponse.Data.ID)
-
-			return nil
-		}),
+		fctl.WithController[*OrchestrationWorkflowsCreateStore](NewOrchestrationWorkflowsCreateController()),
 	)
+}
+
+func (c *OrchestrationWorkflowsCreateController) GetStore() *OrchestrationWorkflowsCreateStore {
+	return c.store
+}
+
+func (c *OrchestrationWorkflowsCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+
+	soc, err := fctl.GetStackOrganizationConfig(cmd)
+	if err != nil {
+		return nil, err
+	}
+	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	if err != nil {
+		return nil, errors.Wrap(err, "creating stack client")
+	}
+
+	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	config := shared.WorkflowConfig{}
+	if err := yaml.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
+	}
+
+	//nolint:gosimple
+	response, err := client.Orchestration.
+		CreateWorkflow(cmd.Context(), shared.CreateWorkflowRequest{
+			Name:   config.Name,
+			Stages: config.Stages,
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	if response.Error != nil {
+		return nil, fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
+	}
+
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
+
+	c.store.WorkflowId = response.CreateWorkflowResponse.Data.ID
+
+	return c, nil
+}
+
+func (c *OrchestrationWorkflowsCreateController) Render(cmd *cobra.Command, args []string) error {
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow created with ID: %s", c.store.WorkflowId)
+
+	return nil
 }
