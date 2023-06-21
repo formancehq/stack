@@ -33,10 +33,19 @@ func taskFetchPayments(logger logging.Logger, client *client) task.Task {
 				return err
 			}
 
+			paymentType := matchPaymentType(paymentEl.Classification)
+
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
+					ID: models.PaymentID{
+						PaymentReference: models.PaymentReference{
+							Reference: paymentEl.TransactionReference,
+							Type:      paymentType,
+						},
+						Provider: models.ConnectorProviderBankingCircle,
+					},
 					Reference: paymentEl.TransactionReference,
-					Type:      matchPaymentType(paymentEl.Classification),
+					Type:      paymentType,
 					Status:    matchPaymentStatus(paymentEl.Status),
 					Scheme:    models.PaymentSchemeOther,
 					Amount:    int64(paymentEl.Transfer.Amount.Amount * 100),

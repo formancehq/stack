@@ -37,10 +37,19 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 				return fmt.Errorf("failed to marshal transaction: %w", err)
 			}
 
+			paymentType := matchTransactionType(transaction.Type)
+
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
+					ID: models.PaymentID{
+						PaymentReference: models.PaymentReference{
+							Reference: transaction.ID,
+							Type:      paymentType,
+						},
+						Provider: models.ConnectorProviderModulr,
+					},
 					Reference: transaction.ID,
-					Type:      matchTransactionType(transaction.Type),
+					Type:      paymentType,
 					Status:    models.PaymentStatusSucceeded,
 					Scheme:    models.PaymentSchemeOther,
 					Amount:    int64(transaction.Amount * 100),

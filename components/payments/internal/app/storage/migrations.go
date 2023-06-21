@@ -275,5 +275,45 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE payments.payment ALTER COLUMN id DROP DEFAULT;
+
+					ALTER TABLE payments.transfers DROP COLUMN payment_id;
+					ALTER TABLE payments.adjustment DROP COLUMN payment_id;
+					ALTER TABLE payments.metadata DROP COLUMN payment_id;
+
+					ALTER TABLE payments.payment ALTER COLUMN id TYPE character varying;
+
+					ALTER TABLE payments.metadata ADD COLUMN payment_id CHARACTER VARYING;
+					ALTER TABLE payments.metadata ADD CONSTRAINT metadata_payment
+						FOREIGN KEY (payment_id)
+						REFERENCES payments.payment (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
+
+					ALTER TABLE payments.adjustment ADD COLUMN payment_id CHARACTER VARYING;
+					ALTER TABLE payments.adjustment ADD CONSTRAINT adjustment_payment
+						FOREIGN KEY (payment_id)
+						REFERENCES payments.payment (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
+
+					-- Since a transfer is created before a payment, we can't
+					-- have a foreign key constraint here.
+					ALTER TABLE payments.transfers ADD COLUMN payment_id CHARACTER VARYING;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

@@ -55,7 +55,6 @@ func startFakeGateway() {
 			if err := json.NewEncoder(w).Encode(res); err != nil {
 				panic(err)
 			}
-			w.WriteHeader(http.StatusOK)
 			return
 		}
 		for name, proxy := range proxies {
