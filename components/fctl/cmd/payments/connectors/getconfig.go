@@ -12,12 +12,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	connectorsAvailable = []string{"stripe"}
+)
+
 func NewGetConfigCommand() *cobra.Command {
 	return fctl.NewCommand("get-config <connector-name>",
 		fctl.WithAliases("getconfig", "getconf", "gc", "get", "g"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithValidArgs("stripe"),
-		fctl.WithShortDescription("Read a connector config"),
+		fctl.WithValidArgs(connectorsAvailable...),
+		fctl.WithShortDescription(fmt.Sprintf("Read a connector config (Connectors available: %s)", connectorsAvailable)),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 
 			cfg, err := fctl.GetConfig(cmd)
