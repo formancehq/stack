@@ -20,6 +20,48 @@ var (
 	ErrMultipleOrganizationsFound = errors.New("found more than one organization and no organization specified")
 )
 
+type StackOrganizationConfig struct {
+	OrganizationID string
+	Stack          *membershipclient.Stack
+	Config         *Config
+}
+
+func GetStackOrganizationConfig(cmd *cobra.Command) (*StackOrganizationConfig, error) {
+	cfg, err := GetConfig(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	organizationID, err := ResolveOrganizationID(cmd, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	stack, err := ResolveStack(cmd, cfg, organizationID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &StackOrganizationConfig{
+		OrganizationID: organizationID,
+		Stack:          stack,
+		Config:         cfg,
+	}, nil
+}
+
+func GetStackOrganizationConfigApprobation(cmd *cobra.Command, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
+	soc, err := GetStackOrganizationConfig(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	if !CheckStackApprobation(cmd, soc.Stack, disclaimer, args...) {
+		return nil, ErrMissingApproval
+	}
+
+	return soc, nil
+}
+
 func GetSelectedOrganization(cmd *cobra.Command) string {
 	return GetString(cmd, organizationFlag)
 }
