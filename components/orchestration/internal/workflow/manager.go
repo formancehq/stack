@@ -51,6 +51,23 @@ func (m *Manager) Create(ctx context.Context, config Config) (*Workflow, error) 
 	return &workflow, nil
 }
 
+func (m *Manager) DeleteWorkflow(ctx context.Context, id string) (*int64, error) {
+
+	var workflow Workflow
+
+	res, err := m.db.NewUpdate().Model(&workflow).Where("id = ?", id).Set("deleted_at = ?", time.Now()).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := res.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
 func (m *Manager) RunWorkflow(ctx context.Context, id string, variables map[string]string) (Instance, error) {
 
 	workflow := Workflow{}

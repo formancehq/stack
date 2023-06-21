@@ -81,7 +81,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetWorkflowResponse'
-
+    delete:
+      summary: Delete a flow by id
+      tags:
+      - Orchestration
+      description: Delete a flow by id
+      operationId: deleteWorkflow
+      responses:
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+        204:
+          description: No content
+  
   /workflows/{workflowID}/instances:
     parameters:
     - in: path
