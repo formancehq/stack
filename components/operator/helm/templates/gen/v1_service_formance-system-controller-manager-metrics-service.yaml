@@ -6,8 +6,8 @@ metadata:
       path: ../rbac/auth_proxy_service.yaml
   labels:
     control-plane: controller-manager
-  name: formance-operator-controller-manager-metrics-service
-  namespace: formance-operator
+  name: formance-system-controller-manager-metrics-service
+  namespace: formance-system
 spec:
   ports:
   - name: https

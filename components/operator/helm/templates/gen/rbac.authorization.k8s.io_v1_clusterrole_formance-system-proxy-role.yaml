@@ -4,7 +4,7 @@ metadata:
   annotations:
     config.kubernetes.io/origin: |
       path: ../rbac/auth_proxy_role.yaml
-  name: formance-operator-proxy-role
+  name: formance-system-proxy-role
 rules:
 - apiGroups:
   - authentication.k8s.io

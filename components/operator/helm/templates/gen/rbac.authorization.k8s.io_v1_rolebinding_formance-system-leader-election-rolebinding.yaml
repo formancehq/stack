@@ -4,13 +4,13 @@ metadata:
   annotations:
     config.kubernetes.io/origin: |
       path: ../rbac/leader_election_role_binding.yaml
-  name: formance-operator-leader-election-rolebinding
-  namespace: formance-operator
+  name: formance-system-leader-election-rolebinding
+  namespace: formance-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: formance-operator-leader-election-role
+  name: formance-system-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: formance-operator-controller-manager
-  namespace: formance-operator
+  name: formance-system-controller-manager
+  namespace: formance-system

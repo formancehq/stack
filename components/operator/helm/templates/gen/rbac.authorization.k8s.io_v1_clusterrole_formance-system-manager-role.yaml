@@ -5,7 +5,7 @@ metadata:
     config.kubernetes.io/origin: |
       path: ../rbac/role.yaml
   creationTimestamp: null
-  name: formance-operator-manager-role
+  name: formance-system-manager-role
 rules:
 - apiGroups:
   - apps

@@ -4,7 +4,7 @@ metadata:
   annotations:
     config.kubernetes.io/origin: |
       path: ../certmanager/certificate.yaml
-  name: formance-operator-selfsigned-issuer
-  namespace: formance-operator
+  name: formance-system-selfsigned-issuer
+  namespace: formance-system
 spec:
   selfSigned: {}
