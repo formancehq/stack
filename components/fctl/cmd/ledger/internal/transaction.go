@@ -2,17 +2,18 @@ package internal
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
+	"unsafe"
 
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"golang.org/x/mod/semver"
 )
@@ -55,7 +56,97 @@ func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.Formance, 
 	return strconv.ParseInt(id, 10, 64)
 }
 
-func CreateTransaction(client *formance.Formance, ctx context.Context, ledger string, request operations.CreateTransactionRequest) (*shared.Transaction, error) {
+// CreateTransactionResponse - OK
+type CreateTransactionResponse struct {
+	Data []shared.Transaction `json:"data"`
+}
+
+type CreateTransactionWrapper struct {
+	ContentType string
+	// OK
+	CreateTransactionResponse *CreateTransactionResponse
+	// Error
+	ErrorResponse *shared.ErrorResponse
+	StatusCode    int
+	RawResponse   *http.Response
+}
+
+// CreateTransaction - Create a new transaction to a ledger
+func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL string, request operations.CreateTransactionRequest) (*CreateTransactionWrapper, error) {
+
+	// Dirty hack to get the http client from the sdk client struct
+	field := reflect.ValueOf(client).Elem().FieldByName("_securityClient")
+	httpClient := reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().Interface().(formance.HTTPClient)
+
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, "PostTransaction", "json")
+	if err != nil {
+		return nil, fmt.Errorf("error serializing request body: %w", err)
+	}
+	if bodyReader == nil {
+		return nil, fmt.Errorf("request body is required")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json;q=1, application/json;q=0")
+	req.Header.Set("Content-Type", reqContentType)
+
+	utils.PopulateHeaders(ctx, req, request)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	httpRes, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+	defer httpRes.Body.Close()
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &CreateTransactionWrapper{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out *CreateTransactionResponse
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+				return nil, err
+			}
+
+			res.CreateTransactionResponse = out
+		}
+	default:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out *shared.ErrorResponse
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+				return nil, err
+			}
+
+			res.ErrorResponse = out
+		}
+	}
+
+	return res, nil
+}
+
+func CreateTransaction(client *formance.Formance, ctx context.Context, request operations.CreateTransactionRequest) (*shared.Transaction, error) {
 
 	versionsResponse, err := client.GetVersions(ctx)
 	if err != nil {
@@ -69,15 +160,17 @@ func CreateTransaction(client *formance.Formance, ctx context.Context, ledger st
 		return version.Name == "ledger"
 	})[0].Version
 
-	response, err := client.Ledger.CreateTransaction(ctx, request)
-
 	if semver.IsValid(version) && semver.Compare(version, "v2.0.0") < 0 {
-		baseResponse := api.BaseResponse[[]shared.Transaction]{}
-		if err := json.NewDecoder(response.RawResponse.Body).Decode(&baseResponse); err != nil {
+		baseURL := strings.TrimSuffix(versionsResponse.RawResponse.Request.URL.String(), "/versions")
+
+		v, err := createTransactionV1(ctx, client, baseURL, request)
+		if err != nil {
 			return nil, err
 		}
-		return &(*baseResponse.Data)[0], nil
+
+		return &v.CreateTransactionResponse.Data[0], nil
 	} else {
+		response, err := client.Ledger.CreateTransaction(ctx, request)
 		if err != nil {
 			return nil, err
 		}

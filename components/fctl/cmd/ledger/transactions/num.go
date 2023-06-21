@@ -120,7 +120,7 @@ func NewCommand() *cobra.Command {
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
 
-			tx, err := internal.CreateTransaction(client, cmd.Context(), ledger, operations.CreateTransactionRequest{
+			tx, err := internal.CreateTransaction(client, cmd.Context(), operations.CreateTransactionRequest{
 				PostTransaction: shared.PostTransaction{
 					Metadata:  metadata,
 					Reference: &reference,
