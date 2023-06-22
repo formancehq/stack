@@ -45,21 +45,18 @@ affinity: {}
 debug: false
 
 server:
-  address: ""
+  address: "app.formance.cloud:443"
   tls:
-    enabled: false
-    insecureSkipVerify: false
-    ca: ""
+    enabled: true
+    insecureSkipVerify: true
 
 agent:
-  id: ""
-  baseUrl: http://example.net
+  id: "b7549a16-f74a-4815-ab1e-bb8ef1c3833b"
+  baseUrl: ""
   production: false
   # Authentication token
   authentication:
-    mode: token
-    token: "sdfsdf"
-    # OAuth2 mode
-    # mode: bearer
-    # issuer: https://app.formance.cloud
-    # clientSecret: YYY
+    mode: bearer
+    issuer: https://app.formance.cloud/api
+    clientID: ""
+    clientSecret: ""
