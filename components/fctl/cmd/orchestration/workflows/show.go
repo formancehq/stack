@@ -13,22 +13,22 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type OrchestrationWorkflowsShowStore struct {
+type WorkflowsShowStore struct {
 	Workflow shared.Workflow `json:"workflow"`
 }
-type OrchestrationWorkflowsShowController struct {
-	store *OrchestrationWorkflowsShowStore
+type WorkflowsShowController struct {
+	store *WorkflowsShowStore
 }
 
-var _ fctl.Controller[*OrchestrationWorkflowsShowStore] = (*OrchestrationWorkflowsShowController)(nil)
+var _ fctl.Controller[*WorkflowsShowStore] = (*WorkflowsShowController)(nil)
 
-func NewDefaultOrchestrationWorkflowsShowStore() *OrchestrationWorkflowsShowStore {
-	return &OrchestrationWorkflowsShowStore{}
+func NewDefaultWorkflowsShowStore() *WorkflowsShowStore {
+	return &WorkflowsShowStore{}
 }
 
-func NewOrchestrationWorkflowsShowController() *OrchestrationWorkflowsShowController {
-	return &OrchestrationWorkflowsShowController{
-		store: NewDefaultOrchestrationWorkflowsShowStore(),
+func NewWorkflowsShowController() *WorkflowsShowController {
+	return &WorkflowsShowController{
+		store: NewDefaultWorkflowsShowStore(),
 	}
 }
 
@@ -37,15 +37,15 @@ func NewShowCommand() *cobra.Command {
 		fctl.WithShortDescription("Show a workflow"),
 		fctl.WithAliases("s"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*OrchestrationWorkflowsShowStore](NewOrchestrationWorkflowsShowController()),
+		fctl.WithController[*WorkflowsShowStore](NewWorkflowsShowController()),
 	)
 }
 
-func (c *OrchestrationWorkflowsShowController) GetStore() *OrchestrationWorkflowsShowStore {
+func (c *WorkflowsShowController) GetStore() *WorkflowsShowStore {
 	return c.store
 }
 
-func (c *OrchestrationWorkflowsShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *WorkflowsShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
@@ -77,7 +77,7 @@ func (c *OrchestrationWorkflowsShowController) Run(cmd *cobra.Command, args []st
 	return c, nil
 }
 
-func (c *OrchestrationWorkflowsShowController) Render(cmd *cobra.Command, args []string) error {
+func (c *WorkflowsShowController) Render(cmd *cobra.Command, args []string) error {
 	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Workflow.ID})

@@ -11,22 +11,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type OrchestrationWorkflowsListStore struct {
+type WorkflowsListStore struct {
 	Workflows []shared.Workflow `json:"workflows"`
 }
-type OrchestrationWorkflowsListController struct {
-	store *OrchestrationWorkflowsListStore
+type WorkflowsListController struct {
+	store *WorkflowsListStore
 }
 
-var _ fctl.Controller[*OrchestrationWorkflowsListStore] = (*OrchestrationWorkflowsListController)(nil)
+var _ fctl.Controller[*WorkflowsListStore] = (*WorkflowsListController)(nil)
 
-func NewDefaultOrchestrationWorkflowsListStore() *OrchestrationWorkflowsListStore {
-	return &OrchestrationWorkflowsListStore{}
+func NewDefaultWorkflowsListStore() *WorkflowsListStore {
+	return &WorkflowsListStore{}
 }
 
-func NewOrchestrationWorkflowsListController() *OrchestrationWorkflowsListController {
-	return &OrchestrationWorkflowsListController{
-		store: NewDefaultOrchestrationWorkflowsListStore(),
+func NewWorkflowsListController() *WorkflowsListController {
+	return &WorkflowsListController{
+		store: NewDefaultWorkflowsListStore(),
 	}
 }
 
@@ -35,15 +35,15 @@ func NewListCommand() *cobra.Command {
 		fctl.WithShortDescription("List all workflows"),
 		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithController[*OrchestrationWorkflowsListStore](NewOrchestrationWorkflowsListController()),
+		fctl.WithController[*WorkflowsListStore](NewWorkflowsListController()),
 	)
 }
 
-func (c *OrchestrationWorkflowsListController) GetStore() *OrchestrationWorkflowsListStore {
+func (c *WorkflowsListController) GetStore() *WorkflowsListStore {
 	return c.store
 }
 
-func (c *OrchestrationWorkflowsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *WorkflowsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
@@ -72,7 +72,7 @@ func (c *OrchestrationWorkflowsListController) Run(cmd *cobra.Command, args []st
 	return c, nil
 }
 
-func (c *OrchestrationWorkflowsListController) Render(cmd *cobra.Command, args []string) error {
+func (c *WorkflowsListController) Render(cmd *cobra.Command, args []string) error {
 	if len(c.store.Workflows) == 0 {
 		fctl.Println("No workflows found.")
 		return nil

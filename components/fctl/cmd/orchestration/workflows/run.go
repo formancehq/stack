@@ -14,26 +14,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type OrchestrationWorkflowsRunStore struct {
+type WorkflowsRunStore struct {
 	WorkflowInstance shared.WorkflowInstance `json:"workflow_instance"`
 }
-type OrchestrationWorkflowsRunController struct {
-	store        *OrchestrationWorkflowsRunStore
+type WorkflowsRunController struct {
+	store        *WorkflowsRunStore
 	variableFlag string
 	waitFlag     string
 	client       *formance.Formance
 	wait         bool
 }
 
-var _ fctl.Controller[*OrchestrationWorkflowsRunStore] = (*OrchestrationWorkflowsRunController)(nil)
+var _ fctl.Controller[*WorkflowsRunStore] = (*WorkflowsRunController)(nil)
 
-func NewDefaultOrchestrationWorkflowsRunStore() *OrchestrationWorkflowsRunStore {
-	return &OrchestrationWorkflowsRunStore{}
+func NewDefaultWorkflowsRunStore() *WorkflowsRunStore {
+	return &WorkflowsRunStore{}
 }
 
-func NewOrchestrationWorkflowsRunController() *OrchestrationWorkflowsRunController {
-	return &OrchestrationWorkflowsRunController{
-		store:        NewDefaultOrchestrationWorkflowsRunStore(),
+func NewWorkflowsRunController() *WorkflowsRunController {
+	return &WorkflowsRunController{
+		store:        NewDefaultWorkflowsRunStore(),
 		variableFlag: "variable",
 		waitFlag:     "wait",
 		wait:         false,
@@ -41,22 +41,22 @@ func NewOrchestrationWorkflowsRunController() *OrchestrationWorkflowsRunControll
 }
 
 func NewRunCommand() *cobra.Command {
-	c := NewOrchestrationWorkflowsRunController()
+	c := NewWorkflowsRunController()
 	return fctl.NewCommand("run <id>",
 		fctl.WithShortDescription("Run a workflow"),
 		fctl.WithAliases("r"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithBoolFlag(c.waitFlag, false, "Wait end of the run"),
 		fctl.WithStringSliceFlag(c.variableFlag, []string{}, "Variable to pass to the workflow"),
-		fctl.WithController[*OrchestrationWorkflowsRunStore](c),
+		fctl.WithController[*WorkflowsRunStore](c),
 	)
 }
 
-func (c *OrchestrationWorkflowsRunController) GetStore() *OrchestrationWorkflowsRunStore {
+func (c *WorkflowsRunController) GetStore() *WorkflowsRunStore {
 	return c.store
 }
 
-func (c *OrchestrationWorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
@@ -101,7 +101,7 @@ func (c *OrchestrationWorkflowsRunController) Run(cmd *cobra.Command, args []str
 	return c, nil
 }
 
-func (c *OrchestrationWorkflowsRunController) Render(cmd *cobra.Command, args []string) error {
+func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error {
 
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow instance created with ID: %s", c.store.WorkflowInstance.ID)
 	if c.wait {
