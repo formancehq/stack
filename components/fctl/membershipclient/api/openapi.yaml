@@ -513,6 +513,28 @@ paths:
                 $ref: '#/components/schemas/CreateInvitationResponse'
           description: Invitation created
       summary: Create invitation
+  /organizations/{organizationId}/invitations/{invitationId}:
+    delete:
+      operationId: deleteInvitation
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: invitationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Invitation deleted
+      summary: Delete invitation
   /organizations/{organizationId}/regions:
     get:
       operationId: listRegions
