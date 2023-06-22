@@ -1,5 +1,5 @@
 type: 'tool'
-language: 'go'
+language: 'unknown'
 tasks:
   docs:
     command: 'helm-docs --chart-search-root ./../'
