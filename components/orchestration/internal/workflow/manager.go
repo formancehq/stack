@@ -170,12 +170,16 @@ func (m *Manager) AbortRun(ctx context.Context, instanceID string) error {
 func (m *Manager) ListInstances(ctx context.Context, workflowID string, running bool) ([]Instance, error) {
 	instances := make([]Instance, 0)
 	query := m.db.NewSelect().Model(&instances)
+
+	query.Join("JOIN workflows ON workflows.id = u.workflow_id").Where("workflows.deleted_at IS NULL")
+
 	if workflowID != "" {
-		query = query.Where("workflow_id = ?", workflowID)
+		query = query.Where("workflows.workflow_id = ?", workflowID)
 	}
 	if running {
-		query = query.Where("terminated = false")
+		query = query.Where("u.terminated = false")
 	}
+
 	if err := query.Scan(ctx); err != nil {
 		return nil, errors.Wrap(err, "retrieving workflow")
 	}
