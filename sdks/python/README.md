@@ -91,6 +91,7 @@ if res.get_versions_response is not None:
 
 * [cancel_event](docs/orchestration/README.md#cancel_event) - Cancel a running workflow
 * [create_workflow](docs/orchestration/README.md#create_workflow) - Create workflow
+* [delete_workflow](docs/orchestration/README.md#delete_workflow) - Delete a flow by id
 * [get_instance](docs/orchestration/README.md#get_instance) - Get a workflow instance by id
 * [get_instance_history](docs/orchestration/README.md#get_instance_history) - Get a workflow instance history by id
 * [get_instance_stage_history](docs/orchestration/README.md#get_instance_stage_history) - Get a workflow instance stage history

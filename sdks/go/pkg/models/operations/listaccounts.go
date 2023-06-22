@@ -65,7 +65,7 @@ type ListAccountsRequest struct {
 	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-	// Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+	// Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
 	Metadata map[string]string `queryParam:"style=deepObject,explode=true,name=metadata"`
 	// The maximum number of results to return per page.
 	//

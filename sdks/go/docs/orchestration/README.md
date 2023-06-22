@@ -4,6 +4,7 @@
 
 * [CancelEvent](#cancelevent) - Cancel a running workflow
 * [CreateWorkflow](#createworkflow) - Create workflow
+* [DeleteWorkflow](#deleteworkflow) - Delete a flow by id
 * [GetInstance](#getinstance) - Get a workflow instance by id
 * [GetInstanceHistory](#getinstancehistory) - Get a workflow instance history by id
 * [GetInstanceStageHistory](#getinstancestagehistory) - Get a workflow instance stage history
@@ -101,6 +102,43 @@ func main() {
 }
 ```
 
+## DeleteWorkflow
+
+Delete a flow by id
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Orchestration.DeleteWorkflow(ctx, operations.DeleteWorkflowRequest{
+        FlowID: "quibusdam",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
 ## GetInstance
 
 Get a workflow instance by id
@@ -126,7 +164,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetInstance(ctx, operations.GetInstanceRequest{
-        InstanceID: "quibusdam",
+        InstanceID: "labore",
     })
     if err != nil {
         log.Fatal(err)
@@ -163,7 +201,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetInstanceHistory(ctx, operations.GetInstanceHistoryRequest{
-        InstanceID: "labore",
+        InstanceID: "modi",
     })
     if err != nil {
         log.Fatal(err)
@@ -200,8 +238,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetInstanceStageHistory(ctx, operations.GetInstanceStageHistoryRequest{
-        InstanceID: "modi",
-        Number: 183191,
+        InstanceID: "qui",
+        Number: 397821,
     })
     if err != nil {
         log.Fatal(err)
@@ -238,7 +276,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetWorkflow(ctx, operations.GetWorkflowRequest{
-        FlowID: "aliquid",
+        FlowID: "cupiditate",
     })
     if err != nil {
         log.Fatal(err)
@@ -276,7 +314,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Orchestration.ListInstances(ctx, operations.ListInstancesRequest{
         Running: formance.Bool(false),
-        WorkflowID: formance.String("cupiditate"),
+        WorkflowID: formance.String("quos"),
     })
     if err != nil {
         log.Fatal(err)
@@ -382,12 +420,10 @@ func main() {
     ctx := context.Background()
     res, err := s.Orchestration.RunWorkflow(ctx, operations.RunWorkflowRequest{
         RequestBody: map[string]string{
-            "perferendis": "magni",
-            "assumenda": "ipsam",
-            "alias": "fugit",
+            "magni": "assumenda",
         },
         Wait: formance.Bool(false),
-        WorkflowID: "dolorum",
+        WorkflowID: "ipsam",
     })
     if err != nil {
         log.Fatal(err)
@@ -425,9 +461,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Orchestration.SendEvent(ctx, operations.SendEventRequest{
         RequestBody: &operations.SendEventRequestBody{
-            Name: "Eddie Prosacco",
+            Name: "Denise Pagac",
         },
-        InstanceID: "delectus",
+        InstanceID: "facilis",
     })
     if err != nil {
         log.Fatal(err)

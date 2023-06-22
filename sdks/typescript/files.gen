@@ -61,6 +61,7 @@ src/sdk/models/operations/readstats.ts
 src/sdk/models/operations/reverttransaction.ts
 src/sdk/models/operations/cancelevent.ts
 src/sdk/models/operations/createworkflow.ts
+src/sdk/models/operations/deleteworkflow.ts
 src/sdk/models/operations/getinstance.ts
 src/sdk/models/operations/getinstancehistory.ts
 src/sdk/models/operations/getinstancestagehistory.ts

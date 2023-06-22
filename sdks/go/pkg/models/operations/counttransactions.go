@@ -19,7 +19,7 @@ type CountTransactionsRequest struct {
 	EndTime *time.Time `queryParam:"style=form,explode=true,name=endTime"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-	// Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+	// Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
 	Metadata map[string]string `queryParam:"style=deepObject,explode=true,name=metadata"`
 	// Filter transactions by reference field.
 	Reference *string `queryParam:"style=form,explode=true,name=reference"`

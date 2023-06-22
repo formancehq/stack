@@ -174,6 +174,68 @@ export class Orchestration {
   }
 
   /**
+   * Delete a flow by id
+   *
+   * @remarks
+   * Delete a flow by id
+   */
+  async deleteWorkflow(
+    req: operations.DeleteWorkflowRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.DeleteWorkflowResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.DeleteWorkflowRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/orchestration/workflows/{flowId}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "delete",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.DeleteWorkflowResponse =
+      new operations.DeleteWorkflowResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 204:
+        break;
+      default:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.error = utils.objectToClass(httpRes?.data, shared.ErrorT);
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
    * Get a workflow instance by id
    *
    * @remarks

@@ -15,7 +15,7 @@ class CountAccountsRequest:
     address: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'address', 'style': 'form', 'explode': True }})
     r"""Filter accounts by address pattern (regular expression placed between ^ and $)."""
     metadata: Optional[dict[str, Any]] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'metadata', 'style': 'deepObject', 'explode': True }})
-    r"""Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2"""
+    r"""Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2"""
     
 
 @dataclasses.dataclass

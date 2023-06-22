@@ -124,6 +124,48 @@ public class Orchestration {
     }
 
     /**
+     * Delete a flow by id
+     * Delete a flow by id
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.DeleteWorkflowResponse deleteWorkflow(com.formance.formance_sdk.models.operations.DeleteWorkflowRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.DeleteWorkflowRequest.class, baseUrl, "/api/orchestration/workflows/{flowId}", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("DELETE");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.DeleteWorkflowResponse res = new com.formance.formance_sdk.models.operations.DeleteWorkflowResponse(contentType, httpRes.statusCode()) {{
+            error = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 204) {
+        }
+        else {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.Error out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.Error.class);
+                res.error = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
      * Get a workflow instance by id
      * Get a workflow instance by id
      * @param request the request object containing all of the parameters for the API call

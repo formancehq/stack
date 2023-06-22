@@ -83,6 +83,34 @@ class Orchestration:
         return res
 
     
+    def delete_workflow(self, request: operations.DeleteWorkflowRequest) -> operations.DeleteWorkflowResponse:
+        r"""Delete a flow by id
+        Delete a flow by id
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.DeleteWorkflowRequest, base_url, '/api/orchestration/workflows/{flowId}', request)
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('DELETE', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.DeleteWorkflowResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 204:
+            pass
+        else:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.Error])
+                res.error = out
+
+        return res
+
+    
     def get_instance(self, request: operations.GetInstanceRequest) -> operations.GetInstanceResponse:
         r"""Get a workflow instance by id
         Get a workflow instance by id
