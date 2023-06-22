@@ -57,8 +57,8 @@ func (c *InfoController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	c.store.Subject = userInfo.GetSubject()
-	c.store.Email = userInfo.GetEmail()
+	c.store.Subject = userInfo.Subject
+	c.store.Email = userInfo.Email
 
 	return c, nil
 }

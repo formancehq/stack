@@ -79,14 +79,7 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	}
 
 	// Browser not found
-	if err != nil && err.Error() == "error_opening_browser" {
-		// url, ok := fctl.GetSharedAdditionnalData("browser_url").(string)
-		// if !ok {
-		// 	return err
-		// }
-
-		// loginOutput.BrowserURL = url
-	} else {
+	if err == nil {
 		c.store.Success = true
 	}
 
@@ -96,7 +89,6 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
 
 	cfg.SetCurrentProfile(currentProfileName, profile)
-	// fctl.SetSharedData(loginOutput, profile, cfg, nil)
 
 	return c, cfg.Persist()
 }

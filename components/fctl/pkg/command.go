@@ -1,6 +1,8 @@
 package fctl
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"

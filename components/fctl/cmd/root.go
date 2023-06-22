@@ -63,7 +63,7 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
 		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
 	)
-	cmd.Version = Version
+	cmd.Version = version.Version
 	cmd.RegisterFlagCompletionFunc(fctl.ProfileFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		cfg, err := fctl.GetConfig(cmd)
 		if err != nil {
