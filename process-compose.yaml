@@ -1,0 +1,99 @@
+version: 0.5
+
+environment:
+  - "OTEL_TRACES=true"
+  - "OTEL_TRACES_EXPORTER=otlp"
+  - "OTEL_TRACES_ENDPOINT=jaeger"
+  - "OTEL_TRACES_PORT=4317"
+  - "OTEL_TRACES_EXPORTER_OTLP_INSECURE=true"
+  - "OTEL_TRACES_EXPORTER_OTLP_MODE=grpc"
+  - "OTEL_TRACES_EXPORTER_OTLP_ENDPOINT=jaeger:4317"
+  - "DEBUG=true"
+
+processes:
+  gateway:
+    command: gateway run --config /etc/formance/gateway/Caddyfile --adapter caddyfile
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=gateway"
+      - "OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317"
+      - "OTEL_EXPORTER_OTLP_INSECURE=true"
+      - "OTEL_EXPORTER_OTLP_PROTOCOL=grpc"
+
+  dex:
+    command: dex serve /etc/formance/dex/dex-config.yaml
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=dex"
+
+  auth:
+    command: auth serve --listen 0.0.0.0:8083 --debug --config /etc/formance/auth/config.yaml --postgres-uri postgresql://formance:formance@postgres/auth?sslmode=disable --base-url http://localhost/api/auth --delegated-client-id gateway --delegated-client-secret ZXhhbXBsZS1hcHAtc2VjcmV0 --delegated-issuer http://localhost/api/auth/dex
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=auth"
+
+  ledger:
+    command: ledger server start --storage.postgres.conn_string postgresql://formance:formance@postgres/ledger?sslmode=disable --server.http.bind_address 0.0.0.0:3068 --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-topic-mapping *:ledger
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=ledger"
+
+  wallets:
+    command: wallets server --listen 0.0.0.0:8081 --stack-url http://localhost --stack-client-id wallets --stack-client-secret wallets
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=wallets"
+
+  payments:
+    command: payments server --listen 0.0.0.0:8082 --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-topic-mapping *:payments --postgres-uri postgresql://formance:formance@postgres/payments?sslmode=disable --config-encryption-key mysuperencryptionkey
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=payments"
+
+  search:
+    command: search serve --open-search-scheme http --open-search-service opensearch:9200 --es-indices formance
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=search"
+
+  webhooks:
+    command: webhooks serve --listen 0.0.0.0:8084 --worker --storage-postgres-conn-string postgresql://formance:formance@postgres/webhooks?sslmode=disable --kafka-topics ledger payments --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-nats-client-id webhooks
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=webhooks"
+
+  benthos:
+    command: benthos -r "/benthos/resources/*.yaml" -t "/benthos/templates/*.yaml" -c /benthos/config.yml --log.level trace streams "/benthos/streams/*.yaml"
+    availability:
+      restart: always
+    environment:
+      - "TOPIC_PREFIX="
+      - "NATS_URL=nats:4222"
+      - "BROKER=nats"
+      - "OPENSEARCH_URL=http://opensearch:9200"
+      - "OPENSEARCH_INDEX=formance"
+      - "OPENSEARCH_TLS_ENABLED=true"
+      - "OPENSEARCH_TLS_SKIP_CERT_VERIFY=true"
+      - "OPENSEARCH_BASIC_AUTH_ENABLED=false"
+      - "OTEL_SERVICE_NAME=benthos"
+
+  control:
+    command: yarn run start
+    availability:
+      restart: always
+    environment:
+      - "API_URL=http://localhost/api"
+      - "REDIRECT_URI=http://localhost"
+      - "CLIENT_ID=control"
+      - "CLIENT_SECRET=mysupersecret"
+      - "ENCRYPTION_KEY=mysuperencryptionkey"
+      - "ENCRYPTION_IV=6f0c77c78a624022"
+      - "OTEL_SERVICE_NAME=control"

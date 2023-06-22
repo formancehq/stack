@@ -9,6 +9,7 @@
     "github:goreleaser/nur#goreleaser-pro",
     "path:nix/speakeasy#speakeasy",
     "path:nix/moon#moon",
+    "process-compose@0.43.1",
     "helm-docs@1.11.0"
   ],
   "shell": {},
