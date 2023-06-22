@@ -15,51 +15,76 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type InstancesDescribeStore struct {
+	WorkflowInstancesHistory []shared.WorkflowInstanceHistory `json:"workflow_instance_history"`
+}
+type InstancesDescribeController struct {
+	store  *InstancesDescribeStore
+	client *formance.Formance
+}
+
+var _ fctl.Controller[*InstancesDescribeStore] = (*InstancesDescribeController)(nil)
+
+func NewDefaultInstancesDescribeStore() *InstancesDescribeStore {
+	return &InstancesDescribeStore{}
+}
+
+func NewInstancesDescribeController() *InstancesDescribeController {
+	return &InstancesDescribeController{
+		store: NewDefaultInstancesDescribeStore(),
+	}
+}
+
 func NewDescribeCommand() *cobra.Command {
+	c := NewInstancesDescribeController()
 	return fctl.NewCommand("describe <instance-id>",
 		fctl.WithShortDescription("Describe a specific workflow instance"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return errors.Wrap(err, "retrieving config")
-			}
-
-			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-			if err != nil {
-				return err
-			}
-
-			client, err := fctl.NewStackClient(cmd, cfg, stack)
-			if err != nil {
-				return errors.Wrap(err, "creating stack client")
-			}
-
-			response, err := client.Orchestration.GetInstanceHistory(cmd.Context(), operations.GetInstanceHistoryRequest{
-				InstanceID: args[0],
-			})
-			if err != nil {
-				return err
-			}
-
-			if response.StatusCode >= 300 {
-				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
-			}
-
-			for i, history := range response.GetWorkflowInstanceHistoryResponse.Data {
-				if err := printStage(cmd, i, client, args[0], history); err != nil {
-					return err
-				}
-			}
-
-			return nil
-		}),
+		fctl.WithController[*InstancesDescribeStore](c),
 	)
+}
+
+func (c *InstancesDescribeController) GetStore() *InstancesDescribeStore {
+	return c.store
+}
+
+func (c *InstancesDescribeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	soc, err := fctl.GetStackOrganizationConfig(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	if err != nil {
+		return nil, errors.Wrap(err, "creating stack client")
+	}
+
+	response, err := client.Orchestration.GetInstanceHistory(cmd.Context(), operations.GetInstanceHistoryRequest{
+		InstanceID: args[0],
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
+
+	c.client = client
+	c.store.WorkflowInstancesHistory = response.GetWorkflowInstanceHistoryResponse.Data
+
+	return c, nil
+}
+
+func (c *InstancesDescribeController) Render(cmd *cobra.Command, args []string) error {
+
+	for i, history := range c.store.WorkflowInstancesHistory {
+		if err := printStage(cmd, i, c.client, args[0], history); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func printHistoryBaseInfo(out io.Writer, name string, ind int, history shared.WorkflowInstanceHistory) {
