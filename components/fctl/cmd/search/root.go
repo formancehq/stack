@@ -79,17 +79,12 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 	size := int64(fctl.GetInt(cmd, sizeFlag))
 
-	// Should be as a default value in cobra
 	target := strings.ToUpper(args[0])
-	if target == "" {
-		target = defaultTarget
-	}
 
 	if target == "ANY" {
 		target = ""
 	}
-	c.target = target // Save for display
-
+	c.target = target
 	request := shared.Query{
 		PageSize: &size,
 		Terms:    terms,
@@ -104,7 +99,6 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	// "" ou ANY
 	if target == "" {
 		c.store.Response.Data = response.Response.Data
 		c.store.Response.Cursor = response.Response.Cursor
