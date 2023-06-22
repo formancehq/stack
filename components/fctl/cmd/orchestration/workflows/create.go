@@ -11,22 +11,22 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type OrchestrationWorkflowsCreateStore struct {
+type WorkflowsCreateStore struct {
 	WorkflowId string `json:"workflowId"`
 }
-type OrchestrationWorkflowsCreateController struct {
-	store *OrchestrationWorkflowsCreateStore
+type WorkflowsCreateController struct {
+	store *WorkflowsCreateStore
 }
 
-var _ fctl.Controller[*OrchestrationWorkflowsCreateStore] = (*OrchestrationWorkflowsCreateController)(nil)
+var _ fctl.Controller[*WorkflowsCreateStore] = (*WorkflowsCreateController)(nil)
 
-func NewDefaultOrchestrationWorkflowsCreateStore() *OrchestrationWorkflowsCreateStore {
-	return &OrchestrationWorkflowsCreateStore{}
+func NewDefaultWorkflowsCreateStore() *WorkflowsCreateStore {
+	return &WorkflowsCreateStore{}
 }
 
-func NewOrchestrationWorkflowsCreateController() *OrchestrationWorkflowsCreateController {
-	return &OrchestrationWorkflowsCreateController{
-		store: NewDefaultOrchestrationWorkflowsCreateStore(),
+func NewWorkflowsCreateController() *WorkflowsCreateController {
+	return &WorkflowsCreateController{
+		store: NewDefaultWorkflowsCreateStore(),
 	}
 }
 
@@ -35,15 +35,15 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithShortDescription("Create a workflow"),
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*OrchestrationWorkflowsCreateStore](NewOrchestrationWorkflowsCreateController()),
+		fctl.WithController[*WorkflowsCreateStore](NewWorkflowsCreateController()),
 	)
 }
 
-func (c *OrchestrationWorkflowsCreateController) GetStore() *OrchestrationWorkflowsCreateStore {
+func (c *WorkflowsCreateController) GetStore() *WorkflowsCreateStore {
 	return c.store
 }
 
-func (c *OrchestrationWorkflowsCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *WorkflowsCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
@@ -87,7 +87,7 @@ func (c *OrchestrationWorkflowsCreateController) Run(cmd *cobra.Command, args []
 	return c, nil
 }
 
-func (c *OrchestrationWorkflowsCreateController) Render(cmd *cobra.Command, args []string) error {
+func (c *WorkflowsCreateController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow created with ID: %s", c.store.WorkflowId)
 
 	return nil
