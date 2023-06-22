@@ -11,7 +11,7 @@ import (
 )
 
 type SendStore struct {
-	Transaction *shared.Transaction `json:"transaction"`
+	Transaction *internal.Transaction `json:"transaction"`
 }
 type SendController struct {
 	store         *SendStore
