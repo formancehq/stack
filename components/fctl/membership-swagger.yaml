@@ -432,6 +432,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateInvitationResponse'
+  /organizations/{organizationId}/invitations/{invitationId}:
+    delete:
+      summary: Delete invitation
+      operationId: deleteInvitation
+      parameters:
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: invitationId
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        204:
+          description: Invitation deleted
+
   /organizations/{organizationId}/regions:
     parameters:
     - name: organizationId
