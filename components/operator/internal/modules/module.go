@@ -80,6 +80,7 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 		}
 		allReady = allReady && ready
 		if !ready {
+			logger.Info(fmt.Sprintf("Module '%s' marked as not ready", moduleName))
 			continue
 		}
 
@@ -183,6 +184,9 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 			return false, err
 		}
 		allReady = allReady && ready
+		if !ready {
+			logger.Info(fmt.Sprintf("Module '%s' marked as not ready", moduleName))
+		}
 	}
 
 	return allReady, nil
@@ -327,7 +331,7 @@ func (module Module) postInstall(ctx Context, deployer *ResourceDeployer, module
 	sort.Strings(versions)
 
 	for _, version := range versions {
-		if !ctx.Versions.IsHigher(moduleName, version) {
+		if !ctx.Versions.IsHigherOrEqual(moduleName, version) {
 			break
 		}
 		selectedVersion := module.Versions[version]
