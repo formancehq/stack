@@ -25,6 +25,8 @@ const (
 	maxRetriesJWKSFetchingFlag = "max-retries-jwks-fetching"
 )
 
+var _ = "hello"
+
 func newServer() *cobra.Command {
 	return &cobra.Command{
 		Use:          "server",
