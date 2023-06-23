@@ -2,17 +2,20 @@ package stack_test
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
 	"testing"
+	"time"
 
 	v1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/controllers/stack"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
-	"github.com/google/uuid"
+	"github.com/formancehq/operator/internal/modules"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
+	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -23,6 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -47,8 +51,6 @@ var _ = ginkgo.BeforeSuite(func() {
 	logf.SetLogger(zap.New(zap.WriteTo(os.Stdout), zap.UseDevMode(true)))
 	ctx, cancel = context.WithCancel(context.Background())
 
-	gomega.Expect(pgtesting.CreatePostgresServer()).To(gomega.BeNil())
-
 	_, filename, _, _ := osRuntime.Caller(0)
 
 	testEnv = &envtest.Environment{
@@ -72,7 +74,6 @@ var _ = ginkgo.BeforeSuite(func() {
 
 var _ = ginkgo.AfterSuite(func() {
 	gomega.Expect(testEnv.Stop())
-	gomega.Expect(pgtesting.DestroyPostgresServer()).To(gomega.BeNil())
 })
 
 var (
@@ -88,8 +89,59 @@ var _ = ginkgo.BeforeEach(func() {
 	})
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
 
-	err = stack.NewReconciler(mgr.GetClient(), mgr.GetScheme(), "us-west-1", "staging").SetupWithManager(mgr)
+	config := stack.Configuration{
+		Region:      "us-west-1",
+		Environment: "staging",
+	}
+	err = stack.NewReconciler(mgr.GetClient(), mgr.GetScheme(), modules.NewStackDeployer(http.DefaultTransport), config).SetupWithManager(mgr)
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
+
+	err = ctrl.NewControllerManagedBy(mgr).
+		For(&v1beta3.Migration{}).
+		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+			migration := &v1beta3.Migration{}
+			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
+				Namespace: request.Namespace,
+				Name:      request.Name,
+			}, migration); err != nil {
+				return reconcile.Result{}, err
+			}
+			migration.Status.Terminated = true
+			if err := mgr.GetClient().Status().Update(ctx, migration); err != nil {
+				return reconcile.Result{}, err
+			}
+			return reconcile.Result{}, nil
+		}))
+	gomega.Expect(err)
+
+	err = ctrl.NewControllerManagedBy(mgr).
+		For(&v1.Deployment{}).
+		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+
+			deployment := &v1.Deployment{}
+			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
+				Namespace: request.Namespace,
+				Name:      request.Name,
+			}, deployment); err != nil {
+				return reconcile.Result{}, err
+			}
+			deployment.Status.ObservedGeneration = deployment.Generation
+			if len(deployment.Status.Conditions) == 0 {
+				deployment.Status.Conditions = append(deployment.Status.Conditions, v1.DeploymentCondition{})
+			}
+			deployment.Status.Conditions[0] = v1.DeploymentCondition{
+				Type:               v1.DeploymentAvailable,
+				Status:             "True",
+				LastUpdateTime:     metav1.Time{Time: time.Now()},
+				LastTransitionTime: metav1.Time{Time: time.Now()},
+			}
+			if err := mgr.GetClient().Status().Update(ctx, deployment); err != nil {
+				return reconcile.Result{}, err
+			}
+			fmt.Println("updated properly")
+			return reconcile.Result{}, nil
+		}))
+	gomega.Expect(err)
 
 	go func() {
 		defer ginkgo.GinkgoRecover()
@@ -114,105 +166,4 @@ func Delete(ob client.Object) error {
 
 func Get(key types.NamespacedName, ob client.Object) error {
 	return k8sClient.Get(ctx, key, ob)
-}
-
-func NewDumbVersions() *v1beta3.Versions {
-	return &v1beta3.Versions{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: uuid.NewString(),
-		},
-		Spec: v1beta3.VersionsSpec{
-			Control:       "latest",
-			Ledger:        "latest",
-			Payments:      "latest",
-			Search:        "latest",
-			Auth:          "latest",
-			Webhooks:      "latest",
-			Wallets:       "latest",
-			Stargate:      "latest",
-			Orchestration: "latest",
-		},
-	}
-}
-
-func NewDumbConfiguration() *v1beta3.Configuration {
-	return &v1beta3.Configuration{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: uuid.NewString(),
-		},
-		Spec: v1beta3.ConfigurationSpec{
-			Services: v1beta3.ConfigurationServicesSpec{
-				Auth: v1beta3.AuthSpec{
-					Postgres: NewPostgresConfig(),
-				},
-				Control: v1beta3.ControlSpec{},
-				Ledger: v1beta3.LedgerSpec{
-					Postgres:            NewPostgresConfig(),
-					AllowPastTimestamps: true,
-				},
-				Payments: v1beta3.PaymentsSpec{
-					Postgres: NewPostgresConfig(),
-				},
-				Search: v1beta3.SearchSpec{
-					ElasticSearchConfig: NewDumpElasticSearchConfig(),
-				},
-				Webhooks: v1beta3.WebhooksSpec{
-					Postgres: NewPostgresConfig(),
-				},
-				Stargate: v1beta3.StargateSpec{},
-				Wallets:  v1beta3.WalletsSpec{},
-				Orchestration: v1beta3.OrchestrationSpec{
-					Postgres: NewPostgresConfig(),
-				},
-			},
-			Broker:     NewDumbBrokerConfig(),
-			Monitoring: NewDumbMonitoring(),
-		},
-	}
-}
-
-func NewDumpKafkaConfig() v1beta3.KafkaConfig {
-	return v1beta3.KafkaConfig{
-		Brokers: []string{"kafka:1234"},
-	}
-}
-
-func NewDumbBrokerConfig() v1beta3.Broker {
-	return v1beta3.Broker{
-		Kafka: func() *v1beta3.KafkaConfig {
-			ret := NewDumpKafkaConfig()
-			return &ret
-		}(),
-	}
-}
-
-func NewDumbMonitoring() *v1beta3.MonitoringSpec {
-	return &v1beta3.MonitoringSpec{
-		Traces: &v1beta3.TracesSpec{
-			Otlp: &v1beta3.TracesOtlpSpec{
-				Endpoint: "localhost",
-				Port:     4317,
-				Insecure: true,
-				Mode:     "grpc",
-			},
-		},
-	}
-}
-
-func NewDumpElasticSearchConfig() v1beta3.ElasticSearchConfig {
-	return v1beta3.ElasticSearchConfig{
-		Scheme: "http",
-		Host:   "elasticsearch",
-		Port:   9200,
-	}
-}
-
-func NewPostgresConfig() v1beta3.PostgresConfig {
-	return v1beta3.PostgresConfig{
-		Port:           pgtesting.Server().GetPort(),
-		Host:           pgtesting.Server().GetHost(),
-		Username:       pgtesting.Server().GetUsername(),
-		Password:       pgtesting.Server().GetPassword(),
-		DisableSSLMode: true,
-	}
 }

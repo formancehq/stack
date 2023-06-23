@@ -1,0 +1,1006 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+        reloader.stakater.com/auto: "true"
+    generation: 1
+    labels:
+        formance.com/monopod: "true"
+        stack: "true"
+    name: monopod-latest
+    namespace: monopod-latest
+spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: monopod-latest
+    strategy:
+        rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+        type: RollingUpdate
+    template:
+        metadata:
+            creationTimestamp: null
+            labels:
+                app.kubernetes.io/name: monopod-latest
+        spec:
+            containers:
+                - args:
+                    - serve
+                  env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-auth
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: LISTEN
+                      value: :10001
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: auth
+                    - name: STACK
+                      value: monopod-latest
+                    - name: CONFIG
+                      value: /config/config/config.yaml
+                    - name: DELEGATED_CLIENT_SECRET
+                    - name: DELEGATED_CLIENT_ID
+                    - name: DELEGATED_ISSUER
+                    - name: BASE_URL
+                      value: http://example.net/api/auth
+                    - name: SIGNING_KEY
+                      valueFrom:
+                        secretKeyRef:
+                            key: signingKey
+                            name: auth-secret
+                  image: ghcr.io/formancehq/auth:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 10001
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: auth
+                  ports:
+                    - containerPort: 10001
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                  volumeMounts:
+                    - mountPath: /config/config
+                      name: auth-config
+                      readOnly: true
+                - env:
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: control
+                    - name: STACK
+                      value: monopod-latest
+                    - name: API_URL
+                      value: http://example.net
+                    - name: ENCRYPTION_KEY
+                      value: 9h44y2ZqrDuUy5R9NGLA9hca7uRUr932
+                    - name: ENCRYPTION_IV
+                      value: b6747T6eP9DnMvEw
+                    - name: CLIENT_ID
+                      value: control
+                    - name: CLIENT_SECRET
+                      value: mocked-secret
+                    - name: REDIRECT_URI
+                      value: http://example.net
+                    - name: UNSECURE_COOKIES
+                      value: "false"
+                  image: ghcr.io/formancehq/control:latest
+                  imagePullPolicy: Always
+                  name: control
+                  ports:
+                    - containerPort: 3000
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 512Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - args:
+                    - run
+                    - --config
+                    - /config/config/Caddyfile
+                    - --adapter
+                    - caddyfile
+                  command:
+                    - /usr/bin/caddy
+                  env:
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: gateway
+                    - name: STACK
+                      value: monopod-latest
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
+                  image: ghcr.io/formancehq/gateway:latest
+                  imagePullPolicy: Always
+                  name: gateway
+                  ports:
+                    - containerPort: 8000
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                  volumeMounts:
+                    - mountPath: /config/config
+                      name: gateway-config
+                      readOnly: true
+                - env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-ledger
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: BIND
+                      value: :10002
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: ledger
+                    - name: STACK
+                      value: monopod-latest
+                    - name: STORAGE_DRIVER
+                      value: postgres
+                    - name: PUBLISHER_TOPIC_MAPPING
+                      value: '*:monopod-latest-ledger'
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: STORAGE_POSTGRES_CONN_STRING
+                      value: $(POSTGRES_URI)
+                  image: ghcr.io/formancehq/ledger:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 10002
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: ledger
+                  ports:
+                    - containerPort: 10002
+                      name: http
+                      protocol: TCP
+                  resources: {}
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-orchestration
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: orchestration
+                    - name: STACK
+                      value: monopod-latest
+                    - name: POSTGRES_DSN
+                      value: $(POSTGRES_URI)
+                    - name: TEMPORAL_TASK_QUEUE
+                      value: monopod-latest
+                    - name: TEMPORAL_ADDRESS
+                    - name: TEMPORAL_NAMESPACE
+                    - name: TEMPORAL_SSL_CLIENT_KEY
+                    - name: TEMPORAL_SSL_CLIENT_CERT
+                    - name: STACK_CLIENT_ID
+                      value: orchestration
+                    - name: STACK_CLIENT_SECRET
+                      value: mocked-secret
+                  image: ghcr.io/formancehq/orchestration:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 8080
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: orchestration
+                  ports:
+                    - containerPort: 8080
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - args:
+                    - worker
+                  env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-orchestration
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: orchestration-worker
+                    - name: STACK
+                      value: monopod-latest
+                    - name: POSTGRES_DSN
+                      value: $(POSTGRES_URI)
+                    - name: TEMPORAL_TASK_QUEUE
+                      value: monopod-latest
+                    - name: TEMPORAL_ADDRESS
+                    - name: TEMPORAL_NAMESPACE
+                    - name: TEMPORAL_SSL_CLIENT_KEY
+                    - name: TEMPORAL_SSL_CLIENT_CERT
+                    - name: STACK_CLIENT_ID
+                      value: orchestration
+                    - name: STACK_CLIENT_SECRET
+                      value: mocked-secret
+                  image: ghcr.io/formancehq/orchestration:latest
+                  imagePullPolicy: Always
+                  name: orchestration-worker
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-payments
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: LISTEN
+                      value: :10003
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: payments
+                    - name: STACK
+                      value: monopod-latest
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: POSTGRES_DATABASE_NAME
+                      value: $(POSTGRES_DATABASE)
+                    - name: CONFIG_ENCRYPTION_KEY
+                    - name: PUBLISHER_TOPIC_MAPPING
+                      value: '*:monopod-latest-payments'
+                  image: ghcr.io/formancehq/payments:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_health
+                        port: 10003
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: payments
+                  ports:
+                    - containerPort: 10003
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - env:
+                    - name: BIND
+                      value: :10004
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: search
+                    - name: STACK
+                      value: monopod-latest
+                    - name: OPENSEARCH_URL
+                      value: http://elasticsearch:9200
+                    - name: OPENSEARCH_BATCHING_COUNT
+                      value: "0"
+                    - name: OPENSEARCH_BATCHING_PERIOD
+                    - name: TOPIC_PREFIX
+                      value: monopod-latest-
+                    - name: OPENSEARCH_INDEX
+                      value: stacks
+                    - name: KAFKA_ADDRESS
+                      value: kafka:1234
+                    - name: OPEN_SEARCH_SERVICE
+                      value: elasticsearch:9200
+                    - name: OPEN_SEARCH_SCHEME
+                      value: http
+                    - name: MAPPING_INIT_DISABLED
+                      value: "true"
+                    - name: ES_INDICES
+                      value: stacks
+                  image: ghcr.io/formancehq/search:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 10004
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: search
+                  ports:
+                    - containerPort: 10004
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - command:
+                    - /benthos
+                    - -r
+                    - /config/resources/*.yaml
+                    - -t
+                    - /config/templates/*.yaml
+                    - -c
+                    - /config/global/config.yaml
+                    - --log.level
+                    - trace
+                    - streams
+                    - /config/streams/*.yaml
+                  env:
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: search-benthos
+                    - name: STACK
+                      value: monopod-latest
+                    - name: OPENSEARCH_URL
+                      value: http://elasticsearch:9200
+                    - name: OPENSEARCH_BATCHING_COUNT
+                      value: "0"
+                    - name: OPENSEARCH_BATCHING_PERIOD
+                    - name: TOPIC_PREFIX
+                      value: monopod-latest-
+                    - name: OPENSEARCH_INDEX
+                      value: stacks
+                    - name: KAFKA_ADDRESS
+                      value: kafka:1234
+                    - name: LEDGER_POSTGRES_HOST
+                      value: localhost
+                    - name: LEDGER_POSTGRES_PORT
+                      value: "5432"
+                    - name: LEDGER_POSTGRES_DATABASE
+                      value: monopod-latest-ledger
+                    - name: LEDGER_POSTGRES_USERNAME
+                      value: root
+                    - name: LEDGER_POSTGRES_PASSWORD
+                      value: root
+                    - name: LEDGER_POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(LEDGER_POSTGRES_USERNAME):$(LEDGER_POSTGRES_PASSWORD)@$(LEDGER_POSTGRES_HOST):$(LEDGER_POSTGRES_PORT)
+                    - name: LEDGER_POSTGRES_URI
+                      value: $(LEDGER_POSTGRES_NO_DATABASE_URI)/$(LEDGER_POSTGRES_DATABASE)?sslmode=disable
+                    - name: BROKER
+                      value: kafka
+                  image: public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1
+                  imagePullPolicy: IfNotPresent
+                  name: search-benthos
+                  ports:
+                    - containerPort: 4195
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                  volumeMounts:
+                    - mountPath: /config/global
+                      name: search-benthos-global
+                      readOnly: true
+                    - mountPath: /config/resources
+                      name: search-benthos-resources
+                      readOnly: true
+                    - mountPath: /config/streams
+                      name: search-benthos-streams
+                      readOnly: true
+                    - mountPath: /config/templates
+                      name: search-benthos-templates
+                      readOnly: true
+                - env:
+                    - name: BIND
+                      value: :10005
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: stargate
+                    - name: STACK
+                      value: monopod-latest
+                    - name: ORGANIZATION_ID
+                      value: monopod
+                    - name: STACK_ID
+                      value: latest
+                    - name: STARGATE_SERVER_URL
+                    - name: GATEWAY_URL
+                      value: http://gateway:8000
+                    - name: STARGATE_AUTH_CLIENT_ID
+                    - name: STARGATE_AUTH_CLIENT_SECRET
+                    - name: STARGATE_AUTH_ISSUER_URL
+                  image: ghcr.io/formancehq/stargate:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 10005
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: stargate
+                  ports:
+                    - containerPort: 10005
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - env:
+                    - name: LISTEN
+                      value: :10006
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: wallets
+                    - name: STACK
+                      value: monopod-latest
+                    - name: STORAGE_POSTGRES_CONN_STRING
+                      value: $(POSTGRES_URI)
+                    - name: STACK_CLIENT_ID
+                      value: wallets
+                    - name: STACK_CLIENT_SECRET
+                      value: mocked-secret
+                  image: ghcr.io/formancehq/wallets:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 10006
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: wallets
+                  ports:
+                    - containerPort: 10006
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-webhooks
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: LISTEN
+                      value: :10007
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: webhooks
+                    - name: STACK
+                      value: monopod-latest
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: STORAGE_POSTGRES_CONN_STRING
+                      value: $(POSTGRES_URI)
+                  image: ghcr.io/formancehq/webhooks:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 10007
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: webhooks
+                  ports:
+                    - containerPort: 10007
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - args:
+                    - worker
+                  env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-webhooks
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: LISTEN
+                      value: :0
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: webhooks-worker
+                    - name: STACK
+                      value: monopod-latest
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: STORAGE_POSTGRES_CONN_STRING
+                      value: $(POSTGRES_URI)
+                    - name: KAFKA_TOPICS
+                      value: monopod-latest-ledger monopod-latest-payments
+                  image: ghcr.io/formancehq/webhooks:latest
+                  imagePullPolicy: Always
+                  name: webhooks-worker
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            initContainers:
+                - command:
+                    - payments
+                    - migrate
+                  env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-payments
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: LISTEN
+                      value: :10003
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: POSTGRES_DATABASE_NAME
+                      value: $(POSTGRES_DATABASE)
+                    - name: CONFIG_ENCRYPTION_KEY
+                    - name: PUBLISHER_TOPIC_MAPPING
+                      value: '*:monopod-latest-payments'
+                  image: ghcr.io/formancehq/payments:latest
+                  imagePullPolicy: Always
+                  name: migrate
+                  resources: {}
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+            volumes:
+                - configMap:
+                    defaultMode: 420
+                    name: auth-config
+                  name: auth-config
+                - configMap:
+                    defaultMode: 420
+                    name: gateway-config
+                  name: gateway-config
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-global
+                  name: search-benthos-global
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-resources
+                  name: search-benthos-resources
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-streams
+                  name: search-benthos-streams
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-templates
+                  name: search-benthos-templates
+status: {}

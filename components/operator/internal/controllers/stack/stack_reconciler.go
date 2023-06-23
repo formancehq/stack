@@ -3,7 +3,6 @@ package stack
 import (
 	"context"
 	"fmt"
-	"runtime/debug"
 	"time"
 
 	"github.com/formancehq/operator/internal/collectionutils"
@@ -48,15 +47,20 @@ const (
 // +kubebuilder:rbac:groups=stack.formance.com,resources=configurations,verbs=get;list;watch
 // +kubebuilder:rbac:groups=stack.formance.com,resources=versions,verbs=get;list;watch
 
-// Reconciler reconciles a Stack object
-type Reconciler struct {
+type Configuration struct {
 	// Cloud region where the stack is deployed
-	region string
+	Region string
 	// Cloud environment where the stack is deployed: staging, production,
 	// sandbox, etc.
-	environment string
-	client      client.Client
-	scheme      *runtime.Scheme
+	Environment string
+}
+
+// Reconciler reconciles a Stack object
+type Reconciler struct {
+	configuration Configuration
+	client        client.Client
+	scheme        *runtime.Scheme
+	stackDeployer *modules.StackDeployer
 }
 
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -76,26 +80,19 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 
 	var (
 		reconcileError error
+		ready          bool
 	)
 	func() {
-		defer func() {
-			if reconcileError != nil {
-				log.Info("reconciliation terminated with error", "error", reconcileError)
-				stack.SetError(reconcileError)
-			} else {
-				log.Info("reconciliation terminated with success")
+		ready, reconcileError = r.reconcileStack(ctx, stack)
+		if reconcileError != nil {
+			log.Info("reconciliation terminated with error", "error", reconcileError)
+			stack.SetError(reconcileError)
+		} else {
+			log.Info("reconciliation terminated with success")
+			if ready {
 				stack.SetReady()
 			}
-		}()
-		defer func() {
-			if e := recover(); e != nil {
-				reconcileError = fmt.Errorf("%s", e)
-				fmt.Println(reconcileError)
-				debug.PrintStack()
-			}
-		}()
-
-		reconcileError = r.reconcileStack(ctx, stack)
+		}
 	}()
 
 	if reconcileError != nil {
@@ -140,6 +137,7 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&corev1.Secret{}).
 		Owns(&corev1.ConfigMap{}).
 		Owns(&appsv1.Deployment{}).
+		Owns(&stackv1beta3.Migration{}).
 		Watches(
 			&source.Kind{Type: &stackv1beta3.Configuration{}},
 			watch(mgr, ".spec.seed"),
@@ -154,20 +152,20 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Stack) error {
+func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Stack) (bool, error) {
 
 	configuration := &stackv1beta3.Configuration{}
 	if err := r.client.Get(ctx, types.NamespacedName{
 		Name: stack.Spec.Seed,
 	}, configuration); err != nil {
 		if errors.IsNotFound(err) {
-			return pkgError.New("Configuration object not found")
+			return false, pkgError.New("Configuration object not found")
 		}
-		return fmt.Errorf("error retrieving Configuration object: %s", err)
+		return false, fmt.Errorf("error retrieving Configuration object: %s", err)
 	}
 
 	if err := configuration.Validate(); err != nil {
-		return err
+		return false, err
 	}
 
 	versionsString := stack.Spec.Versions
@@ -178,37 +176,37 @@ func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Sta
 	versions := &stackv1beta3.Versions{}
 	if err := r.client.Get(ctx, types.NamespacedName{Name: versionsString}, versions); err != nil {
 		if errors.IsNotFound(err) {
-			return pkgError.New("Versions object not found")
+			return false, pkgError.New("Versions object not found")
 		}
-		return fmt.Errorf("error retrieving Versions object: %s", err)
+		return false, fmt.Errorf("error retrieving Versions object: %s", err)
 	}
 
 	_, _, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Name: stack.Name,
 	}, controllerutils.WithController[*corev1.Namespace](stack, r.scheme), func(ns *corev1.Namespace) {})
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	deployer := modules.NewDeployer(r.client, r.scheme, stack, configuration)
 	resolveContext := modules.Context{
 		Context:       ctx,
-		Region:        r.region,
-		Environment:   r.environment,
+		Region:        r.configuration.Region,
+		Environment:   r.configuration.Environment,
 		Stack:         stack,
 		Configuration: configuration,
 		Versions:      versions,
 	}
 
-	return modules.HandleStack(resolveContext, deployer)
+	return r.stackDeployer.HandleStack(resolveContext, deployer)
 }
 
-func NewReconciler(client client.Client, scheme *runtime.Scheme, region, environment string) *Reconciler {
+func NewReconciler(client client.Client, scheme *runtime.Scheme, stackDeployer *modules.StackDeployer, configuration Configuration) *Reconciler {
 	return &Reconciler{
-		region:      region,
-		environment: environment,
-		client:      client,
-		scheme:      scheme,
+		configuration: configuration,
+		client:        client,
+		scheme:        scheme,
+		stackDeployer: stackDeployer,
 	}
 }
 
