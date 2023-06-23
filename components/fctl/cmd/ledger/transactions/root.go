@@ -11,7 +11,7 @@ func NewLedgerTransactionsCommand() *cobra.Command {
 		fctl.WithShortDescription("Transactions management"),
 		fctl.WithChildCommands(
 			NewListCommand(),
-			NewCommand(),
+			NewNumCommand(),
 			NewRevertCommand(),
 			NewShowCommand(),
 			NewSetMetadataCommand(),
