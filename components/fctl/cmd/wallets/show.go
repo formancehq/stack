@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
+	"github.com/formancehq/fctl/cmd/wallets/internal/views"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -97,5 +98,5 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 }
 
 func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintWallet(cmd.OutOrStdout(), c.store.Wallet)
+	return views.PrintWalletWithMetadata(cmd.OutOrStdout(), c.store.Wallet)
 }
