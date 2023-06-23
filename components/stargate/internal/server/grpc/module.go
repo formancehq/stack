@@ -7,7 +7,7 @@ import (
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/interceptors"
-	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/server/grpc/metrics"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gogo/status"
 	grpclogging "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
@@ -30,8 +30,8 @@ func Module(
 	options := make([]fx.Option, 0)
 
 	options = append(options,
-		fx.Provide(opentelemetry.RegisterMetricsRegistry),
-		fx.Provide(func(logger logging.Logger, metricsRegistry opentelemetry.MetricsRegistry) *interceptors.AuthInterceptor {
+		fx.Provide(metrics.RegisterMetricsRegistry),
+		fx.Provide(func(logger logging.Logger, metricsRegistry metrics.MetricsRegistry) *interceptors.AuthInterceptor {
 			return interceptors.NewAuthInterceptor(logger, jwksURL, maxRetriesJWKSFetching, metricsRegistry)
 		}),
 		fx.Provide(NewServer),

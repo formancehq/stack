@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
-	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/server/grpc/metrics"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
@@ -26,13 +26,13 @@ type Server struct {
 
 	logger          logging.Logger
 	natsConn        *nats.Conn
-	metricsRegistry opentelemetry.MetricsRegistry
+	metricsRegistry metrics.MetricsRegistry
 }
 
 func NewServer(
 	logger logging.Logger,
 	natsConn *nats.Conn,
-	metricsRegistry opentelemetry.MetricsRegistry,
+	metricsRegistry metrics.MetricsRegistry,
 ) *Server {
 	return &Server{
 		logger:          logger,
@@ -64,8 +64,8 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 		"organization_id": organizationID,
 		"stack_id":        stackID,
 	})
-	opentelemetry.ClientsConnected.Add(1)
-	defer opentelemetry.ClientsConnected.Add(-1)
+	metrics.ClientsConnected.Add(1)
+	defer metrics.ClientsConnected.Add(-1)
 
 	logger.Infof("[GRPC] new stargate connection")
 	defer logger.Infof("[GRPC] stargate connection closed")
