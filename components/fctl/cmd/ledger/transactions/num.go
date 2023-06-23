@@ -14,7 +14,7 @@ import (
 )
 
 type NumStore struct {
-	Transaction *shared.Transaction `json:"transaction"`
+	Transaction *internal.Transaction `json:"transaction"`
 }
 type NumController struct {
 	store          *NumStore
