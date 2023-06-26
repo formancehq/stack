@@ -10,7 +10,7 @@ import (
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	stargateserver "github.com/formancehq/stack/components/stargate/internal/server/grpc"
-	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/server/grpc/metrics"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	natsServer "github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
@@ -50,7 +50,7 @@ func TestMain(m *testing.M) {
 	lis = bufconn.Listen(bufSize)
 	srv := grpc.NewServer()
 	defer srv.GracefulStop()
-	api.RegisterStargateServiceServer(srv, stargateserver.NewServer(logging.Testing(), nc, opentelemetry.NewNoOpMetricsRegistry()))
+	api.RegisterStargateServiceServer(srv, stargateserver.NewServer(logging.Testing(), nc, metrics.NewNoOpMetricsRegistry()))
 
 	go func() {
 		if err := srv.Serve(lis); err != nil {

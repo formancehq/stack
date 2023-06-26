@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app.kubernetes.io/service-name: search-benthos
+    name: search-benthos
+    namespace: monopod-ledgerv1
+spec:
+    clusterIP: 10.0.0.216
+    clusterIPs:
+        - 10.0.0.216
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 4195
+          protocol: TCP
+          targetPort: 4195
+    selector:
+        app.kubernetes.io/name: monopod-ledgerv1
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

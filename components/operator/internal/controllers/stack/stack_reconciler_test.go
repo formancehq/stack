@@ -1,15 +1,19 @@
 package stack_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/handlers"
+	"github.com/formancehq/operator/internal/modules"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -29,68 +33,114 @@ func init() {
 	handlers.RSAKeyGenerator = func() string {
 		return "fake-rsa-key"
 	}
+	modules.CreatePostgresDatabase = func(ctx context.Context, dsn, dbName string) error {
+		return nil
+	}
 }
 
-var _ = Describe("When creating a stack", func() {
-	var (
-		configuration *stackv1beta3.Configuration
-		versions      *stackv1beta3.Versions
-		stack         = &stackv1beta3.Stack{}
-	)
-	BeforeEach(func() {
-		configuration = NewDumbConfiguration()
-		versions = NewDumbVersions()
-		*stack = stackv1beta3.Stack{
-			ObjectMeta: v1.ObjectMeta{
-				Name: "orga1-stack1",
-			},
-			Spec: stackv1beta3.StackSpec{
-				Seed:     configuration.Name,
-				Versions: versions.Name,
-				Host:     "example.net",
-				Scheme:   "http",
-				Stargate: &stackv1beta3.StackStargateConfig{},
-			},
+var _ = Describe("Check stack deployment", func() {
+	defer func() {
+		if e := recover(); e != nil {
+			debug.PrintStack()
+			spew.Dump(e)
+			panic(e)
+		}
+	}()
+	ls, err := os.ReadDir("testdata")
+	if err != nil {
+		panic(err)
+	}
+	for _, dirEntry := range ls {
+		if !dirEntry.IsDir() {
+			continue
+		}
+		if dirEntry.Name() != "multipod-latest" {
+			continue
+		}
+		name := strings.ReplaceAll(dirEntry.Name(), ".", "-")
+		dirName := dirEntry.Name()
+
+		versionsFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "versions.yaml"))
+		if err != nil {
+			panic(err)
+		}
+		configurationFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "configuration.yaml"))
+		if err != nil {
+			panic(err)
 		}
 
-	})
-	JustBeforeEach(func() {
-		Expect(Create(configuration)).To(Succeed())
-		Expect(Create(versions)).To(Succeed())
-		Expect(Create(stack)).To(Succeed())
-		Eventually(func() bool {
-			Expect(Get(types.NamespacedName{
-				Namespace: stack.GetNamespace(),
-				Name:      stack.GetName(),
-			}, stack)).To(BeNil())
-			return stack.IsReady()
-		}).WithTimeout(5 * time.Second).Should(BeTrue())
-	})
-	JustAfterEach(func() {
-		Expect(Delete(stack)).To(Succeed())
-		Expect(Delete(configuration)).To(Succeed())
-		Expect(Delete(versions)).To(Succeed())
-	})
-	It("should be ok", func() {
-		verifyResources(stack, "multipod")
-	})
-	Context("with light mode", func() {
-		BeforeEach(func() {
-			stack.Name = "orga2-stack2"
-			configuration.Spec.LightMode = true
-		})
-		It("should be ok", func() {
-			verifyResources(stack, "monopod")
-		})
-		Context("and ledger v1", func() {
+		tmp := make(map[string]any)
+
+		if err := yaml.Unmarshal(versionsFile, &tmp); err != nil {
+			panic(err)
+		}
+
+		data, err := json.Marshal(tmp)
+		if err != nil {
+			panic(err)
+		}
+
+		versions := &stackv1beta3.Versions{}
+		if err := json.Unmarshal(data, versions); err != nil {
+			panic(err)
+		}
+		versions.Name = name
+
+		if err := yaml.Unmarshal(configurationFile, &tmp); err != nil {
+			panic(err)
+		}
+
+		data, err = json.Marshal(tmp)
+		if err != nil {
+			panic(err)
+		}
+
+		configuration := &stackv1beta3.Configuration{}
+		if err := json.Unmarshal(data, configuration); err != nil {
+			panic(err)
+		}
+		configuration.Name = name
+
+		Context(fmt.Sprintf("with config from dir '%s'", dirEntry.Name()), func() {
+			var (
+				stack = &stackv1beta3.Stack{}
+			)
 			BeforeEach(func() {
-				versions.Spec.Ledger = "v1.0.0"
+				*stack = stackv1beta3.Stack{
+					ObjectMeta: v1.ObjectMeta{
+						Name: name,
+					},
+					Spec: stackv1beta3.StackSpec{
+						Seed:     configuration.Name,
+						Versions: versions.Name,
+						Host:     "example.net",
+						Scheme:   "http",
+						Stargate: &stackv1beta3.StackStargateConfig{},
+					},
+				}
+			})
+			JustBeforeEach(func() {
+				Expect(Create(configuration)).To(Succeed())
+				Expect(Create(versions)).To(Succeed())
+				Expect(Create(stack)).To(Succeed())
+				Eventually(func() bool {
+					Expect(Get(types.NamespacedName{
+						Namespace: stack.GetNamespace(),
+						Name:      stack.GetName(),
+					}, stack)).To(BeNil())
+					return stack.IsReady()
+				}).WithTimeout(5 * time.Second).Should(BeTrue())
+			})
+			JustAfterEach(func() {
+				Expect(Delete(stack)).To(Succeed())
+				Expect(Delete(configuration)).To(Succeed())
+				Expect(Delete(versions)).To(Succeed())
 			})
 			It("should be ok", func() {
-				verifyResources(stack, "monopod-ledgerv1")
+				verifyResources(stack, filepath.Join(dirName, "results"))
 			})
 		})
-	})
+	}
 })
 
 func verifyResources(stack *stackv1beta3.Stack, directory string) {
@@ -156,6 +206,8 @@ func verifyResources(stack *stackv1beta3.Stack, directory string) {
 				`["creationTimestamp"]`,
 				`["ownerReferences"]`,
 				`["generation"]`,
+				`["lastTransitionTime"]`,
+				`["lastUpdateTime"]`,
 			}
 
 			if diff := cmp.Diff(expectedResourceSpec, actualResourceSpec,
@@ -238,6 +290,11 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 			Group:    networkingv1.GroupName,
 			Version:  "v1",
 			Resource: "ingresses",
+		},
+		{
+			Group:    "stack.formance.com",
+			Version:  "v1beta3",
+			Resource: "migrations",
 		},
 	}
 	for _, gvk := range gvks {

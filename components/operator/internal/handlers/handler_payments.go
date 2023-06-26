@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
-	"github.com/rogpeppe/go-internal/semver"
 )
 
 func init() {
@@ -19,38 +18,38 @@ func init() {
 		Postgres: func(ctx modules.Context) v1beta3.PostgresConfig {
 			return ctx.Configuration.Spec.Services.Payments.Postgres
 		},
-		Services: func(ctx modules.Context) modules.Services {
-			version := ctx.Versions.Spec.Payments
-			migrateCommand := []string{"payments", "migrate"}
-			if semver.IsValid(version) {
-				version := semver.Compare(version, "v0.7.0")
-				if version < 0 {
-					migrateCommand = append(migrateCommand, "up")
-				}
-			}
-			return modules.Services{{
-				InjectPostgresVariables: true,
-				HasVersionEndpoint:      true,
-				ListenEnvVar:            "LISTEN",
-				ExposeHTTP:              true,
-				NeedTopic:               true,
-				Liveness:                modules.LivenessLegacy,
-				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-					return modules.Container{
-						Env:       env(resolveContext),
-						Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-						Resources: modules.ResourceSizeSmall(),
+		Versions: map[string]modules.Version{
+			"v0.0.0": {
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					migrateCommand := []string{"payments", "migrate"}
+					if ctx.HasVersionLower("v0.7.0") {
+						migrateCommand = append(migrateCommand, "up")
 					}
-				},
-				InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {
-					return []modules.Container{{
-						Name:    "migrate",
-						Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-						Env:     env(resolveContext),
-						Command: migrateCommand,
+					return modules.Services{{
+						InjectPostgresVariables: true,
+						HasVersionEndpoint:      true,
+						ListenEnvVar:            "LISTEN",
+						ExposeHTTP:              true,
+						NeedTopic:               true,
+						Liveness:                modules.LivenessLegacy,
+						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+							return modules.Container{
+								Env:       env(resolveContext),
+								Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+								Resources: modules.ResourceSizeSmall(),
+							}
+						},
+						InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {
+							return []modules.Container{{
+								Name:    "migrate",
+								Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+								Env:     env(resolveContext),
+								Command: migrateCommand,
+							}}
+						},
 					}}
 				},
-			}}
+			},
 		},
 	})
 }

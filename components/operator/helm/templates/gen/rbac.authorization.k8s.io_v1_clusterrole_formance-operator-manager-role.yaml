@@ -103,6 +103,32 @@ rules:
 - apiGroups:
   - stack.formance.com
   resources:
+  - migrations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - migrations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - migrations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - stack.formance.com
+  resources:
   - stacks
   verbs:
   - create

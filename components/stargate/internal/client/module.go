@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/client/controllers"
 	"github.com/formancehq/stack/components/stargate/internal/client/interceptors"
-	"github.com/formancehq/stack/components/stargate/internal/client/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/client/metrics"
 	"github.com/formancehq/stack/components/stargate/internal/client/routes"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/middlewares"
 	"github.com/formancehq/stack/libs/go-libs/health"
@@ -55,7 +55,7 @@ func Module(
 			return newGrpcClient(l, serverURL, tlsEnabled, tlsCACertificate, tlsInsecureSkipVerify, authInterceptor)
 		}),
 		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
-		fx.Provide(opentelemetry.RegisterMetricsRegistry),
+		fx.Provide(metrics.RegisterMetricsRegistry),
 		fx.Provide(NewClient),
 		fx.Invoke(func(lc fx.Lifecycle, client *Client, authInterceptor *interceptors.AuthInterceptor) {
 			lc.Append(fx.Hook{

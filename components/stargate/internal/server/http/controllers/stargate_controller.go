@@ -7,10 +7,12 @@ import (
 	"strings"
 
 	service "github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/opentelemetry"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/propagation"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -121,14 +123,18 @@ func requestToProto(r *http.Request) (*service.StargateServerMessage, error) {
 		headers[k] = &service.Values{Values: v}
 	}
 
+	carrier := propagation.MapCarrier{}
+	opentelemetry.Propagator.Inject(r.Context(), carrier)
+
 	return &service.StargateServerMessage{
 		Event: &service.StargateServerMessage_ApiCall{
 			ApiCall: &service.StargateServerMessage_APICall{
-				Method:  r.Method,
-				Path:    r.URL.Path,
-				Query:   urlQuery,
-				Body:    body,
-				Headers: headers,
+				Method:      r.Method,
+				Path:        r.URL.Path,
+				Query:       urlQuery,
+				Body:        body,
+				Headers:     headers,
+				OtlpContext: carrier,
 			},
 		},
 	}, nil

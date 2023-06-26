@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app.kubernetes.io/service-name: webhooks
+    name: webhooks
+    namespace: monopod-latest
+spec:
+    clusterIP: 10.0.0.219
+    clusterIPs:
+        - 10.0.0.219
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 10007
+          protocol: TCP
+          targetPort: 10007
+    selector:
+        app.kubernetes.io/name: monopod-latest
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

@@ -12,41 +12,45 @@ func init() {
 		Postgres: func(ctx modules.Context) stackv1beta3.PostgresConfig {
 			return ctx.Configuration.Spec.Services.Webhooks.Postgres
 		},
-		Services: func(ctx modules.Context) modules.Services {
-			return modules.Services{
-				{
-					HasVersionEndpoint:      true,
-					ExposeHTTP:              true,
-					InjectPostgresVariables: true,
-					ListenEnvVar:            "LISTEN",
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-						return modules.Container{
-							Image:     modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
-							Env:       webhooksEnvVars(resolveContext.Configuration),
-							Resources: modules.ResourceSizeSmall(),
-						}
-					},
+		Versions: map[string]modules.Version{
+			"v0.0.0": {
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return modules.Services{
+						{
+							HasVersionEndpoint:      true,
+							ExposeHTTP:              true,
+							InjectPostgresVariables: true,
+							ListenEnvVar:            "LISTEN",
+							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+								return modules.Container{
+									Image:     modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
+									Env:       webhooksEnvVars(resolveContext.Configuration),
+									Resources: modules.ResourceSizeSmall(),
+								}
+							},
+						},
+						{
+							Name:                    "worker",
+							InjectPostgresVariables: true,
+							ListenEnvVar:            "LISTEN",
+							Liveness:                modules.LivenessDisable,
+							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+								return modules.Container{
+									Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
+									Env: webhooksEnvVars(resolveContext.Configuration).Append(
+										modules.Env("KAFKA_TOPICS", strings.Join([]string{
+											resolveContext.Stack.GetServiceName("ledger"),
+											resolveContext.Stack.GetServiceName("payments"),
+										}, " ")),
+									),
+									Args:      []string{"worker"},
+									Resources: modules.ResourceSizeSmall(),
+								}
+							},
+						},
+					}
 				},
-				{
-					Name:                    "worker",
-					InjectPostgresVariables: true,
-					ListenEnvVar:            "LISTEN",
-					Liveness:                modules.LivenessDisable,
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-						return modules.Container{
-							Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
-							Env: webhooksEnvVars(resolveContext.Configuration).Append(
-								modules.Env("KAFKA_TOPICS", strings.Join([]string{
-									resolveContext.Stack.GetServiceName("ledger"),
-									resolveContext.Stack.GetServiceName("payments"),
-								}, " ")),
-							),
-							Args:      []string{"worker"},
-							Resources: modules.ResourceSizeSmall(),
-						}
-					},
-				},
-			}
+			},
 		},
 	})
 }

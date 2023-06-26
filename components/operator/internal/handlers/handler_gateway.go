@@ -15,41 +15,45 @@ const (
 
 func init() {
 	modules.Register("gateway", modules.Module{
-		Services: func(ctx modules.Context) modules.Services {
-			return modules.Services{{
-				Port:       gatewayPort,
-				Path:       "/",
-				ExposeHTTP: true,
-				Liveness:   modules.LivenessDisable,
-				Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
-					return modules.Configs{
-						"config": modules.Config{
-							Data: map[string]string{
-								"Caddyfile": createCaddyfile(resolveContext),
-							},
-							Mount: true,
+		Versions: map[string]modules.Version{
+			"v0.0.0": {
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return modules.Services{{
+						Port:       gatewayPort,
+						Path:       "/",
+						ExposeHTTP: true,
+						Liveness:   modules.LivenessDisable,
+						Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
+							return modules.Configs{
+								"config": modules.Config{
+									Data: map[string]string{
+										"Caddyfile": createCaddyfile(resolveContext),
+									},
+									Mount: true,
+								},
+							}
 						},
-					}
-				},
-				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-					return modules.Container{
-						Command: []string{"/usr/bin/caddy"},
-						Args: []string{
-							"run",
-							"--config", resolveContext.GetConfig("config").GetMountPath() + "/Caddyfile",
-							"--adapter", "caddyfile",
+						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+							return modules.Container{
+								Command: []string{"/usr/bin/caddy"},
+								Args: []string{
+									"run",
+									"--config", resolveContext.GetConfig("config").GetMountPath() + "/Caddyfile",
+									"--adapter", "caddyfile",
+								},
+								Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
+								Env: modules.NewEnv().Append(
+									modules.Env(
+										"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+										"http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)",
+									),
+								),
+								Resources: modules.ResourceSizeSmall(),
+							}
 						},
-						Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
-						Env: modules.NewEnv().Append(
-							modules.Env(
-								"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
-								"http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)",
-							),
-						),
-						Resources: modules.ResourceSizeSmall(),
-					}
+					}}
 				},
-			}}
+			},
 		},
 	})
 }

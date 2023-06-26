@@ -28,6 +28,7 @@ const (
 func newServer() *cobra.Command {
 	return &cobra.Command{
 		Use:          "server",
+		Aliases:      []string{"serve"},
 		Short:        "Launch server",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -17,23 +17,28 @@ limitations under the License.
 package main
 
 import (
+	"crypto/tls"
 	"flag"
+	"net/http"
 	"os"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 
 	authcomponentsv1beta1 "github.com/formancehq/operator/apis/auth.components/v1beta1"
 	componentsv1beta1 "github.com/formancehq/operator/apis/components/v1beta1"
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	"github.com/formancehq/operator/internal/controllers/stack"
-	"k8s.io/apimachinery/pkg/runtime"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"github.com/formancehq/operator/internal/modules"
 
-	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
-	benthoscomponentsv1beta2 "github.com/formancehq/operator/apis/benthos.components/v1beta2"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+
+	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
+	benthoscomponentsv1beta2 "github.com/formancehq/operator/apis/benthos.components/v1beta2"
 
 	stackv1beta1 "github.com/formancehq/operator/apis/stack/v1beta1"
 	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
@@ -129,12 +134,32 @@ func main() {
 		}
 	}
 
-	stackReconciler := stack.NewReconciler(mgr.GetClient(), mgr.GetScheme(), region, env)
+	httpTransport := http.DefaultTransport
+	httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: true,
+	}
+
+	configuration := stack.Configuration{
+		Region:      region,
+		Environment: env,
+	}
+
+	stackReconciler := stack.NewReconciler(
+		mgr.GetClient(),
+		mgr.GetScheme(),
+		modules.NewStackDeployer(httpTransport),
+		configuration,
+	)
 	if err = stackReconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Stack")
 		os.Exit(1)
 	}
 
+	migrationReconciler := stack.NewMigrationReconciler(mgr.GetClient(), mgr.GetScheme(), configuration)
+	if err := migrationReconciler.SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Migration")
+		os.Exit(1)
+	}
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
