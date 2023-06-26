@@ -1,4 +1,4 @@
-package opentelemetry
+package metrics
 
 import (
 	"go.opentelemetry.io/otel/metric"

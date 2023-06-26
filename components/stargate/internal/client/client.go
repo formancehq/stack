@@ -10,9 +10,11 @@ import (
 
 	"github.com/alitto/pond"
 	"github.com/formancehq/stack/components/stargate/internal/api"
-	"github.com/formancehq/stack/components/stargate/internal/client/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/client/metrics"
+	"github.com/formancehq/stack/components/stargate/internal/opentelemetry"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/propagation"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/metadata"
 )
@@ -66,7 +68,7 @@ type Client struct {
 	httpClient     *http.Client
 
 	workerPool      *pond.WorkerPool
-	metricsRegistry opentelemetry.MetricsRegistry
+	metricsRegistry metrics.MetricsRegistry
 }
 
 func NewClient(
@@ -74,7 +76,7 @@ func NewClient(
 	stargateClient api.StargateServiceClient,
 	clientConfig Config,
 	workerPoolConfig WorkerPoolConfig,
-	metricsRegistry opentelemetry.MetricsRegistry,
+	metricsRegistry metrics.MetricsRegistry,
 ) *Client {
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.MaxIdleConns = clientConfig.HTTPMaxIdleConns
@@ -191,17 +193,23 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 
 	switch ev := in.Event.(type) {
 	case *api.StargateServerMessage_ApiCall:
+
+		ctx = opentelemetry.Propagator.Extract(ctx, propagation.MapCarrier(ev.ApiCall.OtlpContext))
+
 		attrs = append(attrs, attribute.String("message_type", "api_call"))
 		c.metricsRegistry.ServerMessageReceivedByType().Add(ctx, 1, attrs...)
 
 		attrs = append(attrs, attribute.String("path", ev.ApiCall.Path))
 		path := strings.TrimPrefix(ev.ApiCall.Path, "/")
-		req, err := http.NewRequest(ev.ApiCall.Method, c.config.GatewayUrl+"/"+path, bytes.NewReader(ev.ApiCall.Body))
+
+		req, err := http.NewRequestWithContext(ctx, ev.ApiCall.Method, c.config.GatewayUrl+"/"+path, bytes.NewReader(ev.ApiCall.Body))
 		if err != nil {
 			return &ResponseChanEvent{
 				err: err,
 			}
 		}
+
+		opentelemetry.Propagator.Inject(ctx, propagation.HeaderCarrier(req.Header))
 
 		q := req.URL.Query()
 		for k, v := range ev.ApiCall.Query {

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/server/grpc/metrics"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/golang-jwt/jwt"
 	"github.com/hashicorp/go-retryablehttp"
@@ -31,14 +31,14 @@ type AuthInterceptor struct {
 	logger          logging.Logger
 	jwksURL         string
 	httpClient      *http.Client
-	metricsRegistry opentelemetry.MetricsRegistry
+	metricsRegistry metrics.MetricsRegistry
 }
 
 func NewAuthInterceptor(
 	logger logging.Logger,
 	jwksURL string,
 	maxRetriesJWKSFetchting int,
-	metricsRegistry opentelemetry.MetricsRegistry,
+	metricsRegistry metrics.MetricsRegistry,
 ) *AuthInterceptor {
 	return &AuthInterceptor{
 		logger:          logger,

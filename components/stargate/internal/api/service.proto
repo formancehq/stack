@@ -13,6 +13,7 @@ message StargateServerMessage {
     map<string, Values> query = 3;
     bytes body = 4;
     map<string, Values> headers = 5;
+    map<string, string> otlpContext = 6;
   }
 
   message Ping {}
