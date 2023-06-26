@@ -18,7 +18,7 @@ repos:
   - id: detect-aws-credentials
     args: [--allow-missing-credentials]
   - id: detect-private-key
-    exclude: components/operator/garden|components/auth/cmd/serve.go
+    exclude: components/operator/garden|components/auth/cmd/serve.go|components/payments/internal/app/connectors/bankingcircle/config.go|docs/docs/payments/connectors/bankingcircle.mdx
 - repo: local
   hooks:
   - id: moon

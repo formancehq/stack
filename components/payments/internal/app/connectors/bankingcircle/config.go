@@ -7,11 +7,21 @@ import (
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
 
+// PFX is not handle very well in Go if we have more than one certificate
+// in the pfx data.
+// To be safe for every user to pass the right data to the connector, let's
+// use two config parameters instead of one: the user certificate and the key
+// associated.
+// To extract them for a pfx file, you can use the following commands:
+// openssl pkcs12 -in PC20230412293693.pfx -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > clientcert.cer
+// openssl pkcs12 -in PC20230412293693.pfx -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > clientcert.key
 type Config struct {
 	Username              string `json:"username" yaml:"username" bson:"username"`
 	Password              string `json:"password" yaml:"password" bson:"password"`
 	Endpoint              string `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
 	AuthorizationEndpoint string `json:"authorizationEndpoint" yaml:"authorizationEndpoint" bson:"authorizationEndpoint"`
+	UserCertificate       string `json:"userCertificate" yaml:"userCertificate" bson:"userCertificate"`
+	UserCertificateKey    string `json:"userCertificateKey" yaml:"userCertificateKey" bson:"userCertificateKey"`
 }
 
 // String obfuscates sensitive fields and returns a string representation of the config.
@@ -37,6 +47,14 @@ func (c Config) Validate() error {
 		return ErrMissingAuthorizationEndpoint
 	}
 
+	if c.UserCertificate == "" {
+		return ErrMissingUserCertificate
+	}
+
+	if c.UserCertificateKey == "" {
+		return ErrMissingUserCertificatePassphrase
+	}
+
 	return nil
 }
 
@@ -51,6 +69,8 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("password", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, true)
 	cfg.AddParameter("authorizationEndpoint", configtemplate.TypeString, true)
+	cfg.AddParameter("userCertificate", configtemplate.TypeString, true)
+	cfg.AddParameter("userCertificateKey", configtemplate.TypeString, true)
 
 	return Name.String(), cfg
 }

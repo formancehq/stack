@@ -18,6 +18,8 @@ Docs: [https://docs.bankingcircleconnect.com/](https://docs.bankingcircleconnect
     Password              string `json:"password" yaml:"password" bson:"password"`
     Endpoint              string `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
     AuthorizationEndpoint string `json:"authorizationEndpoint" yaml:"authorizationEndpoint" bson:"authorizationEndpoint"`
+    UserCertificate       string `json:"userCertificate" yaml:"userCertificate" bson:"userCertificate"`
+	UserCertificateKey    string `json:"userCertificateKey" yaml:"userCertificateKey" bson:"userCertificateKey"`
 ```
 
 #### Sandbox defaults
@@ -26,7 +28,9 @@ Docs: [https://docs.bankingcircleconnect.com/](https://docs.bankingcircleconnect
     "username": "username",
     "password": "password",
     "endpoint": "https://sandbox.bankingcircle.com",
-    "authorizationEndpoint": "https://authorizationsandbox.bankingcircleconnect.com"
+    "authorizationEndpoint": "https://authorizationsandbox.bankingcircleconnect.com",
+    "userCertificate": "userCertificate",
+    "userCertificateKey": "userCertificateKey"
 }
 ```
 
@@ -36,7 +40,9 @@ Docs: [https://docs.bankingcircleconnect.com/](https://docs.bankingcircleconnect
     "username": "username",
     "password": "password",
     "endpoint": "https://www.bankingcircleconnect.com/",
-    "authorizationEndpoint": "https://authorization.bankingcircleconnect.com"
+    "authorizationEndpoint": "https://authorization.bankingcircleconnect.com",
+    "userCertificate": "userCertificate",
+    "userCertificateKey": "userCertificateKey"
 }
 ```
 
