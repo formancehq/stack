@@ -29,7 +29,7 @@ const sidebars = {
       items: [
         {
           type: 'doc',
-          id: 'stack/tutorials/installation',
+          id: 'getting-started/quick-start',
           customProps: {
             // icon: '💾',
           }
