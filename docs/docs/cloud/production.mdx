@@ -2,6 +2,10 @@
 title: Formance Cloud
 ---
 
+:::tip
+This feature is only available for Formance Cloud or Enterprise customers.
+:::
+
 In addition to sandbox deployments, Formance Cloud provides an environment which can be used to deploy your production applications. Informations regarding the available plans can be found on the [Formance Cloud Pricing](https://formance.com/pricing) page.
 
 ## Available regions
@@ -17,24 +21,6 @@ Formance Cloud is available in the following regions:
 | `aws-us-east-1-production` | US, Virginia (AWS) | Available upon [request](mailto:support@formance.com) |
 | `aws-us-west-1-production` | US, Oregon (AWS) | Available upon [request](mailto:support@formance.com) |
 | `aws-ap-southeast-1-production` | APAC, Singapore (AWS) | Available upon [request](mailto:support@formance.com) |
-
-## Setting up billing
-
-:::tip
-Prior to executing the commands below, make sure you have installed the Formance CLI. If you haven't, follow the instructions in the [installation guide](/stack/fctl).
-:::
-
-The first step is to set up your billing account. This will create a new billing account and link it to your Formance account. You will be asked to provide your credit card details in the process, with Stripe being used as the payment processor.
-
-```shell
-fctl cloud billing setup
-```
-
-Once your billing account is set up, you can manage your plan directly from the billing portal, which can be accessed by running the following command:
-
-```shell
-fctl cloud billing portal
-```
 
 ## Creating a production deployment
 

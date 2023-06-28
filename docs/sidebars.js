@@ -74,11 +74,6 @@ const sidebars = {
         },
         {
           type: 'doc',
-          id: 'stack/webhooks/index',
-          label: 'Webhooks',
-        },
-        {
-          type: 'doc',
           id: 'stack/unambiguous-monetary-notation',
           label: 'Monetary Notation (UMN)',
         },
@@ -88,11 +83,6 @@ const sidebars = {
           collapsible: true,
           collapsed: true,
           items: [
-            {
-              type: 'doc',
-              id: 'cloud/sandboxes',
-              label: 'Sandbox',
-            },
             {
               type: 'doc',
               id: 'cloud/production',
@@ -111,10 +101,6 @@ const sidebars = {
          items: [
            {
              type: 'doc',
-             id: 'stack/self-hosted/authentication',
-           },
-           {
-             type: 'doc',
              id: 'stack/reference/docker',
              label: 'Docker',
            },
@@ -123,16 +109,6 @@ const sidebars = {
              id: 'stack/reference/operator',
              label: 'Kubernetes (operator)',
            },
-           {
-             type: 'doc',
-             id: 'stack/reference/helm',
-             label: 'Kubernetes (helm)',
-           },
-           // {
-           //   type: 'doc',
-           //   id: 'stack/reference/production',
-           //   label: 'Production checklist',
-           // }
          ],
        },
 //        // {
@@ -398,6 +374,20 @@ const sidebars = {
             },
           ]
         },
+
+        {
+          label: 'Webhooks',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'webhooks/index',
+              label: 'Introduction'
+            },
+          ]
+        },
         {
           label: 'Wallets (beta)',
           type: 'category',
@@ -536,13 +526,18 @@ const sidebars = {
       items: [
         {
           type: 'doc',
-          id: 'guides/newStack',
-          label: 'How to create a new stack ?',
+          id: 'guides/newSandbox',
+          label: 'How to create a sandbox ?',
         },
         {
           type: 'doc',
           id: 'guides/privateRegion',
           label: 'How to create a private region ?',
+        },
+        {
+          type: 'doc',
+          id: 'guides/configOperator',
+          label: 'How to config Formance Operator ?',
         },
       ]
     },
