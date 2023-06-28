@@ -1,12 +1,8 @@
 ---
-title: Formance Cloud Sandbox
-pagination_next: null
-pagination_prev: null
-# hide_table_of_contents: true
-# the above sets the doc column width to 100% when set to true,
-# landing a less-than-ideal look
-toc_min_heading_level: 3
+title: How to create a sandbox ?
+description: How to create a sandbox in Formance Platform.
 ---
+import Install from '../fctl/partials/_install.mdx';
 
 To get started in no beat with The Formance Platform, you can create a Formance Cloud sandbox environment. Sandbox environments are free, fully functional Formance Platform instances that you can use to test and develop your applications. Sandbox environments are hosted on the Formance Cloud, and are available to all users.
 
@@ -14,15 +10,12 @@ To get started in no beat with The Formance Platform, you can create a Formance 
 Sandbox environments are not suitable for production use. They are intended for development and testing purposes only. Data persistence is not guaranteed, and data may be lost at any time without prior notice. They also enter a sleep mode after a prolonged period of inactivity, which may result in a longer startup time. If you need a production-ready managed cloud environment, please checkout the [Production Cloud](/cloud/production) section.
 :::
 
+
+## Installation of fctl
+
+<Install />
+
 ## Creating a Sandbox
-
-Prior to creating a sandbox, make sure you have installed the Formance CLI. If you haven't, follow the instructions in the [installation guide](/stack/fctl).
-
-First, let's make sure that you are logged in to Formance Cloud if you haven't already.
-
-```shell
-fctl login
-```
 
 Now, let's create a sandbox.
 
