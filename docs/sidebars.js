@@ -105,37 +105,37 @@ const sidebars = {
             },
           ],
         },
-        {
-          type: 'category',
-          label: 'Self-hosting',
-          items: [
-            {
-              type: 'doc',
-              id: 'stack/self-hosted/authentication',
-            },
-            {
-              type: 'doc',
-              id: 'stack/reference/docker',
-              label: 'Docker',
-            },
-            {
-              type: 'doc',
-              id: 'stack/reference/operator',
-              label: 'Kubernetes (operator)',
-            },
-            {
-              type: 'doc',
-              id: 'stack/reference/helm',
-              label: 'Kubernetes (helm)',
-            },
-            // {
-            //   type: 'doc',
-            //   id: 'stack/reference/production',
-            //   label: 'Production checklist',
-            // }
-          ],
-        },
-        // {
+       {
+         type: 'category',
+         label: 'Self-hosting',
+         items: [
+           {
+             type: 'doc',
+             id: 'stack/self-hosted/authentication',
+           },
+           {
+             type: 'doc',
+             id: 'stack/reference/docker',
+             label: 'Docker',
+           },
+           {
+             type: 'doc',
+             id: 'stack/reference/operator',
+             label: 'Kubernetes (operator)',
+           },
+           {
+             type: 'doc',
+             id: 'stack/reference/helm',
+             label: 'Kubernetes (helm)',
+           },
+           // {
+           //   type: 'doc',
+           //   id: 'stack/reference/production',
+           //   label: 'Production checklist',
+           // }
+         ],
+       },
+//        // {
         //   type: 'doc',
         //   id: 'stack/telemetry/index',
         //   label: 'Telemetry',

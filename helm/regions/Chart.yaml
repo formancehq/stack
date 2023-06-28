@@ -16,9 +16,9 @@ appVersion: "latest"
 dependencies:
   - name: agent
     version: "0.1.0"
-    repository: "file://../../components/agent/helm"
+    repository: "oci://ghcr.io/formancehq/helm"
     condition: agent.enabled
   - name: operator
     version: "0.1.0"
-    repository: "file://../../components/operator/helm"
+    repository: "oci://ghcr.io/formancehq/helm"
     condition: operator.enabled
