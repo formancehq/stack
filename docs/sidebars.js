@@ -527,6 +527,25 @@ const sidebars = {
         }
       ]
     },
+
+    {
+      label: 'Guides',
+      type: 'category',
+      collapsible: true,
+      collapsed: false,
+      items: [
+        {
+          type: 'doc',
+          id: 'guides/newStack',
+          label: 'How to create a new stack ?',
+        },
+        {
+          type: 'doc',
+          id: 'guides/privateRegion',
+          label: 'How to create a private region ?',
+        },
+      ]
+    },
   ],
 };
 

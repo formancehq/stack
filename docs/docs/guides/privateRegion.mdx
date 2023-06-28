@@ -1,0 +1,43 @@
+---
+title: How to create a private region ?
+description: Learn about the private region with Formance Platform.
+---
+
+:::tip
+This feature is only available for Formance Platform Enterprise customers.
+:::
+
+## Create a region with fctl
+To create a private region, run the following fctl command:
+```bash
+fctl cloud regions create name_of_private_region
+```
+
+## Deploy region with Helm
+You can now create a private region via Helm. To do this, we'll first generate a Helm configuration file.
+You'll need to adapt the following values:
+- REGION_ID: the identifier of the private region you've just created via FCTL
+- REGION_SECRET: the secret of the private region you have just created via FCTL
+- URL_OF_PRIVATE_REGION: the url of the private region (eg: https://sandbox.formance.cloud)
+
+```yaml
+# values.yaml
+agent:
+  agent:
+    id: "REGION_ID"
+    baseUrl: "URL_OF_PRIVATE_REGION"
+    authentication:
+        clientID: "REGION_ID"
+        clientSecret: "REGION_SECRET"
+```
+We can now create a private region with Helm:
+```bash
+helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions --version 0.1.0 --namespace formance-system --create-namespace --values values.yaml
+```
+
+## Verify that the region is active
+You can check that your region is active with the following FCTL command:
+```
+fctl cloud regions show REGION_ID
+```
+You now have your own active private region! 🎉
