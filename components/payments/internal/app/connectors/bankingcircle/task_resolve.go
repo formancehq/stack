@@ -21,7 +21,15 @@ type TaskDescriptor struct {
 }
 
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition models.TaskDescriptor) task.Task {
-	bankingCircleClient, err := newClient(config.Username, config.Password, config.Endpoint, config.AuthorizationEndpoint, logger)
+	bankingCircleClient, err := newClient(
+		config.Username,
+		config.Password,
+		config.Endpoint,
+		config.AuthorizationEndpoint,
+		config.UserCertificate,
+		config.UserCertificateKey,
+		logger,
+	)
 	if err != nil {
 		logger.Error(err)
 

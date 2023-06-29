@@ -17,4 +17,10 @@ var (
 
 	// ErrMissingAuthorizationEndpoint is returned when the authorization endpoint is missing.
 	ErrMissingAuthorizationEndpoint = errors.New("missing authorization endpoint from config")
+
+	// ErrMissingUserCertificate is returned when the user certificate is missing.
+	ErrMissingUserCertificate = errors.New("missing user certificate from config")
+
+	// ErrMissingUserCertificatePassphrase is returned when the user certificate passphrase is missing.
+	ErrMissingUserCertificatePassphrase = errors.New("missing user certificate passphrase from config")
 )
