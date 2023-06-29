@@ -69,8 +69,8 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("password", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, true)
 	cfg.AddParameter("authorizationEndpoint", configtemplate.TypeString, true)
-	cfg.AddParameter("userCertificate", configtemplate.TypeString, true)
-	cfg.AddParameter("userCertificateKey", configtemplate.TypeString, true)
+	cfg.AddParameter("userCertificate", configtemplate.TypeLongString, true)
+	cfg.AddParameter("userCertificateKey", configtemplate.TypeLongString, true)
 
 	return Name.String(), cfg
 }
