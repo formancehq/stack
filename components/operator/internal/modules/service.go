@@ -252,6 +252,11 @@ type Context struct {
 	Versions      *stackv1beta3.Versions
 }
 
+type PostInstallContext struct {
+	Context
+	ModuleName string
+}
+
 type ConfigHandles map[string]ConfigHandle
 
 func (h ConfigHandles) sort() []string {
@@ -289,20 +294,21 @@ type Service struct {
 	Port int32
 	// Path indicates the path used to expose the service using an ingress
 	Path                    string
-	EnvPrefix               string
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
-	AuthConfiguration       func(resolveContext PrepareContext) stackv1beta3.ClientConfiguration
+	Liveness                Liveness
+	AuthConfiguration       func(resolveContext ModuleContext) stackv1beta3.ClientConfiguration
 	Configs                 func(resolveContext ServiceInstallContext) Configs
 	Secrets                 func(resolveContext ServiceInstallContext) Secrets
 	Container               func(resolveContext ContainerResolutionContext) Container
 	InitContainer           func(resolveContext ContainerResolutionContext) []Container
 	NeedTopic               bool
 
-	usedPort int32
+	usedPort  int32
+	EnvPrefix string
 }
 
-func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
+func (service *Service) Prepare(ctx ModuleContext, serviceName string) {
 	if service.AuthConfiguration != nil {
 		_ = ctx.Stack.GetOrCreateClient(serviceName, service.AuthConfiguration(ctx))
 	}
@@ -311,6 +317,16 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 		if service.usedPort == 0 {
 			service.usedPort = ctx.PortAllocator.NextPort()
 		}
+
+		if ctx.Stack.Status.Ports == nil {
+			ctx.Stack.Status.Ports = make(map[string]map[string]int32)
+		}
+
+		if ctx.Stack.Status.Ports[ctx.Module] == nil {
+			ctx.Stack.Status.Ports[ctx.Module] = make(map[string]int32)
+		}
+
+		ctx.Stack.Status.Ports[ctx.Module][serviceName] = service.usedPort
 	}
 
 	if ctx.Configuration.Spec.Broker.Nats != nil && service.NeedTopic {
@@ -337,7 +353,7 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 		} else {
 			_, err = js.UpdateStream(&streamConfig)
 			if err != nil {
-				logging.Error(err)
+				logging.Error(fmt.Sprintf("%s: %s", topicName, err))
 			}
 		}
 	}
@@ -349,6 +365,7 @@ func (service Service) installService(ctx ServiceInstallContext, deployer Deploy
 		if ctx.Configuration.Spec.LightMode {
 			selector = ctx.Stack.Name
 		}
+		t.Labels = collectionutils.CreateMap("app.kubernetes.io/service-name", serviceName)
 		t.Spec = corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{{
 				Name:        "http",
@@ -450,7 +467,7 @@ func (service Service) containers(ctx ContainerResolutionContext, container Cont
 	}
 }
 
-func (service Service) Install(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) error {
+func (service Service) install(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) error {
 	configHandles, err := service.installConfigs(ctx, deployer, serviceName)
 	if err != nil {
 		return err
@@ -492,9 +509,10 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			}
 			return serviceName
 		}(),
-		Image:   container.Image,
-		Command: container.Command,
-		Args:    container.Args,
+		Image:     container.Image,
+		Command:   container.Command,
+		Args:      container.Args,
+		Resources: container.Resources,
 	}
 	env := NewEnv()
 	if service.InjectPostgresVariables {
@@ -504,7 +522,7 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 	}
 	if service.ListenEnvVar != "" {
 		env = env.Append(
-			Env(service.EnvPrefix+service.ListenEnvVar, fmt.Sprintf(":%d", service.usedPort)),
+			Env(fmt.Sprintf("%s%s", service.EnvPrefix, service.ListenEnvVar), fmt.Sprintf(":%d", service.usedPort)),
 		)
 	}
 
@@ -516,16 +534,22 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 
 	if !init {
 		env = env.Append(
-			Env(service.EnvPrefix+"DEBUG", fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
-			Env(service.EnvPrefix+"DEV", fmt.Sprintf("%v", ctx.Stack.Spec.Dev)),
+			Env(fmt.Sprintf("%sDEBUG", service.EnvPrefix), fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
+			Env(fmt.Sprintf("%sDEV", service.EnvPrefix), fmt.Sprintf("%v", ctx.Stack.Spec.Dev)),
 			// TODO: the stack url is a full url, we can target the gateway. Need to find how to generalize this
 			// as the gateway is a component like another
-			Env(service.EnvPrefix+"STACK_URL", ctx.Stack.URL()),
-			Env(service.EnvPrefix+"OTEL_SERVICE_NAME", serviceName),
+			Env(fmt.Sprintf("%sSTACK_URL", service.EnvPrefix), ctx.Stack.URL()),
+			Env(fmt.Sprintf("%sOTEL_SERVICE_NAME", service.EnvPrefix), serviceName),
+			Env("STACK", ctx.Stack.Name),
 		)
 	}
 
-	c.Env = env.Append(container.Env...).ToCoreEnv()
+	for _, envVar := range container.Env {
+		envVar.Name = fmt.Sprintf("%s%s", service.EnvPrefix, envVar.Name)
+		env = append(env, envVar)
+	}
+
+	c.Env = env.ToCoreEnv()
 
 	if !init {
 		ret := make([]corev1.VolumeMount, 0)
@@ -553,7 +577,7 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 		}
 		c.VolumeMounts = ret
 
-		switch container.Liveness {
+		switch service.Liveness {
 		case LivenessDefault:
 			c.LivenessProbe = common.DefaultLiveness(service.GetUsedPort())
 		case LivenessLegacy:

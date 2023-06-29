@@ -19,13 +19,13 @@ var _ MappedNullable = &ClientOptions{}
 
 // ClientOptions struct for ClientOptions
 type ClientOptions struct {
-	Public                 interface{}            `json:"public,omitempty"`
-	RedirectUris           interface{}            `json:"redirectUris,omitempty"`
-	Description            interface{}            `json:"description,omitempty"`
-	Name                   interface{}            `json:"name"`
-	Trusted                interface{}            `json:"trusted,omitempty"`
-	PostLogoutRedirectUris interface{}            `json:"postLogoutRedirectUris,omitempty"`
-	Metadata               map[string]interface{} `json:"metadata,omitempty"`
+	Public interface{} `json:"public,omitempty"`
+	RedirectUris interface{} `json:"redirectUris,omitempty"`
+	Description interface{} `json:"description,omitempty"`
+	Name interface{} `json:"name"`
+	Trusted interface{} `json:"trusted,omitempty"`
+	PostLogoutRedirectUris interface{} `json:"postLogoutRedirectUris,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewClientOptions instantiates a new ClientOptions object
@@ -59,7 +59,7 @@ func (o *ClientOptions) GetPublic() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetPublicOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Public) {
+	if o == nil || IsNil(o.Public) {
 		return nil, false
 	}
 	return &o.Public, true
@@ -67,7 +67,7 @@ func (o *ClientOptions) GetPublicOk() (*interface{}, bool) {
 
 // HasPublic returns a boolean if a field has been set.
 func (o *ClientOptions) HasPublic() bool {
-	if o != nil && isNil(o.Public) {
+	if o != nil && IsNil(o.Public) {
 		return true
 	}
 
@@ -92,7 +92,7 @@ func (o *ClientOptions) GetRedirectUris() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetRedirectUrisOk() (*interface{}, bool) {
-	if o == nil || isNil(o.RedirectUris) {
+	if o == nil || IsNil(o.RedirectUris) {
 		return nil, false
 	}
 	return &o.RedirectUris, true
@@ -100,7 +100,7 @@ func (o *ClientOptions) GetRedirectUrisOk() (*interface{}, bool) {
 
 // HasRedirectUris returns a boolean if a field has been set.
 func (o *ClientOptions) HasRedirectUris() bool {
-	if o != nil && isNil(o.RedirectUris) {
+	if o != nil && IsNil(o.RedirectUris) {
 		return true
 	}
 
@@ -125,7 +125,7 @@ func (o *ClientOptions) GetDescription() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetDescriptionOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Description) {
+	if o == nil || IsNil(o.Description) {
 		return nil, false
 	}
 	return &o.Description, true
@@ -133,7 +133,7 @@ func (o *ClientOptions) GetDescriptionOk() (*interface{}, bool) {
 
 // HasDescription returns a boolean if a field has been set.
 func (o *ClientOptions) HasDescription() bool {
-	if o != nil && isNil(o.Description) {
+	if o != nil && IsNil(o.Description) {
 		return true
 	}
 
@@ -160,7 +160,7 @@ func (o *ClientOptions) GetName() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetNameOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
 	return &o.Name, true
@@ -184,7 +184,7 @@ func (o *ClientOptions) GetTrusted() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetTrustedOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Trusted) {
+	if o == nil || IsNil(o.Trusted) {
 		return nil, false
 	}
 	return &o.Trusted, true
@@ -192,7 +192,7 @@ func (o *ClientOptions) GetTrustedOk() (*interface{}, bool) {
 
 // HasTrusted returns a boolean if a field has been set.
 func (o *ClientOptions) HasTrusted() bool {
-	if o != nil && isNil(o.Trusted) {
+	if o != nil && IsNil(o.Trusted) {
 		return true
 	}
 
@@ -217,7 +217,7 @@ func (o *ClientOptions) GetPostLogoutRedirectUris() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetPostLogoutRedirectUrisOk() (*interface{}, bool) {
-	if o == nil || isNil(o.PostLogoutRedirectUris) {
+	if o == nil || IsNil(o.PostLogoutRedirectUris) {
 		return nil, false
 	}
 	return &o.PostLogoutRedirectUris, true
@@ -225,7 +225,7 @@ func (o *ClientOptions) GetPostLogoutRedirectUrisOk() (*interface{}, bool) {
 
 // HasPostLogoutRedirectUris returns a boolean if a field has been set.
 func (o *ClientOptions) HasPostLogoutRedirectUris() bool {
-	if o != nil && isNil(o.PostLogoutRedirectUris) {
+	if o != nil && IsNil(o.PostLogoutRedirectUris) {
 		return true
 	}
 
@@ -250,7 +250,7 @@ func (o *ClientOptions) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetMetadataOk() (*map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
 	return &o.Metadata, true
@@ -258,7 +258,7 @@ func (o *ClientOptions) GetMetadataOk() (*map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ClientOptions) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && IsNil(o.Metadata) {
 		return true
 	}
 
@@ -271,7 +271,7 @@ func (o *ClientOptions) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ClientOptions) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -339,3 +339,5 @@ func (v *NullableClientOptions) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

@@ -1,15 +1,19 @@
 package stack_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/handlers"
+	"github.com/formancehq/operator/internal/modules"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -29,59 +33,114 @@ func init() {
 	handlers.RSAKeyGenerator = func() string {
 		return "fake-rsa-key"
 	}
+	modules.CreatePostgresDatabase = func(ctx context.Context, dsn, dbName string) error {
+		return nil
+	}
 }
 
-var _ = Describe("When creating a stack", func() {
-	var (
-		configuration *stackv1beta3.Configuration
-		versions      *stackv1beta3.Versions
-		stack         = &stackv1beta3.Stack{}
-	)
-	BeforeEach(func() {
-		configuration = NewDumbConfiguration()
-		versions = NewDumbVersions()
-		*stack = stackv1beta3.Stack{
-			ObjectMeta: v1.ObjectMeta{
-				Name: "stack1",
-			},
-			Spec: stackv1beta3.StackSpec{
-				Seed:     configuration.Name,
-				Versions: versions.Name,
-				Host:     "example.net",
-				Scheme:   "http",
-			},
+var _ = Describe("Check stack deployment", func() {
+	defer func() {
+		if e := recover(); e != nil {
+			debug.PrintStack()
+			spew.Dump(e)
+			panic(e)
+		}
+	}()
+	ls, err := os.ReadDir("testdata")
+	if err != nil {
+		panic(err)
+	}
+	for _, dirEntry := range ls {
+		if !dirEntry.IsDir() {
+			continue
+		}
+		if dirEntry.Name() != "multipod-latest" {
+			continue
+		}
+		name := strings.ReplaceAll(dirEntry.Name(), ".", "-")
+		dirName := dirEntry.Name()
+
+		versionsFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "versions.yaml"))
+		if err != nil {
+			panic(err)
+		}
+		configurationFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "configuration.yaml"))
+		if err != nil {
+			panic(err)
 		}
 
-	})
-	JustBeforeEach(func() {
-		Expect(Create(configuration)).To(Succeed())
-		Expect(Create(versions)).To(Succeed())
-		Expect(Create(stack)).To(Succeed())
-		Eventually(func() bool {
-			Expect(Get(types.NamespacedName{
-				Namespace: stack.GetNamespace(),
-				Name:      stack.GetName(),
-			}, stack)).To(BeNil())
-			return stack.IsReady()
-		}).WithTimeout(5 * time.Second).Should(BeTrue())
-	})
-	JustAfterEach(func() {
-		Expect(Delete(stack)).To(Succeed())
-		Expect(Delete(configuration)).To(Succeed())
-		Expect(Delete(versions)).To(Succeed())
-	})
-	It("should be ok", func() {
-		verifyResources(stack, "multipod")
-	})
-	Context("with light mode", func() {
-		BeforeEach(func() {
-			stack.Name = "stack2"
-			configuration.Spec.LightMode = true
+		tmp := make(map[string]any)
+
+		if err := yaml.Unmarshal(versionsFile, &tmp); err != nil {
+			panic(err)
+		}
+
+		data, err := json.Marshal(tmp)
+		if err != nil {
+			panic(err)
+		}
+
+		versions := &stackv1beta3.Versions{}
+		if err := json.Unmarshal(data, versions); err != nil {
+			panic(err)
+		}
+		versions.Name = name
+
+		if err := yaml.Unmarshal(configurationFile, &tmp); err != nil {
+			panic(err)
+		}
+
+		data, err = json.Marshal(tmp)
+		if err != nil {
+			panic(err)
+		}
+
+		configuration := &stackv1beta3.Configuration{}
+		if err := json.Unmarshal(data, configuration); err != nil {
+			panic(err)
+		}
+		configuration.Name = name
+
+		Context(fmt.Sprintf("with config from dir '%s'", dirEntry.Name()), func() {
+			var (
+				stack = &stackv1beta3.Stack{}
+			)
+			BeforeEach(func() {
+				*stack = stackv1beta3.Stack{
+					ObjectMeta: v1.ObjectMeta{
+						Name: name,
+					},
+					Spec: stackv1beta3.StackSpec{
+						Seed:     configuration.Name,
+						Versions: versions.Name,
+						Host:     "example.net",
+						Scheme:   "http",
+						Stargate: &stackv1beta3.StackStargateConfig{},
+					},
+				}
+			})
+			JustBeforeEach(func() {
+				Expect(Create(configuration)).To(Succeed())
+				Expect(Create(versions)).To(Succeed())
+				Expect(Create(stack)).To(Succeed())
+				Eventually(func() bool {
+					Expect(Get(types.NamespacedName{
+						Namespace: stack.GetNamespace(),
+						Name:      stack.GetName(),
+					}, stack)).To(BeNil())
+					return stack.IsReady()
+				}).WithTimeout(5 * time.Second).Should(BeTrue())
+			})
+			JustAfterEach(func() {
+				Expect(Delete(stack)).To(Succeed())
+				Expect(Delete(configuration)).To(Succeed())
+				Expect(Delete(versions)).To(Succeed())
+			})
+			It("should be ok", func() {
+				verifyResources(stack, filepath.Join(dirName, "results"))
+			})
 		})
-		It("should be ok", func() {
-			verifyResources(stack, "monopod")
-		})
-	})
+	}
 })
 
 func verifyResources(stack *stackv1beta3.Stack, directory string) {
@@ -92,19 +151,19 @@ func verifyResources(stack *stackv1beta3.Stack, directory string) {
 	testDataResourcesDir := filepath.Join("testdata", directory)
 
 	entries, err := os.ReadDir(testDataResourcesDir)
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 
 	for _, gvkEntry := range entries {
 
 		resourceDirFilename := filepath.Join(testDataResourcesDir, gvkEntry.Name())
 		resourceEntries, err := os.ReadDir(resourceDirFilename)
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 
 		for _, resourceEntry := range resourceEntries {
 			gvkParts := strings.SplitN(gvkEntry.Name(), "-", 3)
 
 			kind, err := k8sClient.RESTMapper().ResourceSingularizer(gvkParts[0])
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 
 			actualResource := &unstructured.Unstructured{
 				Object: map[string]interface{}{
@@ -123,13 +182,13 @@ func verifyResources(stack *stackv1beta3.Stack, directory string) {
 			resourceEntryFilename := filepath.Join(resourceDirFilename, resourceEntry.Name())
 
 			expectedContent, err := os.ReadFile(resourceEntryFilename)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 
 			expectedContentAsMap := make(map[string]any)
 			Expect(yaml.Unmarshal(expectedContent, &expectedContentAsMap)).To(BeNil())
 
 			expectedContentAsJSON, err := json.Marshal(expectedContentAsMap)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 
 			expectedResource := &unstructured.Unstructured{}
 			Expect(json.Unmarshal(expectedContentAsJSON, &expectedResource)).To(BeNil())
@@ -147,6 +206,8 @@ func verifyResources(stack *stackv1beta3.Stack, directory string) {
 				`["creationTimestamp"]`,
 				`["ownerReferences"]`,
 				`["generation"]`,
+				`["lastTransitionTime"]`,
+				`["lastUpdateTime"]`,
 			}
 
 			if diff := cmp.Diff(expectedResourceSpec, actualResourceSpec,
@@ -230,10 +291,15 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 			Version:  "v1",
 			Resource: "ingresses",
 		},
+		{
+			Group:    "stack.formance.com",
+			Version:  "v1beta3",
+			Resource: "migrations",
+		},
 	}
 	for _, gvk := range gvks {
 		list, err := dynamic.Resource(gvk).Namespace(stack.Name).List(ctx, v1.ListOptions{})
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 
 		for _, item := range list.Items {
 			groupDir := filepath.Join("testdata", directory, fmt.Sprintf("%s-%s-%s",
@@ -241,10 +307,10 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 
 			Expect(os.MkdirAll(groupDir, os.ModePerm)).To(BeNil())
 			sampleFile, err := os.Create(fmt.Sprintf("%s/%s.yaml", groupDir, item.GetName()))
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 
 			itemAsJson, err := json.Marshal(item.UnstructuredContent())
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 
 			itemAsMap := make(map[string]any)
 			Expect(json.Unmarshal(itemAsJson, &itemAsMap)).To(BeNil())

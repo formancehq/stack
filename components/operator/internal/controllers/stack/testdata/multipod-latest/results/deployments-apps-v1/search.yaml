@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+        reloader.stakater.com/auto: "true"
+    generation: 1
+    labels:
+        formance.com/monopod: "false"
+        stack: "true"
+    name: search
+    namespace: multipod-latest
+spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: search
+    strategy:
+        rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+        type: RollingUpdate
+    template:
+        metadata:
+            creationTimestamp: null
+            labels:
+                app.kubernetes.io/name: search
+        spec:
+            containers:
+                - env:
+                    - name: BIND
+                      value: :8080
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: search
+                    - name: STACK
+                      value: multipod-latest
+                    - name: OPENSEARCH_URL
+                      value: http://elasticsearch:9200
+                    - name: OPENSEARCH_BATCHING_COUNT
+                      value: "0"
+                    - name: OPENSEARCH_BATCHING_PERIOD
+                    - name: TOPIC_PREFIX
+                      value: multipod-latest-
+                    - name: OPENSEARCH_INDEX
+                      value: stacks
+                    - name: KAFKA_ADDRESS
+                      value: kafka:1234
+                    - name: OPEN_SEARCH_SERVICE
+                      value: elasticsearch:9200
+                    - name: OPEN_SEARCH_SCHEME
+                      value: http
+                    - name: MAPPING_INIT_DISABLED
+                      value: "true"
+                    - name: ES_INDICES
+                      value: stacks
+                  image: ghcr.io/formancehq/search:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 8080
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: search
+                  ports:
+                    - containerPort: 8080
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+status:
+    conditions:
+        - lastTransitionTime: "2023-06-22T12:02:16Z"
+          lastUpdateTime: "2023-06-22T12:02:16Z"
+          status: "True"
+          type: Available
+    observedGeneration: 1

@@ -1,46 +1,56 @@
 package vm
 
 import (
-	"encoding/json"
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/machine/vm/program"
+	"github.com/formancehq/ledger/pkg/machine/internal"
+	"github.com/formancehq/ledger/pkg/machine/vm/program"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
+
+type Posting struct {
+	Source      string                `json:"source"`
+	Destination string                `json:"destination"`
+	Amount      *internal.MonetaryInt `json:"amount"`
+	Asset       string                `json:"asset"`
+}
 
 const InternalError = "internal interpreter error, please report to the issue tracker"
 
-type LedgerReader interface {
-	GetBalance(account core.AccountAddress, asset core.Asset) core.Number
-	GetMeta(account core.AccountAddress, key string) core.Value
-}
+// type LedgerReader interface {
+// 	GetBalance(account internal.AccountAddress, asset internal.Asset) internal.Number
+// 	GetMeta(account internal.AccountAddress, key string) internal.Value
+// }
 
 type Machine struct {
-	ledger      LedgerReader
-	vars        map[string]core.Value
-	balances    map[core.AccountAddress]map[core.Asset]core.Number
-	Postings    []core.Posting
-	TxMeta      map[string]core.Value
-	AccountMeta map[core.AccountAddress]map[string]core.Value
-	Printed     []core.Value
+	store        Store
+	ctx          context.Context
+	providedVars map[string]string
+	vars         map[string]internal.Value
+	balances     map[internal.AccountAddress]map[internal.Asset]internal.Number
+	Postings     []Posting
+	TxMeta       map[string]internal.Value
+	AccountMeta  map[internal.AccountAddress]map[string]internal.Value
+	Printed      []internal.Value
 }
 
-func NewMachine(ledger LedgerReader, vars map[string]core.Value) Machine {
+func NewMachine(store Store, vars map[string]string) Machine {
 	return Machine{
-		ledger:      ledger,
-		vars:        vars,
-		balances:    make(map[core.AccountAddress]map[core.Asset]core.Number),
-		Postings:    make([]core.Posting, 0),
-		TxMeta:      make(map[string]core.Value),
-		AccountMeta: make(map[core.AccountAddress]map[string]core.Value),
-		Printed:     make([]core.Value, 0),
+		store:        store,
+		providedVars: vars,
+		balances:     make(map[internal.AccountAddress]map[internal.Asset]internal.Number),
+		Postings:     make([]Posting, 0),
+		TxMeta:       make(map[string]internal.Value),
+		AccountMeta:  make(map[internal.AccountAddress]map[string]internal.Value),
+		Printed:      make([]internal.Value, 0),
 	}
 }
 
-func (m *Machine) checkVar(value core.Value) error {
+func (m *Machine) checkVar(value internal.Value) error {
 	switch v := value.(type) {
-	case core.Monetary:
+	case internal.Monetary:
 		if v.Amount.Ltz() {
 			return fmt.Errorf("monetary amounts must be non-negative but is %v", v.Amount)
 		}
@@ -52,28 +62,39 @@ func (m *Machine) Execute(script program.Program) error {
 	for _, var_decl := range script.VarsDecl {
 		switch o := var_decl.Origin.(type) {
 		case program.VarOriginMeta:
-			account, err := EvalAs[core.AccountAddress](m, o.Account)
+			account, err := EvalAs[internal.AccountAddress](m, o.Account)
 			if err != nil {
 				return err
 			}
-			value := m.ledger.GetMeta(*account, o.Key)
+			metadata, err := m.store.GetMetadataFromLogs(m.ctx, string(*account), o.Key)
+			if err != nil {
+				return fmt.Errorf("failed to get metadata of account %s for key %s: %s", account, o.Key, err)
+			}
+			value, err := internal.NewValueFromString(var_decl.Typ, metadata)
+			if err != nil {
+				return fmt.Errorf("failed to parse variable: %s", err)
+			}
 			err = m.checkVar(value)
 			if err != nil {
 				return fmt.Errorf("failed to get metadata of account %s for key %s: %s", account, o.Key, err)
 			}
 			m.vars[var_decl.Name] = value
 		case program.VarOriginBalance:
-			account, err := EvalAs[core.AccountAddress](m, o.Account)
+			account, err := EvalAs[internal.AccountAddress](m, o.Account)
 			if err != nil {
 				return err
 			}
-			asset, err := EvalAs[core.Asset](m, o.Asset)
+			asset, err := EvalAs[internal.Asset](m, o.Asset)
 			if err != nil {
 				return err
 			}
-			balance := core.Monetary{
+			amt, err := m.store.GetBalanceFromLogs(m.ctx, string(*account), string(*asset))
+			if err != nil {
+				return err
+			}
+			balance := internal.Monetary{
 				Asset:  *asset,
-				Amount: m.ledger.GetBalance(*account, *asset),
+				Amount: internal.NewMonetaryIntFromBigInt(amt),
 			}
 			err = m.checkVar(balance)
 			if err != nil {
@@ -81,10 +102,15 @@ func (m *Machine) Execute(script program.Program) error {
 			}
 			m.vars[var_decl.Name] = balance
 		case nil:
-			err := m.checkVar(m.vars[var_decl.Name])
+			val, err := internal.NewValueFromString(var_decl.Typ, m.providedVars[var_decl.Name])
+			if err != nil {
+				return fmt.Errorf("failed to parse variable: %s", err)
+			}
+			err = m.checkVar(val)
 			if err != nil {
 				return fmt.Errorf("variable passed is incorrect: %s", err)
 			}
+			m.vars[var_decl.Name] = val
 		default:
 			return errors.New(InternalError)
 		}
@@ -102,7 +128,7 @@ func (m *Machine) Execute(script program.Program) error {
 			m.Printed = append(m.Printed, v)
 			fmt.Printf("%v\n", s.Expr)
 		case program.StatementAllocate:
-			funding, err := EvalAs[core.Funding](m, s.Funding)
+			funding, err := EvalAs[internal.Funding](m, s.Funding)
 			if err != nil {
 				return err
 			}
@@ -123,7 +149,7 @@ func (m *Machine) Execute(script program.Program) error {
 			}
 			m.TxMeta[s.Key] = value
 		case program.StatementSetAccountMeta:
-			account, err := EvalAs[core.AccountAddress](m, s.Account)
+			account, err := EvalAs[internal.AccountAddress](m, s.Account)
 			if err != nil {
 				return err
 			}
@@ -132,7 +158,7 @@ func (m *Machine) Execute(script program.Program) error {
 				return err
 			}
 			if _, ok := m.AccountMeta[*account]; !ok {
-				m.AccountMeta[*account] = make(map[string]core.Value)
+				m.AccountMeta[*account] = make(map[string]internal.Value)
 			}
 			m.AccountMeta[*account][s.Key] = value
 		default:
@@ -142,33 +168,37 @@ func (m *Machine) Execute(script program.Program) error {
 	return nil
 }
 
-func (m *Machine) Send(funding core.Funding, account core.AccountAddress) {
-	if funding.Total().Eq(core.NewNumber(0)) {
-		return //no empty postings
+func (m *Machine) Send(funding internal.Funding, account internal.AccountAddress) error {
+	if funding.Total().Eq(internal.NewNumber(0)) {
+		return nil //no empty postings
 	}
 	for _, part := range funding.Parts {
-		m.Postings = append(m.Postings, core.Posting{
+		m.Postings = append(m.Postings, Posting{
 			Source:      string(part.Account),
 			Destination: string(account),
 			Asset:       string(funding.Asset),
 			Amount:      part.Amount,
 		})
-		bal := m.BalanceOf(account, funding.Asset)
+		bal, err := m.BalanceOf(account, funding.Asset)
+		if err != nil {
+			return err
+		}
 		*bal = *bal.Add(part.Amount)
 	}
+	return nil
 }
 
-func (m *Machine) Allocate(funding core.Funding, destination program.Destination) error {
+func (m *Machine) Allocate(funding internal.Funding, destination program.Destination) error {
 	switch d := destination.(type) {
 	case program.DestinationAccount:
-		account, err := EvalAs[core.AccountAddress](m, d.Expr)
+		account, err := EvalAs[internal.AccountAddress](m, d.Expr)
 		if err != nil {
 			return err
 		}
 		m.Send(funding, *account)
 	case program.DestinationInOrder:
 		for _, part := range d.Parts {
-			max, err := EvalAs[core.Monetary](m, part.Max)
+			max, err := EvalAs[internal.Monetary](m, part.Max)
 			if err != nil {
 				return err
 			}
@@ -178,13 +208,13 @@ func (m *Machine) Allocate(funding core.Funding, destination program.Destination
 		}
 		m.AllocateOrKeep(funding, d.Remaining)
 	case program.DestinationAllotment:
-		portions := make([]core.Portion, 0)
+		portions := make([]internal.Portion, 0)
 		sub_dests := make([]program.KeptOrDestination, 0)
 		for _, part := range d {
 			if part.Portion.Remaining {
-				portions = append(portions, core.NewPortionRemaining())
+				portions = append(portions, internal.NewPortionRemaining())
 			} else {
-				portion, err := EvalAs[core.Portion](m, part.Portion.Expr)
+				portion, err := EvalAs[internal.Portion](m, part.Portion.Expr)
 				if err != nil {
 					return err
 				}
@@ -192,7 +222,7 @@ func (m *Machine) Allocate(funding core.Funding, destination program.Destination
 			}
 			sub_dests = append(sub_dests, part.Kod)
 		}
-		allotment, err := core.NewAllotment(portions)
+		allotment, err := internal.NewAllotment(portions)
 		if err != nil {
 			return fmt.Errorf("failed to create allotment: %v", err)
 		}
@@ -208,7 +238,7 @@ func (m *Machine) Allocate(funding core.Funding, destination program.Destination
 	return nil
 }
 
-func (m *Machine) AllocateOrKeep(funding core.Funding, kod program.KeptOrDestination) error {
+func (m *Machine) AllocateOrKeep(funding internal.Funding, kod program.KeptOrDestination) error {
 	if kod.Kept {
 		m.Repay(funding)
 	} else {
@@ -220,7 +250,7 @@ func (m *Machine) AllocateOrKeep(funding core.Funding, kod program.KeptOrDestina
 	return nil
 }
 
-func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon core.Monetary) (*core.Funding, error) {
+func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon internal.Monetary) (*internal.Funding, error) {
 	switch s := source.(type) {
 	case program.ValueAwareSourceSource:
 		available, fallback, err := m.TakeFromSource(s.Source, mon.Asset)
@@ -229,13 +259,16 @@ func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon 
 		}
 		taken, remainder := available.TakeMax(mon.Amount)
 		if !taken.Total().Eq(mon.Amount) {
-			missing := core.Monetary{
+			missing := internal.Monetary{
 				Asset:  mon.Asset,
 				Amount: mon.Amount.Sub(taken.Total()),
 			}
 			if fallback != nil {
-				missing_taken := m.WithdrawAlways(*fallback, missing)
-				taken, err = taken.Concat(missing_taken)
+				missing_taken, err := m.WithdrawAlways(*fallback, missing)
+				if err != nil {
+					return nil, err
+				}
+				taken, err = taken.Concat(*missing_taken)
 				if err != nil {
 					return nil, errors.New("mismatching assets")
 				}
@@ -246,28 +279,28 @@ func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon 
 		m.Repay(remainder)
 		return &taken, nil
 	case program.ValueAwareSourceAllotment:
-		portions := make([]core.Portion, 0)
+		portions := make([]internal.Portion, 0)
 		for _, part := range s {
 			if part.Portion.Remaining {
-				portions = append(portions, core.NewPortionRemaining())
+				portions = append(portions, internal.NewPortionRemaining())
 			} else {
-				portion, err := EvalAs[core.Portion](m, part.Portion.Expr)
+				portion, err := EvalAs[internal.Portion](m, part.Portion.Expr)
 				if err != nil {
 					return nil, err
 				}
 				portions = append(portions, *portion)
 			}
 		}
-		allotment, err := core.NewAllotment(portions)
+		allotment, err := internal.NewAllotment(portions)
 		if err != nil {
 			return nil, fmt.Errorf("could not create allotment: %v", err)
 		}
-		funding := core.Funding{
+		funding := internal.Funding{
 			Asset: mon.Asset,
-			Parts: make([]core.FundingPart, 0),
+			Parts: make([]internal.FundingPart, 0),
 		}
 		for i, amt := range allotment.Allocate(mon.Amount) {
-			taken, err := m.TakeFromValueAwareSource(program.ValueAwareSourceSource{Source: s[i].Source}, core.Monetary{Asset: mon.Asset, Amount: amt})
+			taken, err := m.TakeFromValueAwareSource(program.ValueAwareSourceSource{Source: s[i].Source}, internal.Monetary{Asset: mon.Asset, Amount: amt})
 			if err != nil {
 				return nil, fmt.Errorf("failed to take from source: %v", err)
 			}
@@ -281,23 +314,23 @@ func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon 
 	return nil, errors.New(InternalError)
 }
 
-func (m *Machine) TakeFromSource(source program.Source, asset core.Asset) (*core.Funding, *core.AccountAddress, error) {
+func (m *Machine) TakeFromSource(source program.Source, asset internal.Asset) (*internal.Funding, *internal.AccountAddress, error) {
 	switch s := source.(type) {
 	case program.SourceAccount:
-		account, err := EvalAs[core.AccountAddress](m, s.Account)
+		account, err := EvalAs[internal.AccountAddress](m, s.Account)
 		if err != nil {
 			return nil, nil, err
 		}
-		overdraft := core.Monetary{
+		overdraft := internal.Monetary{
 			Asset:  asset,
-			Amount: core.NewNumber(0),
+			Amount: internal.NewNumber(0),
 		}
-		var fallback *core.AccountAddress
+		var fallback *internal.AccountAddress
 		if s.Overdraft != nil {
 			if s.Overdraft.Unbounded {
 				fallback = account
 			} else {
-				ov, err := EvalAs[core.Monetary](m, *s.Overdraft.UpTo)
+				ov, err := EvalAs[internal.Monetary](m, *s.Overdraft.UpTo)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -310,14 +343,17 @@ func (m *Machine) TakeFromSource(source program.Source, asset core.Asset) (*core
 		if overdraft.Asset != asset {
 			return nil, nil, errors.New("mismatching asset")
 		}
-		funding := m.WithdrawAll(*account, asset, overdraft.Amount)
-		return &funding, fallback, nil
+		funding, err := m.WithdrawAll(*account, asset, overdraft.Amount)
+		if err != nil {
+			return nil, nil, err
+		}
+		return funding, fallback, nil
 	case program.SourceMaxed:
 		taken, fallback, err := m.TakeFromSource(s.Source, asset)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to take from source: %v", err)
 		}
-		max, err := EvalAs[core.Monetary](m, s.Max)
+		max, err := EvalAs[internal.Monetary](m, s.Max)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -328,11 +364,15 @@ func (m *Machine) TakeFromSource(source program.Source, asset core.Asset) (*core
 		m.Repay(remainder)
 		if maxed.Total().Lte(max.Amount) {
 			if fallback != nil {
-				missing := core.Monetary{
+				missing := internal.Monetary{
 					Asset:  asset,
 					Amount: max.Amount.Sub(maxed.Total()),
 				}
-				maxed, err = maxed.Concat(m.WithdrawAlways(*fallback, missing))
+				withdrawn, err := m.WithdrawAlways(*fallback, missing)
+				if err != nil {
+					return nil, nil, fmt.Errorf("failed to withdraw %s", err)
+				}
+				maxed, err = maxed.Concat(*withdrawn)
 				if err != nil {
 					return nil, nil, fmt.Errorf("funding error: %v", err)
 				}
@@ -340,11 +380,11 @@ func (m *Machine) TakeFromSource(source program.Source, asset core.Asset) (*core
 		}
 		return &maxed, nil, nil
 	case program.SourceInOrder:
-		total := core.Funding{
+		total := internal.Funding{
 			Asset: asset,
-			Parts: make([]core.FundingPart, 0),
+			Parts: make([]internal.FundingPart, 0),
 		}
-		var fallback *core.AccountAddress
+		var fallback *internal.AccountAddress
 		nb_sources := len(s)
 		for i, source := range s {
 			subsource_taken, subsource_fallback, err := m.TakeFromSource(source, asset)
@@ -362,13 +402,13 @@ func (m *Machine) TakeFromSource(source program.Source, asset core.Asset) (*core
 		}
 		return &total, fallback, nil
 		// case program.SourceArrayInOrder:
-		// 	list := EvalAs[core.AccountAddress](m, s.Array)
-		// 	total := core.Funding{
+		// 	list := EvalAs[internal.AccountAddress](m, s.Array)
+		// 	total := internal.Funding{
 		// 		Asset: asset,
-		// 		Parts: make([]core.FundingPart, 0),
+		// 		Parts: make([]internal.FundingPart, 0),
 		// 	}
 		// 	for _, account := range list {
-		// 		withdrawn := m.WithdrawAll(account, asset, core.NewNumber(0))
+		// 		withdrawn := m.WithdrawAll(account, asset, internal.NewNumber(0))
 		// 		total, err = total.Concat(withdrawn)
 		// 		if err != nil {
 		// 			panic("mismatching assets")
@@ -379,96 +419,110 @@ func (m *Machine) TakeFromSource(source program.Source, asset core.Asset) (*core
 	return nil, nil, errors.New(InternalError)
 }
 
-func (m *Machine) Repay(funding core.Funding) {
+func (m *Machine) Repay(funding internal.Funding) error {
 	for _, part := range funding.Parts {
-		balance := m.BalanceOf(part.Account, funding.Asset)
+		balance, err := m.BalanceOf(part.Account, funding.Asset)
+		if err != nil {
+			return err
+		}
 		*balance = *balance.Add(part.Amount)
 	}
+	return nil
 }
 
-func (m *Machine) WithdrawAll(account core.AccountAddress, asset core.Asset, overdraft core.Number) core.Funding {
-	balance := m.BalanceOf(account, asset)
+func (m *Machine) WithdrawAll(account internal.AccountAddress, asset internal.Asset, overdraft internal.Number) (*internal.Funding, error) {
+	balance, err := m.BalanceOf(account, asset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to withdraw %s", err)
+	}
 	withdrawn := balance.Add(overdraft)
 	*balance = *overdraft.Neg()
-	return core.Funding{
+	return &internal.Funding{
 		Asset: asset,
-		Parts: []core.FundingPart{
+		Parts: []internal.FundingPart{
 			{
 				Account: account,
 				Amount:  withdrawn,
 			},
 		},
-	}
+	}, nil
 }
 
-func (m *Machine) WithdrawAlways(account core.AccountAddress, mon core.Monetary) core.Funding {
-	balance := m.BalanceOf(account, mon.Asset)
+func (m *Machine) WithdrawAlways(account internal.AccountAddress, mon internal.Monetary) (*internal.Funding, error) {
+	balance, err := m.BalanceOf(account, mon.Asset)
+	if err != nil {
+		return nil, err
+	}
 	*balance = *balance.Sub(mon.Amount)
-	return core.Funding{
+	return &internal.Funding{
 		Asset: mon.Asset,
-		Parts: []core.FundingPart{
+		Parts: []internal.FundingPart{
 			{
 				Account: account,
 				Amount:  mon.Amount,
 			},
 		},
-	}
+	}, nil
 }
 
-func (m *Machine) BalanceOf(account core.AccountAddress, asset core.Asset) core.Number {
+func (m *Machine) BalanceOf(account internal.AccountAddress, asset internal.Asset) (internal.Number, error) {
 	if _, ok := m.balances[account]; !ok {
-		m.balances[account] = make(map[core.Asset]core.Number)
+		m.balances[account] = make(map[internal.Asset]internal.Number)
 	}
 	if _, ok := m.balances[account][asset]; !ok {
-		m.balances[account][asset] = m.ledger.GetBalance(account, asset)
+		amt, err := m.store.GetBalanceFromLogs(m.ctx, string(account), string(asset))
+		if err != nil {
+			return nil, fmt.Errorf("failed to get balance from store: %s", err)
+		}
+		m.balances[account][asset] = internal.NewMonetaryIntFromBigInt(amt)
 	}
-	return m.balances[account][asset]
+	return m.balances[account][asset], nil
 }
 
-func (m *Machine) Eval(expr program.Expr) (core.Value, error) {
+func (m *Machine) Eval(expr program.Expr) (internal.Value, error) {
 	switch expr := expr.(type) {
 	case program.ExprLiteral:
 		return expr.Value, nil
 	case program.ExprInfix:
 		switch expr.Op {
 		case program.OP_ADD:
-			lhs, err := EvalAs[core.Number](m, expr.Lhs)
+			lhs, err := EvalAs[internal.Number](m, expr.Lhs)
 			if err != nil {
 				return nil, err
 			}
-			rhs, err := EvalAs[core.Number](m, expr.Rhs)
+			rhs, err := EvalAs[internal.Number](m, expr.Rhs)
 			if err != nil {
 				return nil, err
 			}
 			return (*lhs).Add(*rhs), nil
 		case program.OP_SUB:
-			lhs, err := EvalAs[core.Number](m, expr.Lhs)
+			lhs, err := EvalAs[internal.Number](m, expr.Lhs)
 			if err != nil {
 				return nil, err
 			}
-			rhs, err := EvalAs[core.Number](m, expr.Rhs)
+			rhs, err := EvalAs[internal.Number](m, expr.Rhs)
 			if err != nil {
 				return nil, err
 			}
 			return (*lhs).Sub(*rhs), nil
 		}
 	case program.ExprMonetaryNew:
-		asset, err := EvalAs[core.Asset](m, expr.Asset)
+		asset, err := EvalAs[internal.Asset](m, expr.Asset)
 		if err != nil {
 			return nil, err
 		}
-		amount, err := EvalAs[core.Number](m, expr.Amount)
+		amount, err := EvalAs[internal.Number](m, expr.Amount)
 		if err != nil {
 			return nil, err
 		}
-		return core.Monetary{
+		return internal.Monetary{
 			Asset:  *asset,
 			Amount: *amount,
 		}, nil
 	case program.ExprVariable:
 		return m.vars[string(expr)], nil
 	case program.ExprTake:
-		amt, err := EvalAs[core.Monetary](m, expr.Amount)
+		amt, err := EvalAs[internal.Monetary](m, expr.Amount)
 		if err != nil {
 			return nil, err
 		}
@@ -478,7 +532,7 @@ func (m *Machine) Eval(expr program.Expr) (core.Value, error) {
 		}
 		return *taken, nil
 	case program.ExprTakeAll:
-		asset, err := EvalAs[core.Asset](m, expr.Asset)
+		asset, err := EvalAs[internal.Asset](m, expr.Asset)
 		if err != nil {
 			return nil, err
 		}
@@ -494,7 +548,7 @@ func (m *Machine) Eval(expr program.Expr) (core.Value, error) {
 	return nil, errors.New(InternalError)
 }
 
-func EvalAs[T core.Value](i *Machine, expr program.Expr) (*T, error) {
+func EvalAs[T internal.Value](i *Machine, expr program.Expr) (*T, error) {
 	x, err := i.Eval(expr)
 	if err != nil {
 		return nil, err
@@ -505,46 +559,31 @@ func EvalAs[T core.Value](i *Machine, expr program.Expr) (*T, error) {
 	return nil, fmt.Errorf("internal interpreter error: expected type '%T' and got '%T'", *new(T), x)
 }
 
-type Metadata map[string]any
-
-func (m *Machine) GetTxMetaJSON() Metadata {
-	meta := make(Metadata)
+func (m *Machine) GetTxMetaJSON() metadata.Metadata {
+	meta := make(metadata.Metadata)
 	for k, v := range m.TxMeta {
-		valJSON, err := json.Marshal(v)
+		var err error
+		meta[k], err = internal.NewStringFromValue(v)
 		if err != nil {
 			panic(err)
 		}
-		v, err := json.Marshal(core.ValueJSON{
-			Type:  v.GetType().String(),
-			Value: valJSON,
-		})
-		if err != nil {
-			panic(err)
-		}
-		meta[k] = v
 	}
 	return meta
 }
 
-func (m *Machine) GetAccountsMetaJSON() Metadata {
-	res := Metadata{}
+func (m *Machine) GetAccountsMetaJSON() map[string]metadata.Metadata {
+	res := make(map[string]metadata.Metadata)
 	for account, meta := range m.AccountMeta {
 		for k, v := range meta {
-			if _, ok := res[account.String()]; !ok {
-				res[account.String()] = map[string][]byte{}
+			if _, ok := res[string(account)]; !ok {
+				res[string(account)] = metadata.Metadata{}
 			}
-			valJSON, err := json.Marshal(v)
+
+			var err error
+			res[string(account)][k], err = internal.NewStringFromValue(v)
 			if err != nil {
 				panic(err)
 			}
-			v, err := json.Marshal(core.ValueJSON{
-				Type:  v.GetType().String(),
-				Value: valJSON,
-			})
-			if err != nil {
-				panic(err)
-			}
-			res[account.String()].(map[string][]byte)[k] = v
 		}
 	}
 

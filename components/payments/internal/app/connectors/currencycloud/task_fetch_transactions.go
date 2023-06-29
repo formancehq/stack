@@ -73,10 +73,19 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 				return fmt.Errorf("failed to marshal transaction: %w", err)
 			}
 
+			paymentType := matchTransactionType(transaction.Type)
+
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
+					ID: models.PaymentID{
+						PaymentReference: models.PaymentReference{
+							Reference: transaction.ID,
+							Type:      paymentType,
+						},
+						Provider: models.ConnectorProviderCurrencyCloud,
+					},
 					Reference: transaction.ID,
-					Type:      matchTransactionType(transaction.Type),
+					Type:      paymentType,
 					Status:    matchTransactionStatus(transaction.Status),
 					Scheme:    models.PaymentSchemeOther,
 					Amount:    int64(amount * 100),

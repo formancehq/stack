@@ -5,9 +5,9 @@ import (
 	"math/big"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/machine/script/parser"
-	"github.com/numary/ledger/pkg/machine/vm/program"
+	"github.com/formancehq/ledger/pkg/machine/internal"
+	"github.com/formancehq/ledger/pkg/machine/script/parser"
+	"github.com/formancehq/ledger/pkg/machine/vm/program"
 )
 
 func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []parser.IAllotmentPortionContext) ([]program.AllotmentPortion, *CompileError) {
@@ -19,7 +19,7 @@ func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []pa
 		c := portions[i]
 		switch c := c.(type) {
 		case *parser.AllotmentPortionConstContext:
-			portion, err := core.ParsePortionSpecific(c.GetText())
+			portion, err := internal.ParsePortionSpecific(c.GetText())
 			if err != nil {
 				return nil, LogicError(c, err)
 			}
@@ -35,7 +35,7 @@ func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []pa
 			if !ok {
 				return nil, LogicError(c, errors.New("variable not declared"))
 			}
-			if ty != core.TypePortion {
+			if ty != internal.TypePortion {
 				return nil, LogicError(c, errors.New("wrong type, expected portion"))
 			}
 			portion := program.ExprVariable(name)

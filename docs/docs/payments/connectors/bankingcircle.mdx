@@ -9,6 +9,13 @@ import ApiWarning from '../partials/_api_key.mdx';
 
 Before you begin, you need to have a BankingCircle account. If you don't have one, you can [sign up for a BankingCircle account](https://www.bankingcircle.com/contact-us) here. Make sure you have prepared your BankingCircle API credentials, with the least amount of permissions required to access the functionality of the BankingCircle Connector you plan to use. You can find more information about how to create an API key [here](https://docs.bankingcircleconnect.com/).
 
+You will also need a client certificate and the unecrypted key that you can extract from the pfx file of your BankingCircle account:
+
+```shell
+openssl pkcs12 -in <filename.pfx> -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > <clientcert.key>
+openssl pkcs12 -in <filename.pfx> -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <clientcert.cer>
+```
+
 <ApiWarning/>
 
 ## Setup
@@ -20,7 +27,9 @@ read "BC_USERNAME"
 read "BC_PASSWORD"
 read "BC_ENDPOINT"
 read "BC_AUTH_ENDPOINT"
-fctl payments connectors install wise $BC_USERNAME $BC_PASSWORD $BC_ENDPOINT $BC_AUTH_ENDPOINT
+read "BC_USER_CERTIFICATE"
+read "BC_USER_CERTIFICATE_KEY"
+fctl payments connectors install bankingcircle $BC_USERNAME $BC_PASSWORD $BC_ENDPOINT $BC_AUTH_ENDPOINT $BC_USER_CERTIFICATE $BC_USER_CERTIFICATE_KEY
 ```
 
 ```shell
@@ -28,7 +37,9 @@ STACK="stack_123" \
 read "BC_USERNAME" && \
 read "BC_PASSWORD" && \
 read "BC_ENDPOINT" && \
-read "BC_AUTH_ENDPOINT"
+read "BC_AUTH_ENDPOINT" && \
+read "BC_USER_CERTIFICATE" && \
+read "BC_USER_CERTIFICATE_KEY"
 echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/bankingcircle" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $TOKEN" \
@@ -37,6 +48,8 @@ echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/bankingcircl
   \"password\": \"$BC_PASSWORD\", \
   \"endpoint\": \"$BC_ENDPOINT\", \
   \"authEndpoint\": \"$BC_AUTH_ENDPOINT\" \
+  \"userCertificate\": \"$BC_USER_CERTIFICATE\" \
+  \"userCertificateKey\": \"$BC_USER_CERTIFICATE_KEY\" \
 }"
 ```
 

@@ -3,7 +3,7 @@ package auth
 import (
 	"time"
 
-	"github.com/zitadel/oidc/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"golang.org/x/text/language"
 )
 

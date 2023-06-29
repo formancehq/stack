@@ -13,6 +13,7 @@ import (
 
 const (
 	monopodLabel = "formance.com/monopod"
+	stackLabel   = "stack"
 )
 
 type pod struct {
@@ -48,7 +49,7 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 					}
 					return "false"
 				}(),
-				"stack": "true",
+				stackLabel: "true",
 			}
 			t.Spec = appsv1.DeploymentSpec{
 				Selector: &metav1.LabelSelector{

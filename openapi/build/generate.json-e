@@ -36,6 +36,24 @@
     }
   ],
   "paths": {
+    "/versions": {
+      "get": {
+        "summary": "Show stack version information",
+        "operationId": "getVersions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetVersionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/_info": {
       "get": {
         "summary": "Get server info",
@@ -713,18 +731,20 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "explode": true,
             "schema": {
               "type": "object",
               "properties": {}
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": "true"
+            }
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK",
             "headers": {
               "Count": {
@@ -775,31 +795,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return accounts after given address, in descending order.",
-            "schema": {
-              "type": "string",
-              "example": "users:003"
+              "maximum": 1000
             }
           },
           {
@@ -816,12 +812,16 @@
             "in": "query",
             "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": "true"
+            }
           },
           {
             "name": "balance",
@@ -830,7 +830,6 @@
             "schema": {
               "type": "integer",
               "format": "int64",
-              "minimum": 0,
               "example": 2400
             }
           },
@@ -852,24 +851,6 @@
             }
           },
           {
-            "name": "balance_operator",
-            "in": "query",
-            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.\nDeprecated, please use `balanceOperator` instead.\n",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "gte",
-                "lte",
-                "gt",
-                "lt",
-                "e",
-                "ne"
-              ],
-              "example": "gte"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -877,16 +858,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -993,6 +964,32 @@
               "type": "string",
               "example": "users:001"
             }
+          },
+          {
+            "name": "dryRun",
+            "in": "query",
+            "description": "Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "async",
+            "in": "query",
+            "description": "Set async mode.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -1017,154 +1014,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/ledger/{ledger}/mapping": {
-      "get": {
-        "tags": [
-          "Mapping"
-        ],
-        "operationId": "getMapping",
-        "summary": "Get the mapping of a ledger",
-        "parameters": [
-          {
-            "name": "ledger",
-            "in": "path",
-            "description": "Name of the ledger.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ledger001"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MappingResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Mapping"
-        ],
-        "operationId": "updateMapping",
-        "summary": "Update the mapping of a ledger",
-        "parameters": [
-          {
-            "name": "ledger",
-            "in": "path",
-            "description": "Name of the ledger.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ledger001"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Mapping"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MappingResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/ledger/{ledger}/script": {
-      "post": {
-        "deprecated": true,
-        "tags": [
-          "Script"
-        ],
-        "operationId": "runScript",
-        "summary": "Execute a Numscript",
-        "description": "This route is deprecated, and has been merged into `POST /{ledger}/transactions`.\n",
-        "parameters": [
-          {
-            "name": "ledger",
-            "in": "path",
-            "description": "Name of the ledger.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ledger001"
-            }
-          },
-          {
-            "name": "preview",
-            "in": "query",
-            "description": "Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Script"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.\n\nOn failure, it will also return a 200 status code, and the following fields:\n  - `details`: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.\n  - `errorCode` and `error_code` (deprecated): contains the string code of the error\n  - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ScriptResponse"
                 }
               }
             }
@@ -1280,16 +1129,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -1299,30 +1138,24 @@
             }
           },
           {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "metadata",
             "in": "query",
             "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": "true"
+            }
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK",
             "headers": {
               "Count": {
@@ -1373,31 +1206,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return transactions after given txid (in descending order).",
-            "schema": {
-              "type": "string",
-              "example": 1234
+              "maximum": 1000
             }
           },
           {
@@ -1446,16 +1255,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -1463,16 +1262,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
           },
           {
             "name": "cursor",
@@ -1484,26 +1273,20 @@
             }
           },
           {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
-          },
-          {
             "name": "metadata",
             "in": "query",
-            "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter transactions by metadata key value pairs.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": "true"
+            }
           }
         ],
         "responses": {
@@ -1547,12 +1330,29 @@
             }
           },
           {
-            "name": "preview",
+            "name": "dryRun",
             "in": "query",
-            "description": "Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.",
+            "description": "Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.",
             "schema": {
               "type": "boolean",
               "example": true
+            }
+          },
+          {
+            "name": "async",
+            "in": "query",
+            "description": "Set async mode.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1573,7 +1373,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionsResponse"
+                  "$ref": "#/components/schemas/CreateTransactionResponse"
                 }
               }
             }
@@ -1628,7 +1428,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
+                  "$ref": "#/components/schemas/GetTransactionResponse"
                 }
               }
             }
@@ -1674,6 +1474,32 @@
               "format": "int64",
               "minimum": 0,
               "example": 1234
+            }
+          },
+          {
+            "name": "dryRun",
+            "in": "query",
+            "description": "Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "async",
+            "in": "query",
+            "description": "Set async mode.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1737,65 +1563,12 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/ledger/{ledger}/transactions/batch": {
-      "post": {
-        "tags": [
-          "Transactions"
-        ],
-        "summary": "Create a new batch of transactions to a ledger",
-        "operationId": "CreateTransactions",
-        "parameters": [
-          {
-            "name": "ledger",
-            "in": "path",
-            "description": "Name of the ledger.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ledger001"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Transactions"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TransactionsResponse"
+                  "$ref": "#/components/schemas/RevertTransactionResponse"
                 }
               }
             }
@@ -1841,12 +1614,15 @@
             }
           },
           {
-            "name": "after",
+            "name": "pageSize",
             "in": "query",
-            "description": "Pagination cursor, will return accounts after given address, in descending order.",
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100,
             "schema": {
-              "type": "string",
-              "example": "users:003"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000
             }
           },
           {
@@ -1857,16 +1633,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nDeprecated, please use `cursor` instead.",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -1973,31 +1739,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
-            "schema": {
-              "type": "string",
-              "example": 1234
+              "maximum": 1000
             }
           },
           {
@@ -2010,16 +1752,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -2029,16 +1761,6 @@
             }
           },
           {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -2046,16 +1768,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -2497,6 +2209,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -2528,13 +2250,12 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "example": "endpoints should be valid urls"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2564,8 +2285,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Config successfully deleted.",
-            "content": {}
+            "description": "Config successfully deleted."
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2597,6 +2327,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AttemptResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2635,9 +2375,15 @@
               }
             }
           },
-          "304": {
-            "description": "Config not modified, was already activated.",
-            "content": {}
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2673,9 +2419,15 @@
               }
             }
           },
-          "304": {
-            "description": "Config not modified, was already deactivated.",
-            "content": {}
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2716,6 +2468,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConfigResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2838,9 +2600,14 @@
             "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": "true"
+            }
           },
           {
             "name": "pageSize",
@@ -2973,11 +2740,16 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "metadata"
+                ],
                 "properties": {
                   "metadata": {
                     "type": "object",
                     "description": "Custom metadata to attach to this wallet.",
-                    "additionalProperties": {}
+                    "additionalProperties": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -2987,6 +2759,50 @@
         "responses": {
           "204": {
             "description": "Wallet successfully updated"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/wallets/{id}/summary": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get wallet summary",
+        "operationId": "getWalletSummary",
+        "tags": [
+          "Wallets"
+        ],
+        "responses": {
+          "200": {
+            "description": "Wallet summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWalletSummaryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Wallet not found"
           },
           "default": {
             "description": "Error",
@@ -3194,12 +3010,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CreditWalletRequest"
-              },
-              "example": {
-                "amount": {
-                  "asset": "USD/2",
-                  "amount": 100
-                }
               }
             }
           }
@@ -3255,12 +3065,16 @@
             "in": "query",
             "description": "Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": "true"
+            }
           },
           {
             "name": "cursor",
@@ -3613,7 +3427,7 @@
             "schema": {
               "type": "boolean"
             },
-            "example": "xxx",
+            "example": true,
             "required": false
           }
         ],
@@ -3837,19 +3651,48 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "Authorization": {
-        "type": "oauth2",
-        "flows": {
-          "clientCredentials": {
-            "tokenUrl": "",
-            "refreshUrl": "",
-            "scopes": {}
-          }
-        }
-      }
-    },
     "schemas": {
+      "Version": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "health": {
+            "type": "bool"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "health"
+        ]
+      },
+      "GetVersionsResponse": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string"
+          },
+          "env": {
+            "type": "string"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Version"
+            }
+          }
+        },
+        "required": [
+          "region",
+          "env",
+          "versions"
+        ]
+      },
       "Metadata": {
         "type": "object",
         "additionalProperties": {}
@@ -4266,7 +4109,7 @@
               "data": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Transaction"
+                  "$ref": "#/components/schemas/ExpandedTransaction"
                 }
               }
             }
@@ -4369,15 +4212,11 @@
       },
       "ledgerMetadata": {
         "type": "object",
-        "nullable": true,
-        "additionalProperties": {},
+        "additionalProperties": {
+          "type": "string"
+        },
         "example": {
-          "admin": true,
-          "a": {
-            "nested": {
-              "key": "value"
-            }
-          }
+          "admin": "true"
         }
       },
       "ConfigInfo": {
@@ -4399,49 +4238,25 @@
           "version"
         ]
       },
-      "ScriptResponse": {
-        "type": "object",
-        "properties": {
-          "errorCode": {
-            "$ref": "#/components/schemas/ErrorsEnum"
-          },
-          "errorMessage": {
-            "type": "string",
-            "example": "account had insufficient funds"
-          },
-          "details": {
-            "type": "string",
-            "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
-          },
-          "transaction": {
-            "$ref": "#/components/schemas/Transaction"
-          }
-        }
-      },
       "Account": {
         "type": "object",
         "required": [
-          "address"
+          "address",
+          "metadata"
         ],
         "properties": {
           "address": {
             "type": "string",
             "example": "users:001"
           },
-          "type": {
-            "type": "string",
-            "example": "virtual"
-          },
           "metadata": {
             "type": "object",
             "properties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           }
         }
@@ -4449,7 +4264,10 @@
       "AccountWithVolumesAndBalances": {
         "type": "object",
         "required": [
-          "address"
+          "address",
+          "metadata",
+          "volumes",
+          "balances"
         ],
         "properties": {
           "address": {
@@ -4463,13 +4281,11 @@
           "metadata": {
             "type": "object",
             "properties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           },
           "volumes": {
@@ -4493,8 +4309,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "integer",
-              "format": "int64",
-              "minimum": 0
+              "format": "int64"
             },
             "example": {
               "COIN": 100
@@ -4522,43 +4337,11 @@
         "type": "object",
         "additionalProperties": {
           "type": "integer",
-          "format": "int64",
-          "minimum": 0
+          "format": "int64"
         },
         "example": {
           "USD": 100,
           "EUR": 12
-        }
-      },
-      "Contract": {
-        "type": "object",
-        "properties": {
-          "account": {
-            "type": "string",
-            "example": "users:001"
-          },
-          "expr": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "accounts",
-          "expr"
-        ]
-      },
-      "Mapping": {
-        "type": "object",
-        "nullable": true,
-        "required": [
-          "contracts"
-        ],
-        "properties": {
-          "contracts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Contract"
-            }
-          }
         }
       },
       "Posting": {
@@ -4601,9 +4384,7 @@
             "type": "object",
             "properties": {},
             "example": {
-              "vars": {
-                "user": "users:042"
-              }
+              "user": "users:042"
             }
           },
           "reference": {
@@ -4643,61 +4424,42 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
-          },
-          "preCommitVolumes": {
-            "$ref": "#/components/schemas/AggregatedVolumes"
-          },
-          "postCommitVolumes": {
-            "$ref": "#/components/schemas/AggregatedVolumes"
           }
         },
         "required": [
           "postings",
           "timestamp",
-          "txid"
+          "txid",
+          "metadata"
         ]
       },
-      "TransactionData": {
-        "type": "object",
-        "required": [
-          "postings"
-        ],
-        "properties": {
-          "postings": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Posting"
-            }
+      "ExpandedTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Transaction"
           },
-          "reference": {
-            "type": "string",
-            "example": "ref:001"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/ledgerMetadata"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
+          {
+            "type": "object",
+            "properties": {
+              "preCommitVolumes": {
+                "$ref": "#/components/schemas/AggregatedVolumes"
+              },
+              "postCommitVolumes": {
+                "$ref": "#/components/schemas/AggregatedVolumes"
+              }
+            },
+            "required": [
+              "preCommitVolumes",
+              "postCommitVolumes"
+            ]
           }
-        }
-      },
-      "Transactions": {
-        "required": [
-          "transactions"
-        ],
-        "type": "object",
-        "properties": {
-          "transactions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TransactionData"
-            }
-          }
-        }
+        ]
       },
       "PostTransaction": {
         "type": "object",
+        "required": [
+          "metadata"
+        ],
         "properties": {
           "timestamp": {
             "type": "string",
@@ -4720,9 +4482,7 @@
                 "type": "object",
                 "properties": {},
                 "example": {
-                  "vars": {
-                    "user": "users:042"
-                  }
+                  "user": "users:042"
                 }
               }
             },
@@ -4771,7 +4531,8 @@
             "type": "string",
             "enum": [
               "NEW_TRANSACTION",
-              "SET_METADATA"
+              "SET_METADATA",
+              "REVERTED_TRANSACTION"
             ]
           },
           "data": {
@@ -4795,24 +4556,24 @@
           "date"
         ]
       },
-      "TransactionsResponse": {
-        "type": "object",
+      "CreateTransactionResponse": {
         "properties": {
           "data": {
-            "items": {
-              "$ref": "#/components/schemas/Transaction"
-            },
-            "type": "array"
+            "$ref": "#/components/schemas/Transaction"
           }
         },
+        "type": "object",
         "required": [
           "data"
         ]
       },
-      "TransactionResponse": {
+      "RevertTransactionResponse": {
+        "$ref": "#/components/schemas/CreateTransactionResponse"
+      },
+      "GetTransactionResponse": {
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Transaction"
+            "$ref": "#/components/schemas/ExpandedTransaction"
           }
         },
         "type": "object",
@@ -4831,24 +4592,8 @@
           "data"
         ]
       },
-      "MappingResponse": {
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Mapping"
-          }
-        },
-        "type": "object"
-      },
       "ConfigInfoResponse": {
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/ConfigInfo"
-          }
-        },
-        "type": "object",
-        "required": [
-          "data"
-        ]
+        "$ref": "#/components/schemas/ConfigInfo"
       },
       "Volume": {
         "type": "object",
@@ -4919,7 +4664,8 @@
       "ErrorResponse": {
         "type": "object",
         "required": [
-          "error_code"
+          "errorCode",
+          "errorMessage"
         ],
         "properties": {
           "errorCode": {
@@ -4927,7 +4673,7 @@
           },
           "errorMessage": {
             "type": "string",
-            "example": "[INSUFFICIENT_FUND] account had insufficient funds"
+            "example": "[VALIDATION] invalid 'cursor' query param"
           },
           "details": {
             "type": "string",
@@ -4944,9 +4690,12 @@
           "CONFLICT",
           "NO_SCRIPT",
           "COMPILATION_FAILED",
-          "METADATA_OVERRIDE"
+          "METADATA_OVERRIDE",
+          "NOT_FOUND",
+          "CONTEXT_CANCELLED",
+          "STORE"
         ],
-        "example": "INSUFFICIENT_FUND"
+        "example": "VALIDATION"
       },
       "LedgerInfoResponse": {
         "properties": {
@@ -5309,7 +5058,7 @@
         ]
       },
       "ConnectorConfig": {
-        "oneOf": [
+        "anyOf": [
           {
             "$ref": "#/components/schemas/StripeConfig"
           },
@@ -5549,7 +5298,8 @@
             "format": "date-time"
           },
           "raw": {
-            "type": "object"
+            "type": "object",
+            "nullable": true
           },
           "adjustments": {
             "type": "array",
@@ -5599,7 +5349,8 @@
           "key": {
             "type": "string"
           }
-        }
+        },
+        "nullable": true
       },
       "paymentsAccount": {
         "type": "object",
@@ -6146,7 +5897,16 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "id",
+          "endpoint",
+          "secret",
+          "eventTypes",
+          "active",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "ConfigChangeSecret": {
         "type": "object",
@@ -6155,7 +5915,10 @@
             "type": "string",
             "example": "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
           }
-        }
+        },
+        "required": [
+          "secret"
+        ]
       },
       "AttemptResponse": {
         "type": "object",
@@ -6209,7 +5972,18 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "id",
+          "webhookID",
+          "createdAt",
+          "updatedAt",
+          "config",
+          "payload",
+          "statusCode",
+          "retryAttempt",
+          "status"
+        ]
       },
       "Monetary": {
         "type": "object",
@@ -6246,7 +6020,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "name": {
@@ -6280,7 +6056,9 @@
           "metadata": {
             "type": "object",
             "description": "Metadata associated with the wallet.",
-            "additionalProperties": {}
+            "additionalProperties": {
+              "type": "string"
+            }
           },
           "name": {
             "type": "string"
@@ -6326,7 +6104,9 @@
           "metadata": {
             "type": "object",
             "description": "Metadata associated with the hold.",
-            "additionalProperties": {}
+            "additionalProperties": {
+              "type": "string"
+            }
           },
           "description": {
             "type": "string"
@@ -6457,7 +6237,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "txid": {
@@ -6475,7 +6257,8 @@
         "required": [
           "postings",
           "timestamp",
-          "txid"
+          "txid",
+          "metadata"
         ]
       },
       "walletsCursor": {
@@ -6577,13 +6360,16 @@
       "CreateWalletRequest": {
         "type": "object",
         "required": [
-          "name"
+          "name",
+          "metadata"
         ],
         "properties": {
           "metadata": {
             "type": "object",
             "description": "Custom metadata to attach to this wallet.",
-            "additionalProperties": {}
+            "additionalProperties": {
+              "type": "string"
+            }
           },
           "name": {
             "type": "string"
@@ -6594,13 +6380,16 @@
         "type": "object",
         "properties": {
           "input": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64"
           },
           "output": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64"
           },
           "balance": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64"
           }
         },
         "required": [
@@ -6700,7 +6489,8 @@
         "type": "object",
         "required": [
           "amount",
-          "sources"
+          "sources",
+          "metadata"
         ],
         "properties": {
           "amount": {
@@ -6708,7 +6498,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "reference": {
@@ -6724,12 +6516,23 @@
             "type": "string",
             "description": "The balance to credit"
           }
+        },
+        "example": {
+          "amount": {
+            "asset": "USD/2",
+            "amount": 100
+          },
+          "metadata": {
+            "key": ""
+          },
+          "sources": []
         }
       },
       "DebitWalletRequest": {
         "type": "object",
         "required": [
-          "amount"
+          "amount",
+          "metadata"
         ],
         "properties": {
           "amount": {
@@ -6741,7 +6544,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "description": {
@@ -6763,6 +6568,9 @@
             "asset": "USD/2",
             "amount": 100
           },
+          "metadata": {
+            "key": ""
+          },
           "pending": true
         }
       },
@@ -6775,7 +6583,8 @@
           "assets": {
             "type": "object",
             "additionalProperties": {
-              "type": "number"
+              "type": "integer",
+              "format": "int64"
             }
           }
         }
@@ -6788,6 +6597,14 @@
         "properties": {
           "name": {
             "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -6800,6 +6617,48 @@
             "$ref": "#/components/schemas/AssetHolder"
           }
         ]
+      },
+      "GetWalletSummaryResponse": {
+        "type": "object",
+        "required": [
+          "balances",
+          "availableFunds",
+          "expiredFunds",
+          "expirableFunds",
+          "holdFunds"
+        ],
+        "properties": {
+          "balances": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BalanceWithAssets"
+            }
+          },
+          "availableFunds": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "expiredFunds": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "expirableFunds": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "holdFunds": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          }
+        }
       },
       "ListBalancesResponse": {
         "type": "object",
@@ -6883,7 +6742,8 @@
           "errorCode": {
             "type": "string",
             "enum": [
-              "VALIDATION"
+              "VALIDATION",
+              "NOT_FOUND"
             ]
           },
           "errorMessage": {
@@ -6968,7 +6828,6 @@
           "id",
           "createdAt",
           "updatedAt",
-          "statuses",
           "terminated"
         ],
         "properties": {
@@ -7027,7 +6886,7 @@
             "type": "string"
           },
           "terminated": {
-            "type": "bool"
+            "type": "boolean"
           },
           "startedAt": {
             "type": "string",
@@ -7068,7 +6927,7 @@
             "type": "string"
           },
           "terminated": {
-            "type": "bool"
+            "type": "boolean"
           },
           "startedAt": {
             "type": "string",
@@ -7453,10 +7312,10 @@
         "$ref": "#/components/schemas/AccountResponse"
       },
       "ActivityCreateTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionsResponse"
+        "$ref": "#/components/schemas/CreateTransactionResponse"
       },
       "ActivityRevertTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionResponse"
+        "$ref": "#/components/schemas/RevertTransactionResponse"
       },
       "ActivityGetPaymentOutput": {
         "$ref": "#/components/schemas/PaymentResponse"
@@ -7522,6 +7381,18 @@
           },
           "GetWallet": {
             "$ref": "#/components/schemas/ActivityGetWalletOutput"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Authorization": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "",
+            "refreshUrl": "",
+            "scopes": {}
           }
         }
       }
@@ -7694,7 +7565,10 @@
           }
         },
         "description": "Fields used to sort payments (default is date:desc).",
-        "example": "date:asc,status:desc"
+        "example": [
+          "date:asc",
+          "status:desc"
+        ]
       },
       "PaymentId": {
         "name": "paymentId",

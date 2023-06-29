@@ -1,33 +1,30 @@
 package stack
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 func NewCreateCommand() *cobra.Command {
 	const (
-		productionFlag = "production"
-		unprotectFlag  = "unprotect"
-		tagFlag        = "tag"
-		nowaitFlag     = "no-wait"
+		unprotectFlag = "unprotect"
+		regionFlag    = "region"
+		nowaitFlag    = "no-wait"
 	)
-	return fctl.NewMembershipCommand("create <name>",
+	return fctl.NewMembershipCommand("create [name]",
 		fctl.WithShortDescription("Create a new stack"),
 		fctl.WithAliases("c", "cr"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithBoolFlag(productionFlag, false, "Create a production stack"),
+		fctl.WithArgs(cobra.RangeArgs(0, 1)),
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
-		fctl.WithStringSliceFlag(tagFlag, []string{}, "Tags to use to find matching region"),
+		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
 		fctl.WithBoolFlag(nowaitFlag, false, "Not wait stack availability"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 
@@ -46,27 +43,61 @@ func NewCreateCommand() *cobra.Command {
 				return err
 			}
 
-			production := fctl.GetBool(cmd, productionFlag)
 			protected := !fctl.GetBool(cmd, unprotectFlag)
 			metadata := map[string]string{
 				fctl.ProtectedStackMetadata: fctl.BoolPointerToString(&protected),
 			}
-			tags := make(map[string]string)
-			for _, tagFlagValue := range fctl.GetStringSlice(cmd, tagFlag) {
-				parts := strings.SplitN(tagFlagValue, "=", 2)
-				if len(parts) < 2 {
-					return errors.New("malformed flag --tag")
+
+			name := ""
+			if len(args) > 0 {
+				name = args[0]
+			} else {
+				name, err = pterm.DefaultInteractiveTextInput.WithMultiLine(false).Show("Enter a name")
+				if err != nil {
+					return err
 				}
-				tags[parts[0]] = parts[1]
 			}
-			stack, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).Body(membershipclient.StackData{
-				Name:       args[0],
-				Production: production,
-				Metadata:   metadata,
-				Tags:       tags,
+
+			region := fctl.GetString(cmd, regionFlag)
+			if region == "" {
+				regions, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
+				if err != nil {
+					return errors.Wrap(err, "listing regions")
+				}
+
+				var options []string
+				for _, region := range regions.Data {
+					privacy := "Private"
+					if region.Public {
+						privacy = "Public "
+					}
+					name := "<noname>"
+					if region.Name != "" {
+						name = region.Name
+					}
+					options = append(options, fmt.Sprintf("%s | %s | %s", region.Id, privacy, name))
+				}
+
+				printer := pterm.DefaultInteractiveSelect.WithOptions(options)
+				selectedOption, err := printer.Show("Please select a region")
+				if err != nil {
+					return err
+				}
+				for i := 0; i < len(options); i++ {
+					if selectedOption == options[i] {
+						region = regions.Data[i].Id
+						break
+					}
+				}
+			}
+
+			stackResponse, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).CreateStackRequest(membershipclient.CreateStackRequest{
+				Name:     name,
+				Metadata: metadata,
+				RegionID: region,
 			}).Execute()
 			if err != nil {
-				return fctl.WrapError(err, "creating stack")
+				return errors.Wrap(err, "creating stack")
 			}
 
 			profile := fctl.GetCurrentProfile(cmd, cfg)
@@ -77,7 +108,7 @@ func NewCreateCommand() *cobra.Command {
 					return err
 				}
 
-				if err := waitStackReady(cmd, profile, stack.Data); err != nil {
+				if err := waitStackReady(cmd, profile, stackResponse.Data); err != nil {
 					return err
 				}
 
@@ -87,9 +118,22 @@ func NewCreateCommand() *cobra.Command {
 			}
 
 			fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Your dashboard will be reachable on: %s",
-				profile.ServicesBaseUrl(stack.Data).String())
+				profile.ServicesBaseUrl(stackResponse.Data).String())
 
-			return internal.PrintStackInformation(cmd.OutOrStdout(), profile, stack.Data)
+			stackClient, err := fctl.NewStackClient(cmd, cfg, stackResponse.Data)
+			if err != nil {
+				return err
+			}
+
+			versions, err := stackClient.GetVersions(cmd.Context())
+			if err != nil {
+				return err
+			}
+			if versions.StatusCode != http.StatusOK {
+				return fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
+			}
+
+			return internal.PrintStackInformation(cmd.OutOrStdout(), profile, stackResponse.Data, versions.GetVersionsResponse)
 		}),
 	)
 }
@@ -103,7 +147,7 @@ func waitStackReady(cmd *cobra.Command, profile *fctl.Profile, stack *membership
 		if err != nil {
 			return err
 		}
-		rsp, err := fctl.GetHttpClient(cmd).Do(req)
+		rsp, err := fctl.GetHttpClient(cmd, map[string][]string{}).Do(req)
 		if err == nil && rsp.StatusCode == http.StatusOK {
 			break
 		}

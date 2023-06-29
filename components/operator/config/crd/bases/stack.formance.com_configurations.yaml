@@ -4250,6 +4250,8 @@ spec:
                     type: object
                   ledger:
                     properties:
+                      allowPastTimestamps:
+                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4371,6 +4373,13 @@ spec:
                         type: object
                     required:
                     - elasticSearch
+                    type: object
+                  stargate:
+                    properties:
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                     type: object
                   wallets:
                     properties:

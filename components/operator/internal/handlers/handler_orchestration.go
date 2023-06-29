@@ -22,36 +22,42 @@ func init() {
 		Postgres: func(ctx modules.Context) stackv1beta3.PostgresConfig {
 			return ctx.Configuration.Spec.Services.Orchestration.Postgres
 		},
-		Services: func(ctx modules.Context) modules.Services {
-			return modules.Services{
-				{
-					Port: 8080,
-					AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
-						return stackv1beta3.NewClientConfiguration()
-					},
-					ExposeHTTP:              true,
-					HasVersionEndpoint:      true,
-					InjectPostgresVariables: true,
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-						return modules.Container{
-							Env:   orchestrationEnvVars(resolveContext),
-							Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-						}
-					},
+		Versions: map[string]modules.Version{
+			"v0.0.0": {
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return modules.Services{
+						{
+							Port: 8080,
+							AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
+								return stackv1beta3.NewClientConfiguration()
+							},
+							ExposeHTTP:              true,
+							HasVersionEndpoint:      true,
+							InjectPostgresVariables: true,
+							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+								return modules.Container{
+									Env:       orchestrationEnvVars(resolveContext),
+									Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+									Resources: modules.ResourceSizeSmall(),
+								}
+							},
+						},
+						{
+							Name:                    "worker",
+							InjectPostgresVariables: true,
+							Liveness:                modules.LivenessDisable,
+							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+								return modules.Container{
+									Env:       orchestrationEnvVars(resolveContext),
+									Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+									Args:      []string{"worker"},
+									Resources: modules.ResourceSizeSmall(),
+								}
+							},
+						},
+					}
 				},
-				{
-					Name:                    "worker",
-					InjectPostgresVariables: true,
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-						return modules.Container{
-							Env:      orchestrationEnvVars(resolveContext),
-							Image:    modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-							Args:     []string{"worker"},
-							Liveness: modules.LivenessDisable,
-						}
-					},
-				},
-			}
+			},
 		},
 	})
 }

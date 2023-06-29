@@ -3,12 +3,13 @@ package compiler
 import (
 	"errors"
 
+	"github.com/formancehq/ledger/pkg/machine/internal"
+	"github.com/formancehq/ledger/pkg/machine/script/parser"
+	"github.com/formancehq/ledger/pkg/machine/vm/program"
 	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/machine/script/parser"
-	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
-type FallbackAccount core.Address
+type FallbackAccount internal.Address
 
 // CompileValueAwareSource returns the resource addresses of all the accounts
 func (p *parseVisitor) CompileValueAwareSource(c parser.IValueAwareSourceContext) (program.ValueAwareSource, *CompileError) {

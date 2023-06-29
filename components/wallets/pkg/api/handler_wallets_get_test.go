@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -17,8 +17,8 @@ func TestWalletsGet(t *testing.T) {
 	t.Parallel()
 
 	w := wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{})
-	balances := map[string]int64{
-		"USD": 100,
+	balances := map[string]*big.Int{
+		"USD": big.NewInt(100),
 	}
 
 	req := newRequest(t, http.MethodGet, "/wallets/"+w.ID, nil)
@@ -26,13 +26,15 @@ func TestWalletsGet(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  account,
-				Metadata: w.LedgerMetadata(),
-				Balances: &balances,
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  account,
+					Metadata: w.LedgerMetadata(),
+				},
+				Balances: balances,
 			}, nil
 		}),
 	)

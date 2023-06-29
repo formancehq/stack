@@ -5,13 +5,16 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
+
+func ptr[V any](v V) *V {
+	return &v
+}
 
 type balanceCreateTestCase struct {
 	name               string
@@ -43,6 +46,15 @@ var balanceCreateTestCases = []balanceCreateTestCase{
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  ErrorCodeValidation,
 	},
+	{
+		name: "with expiration",
+		request: wallet.CreateBalance{
+			Name:      wallet.MainBalance,
+			ExpiresAt: ptr(time.Now().Add(10 * time.Second)),
+		},
+		expectedStatusCode: http.StatusBadRequest,
+		expectedErrorCode:  ErrorCodeValidation,
+	},
 }
 
 func TestBalancesCreate(t *testing.T) {
@@ -60,17 +72,17 @@ func TestBalancesCreate(t *testing.T) {
 			var (
 				targetedLedger  string
 				targetedAccount string
-				appliedMetadata metadata.Metadata
+				appliedMetadata wallet.Metadata
 			)
 			testEnv := newTestEnv(
-				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
+				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, metadata wallet.Metadata) error {
 					targetedLedger = ledger
 					targetedAccount = account
 					appliedMetadata = metadata
 					return nil
 				}),
-				WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
-					return &sdk.AccountWithVolumesAndBalances{}, nil
+				WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
+					return &wallet.AccountWithVolumesAndBalances{}, nil
 				}),
 			)
 			testEnv.Router().ServeHTTP(rec, req)

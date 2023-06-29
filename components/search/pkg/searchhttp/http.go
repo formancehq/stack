@@ -257,17 +257,19 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 				previous = EncodeCursorToken(prevTokenInfo)
 			}
 
-			resp := api.BaseResponse[json.RawMessage]{
-				Cursor: &api.Cursor[json.RawMessage]{
-					PageSize: int(math.Min(float64(qq.PageSize-1), float64(len(items)))),
-					Total: &api.Total{
+			resp := BaseResponse[json.RawMessage]{
+				Cursor: &Cursor[json.RawMessage]{
+					Cursor: api.Cursor[json.RawMessage]{
+						PageSize: int(math.Min(float64(qq.PageSize-1), float64(len(items)))),
+						HasMore:  next != "",
+						Previous: previous,
+						Next:     next,
+						Data:     items,
+					},
+					Total: Total{
 						Value: uint64(searchResponse.Total.Value),
 						Rel:   searchResponse.Total.Relation,
 					},
-					HasMore:  next != "",
-					Previous: previous,
-					Next:     next,
-					Data:     items,
 				},
 			}
 			w.Header().Set("Content-Type", "application/json")

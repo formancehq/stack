@@ -1,15 +1,15 @@
 package compiler
 
 import (
-	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/machine/script/parser"
-	"github.com/numary/ledger/pkg/machine/vm/program"
+	"github.com/formancehq/ledger/pkg/machine/internal"
+	"github.com/formancehq/ledger/pkg/machine/script/parser"
+	"github.com/formancehq/ledger/pkg/machine/vm/program"
 )
 
 func (p *parseVisitor) CompileDestination(c parser.IDestinationContext) (program.Destination, *CompileError) {
 	switch c := c.(type) {
 	case *parser.DestAccountContext:
-		account, err := p.CompileExprTy(c.Expression(), core.TypeAccount)
+		account, err := p.CompileExprTy(c.Expression(), internal.TypeAccount)
 		if err != nil {
 			return nil, err
 		}
@@ -19,7 +19,7 @@ func (p *parseVisitor) CompileDestination(c parser.IDestinationContext) (program
 		dests := c.DestinationInOrder().GetDests()
 		amounts := c.DestinationInOrder().GetAmounts()
 		for i := 0; i < len(dests); i++ {
-			amount, err := p.CompileExprTy(amounts[i], core.TypeMonetary)
+			amount, err := p.CompileExprTy(amounts[i], internal.TypeMonetary)
 			if err != nil {
 				return nil, err
 			}

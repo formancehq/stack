@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/go-chi/chi/v5"
 	flag "github.com/spf13/pflag"
@@ -41,11 +41,12 @@ type mockedClient struct {
 func (c *mockedClient) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, w interface{}, args ...interface{}) (client.WorkflowRun, error) {
 	input := args[0].(workflow.Input)
 	for ind := range input.Workflow.Config.Stages {
+		timestamp := time.Now()
 		_, err := c.db.NewInsert().Model(&workflow.Stage{
 			Number:       ind,
 			InstanceID:   options.ID,
 			StartedAt:    time.Now(),
-			TerminatedAt: sdk.PtrTime(time.Now()),
+			TerminatedAt: &timestamp,
 		}).Exec(context.Background())
 		require.NoError(c.t, err)
 	}
@@ -72,10 +73,12 @@ func test(t *testing.T, fn func(router *chi.Mux, m *workflow.Manager, db *bun.DB
 	t.Parallel()
 
 	database := pgtesting.NewPostgresDatabase(t)
-	db := storage.LoadDB(database.ConnString(), testing.Verbose())
-	require.NoError(t, storage.Migrate(db, testing.Verbose()))
+	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
+	require.NoError(t, storage.Migrate(context.Background(), db))
 	manager := workflow.NewManager(db, newMockedClient(t, db), "default")
-	router := newRouter(manager)
+	router := newRouter(manager, ServiceInfo{
+		Version: "test",
+	}, &health.HealthController{})
 	fn(router, manager, db)
 }
 

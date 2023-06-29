@@ -6,7 +6,7 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/fx"
 )
 

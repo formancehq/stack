@@ -1,20 +1,20 @@
 # Build the manager binary
 FROM golang:1.19-alpine as builder
-WORKDIR /workspace
+WORKDIR /src
 ENV CGO_ENABLED=0
-ENV GOOS=linux
-COPY . .
-WORKDIR /workspace/components/operator
-RUN go build -v -a -o manager main.go
-
-FROM golang:1.19-alpine as reloader
-RUN go install github.com/cosmtrek/air@latest
+COPY libs/go-libs libs/go-libs
+COPY components/search components/search
+COPY components/operator components/operator
+WORKDIR /src/components/operator
+RUN --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+    --mount=type=cache,id=gomodcache,target=/go/pkg/mod \
+    go build -v -a -o manager main.go
 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot as release
 LABEL org.opencontainers.image.source=https://github.com/formancehq/operator
 WORKDIR /
-COPY --from=builder /workspace/components/operator/manager /usr/bin/operator
+COPY --from=builder /src/components/operator/manager /usr/bin/operator
 USER 65532:65532
 ENTRYPOINT ["/usr/bin/operator"]

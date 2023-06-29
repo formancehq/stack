@@ -1,47 +1,58 @@
 package middlewares
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/numary/ledger/pkg/api/apierrors"
-	"github.com/numary/ledger/pkg/contextlogger"
-	"github.com/numary/ledger/pkg/ledger"
-	"github.com/numary/ledger/pkg/opentelemetry"
+	"github.com/formancehq/ledger/pkg/api/apierrors"
+	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/opentelemetry/tracer"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
-type LedgerMiddleware struct {
-	resolver *ledger.Resolver
-}
+func LedgerMiddleware(
+	resolver controllers.Backend,
+) func(handler http.Handler) http.Handler {
+	return func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			name := chi.URLParam(r, "ledger")
+			if name == "" {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
 
-func NewLedgerMiddleware(resolver *ledger.Resolver) LedgerMiddleware {
-	return LedgerMiddleware{
-		resolver: resolver,
+			ctx, span := tracer.Start(r.Context(), name)
+			defer span.End()
+
+			r = r.WithContext(ctx)
+			r = wrapRequest(r)
+
+			l, err := resolver.GetLedger(r.Context(), name)
+			if err != nil {
+				apierrors.ResponseError(w, r, err)
+				return
+			}
+			// TODO(polo/gfyrag): close ledger if not used for x minutes
+			// defer l.Close(context.Background())
+			// When close, we have to decrease the active ledgers counter:
+			// globalMetricsRegistry.ActiveLedgers.Add(r.Context(), -1)
+
+			r = r.WithContext(controllers.ContextWithLedger(r.Context(), l))
+
+			handler.ServeHTTP(w, r)
+		})
 	}
 }
 
-func (m *LedgerMiddleware) LedgerMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.Param("ledger")
-		if name == "" {
-			c.AbortWithStatus(http.StatusNotFound)
-			return
-		}
-
-		span := opentelemetry.WrapGinContext(c, "Ledger access")
-		defer span.End()
-
-		contextlogger.WrapGinRequest(c)
-
-		l, err := m.resolver.GetLedger(c.Request.Context(), name)
-		if err != nil {
-			apierrors.ResponseError(c, err)
-			return
-		}
-		defer l.Close(context.Background())
-
-		c.Set("ledger", l)
-		c.Next()
+func wrapRequest(r *http.Request) *http.Request {
+	span := trace.SpanFromContext(r.Context())
+	contextKeyID := uuid.NewString()
+	if span.SpanContext().SpanID().IsValid() {
+		contextKeyID = span.SpanContext().SpanID().String()
 	}
+	return r.WithContext(logging.ContextWithLogger(r.Context(), logging.FromContext(r.Context()).WithFields(map[string]any{
+		"contextID": contextKeyID,
+	})))
 }

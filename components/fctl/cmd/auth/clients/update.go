@@ -1,10 +1,12 @@
 package clients
 
 import (
+	"fmt"
 	"strings"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -59,25 +61,33 @@ func NewUpdateCommand() *cobra.Command {
 			trusted := fctl.GetBool(cmd, trustedFlag)
 			description := fctl.GetString(cmd, descriptionFlag)
 
-			response, _, err := authClient.ClientsApi.UpdateClient(cmd.Context(), args[0]).Body(formance.ClientOptions{
-				Public:                 &public,
-				RedirectUris:           fctl.GetStringSlice(cmd, redirectUriFlag),
-				Description:            &description,
-				Name:                   args[0],
-				Trusted:                &trusted,
-				PostLogoutRedirectUris: fctl.GetStringSlice(cmd, postLogoutRedirectUriFlag),
-			}).Execute()
+			request := operations.UpdateClientRequest{
+				ClientID: args[0],
+				UpdateClientRequest: &shared.UpdateClientRequest{
+					Public:                 &public,
+					RedirectUris:           fctl.GetStringSlice(cmd, redirectUriFlag),
+					Description:            &description,
+					Name:                   args[0],
+					Trusted:                &trusted,
+					PostLogoutRedirectUris: fctl.GetStringSlice(cmd, postLogoutRedirectUriFlag),
+				},
+			}
+			response, err := authClient.Auth.UpdateClient(cmd.Context(), request)
 			if err != nil {
 				return err
 			}
 
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("ID"), response.Data.Id})
-			tableData = append(tableData, []string{pterm.LightCyan("Name"), response.Data.Name})
-			tableData = append(tableData, []string{pterm.LightCyan("Description"), fctl.StringPointerToString(response.Data.Description)})
-			tableData = append(tableData, []string{pterm.LightCyan("Public"), fctl.BoolPointerToString(response.Data.Public)})
-			tableData = append(tableData, []string{pterm.LightCyan("Redirect URIs"), strings.Join(response.Data.RedirectUris, ",")})
-			tableData = append(tableData, []string{pterm.LightCyan("Post logout redirect URIs"), strings.Join(response.Data.PostLogoutRedirectUris, ",")})
+			tableData = append(tableData, []string{pterm.LightCyan("ID"), response.UpdateClientResponse.Data.ID})
+			tableData = append(tableData, []string{pterm.LightCyan("Name"), response.UpdateClientResponse.Data.Name})
+			tableData = append(tableData, []string{pterm.LightCyan("Description"), fctl.StringPointerToString(response.UpdateClientResponse.Data.Description)})
+			tableData = append(tableData, []string{pterm.LightCyan("Public"), fctl.BoolPointerToString(response.UpdateClientResponse.Data.Public)})
+			tableData = append(tableData, []string{pterm.LightCyan("Redirect URIs"), strings.Join(response.UpdateClientResponse.Data.RedirectUris, ",")})
+			tableData = append(tableData, []string{pterm.LightCyan("Post logout redirect URIs"), strings.Join(response.UpdateClientResponse.Data.PostLogoutRedirectUris, ",")})
 			return pterm.DefaultTable.
 				WithWriter(cmd.OutOrStdout()).
 				WithData(tableData).

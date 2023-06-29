@@ -20,6 +20,7 @@ import (
 	"reflect"
 
 	"github.com/iancoleman/strcase"
+	"golang.org/x/mod/semver"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -43,6 +44,8 @@ type VersionsSpec struct {
 	Orchestration string `json:"orchestration"`
 	// +optional
 	Gateway string `json:"gateway"`
+	// +optional
+	Stargate string `json:"stargate"`
 }
 
 // VersionsStatus defines the observed state of Versions
@@ -61,6 +64,53 @@ type Versions struct {
 
 	Spec   VersionsSpec   `json:"spec,omitempty"`
 	Status VersionsStatus `json:"status,omitempty"`
+}
+
+type VersionDiff int
+
+const (
+	Lower VersionDiff = iota
+	Equals
+	Higher
+	Undefined
+)
+
+func (v *Versions) GetVersion(module string) string {
+	return reflect.ValueOf(v.Spec).FieldByName(strcase.ToCamel(module)).Interface().(string)
+}
+
+func (v *Versions) Compare(module, version string) VersionDiff {
+	if !semver.IsValid(version) {
+		panic("provided version is not semver")
+	}
+
+	versionInConfig := v.GetVersion(module)
+	if !semver.IsValid(versionInConfig) {
+		return Undefined
+	}
+
+	switch semver.Compare(version, versionInConfig) {
+	case 1:
+		return Lower
+	case 0:
+		return Equals
+	case -1:
+		return Higher
+	}
+	return Undefined
+}
+
+func (v *Versions) IsLower(service, version string) bool {
+	return v.Compare(service, version) == Lower
+}
+
+func (v *Versions) IsHigher(service, version string) bool {
+	return v.Compare(service, version) >= Higher
+}
+
+func (v *Versions) IsHigherOrEqual(service, version string) bool {
+	cmp := v.Compare(service, version)
+	return cmp >= Equals
 }
 
 func (*Versions) Hub() {}

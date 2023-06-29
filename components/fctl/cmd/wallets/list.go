@@ -1,8 +1,11 @@
 package wallets
 
 import (
+	"fmt"
+
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -43,12 +46,18 @@ func NewListCommand() *cobra.Command {
 				return err
 			}
 
-			res, _, err := client.WalletsApi.ListWallets(cmd.Context()).Metadata(metadata).Execute()
+			response, err := client.Wallets.ListWallets(cmd.Context(), operations.ListWalletsRequest{
+				Metadata: metadata,
+			})
 			if err != nil {
-				return errors.Wrap(err, "listing wallets")
+				return errors.Wrap(err, "listing wallet")
 			}
 
-			if len(res.Cursor.Data) == 0 {
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			if len(response.ListWalletsResponse.Cursor.Data) == 0 {
 				fctl.Println("No wallets found.")
 				return nil
 			}
@@ -58,10 +67,10 @@ func NewListCommand() *cobra.Command {
 				WithWriter(cmd.OutOrStdout()).
 				WithData(
 					fctl.Prepend(
-						fctl.Map(res.Cursor.Data,
-							func(src formance.Wallet) []string {
+						fctl.Map(response.ListWalletsResponse.Cursor.Data,
+							func(src shared.Wallet) []string {
 								return []string{
-									src.Id,
+									src.ID,
 									src.Name,
 								}
 							}),

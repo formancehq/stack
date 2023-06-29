@@ -2,17 +2,40 @@ package wallet
 
 import (
 	"encoding/json"
-
-	sdk "github.com/formancehq/formance-sdk-go"
+	"math/big"
+	"time"
 )
 
+type Volume struct {
+	Input   *big.Int `json:"input"`
+	Output  *big.Int `json:"output"`
+	Balance *big.Int `json:"balance,omitempty"`
+}
+
+type Posting struct {
+	Amount      *big.Int `json:"amount"`
+	Asset       string   `json:"asset"`
+	Destination string   `json:"destination"`
+	Source      string   `json:"source"`
+}
+
+type ExpandedTransaction struct {
+	Timestamp         time.Time                    `json:"timestamp"`
+	Postings          []Posting                    `json:"postings"`
+	Reference         *string                      `json:"reference,omitempty"`
+	Metadata          Metadata                     `json:"metadata"`
+	Txid              int64                        `json:"txid"`
+	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes"`
+	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes"`
+}
+
 type Transaction struct {
-	sdk.Transaction
+	ExpandedTransaction
 	Ledger string `json:"ledger"`
 }
 
 func (t Transaction) MarshalJSON() ([]byte, error) {
-	asJSON, err := json.Marshal(t.Transaction)
+	asJSON, err := json.Marshal(t.ExpandedTransaction)
 	if err != nil {
 		return nil, err
 	}

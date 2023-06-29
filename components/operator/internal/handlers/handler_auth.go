@@ -19,17 +19,21 @@ func init() {
 		Postgres: func(ctx modules.Context) stackv1beta3.PostgresConfig {
 			return ctx.Configuration.Spec.Services.Auth.Postgres
 		},
-		Services: func(ctx modules.Context) modules.Services {
-			return modules.Services{{
-				Secured:                 true,
-				ListenEnvVar:            "LISTEN",
-				ExposeHTTP:              true,
-				Configs:                 resolveAuthConfigs,
-				Secrets:                 resolveAuthSecrets,
-				Container:               resolveAuthContainer,
-				InjectPostgresVariables: true,
-				HasVersionEndpoint:      true,
-			}}
+		Versions: map[string]modules.Version{
+			"v0.0.0": {
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return modules.Services{{
+						Secured:                 true,
+						ListenEnvVar:            "LISTEN",
+						ExposeHTTP:              true,
+						Configs:                 resolveAuthConfigs,
+						Secrets:                 resolveAuthSecrets,
+						Container:               resolveAuthContainer,
+						InjectPostgresVariables: true,
+						HasVersionEndpoint:      true,
+					}}
+				},
+			},
 		},
 	})
 }
@@ -47,9 +51,10 @@ func resolveAuthContainer(resolveContext modules.ContainerResolutionContext) mod
 		env = env.Append(modules.Env("CAOS_OIDC_DEV", "1"))
 	}
 	return modules.Container{
-		Args:  []string{"serve"},
-		Env:   env,
-		Image: modules.GetImage("auth", resolveContext.Versions.Spec.Auth),
+		Args:      []string{"serve"},
+		Env:       env,
+		Image:     modules.GetImage("auth", resolveContext.Versions.Spec.Auth),
+		Resources: modules.ResourceSizeSmall(),
 	}
 }
 

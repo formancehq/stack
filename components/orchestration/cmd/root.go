@@ -2,11 +2,17 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 
+	"github.com/formancehq/orchestration/internal/storage"
+	"github.com/formancehq/orchestration/internal/temporal"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"go.uber.org/fx"
 )
 
 var (
@@ -25,13 +31,31 @@ const (
 	temporalSSLClientKeyFlag  = "temporal-ssl-client-key"
 	temporalSSLClientCertFlag = "temporal-ssl-client-cert"
 	temporalTaskQueueFlag     = "temporal-task-queue"
+	listenFlag                = "listen"
 	postgresDSNFlag           = "postgres-dsn"
+	workerFlag                = "worker"
 )
 
-var rootCmd = &cobra.Command{
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		return bindFlagsToViper(cmd)
-	},
+func NewRootCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			return bindFlagsToViper(cmd)
+		},
+	}
+	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
+	cmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
+	cmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
+	cmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")
+	cmd.PersistentFlags().String(temporalAddressFlag, "", "Temporal server address")
+	cmd.PersistentFlags().String(temporalNamespaceFlag, "default", "Temporal namespace")
+	cmd.PersistentFlags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
+	cmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
+	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
+	cmd.PersistentFlags().String(postgresDSNFlag, "", "Postgres address")
+	cmd.AddCommand(newServeCommand(), newWorkerCommand(), newVersionCommand())
+
+	return cmd
 }
 
 func exitWithCode(code int, v ...any) {
@@ -40,21 +64,20 @@ func exitWithCode(code int, v ...any) {
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := NewRootCommand().Execute(); err != nil {
 		exitWithCode(1, err)
 	}
 }
 
-func init() {
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
-	rootCmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
-	rootCmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
-	rootCmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")
-	rootCmd.PersistentFlags().String(temporalAddressFlag, "", "Temporal server address")
-	rootCmd.PersistentFlags().String(temporalNamespaceFlag, "default", "Temporal namespace")
-	rootCmd.PersistentFlags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
-	rootCmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
-	rootCmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
-	rootCmd.PersistentFlags().String(postgresDSNFlag, "", "Postgres address")
+func commonOptions(output io.Writer) fx.Option {
+	return fx.Options(
+		otlptraces.CLITracesModule(viper.GetViper()),
+		temporal.NewClientModule(
+			viper.GetString(temporalAddressFlag),
+			viper.GetString(temporalNamespaceFlag),
+			viper.GetString(temporalSSLClientCertFlag),
+			viper.GetString(temporalSSLClientKeyFlag),
+		),
+		storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag), output),
+	)
 }

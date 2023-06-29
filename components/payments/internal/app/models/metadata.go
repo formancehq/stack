@@ -4,14 +4,12 @@ import (
 	"time"
 
 	"github.com/uptrace/bun"
-
-	"github.com/google/uuid"
 )
 
 type Metadata struct {
 	bun.BaseModel `bun:"payments.metadata"`
 
-	PaymentID uuid.UUID `bun:",pk,nullzero"`
+	PaymentID PaymentID `bun:",pk,nullzero"`
 	CreatedAt time.Time `bun:",nullzero"`
 	Key       string    `bun:",pk,nullzero"`
 	Value     string

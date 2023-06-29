@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    config.kubernetes.io/origin: |
+      path: ../webhook/service.yaml
+  name: formance-system-webhook-service
+  namespace: formance-system
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 9443
+  selector:
+    control-plane: controller-manager

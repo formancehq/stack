@@ -59,6 +59,13 @@ func parseIngestionPayload(config Config, descriptor TaskDescriptor, fs fs) (ing
 
 	ingestionPayload := ingestion.PaymentBatch{ingestion.PaymentBatchElement{
 		Payment: &models.Payment{
+			ID: models.PaymentID{
+				PaymentReference: models.PaymentReference{
+					Reference: paymentElement.Reference,
+					Type:      paymentElement.Type,
+				},
+				Provider: models.ConnectorProviderDummyPay,
+			},
 			Reference: paymentElement.Reference,
 			Amount:    paymentElement.Amount,
 			Type:      paymentElement.Type,

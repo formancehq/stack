@@ -1,0 +1,24 @@
+apiVersion: v2
+name: regions
+description: Formance Private Regions Helm Chart
+home: "https://formance.com"
+sources:
+  - "https://github.com/formancehq/stack"
+maintainers:
+  - name: "Formance Team"
+    email: "support@formance.com"
+icon: "https://avatars.githubusercontent.com/u/84325077?s=200&v=4"
+
+type: application
+version: 0.1.0
+appVersion: "latest"
+
+dependencies:
+  - name: agent
+    version: "0.1.0"
+    repository: "file://../../components/agent/helm"
+    condition: agent.enabled
+  - name: operator
+    version: "0.1.0"
+    repository: "file://../../components/operator/helm"
+    condition: operator.enabled

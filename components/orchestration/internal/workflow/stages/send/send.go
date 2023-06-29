@@ -1,7 +1,7 @@
 package send
 
 import (
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 )
@@ -80,9 +80,9 @@ func (s Destination) WithAccount(src *LedgerAccountDestination) Destination {
 }
 
 type Send struct {
-	Source      Source       `json:"source"`
-	Destination Destination  `json:"destination"`
-	Amount      sdk.Monetary `json:"amount"`
+	Source      Source           `json:"source"`
+	Destination Destination      `json:"destination"`
+	Amount      *shared.Monetary `json:"amount,omitempty"`
 }
 
 func (s Send) GetWorkflow() any {

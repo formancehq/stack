@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"encoding/json"
+
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
@@ -18,6 +20,8 @@ const (
 	MetadataKeyHoldVoidDestination   = "void_destination"
 	MetadataKeyHoldDestination       = "destination"
 	MetadataKeyBalanceName           = "wallets/balances/name"
+	MetadataKeyBalanceExpiresAt      = "wallets/balances/expiresAt"
+	MetadataKeyBalancePriority       = "wallets/balances/priority"
 	MetadataKeyWalletBalance         = "wallets/balances"
 	MetadataKeyCreatedAt             = "wallets/createdAt"
 
@@ -31,15 +35,19 @@ func TransactionMetadata(customMetadata metadata.Metadata) metadata.Metadata {
 	if customMetadata == nil {
 		customMetadata = metadata.Metadata{}
 	}
+	marshalledCustomMetadata, err := json.Marshal(customMetadata)
+	if err != nil {
+		panic(err)
+	}
 	return metadata.Metadata{
-		MetadataKeyWalletTransaction: true,
-		MetadataKeyWalletCustomData:  customMetadata,
+		MetadataKeyWalletTransaction: "true",
+		MetadataKeyWalletCustomData:  string(marshalledCustomMetadata),
 	}
 }
 
 func TransactionBaseMetadataFilter() metadata.Metadata {
 	return metadata.Metadata{
-		MetadataKeyWalletTransaction: true,
+		MetadataKeyWalletTransaction: "true",
 	}
 }
 
@@ -51,7 +59,7 @@ func IsHold(v metadata.Owner) bool {
 	return HasMetadata(v, MetadataKeyWalletSpecType, HoldWallet)
 }
 
-func GetMetadata(v metadata.Owner, key string) any {
+func GetMetadata(v metadata.Owner, key string) string {
 	return v.GetMetadata()[key]
 }
 

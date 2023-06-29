@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**[]Region**](Region.md) |  | [optional]
+**Data** | [**[]AnyRegion**](AnyRegion.md) |  | 
 
 ## Methods
 
 ### NewListRegionsResponse
 
-`func NewListRegionsResponse() *ListRegionsResponse`
+`func NewListRegionsResponse(data []AnyRegion, ) *ListRegionsResponse`
 
 NewListRegionsResponse instantiates a new ListRegionsResponse object
 This constructor will assign default values to properties that have it defined,
@@ -27,28 +27,25 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ListRegionsResponse) GetData() []Region`
+`func (o *ListRegionsResponse) GetData() []AnyRegion`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ListRegionsResponse) GetDataOk() (*[]Region, bool)`
+`func (o *ListRegionsResponse) GetDataOk() (*[]AnyRegion, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ListRegionsResponse) SetData(v []Region)`
+`func (o *ListRegionsResponse) SetData(v []AnyRegion)`
 
 SetData sets Data field to given value.
 
-### HasData
-
-`func (o *ListRegionsResponse) HasData() bool`
-
-HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

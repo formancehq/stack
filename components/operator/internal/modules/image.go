@@ -4,9 +4,13 @@ import (
 	"fmt"
 )
 
-func GetImage(component, version string) string {
+func NormalizeVersion(version string) string {
 	if version == "" {
 		version = "latest"
 	}
-	return fmt.Sprintf("ghcr.io/formancehq/%s:%s", component, version)
+	return version
+}
+
+func GetImage(component, version string) string {
+	return fmt.Sprintf("ghcr.io/formancehq/%s:%s", component, NormalizeVersion(version))
 }

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strconv"
-	"strings"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
@@ -19,8 +18,6 @@ import (
 	"github.com/formancehq/payments/internal/app/connectors/modulr"
 	"github.com/formancehq/payments/internal/app/connectors/stripe"
 	"github.com/formancehq/payments/internal/app/connectors/wise"
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -29,17 +26,9 @@ import (
 	"go.uber.org/fx"
 )
 
-//nolint:gosec // false positive
 const (
-	otelTracesFlag                  = "otel-traces"
-	authBasicEnabledFlag            = "auth-basic-enabled"
-	authBasicCredentialsFlag        = "auth-basic-credentials"
-	authBearerEnabledFlag           = "auth-bearer-enabled"
-	authBearerIntrospectURLFlag     = "auth-bearer-introspect-url"
-	authBearerAudienceFlag          = "auth-bearer-audience"
-	authBearerAudiencesWildcardFlag = "auth-bearer-audiences-wildcard"
-
-	serviceName = "Payments"
+	otelTracesFlag = "otel-traces"
+	serviceName    = "Payments"
 )
 
 func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
@@ -80,35 +69,6 @@ func httpServeFunc(handler http.Handler) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		handler.ServeHTTP(w, r)
 	})
-}
-
-func sharedAuthMethods() []auth.Method {
-	methods := make([]auth.Method, 0)
-
-	if viper.GetBool(authBasicEnabledFlag) {
-		credentials := auth.Credentials{}
-
-		for _, kv := range viper.GetStringSlice(authBasicCredentialsFlag) {
-			parts := strings.SplitN(kv, ":", 2)
-			credentials[parts[0]] = auth.Credential{
-				Password: parts[1],
-			}
-		}
-
-		methods = append(methods, auth.NewHTTPBasicMethod(credentials))
-	}
-
-	if viper.GetBool(authBearerEnabledFlag) {
-		methods = append(methods, auth.NewHttpBearerMethod(
-			auth.NewIntrospectionValidator(
-				oauth2introspect.NewIntrospecter(viper.GetString(authBearerIntrospectURLFlag)),
-				viper.GetBool(authBearerAudiencesWildcardFlag),
-				auth.AudienceIn(viper.GetStringSlice(authBearerAudienceFlag)...),
-			),
-		))
-	}
-
-	return methods
 }
 
 func handleServerError(w http.ResponseWriter, r *http.Request, err error) {

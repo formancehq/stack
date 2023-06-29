@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -35,16 +36,23 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			response, _, err := authClient.ClientsApi.ReadClient(cmd.Context(), args[0]).Execute()
+			request := operations.ReadClientRequest{
+				ClientID: args[0],
+			}
+			response, err := authClient.Auth.ReadClient(cmd.Context(), request)
 			if err != nil {
 				return err
 			}
 
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("ID"), response.Data.Id})
-			tableData = append(tableData, []string{pterm.LightCyan("Name"), response.Data.Name})
-			tableData = append(tableData, []string{pterm.LightCyan("Description"), fctl.StringPointerToString(response.Data.Description)})
-			tableData = append(tableData, []string{pterm.LightCyan("Public"), fctl.BoolPointerToString(response.Data.Public)})
+			tableData = append(tableData, []string{pterm.LightCyan("ID"), response.ReadClientResponse.Data.ID})
+			tableData = append(tableData, []string{pterm.LightCyan("Name"), response.ReadClientResponse.Data.Name})
+			tableData = append(tableData, []string{pterm.LightCyan("Description"), fctl.StringPointerToString(response.ReadClientResponse.Data.Description)})
+			tableData = append(tableData, []string{pterm.LightCyan("Public"), fctl.BoolPointerToString(response.ReadClientResponse.Data.Public)})
 
 			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information :")
 			if err := pterm.DefaultTable.
@@ -55,9 +63,9 @@ func NewShowCommand() *cobra.Command {
 			}
 			fmt.Fprintln(cmd.OutOrStdout(), "")
 
-			if len(response.Data.RedirectUris) > 0 {
+			if len(response.ReadClientResponse.Data.RedirectUris) > 0 {
 				fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Redirect URIs :")
-				if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(response.Data.RedirectUris, func(redirectURI string) pterm.BulletListItem {
+				if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(response.ReadClientResponse.Data.RedirectUris, func(redirectURI string) pterm.BulletListItem {
 					return pterm.BulletListItem{
 						Text:        redirectURI,
 						TextStyle:   pterm.NewStyle(pterm.FgDefault),
@@ -68,9 +76,9 @@ func NewShowCommand() *cobra.Command {
 				}
 			}
 
-			if len(response.Data.PostLogoutRedirectUris) > 0 {
+			if len(response.ReadClientResponse.Data.PostLogoutRedirectUris) > 0 {
 				fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Post logout redirect URIs :")
-				if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(response.Data.PostLogoutRedirectUris, func(redirectURI string) pterm.BulletListItem {
+				if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(response.ReadClientResponse.Data.PostLogoutRedirectUris, func(redirectURI string) pterm.BulletListItem {
 					return pterm.BulletListItem{
 						Text:        redirectURI,
 						TextStyle:   pterm.NewStyle(pterm.FgDefault),
@@ -81,16 +89,16 @@ func NewShowCommand() *cobra.Command {
 				}
 			}
 
-			if len(response.Data.Secrets) > 0 {
+			if len(response.ReadClientResponse.Data.Secrets) > 0 {
 				fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Secrets :")
 
 				if err := pterm.DefaultTable.
 					WithWriter(cmd.OutOrStdout()).
 					WithHasHeader(true).
 					WithData(fctl.Prepend(
-						fctl.Map(response.Data.Secrets, func(secret formance.ClientSecret) []string {
+						fctl.Map(response.ReadClientResponse.Data.Secrets, func(secret shared.ClientSecret) []string {
 							return []string{
-								secret.Id, secret.Name, secret.LastDigits,
+								secret.ID, secret.Name, secret.LastDigits,
 							}
 						}),
 						[]string{"ID", "Name", "Last digits"},

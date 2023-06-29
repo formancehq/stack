@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -17,10 +16,8 @@ import (
 func httpRouter(logger logging.Logger, store *storage.Storage, serviceInfo api.ServiceInfo, connectorHandlers []connectorHandler) (*mux.Router, error) {
 	rootMux := mux.NewRouter()
 
-	if viper.GetBool(otelTracesFlag) {
-		rootMux.Use(otelmux.Middleware(serviceName))
-	}
-
+	// We have to keep this recovery handler here to ensure that the health
+	// endpoint is not panicking
 	rootMux.Use(recoveryHandler(httpRecoveryFunc))
 	rootMux.Use(httpCorsHandler())
 	rootMux.Use(httpServeFunc)
@@ -31,14 +28,18 @@ func httpRouter(logger logging.Logger, store *storage.Storage, serviceInfo api.S
 	})
 
 	rootMux.Path("/_health").Handler(healthHandler(store))
-	rootMux.Path("/_live").Handler(liveHandler())
-	rootMux.Path("/_info").Handler(api.InfoHandler(serviceInfo))
 
-	authGroup := rootMux.Name("authenticated").Subrouter()
-
-	if methods := sharedAuthMethods(); len(methods) > 0 {
-		authGroup.Use(auth.Middleware(methods...))
+	subRouter := rootMux.NewRoute().Subrouter()
+	if viper.GetBool(otelTracesFlag) {
+		subRouter.Use(otelmux.Middleware(serviceName))
+		// Add a second recovery handler to ensure that the otel middleware
+		// is catching the error in the trace
+		rootMux.Use(recoveryHandler(httpRecoveryFunc))
 	}
+	subRouter.Path("/_live").Handler(liveHandler())
+	subRouter.Path("/_info").Handler(api.InfoHandler(serviceInfo))
+
+	authGroup := subRouter.Name("authenticated").Subrouter()
 
 	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(store))
 	authGroup.Path("/payments/{paymentID}").Methods(http.MethodGet).Handler(readPaymentHandler(store))

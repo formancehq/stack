@@ -23,6 +23,11 @@ pipeline:
                       "match": {
                         "indexed.provider": this.payload.connector
                       }
+                    },
+                    {
+                      "match": {
+                        "stack": env("STACK")
+                      }
                     }
                   ]
                 }

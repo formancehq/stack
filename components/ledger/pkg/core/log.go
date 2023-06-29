@@ -1,53 +1,238 @@
 package core
 
 import (
+	"bytes"
+	"crypto/sha256"
 	"encoding/json"
+	"reflect"
+	"sort"
 	"strconv"
 	"strings"
-	"time"
+	"sync"
+
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/pkg/errors"
 )
 
-const SetMetadataType = "SET_METADATA"
-const NewTransactionType = "NEW_TRANSACTION"
+type LogType int16
 
-type Log struct {
-	ID   uint64      `json:"id"`
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
-	Hash string      `json:"hash"`
-	Date time.Time   `json:"date"`
+const (
+	// TODO(gfyrag): Create dedicated log type for account and metadata
+	SetMetadataLogType         LogType = iota // "SET_METADATA"
+	NewTransactionLogType                     // "NEW_TRANSACTION"
+	RevertedTransactionLogType                // "REVERTED_TRANSACTION"
+)
+
+func (l LogType) String() string {
+	switch l {
+	case SetMetadataLogType:
+		return "SET_METADATA"
+	case NewTransactionLogType:
+		return "NEW_TRANSACTION"
+	case RevertedTransactionLogType:
+		return "REVERTED_TRANSACTION"
+	}
+
+	return ""
 }
 
-func NewTransactionLogWithDate(previousLog *Log, tx Transaction, time time.Time) Log {
-	id := uint64(0)
-	if previousLog != nil {
-		id = previousLog.ID + 1
+func LogTypeFromString(logType string) (LogType, error) {
+	switch logType {
+	case "SET_METADATA":
+		return SetMetadataLogType, nil
+	case "NEW_TRANSACTION":
+		return NewTransactionLogType, nil
+	case "REVERTED_TRANSACTION":
+		return RevertedTransactionLogType, nil
 	}
-	l := Log{
-		ID:   id,
-		Type: NewTransactionType,
-		Date: time,
-		Data: tx,
+
+	return 0, errors.New("invalid log type")
+}
+
+// Needed in order to keep the compatibility with the openapi response for
+// ListLogs.
+func (lt LogType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(lt.String())
+}
+
+func (lt *LogType) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
 	}
-	l.Hash = Hash(previousLog, &l)
+
+	switch s {
+	case "SET_METADATA":
+		*lt = SetMetadataLogType
+	case "NEW_TRANSACTION":
+		*lt = NewTransactionLogType
+	case "REVERTED_TRANSACTION":
+		*lt = RevertedTransactionLogType
+	default:
+		return errors.New("invalid log type")
+	}
+
+	return nil
+}
+
+type hashable interface {
+	hashString(buf *buffer)
+}
+
+type PersistedLog struct {
+	Log
+	ID   uint64 `json:"id"`
+	Hash []byte `json:"hash"`
+}
+
+func (l *PersistedLog) WithID(id uint64) *PersistedLog {
+	l.ID = id
 	return l
 }
 
-func NewTransactionLog(previousLog *Log, tx Transaction) Log {
-	return NewTransactionLogWithDate(previousLog, tx, tx.Timestamp)
+func (l *PersistedLog) UnmarshalJSON(data []byte) error {
+	type auxLog PersistedLog
+	type log struct {
+		auxLog
+		Data json.RawMessage `json:"data"`
+	}
+	rawLog := log{}
+	if err := json.Unmarshal(data, &rawLog); err != nil {
+		return err
+	}
+
+	var err error
+	rawLog.auxLog.Data, err = HydrateLog(rawLog.Type, rawLog.Data)
+	if err != nil {
+		return err
+	}
+	*l = PersistedLog(rawLog.auxLog)
+	return err
 }
 
-type SetMetadata struct {
-	TargetType string      `json:"targetType"`
-	TargetID   interface{} `json:"targetId"`
-	Metadata   Metadata    `json:"metadata"`
+func (l *PersistedLog) ComputeHash(previous *PersistedLog) {
+
+	buf := bufferPool.Get().(*buffer)
+	defer func() {
+		buf.reset()
+		bufferPool.Put(buf)
+	}()
+	hashLog := func(l *PersistedLog) {
+		buf.writeUInt64(l.ID)
+		buf.writeUInt16(uint16(l.Type))
+		buf.writeUInt64(uint64(l.Date.UnixNano()))
+		buf.writeString(l.IdempotencyKey)
+		l.Data.hashString(buf)
+	}
+
+	if previous != nil {
+		hashLog(previous)
+	}
+	hashLog(l)
+
+	h := sha256.New()
+	_, err := h.Write(buf.bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	l.Hash = h.Sum(nil)
 }
 
-func (s *SetMetadata) UnmarshalJSON(data []byte) error {
+type Log struct {
+	Type           LogType  `json:"type"`
+	Data           hashable `json:"data"`
+	Date           Time     `json:"date"`
+	IdempotencyKey string   `json:"idempotencyKey"`
+}
+
+func (l *Log) WithDate(date Time) *Log {
+	l.Date = date
+	return l
+}
+
+func (l *Log) WithIdempotencyKey(key string) *Log {
+	l.IdempotencyKey = key
+	return l
+}
+
+func (l *Log) ComputePersistentLog(previous *PersistedLog) *PersistedLog {
+	ret := &PersistedLog{}
+	ret.Log = *l
+	ret.ComputeHash(previous)
+	if previous != nil {
+		ret.ID = previous.ID + 1
+	}
+	return ret
+}
+
+type AccountMetadata map[string]metadata.Metadata
+
+func (m AccountMetadata) hashString(buf *buffer) {
+	if len(m) == 0 {
+		return
+	}
+	accounts := collectionutils.Keys(m)
+	if len(accounts) > 1 {
+		sort.Strings(accounts)
+	}
+
+	for _, account := range accounts {
+		buf.writeString(account)
+		hashStringMetadata(buf, m[account])
+	}
+}
+
+type NewTransactionLogPayload struct {
+	Transaction     *Transaction    `json:"transaction"`
+	AccountMetadata AccountMetadata `json:"accountMetadata"`
+}
+
+func (n NewTransactionLogPayload) hashString(buf *buffer) {
+	n.AccountMetadata.hashString(buf)
+	n.Transaction.hashString(buf)
+}
+
+func NewTransactionLogWithDate(tx *Transaction, accountMetadata map[string]metadata.Metadata, time Time) *Log {
+	// Since the id is unique and the hash is a hash of the previous log, they
+	// will be filled at insertion time during the batch process.
+	return &Log{
+		Type: NewTransactionLogType,
+		Date: time,
+		Data: NewTransactionLogPayload{
+			Transaction:     tx,
+			AccountMetadata: accountMetadata,
+		},
+	}
+}
+
+func NewTransactionLog(tx *Transaction, accountMetadata map[string]metadata.Metadata) *Log {
+	return NewTransactionLogWithDate(tx, accountMetadata, tx.Timestamp)
+}
+
+type SetMetadataLogPayload struct {
+	TargetType string            `json:"targetType"`
+	TargetID   any               `json:"targetId"`
+	Metadata   metadata.Metadata `json:"metadata"`
+}
+
+func (s SetMetadataLogPayload) hashString(buf *buffer) {
+	buf.writeString(s.TargetType)
+	switch targetID := s.TargetID.(type) {
+	case string:
+		buf.writeString(targetID)
+	case uint64:
+		buf.writeUInt64(targetID)
+	}
+	hashStringMetadata(buf, s.Metadata)
+}
+
+func (s *SetMetadataLogPayload) UnmarshalJSON(data []byte) error {
 	type X struct {
-		TargetType string          `json:"targetType"`
-		TargetID   json.RawMessage `json:"targetId"`
-		Metadata   Metadata        `json:"metadata"`
+		TargetType string            `json:"targetType"`
+		TargetID   json.RawMessage   `json:"targetId"`
+		Metadata   metadata.Metadata `json:"metadata"`
 	}
 	x := X{}
 	err := json.Unmarshal(data, &x)
@@ -68,7 +253,7 @@ func (s *SetMetadata) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*s = SetMetadata{
+	*s = SetMetadataLogPayload{
 		TargetType: x.TargetType,
 		TargetID:   id,
 		Metadata:   x.Metadata,
@@ -76,105 +261,165 @@ func (s *SetMetadata) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func NewSetMetadataLog(previousLog *Log, at time.Time, metadata SetMetadata) Log {
-	id := uint64(0)
-	if previousLog != nil {
-		id = previousLog.ID + 1
-	}
-	l := Log{
-		ID:   id,
-		Type: SetMetadataType,
+func NewSetMetadataLog(at Time, metadata SetMetadataLogPayload) *Log {
+	// Since the id is unique and the hash is a hash of the previous log, they
+	// will be filled at insertion time during the batch process.
+	return &Log{
+		Type: SetMetadataLogType,
 		Date: at,
 		Data: metadata,
 	}
-	l.Hash = Hash(previousLog, &l)
-	return l
 }
 
-func HydrateLog(_type string, data string) (interface{}, error) {
-	switch _type {
-	case NewTransactionType:
-		tx := Transaction{}
-		err := json.Unmarshal([]byte(data), &tx)
-		if err != nil {
-			return nil, err
-		}
+type RevertedTransactionLogPayload struct {
+	RevertedTransactionID uint64       `json:"revertedTransactionID"`
+	RevertTransaction     *Transaction `json:"transaction"`
+}
 
-		return tx, nil
-	case SetMetadataType:
-		sm := SetMetadata{}
-		err := json.Unmarshal([]byte(data), &sm)
-		if err != nil {
-			return nil, err
-		}
-		return sm, nil
-	default:
-		panic("unknown type " + _type)
+func (r RevertedTransactionLogPayload) hashString(buf *buffer) {
+	buf.writeUInt64(r.RevertedTransactionID)
+	r.RevertTransaction.hashString(buf)
+}
+
+func NewRevertedTransactionLog(at Time, revertedTxID uint64, tx *Transaction) *Log {
+	return &Log{
+		Type: RevertedTransactionLogType,
+		Date: at,
+		Data: RevertedTransactionLogPayload{
+			RevertedTransactionID: revertedTxID,
+			RevertTransaction:     tx,
+		},
 	}
+}
+
+func HydrateLog(_type LogType, data []byte) (hashable, error) {
+	var payload any
+	switch _type {
+	case NewTransactionLogType:
+		payload = &NewTransactionLogPayload{}
+	case SetMetadataLogType:
+		payload = &SetMetadataLogPayload{}
+	case RevertedTransactionLogType:
+		payload = &RevertedTransactionLogPayload{}
+	default:
+		panic("unknown type " + _type.String())
+	}
+	err := json.Unmarshal(data, &payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return reflect.ValueOf(payload).Elem().Interface().(hashable), nil
 }
 
 type Accounts map[string]Account
 
-func (a Accounts) ensureExists(accounts ...string) {
-	for _, account := range accounts {
-		_, ok := a[account]
-		if !ok {
-			a[account] = Account{
-				Address:  AccountAddress(account),
-				Metadata: Metadata{},
-			}
-		}
+type ActiveLog struct {
+	*Log
+	Ingested chan struct{}
+}
+
+func (h *ActiveLog) SetIngested() {
+	close(h.Ingested)
+}
+
+func NewActiveLog(log *Log) *ActiveLog {
+	return &ActiveLog{
+		Log:      log,
+		Ingested: make(chan struct{}),
 	}
 }
 
-type LogProcessor struct {
-	Transactions []*ExpandedTransaction
-	Accounts     Accounts
-	Volumes      AccountsAssetsVolumes
+type buffer struct {
+	buf *bytes.Buffer
 }
 
-func (m *LogProcessor) ProcessNextLog(logs ...Log) {
-	for _, log := range logs {
-		switch log.Type {
-		case NewTransactionType:
-			tx := ExpandedTransaction{
-				Transaction:       log.Data.(Transaction),
-				PreCommitVolumes:  AccountsAssetsVolumes{},
-				PostCommitVolumes: AccountsAssetsVolumes{},
-			}
-			m.Transactions = append(m.Transactions, &tx)
-			for _, posting := range tx.Postings {
-				tx.PreCommitVolumes.SetVolumes(posting.Source, posting.Asset, m.Volumes.GetVolumes(posting.Source, posting.Asset))
-				tx.PreCommitVolumes.SetVolumes(posting.Destination, posting.Asset, m.Volumes.GetVolumes(posting.Destination, posting.Asset))
-			}
-			for _, posting := range tx.Postings {
-				m.Accounts.ensureExists(posting.Source, posting.Destination)
-				m.Volumes.AddOutput(posting.Source, posting.Asset, posting.Amount)
-				m.Volumes.AddInput(posting.Destination, posting.Asset, posting.Amount)
-			}
-			for _, posting := range tx.Postings {
-				tx.PostCommitVolumes.SetVolumes(posting.Source, posting.Asset, m.Volumes.GetVolumes(posting.Source, posting.Asset))
-				tx.PostCommitVolumes.SetVolumes(posting.Destination, posting.Asset, m.Volumes.GetVolumes(posting.Destination, posting.Asset))
-			}
-		case SetMetadataType:
-			setMetadata := log.Data.(SetMetadata)
-			switch setMetadata.TargetType {
-			case MetaTargetTypeAccount:
-				account := setMetadata.TargetID.(string)
-				m.Accounts.ensureExists(account)
-				m.Accounts[account].Metadata.Merge(setMetadata.Metadata)
-			case MetaTargetTypeTransaction:
-				id := setMetadata.TargetID.(int)
-				m.Transactions[id].Metadata.Merge(setMetadata.Metadata)
-			}
-		}
+func (b *buffer) must(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
 
-func NewLogProcessor() *LogProcessor {
-	return &LogProcessor{
-		Transactions: make([]*ExpandedTransaction, 0),
-		Accounts:     Accounts{},
-		Volumes:      AccountsAssetsVolumes{},
+func (b *buffer) mustWithValue(v any, err error) {
+	if err != nil {
+		panic(err)
 	}
+}
+
+func (b *buffer) writeUInt64(v uint64) {
+	b.must(b.buf.WriteByte(byte((v >> 56) & 0xFF)))
+	b.must(b.buf.WriteByte(byte((v >> 48) & 0xFF)))
+	b.must(b.buf.WriteByte(byte((v >> 40) & 0xFF)))
+	b.must(b.buf.WriteByte(byte((v >> 32) & 0xFF)))
+	b.must(b.buf.WriteByte(byte(v >> 24)))
+	b.must(b.buf.WriteByte(byte((v >> 16) & 0xFF)))
+	b.must(b.buf.WriteByte(byte((v >> 8) & 0xFF)))
+	b.must(b.buf.WriteByte(byte(v & 0xFF)))
+}
+
+func (b *buffer) writeUInt16(v uint16) {
+	b.must(b.buf.WriteByte(byte((v >> 8) & 0xFF)))
+	b.must(b.buf.WriteByte(byte(v & 0xFF)))
+}
+
+func (b *buffer) writeString(v string) {
+	b.mustWithValue(b.buf.WriteString(v))
+}
+
+func (b *buffer) reset() {
+	b.buf.Reset()
+}
+
+func (b *buffer) bytes() []byte {
+	return b.buf.Bytes()
+}
+
+func (b *buffer) write(bytes []byte) {
+	b.mustWithValue(b.buf.Write(bytes))
+}
+
+var (
+	bufferPool = sync.Pool{
+		New: func() any {
+			return &buffer{
+				buf: bytes.NewBuffer(make([]byte, 4096)),
+			}
+		},
+	}
+)
+
+type LogPersistenceTracker struct {
+	activeLog    *ActiveLog
+	done         chan struct{}
+	persistedLog *PersistedLog
+}
+
+func (r *LogPersistenceTracker) ActiveLog() *ActiveLog {
+	return r.activeLog
+}
+
+func (r *LogPersistenceTracker) Resolve(persistedLog *PersistedLog) {
+	r.persistedLog = persistedLog
+	close(r.done)
+}
+
+func (r *LogPersistenceTracker) Done() chan struct{} {
+	return r.done
+}
+
+func (r *LogPersistenceTracker) Result() *PersistedLog {
+	return r.persistedLog
+}
+
+func NewLogPersistenceTracker(log *ActiveLog) *LogPersistenceTracker {
+	return &LogPersistenceTracker{
+		activeLog: log,
+		done:      make(chan struct{}),
+	}
+}
+
+func NewResolvedLogPersistenceTracker(log *ActiveLog, v *PersistedLog) *LogPersistenceTracker {
+	ret := NewLogPersistenceTracker(log)
+	ret.Resolve(v)
+	return ret
 }

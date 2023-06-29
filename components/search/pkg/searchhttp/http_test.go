@@ -223,24 +223,26 @@ func TestSingleDocTypeSearch(t *testing.T) {
 					},
 				},
 			},
-			expected: api.BaseResponse[map[string]interface{}]{
-				Cursor: &api.Cursor[map[string]interface{}]{
-					PageSize: 2,
-					Total: &api.Total{
-						Value: 2,
-						Rel:   "eq",
-					},
-					Data: []map[string]interface{}{
-						{
-							"address":  "user:001",
-							"metadata": nil,
-						},
-						{
-							"address": "user:002",
-							"metadata": map[string]interface{}{
-								"foo": "bar",
+			expected: BaseResponse[map[string]interface{}]{
+				Cursor: &Cursor[map[string]interface{}]{
+					Cursor: api.Cursor[map[string]any]{
+						PageSize: 2,
+						Data: []map[string]interface{}{
+							{
+								"address":  "user:001",
+								"metadata": nil,
+							},
+							{
+								"address": "user:002",
+								"metadata": map[string]interface{}{
+									"foo": "bar",
+								},
 							},
 						},
+					},
+					Total: Total{
+						Value: 2,
+						Rel:   "eq",
 					},
 				},
 			},
@@ -266,21 +268,23 @@ func TestSingleDocTypeSearch(t *testing.T) {
 					},
 				},
 			},
-			expected: api.BaseResponse[map[string]interface{}]{
-				Cursor: &api.Cursor[map[string]interface{}]{
-					PageSize: 1,
-					HasMore:  false,
-					Total: &api.Total{
-						Value: 1,
-						Rel:   "eq",
-					},
-					Data: []map[string]interface{}{
-						{
-							"address": "user:002",
-							"metadata": map[string]interface{}{
-								"foo": "bar",
+			expected: BaseResponse[map[string]interface{}]{
+				Cursor: &Cursor[map[string]interface{}]{
+					Cursor: api.Cursor[map[string]any]{
+						PageSize: 1,
+						HasMore:  false,
+						Data: []map[string]interface{}{
+							{
+								"address": "user:002",
+								"metadata": map[string]interface{}{
+									"foo": "bar",
+								},
 							},
 						},
+					},
+					Total: Total{
+						Value: 1,
+						Rel:   "eq",
 					},
 				},
 			},
@@ -305,19 +309,21 @@ func TestSingleDocTypeSearch(t *testing.T) {
 					Address: "user:001",
 				},
 			},
-			expected: api.BaseResponse[map[string]interface{}]{
-				Cursor: &api.Cursor[map[string]interface{}]{
-					PageSize: 1,
-					HasMore:  false,
-					Total: &api.Total{
+			expected: BaseResponse[map[string]interface{}]{
+				Cursor: &Cursor[map[string]interface{}]{
+					Cursor: api.Cursor[map[string]any]{
+						PageSize: 1,
+						HasMore:  false,
+						Data: []map[string]interface{}{
+							{
+								"address":  "user:001",
+								"metadata": nil,
+							},
+						},
+					},
+					Total: Total{
 						Value: 1,
 						Rel:   "eq",
-					},
-					Data: []map[string]interface{}{
-						{
-							"address":  "user:001",
-							"metadata": nil,
-						},
 					},
 				},
 			},
@@ -353,33 +359,35 @@ func TestSingleDocTypeSearch(t *testing.T) {
 					Address: "user:001",
 				},
 			},
-			expected: api.BaseResponse[map[string]interface{}]{
-				Cursor: &api.Cursor[map[string]interface{}]{
-					PageSize: 1,
-					HasMore:  false,
-					Previous: EncodeCursorToken(cursorTokenInfo{
-						Target: "ACCOUNT",
-						Sort: []searchengine.Sort{
+			expected: BaseResponse[map[string]interface{}]{
+				Cursor: &Cursor[map[string]interface{}]{
+					Cursor: api.Cursor[map[string]any]{
+						PageSize: 1,
+						HasMore:  false,
+						Previous: EncodeCursorToken(cursorTokenInfo{
+							Target: "ACCOUNT",
+							Sort: []searchengine.Sort{
+								{
+									Key:   "address",
+									Order: esquery.OrderAsc,
+								},
+							},
+							SearchAfter: []interface{}{
+								"user:001",
+							},
+							PageSize: 5,
+							Reverse:  true,
+						}),
+						Data: []map[string]interface{}{
 							{
-								Key:   "address",
-								Order: esquery.OrderAsc,
+								"address":  "user:001",
+								"metadata": nil,
 							},
 						},
-						SearchAfter: []interface{}{
-							"user:001",
-						},
-						PageSize: 5,
-						Reverse:  true,
-					}),
-					Total: &api.Total{
+					},
+					Total: Total{
 						Value: 1,
 						Rel:   "eq",
-					},
-					Data: []map[string]interface{}{
-						{
-							"address":  "user:001",
-							"metadata": nil,
-						},
 					},
 				},
 			},
@@ -433,7 +441,7 @@ func TestSingleDocTypeSearch(t *testing.T) {
 			r.ServeHTTP(rec, req)
 			require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
-			response := api.BaseResponse[map[string]interface{}]{}
+			response := BaseResponse[map[string]interface{}]{}
 			err = json.NewDecoder(rec.Body).Decode(&response)
 			require.NoError(t, err)
 			require.EqualValues(t, tc.expected, response)

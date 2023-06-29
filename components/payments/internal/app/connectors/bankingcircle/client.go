@@ -2,10 +2,12 @@ package bankingcircle
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -27,16 +29,35 @@ type client struct {
 	accessTokenExpiresAt time.Time
 }
 
-func newHTTPClient() *http.Client {
+func newHTTPClient(userCertificate, userCertificateKey string) (*http.Client, error) {
+	cert, err := tls.X509KeyPair([]byte(userCertificate), []byte(userCertificateKey))
+	if err != nil {
+		return nil, err
+	}
+
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.TLSClientConfig = &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
+
 	return &http.Client{
 		Timeout:   10 * time.Second,
-		Transport: otelhttp.NewTransport(http.DefaultTransport),
-	}
+		Transport: otelhttp.NewTransport(tr),
+	}, nil
 }
 
-func newClient(username, password, endpoint, authorizationEndpoint string, logger logging.Logger) (*client, error) {
+func newClient(
+	username, password,
+	endpoint, authorizationEndpoint,
+	uCertificate, uCertificateKey string,
+	logger logging.Logger) (*client, error) {
+	httpClient, err := newHTTPClient(uCertificate, uCertificateKey)
+	if err != nil {
+		return nil, err
+	}
+
 	c := &client{
-		httpClient: newHTTPClient(),
+		httpClient: httpClient,
 
 		username:              username,
 		password:              password,
@@ -82,7 +103,7 @@ func (c *client) login(ctx context.Context) error {
 	//nolint:tagliatelle // allow for client-side structures
 	type response struct {
 		AccessToken string `json:"access_token"`
-		ExpiresIn   int    `json:"expires_in"`
+		ExpiresIn   string `json:"expires_in"`
 	}
 
 	var res response
@@ -92,7 +113,13 @@ func (c *client) login(ctx context.Context) error {
 	}
 
 	c.accessToken = res.AccessToken
-	c.accessTokenExpiresAt = time.Now().Add(time.Duration(res.ExpiresIn) * time.Second)
+
+	expiresIn, err := strconv.Atoi(res.ExpiresIn)
+	if err != nil {
+		return fmt.Errorf("failed to convert expires_in to int: %w", err)
+	}
+
+	c.accessTokenExpiresAt = time.Now().Add(time.Duration(expiresIn) * time.Second)
 
 	return nil
 }
@@ -177,7 +204,7 @@ type payment struct {
 func (c *client) getAllPayments(ctx context.Context) ([]*payment, error) {
 	var payments []*payment
 
-	for page := 0; ; page++ {
+	for page := 1; ; page++ {
 		pagedPayments, err := c.getPayments(ctx, page)
 		if err != nil {
 			return nil, err

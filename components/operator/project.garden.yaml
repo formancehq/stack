@@ -1,4 +1,5 @@
 ---
+apiVersion: garden.io/v0
 kind: Project
 name: operator
 
@@ -7,12 +8,10 @@ variables:
 
 environments:
   - name: default
-    providers:
-    - name: kubernetes
-      setupIngressController: false
 
 providers:
   - name: kubernetes
+    setupIngressController: false
     context: k3d-formance
     buildMode: kaniko
     kaniko:

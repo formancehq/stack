@@ -1,0 +1,10 @@
+type: 'application'
+language: 'go'
+
+tasks:
+  helm:
+    command: 'task helm'
+    platform: 'system'
+    inputs:
+      - 'helm'
+      - 'config/**'

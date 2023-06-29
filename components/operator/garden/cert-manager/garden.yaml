@@ -1,4 +1,5 @@
 ---
+apiVersion: garden.io/v0
 kind: Module
 description: cert-manager
 type: helm

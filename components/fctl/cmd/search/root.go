@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -54,18 +54,23 @@ func NewCommand() *cobra.Command {
 			}
 			size := int64(fctl.GetInt(cmd, sizeFlag))
 
-			response, _, err := searchClient.SearchApi.Search(cmd.Context()).Query(formance.Query{
+			request := shared.Query{
 				PageSize: &size,
 				Terms:    terms,
 				Target:   &target,
-			}).Execute()
+			}
+			response, err := searchClient.Search.Search(cmd.Context(), request)
 			if err != nil {
 				return err
 			}
 
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			if target == "" {
 				tableData := make([][]string, 0)
-				for kind, values := range response.Data {
+				for kind, values := range response.Response.Data {
 					for _, value := range values.([]any) {
 						dataAsJson, err := json.Marshal(value)
 						if err != nil {
@@ -94,26 +99,25 @@ func NewCommand() *cobra.Command {
 			switch target {
 			case "TRANSACTION":
 				fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Transactions")
-				err = displayTransactions(cmd.OutOrStdout(), response.Cursor.Data)
+				err = displayTransactions(cmd.OutOrStdout(), response.Response.Cursor.Data)
 			case "ACCOUNT":
 				fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Accounts")
-				err = displayAccounts(cmd.OutOrStdout(), response.Cursor.Data)
+				err = displayAccounts(cmd.OutOrStdout(), response.Response.Cursor.Data)
 			case "ASSET":
 				fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Assets")
-				err = displayAssets(cmd.OutOrStdout(), response.Cursor.Data)
+				err = displayAssets(cmd.OutOrStdout(), response.Response.Cursor.Data)
 			case "PAYMENT":
 				fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Payments")
-				err = displayPayments(cmd.OutOrStdout(), response.Cursor.Data)
+				err = displayPayments(cmd.OutOrStdout(), response.Response.Cursor.Data)
 			}
 			return err
 		}),
 	)
 }
 
-func displayPayments(out io.Writer, payments []interface{}) error {
+func displayPayments(out io.Writer, payments []map[string]interface{}) error {
 	tableData := make([][]string, 0)
 	for _, payment := range payments {
-		payment := payment.(map[string]any)
 		tableData = append(tableData, []string{
 			payment["provider"].(string),
 			payment["reference"].(string),
@@ -135,10 +139,9 @@ func displayPayments(out io.Writer, payments []interface{}) error {
 		Render()
 }
 
-func displayAssets(out io.Writer, assets []interface{}) error {
+func displayAssets(out io.Writer, assets []map[string]interface{}) error {
 	tableData := make([][]string, 0)
 	for _, asset := range assets {
-		asset := asset.(map[string]any)
 		tableData = append(tableData, []string{
 			asset["ledger"].(string),
 			asset["name"].(string),
@@ -156,10 +159,9 @@ func displayAssets(out io.Writer, assets []interface{}) error {
 		Render()
 }
 
-func displayAccounts(out io.Writer, accounts []interface{}) error {
+func displayAccounts(out io.Writer, accounts []map[string]interface{}) error {
 	tableData := make([][]string, 0)
 	for _, account := range accounts {
-		account := account.(map[string]any)
 		tableData = append(tableData, []string{
 			// TODO: Missing property 'ledger' on api response
 			//account["ledger"].(string),
@@ -175,10 +177,9 @@ func displayAccounts(out io.Writer, accounts []interface{}) error {
 		Render()
 }
 
-func displayTransactions(out io.Writer, txs []interface{}) error {
+func displayTransactions(out io.Writer, txs []map[string]interface{}) error {
 	tableData := make([][]string, 0)
 	for _, tx := range txs {
-		tx := tx.(map[string]any)
 		tableData = append(tableData, []string{
 			tx["ledger"].(string),
 			fmt.Sprint(tx["txid"].(float64)),

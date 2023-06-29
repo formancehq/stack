@@ -9,3 +9,17 @@ vendor
 go.work
 go.work.sum
 worktrees
+
+**/*.out
+**/*.out
+**/*.test
+**/*.stats
+.direnv
+
+# moon
+.moon/cache
+.moon/docker
+.moon/bin
+.moon/go
+
+.devbox

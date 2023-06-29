@@ -2,8 +2,11 @@ package wallet
 
 import (
 	"context"
+	"math/big"
+	"sort"
+	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
@@ -48,20 +51,20 @@ func newListResponse[SRC any, DST any](cursor interface {
 
 type ListHolds struct {
 	WalletID string
-	Metadata map[string]any
+	Metadata metadata.Metadata
 }
 
 type ListBalances struct {
 	WalletID string
-	Metadata map[string]any
+	Metadata metadata.Metadata
 }
 
 type ListTransactions struct {
 	WalletID string
 }
 
-func BalancesMetadataFilter(walletID string) map[string]interface{} {
-	return map[string]interface{}{
+func BalancesMetadataFilter(walletID string) metadata.Metadata {
+	return metadata.Metadata{
 		MetadataKeyWalletBalance: TrueValue,
 		MetadataKeyWalletID:      walletID,
 	}
@@ -105,14 +108,23 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	}
 
 	sources := make([]string, 0)
-	var err error
 	switch {
 	case len(debit.Balances) == 0:
 		sources = append(sources, m.chart.GetMainBalanceAccount(debit.WalletID))
 	case len(debit.Balances) == 1 && debit.Balances[0] == "*":
-		sources, err = fetchAndMapAllAccounts[string](ctx, m, BalancesMetadataFilter(debit.WalletID), Account.GetAddress)
+		balancesRaw, err := fetchAndMapAllAccounts[Balance](ctx, m, BalancesMetadataFilter(debit.WalletID), BalanceFromAccount)
 		if err != nil {
 			return nil, err
+		}
+		balances := Balances(balancesRaw)
+		sort.Stable(balances)
+
+		// Filter expired and generate sources
+		for _, balance := range balances {
+			if balance.ExpiresAt != nil && balance.ExpiresAt.Before(time.Now()) {
+				continue
+			}
+			sources = append(sources, m.chart.GetBalanceAccount(debit.WalletID, balance.Name))
 		}
 	default:
 		for _, balance := range debit.Balances {
@@ -123,25 +135,32 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 		}
 	}
 
-	script := sdk.Script{
-		Plain: BuildDebitWalletScript(sources...),
-		Vars: map[string]interface{}{
-			"destination": dest.getAccount(m.chart),
-			"amount": map[string]any{
-				// @todo: upgrade this to proper int after sdk is updated
-				"amount": debit.Amount.Amount.Uint64(),
-				"asset":  debit.Amount.Asset,
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
+			Plain: BuildDebitWalletScript(sources...),
+			Vars: map[string]interface{}{
+				"destination": dest.getAccount(m.chart),
+				"amount": map[string]any{
+					// @todo: upgrade this to proper int after sdk is updated
+					"amount": debit.Amount.Amount.Uint64(),
+					"asset":  debit.Amount.Asset,
+				},
 			},
 		},
 		Metadata: TransactionMetadata(debit.Metadata),
 		//nolint:godox
 		// TODO: Add set account metadata for hold when released on ledger (v1.9)
 	}
+
 	if debit.Reference != "" {
-		script.Reference = &debit.Reference
+		postTransaction.Reference = &debit.Reference
 	}
 
-	return hold, m.runScript(ctx, script)
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+		return nil, err
+	}
+
+	return hold, nil
 }
 
 func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
@@ -153,7 +172,7 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		return ErrHoldNotFound
 	}
 
-	hold := ExpandedDebitHoldFromLedgerAccount(account)
+	hold := ExpandedDebitHoldFromLedgerAccount(*account)
 	if hold.Remaining.Uint64() == 0 {
 		return ErrClosedHold
 	}
@@ -163,9 +182,8 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		return err
 	}
 
-	return m.runScript(
-		ctx,
-		sdk.Script{
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
 			Plain: BuildConfirmHoldScript(debit.Final, hold.Asset),
 			Vars: map[string]interface{}{
 				"hold": m.chart.GetHoldAccount(debit.HoldID),
@@ -174,9 +192,15 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 					"asset":  hold.Asset,
 				},
 			},
-			Metadata: TransactionMetadata(metadata.Metadata{}),
 		},
-	)
+		Metadata: TransactionMetadata(metadata.Metadata{}),
+	}
+
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
@@ -185,18 +209,26 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 		return errors.Wrap(err, "getting account")
 	}
 
-	hold := ExpandedDebitHoldFromLedgerAccount(account)
+	hold := ExpandedDebitHoldFromLedgerAccount(*account)
 	if hold.IsClosed() {
 		return ErrClosedHold
 	}
 
-	return m.runScript(ctx, sdk.Script{
-		Plain: BuildCancelHoldScript(hold.Asset),
-		Vars: map[string]interface{}{
-			"hold": m.chart.GetHoldAccount(void.HoldID),
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
+			Plain: BuildCancelHoldScript(hold.Asset),
+			Vars: map[string]interface{}{
+				"hold": m.chart.GetHoldAccount(void.HoldID),
+			},
 		},
 		Metadata: TransactionMetadata(metadata.Metadata{}),
-	})
+	}
+
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *Manager) Credit(ctx context.Context, credit Credit) error {
@@ -210,47 +242,55 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 		}
 	}
 
-	script := sdk.Script{
-		Plain: BuildCreditWalletScript(credit.Sources.ResolveAccounts(m.chart)...),
-		Vars: map[string]interface{}{
-			"destination": credit.destinationAccount(m.chart),
-			"amount": map[string]any{
-				// @todo: upgrade this to proper int after sdk is updated
-				"amount": credit.Amount.Amount.Uint64(),
-				"asset":  credit.Amount.Asset,
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
+			Plain: BuildCreditWalletScript(credit.Sources.ResolveAccounts(m.chart)...),
+			Vars: map[string]interface{}{
+				"destination": credit.destinationAccount(m.chart),
+				"amount": map[string]any{
+					// @todo: upgrade this to proper int after sdk is updated
+					"amount": credit.Amount.Amount.Uint64(),
+					"asset":  credit.Amount.Asset,
+				},
 			},
 		},
 		Metadata: TransactionMetadata(credit.Metadata),
 	}
 	if credit.Reference != "" {
-		script.Reference = &credit.Reference
+		postTransaction.Reference = &credit.Reference
 	}
 
-	return m.runScript(ctx, script)
-}
-
-func (m *Manager) runScript(ctx context.Context, script sdk.Script) error {
-	ret, err := m.client.RunScript(ctx, m.ledgerName, script)
-	if err != nil {
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
 		return err
 	}
-	if ret.ErrorCode == nil {
-		return nil
+
+	return nil
+}
+
+func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTransaction) error {
+	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		apiErr, ok := err.(GenericOpenAPIError)
+		if ok {
+			respErr, ok := apiErr.Model().(shared.ErrorResponse)
+			if ok {
+				switch respErr.ErrorCode {
+				case shared.ErrorsEnumInsufficientFund:
+					return ErrInsufficientFundError
+				}
+			}
+		}
+
+		return errors.Wrap(err, "creating transaction")
 	}
-	if *ret.ErrorCode == sdk.INSUFFICIENT_FUND {
-		return ErrInsufficientFundError
-	}
-	if ret.ErrorMessage != nil {
-		return errors.New(*ret.ErrorMessage)
-	}
-	return errors.New(string(*ret.ErrorCode))
+
+	return nil
 }
 
 func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets]) (*ListResponse[Wallet], error) {
 	return mapAccountList(ctx, m, mapAccountListQuery{
 		Pagination: query.Pagination,
 		Metadata: func() metadata.Metadata {
-			metadata := map[string]interface{}{
+			metadata := metadata.Metadata{
 				MetadataKeyWalletSpecType: PrimaryWallet,
 			}
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
@@ -305,7 +345,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 
 func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTransactions]) (*ListResponse[Transaction], error) {
 	var (
-		response *sdk.TransactionsCursorResponseCursor
+		response *TransactionsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -328,10 +368,10 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 		return nil, errors.Wrap(err, "listing transactions")
 	}
 
-	return newListResponse[sdk.Transaction, Transaction](response, func(tx sdk.Transaction) Transaction {
+	return newListResponse[ExpandedTransaction, Transaction](response, func(tx ExpandedTransaction) Transaction {
 		return Transaction{
-			Transaction: tx,
-			Ledger:      m.ledgerName,
+			ExpandedTransaction: tx,
+			Ledger:              m.ledgerName,
 		}
 	}), nil
 }
@@ -363,13 +403,15 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 
 	newCustomMetadata := metadata.Metadata{}
 	existingCustomMetadata := GetMetadata(account, MetadataKeyWalletCustomData)
-	if existingCustomMetadata != nil {
-		newCustomMetadata = newCustomMetadata.Merge(existingCustomMetadata.(map[string]any))
+	if existingCustomMetadata != "" {
+		newCustomMetadata = newCustomMetadata.Merge(
+			metadata.UnmarshalValue[metadata.Metadata](existingCustomMetadata),
+		)
 	}
 	newCustomMetadata = newCustomMetadata.Merge(data.Metadata)
 
 	meta := account.GetMetadata()
-	meta[MetadataKeyWalletCustomData] = newCustomMetadata
+	meta[MetadataKeyWalletCustomData] = metadata.MarshalValue(newCustomMetadata)
 
 	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), meta); err != nil {
 		return errors.Wrap(err, "adding metadata to account")
@@ -392,7 +434,89 @@ func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, erro
 		return nil, ErrWalletNotFound
 	}
 
-	return Ptr(WithBalancesFromAccount(m.ledgerName, account)), nil
+	return Ptr(WithBalancesFromAccount(m.ledgerName, *account)), nil
+}
+
+type Summary struct {
+	Balances       []ExpandedBalance   `json:"balances"`
+	AvailableFunds map[string]*big.Int `json:"availableFunds"`
+	ExpiredFunds   map[string]*big.Int `json:"expiredFunds"`
+	ExpirableFunds map[string]*big.Int `json:"expirableFunds"`
+	HoldFunds      map[string]*big.Int `json:"holdFunds"`
+}
+
+func (m *Manager) GetWalletSummary(ctx context.Context, id string) (*Summary, error) {
+	balances, err := fetchAndMapAllAccounts(ctx, m, metadata.Metadata{
+		MetadataKeyWalletID: id,
+	}, func(src Account) ExpandedBalance {
+		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
+		if err != nil {
+			// TODO: refine error handling
+			panic(errors.Wrap(err, "getting account"))
+		}
+		return ExpandedBalanceFromAccount(*account)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	s := &Summary{
+		Balances:       balances,
+		AvailableFunds: map[string]*big.Int{},
+		ExpiredFunds:   map[string]*big.Int{},
+		ExpirableFunds: map[string]*big.Int{},
+		HoldFunds:      map[string]*big.Int{},
+	}
+
+	for _, balance := range balances {
+		for asset, amount := range balance.Assets {
+			switch {
+			case balance.ExpiresAt != nil && balance.ExpiresAt.Before(time.Now()):
+				if s.ExpiredFunds[asset] == nil {
+					s.ExpiredFunds[asset] = new(big.Int)
+				}
+				s.ExpiredFunds[asset].Add(s.ExpiredFunds[asset], amount)
+			case balance.ExpiresAt != nil && !balance.ExpiresAt.Before(time.Now()):
+				if s.ExpirableFunds[asset] == nil {
+					s.ExpirableFunds[asset] = new(big.Int)
+				}
+				s.ExpirableFunds[asset].Add(s.ExpirableFunds[asset], amount)
+				if s.AvailableFunds[asset] == nil {
+					s.AvailableFunds[asset] = new(big.Int)
+				}
+				s.AvailableFunds[asset].Add(s.AvailableFunds[asset], amount)
+			case balance.ExpiresAt == nil:
+				if s.AvailableFunds[asset] == nil {
+					s.AvailableFunds[asset] = new(big.Int)
+				}
+				s.AvailableFunds[asset].Add(s.AvailableFunds[asset], amount)
+			}
+		}
+	}
+
+	holds, err := fetchAndMapAllAccounts(ctx, m, metadata.Metadata{
+		MetadataKeyHoldWalletID: id,
+	}, func(src Account) ExpandedDebitHold {
+		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
+		if err != nil {
+			// TODO: refine error handling
+			panic(errors.Wrap(err, "getting account"))
+		}
+
+		return ExpandedDebitHoldFromLedgerAccount(*account)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, hold := range holds {
+		if s.HoldFunds[hold.Asset] == nil {
+			s.HoldFunds[hold.Asset] = new(big.Int)
+		}
+		s.HoldFunds[hold.Asset].Add(s.HoldFunds[hold.Asset], hold.Remaining)
+	}
+
+	return s, nil
 }
 
 func (m *Manager) GetHold(ctx context.Context, id string) (*ExpandedDebitHold, error) {
@@ -401,7 +525,7 @@ func (m *Manager) GetHold(ctx context.Context, id string) (*ExpandedDebitHold, e
 		return nil, err
 	}
 
-	return Ptr(ExpandedDebitHoldFromLedgerAccount(account)), nil
+	return Ptr(ExpandedDebitHoldFromLedgerAccount(*account)), nil
 }
 
 func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Balance, error) {
@@ -416,7 +540,7 @@ func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Bala
 		return nil, ErrBalanceAlreadyExists
 	}
 
-	balance := NewBalance(data.Name)
+	balance := NewBalance(data.Name, data.ExpiresAt)
 
 	if err := m.client.AddMetadataToAccount(
 		ctx,
@@ -439,7 +563,7 @@ func (m *Manager) GetBalance(ctx context.Context, walletID string, balanceName s
 		return nil, ErrBalanceNotExists
 	}
 
-	return Ptr(ExpandedBalanceFromAccount(account)), nil
+	return Ptr(ExpandedBalanceFromAccount(*account)), nil
 }
 
 type mapAccountListQuery struct {
@@ -449,7 +573,7 @@ type mapAccountListQuery struct {
 
 func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[Account, TO]) (*ListResponse[TO], error) {
 	var (
-		response *sdk.AccountsCursorResponseCursor
+		response *AccountsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -466,8 +590,8 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 		return nil, err
 	}
 
-	return newListResponse[sdk.Account, TO](response, func(item sdk.Account) TO {
-		return mapper(&item)
+	return newListResponse[Account, TO](response, func(item Account) TO {
+		return mapper(item)
 	}), nil
 }
 

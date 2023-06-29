@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -13,9 +13,10 @@ import (
 const AuthorizeCallbackPath = "/authorize/callback"
 
 func AddRoutes(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
-	router.NewRoute().Path(AuthorizeCallbackPath).Queries("code", "{code}").
+	authorizationRouter := router.NewRoute().Subrouter()
+	authorizationRouter.NewRoute().Path(AuthorizeCallbackPath).Queries("code", "{code}").
 		Handler(authorizeCallbackHandler(provider, storage, relyingParty))
-	router.NewRoute().Path(AuthorizeCallbackPath).Queries("error", "{error}").
+	authorizationRouter.NewRoute().Path(AuthorizeCallbackPath).Queries("error", "{error}").
 		Handler(authorizeErrorHandler())
 
 	oidcLibRouter := router.PathPrefix("/").Subrouter()

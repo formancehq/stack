@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -16,9 +16,9 @@ func TestGetBalance(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	balance := wallet.NewBalance(uuid.NewString())
-	assets := map[string]int64{
-		"USD": 50,
+	balance := wallet.NewBalance(uuid.NewString(), nil)
+	assets := map[string]*big.Int{
+		"USD": big.NewInt(50),
 	}
 
 	req := newRequest(t, http.MethodGet, "/wallets/"+walletID+"/balances/"+balance.Name, nil)
@@ -26,14 +26,16 @@ func TestGetBalance(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetBalanceAccount(walletID, balance.Name), account)
 
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  account,
-				Metadata: balance.LedgerMetadata(walletID),
-				Balances: &assets,
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  account,
+					Metadata: balance.LedgerMetadata(walletID),
+				},
+				Balances: assets,
 			}, nil
 		}),
 	)
@@ -59,10 +61,12 @@ func TestGetBalanceNotFound(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
-			return &sdk.AccountWithVolumesAndBalances{
-				Address: account,
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address: account,
+				},
 			}, nil
 		}),
 	)

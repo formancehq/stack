@@ -1,0 +1,16 @@
+type: 'tool'
+language: 'go'
+
+dependsOn:
+    - 'openapi'
+
+workspace:
+    inheritedTasks:
+        exclude: ['lint', 'test']
+
+tasks:
+    tests:
+        command: 'task tests'
+        platform: 'system'
+        options:
+            runInCI: false

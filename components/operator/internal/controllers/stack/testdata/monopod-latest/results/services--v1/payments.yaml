@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app.kubernetes.io/service-name: payments
+    name: payments
+    namespace: monopod-latest
+spec:
+    clusterIP: 10.0.0.164
+    clusterIPs:
+        - 10.0.0.164
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 10003
+          protocol: TCP
+          targetPort: 10003
+    selector:
+        app.kubernetes.io/name: monopod-latest
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

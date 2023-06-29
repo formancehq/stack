@@ -1,9 +1,8 @@
 package bus
 
 import (
-	"time"
-
-	"github.com/numary/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 const (
@@ -12,12 +11,11 @@ const (
 
 	EventTypeCommittedTransactions = "COMMITTED_TRANSACTIONS"
 	EventTypeSavedMetadata         = "SAVED_METADATA"
-	EventTypeUpdatedMapping        = "UPDATED_MAPPING"
 	EventTypeRevertedTransaction   = "REVERTED_TRANSACTION"
 )
 
 type EventMessage struct {
-	Date    time.Time `json:"date"`
+	Date    core.Time `json:"date"`
 	App     string    `json:"app"`
 	Version string    `json:"version"`
 	Type    string    `json:"type"`
@@ -35,7 +33,7 @@ type CommittedTransactions struct {
 
 func newEventCommittedTransactions(txs CommittedTransactions) EventMessage {
 	return EventMessage{
-		Date:    time.Now().UTC(),
+		Date:    core.Now(),
 		App:     EventApp,
 		Version: EventVersion,
 		Type:    EventTypeCommittedTransactions,
@@ -44,34 +42,19 @@ func newEventCommittedTransactions(txs CommittedTransactions) EventMessage {
 }
 
 type SavedMetadata struct {
-	Ledger     string        `json:"ledger"`
-	TargetType string        `json:"targetType"`
-	TargetID   string        `json:"targetId"`
-	Metadata   core.Metadata `json:"metadata"`
+	Ledger     string            `json:"ledger"`
+	TargetType string            `json:"targetType"`
+	TargetID   string            `json:"targetId"`
+	Metadata   metadata.Metadata `json:"metadata"`
 }
 
 func newEventSavedMetadata(metadata SavedMetadata) EventMessage {
 	return EventMessage{
-		Date:    time.Now().UTC(),
+		Date:    core.Now(),
 		App:     EventApp,
 		Version: EventVersion,
 		Type:    EventTypeSavedMetadata,
 		Payload: metadata,
-	}
-}
-
-type UpdatedMapping struct {
-	Ledger  string       `json:"ledger"`
-	Mapping core.Mapping `json:"mapping"`
-}
-
-func newEventUpdatedMapping(mapping UpdatedMapping) EventMessage {
-	return EventMessage{
-		Date:    time.Now().UTC(),
-		App:     EventApp,
-		Version: EventVersion,
-		Type:    EventTypeUpdatedMapping,
-		Payload: mapping,
 	}
 }
 
@@ -83,7 +66,7 @@ type RevertedTransaction struct {
 
 func newEventRevertedTransaction(tx RevertedTransaction) EventMessage {
 	return EventMessage{
-		Date:    time.Now().UTC(),
+		Date:    core.Now(),
 		App:     EventApp,
 		Version: EventVersion,
 		Type:    EventTypeRevertedTransaction,

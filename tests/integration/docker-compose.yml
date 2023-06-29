@@ -3,7 +3,10 @@ version: '3.9'
 
 services:
   postgres:
-    image: "postgres:13-alpine"
+    image: "postgres:15-alpine"
+    command:
+      - -c
+      - max_connections=500
     ports:
     - "5432:5432"
     environment:
@@ -26,3 +29,14 @@ services:
     - "4222:4222"
     command:
     - -js
+
+  temporalite:
+    container_name: temporalite
+    build:
+      dockerfile: temporalite.Dockerfile
+      context: .
+    ports:
+    - 7233:7233
+    - 8233:8233
+    stdin_open: true
+    tty: true

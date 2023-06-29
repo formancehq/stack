@@ -23,13 +23,13 @@ func monitoringTracesEnvVars(traces *stackv1beta3.TracesSpec, prefix string) Con
 
 func monitoringTracesOTLPEnvVars(otlp *stackv1beta3.TracesOtlpSpec, prefix string) ContainerEnv {
 	return ContainerEnv{
-		Env(prefix+"OTEL_TRACES", "true"),
-		Env(prefix+"OTEL_TRACES_EXPORTER", "otlp"),
-		EnvFromBool(prefix+"OTEL_TRACES_EXPORTER_OTLP_INSECURE", otlp.Insecure),
-		Env(prefix+"OTEL_TRACES_EXPORTER_OTLP_MODE", otlp.Mode),
-		Env(prefix+"OTEL_TRACES_PORT", fmt.Sprint(otlp.Port)),
-		Env(prefix+"OTEL_TRACES_ENDPOINT", otlp.Endpoint),
-		Env(prefix+"OTEL_TRACES_EXPORTER_OTLP_ENDPOINT", controllerutils.ComputeEnvVar(prefix, "%s:%s", "OTEL_TRACES_ENDPOINT", "OTEL_TRACES_PORT")),
-		Env(prefix+"OTEL_RESOURCE_ATTRIBUTES", otlp.ResourceAttributes),
+		Env(fmt.Sprintf("%sOTEL_TRACES", prefix), "true"),
+		Env(fmt.Sprintf("%sOTEL_TRACES_EXPORTER", prefix), "otlp"),
+		EnvFromBool(fmt.Sprintf("%sOTEL_TRACES_EXPORTER_OTLP_INSECURE", prefix), otlp.Insecure),
+		Env(fmt.Sprintf("%sOTEL_TRACES_EXPORTER_OTLP_MODE", prefix), otlp.Mode),
+		Env(fmt.Sprintf("%sOTEL_TRACES_PORT", prefix), fmt.Sprint(otlp.Port)),
+		Env(fmt.Sprintf("%sOTEL_TRACES_ENDPOINT", prefix), otlp.Endpoint),
+		Env(fmt.Sprintf("%sOTEL_TRACES_EXPORTER_OTLP_ENDPOINT", prefix), controllerutils.ComputeEnvVar(prefix, "%s:%s", "OTEL_TRACES_ENDPOINT", "OTEL_TRACES_PORT")),
+		Env(fmt.Sprintf("%sOTEL_RESOURCE_ATTRIBUTES", prefix), otlp.ResourceAttributes),
 	}
 }

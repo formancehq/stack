@@ -92,6 +92,10 @@ type StackAuthSpec struct {
 	StaticClients []StaticClient `json:"staticClients,omitempty"`
 }
 
+type StackStargateConfig struct {
+	StargateServerURL string `json:"stargateServerURL"`
+}
+
 // StackSpec defines the desired state of Stack
 type StackSpec struct {
 	DevProperties `json:",inline"`
@@ -101,11 +105,17 @@ type StackSpec struct {
 	Auth StackAuthSpec `json:"auth"`
 
 	// +optional
+	Stargate *StackStargateConfig `json:"stargate,omitempty"`
+
+	// +optional
 	Versions string `json:"versions"`
 
 	// +optional
 	// +kubebuilder:default:="http"
 	Scheme string `json:"scheme"`
+
+	// +optional
+	Disabled bool `json:"disabled"`
 }
 
 type ControlAuthentication struct {
@@ -114,6 +124,9 @@ type ControlAuthentication struct {
 
 type StackStatus struct {
 	Status `json:",inline"`
+
+	// +optional
+	Ports map[string]map[string]int32 `json:"ports,omitempty"`
 
 	// +optional
 	StaticAuthClients map[string]StaticClient `json:"staticAuthClients,omitempty"`

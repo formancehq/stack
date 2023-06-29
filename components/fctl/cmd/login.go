@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
 )
 
 type Dialog interface {
@@ -21,27 +22,27 @@ func (fn DialogFn) DisplayURIAndCode(uri, code string) {
 	fn(uri, code)
 }
 
-func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*oidc.Tokens, error) {
-	deviceCode, err := rp.GetDeviceCode(ctx, relyingParty)
+func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*oidc.AccessTokenResponse, error) {
+	deviceCode, err := rp.DeviceAuthorization(relyingParty.OAuthConfig().Scopes, relyingParty)
 	if err != nil {
 		return nil, err
 	}
 
-	uri, err := url.Parse(deviceCode.GetVerificationUri())
+	uri, err := url.Parse(deviceCode.VerificationURI)
 	if err != nil {
 		panic(err)
 	}
 	query := uri.Query()
-	query.Set("user_code", deviceCode.GetUserCode())
+	query.Set("user_code", deviceCode.UserCode)
 	uri.RawQuery = query.Encode()
 
-	dialog.DisplayURIAndCode(deviceCode.GetVerificationUri(), deviceCode.GetUserCode())
+	dialog.DisplayURIAndCode(deviceCode.VerificationURI, deviceCode.UserCode)
 
 	if err := fctl.Open(uri.String()); err != nil {
 		return nil, err
 	}
 
-	return rp.PollDeviceCode(ctx, deviceCode.GetDeviceCode(), deviceCode.GetInterval(), relyingParty)
+	return rp.DeviceAccessToken(ctx, deviceCode.DeviceCode, time.Duration(deviceCode.Interval)*time.Second, relyingParty)
 }
 
 func NewLoginCommand() *cobra.Command {
@@ -66,7 +67,7 @@ func NewLoginCommand() *cobra.Command {
 				membershipUri = profile.GetMembershipURI()
 			}
 
-			relyingParty, err := fctl.GetAuthRelyingParty(cmd, membershipUri)
+			relyingParty, err := fctl.GetAuthRelyingParty(fctl.GetHttpClient(cmd, map[string][]string{}), membershipUri)
 			if err != nil {
 				return err
 			}
@@ -80,7 +81,7 @@ func NewLoginCommand() *cobra.Command {
 			}
 
 			profile.SetMembershipURI(membershipUri)
-			profile.UpdateToken(ret.Token)
+			profile.UpdateToken(ret)
 
 			currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
 

@@ -1,7 +1,10 @@
 package clients
 
 import (
+	"fmt"
+
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -37,9 +40,16 @@ func NewDeleteCommand() *cobra.Command {
 				return err
 			}
 
-			_, err = authClient.ClientsApi.DeleteClient(cmd.Context(), args[0]).Execute()
+			request := operations.DeleteClientRequest{
+				ClientID: args[0],
+			}
+			response, err := authClient.Auth.DeleteClient(cmd.Context(), request)
 			if err != nil {
 				return err
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Client deleted!")

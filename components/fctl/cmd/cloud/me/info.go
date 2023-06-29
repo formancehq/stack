@@ -31,8 +31,8 @@ func NewInfoCommand() *cobra.Command {
 			}
 
 			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("Subject"), userInfo.GetSubject()})
-			tableData = append(tableData, []string{pterm.LightCyan("Email"), userInfo.GetEmail()})
+			tableData = append(tableData, []string{pterm.LightCyan("Subject"), userInfo.Subject})
+			tableData = append(tableData, []string{pterm.LightCyan("Email"), userInfo.Email})
 
 			return pterm.DefaultTable.
 				WithWriter(cmd.OutOrStdout()).

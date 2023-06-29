@@ -38,7 +38,8 @@ func numscriptParserInit() {
 		"'print'", "'fail'", "'send'", "'source'", "'from'", "'max'", "'destination'",
 		"'to'", "'allocate'", "'+'", "'-'", "'('", "')'", "'['", "']'", "'{'",
 		"'}'", "'='", "'account'", "'asset'", "'number'", "'monetary'", "'portion'",
-		"'string'", "", "", "'remaining'", "'kept'", "'balance'", "", "'%'",
+		"'string'", "", "", "'remaining'", "'kept'", "'balance'", "'save'",
+		"", "'%'",
 	}
 	staticData.symbolicNames = []string{
 		"", "", "", "", "", "NEWLINE", "WHITESPACE", "MULTILINE_COMMENT", "LINE_COMMENT",
@@ -46,8 +47,8 @@ func numscriptParserInit() {
 		"SEND", "SOURCE", "FROM", "MAX", "DESTINATION", "TO", "ALLOCATE", "OP_ADD",
 		"OP_SUB", "LPAREN", "RPAREN", "LBRACK", "RBRACK", "LBRACE", "RBRACE",
 		"EQ", "TY_ACCOUNT", "TY_ASSET", "TY_NUMBER", "TY_MONETARY", "TY_PORTION",
-		"TY_STRING", "STRING", "PORTION", "REMAINING", "KEPT", "BALANCE", "NUMBER",
-		"PERCENT", "VARIABLE_NAME", "ACCOUNT", "ASSET",
+		"TY_STRING", "STRING", "PORTION", "REMAINING", "KEPT", "BALANCE", "SAVE",
+		"NUMBER", "PERCENT", "VARIABLE_NAME", "ACCOUNT", "ASSET",
 	}
 	staticData.ruleNames = []string{
 		"monetary", "monetaryAll", "literal", "variable", "expression", "allotmentPortion",
@@ -58,7 +59,7 @@ func numscriptParserInit() {
 	}
 	staticData.predictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 46, 306, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 1, 47, 314, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
 		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
 		10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 2, 14, 7, 14, 2, 15, 7, 15,
 		2, 16, 7, 16, 2, 17, 7, 17, 2, 18, 7, 18, 2, 19, 7, 19, 2, 20, 7, 20, 2,
@@ -75,120 +76,124 @@ func numscriptParserInit() {
 		13, 1, 13, 1, 14, 1, 14, 1, 14, 3, 14, 151, 8, 14, 1, 15, 1, 15, 1, 15,
 		1, 15, 1, 15, 1, 15, 1, 15, 4, 15, 160, 8, 15, 11, 15, 12, 15, 161, 1,
 		15, 1, 15, 1, 16, 1, 16, 3, 16, 168, 8, 16, 1, 17, 1, 17, 1, 17, 1, 17,
-		1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1,
+		1, 17, 3, 17, 175, 8, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1,
 		17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17,
 		1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1,
-		17, 1, 17, 1, 17, 1, 17, 3, 17, 209, 8, 17, 1, 17, 1, 17, 1, 17, 1, 17,
-		1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1,
-		17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 3, 17, 234,
-		8, 17, 1, 17, 1, 17, 1, 17, 3, 17, 239, 8, 17, 1, 18, 1, 18, 1, 19, 1,
-		19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19,
-		1, 19, 1, 19, 3, 19, 257, 8, 19, 1, 20, 1, 20, 1, 20, 1, 20, 3, 20, 263,
-		8, 20, 1, 21, 1, 21, 1, 21, 1, 21, 1, 21, 4, 21, 270, 8, 21, 11, 21, 12,
-		21, 271, 4, 21, 274, 8, 21, 11, 21, 12, 21, 275, 1, 21, 1, 21, 1, 21, 1,
-		22, 5, 22, 282, 8, 22, 10, 22, 12, 22, 285, 9, 22, 1, 22, 3, 22, 288, 8,
-		22, 1, 22, 1, 22, 1, 22, 5, 22, 293, 8, 22, 10, 22, 12, 22, 296, 9, 22,
-		1, 22, 5, 22, 299, 8, 22, 10, 22, 12, 22, 302, 9, 22, 1, 22, 1, 22, 1,
-		22, 0, 1, 8, 23, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28,
-		30, 32, 34, 36, 38, 40, 42, 44, 0, 2, 1, 0, 22, 23, 1, 0, 31, 36, 318,
-		0, 46, 1, 0, 0, 0, 2, 51, 1, 0, 0, 0, 4, 61, 1, 0, 0, 0, 6, 63, 1, 0, 0,
-		0, 8, 69, 1, 0, 0, 0, 10, 82, 1, 0, 0, 0, 12, 84, 1, 0, 0, 0, 14, 100,
-		1, 0, 0, 0, 16, 115, 1, 0, 0, 0, 18, 120, 1, 0, 0, 0, 20, 125, 1, 0, 0,
-		0, 22, 127, 1, 0, 0, 0, 24, 131, 1, 0, 0, 0, 26, 142, 1, 0, 0, 0, 28, 150,
-		1, 0, 0, 0, 30, 152, 1, 0, 0, 0, 32, 167, 1, 0, 0, 0, 34, 238, 1, 0, 0,
-		0, 36, 240, 1, 0, 0, 0, 38, 256, 1, 0, 0, 0, 40, 258, 1, 0, 0, 0, 42, 264,
-		1, 0, 0, 0, 44, 283, 1, 0, 0, 0, 46, 47, 5, 26, 0, 0, 47, 48, 3, 8, 4,
-		0, 48, 49, 3, 8, 4, 0, 49, 50, 5, 27, 0, 0, 50, 1, 1, 0, 0, 0, 51, 52,
-		5, 26, 0, 0, 52, 53, 3, 8, 4, 0, 53, 54, 5, 1, 0, 0, 54, 55, 5, 27, 0,
-		0, 55, 3, 1, 0, 0, 0, 56, 62, 5, 45, 0, 0, 57, 62, 5, 46, 0, 0, 58, 62,
-		5, 42, 0, 0, 59, 62, 5, 37, 0, 0, 60, 62, 5, 38, 0, 0, 61, 56, 1, 0, 0,
-		0, 61, 57, 1, 0, 0, 0, 61, 58, 1, 0, 0, 0, 61, 59, 1, 0, 0, 0, 61, 60,
-		1, 0, 0, 0, 62, 5, 1, 0, 0, 0, 63, 64, 5, 44, 0, 0, 64, 7, 1, 0, 0, 0,
-		65, 66, 6, 4, -1, 0, 66, 70, 3, 4, 2, 0, 67, 70, 3, 6, 3, 0, 68, 70, 3,
-		0, 0, 0, 69, 65, 1, 0, 0, 0, 69, 67, 1, 0, 0, 0, 69, 68, 1, 0, 0, 0, 70,
-		76, 1, 0, 0, 0, 71, 72, 10, 4, 0, 0, 72, 73, 7, 0, 0, 0, 73, 75, 3, 8,
-		4, 5, 74, 71, 1, 0, 0, 0, 75, 78, 1, 0, 0, 0, 76, 74, 1, 0, 0, 0, 76, 77,
-		1, 0, 0, 0, 77, 9, 1, 0, 0, 0, 78, 76, 1, 0, 0, 0, 79, 83, 5, 38, 0, 0,
-		80, 83, 3, 6, 3, 0, 81, 83, 5, 39, 0, 0, 82, 79, 1, 0, 0, 0, 82, 80, 1,
-		0, 0, 0, 82, 81, 1, 0, 0, 0, 83, 11, 1, 0, 0, 0, 84, 85, 5, 28, 0, 0, 85,
-		91, 5, 5, 0, 0, 86, 87, 5, 18, 0, 0, 87, 88, 3, 8, 4, 0, 88, 89, 3, 16,
-		8, 0, 89, 90, 5, 5, 0, 0, 90, 92, 1, 0, 0, 0, 91, 86, 1, 0, 0, 0, 92, 93,
-		1, 0, 0, 0, 93, 91, 1, 0, 0, 0, 93, 94, 1, 0, 0, 0, 94, 95, 1, 0, 0, 0,
-		95, 96, 5, 39, 0, 0, 96, 97, 3, 16, 8, 0, 97, 98, 5, 5, 0, 0, 98, 99, 5,
-		29, 0, 0, 99, 13, 1, 0, 0, 0, 100, 101, 5, 28, 0, 0, 101, 106, 5, 5, 0,
-		0, 102, 103, 3, 10, 5, 0, 103, 104, 3, 16, 8, 0, 104, 105, 5, 5, 0, 0,
-		105, 107, 1, 0, 0, 0, 106, 102, 1, 0, 0, 0, 107, 108, 1, 0, 0, 0, 108,
-		106, 1, 0, 0, 0, 108, 109, 1, 0, 0, 0, 109, 110, 1, 0, 0, 0, 110, 111,
-		5, 29, 0, 0, 111, 15, 1, 0, 0, 0, 112, 113, 5, 20, 0, 0, 113, 116, 3, 18,
-		9, 0, 114, 116, 5, 40, 0, 0, 115, 112, 1, 0, 0, 0, 115, 114, 1, 0, 0, 0,
-		116, 17, 1, 0, 0, 0, 117, 121, 3, 8, 4, 0, 118, 121, 3, 12, 6, 0, 119,
-		121, 3, 14, 7, 0, 120, 117, 1, 0, 0, 0, 120, 118, 1, 0, 0, 0, 120, 119,
-		1, 0, 0, 0, 121, 19, 1, 0, 0, 0, 122, 123, 5, 2, 0, 0, 123, 126, 3, 8,
-		4, 0, 124, 126, 5, 3, 0, 0, 125, 122, 1, 0, 0, 0, 125, 124, 1, 0, 0, 0,
-		126, 21, 1, 0, 0, 0, 127, 129, 3, 8, 4, 0, 128, 130, 3, 20, 10, 0, 129,
-		128, 1, 0, 0, 0, 129, 130, 1, 0, 0, 0, 130, 23, 1, 0, 0, 0, 131, 132, 5,
-		28, 0, 0, 132, 136, 5, 5, 0, 0, 133, 134, 3, 28, 14, 0, 134, 135, 5, 5,
-		0, 0, 135, 137, 1, 0, 0, 0, 136, 133, 1, 0, 0, 0, 137, 138, 1, 0, 0, 0,
-		138, 136, 1, 0, 0, 0, 138, 139, 1, 0, 0, 0, 139, 140, 1, 0, 0, 0, 140,
-		141, 5, 29, 0, 0, 141, 25, 1, 0, 0, 0, 142, 143, 5, 18, 0, 0, 143, 144,
-		3, 8, 4, 0, 144, 145, 5, 17, 0, 0, 145, 146, 3, 28, 14, 0, 146, 27, 1,
-		0, 0, 0, 147, 151, 3, 22, 11, 0, 148, 151, 3, 26, 13, 0, 149, 151, 3, 24,
-		12, 0, 150, 147, 1, 0, 0, 0, 150, 148, 1, 0, 0, 0, 150, 149, 1, 0, 0, 0,
-		151, 29, 1, 0, 0, 0, 152, 153, 5, 28, 0, 0, 153, 159, 5, 5, 0, 0, 154,
-		155, 3, 10, 5, 0, 155, 156, 5, 17, 0, 0, 156, 157, 3, 28, 14, 0, 157, 158,
-		5, 5, 0, 0, 158, 160, 1, 0, 0, 0, 159, 154, 1, 0, 0, 0, 160, 161, 1, 0,
-		0, 0, 161, 159, 1, 0, 0, 0, 161, 162, 1, 0, 0, 0, 162, 163, 1, 0, 0, 0,
-		163, 164, 5, 29, 0, 0, 164, 31, 1, 0, 0, 0, 165, 168, 3, 28, 14, 0, 166,
-		168, 3, 30, 15, 0, 167, 165, 1, 0, 0, 0, 167, 166, 1, 0, 0, 0, 168, 33,
-		1, 0, 0, 0, 169, 170, 5, 13, 0, 0, 170, 239, 3, 8, 4, 0, 171, 172, 5, 11,
-		0, 0, 172, 173, 5, 24, 0, 0, 173, 174, 5, 37, 0, 0, 174, 175, 5, 4, 0,
-		0, 175, 176, 3, 8, 4, 0, 176, 177, 5, 25, 0, 0, 177, 239, 1, 0, 0, 0, 178,
-		179, 5, 12, 0, 0, 179, 180, 5, 24, 0, 0, 180, 181, 3, 8, 4, 0, 181, 182,
-		5, 4, 0, 0, 182, 183, 5, 37, 0, 0, 183, 184, 5, 4, 0, 0, 184, 185, 3, 8,
-		4, 0, 185, 186, 5, 25, 0, 0, 186, 239, 1, 0, 0, 0, 187, 239, 5, 14, 0,
-		0, 188, 189, 5, 15, 0, 0, 189, 190, 3, 8, 4, 0, 190, 191, 5, 24, 0, 0,
-		191, 208, 5, 5, 0, 0, 192, 193, 5, 16, 0, 0, 193, 194, 5, 30, 0, 0, 194,
-		195, 3, 32, 16, 0, 195, 196, 5, 5, 0, 0, 196, 197, 5, 19, 0, 0, 197, 198,
-		5, 30, 0, 0, 198, 199, 3, 18, 9, 0, 199, 209, 1, 0, 0, 0, 200, 201, 5,
-		19, 0, 0, 201, 202, 5, 30, 0, 0, 202, 203, 3, 18, 9, 0, 203, 204, 5, 5,
-		0, 0, 204, 205, 5, 16, 0, 0, 205, 206, 5, 30, 0, 0, 206, 207, 3, 32, 16,
-		0, 207, 209, 1, 0, 0, 0, 208, 192, 1, 0, 0, 0, 208, 200, 1, 0, 0, 0, 209,
-		210, 1, 0, 0, 0, 210, 211, 5, 5, 0, 0, 211, 212, 5, 25, 0, 0, 212, 239,
-		1, 0, 0, 0, 213, 214, 5, 15, 0, 0, 214, 215, 3, 2, 1, 0, 215, 216, 5, 24,
-		0, 0, 216, 233, 5, 5, 0, 0, 217, 218, 5, 16, 0, 0, 218, 219, 5, 30, 0,
-		0, 219, 220, 3, 28, 14, 0, 220, 221, 5, 5, 0, 0, 221, 222, 5, 19, 0, 0,
-		222, 223, 5, 30, 0, 0, 223, 224, 3, 18, 9, 0, 224, 234, 1, 0, 0, 0, 225,
-		226, 5, 19, 0, 0, 226, 227, 5, 30, 0, 0, 227, 228, 3, 18, 9, 0, 228, 229,
-		5, 5, 0, 0, 229, 230, 5, 16, 0, 0, 230, 231, 5, 30, 0, 0, 231, 232, 3,
-		28, 14, 0, 232, 234, 1, 0, 0, 0, 233, 217, 1, 0, 0, 0, 233, 225, 1, 0,
-		0, 0, 234, 235, 1, 0, 0, 0, 235, 236, 5, 5, 0, 0, 236, 237, 5, 25, 0, 0,
-		237, 239, 1, 0, 0, 0, 238, 169, 1, 0, 0, 0, 238, 171, 1, 0, 0, 0, 238,
-		178, 1, 0, 0, 0, 238, 187, 1, 0, 0, 0, 238, 188, 1, 0, 0, 0, 238, 213,
-		1, 0, 0, 0, 239, 35, 1, 0, 0, 0, 240, 241, 7, 1, 0, 0, 241, 37, 1, 0, 0,
-		0, 242, 243, 5, 10, 0, 0, 243, 244, 5, 24, 0, 0, 244, 245, 3, 8, 4, 0,
-		245, 246, 5, 4, 0, 0, 246, 247, 5, 37, 0, 0, 247, 248, 5, 25, 0, 0, 248,
-		257, 1, 0, 0, 0, 249, 250, 5, 41, 0, 0, 250, 251, 5, 24, 0, 0, 251, 252,
-		3, 8, 4, 0, 252, 253, 5, 4, 0, 0, 253, 254, 3, 8, 4, 0, 254, 255, 5, 25,
-		0, 0, 255, 257, 1, 0, 0, 0, 256, 242, 1, 0, 0, 0, 256, 249, 1, 0, 0, 0,
-		257, 39, 1, 0, 0, 0, 258, 259, 3, 36, 18, 0, 259, 262, 3, 6, 3, 0, 260,
-		261, 5, 30, 0, 0, 261, 263, 3, 38, 19, 0, 262, 260, 1, 0, 0, 0, 262, 263,
-		1, 0, 0, 0, 263, 41, 1, 0, 0, 0, 264, 265, 5, 9, 0, 0, 265, 266, 5, 28,
-		0, 0, 266, 273, 5, 5, 0, 0, 267, 269, 3, 40, 20, 0, 268, 270, 5, 5, 0,
-		0, 269, 268, 1, 0, 0, 0, 270, 271, 1, 0, 0, 0, 271, 269, 1, 0, 0, 0, 271,
-		272, 1, 0, 0, 0, 272, 274, 1, 0, 0, 0, 273, 267, 1, 0, 0, 0, 274, 275,
-		1, 0, 0, 0, 275, 273, 1, 0, 0, 0, 275, 276, 1, 0, 0, 0, 276, 277, 1, 0,
-		0, 0, 277, 278, 5, 29, 0, 0, 278, 279, 5, 5, 0, 0, 279, 43, 1, 0, 0, 0,
-		280, 282, 5, 5, 0, 0, 281, 280, 1, 0, 0, 0, 282, 285, 1, 0, 0, 0, 283,
-		281, 1, 0, 0, 0, 283, 284, 1, 0, 0, 0, 284, 287, 1, 0, 0, 0, 285, 283,
-		1, 0, 0, 0, 286, 288, 3, 42, 21, 0, 287, 286, 1, 0, 0, 0, 287, 288, 1,
-		0, 0, 0, 288, 289, 1, 0, 0, 0, 289, 294, 3, 34, 17, 0, 290, 291, 5, 5,
-		0, 0, 291, 293, 3, 34, 17, 0, 292, 290, 1, 0, 0, 0, 293, 296, 1, 0, 0,
-		0, 294, 292, 1, 0, 0, 0, 294, 295, 1, 0, 0, 0, 295, 300, 1, 0, 0, 0, 296,
-		294, 1, 0, 0, 0, 297, 299, 5, 5, 0, 0, 298, 297, 1, 0, 0, 0, 299, 302,
-		1, 0, 0, 0, 300, 298, 1, 0, 0, 0, 300, 301, 1, 0, 0, 0, 301, 303, 1, 0,
-		0, 0, 302, 300, 1, 0, 0, 0, 303, 304, 5, 0, 0, 1, 304, 45, 1, 0, 0, 0,
-		25, 61, 69, 76, 82, 93, 108, 115, 120, 125, 129, 138, 150, 161, 167, 208,
-		233, 238, 256, 262, 271, 275, 283, 287, 294, 300,
+		17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17,
+		1, 17, 1, 17, 3, 17, 217, 8, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1,
+		17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17,
+		1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 1, 17, 3, 17, 242, 8, 17, 1,
+		17, 1, 17, 1, 17, 3, 17, 247, 8, 17, 1, 18, 1, 18, 1, 19, 1, 19, 1, 19,
+		1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1,
+		19, 3, 19, 265, 8, 19, 1, 20, 1, 20, 1, 20, 1, 20, 3, 20, 271, 8, 20, 1,
+		21, 1, 21, 1, 21, 1, 21, 1, 21, 4, 21, 278, 8, 21, 11, 21, 12, 21, 279,
+		4, 21, 282, 8, 21, 11, 21, 12, 21, 283, 1, 21, 1, 21, 1, 21, 1, 22, 5,
+		22, 290, 8, 22, 10, 22, 12, 22, 293, 9, 22, 1, 22, 3, 22, 296, 8, 22, 1,
+		22, 1, 22, 1, 22, 5, 22, 301, 8, 22, 10, 22, 12, 22, 304, 9, 22, 1, 22,
+		5, 22, 307, 8, 22, 10, 22, 12, 22, 310, 9, 22, 1, 22, 1, 22, 1, 22, 0,
+		1, 8, 23, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32,
+		34, 36, 38, 40, 42, 44, 0, 2, 1, 0, 22, 23, 1, 0, 31, 36, 328, 0, 46, 1,
+		0, 0, 0, 2, 51, 1, 0, 0, 0, 4, 61, 1, 0, 0, 0, 6, 63, 1, 0, 0, 0, 8, 69,
+		1, 0, 0, 0, 10, 82, 1, 0, 0, 0, 12, 84, 1, 0, 0, 0, 14, 100, 1, 0, 0, 0,
+		16, 115, 1, 0, 0, 0, 18, 120, 1, 0, 0, 0, 20, 125, 1, 0, 0, 0, 22, 127,
+		1, 0, 0, 0, 24, 131, 1, 0, 0, 0, 26, 142, 1, 0, 0, 0, 28, 150, 1, 0, 0,
+		0, 30, 152, 1, 0, 0, 0, 32, 167, 1, 0, 0, 0, 34, 246, 1, 0, 0, 0, 36, 248,
+		1, 0, 0, 0, 38, 264, 1, 0, 0, 0, 40, 266, 1, 0, 0, 0, 42, 272, 1, 0, 0,
+		0, 44, 291, 1, 0, 0, 0, 46, 47, 5, 26, 0, 0, 47, 48, 3, 8, 4, 0, 48, 49,
+		3, 8, 4, 0, 49, 50, 5, 27, 0, 0, 50, 1, 1, 0, 0, 0, 51, 52, 5, 26, 0, 0,
+		52, 53, 3, 8, 4, 0, 53, 54, 5, 1, 0, 0, 54, 55, 5, 27, 0, 0, 55, 3, 1,
+		0, 0, 0, 56, 62, 5, 46, 0, 0, 57, 62, 5, 47, 0, 0, 58, 62, 5, 43, 0, 0,
+		59, 62, 5, 37, 0, 0, 60, 62, 5, 38, 0, 0, 61, 56, 1, 0, 0, 0, 61, 57, 1,
+		0, 0, 0, 61, 58, 1, 0, 0, 0, 61, 59, 1, 0, 0, 0, 61, 60, 1, 0, 0, 0, 62,
+		5, 1, 0, 0, 0, 63, 64, 5, 45, 0, 0, 64, 7, 1, 0, 0, 0, 65, 66, 6, 4, -1,
+		0, 66, 70, 3, 4, 2, 0, 67, 70, 3, 6, 3, 0, 68, 70, 3, 0, 0, 0, 69, 65,
+		1, 0, 0, 0, 69, 67, 1, 0, 0, 0, 69, 68, 1, 0, 0, 0, 70, 76, 1, 0, 0, 0,
+		71, 72, 10, 4, 0, 0, 72, 73, 7, 0, 0, 0, 73, 75, 3, 8, 4, 5, 74, 71, 1,
+		0, 0, 0, 75, 78, 1, 0, 0, 0, 76, 74, 1, 0, 0, 0, 76, 77, 1, 0, 0, 0, 77,
+		9, 1, 0, 0, 0, 78, 76, 1, 0, 0, 0, 79, 83, 5, 38, 0, 0, 80, 83, 3, 6, 3,
+		0, 81, 83, 5, 39, 0, 0, 82, 79, 1, 0, 0, 0, 82, 80, 1, 0, 0, 0, 82, 81,
+		1, 0, 0, 0, 83, 11, 1, 0, 0, 0, 84, 85, 5, 28, 0, 0, 85, 91, 5, 5, 0, 0,
+		86, 87, 5, 18, 0, 0, 87, 88, 3, 8, 4, 0, 88, 89, 3, 16, 8, 0, 89, 90, 5,
+		5, 0, 0, 90, 92, 1, 0, 0, 0, 91, 86, 1, 0, 0, 0, 92, 93, 1, 0, 0, 0, 93,
+		91, 1, 0, 0, 0, 93, 94, 1, 0, 0, 0, 94, 95, 1, 0, 0, 0, 95, 96, 5, 39,
+		0, 0, 96, 97, 3, 16, 8, 0, 97, 98, 5, 5, 0, 0, 98, 99, 5, 29, 0, 0, 99,
+		13, 1, 0, 0, 0, 100, 101, 5, 28, 0, 0, 101, 106, 5, 5, 0, 0, 102, 103,
+		3, 10, 5, 0, 103, 104, 3, 16, 8, 0, 104, 105, 5, 5, 0, 0, 105, 107, 1,
+		0, 0, 0, 106, 102, 1, 0, 0, 0, 107, 108, 1, 0, 0, 0, 108, 106, 1, 0, 0,
+		0, 108, 109, 1, 0, 0, 0, 109, 110, 1, 0, 0, 0, 110, 111, 5, 29, 0, 0, 111,
+		15, 1, 0, 0, 0, 112, 113, 5, 20, 0, 0, 113, 116, 3, 18, 9, 0, 114, 116,
+		5, 40, 0, 0, 115, 112, 1, 0, 0, 0, 115, 114, 1, 0, 0, 0, 116, 17, 1, 0,
+		0, 0, 117, 121, 3, 8, 4, 0, 118, 121, 3, 12, 6, 0, 119, 121, 3, 14, 7,
+		0, 120, 117, 1, 0, 0, 0, 120, 118, 1, 0, 0, 0, 120, 119, 1, 0, 0, 0, 121,
+		19, 1, 0, 0, 0, 122, 123, 5, 2, 0, 0, 123, 126, 3, 8, 4, 0, 124, 126, 5,
+		3, 0, 0, 125, 122, 1, 0, 0, 0, 125, 124, 1, 0, 0, 0, 126, 21, 1, 0, 0,
+		0, 127, 129, 3, 8, 4, 0, 128, 130, 3, 20, 10, 0, 129, 128, 1, 0, 0, 0,
+		129, 130, 1, 0, 0, 0, 130, 23, 1, 0, 0, 0, 131, 132, 5, 28, 0, 0, 132,
+		136, 5, 5, 0, 0, 133, 134, 3, 28, 14, 0, 134, 135, 5, 5, 0, 0, 135, 137,
+		1, 0, 0, 0, 136, 133, 1, 0, 0, 0, 137, 138, 1, 0, 0, 0, 138, 136, 1, 0,
+		0, 0, 138, 139, 1, 0, 0, 0, 139, 140, 1, 0, 0, 0, 140, 141, 5, 29, 0, 0,
+		141, 25, 1, 0, 0, 0, 142, 143, 5, 18, 0, 0, 143, 144, 3, 8, 4, 0, 144,
+		145, 5, 17, 0, 0, 145, 146, 3, 28, 14, 0, 146, 27, 1, 0, 0, 0, 147, 151,
+		3, 22, 11, 0, 148, 151, 3, 26, 13, 0, 149, 151, 3, 24, 12, 0, 150, 147,
+		1, 0, 0, 0, 150, 148, 1, 0, 0, 0, 150, 149, 1, 0, 0, 0, 151, 29, 1, 0,
+		0, 0, 152, 153, 5, 28, 0, 0, 153, 159, 5, 5, 0, 0, 154, 155, 3, 10, 5,
+		0, 155, 156, 5, 17, 0, 0, 156, 157, 3, 28, 14, 0, 157, 158, 5, 5, 0, 0,
+		158, 160, 1, 0, 0, 0, 159, 154, 1, 0, 0, 0, 160, 161, 1, 0, 0, 0, 161,
+		159, 1, 0, 0, 0, 161, 162, 1, 0, 0, 0, 162, 163, 1, 0, 0, 0, 163, 164,
+		5, 29, 0, 0, 164, 31, 1, 0, 0, 0, 165, 168, 3, 28, 14, 0, 166, 168, 3,
+		30, 15, 0, 167, 165, 1, 0, 0, 0, 167, 166, 1, 0, 0, 0, 168, 33, 1, 0, 0,
+		0, 169, 170, 5, 13, 0, 0, 170, 247, 3, 8, 4, 0, 171, 174, 5, 42, 0, 0,
+		172, 175, 3, 8, 4, 0, 173, 175, 3, 2, 1, 0, 174, 172, 1, 0, 0, 0, 174,
+		173, 1, 0, 0, 0, 175, 176, 1, 0, 0, 0, 176, 177, 5, 17, 0, 0, 177, 178,
+		3, 8, 4, 0, 178, 247, 1, 0, 0, 0, 179, 180, 5, 11, 0, 0, 180, 181, 5, 24,
+		0, 0, 181, 182, 5, 37, 0, 0, 182, 183, 5, 4, 0, 0, 183, 184, 3, 8, 4, 0,
+		184, 185, 5, 25, 0, 0, 185, 247, 1, 0, 0, 0, 186, 187, 5, 12, 0, 0, 187,
+		188, 5, 24, 0, 0, 188, 189, 3, 8, 4, 0, 189, 190, 5, 4, 0, 0, 190, 191,
+		5, 37, 0, 0, 191, 192, 5, 4, 0, 0, 192, 193, 3, 8, 4, 0, 193, 194, 5, 25,
+		0, 0, 194, 247, 1, 0, 0, 0, 195, 247, 5, 14, 0, 0, 196, 197, 5, 15, 0,
+		0, 197, 198, 3, 8, 4, 0, 198, 199, 5, 24, 0, 0, 199, 216, 5, 5, 0, 0, 200,
+		201, 5, 16, 0, 0, 201, 202, 5, 30, 0, 0, 202, 203, 3, 32, 16, 0, 203, 204,
+		5, 5, 0, 0, 204, 205, 5, 19, 0, 0, 205, 206, 5, 30, 0, 0, 206, 207, 3,
+		18, 9, 0, 207, 217, 1, 0, 0, 0, 208, 209, 5, 19, 0, 0, 209, 210, 5, 30,
+		0, 0, 210, 211, 3, 18, 9, 0, 211, 212, 5, 5, 0, 0, 212, 213, 5, 16, 0,
+		0, 213, 214, 5, 30, 0, 0, 214, 215, 3, 32, 16, 0, 215, 217, 1, 0, 0, 0,
+		216, 200, 1, 0, 0, 0, 216, 208, 1, 0, 0, 0, 217, 218, 1, 0, 0, 0, 218,
+		219, 5, 5, 0, 0, 219, 220, 5, 25, 0, 0, 220, 247, 1, 0, 0, 0, 221, 222,
+		5, 15, 0, 0, 222, 223, 3, 2, 1, 0, 223, 224, 5, 24, 0, 0, 224, 241, 5,
+		5, 0, 0, 225, 226, 5, 16, 0, 0, 226, 227, 5, 30, 0, 0, 227, 228, 3, 28,
+		14, 0, 228, 229, 5, 5, 0, 0, 229, 230, 5, 19, 0, 0, 230, 231, 5, 30, 0,
+		0, 231, 232, 3, 18, 9, 0, 232, 242, 1, 0, 0, 0, 233, 234, 5, 19, 0, 0,
+		234, 235, 5, 30, 0, 0, 235, 236, 3, 18, 9, 0, 236, 237, 5, 5, 0, 0, 237,
+		238, 5, 16, 0, 0, 238, 239, 5, 30, 0, 0, 239, 240, 3, 28, 14, 0, 240, 242,
+		1, 0, 0, 0, 241, 225, 1, 0, 0, 0, 241, 233, 1, 0, 0, 0, 242, 243, 1, 0,
+		0, 0, 243, 244, 5, 5, 0, 0, 244, 245, 5, 25, 0, 0, 245, 247, 1, 0, 0, 0,
+		246, 169, 1, 0, 0, 0, 246, 171, 1, 0, 0, 0, 246, 179, 1, 0, 0, 0, 246,
+		186, 1, 0, 0, 0, 246, 195, 1, 0, 0, 0, 246, 196, 1, 0, 0, 0, 246, 221,
+		1, 0, 0, 0, 247, 35, 1, 0, 0, 0, 248, 249, 7, 1, 0, 0, 249, 37, 1, 0, 0,
+		0, 250, 251, 5, 10, 0, 0, 251, 252, 5, 24, 0, 0, 252, 253, 3, 8, 4, 0,
+		253, 254, 5, 4, 0, 0, 254, 255, 5, 37, 0, 0, 255, 256, 5, 25, 0, 0, 256,
+		265, 1, 0, 0, 0, 257, 258, 5, 41, 0, 0, 258, 259, 5, 24, 0, 0, 259, 260,
+		3, 8, 4, 0, 260, 261, 5, 4, 0, 0, 261, 262, 3, 8, 4, 0, 262, 263, 5, 25,
+		0, 0, 263, 265, 1, 0, 0, 0, 264, 250, 1, 0, 0, 0, 264, 257, 1, 0, 0, 0,
+		265, 39, 1, 0, 0, 0, 266, 267, 3, 36, 18, 0, 267, 270, 3, 6, 3, 0, 268,
+		269, 5, 30, 0, 0, 269, 271, 3, 38, 19, 0, 270, 268, 1, 0, 0, 0, 270, 271,
+		1, 0, 0, 0, 271, 41, 1, 0, 0, 0, 272, 273, 5, 9, 0, 0, 273, 274, 5, 28,
+		0, 0, 274, 281, 5, 5, 0, 0, 275, 277, 3, 40, 20, 0, 276, 278, 5, 5, 0,
+		0, 277, 276, 1, 0, 0, 0, 278, 279, 1, 0, 0, 0, 279, 277, 1, 0, 0, 0, 279,
+		280, 1, 0, 0, 0, 280, 282, 1, 0, 0, 0, 281, 275, 1, 0, 0, 0, 282, 283,
+		1, 0, 0, 0, 283, 281, 1, 0, 0, 0, 283, 284, 1, 0, 0, 0, 284, 285, 1, 0,
+		0, 0, 285, 286, 5, 29, 0, 0, 286, 287, 5, 5, 0, 0, 287, 43, 1, 0, 0, 0,
+		288, 290, 5, 5, 0, 0, 289, 288, 1, 0, 0, 0, 290, 293, 1, 0, 0, 0, 291,
+		289, 1, 0, 0, 0, 291, 292, 1, 0, 0, 0, 292, 295, 1, 0, 0, 0, 293, 291,
+		1, 0, 0, 0, 294, 296, 3, 42, 21, 0, 295, 294, 1, 0, 0, 0, 295, 296, 1,
+		0, 0, 0, 296, 297, 1, 0, 0, 0, 297, 302, 3, 34, 17, 0, 298, 299, 5, 5,
+		0, 0, 299, 301, 3, 34, 17, 0, 300, 298, 1, 0, 0, 0, 301, 304, 1, 0, 0,
+		0, 302, 300, 1, 0, 0, 0, 302, 303, 1, 0, 0, 0, 303, 308, 1, 0, 0, 0, 304,
+		302, 1, 0, 0, 0, 305, 307, 5, 5, 0, 0, 306, 305, 1, 0, 0, 0, 307, 310,
+		1, 0, 0, 0, 308, 306, 1, 0, 0, 0, 308, 309, 1, 0, 0, 0, 309, 311, 1, 0,
+		0, 0, 310, 308, 1, 0, 0, 0, 311, 312, 5, 0, 0, 1, 312, 45, 1, 0, 0, 0,
+		26, 61, 69, 76, 82, 93, 108, 115, 120, 125, 129, 138, 150, 161, 167, 174,
+		216, 241, 246, 264, 270, 279, 283, 291, 295, 302, 308,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -268,11 +273,12 @@ const (
 	NumScriptParserREMAINING         = 39
 	NumScriptParserKEPT              = 40
 	NumScriptParserBALANCE           = 41
-	NumScriptParserNUMBER            = 42
-	NumScriptParserPERCENT           = 43
-	NumScriptParserVARIABLE_NAME     = 44
-	NumScriptParserACCOUNT           = 45
-	NumScriptParserASSET             = 46
+	NumScriptParserSAVE              = 42
+	NumScriptParserNUMBER            = 43
+	NumScriptParserPERCENT           = 44
+	NumScriptParserVARIABLE_NAME     = 45
+	NumScriptParserACCOUNT           = 46
+	NumScriptParserASSET             = 47
 )
 
 // NumScriptParser rules.
@@ -4378,6 +4384,116 @@ func (s *SendAllContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+type SaveFromAccountContext struct {
+	*StatementContext
+	mon    IExpressionContext
+	monAll IMonetaryAllContext
+	acc    IExpressionContext
+}
+
+func NewSaveFromAccountContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *SaveFromAccountContext {
+	var p = new(SaveFromAccountContext)
+
+	p.StatementContext = NewEmptyStatementContext()
+	p.parser = parser
+	p.CopyFrom(ctx.(*StatementContext))
+
+	return p
+}
+
+func (s *SaveFromAccountContext) GetMon() IExpressionContext { return s.mon }
+
+func (s *SaveFromAccountContext) GetMonAll() IMonetaryAllContext { return s.monAll }
+
+func (s *SaveFromAccountContext) GetAcc() IExpressionContext { return s.acc }
+
+func (s *SaveFromAccountContext) SetMon(v IExpressionContext) { s.mon = v }
+
+func (s *SaveFromAccountContext) SetMonAll(v IMonetaryAllContext) { s.monAll = v }
+
+func (s *SaveFromAccountContext) SetAcc(v IExpressionContext) { s.acc = v }
+
+func (s *SaveFromAccountContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *SaveFromAccountContext) SAVE() antlr.TerminalNode {
+	return s.GetToken(NumScriptParserSAVE, 0)
+}
+
+func (s *SaveFromAccountContext) FROM() antlr.TerminalNode {
+	return s.GetToken(NumScriptParserFROM, 0)
+}
+
+func (s *SaveFromAccountContext) AllExpression() []IExpressionContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IExpressionContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IExpressionContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IExpressionContext); ok {
+			tst[i] = t.(IExpressionContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *SaveFromAccountContext) Expression(i int) IExpressionContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IExpressionContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IExpressionContext)
+}
+
+func (s *SaveFromAccountContext) MonetaryAll() IMonetaryAllContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMonetaryAllContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMonetaryAllContext)
+}
+
+func (s *SaveFromAccountContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(NumScriptListener); ok {
+		listenerT.EnterSaveFromAccount(s)
+	}
+}
+
+func (s *SaveFromAccountContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(NumScriptListener); ok {
+		listenerT.ExitSaveFromAccount(s)
+	}
+}
+
 type SetTxMetaContext struct {
 	*StatementContext
 	key   antlr.Token
@@ -4738,9 +4854,9 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 		}
 	}()
 
-	p.SetState(238)
+	p.SetState(246)
 	p.GetErrorHandler().Sync(p)
-	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 16, p.GetParserRuleContext()) {
+	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 17, p.GetParserRuleContext()) {
 	case 1:
 		localctx = NewPrintContext(p, localctx)
 		p.EnterOuterAlt(localctx, 1)
@@ -4757,158 +4873,163 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 		}
 
 	case 2:
-		localctx = NewSetTxMetaContext(p, localctx)
+		localctx = NewSaveFromAccountContext(p, localctx)
 		p.EnterOuterAlt(localctx, 2)
 		{
 			p.SetState(171)
+			p.Match(NumScriptParserSAVE)
+		}
+		p.SetState(174)
+		p.GetErrorHandler().Sync(p)
+		switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 14, p.GetParserRuleContext()) {
+		case 1:
+			{
+				p.SetState(172)
+
+				var _x = p.expression(0)
+
+				localctx.(*SaveFromAccountContext).mon = _x
+			}
+
+		case 2:
+			{
+				p.SetState(173)
+
+				var _x = p.MonetaryAll()
+
+				localctx.(*SaveFromAccountContext).monAll = _x
+			}
+
+		}
+		{
+			p.SetState(176)
+			p.Match(NumScriptParserFROM)
+		}
+		{
+			p.SetState(177)
+
+			var _x = p.expression(0)
+
+			localctx.(*SaveFromAccountContext).acc = _x
+		}
+
+	case 3:
+		localctx = NewSetTxMetaContext(p, localctx)
+		p.EnterOuterAlt(localctx, 3)
+		{
+			p.SetState(179)
 			p.Match(NumScriptParserSET_TX_META)
 		}
 		{
-			p.SetState(172)
+			p.SetState(180)
 			p.Match(NumScriptParserLPAREN)
 		}
 		{
-			p.SetState(173)
+			p.SetState(181)
 
 			var _m = p.Match(NumScriptParserSTRING)
 
 			localctx.(*SetTxMetaContext).key = _m
 		}
 		{
-			p.SetState(174)
+			p.SetState(182)
 			p.Match(NumScriptParserT__3)
 		}
 		{
-			p.SetState(175)
+			p.SetState(183)
 
 			var _x = p.expression(0)
 
 			localctx.(*SetTxMetaContext).value = _x
 		}
 		{
-			p.SetState(176)
+			p.SetState(184)
 			p.Match(NumScriptParserRPAREN)
 		}
 
-	case 3:
+	case 4:
 		localctx = NewSetAccountMetaContext(p, localctx)
-		p.EnterOuterAlt(localctx, 3)
+		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(178)
+			p.SetState(186)
 			p.Match(NumScriptParserSET_ACCOUNT_META)
 		}
 		{
-			p.SetState(179)
+			p.SetState(187)
 			p.Match(NumScriptParserLPAREN)
 		}
 		{
-			p.SetState(180)
+			p.SetState(188)
 
 			var _x = p.expression(0)
 
 			localctx.(*SetAccountMetaContext).acc = _x
 		}
 		{
-			p.SetState(181)
+			p.SetState(189)
 			p.Match(NumScriptParserT__3)
 		}
 		{
-			p.SetState(182)
+			p.SetState(190)
 
 			var _m = p.Match(NumScriptParserSTRING)
 
 			localctx.(*SetAccountMetaContext).key = _m
 		}
 		{
-			p.SetState(183)
+			p.SetState(191)
 			p.Match(NumScriptParserT__3)
 		}
 		{
-			p.SetState(184)
+			p.SetState(192)
 
 			var _x = p.expression(0)
 
 			localctx.(*SetAccountMetaContext).value = _x
 		}
 		{
-			p.SetState(185)
+			p.SetState(193)
 			p.Match(NumScriptParserRPAREN)
 		}
 
-	case 4:
+	case 5:
 		localctx = NewFailContext(p, localctx)
-		p.EnterOuterAlt(localctx, 4)
+		p.EnterOuterAlt(localctx, 5)
 		{
-			p.SetState(187)
+			p.SetState(195)
 			p.Match(NumScriptParserFAIL)
 		}
 
-	case 5:
+	case 6:
 		localctx = NewSendContext(p, localctx)
-		p.EnterOuterAlt(localctx, 5)
+		p.EnterOuterAlt(localctx, 6)
 		{
-			p.SetState(188)
+			p.SetState(196)
 			p.Match(NumScriptParserSEND)
 		}
 		{
-			p.SetState(189)
+			p.SetState(197)
 
 			var _x = p.expression(0)
 
 			localctx.(*SendContext).mon = _x
 		}
 		{
-			p.SetState(190)
+			p.SetState(198)
 			p.Match(NumScriptParserLPAREN)
 		}
 		{
-			p.SetState(191)
+			p.SetState(199)
 			p.Match(NumScriptParserNEWLINE)
 		}
-		p.SetState(208)
+		p.SetState(216)
 		p.GetErrorHandler().Sync(p)
 
 		switch p.GetTokenStream().LA(1) {
 		case NumScriptParserSOURCE:
 			{
-				p.SetState(192)
-				p.Match(NumScriptParserSOURCE)
-			}
-			{
-				p.SetState(193)
-				p.Match(NumScriptParserEQ)
-			}
-			{
-				p.SetState(194)
-
-				var _x = p.ValueAwareSource()
-
-				localctx.(*SendContext).src = _x
-			}
-			{
-				p.SetState(195)
-				p.Match(NumScriptParserNEWLINE)
-			}
-			{
-				p.SetState(196)
-				p.Match(NumScriptParserDESTINATION)
-			}
-			{
-				p.SetState(197)
-				p.Match(NumScriptParserEQ)
-			}
-			{
-				p.SetState(198)
-
-				var _x = p.Destination()
-
-				localctx.(*SendContext).dest = _x
-			}
-
-		case NumScriptParserDESTINATION:
-			{
 				p.SetState(200)
-				p.Match(NumScriptParserDESTINATION)
+				p.Match(NumScriptParserSOURCE)
 			}
 			{
 				p.SetState(201)
@@ -4917,9 +5038,9 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			{
 				p.SetState(202)
 
-				var _x = p.Destination()
+				var _x = p.ValueAwareSource()
 
-				localctx.(*SendContext).dest = _x
+				localctx.(*SendContext).src = _x
 			}
 			{
 				p.SetState(203)
@@ -4927,7 +5048,7 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			}
 			{
 				p.SetState(204)
-				p.Match(NumScriptParserSOURCE)
+				p.Match(NumScriptParserDESTINATION)
 			}
 			{
 				p.SetState(205)
@@ -4935,6 +5056,42 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			}
 			{
 				p.SetState(206)
+
+				var _x = p.Destination()
+
+				localctx.(*SendContext).dest = _x
+			}
+
+		case NumScriptParserDESTINATION:
+			{
+				p.SetState(208)
+				p.Match(NumScriptParserDESTINATION)
+			}
+			{
+				p.SetState(209)
+				p.Match(NumScriptParserEQ)
+			}
+			{
+				p.SetState(210)
+
+				var _x = p.Destination()
+
+				localctx.(*SendContext).dest = _x
+			}
+			{
+				p.SetState(211)
+				p.Match(NumScriptParserNEWLINE)
+			}
+			{
+				p.SetState(212)
+				p.Match(NumScriptParserSOURCE)
+			}
+			{
+				p.SetState(213)
+				p.Match(NumScriptParserEQ)
+			}
+			{
+				p.SetState(214)
 
 				var _x = p.ValueAwareSource()
 
@@ -4945,80 +5102,44 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 		}
 		{
-			p.SetState(210)
+			p.SetState(218)
 			p.Match(NumScriptParserNEWLINE)
 		}
 		{
-			p.SetState(211)
+			p.SetState(219)
 			p.Match(NumScriptParserRPAREN)
 		}
 
-	case 6:
+	case 7:
 		localctx = NewSendAllContext(p, localctx)
-		p.EnterOuterAlt(localctx, 6)
+		p.EnterOuterAlt(localctx, 7)
 		{
-			p.SetState(213)
+			p.SetState(221)
 			p.Match(NumScriptParserSEND)
 		}
 		{
-			p.SetState(214)
+			p.SetState(222)
 
 			var _x = p.MonetaryAll()
 
 			localctx.(*SendAllContext).monAll = _x
 		}
 		{
-			p.SetState(215)
+			p.SetState(223)
 			p.Match(NumScriptParserLPAREN)
 		}
 		{
-			p.SetState(216)
+			p.SetState(224)
 			p.Match(NumScriptParserNEWLINE)
 		}
-		p.SetState(233)
+		p.SetState(241)
 		p.GetErrorHandler().Sync(p)
 
 		switch p.GetTokenStream().LA(1) {
 		case NumScriptParserSOURCE:
 			{
-				p.SetState(217)
-				p.Match(NumScriptParserSOURCE)
-			}
-			{
-				p.SetState(218)
-				p.Match(NumScriptParserEQ)
-			}
-			{
-				p.SetState(219)
-
-				var _x = p.Source()
-
-				localctx.(*SendAllContext).src = _x
-			}
-			{
-				p.SetState(220)
-				p.Match(NumScriptParserNEWLINE)
-			}
-			{
-				p.SetState(221)
-				p.Match(NumScriptParserDESTINATION)
-			}
-			{
-				p.SetState(222)
-				p.Match(NumScriptParserEQ)
-			}
-			{
-				p.SetState(223)
-
-				var _x = p.Destination()
-
-				localctx.(*SendAllContext).dest = _x
-			}
-
-		case NumScriptParserDESTINATION:
-			{
 				p.SetState(225)
-				p.Match(NumScriptParserDESTINATION)
+				p.Match(NumScriptParserSOURCE)
 			}
 			{
 				p.SetState(226)
@@ -5027,9 +5148,9 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			{
 				p.SetState(227)
 
-				var _x = p.Destination()
+				var _x = p.Source()
 
-				localctx.(*SendAllContext).dest = _x
+				localctx.(*SendAllContext).src = _x
 			}
 			{
 				p.SetState(228)
@@ -5037,7 +5158,7 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			}
 			{
 				p.SetState(229)
-				p.Match(NumScriptParserSOURCE)
+				p.Match(NumScriptParserDESTINATION)
 			}
 			{
 				p.SetState(230)
@@ -5045,6 +5166,42 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			}
 			{
 				p.SetState(231)
+
+				var _x = p.Destination()
+
+				localctx.(*SendAllContext).dest = _x
+			}
+
+		case NumScriptParserDESTINATION:
+			{
+				p.SetState(233)
+				p.Match(NumScriptParserDESTINATION)
+			}
+			{
+				p.SetState(234)
+				p.Match(NumScriptParserEQ)
+			}
+			{
+				p.SetState(235)
+
+				var _x = p.Destination()
+
+				localctx.(*SendAllContext).dest = _x
+			}
+			{
+				p.SetState(236)
+				p.Match(NumScriptParserNEWLINE)
+			}
+			{
+				p.SetState(237)
+				p.Match(NumScriptParserSOURCE)
+			}
+			{
+				p.SetState(238)
+				p.Match(NumScriptParserEQ)
+			}
+			{
+				p.SetState(239)
 
 				var _x = p.Source()
 
@@ -5055,11 +5212,11 @@ func (p *NumScriptParser) Statement() (localctx IStatementContext) {
 			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 		}
 		{
-			p.SetState(235)
+			p.SetState(243)
 			p.Match(NumScriptParserNEWLINE)
 		}
 		{
-			p.SetState(236)
+			p.SetState(244)
 			p.Match(NumScriptParserRPAREN)
 		}
 
@@ -5176,7 +5333,7 @@ func (p *NumScriptParser) Type_() (localctx IType_Context) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(240)
+		p.SetState(248)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(((_la-31)&-(0x1f+1)) == 0 && ((1<<uint((_la-31)))&((1<<(NumScriptParserTY_ACCOUNT-31))|(1<<(NumScriptParserTY_ASSET-31))|(1<<(NumScriptParserTY_NUMBER-31))|(1<<(NumScriptParserTY_MONETARY-31))|(1<<(NumScriptParserTY_PORTION-31))|(1<<(NumScriptParserTY_STRING-31)))) != 0) {
@@ -5428,7 +5585,7 @@ func (p *NumScriptParser) Origin() (localctx IOriginContext) {
 		}
 	}()
 
-	p.SetState(256)
+	p.SetState(264)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
@@ -5436,33 +5593,33 @@ func (p *NumScriptParser) Origin() (localctx IOriginContext) {
 		localctx = NewOriginAccountMetaContext(p, localctx)
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(242)
+			p.SetState(250)
 			p.Match(NumScriptParserMETA)
 		}
 		{
-			p.SetState(243)
+			p.SetState(251)
 			p.Match(NumScriptParserLPAREN)
 		}
 		{
-			p.SetState(244)
+			p.SetState(252)
 
 			var _x = p.expression(0)
 
 			localctx.(*OriginAccountMetaContext).account = _x
 		}
 		{
-			p.SetState(245)
+			p.SetState(253)
 			p.Match(NumScriptParserT__3)
 		}
 		{
-			p.SetState(246)
+			p.SetState(254)
 
 			var _m = p.Match(NumScriptParserSTRING)
 
 			localctx.(*OriginAccountMetaContext).key = _m
 		}
 		{
-			p.SetState(247)
+			p.SetState(255)
 			p.Match(NumScriptParserRPAREN)
 		}
 
@@ -5470,33 +5627,33 @@ func (p *NumScriptParser) Origin() (localctx IOriginContext) {
 		localctx = NewOriginAccountBalanceContext(p, localctx)
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(249)
+			p.SetState(257)
 			p.Match(NumScriptParserBALANCE)
 		}
 		{
-			p.SetState(250)
+			p.SetState(258)
 			p.Match(NumScriptParserLPAREN)
 		}
 		{
-			p.SetState(251)
+			p.SetState(259)
 
 			var _x = p.expression(0)
 
 			localctx.(*OriginAccountBalanceContext).account = _x
 		}
 		{
-			p.SetState(252)
+			p.SetState(260)
 			p.Match(NumScriptParserT__3)
 		}
 		{
-			p.SetState(253)
+			p.SetState(261)
 
 			var _x = p.expression(0)
 
 			localctx.(*OriginAccountBalanceContext).asset = _x
 		}
 		{
-			p.SetState(254)
+			p.SetState(262)
 			p.Match(NumScriptParserRPAREN)
 		}
 
@@ -5676,30 +5833,30 @@ func (p *NumScriptParser) VarDecl() (localctx IVarDeclContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(258)
+		p.SetState(266)
 
 		var _x = p.Type_()
 
 		localctx.(*VarDeclContext).ty = _x
 	}
 	{
-		p.SetState(259)
+		p.SetState(267)
 
 		var _x = p.Variable()
 
 		localctx.(*VarDeclContext).name = _x
 	}
-	p.SetState(262)
+	p.SetState(270)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == NumScriptParserEQ {
 		{
-			p.SetState(260)
+			p.SetState(268)
 			p.Match(NumScriptParserEQ)
 		}
 		{
-			p.SetState(261)
+			p.SetState(269)
 
 			var _x = p.Origin()
 
@@ -5878,55 +6035,55 @@ func (p *NumScriptParser) VarListDecl() (localctx IVarListDeclContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(264)
+		p.SetState(272)
 		p.Match(NumScriptParserVARS)
 	}
 	{
-		p.SetState(265)
+		p.SetState(273)
 		p.Match(NumScriptParserLBRACE)
 	}
 	{
-		p.SetState(266)
+		p.SetState(274)
 		p.Match(NumScriptParserNEWLINE)
 	}
-	p.SetState(273)
+	p.SetState(281)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for ok := true; ok; ok = (((_la-31)&-(0x1f+1)) == 0 && ((1<<uint((_la-31)))&((1<<(NumScriptParserTY_ACCOUNT-31))|(1<<(NumScriptParserTY_ASSET-31))|(1<<(NumScriptParserTY_NUMBER-31))|(1<<(NumScriptParserTY_MONETARY-31))|(1<<(NumScriptParserTY_PORTION-31))|(1<<(NumScriptParserTY_STRING-31)))) != 0) {
 		{
-			p.SetState(267)
+			p.SetState(275)
 
 			var _x = p.VarDecl()
 
 			localctx.(*VarListDeclContext)._varDecl = _x
 		}
 		localctx.(*VarListDeclContext).v = append(localctx.(*VarListDeclContext).v, localctx.(*VarListDeclContext)._varDecl)
-		p.SetState(269)
+		p.SetState(277)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		for ok := true; ok; ok = _la == NumScriptParserNEWLINE {
 			{
-				p.SetState(268)
+				p.SetState(276)
 				p.Match(NumScriptParserNEWLINE)
 			}
 
-			p.SetState(271)
+			p.SetState(279)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 		}
 
-		p.SetState(275)
+		p.SetState(283)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(277)
+		p.SetState(285)
 		p.Match(NumScriptParserRBRACE)
 	}
 	{
-		p.SetState(278)
+		p.SetState(286)
 		p.Match(NumScriptParserNEWLINE)
 	}
 
@@ -6120,27 +6277,27 @@ func (p *NumScriptParser) Script() (localctx IScriptContext) {
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(283)
+	p.SetState(291)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == NumScriptParserNEWLINE {
 		{
-			p.SetState(280)
+			p.SetState(288)
 			p.Match(NumScriptParserNEWLINE)
 		}
 
-		p.SetState(285)
+		p.SetState(293)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
-	p.SetState(287)
+	p.SetState(295)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == NumScriptParserVARS {
 		{
-			p.SetState(286)
+			p.SetState(294)
 
 			var _x = p.VarListDecl()
 
@@ -6149,25 +6306,25 @@ func (p *NumScriptParser) Script() (localctx IScriptContext) {
 
 	}
 	{
-		p.SetState(289)
+		p.SetState(297)
 
 		var _x = p.Statement()
 
 		localctx.(*ScriptContext)._statement = _x
 	}
 	localctx.(*ScriptContext).stmts = append(localctx.(*ScriptContext).stmts, localctx.(*ScriptContext)._statement)
-	p.SetState(294)
+	p.SetState(302)
 	p.GetErrorHandler().Sync(p)
-	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 23, p.GetParserRuleContext())
+	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 24, p.GetParserRuleContext())
 
 	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		if _alt == 1 {
 			{
-				p.SetState(290)
+				p.SetState(298)
 				p.Match(NumScriptParserNEWLINE)
 			}
 			{
-				p.SetState(291)
+				p.SetState(299)
 
 				var _x = p.Statement()
 
@@ -6176,26 +6333,26 @@ func (p *NumScriptParser) Script() (localctx IScriptContext) {
 			localctx.(*ScriptContext).stmts = append(localctx.(*ScriptContext).stmts, localctx.(*ScriptContext)._statement)
 
 		}
-		p.SetState(296)
+		p.SetState(304)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 23, p.GetParserRuleContext())
+		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 24, p.GetParserRuleContext())
 	}
-	p.SetState(300)
+	p.SetState(308)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == NumScriptParserNEWLINE {
 		{
-			p.SetState(297)
+			p.SetState(305)
 			p.Match(NumScriptParserNEWLINE)
 		}
 
-		p.SetState(302)
+		p.SetState(310)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(303)
+		p.SetState(311)
 		p.Match(NumScriptParserEOF)
 	}
 

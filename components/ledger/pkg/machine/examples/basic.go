@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/numary/ledger/pkg/core"
-	"github.com/numary/ledger/pkg/machine/script/compiler"
-	"github.com/numary/ledger/pkg/machine/vm"
+	"github.com/formancehq/ledger/pkg/machine/internal"
+	"github.com/formancehq/ledger/pkg/machine/script/compiler"
+	"github.com/formancehq/ledger/pkg/machine/vm"
 )
 
 func main() {
@@ -34,21 +34,21 @@ func main() {
 
 	ledger := vm.MockupLedger(map[string]vm.MockupAccount{
 		"alice": {
-			Balances: map[string]core.MonetaryInt{
-				"COIN": *core.NewMonetaryInt(10),
+			Balances: map[string]internal.MonetaryInt{
+				"COIN": *internal.NewMonetaryInt(10),
 			},
-			Meta: map[string]core.Value{},
+			Meta: map[string]internal.Value{},
 		},
 		"bob": {
-			Balances: map[string]core.MonetaryInt{
-				"COIN": *core.NewMonetaryInt(100),
+			Balances: map[string]internal.MonetaryInt{
+				"COIN": *internal.NewMonetaryInt(100),
 			},
-			Meta: map[string]core.Value{},
+			Meta: map[string]internal.Value{},
 		},
 	})
 
-	m := vm.NewMachine(ledger, map[string]core.Value{
-		"dest": core.AccountAddress("charlie"),
+	m := vm.NewMachine(ledger, map[string]internal.Value{
+		"dest": internal.AccountAddress("charlie"),
 	})
 
 	err = m.Execute(*program)

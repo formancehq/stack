@@ -12,6 +12,7 @@ func NewCommand() *cobra.Command {
 		fctl.WithChildCommands(
 			NewSendCommand(),
 			NewListCommand(),
+			NewDeleteCommand(),
 		),
 	)
 }

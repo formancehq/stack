@@ -25,91 +25,20 @@ jobs:
         id: extract2
         run: echo "version=$(node .github/actions/extract-in-tag/version.js ${{ github.ref_name }})" >> $GITHUB_OUTPUT
 
-  Lint:
-    runs-on: ubuntu-latest
+  Release:
+    runs-on: 'ubuntu-latest'
     needs:
       - Extract
     steps:
-      - uses: actions/checkout@v3
+      - uses: 'actions/checkout@v3'
         with:
           fetch-depth: 0
-      - name: Install Task
-        uses: arduino/setup-task@v1
+      - name: Setup Env
+        uses: ./.github/actions/env
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
-          cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
-          cache: true
-      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
-      - run: task ${{ needs.Extract.outputs.service }}:lint
-
-  Tests:
-    runs-on: ubuntu-latest
-    needs:
-      - Extract
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Install Task
-        uses: arduino/setup-task@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
-          cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
-          cache: true
-      - run: task ${{ needs.Extract.outputs.service }}:tests
-      - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          directory: 'components/${{ needs.Extract.outputs.service }}'
-          name: '${{ needs.Extract.outputs.service }} ${{ needs.Extract.outputs.version }}'
-          fail_ci_if_error: false # optional (default = false)
-          verbose: true # optional (default = false)
-
-  GoReleaser:
-    name: GoReleaser
-    runs-on:
-      group: enterprise/runners
-      labels: formance-ubuntu-latest-8-cores
-    needs:
-      - Extract
-      - Tests
-      - Lint
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
-          cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
-          cache: true
-      - run: go mod vendor
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: "NumaryBot"
-          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v4
-        with:
-          distribution: goreleaser-pro
-          version: latest
-          args: release --clean -f components/${{ needs.Extract.outputs.service }}/.goreleaser.yml
+          os: ${{ runner.os }}
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - run: 'devbox run -- moon run ${{ needs.Extract.outputs.service }}:release'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}

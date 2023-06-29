@@ -2,52 +2,19 @@ package cmd
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/formancehq/orchestration/internal/temporal"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
-	"github.com/riandyrn/otelchi"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 	"go.uber.org/fx"
 )
-
-func httpServerModule() fx.Option {
-	return fx.Options(
-		fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux, healthController *health.HealthController) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					rootRouter := chi.NewRouter()
-					rootRouter.Use(func(handler http.Handler) http.Handler {
-						return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Header().Set("Content-Type", "application/json")
-							handler.ServeHTTP(w, r)
-						})
-					})
-					rootRouter.Get("/_healthcheck", healthController.Check)
-					rootRouter.Group(func(r chi.Router) {
-						r.Use(otelchi.Middleware(ServiceName))
-						r.Mount("/", router)
-					})
-					go func() {
-						err := http.ListenAndServe(":8080", rootRouter)
-						if err != nil {
-							panic(err)
-						}
-					}()
-					return nil
-				},
-			})
-		}),
-	)
-}
 
 func healthCheckModule() fx.Option {
 	return fx.Options(
@@ -60,41 +27,43 @@ func healthCheckModule() fx.Option {
 	)
 }
 
-var serveCmd = &cobra.Command{
-	Use: "serve",
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		return bindFlagsToViper(cmd)
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
+func newServeCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "serve",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return bindFlagsToViper(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
 
-		options := []fx.Option{
-			healthCheckModule(),
-			httpServerModule(),
-			// This will set up the telemetry stack
-			// You have to add a middleware on your router to traces http requests
-			otlptraces.CLITracesModule(viper.GetViper()),
-			api.NewModule(),
-			temporal.NewClientModule(
-				viper.GetString(temporalAddressFlag),
-				viper.GetString(temporalNamespaceFlag),
-				viper.GetString(temporalSSLClientCertFlag),
-				viper.GetString(temporalSSLClientKeyFlag),
-			),
-			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag)),
-			workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
-			fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
-				lifecycle.Append(fx.Hook{
-					OnStart: func(ctx context.Context) error {
-						return storage.Migrate(db, viper.GetBool(service.DebugFlag))
-					},
-				})
-			}),
-		}
+			options := []fx.Option{
+				healthCheckModule(),
+				fx.Provide(func() api.ServiceInfo {
+					return api.ServiceInfo{
+						Version: Version,
+					}
+				}),
+				api.NewModule(),
+				workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
+				fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
+					lifecycle.Append(fx.Hook{
+						OnStart: func(ctx context.Context) error {
+							return storage.Migrate(ctx, db)
+						},
+					})
+				}),
+				fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
+					lc.Append(httpserver.NewHook(viper.GetString(listenFlag), router))
+				}),
+				commonOptions(cmd.OutOrStdout()),
+			}
+			if viper.GetBool(workerFlag) {
+				options = append(options, workerOptions())
+			}
 
-		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(serveCmd)
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		},
+	}
+	cmd.Flags().Bool(workerFlag, false, "Enable worker mode")
+	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+	return cmd
 }

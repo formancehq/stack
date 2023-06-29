@@ -50,6 +50,7 @@ type Response map[string][]interface{}
 type DefaultEngine struct {
 	openSearchClient *opensearch.Client
 	indices          []string
+	stack            string
 }
 
 func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{}) (*es.Response, error) {
@@ -64,6 +65,15 @@ func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{})
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 		return err
+	}
+
+	m["query"] = map[string]any{
+		"bool": map[string]any{
+			"must": []any{
+				map[string]any{"match": map[string]any{"stack": e.stack}},
+				m["query"],
+			},
+		},
 	}
 
 	data, err := json.Marshal(m)
@@ -114,10 +124,11 @@ func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{})
 	return res, nil
 }
 
-func NewDefaultEngine(openSearchClient *opensearch.Client, opts ...DefaultEngineOption) *DefaultEngine {
+func NewDefaultEngine(openSearchClient *opensearch.Client, stack string, opts ...DefaultEngineOption) *DefaultEngine {
 
 	engine := &DefaultEngine{
 		openSearchClient: openSearchClient,
+		stack:            stack,
 	}
 	opts = append(DefaultEngineOptions, opts...)
 	for _, opt := range opts {

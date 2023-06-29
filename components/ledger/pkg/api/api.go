@@ -1,49 +1,41 @@
 package api
 
 import (
+	"context"
 	_ "embed"
-	"net/http"
 
+	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/api/routes"
+	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/gin-gonic/gin"
-	"github.com/numary/ledger/pkg/api/controllers"
-	"github.com/numary/ledger/pkg/api/middlewares"
-	"github.com/numary/ledger/pkg/api/routes"
+	"go.opentelemetry.io/otel/metric"
 	"go.uber.org/fx"
 )
 
-type API struct {
-	handler *gin.Engine
-}
-
-func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	a.handler.ServeHTTP(w, r)
-}
-
-func NewAPI(routes *routes.Routes) *API {
-	gin.SetMode(gin.ReleaseMode)
-	h := &API{
-		handler: routes.Engine(),
-	}
-	return h
-}
-
 type Config struct {
-	StorageDriver string
-	Version       string
-	UseScopes     bool
+	Version string
 }
 
 func Module(cfg Config) fx.Option {
 	return fx.Options(
-		controllers.ProvideVersion(func() string {
-			return cfg.Version
+		fx.Provide(routes.NewRouter),
+		fx.Provide(func(storageDriver *storage.Driver, resolver *ledger.Resolver) controllers.Backend {
+			return controllers.NewDefaultBackend(storageDriver, cfg.Version, resolver)
 		}),
-		middlewares.Module,
-		routes.Module,
-		controllers.Module,
-		fx.Provide(NewAPI),
-		fx.Supply(routes.UseScopes(cfg.UseScopes)),
+		//TODO(gfyrag): Move in pkg/ledger package
+		fx.Invoke(func(lc fx.Lifecycle, backend controllers.Backend) {
+			lc.Append(fx.Hook{
+				OnStop: func(ctx context.Context) error {
+					return backend.CloseLedgers(ctx)
+				},
+			})
+		}),
+		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
+		fx.Decorate(fx.Annotate(func(meterProvider metric.MeterProvider) (metrics.GlobalMetricsRegistry, error) {
+			return metrics.RegisterGlobalMetricsRegistry(meterProvider)
+		}, fx.As(new(metrics.GlobalMetricsRegistry)))),
 		health.Module(),
 	)
 }

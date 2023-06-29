@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package formance.stargate.api;
+
+option go_package = "github.com/formancehq/stack/components/stargate/internal/api";
+
+message Values { repeated string values = 1; }
+
+message StargateServerMessage {
+  message APICall {
+    string method = 1;
+    string path = 2;
+    map<string, Values> query = 3;
+    bytes body = 4;
+    map<string, Values> headers = 5;
+    map<string, string> otlpContext = 6;
+  }
+
+  message Ping {}
+
+  string correlation_id = 1;
+
+  oneof event {
+    APICall api_call = 101;
+    Ping ping = 102;
+  }
+}
+
+message StargateClientMessage {
+  message APICallResponse {
+    int32 status_code = 1;
+    bytes body = 2;
+    map<string, Values> headers = 3;
+  }
+
+  message Pong {}
+
+  string correlation_id = 1;
+
+  oneof event {
+    APICallResponse api_call_response = 101;
+    Pong pong = 102;
+  }
+}
+
+service StargateService {
+  rpc Stargate(stream StargateClientMessage)
+      returns (stream StargateServerMessage);
+}

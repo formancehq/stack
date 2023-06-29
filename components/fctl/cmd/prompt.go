@@ -173,7 +173,7 @@ func (p *prompt) refreshUserEmail(cmd *cobra.Command, cfg *fctl.Config) error {
 		p.userEmail = ""
 		return nil
 	}
-	p.userEmail = userInfo.GetEmail()
+	p.userEmail = userInfo.Email
 	return nil
 }
 

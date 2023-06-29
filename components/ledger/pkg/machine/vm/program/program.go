@@ -1,10 +1,9 @@
 package program
 
 import (
-	"encoding/json"
 	"fmt"
 
-	"github.com/numary/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/machine/internal"
 )
 
 const (
@@ -17,7 +16,7 @@ type Expr interface {
 }
 
 type ExprLiteral struct {
-	Value core.Value
+	Value internal.Value
 }
 
 func (e ExprLiteral) isExpr() {}
@@ -157,6 +156,16 @@ type StatementPrint struct{ Expr Expr }
 
 func (s StatementPrint) isStatement() {}
 
+type StatementSave struct {
+	Amount  Expr
+	Account Expr
+}
+
+type StatementSaveAll struct {
+	Amount  Expr
+	Account Expr
+}
+
 type StatementAllocate struct {
 	Funding     Expr
 	Destination Destination
@@ -205,7 +214,7 @@ type VarOriginBalance struct {
 func (v VarOriginBalance) isVarOrigin() {}
 
 type VarDecl struct {
-	Typ    core.Type
+	Typ    internal.Type
 	Name   string
 	Origin VarOrigin
 }
@@ -215,35 +224,35 @@ type Program struct {
 	Statements []Statement
 }
 
-// func (p *Program) ParseVariables(vars map[string]core.Value) (map[string]core.Value, error) {
-// 	variables := make(map[string]core.Value)
+// func (p *Program) ParseVariables(vars map[string]internal.Value) (map[string]internal.Value, error) {
+// 	variables := make(map[string]internal.Value)
 // 	for _, res := range p.Resources {
 // 		if variable, ok := res.(Variable); ok {
 // 			if val, ok := vars[variable.Name]; ok && val.GetType() == variable.Typ {
 // 				variables[variable.Name] = val
 // 				switch val.GetType() {
-// 				case core.TypeAccount:
-// 					if err := core.ParseAccountAddress(val.(core.AccountAddress)); err != nil {
+// 				case internal.TypeAccount:
+// 					if err := internal.ParseAccountAddress(val.(internal.AccountAddress)); err != nil {
 // 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-// 							variable.Name, string(val.(core.AccountAddress)))
+// 							variable.Name, string(val.(internal.AccountAddress)))
 // 					}
-// 				case core.TypeAsset:
-// 					if err := core.ParseAsset(val.(core.Asset)); err != nil {
+// 				case internal.TypeAsset:
+// 					if err := internal.ParseAsset(val.(internal.Asset)); err != nil {
 // 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-// 							variable.Name, string(val.(core.Asset)))
+// 							variable.Name, string(val.(internal.Asset)))
 // 					}
-// 				case core.TypeMonetary:
-// 					if err := core.ParseMonetary(val.(core.Monetary)); err != nil {
+// 				case internal.TypeMonetary:
+// 					if err := internal.ParseMonetary(val.(internal.Monetary)); err != nil {
 // 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-// 							variable.Name, val.(core.Monetary).String())
+// 							variable.Name, val.(internal.Monetary).String())
 // 					}
-// 				case core.TypePortion:
-// 					if err := core.ValidatePortionSpecific(val.(core.Portion)); err != nil {
+// 				case internal.TypePortion:
+// 					if err := internal.ValidatePortionSpecific(val.(internal.Portion)); err != nil {
 // 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-// 							variable.Name, val.(core.Portion).String())
+// 							variable.Name, val.(internal.Portion).String())
 // 					}
-// 				case core.TypeString:
-// 				case core.TypeNumber:
+// 				case internal.TypeString:
+// 				case internal.TypeNumber:
 // 				default:
 // 					return nil, fmt.Errorf("unsupported type for variable $%s: %s",
 // 						variable.Name, val.GetType())
@@ -263,8 +272,8 @@ type Program struct {
 // 	return variables, nil
 // }
 
-func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[string]core.Value, error) {
-	variables := make(map[string]core.Value)
+func (p *Program) ParseVariablesJSON(vars map[string]string) (map[string]internal.Value, error) {
+	variables := make(map[string]internal.Value)
 	for _, var_decl := range p.VarsDecl {
 		if var_decl.Origin != nil {
 			continue
@@ -273,13 +282,13 @@ func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[strin
 		if !ok {
 			return nil, fmt.Errorf("missing variable $%s", var_decl.Name)
 		}
-		val, err := core.NewValueFromJSON(var_decl.Typ, data)
+		val, err := internal.NewValueFromString(var_decl.Typ, data)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"invalid JSON value for variable $%s of type %v: %w",
 				var_decl.Name, var_decl.Typ, err)
 		}
-		variables[var_decl.Name] = *val
+		variables[var_decl.Name] = val
 		delete(vars, var_decl.Name)
 	}
 	for name := range vars {

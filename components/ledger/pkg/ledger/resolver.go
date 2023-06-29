@@ -4,117 +4,130 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dgraph-io/ristretto"
-	"github.com/numary/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/ledger/command"
+	"github.com/formancehq/ledger/pkg/ledger/monitor"
+	"github.com/formancehq/ledger/pkg/ledger/query"
+	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
+	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
-	"go.uber.org/fx"
 )
 
-type ResolverOption interface {
-	apply(r *Resolver) error
-}
-type ResolveOptionFn func(r *Resolver) error
+type option func(r *Resolver)
 
-func (fn ResolveOptionFn) apply(r *Resolver) error {
-	return fn(r)
-}
-
-func WithMonitor(monitor Monitor) ResolveOptionFn {
-	return func(r *Resolver) error {
+func WithMonitor(monitor monitor.Monitor) option {
+	return func(r *Resolver) {
 		r.monitor = monitor
-		return nil
 	}
 }
 
-var DefaultResolverOptions = []ResolverOption{
-	WithMonitor(&noOpMonitor{}),
+func WithMetricsRegistry(registry metrics.GlobalMetricsRegistry) option {
+	return func(r *Resolver) {
+		r.metricsRegistry = registry
+	}
+}
+
+func WithCompiler(compiler *command.Compiler) option {
+	return func(r *Resolver) {
+		r.compiler = compiler
+	}
+}
+
+var defaultOptions = []option{
+	WithMetricsRegistry(metrics.NewNoOpMetricsRegistry()),
+	WithMonitor(monitor.NewNoOpMonitor()),
+	WithCompiler(command.NewCompiler(1024)),
 }
 
 type Resolver struct {
-	storageDriver     storage.Driver[Store]
-	lock              sync.RWMutex
-	initializedStores map[string]struct{}
-	monitor           Monitor
-	ledgerOptions     []LedgerOption
-	cache             *ristretto.Cache
+	storageDriver   *storage.Driver
+	monitor         monitor.Monitor
+	lock            sync.RWMutex
+	metricsRegistry metrics.GlobalMetricsRegistry
+	//TODO(gfyrag): add a routine to clean old ledger
+	ledgers  map[string]*Ledger
+	compiler *command.Compiler
 }
 
-func NewResolver(
-	storageFactory storage.Driver[Store],
-	ledgerOptions []LedgerOption,
-	cacheBytesCapacity, cacheMaxNumKeys int64,
-	options ...ResolverOption,
-) *Resolver {
-	options = append(DefaultResolverOptions, options...)
+func NewResolver(storageDriver *storage.Driver, options ...option) *Resolver {
 	r := &Resolver{
-		storageDriver:     storageFactory,
-		initializedStores: map[string]struct{}{},
-		cache:             NewCache(cacheBytesCapacity, cacheMaxNumKeys, false),
+		storageDriver: storageDriver,
+		ledgers:       map[string]*Ledger{},
 	}
-	for _, opt := range options {
-		if err := opt.apply(r); err != nil {
-			panic(errors.Wrap(err, "applying option on resolver"))
-		}
+	for _, opt := range append(defaultOptions, options...) {
+		opt(r)
 	}
-	r.ledgerOptions = ledgerOptions
 
 	return r
 }
 
 func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) {
-	store, _, err := r.storageDriver.GetLedgerStore(ctx, name, true)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving ledger store")
-	}
-
 	r.lock.RLock()
-	_, ok := r.initializedStores[name]
+	ledger, ok := r.ledgers[name]
 	r.lock.RUnlock()
-	if ok {
-		return NewLedger(store, r.monitor, r.cache, r.ledgerOptions...)
-	}
+	if !ok {
+		r.lock.Lock()
+		defer r.lock.Unlock()
 
-	r.lock.Lock()
-	defer r.lock.Unlock()
-
-	if _, ok = r.initializedStores[name]; !ok {
-		_, err = store.Initialize(ctx)
+		exists, err := r.storageDriver.GetSystemStore().Exists(ctx, name)
 		if err != nil {
-			return nil, errors.Wrap(err, "initializing ledger store")
+			return nil, err
 		}
-		r.initializedStores[name] = struct{}{}
+
+		var store *ledgerstore.Store
+		if !exists {
+			store, err = r.storageDriver.CreateLedgerStore(ctx, name)
+		} else {
+			store, err = r.storageDriver.GetLedgerStore(ctx, name)
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		if !store.IsInitialized() {
+			if _, err := store.Migrate(ctx); err != nil {
+				return nil, errors.Wrap(err, "initializing ledger store")
+			}
+		}
+
+		backgroundContext := logging.ContextWithLogger(
+			context.Background(),
+			logging.FromContext(ctx),
+		)
+		runOrPanic := func(task func(context.Context) error) {
+			go func() {
+				if err := task(backgroundContext); err != nil {
+					panic(err)
+				}
+			}()
+		}
+
+		locker := command.NewDefaultLocker()
+
+		metricsRegistry, err := metrics.RegisterPerLedgerMetricsRegistry(name)
+		if err != nil {
+			return nil, errors.Wrap(err, "registering metrics")
+		}
+
+		queryWorker := query.NewWorker(query.DefaultWorkerConfig, query.NewDefaultStore(store), name, r.monitor, metricsRegistry)
+		runOrPanic(queryWorker.Run)
+
+		ledger = New(store, locker, queryWorker, r.compiler, metricsRegistry)
+		r.ledgers[name] = ledger
+		r.metricsRegistry.ActiveLedgers().Add(ctx, +1)
 	}
 
-	return NewLedger(store, r.monitor, r.cache, r.ledgerOptions...)
+	return ledger, nil
 }
 
-func (r *Resolver) Close() {
-	r.cache.Close()
-}
+func (r *Resolver) CloseLedgers(ctx context.Context) error {
+	for name, ledger := range r.ledgers {
+		if err := ledger.Close(ctx); err != nil {
+			return err
+		}
+		delete(r.ledgers, name)
+	}
 
-const ResolverOptionsKey = `group:"_ledgerResolverOptions"`
-const ResolverLedgerOptionsKey = `name:"_ledgerResolverLedgerOptions"`
-
-func ProvideResolverOption(provider interface{}) fx.Option {
-	return fx.Provide(
-		fx.Annotate(provider, fx.ResultTags(ResolverOptionsKey), fx.As(new(ResolverOption))),
-	)
-}
-
-func ResolveModule(cacheBytesCapacity, cacheMaxNumKeys int64) fx.Option {
-	return fx.Options(
-		fx.Provide(
-			fx.Annotate(func(storageFactory storage.Driver[Store], ledgerOptions []LedgerOption, options ...ResolverOption) *Resolver {
-				return NewResolver(storageFactory, ledgerOptions, cacheBytesCapacity, cacheMaxNumKeys, options...)
-			}, fx.ParamTags("", ResolverLedgerOptionsKey, ResolverOptionsKey)),
-		),
-		fx.Invoke(func(lc fx.Lifecycle, r *Resolver) {
-			lc.Append(fx.Hook{
-				OnStop: func(ctx context.Context) error {
-					r.Close()
-					return nil
-				},
-			})
-		}),
-	)
+	return nil
 }
