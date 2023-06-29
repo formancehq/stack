@@ -636,6 +636,8 @@ components:
         - password
         - endpoint
         - authorizationEndpoint
+        - userCertificate
+        - userCertificateKey
       properties:
         username:
           type: string
@@ -647,6 +649,12 @@ components:
           type: string
           example: 'XXX'
         authorizationEndpoint:
+          type: string
+          example: 'XXX'
+        userCertificate:
+          type: string
+          example: 'XXX'
+        userCertificateKey:
           type: string
           example: 'XXX'
     MangoPayConfig:

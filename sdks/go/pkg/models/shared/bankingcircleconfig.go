@@ -6,5 +6,7 @@ type BankingCircleConfig struct {
 	AuthorizationEndpoint string `json:"authorizationEndpoint"`
 	Endpoint              string `json:"endpoint"`
 	Password              string `json:"password"`
+	UserCertificate       string `json:"userCertificate"`
+	UserCertificateKey    string `json:"userCertificateKey"`
 	Username              string `json:"username"`
 }

@@ -5220,7 +5220,9 @@
           "username",
           "password",
           "endpoint",
-          "authorizationEndpoint"
+          "authorizationEndpoint",
+          "userCertificate",
+          "userCertificateKey"
         ],
         "properties": {
           "username": {
@@ -5236,6 +5238,14 @@
             "example": "XXX"
           },
           "authorizationEndpoint": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "userCertificate": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "userCertificateKey": {
             "type": "string",
             "example": "XXX"
           }

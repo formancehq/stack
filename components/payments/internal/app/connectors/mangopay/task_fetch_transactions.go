@@ -35,12 +35,21 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, userID 
 				return fmt.Errorf("failed to marshal transaction: %w", err)
 			}
 
+			paymentType := matchPaymentType(transaction.Type)
+
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
+					ID: models.PaymentID{
+						PaymentReference: models.PaymentReference{
+							Reference: transaction.Id,
+							Type:      paymentType,
+						},
+						Provider: models.ConnectorProviderMangopay,
+					},
 					CreatedAt: time.Unix(transaction.CreationDate, 0),
 					Reference: transaction.Id,
 					Amount:    transaction.DebitedFunds.Amount,
-					Type:      matchPaymentType(transaction.Type),
+					Type:      paymentType,
 					Status:    matchPaymentStatus(transaction.Status),
 					Scheme:    models.PaymentSchemeOther,
 					Asset:     currency.FormatAsset(transaction.DebitedFunds.Currency),

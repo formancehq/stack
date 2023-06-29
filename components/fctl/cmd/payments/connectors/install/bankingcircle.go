@@ -16,6 +16,8 @@ func NewBankingCircleCommand() *cobra.Command {
 	const (
 		endpointFlag              = "endpoint"
 		authorizationEndpointFlag = "authorization-endpoint"
+		userCertificateFlag       = "user-certificate"
+		userCertificateKeyFlag    = "user-certificate-key"
 
 		defaultEndpoint              = "https://sandbox.bankingcircle.com"
 		defaultAuthorizationEndpoint = "https://authorizationsandbox.bankingcircleconnect.com"
@@ -25,6 +27,8 @@ func NewBankingCircleCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(endpointFlag, defaultEndpoint, "API endpoint"),
 		fctl.WithStringFlag(authorizationEndpointFlag, defaultAuthorizationEndpoint, "Authorization endpoint"),
+		fctl.WithStringFlag(userCertificateFlag, "", "User certificate"),
+		fctl.WithStringFlag(userCertificateKeyFlag, "", "User certificate key"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
 			if err != nil {
@@ -57,6 +61,8 @@ func NewBankingCircleCommand() *cobra.Command {
 					Password:              args[1],
 					Endpoint:              fctl.GetString(cmd, endpointFlag),
 					AuthorizationEndpoint: fctl.GetString(cmd, authorizationEndpointFlag),
+					UserCertificate:       fctl.GetString(cmd, userCertificateFlag),
+					UserCertificateKey:    fctl.GetString(cmd, userCertificateKeyFlag),
 				},
 			}
 			response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)
