@@ -31,32 +31,6 @@ properties:
         required: [ ]
       txid:
         type: number
-      preCommitVolumes:
-        type: object
-        additionalProperties:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-      postCommitVolumes:
-        type: object
-        additionalProperties:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
       timestamp:
         type: string
     required:
@@ -64,8 +38,6 @@ properties:
     - reference
     - metadata
     - txid
-    - preCommitVolumes
-    - postCommitVolumes
     - timestamp
   revertTransaction:
     type: object
@@ -96,32 +68,6 @@ properties:
         required: [ ]
       txid:
         type: number
-      preCommitVolumes:
-        type: object
-        additionalProperties:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-      postCommitVolumes:
-        type: object
-        additionalProperties:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
       timestamp:
         type: string
     required:
@@ -129,8 +75,6 @@ properties:
     - reference
     - metadata
     - txid
-    - preCommitVolumes
-    - postCommitVolumes
     - timestamp
 required:
 - ledger

@@ -170,11 +170,13 @@ func startLedger() {
 		"--publisher-nats-url=" + natsAddress(),
 		fmt.Sprintf("--publisher-topic-mapping=*:%s-ledger", actualTestID),
 		"--storage-postgres-conn-string=" + dsn.String(),
+		"--json-formatting-logger=false",
 		"--bind=0.0.0.0:0", // Random port
+		"--debug",
 	}
-	if testing.Verbose() {
-		args = append(args, "--debug")
-	}
+	//if testing.Verbose() {
+	//	args = append(args, "--debug")
+	//}
 	command.SetArgs(args)
 	ledgerPort, ledgerCancel, ledgerErrCh = runAndWaitPort("ledger", command)
 }

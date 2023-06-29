@@ -210,37 +210,6 @@ var _ = Given("some empty environment", func() {
 				))
 				return true
 			}).Should(BeTrue())
-
-			Eventually(func(g Gomega) bool {
-				response, err := Client().Search.Search(
-					TestContext(),
-					shared.Query{
-						Target: ptr("ASSET"),
-					},
-				)
-				g.Expect(err).ToNot(HaveOccurred())
-				g.Expect(response.StatusCode).To(Equal(200))
-
-				res := response.Response
-				g.Expect(res.Cursor.Data).To(HaveLen(2))
-				g.Expect(res.Cursor.Data).To(ContainElements(
-					map[string]any{
-						"account": "world",
-						"ledger":  "default",
-						"output":  float64(100),
-						"input":   float64(0),
-						"name":    "USD",
-					},
-					map[string]any{
-						"account": "alice",
-						"ledger":  "default",
-						"output":  float64(0),
-						"input":   float64(100),
-						"name":    "USD",
-					},
-				))
-				return true
-			}).Should(BeTrue())
 		})
 	})
 })

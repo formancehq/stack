@@ -2,7 +2,7 @@ package suite
 
 import (
 	"fmt"
-	"math/big"
+	"sort"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -96,14 +96,13 @@ var _ = Given("some empty environment", func() {
 			accountsCursorResponse := response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(3))
 			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
-				Address:  "foo:foo",
-				Metadata: metadata1,
-			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
-
+			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
+				Address:  "foo:foo",
+				Metadata: metadata1,
+			}))
 			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(shared.Account{
 				Address:  "world",
 				Metadata: metadata.Metadata{},
@@ -113,48 +112,8 @@ var _ = Given("some empty environment", func() {
 			response, err := Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
-					Address: ptr("foo:.*"),
+					Address: ptr("foo:"),
 					Ledger:  "default",
-				},
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
-
-			accountsCursorResponse := response.AccountsCursorResponse
-			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
-				Address:  "foo:foo",
-				Metadata: metadata1,
-			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
-				Address:  "foo:bar",
-				Metadata: metadata2,
-			}))
-
-			response, err = Client().Ledger.ListAccounts(
-				TestContext(),
-				operations.ListAccountsRequest{
-					Address: ptr(".*:foo"),
-					Ledger:  "default",
-				},
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
-
-			accountsCursorResponse = response.AccountsCursorResponse
-			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
-				Address:  "foo:foo",
-				Metadata: metadata1,
-			}))
-		})
-		It("should be listed on api using balance filters", func() {
-			response, err := Client().Ledger.ListAccounts(
-				TestContext(),
-				operations.ListAccountsRequest{
-					Balance:         big.NewInt(90),
-					BalanceOperator: ptr(operations.ListAccountsBalanceOperatorLte),
-					Ledger:          "default",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -167,15 +126,14 @@ var _ = Given("some empty environment", func() {
 				Metadata: metadata2,
 			}))
 			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
-				Address:  "world",
-				Metadata: metadata.Metadata{},
+				Address:  "foo:foo",
+				Metadata: metadata1,
 			}))
 
-			// Default operator should be gte
 			response, err = Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
-					Balance: big.NewInt(90),
+					Address: ptr(":foo"),
 					Ledger:  "default",
 				},
 			)
@@ -271,6 +229,10 @@ var _ = Given("some environment with accounts", func() {
 				accounts = append(accounts, shared.Account{
 					Address:  fmt.Sprintf("foo:%d", i),
 					Metadata: m,
+				})
+
+				sort.Slice(accounts, func(i, j int) bool {
+					return accounts[i].Address < accounts[j].Address
 				})
 			}
 		})

@@ -46,6 +46,7 @@ require (
 	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2 // indirect
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
+	github.com/alitto/pond v1.8.3 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10 // indirect
 	github.com/aquasecurity/esquery v0.2.0 // indirect
 	github.com/bluele/gcache v0.0.2 // indirect

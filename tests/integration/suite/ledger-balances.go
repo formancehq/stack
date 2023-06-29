@@ -73,8 +73,8 @@ var _ = Given("some empty environment", func() {
 			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.BalancesCursorResponse.Cursor.Data).To(HaveLen(3))
 			Expect(response.BalancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]*big.Int{
-				"world": {
-					"USD": big.NewInt(-300),
+				"foo:bar": {
+					"USD": big.NewInt(200),
 				},
 			}))
 			Expect(response.BalancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]*big.Int{
@@ -83,8 +83,8 @@ var _ = Given("some empty environment", func() {
 				},
 			}))
 			Expect(response.BalancesCursorResponse.Cursor.Data[2]).To(Equal(map[string]map[string]*big.Int{
-				"foo:bar": {
-					"USD": big.NewInt(200),
+				"world": {
+					"USD": big.NewInt(-300),
 				},
 			}))
 		})
@@ -92,7 +92,7 @@ var _ = Given("some empty environment", func() {
 			response, err := Client().Ledger.GetBalances(
 				TestContext(),
 				operations.GetBalancesRequest{
-					Address: ptr("foo:.*"),
+					Address: ptr("foo:"),
 					Ledger:  "default",
 				},
 			)
@@ -102,20 +102,20 @@ var _ = Given("some empty environment", func() {
 			balancesCursorResponse := response.BalancesCursorResponse
 			Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(2))
 			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]*big.Int{
-				"foo:foo": {
-					"USD": big.NewInt(100),
+				"foo:bar": {
+					"USD": big.NewInt(200),
 				},
 			}))
 			Expect(balancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]*big.Int{
-				"foo:bar": {
-					"USD": big.NewInt(200),
+				"foo:foo": {
+					"USD": big.NewInt(100),
 				},
 			}))
 
 			response, err = Client().Ledger.GetBalances(
 				TestContext(),
 				operations.GetBalancesRequest{
-					Address: ptr(".*:foo"),
+					Address: ptr(":foo"),
 					Ledger:  "default",
 				},
 			)
@@ -149,7 +149,7 @@ var _ = Given("some empty environment", func() {
 			response, err := Client().Ledger.GetBalancesAggregated(
 				TestContext(),
 				operations.GetBalancesAggregatedRequest{
-					Address: ptr("foo:.*"),
+					Address: ptr("foo:"),
 					Ledger:  "default",
 				},
 			)
@@ -240,6 +240,15 @@ var _ = Given("some environment with accounts and transactions", func() {
 				})
 			}
 
+			balances = append([]map[string]map[string]*big.Int{
+				{
+					"world": {
+						"USD": big.NewInt(-transactionCounts / 2 * 100),
+						"EUR": big.NewInt(-transactionCounts / 2 * 100),
+					},
+				},
+			}, balances...)
+
 			sort.Slice(balances, func(i, j int) bool {
 				name1 := ""
 				for name := range balances[i] {
@@ -251,17 +260,8 @@ var _ = Given("some environment with accounts and transactions", func() {
 					name2 = name
 					break
 				}
-				return name1 > name2
+				return name1 < name2
 			})
-
-			balances = append([]map[string]map[string]*big.Int{
-				{
-					"world": {
-						"USD": big.NewInt(-transactionCounts / 2 * 100),
-						"EUR": big.NewInt(-transactionCounts / 2 * 100),
-					},
-				},
-			}, balances...)
 		})
 		AfterEach(func() {
 			balances = nil
