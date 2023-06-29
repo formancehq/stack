@@ -255,7 +255,7 @@ var CreatePostgresDatabase = func(ctx context.Context, dsn, dbName string) error
 
 type Version struct {
 	PreUpgrade  func(ctx Context) error
-	PostUpgrade func(ctx Context) error
+	PostUpgrade func(ctx PostInstallContext) error
 	Services    func(ctx ModuleContext) Services
 }
 
