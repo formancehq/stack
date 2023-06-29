@@ -15,7 +15,8 @@ public enum Connector {
     WISE("WISE"),
     MODULR("MODULR"),
     CURRENCY_CLOUD("CURRENCY-CLOUD"),
-    BANKING_CIRCLE("BANKING-CIRCLE");
+    BANKING_CIRCLE("BANKING-CIRCLE"),
+    MANGOPAY("MANGOPAY");
 
     @JsonValue
     public final String value;

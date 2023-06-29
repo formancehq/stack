@@ -74,7 +74,7 @@ sdk.payments.connectorsTransfer({
     destination: "acct_1Gqj58KZcSIg2N2q",
     source: "acct_1Gqj58KZcSIg2N2q",
   },
-  connector: Connector.Modulr,
+  connector: Connector.CurrencyCloud,
 }).then((res: ConnectorsTransferResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -100,7 +100,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getConnectorTask({
-  connector: Connector.BankingCircle,
+  connector: Connector.Mangopay,
   taskId: "sint",
 }).then((res: GetConnectorTaskResponse) => {
   if (res.statusCode == 200) {
@@ -158,7 +158,7 @@ sdk.payments.installConnector({
     fileGenerationPeriod: "60s",
     filePollingPeriod: "60s",
   },
-  connector: Connector.BankingCircle,
+  connector: Connector.Mangopay,
 }).then((res: InstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -231,7 +231,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorTasks({
-  connector: Connector.BankingCircle,
+  connector: Connector.Mangopay,
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   pageSize: 680056,
 }).then((res: ListConnectorTasksResponse) => {
@@ -259,7 +259,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorsTransfers({
-  connector: Connector.Wise,
+  connector: Connector.Modulr,
 }).then((res: ListConnectorsTransfersResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -402,7 +402,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.resetConnector({
-  connector: Connector.Modulr,
+  connector: Connector.CurrencyCloud,
 }).then((res: ResetConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -428,7 +428,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.uninstallConnector({
-  connector: Connector.DummyPay,
+  connector: Connector.Wise,
 }).then((res: UninstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response

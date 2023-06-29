@@ -91,7 +91,7 @@ public class Application {
 
             ConnectorsTransferRequest req = new ConnectorsTransferRequest(                new TransferRequest(100L, "USD", "acct_1Gqj58KZcSIg2N2q") {{
                                 source = "acct_1Gqj58KZcSIg2N2q";
-                            }};, Connector.MODULR);            
+                            }};, Connector.CURRENCY_CLOUD);            
 
             ConnectorsTransferResponse res = sdk.payments.connectorsTransfer(req);
 
@@ -196,6 +196,7 @@ import com.formance.formance_sdk.models.shared.BankingCircleConfig;
 import com.formance.formance_sdk.models.shared.Connector;
 import com.formance.formance_sdk.models.shared.CurrencyCloudConfig;
 import com.formance.formance_sdk.models.shared.DummyPayConfig;
+import com.formance.formance_sdk.models.shared.MangoPayConfig;
 import com.formance.formance_sdk.models.shared.ModulrConfig;
 import com.formance.formance_sdk.models.shared.Security;
 import com.formance.formance_sdk.models.shared.StripeConfig;
@@ -212,7 +213,7 @@ public class Application {
 
             InstallConnectorRequest req = new InstallConnectorRequest(                new WiseConfig("XXX") {{
                                 apiKey = "XXX";
-                            }}, Connector.MODULR);            
+                            }}, Connector.CURRENCY_CLOUD);            
 
             InstallConnectorResponse res = sdk.payments.installConnector(req);
 
@@ -318,7 +319,7 @@ public class Application {
                 }})
                 .build();
 
-            ListConnectorTasksRequest req = new ListConnectorTasksRequest(Connector.WISE) {{
+            ListConnectorTasksRequest req = new ListConnectorTasksRequest(Connector.MODULR) {{
                 cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
                 pageSize = 301575L;
             }};            
@@ -359,7 +360,7 @@ public class Application {
                 }})
                 .build();
 
-            ListConnectorsTransfersRequest req = new ListConnectorsTransfersRequest(Connector.MODULR);            
+            ListConnectorsTransfersRequest req = new ListConnectorsTransfersRequest(Connector.CURRENCY_CLOUD);            
 
             ListConnectorsTransfersResponse res = sdk.payments.listConnectorsTransfers(req);
 
@@ -558,7 +559,7 @@ public class Application {
                 }})
                 .build();
 
-            ResetConnectorRequest req = new ResetConnectorRequest(Connector.MODULR);            
+            ResetConnectorRequest req = new ResetConnectorRequest(Connector.CURRENCY_CLOUD);            
 
             ResetConnectorResponse res = sdk.payments.resetConnector(req);
 
@@ -596,7 +597,7 @@ public class Application {
                 }})
                 .build();
 
-            UninstallConnectorRequest req = new UninstallConnectorRequest(Connector.MODULR);            
+            UninstallConnectorRequest req = new UninstallConnectorRequest(Connector.CURRENCY_CLOUD);            
 
             UninstallConnectorResponse res = sdk.payments.uninstallConnector(req);
 

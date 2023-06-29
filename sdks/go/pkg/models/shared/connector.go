@@ -17,6 +17,7 @@ const (
 	ConnectorModulr        Connector = "MODULR"
 	ConnectorCurrencyCloud Connector = "CURRENCY-CLOUD"
 	ConnectorBankingCircle Connector = "BANKING-CIRCLE"
+	ConnectorMangopay      Connector = "MANGOPAY"
 )
 
 func (e Connector) ToPointer() *Connector {
@@ -40,6 +41,8 @@ func (e *Connector) UnmarshalJSON(data []byte) error {
 	case "CURRENCY-CLOUD":
 		fallthrough
 	case "BANKING-CIRCLE":
+		fallthrough
+	case "MANGOPAY":
 		*e = Connector(v)
 		return nil
 	default:

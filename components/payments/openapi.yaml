@@ -444,6 +444,7 @@ components:
                       - $ref: '#/components/schemas/TaskDummyPay'
                       - $ref: '#/components/schemas/TaskModulr'
                       - $ref: '#/components/schemas/TaskBankingCircle'
+                      - $ref: '#/components/schemas/TaskMangoPay'
 
     # ---------------------- RESPONSES ----------------------
     ConnectorConfigResponse:
@@ -513,6 +514,7 @@ components:
             - $ref: '#/components/schemas/TaskDummyPay'
             - $ref: '#/components/schemas/TaskModulr'
             - $ref: '#/components/schemas/TaskBankingCircle'
+            - $ref: '#/components/schemas/TaskMangoPay'
     TransferResponse:
       type: object
       properties:
@@ -554,6 +556,7 @@ components:
         - MODULR
         - CURRENCY-CLOUD
         - BANKING-CIRCLE
+        - MANGOPAY
     ConnectorConfig:
       anyOf:
         - $ref: '#/components/schemas/StripeConfig'
@@ -562,6 +565,7 @@ components:
         - $ref: '#/components/schemas/ModulrConfig'
         - $ref: '#/components/schemas/CurrencyCloudConfig'
         - $ref: '#/components/schemas/BankingCircleConfig'
+        - $ref: '#/components/schemas/MangoPayConfig'
     StripeConfig:
       type: object
       required:
@@ -643,6 +647,22 @@ components:
           type: string
           example: 'XXX'
         authorizationEndpoint:
+          type: string
+          example: 'XXX'
+    MangoPayConfig:
+      type: object
+      required:
+        - clientID
+        - apiKey
+        - endpoint
+      properties:
+        clientID:
+          type: string
+          example: 'XXX'
+        apiKey:
+          type: string
+          example: 'XXX'
+        endpoint:
           type: string
           example: 'XXX'
     CurrencyCloudConfig:
@@ -917,6 +937,22 @@ components:
                 name:
                   type: string
                 key:
+                  type: string
+    TaskMangoPay:
+      allOf:
+        - $ref: '#/components/schemas/TaskBase'
+        - type: object
+          required:
+            - descriptor
+          properties:
+            descriptor:
+              type: object
+              properties:
+                name:
+                  type: string
+                key:
+                  type: string
+                userID:
                   type: string
     TransferRequest:
       type: object

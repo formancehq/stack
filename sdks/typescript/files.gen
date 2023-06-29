@@ -230,6 +230,7 @@ src/sdk/models/shared/taskcurrencycloud.ts
 src/sdk/models/shared/taskdummypay.ts
 src/sdk/models/shared/taskmodulr.ts
 src/sdk/models/shared/taskbankingcircle.ts
+src/sdk/models/shared/taskmangopay.ts
 src/sdk/models/shared/paymentresponse.ts
 src/sdk/models/shared/stripeconfig.ts
 src/sdk/models/shared/dummypayconfig.ts
@@ -237,6 +238,7 @@ src/sdk/models/shared/wiseconfig.ts
 src/sdk/models/shared/modulrconfig.ts
 src/sdk/models/shared/currencycloudconfig.ts
 src/sdk/models/shared/bankingcircleconfig.ts
+src/sdk/models/shared/mangopayconfig.ts
 src/sdk/models/shared/connectorsresponse.ts
 src/sdk/models/shared/connectorsconfigsresponse.ts
 src/sdk/models/shared/taskscursor.ts
