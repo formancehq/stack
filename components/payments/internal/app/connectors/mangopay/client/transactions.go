@@ -61,11 +61,6 @@ func (c *Client) getTransactions(ctx context.Context, userID string, page int) (
 		return nil, fmt.Errorf("failed to create login request: %w", err)
 	}
 
-	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
-		return nil, err
-	}
-	req.Header.Set("Authorization", "Bearer "+c.accessToken)
-
 	q := req.URL.Query()
 	q.Add("per_page", "100")
 	q.Add("page", fmt.Sprint(page))
