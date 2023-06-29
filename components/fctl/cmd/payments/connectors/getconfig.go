@@ -62,6 +62,8 @@ func NewGetConfigCommand() *cobra.Command {
 				err = displayCurrencyCloudConfig(cmd, response.ConnectorConfigResponse)
 			case internal.WiseConnector:
 				err = displayWiseConfig(cmd, response.ConnectorConfigResponse)
+			case internal.MangoPayConnector:
+				err = displayMangoPayConfig(cmd, response.ConnectorConfigResponse)
 			default:
 				pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("Connection unknown.")
 			}
@@ -167,6 +169,26 @@ func displayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.Conn
 		}
 		return *config.Endpoint
 	}()})
+
+	if err := pterm.DefaultTable.
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func displayMangoPayConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+	config, ok := connectorConfig.Data.(*shared.MangoPayConfig)
+	if !ok {
+		return errors.New("invalid currency cloud connector config")
+	}
+
+	tableData := pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
+	tableData = append(tableData, []string{pterm.LightCyan("Client ID:"), config.ClientID})
+	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), config.Endpoint})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).

@@ -15,6 +15,7 @@ func NewInstallCommand() *cobra.Command {
 			NewCurrencyCloudCommand(),
 			NewModulrCommand(),
 			NewWiseCommand(),
+			NewMangoPayCommand(),
 		),
 	)
 }

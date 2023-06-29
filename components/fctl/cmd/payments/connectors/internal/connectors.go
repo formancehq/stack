@@ -6,6 +6,7 @@ const (
 	ModulrConnector        = "modulr"
 	StripeConnector        = "stripe"
 	WiseConnector          = "wise"
+	MangoPayConnector      = "mangopay"
 )
 
 var AllConnectors = []string{
@@ -14,4 +15,5 @@ var AllConnectors = []string{
 	ModulrConnector,
 	StripeConnector,
 	WiseConnector,
+	MangoPayConnector,
 }
