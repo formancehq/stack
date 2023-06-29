@@ -27,26 +27,6 @@ pipeline:
               }).values()).values().flatten()
             }
 
-            map volumes {
-                root = this.map_each(v -> v.value.map_each(v2 -> {
-                    "action": "index",
-                    "id": "%s-%s".format(v.key, v2.key),
-                    "document": {
-                        "data": {
-                            "name": v2.key,
-                            "input": v2.value.input,
-                            "output": v2.value.output,
-                            "account": v.key
-                        },
-                        "indexed": {
-                            "account": v.key,
-                            "name": v2.key
-                        },
-                        "kind": "ASSET"
-                    }
-                }).values()).values().flatten()
-            }
-
             map tx {
               root = {
                 "action": "index",
@@ -83,16 +63,31 @@ pipeline:
                     this.payload.transactions.map_each(t -> t.apply("tx")).map_each(t -> t.assign({
                         "id": "TRANSACTION-%s-%s".format(this.payload.ledger, t.id)
                     })),
-                    this.payload.volumes.apply("volumes").
-                        sort(v -> v.right.id > v.left.id).
-                        map_each(t -> t.assign({
-                            "id": "ASSET-%s-%s".format(this.payload.ledger, t.id)
-                        })),
-                    this.payload.volumes.apply("account").
-                        sort(v -> v.right.id > v.left.id).
-                        map_each(t -> t.assign({
-                            "id": "ACCOUNT-%s-%s".format(this.payload.ledger, t.id)
-                        })),
+                    this.payload.transactions.map_each(t -> t.postings.map_each(p -> [{
+                        "action": "upsert",
+                        "id": "ACCOUNT-%s-%s".format(this.payload.ledger, p.source),
+                        "document": {
+                            "data": {
+                                "address": p.source
+                            },
+                            "indexed": {
+                                "address": p.source
+                            },
+                            "kind": "ACCOUNT"
+                        }
+                    }, {
+                        "action": "upsert",
+                        "id": "ACCOUNT-%s-%s".format(this.payload.ledger, p.destination),
+                        "document": {
+                            "data": {
+                                "address": p.destination
+                            },
+                            "indexed": {
+                                "address": p.destination
+                            },
+                            "kind": "ACCOUNT"
+                        }
+                    }])).flatten().flatten()
                 ].flatten().map_each(t -> t.merge({
                    "document": {
                        "when": this.date,
