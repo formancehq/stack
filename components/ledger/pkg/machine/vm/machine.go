@@ -40,6 +40,7 @@ func NewMachine(store Store, vars map[string]string) Machine {
 	return Machine{
 		store:        store,
 		providedVars: vars,
+		vars:         make(map[string]internal.Value),
 		balances:     make(map[internal.AccountAddress]map[internal.Asset]internal.Number),
 		Postings:     make([]Posting, 0),
 		TxMeta:       make(map[string]internal.Value),

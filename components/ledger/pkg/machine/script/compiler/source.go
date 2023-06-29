@@ -6,7 +6,6 @@ import (
 	"github.com/formancehq/ledger/pkg/machine/internal"
 	"github.com/formancehq/ledger/pkg/machine/script/parser"
 	"github.com/formancehq/ledger/pkg/machine/vm/program"
-	"github.com/numary/ledger/pkg/core"
 )
 
 type FallbackAccount internal.Address
@@ -49,7 +48,7 @@ func (p *parseVisitor) CompileSource(c parser.ISourceContext) (program.Source, b
 	fallback := false
 	switch c := c.(type) {
 	case *parser.SrcAccountContext:
-		account, compErr := p.CompileExprTy(c.SourceAccount().GetAccount(), core.TypeAccount)
+		account, compErr := p.CompileExprTy(c.SourceAccount().GetAccount(), internal.TypeAccount)
 		if compErr != nil {
 			return nil, false, compErr
 		}
@@ -63,7 +62,7 @@ func (p *parseVisitor) CompileSource(c parser.ISourceContext) (program.Source, b
 			}
 			switch c := c.SourceAccount().GetOverdraft().(type) {
 			case *parser.SrcAccountOverdraftSpecificContext:
-				mon, err := p.CompileExprTy(c.GetSpecific(), core.TypeMonetary)
+				mon, err := p.CompileExprTy(c.GetSpecific(), internal.TypeMonetary)
 				if err != nil {
 					return nil, false, err
 				}
@@ -87,7 +86,7 @@ func (p *parseVisitor) CompileSource(c parser.ISourceContext) (program.Source, b
 		if err != nil {
 			return nil, false, err
 		}
-		max, err := p.CompileExprTy(c.SourceMaxed().GetMax(), core.TypeMonetary)
+		max, err := p.CompileExprTy(c.SourceMaxed().GetMax(), internal.TypeMonetary)
 		if err != nil {
 			return nil, false, err
 		}

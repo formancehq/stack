@@ -161,10 +161,14 @@ type StatementSave struct {
 	Account Expr
 }
 
+func (s StatementSave) isStatement() {}
+
 type StatementSaveAll struct {
-	Amount  Expr
+	Asset   Expr
 	Account Expr
 }
+
+func (s StatementSaveAll) isStatement() {}
 
 type StatementAllocate struct {
 	Funding     Expr

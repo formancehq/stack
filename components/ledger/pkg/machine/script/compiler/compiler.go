@@ -198,6 +198,25 @@ func (p *parseVisitor) CompileSetAccountMeta(ctx *parser.SetAccountMetaContext) 
 	}, nil
 }
 
+func (p *parseVisitor) CompileSave(ctx *parser.SaveFromAccountContext) (program.Statement, *CompileError) {
+	typ, amt_expr, err := p.CompileExpr(ctx.GetMon())
+	if err != nil {
+		return nil, err
+	}
+	acc_expr, err := p.CompileExprTy(ctx.GetAcc(), internal.TypeAccount)
+	if err != nil {
+		return nil, err
+	}
+	switch typ {
+	case internal.TypeAsset:
+		return program.StatementSaveAll{Asset: amt_expr, Account: acc_expr}, nil
+	case internal.TypeMonetary:
+		return program.StatementSave{Amount: amt_expr, Account: acc_expr}, nil
+	default:
+		return nil, InternalError(ctx)
+	}
+}
+
 func (p *parseVisitor) CompilePrint(ctx *parser.PrintContext) (program.Statement, *CompileError) {
 	_, expr, err := p.CompileExpr(ctx.GetExpr())
 	if err != nil {
@@ -302,6 +321,8 @@ func (p *parseVisitor) CompileScript(c parser.IScriptContext) (*program.Program,
 				stmt, err = p.CompilePrint(c)
 			case *parser.FailContext:
 				stmt = program.StatementFail{}
+			case *parser.SaveFromAccountContext:
+				stmt, err = p.CompileSave(c)
 			case *parser.SendContext:
 				stmt, err = p.CompileSend(c)
 			case *parser.SendAllContext:

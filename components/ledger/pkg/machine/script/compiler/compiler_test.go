@@ -7,9 +7,7 @@ import (
 	"testing"
 
 	"github.com/formancehq/ledger/pkg/machine/internal"
-	"github.com/formancehq/ledger/pkg/machine/vm/program"
 	. "github.com/formancehq/ledger/pkg/machine/vm/program"
-	"github.com/numary/ledger/pkg/core"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -53,7 +51,7 @@ func TestSimplePrint(t *testing.T) {
 				Statements: []Statement{
 					StatementPrint{
 						Expr: ExprLiteral{
-							Value: core.NewNumber(1),
+							Value: internal.NewNumber(1),
 						},
 					},
 				},
@@ -71,12 +69,12 @@ func TestCompositeExpr(t *testing.T) {
 					StatementPrint{
 						Expr: ExprInfix{
 							Lhs: ExprInfix{
-								Lhs: ExprLiteral{Value: core.NewNumber(29)},
+								Lhs: ExprLiteral{Value: internal.NewNumber(29)},
 								Op:  OP_ADD,
-								Rhs: ExprLiteral{Value: core.NewNumber(15)},
+								Rhs: ExprLiteral{Value: internal.NewNumber(15)},
 							},
 							Op:  OP_SUB,
-							Rhs: ExprLiteral{Value: core.NewNumber(2)},
+							Rhs: ExprLiteral{Value: internal.NewNumber(2)},
 						},
 					},
 				},
@@ -105,10 +103,10 @@ func TestCRLF(t *testing.T) {
 			Program: Program{
 				Statements: []Statement{
 					StatementPrint{
-						Expr: ExprLiteral{Value: core.AccountAddress("a")},
+						Expr: ExprLiteral{Value: internal.AccountAddress("a")},
 					},
 					StatementPrint{
-						Expr: ExprLiteral{Value: core.AccountAddress("b")},
+						Expr: ExprLiteral{Value: internal.AccountAddress("b")},
 					},
 				},
 			},
@@ -147,30 +145,30 @@ func TestSetTxMeta(t *testing.T) {
 				Statements: []Statement{
 					StatementSetTxMeta{
 						Key:   "aaa",
-						Value: ExprLiteral{Value: core.AccountAddress("platform")},
+						Value: ExprLiteral{Value: internal.AccountAddress("platform")},
 					},
 					StatementSetTxMeta{
 						Key:   "bbb",
-						Value: ExprLiteral{Value: core.Asset("GEM")},
+						Value: ExprLiteral{Value: internal.Asset("GEM")},
 					},
 					StatementSetTxMeta{
 						Key:   "ccc",
-						Value: ExprLiteral{Value: core.NewNumber(42)},
+						Value: ExprLiteral{Value: internal.NewNumber(42)},
 					},
 					StatementSetTxMeta{
 						Key:   "ddd",
-						Value: ExprLiteral{Value: core.String("test")},
+						Value: ExprLiteral{Value: internal.String("test")},
 					},
 					StatementSetTxMeta{
 						Key: "eee",
 						Value: ExprMonetaryNew{
-							Asset:  ExprLiteral{Value: core.Asset("COIN")},
-							Amount: ExprLiteral{Value: core.NewNumber(30)},
+							Asset:  ExprLiteral{Value: internal.Asset("COIN")},
+							Amount: ExprLiteral{Value: internal.NewNumber(30)},
 						},
 					},
 					StatementSetTxMeta{
 						Key: "fff",
-						Value: ExprLiteral{Value: core.Portion{
+						Value: ExprLiteral{Value: internal.Portion{
 							Remaining: false,
 							Specific:  big.NewRat(15, 100),
 						}},
@@ -193,7 +191,7 @@ func TestSetTxMetaVars(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Typ:  core.TypePortion,
+						Typ:  internal.TypePortion,
 						Name: "commission",
 					},
 				},
@@ -223,7 +221,7 @@ func TestComments(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Typ:  core.TypeAccount,
+						Typ:  internal.TypeAccount,
 						Name: "a",
 					},
 				},
@@ -293,37 +291,37 @@ func TestDestinationAllotment(t *testing.T) {
 					StatementAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
-								Asset:  ExprLiteral{Value: core.Asset("EUR/2")},
-								Amount: ExprLiteral{Value: core.NewNumber(43)},
+								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
+								Amount: ExprLiteral{Value: internal.NewNumber(43)},
 							},
 							Source: ValueAwareSourceSource{
-								Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("foo")}},
+								Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("foo")}},
 							},
 						},
 						Destination: DestinationAllotment{
 							{
 								Portion: AllotmentPortion{
-									Expr: ExprLiteral{Value: core.Portion{
+									Expr: ExprLiteral{Value: internal.Portion{
 										Remaining: false,
 										Specific:  big.NewRat(1, 8),
 									}},
 								},
 								Kod: KeptOrDestination{
 									Destination: DestinationAccount{
-										Expr: ExprLiteral{Value: core.AccountAddress("bar")},
+										Expr: ExprLiteral{Value: internal.AccountAddress("bar")},
 									},
 								},
 							},
 							{
 								Portion: AllotmentPortion{
-									Expr: ExprLiteral{Value: core.Portion{
+									Expr: ExprLiteral{Value: internal.Portion{
 										Remaining: false,
 										Specific:  big.NewRat(7, 8),
 									}},
 								},
 								Kod: KeptOrDestination{
 									Destination: DestinationAccount{
-										Expr: ExprLiteral{Value: core.AccountAddress("baz")},
+										Expr: ExprLiteral{Value: internal.AccountAddress("baz")},
 									},
 								},
 							},
@@ -350,30 +348,30 @@ func TestDestinationInOrder(t *testing.T) {
 					StatementAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
-								Asset:  ExprLiteral{Value: core.Asset("COIN")},
-								Amount: ExprLiteral{Value: core.NewNumber(50)},
+								Asset:  ExprLiteral{Value: internal.Asset("COIN")},
+								Amount: ExprLiteral{Value: internal.NewNumber(50)},
 							},
 							Source: ValueAwareSourceSource{
-								Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("a")}},
+								Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("a")}},
 							},
 						},
 						Destination: DestinationInOrder{
 							Parts: []DestinationInOrderPart{
 								{
 									Max: ExprMonetaryNew{
-										Asset:  ExprLiteral{Value: core.Asset("COIN")},
-										Amount: ExprLiteral{Value: core.NewNumber(10)},
+										Asset:  ExprLiteral{Value: internal.Asset("COIN")},
+										Amount: ExprLiteral{Value: internal.NewNumber(10)},
 									},
 									Kod: KeptOrDestination{
 										Destination: DestinationAccount{
-											Expr: ExprLiteral{Value: core.AccountAddress("b")},
+											Expr: ExprLiteral{Value: internal.AccountAddress("b")},
 										},
 									},
 								},
 							},
 							Remaining: KeptOrDestination{
 								Destination: DestinationAccount{
-									Expr: ExprLiteral{Value: core.AccountAddress("c")},
+									Expr: ExprLiteral{Value: internal.AccountAddress("c")},
 								},
 							},
 						},
@@ -400,50 +398,50 @@ func TestAllocationPercentages(t *testing.T) {
 					StatementAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
-								Asset:  ExprLiteral{Value: core.Asset("EUR/2")},
-								Amount: ExprLiteral{Value: core.NewNumber(43)},
+								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
+								Amount: ExprLiteral{Value: internal.NewNumber(43)},
 							},
 							Source: ValueAwareSourceSource{
-								Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("foo")}},
+								Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("foo")}},
 							},
 						},
 						Destination: DestinationAllotment{
 							{
 								Portion: AllotmentPortion{
-									Expr: ExprLiteral{Value: core.Portion{
+									Expr: ExprLiteral{Value: internal.Portion{
 										Remaining: false,
 										Specific:  big.NewRat(125, 1000),
 									}},
 								},
 								Kod: KeptOrDestination{
 									Destination: DestinationAccount{
-										Expr: ExprLiteral{Value: core.AccountAddress("bar")},
+										Expr: ExprLiteral{Value: internal.AccountAddress("bar")},
 									},
 								},
 							},
 							{
 								Portion: AllotmentPortion{
-									Expr: ExprLiteral{Value: core.Portion{
+									Expr: ExprLiteral{Value: internal.Portion{
 										Remaining: false,
 										Specific:  big.NewRat(375, 1000),
 									}},
 								},
 								Kod: KeptOrDestination{
 									Destination: DestinationAccount{
-										Expr: ExprLiteral{Value: core.AccountAddress("baz")},
+										Expr: ExprLiteral{Value: internal.AccountAddress("baz")},
 									},
 								},
 							},
 							{
 								Portion: AllotmentPortion{
-									Expr: ExprLiteral{Value: core.Portion{
+									Expr: ExprLiteral{Value: internal.Portion{
 										Remaining: false,
 										Specific:  big.NewRat(500, 1000),
 									}},
 								},
 								Kod: KeptOrDestination{
 									Destination: DestinationAccount{
-										Expr: ExprLiteral{Value: core.AccountAddress("qux")},
+										Expr: ExprLiteral{Value: internal.AccountAddress("qux")},
 									},
 								},
 							},
@@ -469,15 +467,15 @@ func TestSend(t *testing.T) {
 					StatementAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
-								Asset:  ExprLiteral{Value: core.Asset("EUR/2")},
-								Amount: ExprLiteral{Value: core.NewNumber(99)},
+								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
+								Amount: ExprLiteral{Value: internal.NewNumber(99)},
 							},
 							Source: ValueAwareSourceSource{
-								Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("alice")}},
+								Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("alice")}},
 							},
 						},
 						Destination: DestinationAccount{
-							Expr: ExprLiteral{Value: core.AccountAddress("bob")},
+							Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
 						},
 					},
 				},
@@ -497,11 +495,11 @@ func TestSendAll(t *testing.T) {
 				Statements: []Statement{
 					StatementAllocate{
 						Funding: ExprTakeAll{
-							Asset:  ExprLiteral{Value: core.Asset("EUR/2")},
-							Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("alice")}},
+							Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
+							Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("alice")}},
 						},
 						Destination: DestinationAccount{
-							Expr: ExprLiteral{Value: core.AccountAddress("bob")},
+							Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
 						},
 					},
 				},
@@ -529,11 +527,11 @@ func TestMetadata(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Typ:  core.TypeAccount,
+						Typ:  internal.TypeAccount,
 						Name: "sale",
 					},
 					{
-						Typ:  core.TypeAccount,
+						Typ:  internal.TypeAccount,
 						Name: "seller",
 						Origin: VarOriginMeta{
 							Account: ExprVariable("sale"),
@@ -541,7 +539,7 @@ func TestMetadata(t *testing.T) {
 						},
 					},
 					{
-						Typ:  core.TypePortion,
+						Typ:  internal.TypePortion,
 						Name: "commission",
 						Origin: VarOriginMeta{
 							Account: ExprVariable("seller"),
@@ -553,8 +551,8 @@ func TestMetadata(t *testing.T) {
 					StatementAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
-								Asset:  ExprLiteral{Value: core.Asset("EUR/2")},
-								Amount: ExprLiteral{Value: core.NewNumber(53)},
+								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
+								Amount: ExprLiteral{Value: internal.NewNumber(53)},
 							},
 							Source: ValueAwareSourceSource{
 								Source: SourceAccount{Account: ExprVariable("sale")},
@@ -567,7 +565,7 @@ func TestMetadata(t *testing.T) {
 								},
 								Kod: KeptOrDestination{
 									Destination: DestinationAccount{
-										Expr: ExprLiteral{Value: core.AccountAddress("platform")},
+										Expr: ExprLiteral{Value: internal.AccountAddress("platform")},
 									},
 								},
 							},
@@ -925,37 +923,37 @@ func TestSetAccountMeta(t *testing.T) {
 				Program: Program{
 					Statements: []Statement{
 						StatementSetAccountMeta{
-							Account: ExprLiteral{Value: core.AccountAddress("alice")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "aaa",
-							Value:   ExprLiteral{Value: core.AccountAddress("platform")},
+							Value:   ExprLiteral{Value: internal.AccountAddress("platform")},
 						},
 						StatementSetAccountMeta{
-							Account: ExprLiteral{Value: core.AccountAddress("alice")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "bbb",
-							Value:   ExprLiteral{Value: core.Asset("GEM")},
+							Value:   ExprLiteral{Value: internal.Asset("GEM")},
 						},
 						StatementSetAccountMeta{
-							Account: ExprLiteral{Value: core.AccountAddress("alice")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "ccc",
-							Value:   ExprLiteral{Value: core.NewNumber(42)},
+							Value:   ExprLiteral{Value: internal.NewNumber(42)},
 						},
 						StatementSetAccountMeta{
-							Account: ExprLiteral{Value: core.AccountAddress("alice")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "ddd",
-							Value:   ExprLiteral{Value: core.String("test")},
+							Value:   ExprLiteral{Value: internal.String("test")},
 						},
 						StatementSetAccountMeta{
-							Account: ExprLiteral{Value: core.AccountAddress("alice")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "eee",
 							Value: ExprMonetaryNew{
-								Asset:  ExprLiteral{Value: core.Asset("COIN")},
-								Amount: ExprLiteral{Value: core.NewNumber(30)},
+								Asset:  ExprLiteral{Value: internal.Asset("COIN")},
+								Amount: ExprLiteral{Value: internal.NewNumber(30)},
 							},
 						},
 						StatementSetAccountMeta{
-							Account: ExprLiteral{Value: core.AccountAddress("alice")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "fff",
-							Value: ExprLiteral{Value: core.Portion{
+							Value: ExprLiteral{Value: internal.Portion{
 								Remaining: false,
 								Specific:  big.NewRat(15, 100),
 							}},
@@ -980,7 +978,7 @@ func TestSetAccountMeta(t *testing.T) {
 				Program: Program{
 					VarsDecl: []VarDecl{
 						{
-							Typ:  core.TypeAccount,
+							Typ:  internal.TypeAccount,
 							Name: "acc",
 						},
 					},
@@ -988,11 +986,11 @@ func TestSetAccountMeta(t *testing.T) {
 						StatementAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetaryNew{
-									Asset:  ExprLiteral{Value: core.Asset("EUR/2")},
-									Amount: ExprLiteral{Value: core.NewNumber(100)},
+									Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
+									Amount: ExprLiteral{Value: internal.NewNumber(100)},
 								},
 								Source: ValueAwareSourceSource{
-									Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("world")}},
+									Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("world")}},
 								},
 							},
 							Destination: DestinationAccount{
@@ -1002,7 +1000,7 @@ func TestSetAccountMeta(t *testing.T) {
 						StatementSetAccountMeta{
 							Account: ExprVariable("acc"),
 							Key:     "fees",
-							Value: ExprLiteral{Value: core.Portion{
+							Value: ExprLiteral{Value: internal.Portion{
 								Remaining: false,
 								Specific:  big.NewRat(1, 100),
 							}},
@@ -1058,11 +1056,11 @@ func TestVariableBalance(t *testing.T) {
 				Program: Program{
 					VarsDecl: []VarDecl{
 						{
-							Typ:  core.TypeMonetary,
+							Typ:  internal.TypeMonetary,
 							Name: "bal",
 							Origin: VarOriginBalance{
-								Account: ExprLiteral{Value: core.AccountAddress("alice")},
-								Asset:   ExprLiteral{Value: core.Asset("COIN")},
+								Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+								Asset:   ExprLiteral{Value: internal.Asset("COIN")},
 							},
 						},
 					},
@@ -1071,11 +1069,11 @@ func TestVariableBalance(t *testing.T) {
 							Funding: ExprTake{
 								Amount: ExprVariable("bal"),
 								Source: ValueAwareSourceSource{
-									Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("alice")}},
+									Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("alice")}},
 								},
 							},
 							Destination: DestinationAccount{
-								Expr: ExprLiteral{Value: core.AccountAddress("bob")},
+								Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
 							},
 						},
 					},
@@ -1098,15 +1096,15 @@ func TestVariableBalance(t *testing.T) {
 				Program: Program{
 					VarsDecl: []VarDecl{
 						{
-							Typ:  core.TypeAccount,
+							Typ:  internal.TypeAccount,
 							Name: "acc",
 						},
 						{
-							Typ:  core.TypeMonetary,
+							Typ:  internal.TypeMonetary,
 							Name: "bal",
 							Origin: VarOriginBalance{
 								Account: ExprVariable("acc"),
-								Asset:   ExprLiteral{Value: core.Asset("COIN")},
+								Asset:   ExprLiteral{Value: internal.Asset("COIN")},
 							},
 						},
 					},
@@ -1115,11 +1113,11 @@ func TestVariableBalance(t *testing.T) {
 							Funding: ExprTake{
 								Amount: ExprVariable("bal"),
 								Source: ValueAwareSourceSource{
-									Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("world")}},
+									Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("world")}},
 								},
 							},
 							Destination: DestinationAccount{
-								Expr: ExprLiteral{Value: core.AccountAddress("alice")},
+								Expr: ExprLiteral{Value: internal.AccountAddress("alice")},
 							},
 						},
 					},
@@ -1243,14 +1241,14 @@ func TestVariableAsset(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Typ:  core.TypeAsset,
+						Typ:  internal.TypeAsset,
 						Name: "ass",
 					},
 					{
-						Typ:  core.TypeMonetary,
+						Typ:  internal.TypeMonetary,
 						Name: "bal",
 						Origin: VarOriginBalance{
-							Account: ExprLiteral{Value: core.AccountAddress("alice")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Asset:   ExprVariable("ass"),
 						},
 					},
@@ -1259,32 +1257,32 @@ func TestVariableAsset(t *testing.T) {
 					StatementAllocate{
 						Funding: ExprTakeAll{
 							Asset:  ExprVariable("ass"),
-							Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("alice")}},
+							Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("alice")}},
 						},
 						Destination: DestinationAccount{
-							Expr: ExprLiteral{Value: core.AccountAddress("bob")},
+							Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
 						},
 					},
 					StatementAllocate{
 						Funding: ExprTake{
-							Amount: ExprMonetaryNew{Asset: ExprVariable("ass"), Amount: ExprLiteral{Value: core.NewNumber(1)}},
+							Amount: ExprMonetaryNew{Asset: ExprVariable("ass"), Amount: ExprLiteral{Value: internal.NewNumber(1)}},
 							Source: ValueAwareSourceSource{
-								Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("bob")}},
+								Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("bob")}},
 							},
 						},
 						Destination: DestinationAccount{
-							Expr: ExprLiteral{Value: core.AccountAddress("alice")},
+							Expr: ExprLiteral{Value: internal.AccountAddress("alice")},
 						},
 					},
 					StatementAllocate{
 						Funding: ExprTake{
 							Amount: ExprVariable("bal"),
 							Source: ValueAwareSourceSource{
-								Source: SourceAccount{Account: ExprLiteral{Value: core.AccountAddress("alice")}},
+								Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("alice")}},
 							},
 						},
 						Destination: DestinationAccount{
-							Expr: ExprLiteral{Value: core.AccountAddress("bob")},
+							Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
 						},
 					},
 				},
@@ -1433,41 +1431,32 @@ func TestSaveFromAccount(t *testing.T) {
  				destination = @bob
  			)`,
 			Expected: CaseResult{
-				Instructions: []byte{
-					program.OP_APUSH, 01, 00,
-					program.OP_APUSH, 02, 00,
-					program.OP_SAVE,
-					program.OP_APUSH, 02, 00,
-					program.OP_APUSH, 03, 00,
-					program.OP_ASSET,
-					program.OP_APUSH, 04, 00,
-					program.OP_MONETARY_NEW,
-					program.OP_TAKE_ALL,
-					program.OP_APUSH, 03, 00,
-					program.OP_TAKE,
-					program.OP_APUSH, 05, 00,
-					program.OP_BUMP,
-					program.OP_REPAY,
-					program.OP_FUNDING_SUM,
-					program.OP_TAKE,
-					program.OP_APUSH, 06, 00,
-					program.OP_SEND,
-					program.OP_REPAY,
-				},
-				Resources: []program.Resource{
-					program.Constant{Inner: internal.Asset("EUR")},
-					program.Monetary{
-						Asset:  0,
-						Amount: internal.NewMonetaryInt(10),
+				Program: Program{
+					Statements: []Statement{
+						StatementSave{
+							Amount: ExprMonetaryNew{
+								Asset:  ExprLiteral{Value: internal.Asset("EUR")},
+								Amount: ExprLiteral{Value: internal.NewNumber(10)},
+							},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+						},
+						StatementAllocate{
+							Funding: ExprTake{
+								Amount: ExprMonetaryNew{
+									Asset:  ExprLiteral{Value: internal.Asset("EUR")},
+									Amount: ExprLiteral{Value: internal.NewNumber(20)},
+								},
+								Source: ValueAwareSourceSource{
+									Source: SourceAccount{
+										Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+									},
+								},
+							},
+							Destination: DestinationAccount{
+								Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
+							},
+						},
 					},
-					program.Constant{Inner: internal.AccountAddress("alice")},
-					program.Monetary{
-						Asset:  0,
-						Amount: internal.NewMonetaryInt(20),
-					},
-					program.Constant{Inner: internal.NewMonetaryInt(0)},
-					program.Constant{Inner: internal.NewMonetaryInt(1)},
-					program.Constant{Inner: internal.AccountAddress("bob")},
 				},
 			},
 		})
@@ -1483,37 +1472,29 @@ func TestSaveFromAccount(t *testing.T) {
  				destination = @bob
  			)`,
 			Expected: CaseResult{
-				Instructions: []byte{
-					program.OP_APUSH, 00, 00,
-					program.OP_APUSH, 01, 00,
-					program.OP_SAVE,
-					program.OP_APUSH, 01, 00,
-					program.OP_APUSH, 02, 00,
-					program.OP_ASSET,
-					program.OP_APUSH, 03, 00,
-					program.OP_MONETARY_NEW,
-					program.OP_TAKE_ALL,
-					program.OP_APUSH, 02, 00,
-					program.OP_TAKE,
-					program.OP_APUSH, 04, 00,
-					program.OP_BUMP,
-					program.OP_REPAY,
-					program.OP_FUNDING_SUM,
-					program.OP_TAKE,
-					program.OP_APUSH, 05, 00,
-					program.OP_SEND,
-					program.OP_REPAY,
-				},
-				Resources: []program.Resource{
-					program.Constant{Inner: internal.Asset("EUR")},
-					program.Constant{Inner: internal.AccountAddress("alice")},
-					program.Monetary{
-						Asset:  0,
-						Amount: internal.NewMonetaryInt(20),
+				Program: Program{
+					Statements: []Statement{
+						StatementSaveAll{
+							Asset:   ExprLiteral{Value: internal.Asset("EUR")},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+						},
+						StatementAllocate{
+							Funding: ExprTake{
+								Amount: ExprMonetaryNew{
+									Asset:  ExprLiteral{Value: internal.Asset("EUR")},
+									Amount: ExprLiteral{Value: internal.NewNumber(20)},
+								},
+								Source: ValueAwareSourceSource{
+									Source: SourceAccount{
+										Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+									},
+								},
+							},
+							Destination: DestinationAccount{
+								Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
+							},
+						},
 					},
-					program.Constant{Inner: internal.NewMonetaryInt(0)},
-					program.Constant{Inner: internal.NewMonetaryInt(1)},
-					program.Constant{Inner: internal.AccountAddress("bob")},
 				},
 			},
 		})
@@ -1533,41 +1514,38 @@ func TestSaveFromAccount(t *testing.T) {
  				destination = @bob
  			)`,
 			Expected: CaseResult{
-				Instructions: []byte{
-					program.OP_APUSH, 01, 00,
-					program.OP_APUSH, 02, 00,
-					program.OP_SAVE,
-					program.OP_APUSH, 02, 00,
-					program.OP_APUSH, 03, 00,
-					program.OP_ASSET,
-					program.OP_APUSH, 04, 00,
-					program.OP_MONETARY_NEW,
-					program.OP_TAKE_ALL,
-					program.OP_APUSH, 03, 00,
-					program.OP_TAKE,
-					program.OP_APUSH, 05, 00,
-					program.OP_BUMP,
-					program.OP_REPAY,
-					program.OP_FUNDING_SUM,
-					program.OP_TAKE,
-					program.OP_APUSH, 06, 00,
-					program.OP_SEND,
-					program.OP_REPAY,
-				},
-				Resources: []program.Resource{
-					program.Variable{Typ: internal.TypeAsset, Name: "ass"},
-					program.Monetary{
-						Asset:  0,
-						Amount: internal.NewMonetaryInt(10),
+				Program: Program{
+					VarsDecl: []VarDecl{
+						{
+							Typ:  internal.TypeAsset,
+							Name: "ass",
+						},
 					},
-					program.Constant{Inner: internal.AccountAddress("alice")},
-					program.Monetary{
-						Asset:  0,
-						Amount: internal.NewMonetaryInt(20),
+					Statements: []Statement{
+						StatementSave{
+							Amount: ExprMonetaryNew{
+								Asset:  ExprVariable("ass"),
+								Amount: ExprLiteral{Value: internal.NewNumber(10)},
+							},
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+						},
+						StatementAllocate{
+							Funding: ExprTake{
+								Amount: ExprMonetaryNew{
+									Asset:  ExprVariable("ass"),
+									Amount: ExprLiteral{Value: internal.NewNumber(20)},
+								},
+								Source: ValueAwareSourceSource{
+									Source: SourceAccount{
+										Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+									},
+								},
+							},
+							Destination: DestinationAccount{
+								Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
+							},
+						},
 					},
-					program.Constant{Inner: internal.NewMonetaryInt(0)},
-					program.Constant{Inner: internal.NewMonetaryInt(1)},
-					program.Constant{Inner: internal.AccountAddress("bob")},
 				},
 			},
 		})
@@ -1587,38 +1565,35 @@ func TestSaveFromAccount(t *testing.T) {
  				destination = @bob
  			)`,
 			Expected: CaseResult{
-				Instructions: []byte{
-					program.OP_APUSH, 00, 00,
-					program.OP_APUSH, 01, 00,
-					program.OP_SAVE,
-					program.OP_APUSH, 01, 00,
-					program.OP_APUSH, 03, 00,
-					program.OP_ASSET,
-					program.OP_APUSH, 04, 00,
-					program.OP_MONETARY_NEW,
-					program.OP_TAKE_ALL,
-					program.OP_APUSH, 03, 00,
-					program.OP_TAKE,
-					program.OP_APUSH, 05, 00,
-					program.OP_BUMP,
-					program.OP_REPAY,
-					program.OP_FUNDING_SUM,
-					program.OP_TAKE,
-					program.OP_APUSH, 06, 00,
-					program.OP_SEND,
-					program.OP_REPAY,
-				},
-				Resources: []program.Resource{
-					program.Variable{Typ: internal.TypeMonetary, Name: "mon"},
-					program.Constant{Inner: internal.AccountAddress("alice")},
-					program.Constant{Inner: internal.Asset("EUR")},
-					program.Monetary{
-						Asset:  2,
-						Amount: internal.NewMonetaryInt(20),
+				Program: Program{
+					VarsDecl: []VarDecl{
+						{
+							Typ:  internal.TypeMonetary,
+							Name: "mon",
+						},
 					},
-					program.Constant{Inner: internal.NewMonetaryInt(0)},
-					program.Constant{Inner: internal.NewMonetaryInt(1)},
-					program.Constant{Inner: internal.AccountAddress("bob")},
+					Statements: []Statement{
+						StatementSave{
+							Amount:  ExprVariable("mon"),
+							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+						},
+						StatementAllocate{
+							Funding: ExprTake{
+								Amount: ExprMonetaryNew{
+									Asset:  ExprVariable("ass"),
+									Amount: ExprLiteral{Value: internal.NewNumber(20)},
+								},
+								Source: ValueAwareSourceSource{
+									Source: SourceAccount{
+										Account: ExprLiteral{Value: internal.AccountAddress("alice")},
+									},
+								},
+							},
+							Destination: DestinationAccount{
+								Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
+							},
+						},
+					},
 				},
 			},
 		})
@@ -1630,9 +1605,7 @@ func TestSaveFromAccount(t *testing.T) {
 				save 30 from @alice
 			`,
 			Expected: CaseResult{
-				Instructions: []byte{},
-				Resources:    []program.Resource{},
-				Error:        "save monetary from account: the first expression should be of type 'monetary' instead of 'number'",
+				Error: "save monetary from account: the first expression should be of type 'monetary' instead of 'number'",
 			},
 		})
 	})
@@ -1643,9 +1616,7 @@ func TestSaveFromAccount(t *testing.T) {
 				save [EUR 30] from ALICE
 			`,
 			Expected: CaseResult{
-				Instructions: []byte{},
-				Resources:    []program.Resource{},
-				Error:        "save monetary from account: the second expression should be of type 'account' instead of 'asset'",
+				Error: "save monetary from account: the second expression should be of type 'account' instead of 'asset'",
 			},
 		})
 	})
