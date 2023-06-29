@@ -280,13 +280,14 @@ func registerMigrations(migrator *migrations.Migrator) {
 				_, err := tx.Exec(`
 					ALTER TABLE payments.payment ALTER COLUMN id DROP DEFAULT;
 
-					ALTER TABLE payments.transfers DROP COLUMN payment_id;
-					ALTER TABLE payments.adjustment DROP COLUMN payment_id;
-					ALTER TABLE payments.metadata DROP COLUMN payment_id;
+					ALTER TABLE payments.adjustment drop constraint IF EXISTS adjustment_payment;
+					ALTER TABLE payments.metadata drop constraint IF EXISTS metadata_payment;
+					ALTER TABLE payments.transfers drop constraint IF EXISTS transfer_payment;
+					ALTER TABLE payments.payment ALTER COLUMN id TYPE CHARACTER VARYING;
+					ALTER TABLE payments.adjustment ALTER COLUMN payment_id TYPE CHARACTER VARYING;
+					ALTER TABLE payments.metadata ALTER COLUMN payment_id TYPE CHARACTER VARYING;
+					ALTER TABLE payments.transfers ALTER COLUMN payment_id TYPE CHARACTER VARYING;
 
-					ALTER TABLE payments.payment ALTER COLUMN id TYPE character varying;
-
-					ALTER TABLE payments.metadata ADD COLUMN payment_id CHARACTER VARYING;
 					ALTER TABLE payments.metadata ADD CONSTRAINT metadata_payment
 						FOREIGN KEY (payment_id)
 						REFERENCES payments.payment (id)
@@ -295,7 +296,6 @@ func registerMigrations(migrator *migrations.Migrator) {
 						INITIALLY IMMEDIATE
 					;
 
-					ALTER TABLE payments.adjustment ADD COLUMN payment_id CHARACTER VARYING;
 					ALTER TABLE payments.adjustment ADD CONSTRAINT adjustment_payment
 						FOREIGN KEY (payment_id)
 						REFERENCES payments.payment (id)
@@ -303,10 +303,6 @@ func registerMigrations(migrator *migrations.Migrator) {
 						NOT DEFERRABLE
 						INITIALLY IMMEDIATE
 					;
-
-					-- Since a transfer is created before a payment, we can't
-					-- have a foreign key constraint here.
-					ALTER TABLE payments.transfers ADD COLUMN payment_id CHARACTER VARYING;
 				`)
 				if err != nil {
 					return err
