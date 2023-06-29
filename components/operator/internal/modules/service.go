@@ -252,6 +252,11 @@ type Context struct {
 	Versions      *stackv1beta3.Versions
 }
 
+type PostInstallContext struct {
+	Context
+	ModuleName string
+}
+
 type ConfigHandles map[string]ConfigHandle
 
 func (h ConfigHandles) sort() []string {
@@ -312,6 +317,16 @@ func (service *Service) Prepare(ctx ModuleContext, serviceName string) {
 		if service.usedPort == 0 {
 			service.usedPort = ctx.PortAllocator.NextPort()
 		}
+
+		if ctx.Stack.Status.Ports == nil {
+			ctx.Stack.Status.Ports = make(map[string]map[string]int32)
+		}
+
+		if ctx.Stack.Status.Ports[ctx.Module] == nil {
+			ctx.Stack.Status.Ports[ctx.Module] = make(map[string]int32)
+		}
+
+		ctx.Stack.Status.Ports[ctx.Module][serviceName] = service.usedPort
 	}
 
 	if ctx.Configuration.Spec.Broker.Nats != nil && service.NeedTopic {

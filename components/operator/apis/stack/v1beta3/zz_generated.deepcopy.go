@@ -892,6 +892,23 @@ func (in *StackStargateConfig) DeepCopy() *StackStargateConfig {
 func (in *StackStatus) DeepCopyInto(out *StackStatus) {
 	*out = *in
 	in.Status.DeepCopyInto(&out.Status)
+	if in.Ports != nil {
+		in, out := &in.Ports, &out.Ports
+		*out = make(map[string]map[string]int32, len(*in))
+		for key, val := range *in {
+			var outVal map[string]int32
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				in, out := &val, &outVal
+				*out = make(map[string]int32, len(*in))
+				for key, val := range *in {
+					(*out)[key] = val
+				}
+			}
+			(*out)[key] = outVal
+		}
+	}
 	if in.StaticAuthClients != nil {
 		in, out := &in.StaticAuthClients, &out.StaticAuthClients
 		*out = make(map[string]StaticClient, len(*in))

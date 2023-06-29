@@ -13,7 +13,7 @@ type Transfer struct {
 
 	ID          uuid.UUID `bun:",pk,nullzero"`
 	ConnectorID uuid.UUID `bun:",nullzero"`
-	PaymentID   *uuid.UUID
+	PaymentID   *PaymentID
 	CreatedAt   time.Time `bun:",nullzero"`
 
 	Reference   *string

@@ -53,17 +53,12 @@ func (i *DefaultIngester) IngestPayments(ctx context.Context, batch PaymentBatch
 		return fmt.Errorf("error upserting payments: %w", err)
 	}
 
-	taskDescriptor, err := json.Marshal(i.descriptor)
-	if err != nil {
-		return fmt.Errorf("error marshaling task descriptor: %w", err)
-	}
-
 	taskState, err := json.Marshal(commitState)
 	if err != nil {
 		return fmt.Errorf("error marshaling task state: %w", err)
 	}
 
-	if err = i.repo.UpdateTaskState(ctx, i.provider, taskDescriptor, taskState); err != nil {
+	if err = i.repo.UpdateTaskState(ctx, i.provider, i.descriptor, taskState); err != nil {
 		return fmt.Errorf("error updating task state: %w", err)
 	}
 

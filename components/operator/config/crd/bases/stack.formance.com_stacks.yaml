@@ -1991,6 +1991,13 @@ spec:
                 type: array
               light:
                 type: boolean
+              ports:
+                additionalProperties:
+                  additionalProperties:
+                    format: int32
+                    type: integer
+                  type: object
+                type: object
               staticAuthClients:
                 additionalProperties:
                   properties:

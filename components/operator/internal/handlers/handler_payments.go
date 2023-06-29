@@ -1,8 +1,15 @@
 package handlers
 
 import (
+	"database/sql"
+	"fmt"
+	"net/http"
+
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	"github.com/formancehq/payments/cmd"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
 func init() {
@@ -50,6 +57,75 @@ func init() {
 					}}
 				},
 			},
+			"v0.6.5": {
+				PreUpgrade: func(ctx modules.Context) error {
+					postgresUri := fmt.Sprintf(
+						"postgresql://%s:%s@%s:%d/%s?sslmode=disable",
+						ctx.Configuration.Spec.Services.Payments.Postgres.Username,
+						ctx.Configuration.Spec.Services.Payments.Postgres.Password,
+						ctx.Configuration.Spec.Services.Payments.Postgres.Host,
+						ctx.Configuration.Spec.Services.Payments.Postgres.Port,
+						ctx.Stack.GetServiceName("payments"),
+					)
+
+					db, err := sql.Open("postgres", postgresUri)
+					if err != nil {
+						return err
+					}
+					bunDB := bun.NewDB(db, pgdialect.New())
+
+					return cmd.Migrate(ctx.Context, bunDB)
+				},
+				PostUpgrade: func(ctx modules.PostInstallContext) error {
+					if err := resetConnectors(ctx, "stripe"); err != nil {
+						return err
+					}
+					if err := resetConnectors(ctx, "wise"); err != nil {
+						return err
+					}
+					if err := resetConnectors(ctx, "modulr"); err != nil {
+						return err
+					}
+					if err := resetConnectors(ctx, "banking-circle"); err != nil {
+						return err
+					}
+					if err := resetConnectors(ctx, "currency-cloud"); err != nil {
+						return err
+					}
+					if err := resetConnectors(ctx, "dummy-pay"); err != nil {
+						return err
+					}
+					return nil
+				},
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return modules.Services{{
+						InjectPostgresVariables: true,
+						HasVersionEndpoint:      true,
+						ListenEnvVar:            "LISTEN",
+						ExposeHTTP:              true,
+						NeedTopic:               true,
+						Liveness:                modules.LivenessLegacy,
+						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+							return modules.Container{
+								Env:       env(resolveContext),
+								Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+								Resources: modules.ResourceSizeSmall(),
+							}
+						},
+					}}
+				},
+			},
 		},
 	})
+}
+
+func resetConnectors(ctx modules.PostInstallContext, connector string) error {
+	endpoint := fmt.Sprintf(
+		"http://payments.%s.svc:%d/connectors/%s/reset",
+		ctx.Stack.Name,
+		ctx.Stack.Status.Ports[ctx.ModuleName]["payments"],
+		connector,
+	)
+	_, err := http.Post(endpoint, "", nil)
+	return err
 }

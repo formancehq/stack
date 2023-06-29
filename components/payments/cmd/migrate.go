@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -55,5 +56,9 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 		bunDB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithWriter(cmd.OutOrStdout())))
 	}
 
-	return storage.Migrate(cmd.Context(), bunDB)
+	return Migrate(cmd.Context(), bunDB)
+}
+
+func Migrate(ctx context.Context, db *bun.DB) error {
+	return storage.Migrate(ctx, db)
 }

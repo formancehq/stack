@@ -49,12 +49,12 @@ func init() {
 
 					return nil
 				},
-				PostUpgrade: func(ctx modules.Context) error {
-					esClient, err := getOpenSearchClient(ctx)
+				PostUpgrade: func(ctx modules.PostInstallContext) error {
+					esClient, err := getOpenSearchClient(ctx.Context)
 					if err != nil {
 						return err
 					}
-					if err := reindexData(ctx, esClient); err != nil {
+					if err := reindexData(ctx.Context, esClient); err != nil {
 						return err
 					}
 

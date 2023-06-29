@@ -126,6 +126,9 @@ type StackStatus struct {
 	Status `json:",inline"`
 
 	// +optional
+	Ports map[string]map[string]int32 `json:"ports,omitempty"`
+
+	// +optional
 	StaticAuthClients map[string]StaticClient `json:"staticAuthClients,omitempty"`
 
 	// +optional

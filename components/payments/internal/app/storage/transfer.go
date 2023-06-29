@@ -31,10 +31,13 @@ func (s *Storage) CreateNewTransfer(ctx context.Context, name models.ConnectorPr
 		Destination: destination,
 	}
 
-	_, err = s.db.NewInsert().Model(&newTransfer).Exec(ctx)
+	var id string
+	_, err = s.db.NewInsert().Model(&newTransfer).Returning("id").Exec(ctx, &id)
 	if err != nil {
 		return models.Transfer{}, e("failed to create new transfer", err)
 	}
+
+	newTransfer.ID = uuid.MustParse(id)
 
 	return newTransfer, nil
 }

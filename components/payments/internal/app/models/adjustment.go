@@ -13,7 +13,7 @@ type Adjustment struct {
 	bun.BaseModel `bun:"payments.adjustment"`
 
 	ID        uuid.UUID `bun:",pk,nullzero"`
-	PaymentID uuid.UUID `bun:",pk,nullzero"`
+	PaymentID PaymentID `bun:",pk,nullzero"`
 	CreatedAt time.Time `bun:",nullzero"`
 	Reference string
 	Amount    int64

@@ -275,5 +275,41 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE payments.payment ALTER COLUMN id DROP DEFAULT;
+
+					ALTER TABLE payments.adjustment drop constraint IF EXISTS adjustment_payment;
+					ALTER TABLE payments.metadata drop constraint IF EXISTS metadata_payment;
+					ALTER TABLE payments.transfers drop constraint IF EXISTS transfer_payment;
+					ALTER TABLE payments.payment ALTER COLUMN id TYPE CHARACTER VARYING;
+					ALTER TABLE payments.adjustment ALTER COLUMN payment_id TYPE CHARACTER VARYING;
+					ALTER TABLE payments.metadata ALTER COLUMN payment_id TYPE CHARACTER VARYING;
+					ALTER TABLE payments.transfers ALTER COLUMN payment_id TYPE CHARACTER VARYING;
+
+					ALTER TABLE payments.metadata ADD CONSTRAINT metadata_payment
+						FOREIGN KEY (payment_id)
+						REFERENCES payments.payment (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
+
+					ALTER TABLE payments.adjustment ADD CONSTRAINT adjustment_payment
+						FOREIGN KEY (payment_id)
+						REFERENCES payments.payment (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

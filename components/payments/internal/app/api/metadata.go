@@ -5,22 +5,21 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/payments/internal/app/models"
 	"github.com/pkg/errors"
-
-	"github.com/google/uuid"
 
 	"github.com/gorilla/mux"
 )
 
 type updateMetadataRepository interface {
-	UpdatePaymentMetadata(ctx context.Context, paymentID uuid.UUID, metadata map[string]string) error
+	UpdatePaymentMetadata(ctx context.Context, paymentID models.PaymentID, metadata map[string]string) error
 }
 
 type updateMetadataRequest map[string]string
 
 func updateMetadataHandler(repo updateMetadataRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		paymentID, err := uuid.Parse(mux.Vars(r)["paymentID"])
+		paymentID, err := models.PaymentIDFromString(mux.Vars(r)["paymentID"])
 		if err != nil {
 			handleErrorBadRequest(w, r, err)
 
@@ -42,7 +41,7 @@ func updateMetadataHandler(repo updateMetadataRepository) http.HandlerFunc {
 			return
 		}
 
-		err = repo.UpdatePaymentMetadata(r.Context(), paymentID, metadata)
+		err = repo.UpdatePaymentMetadata(r.Context(), *paymentID, metadata)
 		if err != nil {
 			handleError(w, r, err)
 

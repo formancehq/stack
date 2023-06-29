@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
-	"github.com/google/uuid"
 )
 
-func (s *Storage) UpdatePaymentMetadata(ctx context.Context, paymentID uuid.UUID, metadata map[string]string) error {
+func (s *Storage) UpdatePaymentMetadata(ctx context.Context, paymentID models.PaymentID, metadata map[string]string) error {
 	var metadataToInsert []models.Metadata // nolint:prealloc // it's against a map
 
 	for key, value := range metadata {

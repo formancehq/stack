@@ -87,24 +87,36 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, errors.New("migration not found")
 	}
 
-	var fn func(modules.Context) error
+	var returnedError error
 	if migration.Spec.PostUpgrade {
-		fn = version.PostUpgrade
+		if err := version.PostUpgrade(modules.PostInstallContext{
+			ModuleName: migration.Spec.Module,
+			Context: modules.Context{
+				Context:       ctx,
+				Region:        r.configuration.Region,
+				Environment:   r.configuration.Environment,
+				Stack:         stack,
+				Configuration: configuration,
+				Versions:      versions,
+			},
+		}); err != nil {
+			returnedError = err
+		}
 	} else {
-		fn = version.PreUpgrade
+		if err := version.PreUpgrade(modules.Context{
+			Context:       ctx,
+			Region:        r.configuration.Region,
+			Environment:   r.configuration.Environment,
+			Stack:         stack,
+			Configuration: configuration,
+			Versions:      versions,
+		}); err != nil {
+			returnedError = err
+		}
 	}
 
-	var returnedError error
-	if err := fn(modules.Context{
-		Context:       ctx,
-		Region:        r.configuration.Region,
-		Environment:   r.configuration.Environment,
-		Stack:         stack,
-		Configuration: configuration,
-		Versions:      versions,
-	}); err != nil {
-		migration.Status.Err = err.Error()
-		returnedError = err
+	if returnedError != nil {
+		migration.Status.Err = returnedError.Error()
 	} else {
 		migration.Status.Terminated = true
 	}
