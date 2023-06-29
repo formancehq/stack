@@ -4,37 +4,35 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"time"
 )
 
 type payment struct {
-	Id             string    `json:"Id"`
-	Tag            string    `json:"Tag"`
-	CreationDate   time.Time `json:"CreationDate"`
-	AuthorId       string    `json:"AuthorId"`
-	CreditedUserId string    `json:"CreditedUserId"`
+	Id             string `json:"Id"`
+	Tag            string `json:"Tag"`
+	CreationDate   int64  `json:"CreationDate"`
+	AuthorId       string `json:"AuthorId"`
+	CreditedUserId string `json:"CreditedUserId"`
 	DebitedFunds   struct {
 		Currency string `json:"Currency"`
-		Amount   int    `json:"Amount"`
+		Amount   int64  `json:"Amount"`
 	} `json:"DebitedFunds"`
 	CreditedFunds struct {
 		Currency string `json:"Currency"`
-		Amount   int    `json:"Amount"`
+		Amount   int64  `json:"Amount"`
 	} `json:"CreditedFunds"`
 	Fees struct {
 		Currency string `json:"Currency"`
-		Amount   int    `json:"Amount"`
+		Amount   int64  `json:"Amount"`
 	} `json:"Fees"`
-	Status           string    `json:"Status"`
-	ResultCode       string    `json:"ResultCode"`
-	ResultMessage    string    `json:"ResultMessage"`
-	ExecutionDate    time.Time `json:"ExecutionDate"`
-	Type             string    `json:"Type"`
-	Nature           string    `json:"Nature"`
-	CreditedWalletID string    `json:"CreditedWalletId"`
-	DebitedWalletID  string    `json:"DebitedWalletId"`
+	Status           string `json:"Status"`
+	ResultCode       string `json:"ResultCode"`
+	ResultMessage    string `json:"ResultMessage"`
+	ExecutionDate    int64  `json:"ExecutionDate"`
+	Type             string `json:"Type"`
+	Nature           string `json:"Nature"`
+	CreditedWalletID string `json:"CreditedWalletId"`
+	DebitedWalletID  string `json:"DebitedWalletId"`
 }
 
 func (c *Client) GetAllTransactions(ctx context.Context, userID string) ([]*payment, error) {
@@ -85,13 +83,8 @@ func (c *Client) getTransactions(ctx context.Context, userID string, page int) (
 		}
 	}()
 
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read login response body: %w", err)
-	}
-
 	var payments []*payment
-	if err := json.Unmarshal(responseBody, &payments); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&payments); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal login response body: %w", err)
 	}
 

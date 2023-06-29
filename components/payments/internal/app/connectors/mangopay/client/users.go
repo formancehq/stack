@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -60,13 +59,8 @@ func (c *Client) getUsers(ctx context.Context, page int) ([]*user, error) {
 		}
 	}()
 
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read login response body: %w", err)
-	}
-
 	var users []*user
-	if err := json.Unmarshal(responseBody, &users); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal login response body: %w", err)
 	}
 

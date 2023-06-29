@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/currency"
 	"github.com/formancehq/payments/internal/app/connectors/mangopay/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/models"
@@ -35,13 +37,13 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, userID 
 
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
-					CreatedAt: transaction.CreationDate,
+					CreatedAt: time.Unix(transaction.CreationDate, 0),
 					Reference: transaction.Id,
-					Amount:    int64(transaction.DebitedFunds.Amount * 100),
+					Amount:    transaction.DebitedFunds.Amount,
 					Type:      matchPaymentType(transaction.Type),
 					Status:    matchPaymentStatus(transaction.Status),
 					Scheme:    models.PaymentSchemeOther,
-					Asset:     models.PaymentAsset(transaction.DebitedFunds.Currency + "/2"),
+					Asset:     currency.FormatAsset(transaction.DebitedFunds.Currency),
 					RawData:   rawData,
 				},
 			}

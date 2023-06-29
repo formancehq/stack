@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/formancehq/payments/internal/app/connectors/mangopay/client"
-	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
@@ -22,7 +21,7 @@ type TaskDescriptor struct {
 }
 
 // clientID, apiKey, endpoint string, logger logging
-func resolveTasks(logger logging.Logger, config Config) func(taskDefinition models.TaskDescriptor) task.Task {
+func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
 	mangopayClient, err := client.NewClient(
 		config.ClientID,
 		config.APIKey,
@@ -35,14 +34,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition mode
 		return nil
 	}
 
-	return func(taskDefinition models.TaskDescriptor) task.Task {
-		taskDescriptor, err := models.DecodeTaskDescriptor[TaskDescriptor](taskDefinition)
-		if err != nil {
-			logger.Error(err)
-
-			return nil
-		}
-
+	return func(taskDescriptor TaskDescriptor) task.Task {
 		switch taskDescriptor.Key {
 		case taskNameFetchUsers:
 			return taskFetchUsers(logger, mangopayClient)

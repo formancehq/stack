@@ -42,6 +42,7 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 
 	cfg.AddParameter("clientID", configtemplate.TypeString, true)
 	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
+	cfg.AddParameter("endpoint", configtemplate.TypeString, true)
 
 	return Name.String(), cfg
 }

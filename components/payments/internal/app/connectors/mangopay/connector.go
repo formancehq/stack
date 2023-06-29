@@ -22,7 +22,10 @@ func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
-	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{Name: taskNameFetchUsers})
+	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name: "Fetch users from client",
+		Key:  taskNameFetchUsers,
+	})
 	if err != nil {
 		return err
 	}
@@ -35,7 +38,12 @@ func (c *Connector) Uninstall(ctx context.Context) error {
 }
 
 func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
-	return resolveTasks(c.logger, c.cfg)
+	taskDescriptor, err := models.DecodeTaskDescriptor[TaskDescriptor](descriptor)
+	if err != nil {
+		panic(err)
+	}
+
+	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
 }
 
 var _ integration.Connector = &Connector{}
