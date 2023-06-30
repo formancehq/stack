@@ -128,9 +128,8 @@ var _ = Describe("Check stack deployment", func() {
 						Namespace: stack.GetNamespace(),
 						Name:      stack.GetName(),
 					}, stack)).To(BeNil())
-					spew.Dump(stack)
 					return stack.IsReady()
-				}).WithTimeout(20 * time.Second).Should(BeTrue())
+				}).WithTimeout(10 * time.Second).Should(BeTrue())
 			})
 			JustAfterEach(func() {
 				Expect(Delete(stack)).To(Succeed())
