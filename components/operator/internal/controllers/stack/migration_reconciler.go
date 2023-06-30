@@ -18,15 +18,17 @@ package stack
 
 import (
 	"context"
-	"errors"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	pkgError "github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 // MigrationReconciler reconciles a Migration object
@@ -50,7 +52,11 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		Namespace: req.Namespace,
 		Name:      req.Name,
 	}, migration); err != nil {
-		return ctrl.Result{}, err
+		if errors.IsNotFound(err) {
+			log.Info("Object not found, skip")
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, pkgError.Wrap(err, "Reading target")
 	}
 
 	if migration.Status.Terminated {
@@ -84,7 +90,7 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	module := modules.Get(migration.Spec.Module)
 	version, ok := module.Versions[migration.Spec.TargetedVersion]
 	if !ok {
-		return ctrl.Result{}, errors.New("migration not found")
+		return ctrl.Result{}, pkgError.New("migration not found")
 	}
 
 	var returnedError error
@@ -133,6 +139,7 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 func (r *MigrationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&stackv1beta3.Migration{}).
+		WithEventFilter(predicate.GenerationChangedPredicate{}).
 		Complete(r)
 }
 
