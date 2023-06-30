@@ -14,6 +14,10 @@ fctl cloud regions create name_of_private_region
 ```
 
 ## Deploy region with Helm
+:::tip
+The operator needs [Cert-Manager](https://cert-manager.io/docs/installation/helm/) to run, so you must install it before installing the operator.
+:::
+
 You can now create a private region via Helm. To do this, we'll first generate a Helm configuration file.
 You'll need to adapt the following values:
 - REGION_ID: the identifier of the private region you've just created via FCTL
