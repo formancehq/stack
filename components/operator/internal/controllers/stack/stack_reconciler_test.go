@@ -62,6 +62,7 @@ var _ = Describe("Check stack deployment", func() {
 		if err != nil {
 			panic(err)
 		}
+
 		configurationFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "configuration.yaml"))
 		if err != nil {
 			panic(err)

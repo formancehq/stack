@@ -113,6 +113,8 @@ var _ = ginkgo.BeforeEach(func() {
 			if err := mgr.GetClient().Status().Update(ctx, migration); err != nil {
 				return reconcile.Result{}, err
 			}
+
+			log.Info("Terminated")
 			return reconcile.Result{}, nil
 		}))
 	gomega.Expect(err)

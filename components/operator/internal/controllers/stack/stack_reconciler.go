@@ -131,12 +131,12 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&stackv1beta3.Stack{}).
-		Owns(&corev1.Namespace{}).
-		Owns(&corev1.Service{}).
-		Owns(&networkingv1.Ingress{}).
-		Owns(&corev1.Secret{}).
-		Owns(&corev1.ConfigMap{}).
-		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.Service{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&networkingv1.Ingress{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.Secret{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.ConfigMap{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&appsv1.Deployment{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&stackv1beta3.Migration{}).
 		Watches(
 			&source.Kind{Type: &stackv1beta3.Configuration{}},
@@ -148,7 +148,6 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 			watch(mgr, ".spec.versions"),
 			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
 		).
-		WithEventFilter(predicate.GenerationChangedPredicate{}).
 		Complete(r)
 }
 
