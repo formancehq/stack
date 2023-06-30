@@ -59,22 +59,7 @@ func init() {
 			},
 			"v0.6.5": {
 				PreUpgrade: func(ctx modules.Context) error {
-					postgresUri := fmt.Sprintf(
-						"postgresql://%s:%s@%s:%d/%s?sslmode=disable",
-						ctx.Configuration.Spec.Services.Payments.Postgres.Username,
-						ctx.Configuration.Spec.Services.Payments.Postgres.Password,
-						ctx.Configuration.Spec.Services.Payments.Postgres.Host,
-						ctx.Configuration.Spec.Services.Payments.Postgres.Port,
-						ctx.Stack.GetServiceName("payments"),
-					)
-
-					db, err := sql.Open("postgres", postgresUri)
-					if err != nil {
-						return err
-					}
-					bunDB := bun.NewDB(db, pgdialect.New())
-
-					return cmd.Migrate(ctx.Context, bunDB)
+					return paymentsPreUpgradeMigration(ctx)
 				},
 				PostUpgrade: func(ctx modules.PostInstallContext) error {
 					if err := resetConnectors(ctx, "stripe"); err != nil {
@@ -98,25 +83,61 @@ func init() {
 					return nil
 				},
 				Services: func(ctx modules.ModuleContext) modules.Services {
-					return modules.Services{{
-						InjectPostgresVariables: true,
-						HasVersionEndpoint:      true,
-						ListenEnvVar:            "LISTEN",
-						ExposeHTTP:              true,
-						NeedTopic:               true,
-						Liveness:                modules.LivenessLegacy,
-						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-							return modules.Container{
-								Env:       env(resolveContext),
-								Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-								Resources: modules.ResourceSizeSmall(),
-							}
-						},
-					}}
+					return paymentsServices(ctx, env)
+				},
+			},
+			"v0.6.7": {
+				PreUpgrade: func(ctx modules.Context) error {
+					return paymentsPreUpgradeMigration(ctx)
+				},
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return paymentsServices(ctx, env)
 				},
 			},
 		},
 	})
+}
+
+func paymentsPreUpgradeMigration(ctx modules.Context) error {
+	postgresUri := fmt.Sprintf(
+		"postgresql://%s:%s@%s:%d/%s?sslmode=disable",
+		ctx.Configuration.Spec.Services.Payments.Postgres.Username,
+		ctx.Configuration.Spec.Services.Payments.Postgres.Password,
+		ctx.Configuration.Spec.Services.Payments.Postgres.Host,
+		ctx.Configuration.Spec.Services.Payments.Postgres.Port,
+		ctx.Stack.GetServiceName("payments"),
+	)
+
+	db, err := sql.Open("postgres", postgresUri)
+	if err != nil {
+		return err
+	}
+
+	bunDB := bun.NewDB(db, pgdialect.New())
+	defer bunDB.Close()
+
+	return cmd.Migrate(ctx.Context, bunDB)
+}
+
+func paymentsServices(
+	ctx modules.ModuleContext,
+	env func(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv,
+) modules.Services {
+	return modules.Services{{
+		InjectPostgresVariables: true,
+		HasVersionEndpoint:      true,
+		ListenEnvVar:            "LISTEN",
+		ExposeHTTP:              true,
+		NeedTopic:               true,
+		Liveness:                modules.LivenessLegacy,
+		Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+			return modules.Container{
+				Env:       env(resolveContext),
+				Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+				Resources: modules.ResourceSizeSmall(),
+			}
+		},
+	}}
 }
 
 func resetConnectors(ctx modules.PostInstallContext, connector string) error {
