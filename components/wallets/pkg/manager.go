@@ -295,7 +295,7 @@ func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets])
 			}
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
 				for k, v := range query.Payload.Metadata {
-					metadata[MetadataKeyWalletCustomData+"."+k] = v
+					metadata[MetadataKeyWalletCustomDataPrefix+k] = v
 				}
 			}
 			if query.Payload.Name != "" {
@@ -320,7 +320,7 @@ func (m *Manager) ListHolds(ctx context.Context, query ListQuery[ListHolds]) (*L
 			}
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
 				for k, v := range query.Payload.Metadata {
-					metadata[MetadataKeyWalletCustomData+"."+k] = v
+					metadata[MetadataKeyWalletCustomDataPrefix+k] = v
 				}
 			}
 			return metadata
@@ -334,7 +334,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 			metadata := BalancesMetadataFilter(query.Payload.WalletID)
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
 				for k, v := range query.Payload.Metadata {
-					metadata[MetadataKeyWalletCustomData+"."+k] = v
+					metadata[MetadataKeyWalletCustomDataPrefix+k] = v
 				}
 			}
 			return metadata
@@ -402,18 +402,13 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 	}
 
 	newCustomMetadata := metadata.Metadata{}
-	existingCustomMetadata := GetMetadata(account, MetadataKeyWalletCustomData)
-	if existingCustomMetadata != "" {
-		newCustomMetadata = newCustomMetadata.Merge(
-			metadata.UnmarshalValue[metadata.Metadata](existingCustomMetadata),
-		)
-	}
+	newCustomMetadata = newCustomMetadata.Merge(ExtractCustomMetadata(account))
 	newCustomMetadata = newCustomMetadata.Merge(data.Metadata)
 
 	meta := account.GetMetadata()
-	meta[MetadataKeyWalletCustomData] = metadata.MarshalValue(newCustomMetadata)
+	meta = meta.Merge(EncodeCustomMetadata(newCustomMetadata))
 
-	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), meta); err != nil {
+	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), metadata.Metadata(meta)); err != nil {
 		return errors.Wrap(err, "adding metadata to account")
 	}
 

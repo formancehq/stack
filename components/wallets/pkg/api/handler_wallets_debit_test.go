@@ -271,10 +271,10 @@ func TestWalletsDebit(t *testing.T) {
 				testEnv             *testEnv
 				postTransaction     wallet.PostTransaction
 				holdAccount         string
-				holdAccountMetadata wallet.Metadata
+				holdAccountMetadata metadata.Metadata
 			)
 			testEnv = newTestEnv(
-				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, m wallet.Metadata) error {
+				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, m metadata.Metadata) error {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					holdAccount = account
 					holdAccountMetadata = m

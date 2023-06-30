@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"math/big"
 	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 type Volume struct {
@@ -23,7 +25,7 @@ type ExpandedTransaction struct {
 	Timestamp         time.Time                    `json:"timestamp"`
 	Postings          []Posting                    `json:"postings"`
 	Reference         *string                      `json:"reference,omitempty"`
-	Metadata          Metadata                     `json:"metadata"`
+	Metadata          metadata.Metadata            `json:"metadata"`
 	Txid              int64                        `json:"txid"`
 	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes"`
 	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes"`

@@ -158,8 +158,8 @@ func TestWalletsListFilterMetadata(t *testing.T) {
 			require.Equal(t, defaultLimit, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, metadata.Metadata{
-				wallet.MetadataKeyWalletSpecType:               wallet.PrimaryWallet,
-				wallet.MetadataKeyWalletCustomData + ".wallet": "2",
+				wallet.MetadataKeyWalletSpecType:                    wallet.PrimaryWallet,
+				wallet.MetadataKeyWalletCustomDataPrefix + "wallet": "2",
 			}, query.Metadata)
 
 			hasMore := false

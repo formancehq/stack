@@ -12,6 +12,7 @@ import (
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	sharedhealth "github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
@@ -87,7 +88,7 @@ func newTestEnv(opts ...Option) *testEnv {
 }
 
 type (
-	addMetadataToAccountFn func(ctx context.Context, ledger, account string, metadata wallet.Metadata) error
+	addMetadataToAccountFn func(ctx context.Context, ledger, account string, metadata metadata.Metadata) error
 	getAccountFn           func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error)
 	listAccountsFn         func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error)
 	listTransactionsFn     func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*wallet.TransactionsCursorResponseCursor, error)
@@ -102,7 +103,7 @@ type LedgerMock struct {
 	createTransaction    createTransactionFn
 }
 
-func (l *LedgerMock) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata wallet.Metadata) error {
+func (l *LedgerMock) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
 	return l.addMetadataToAccount(ctx, ledger, account, metadata)
 }
 
