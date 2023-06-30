@@ -38,28 +38,37 @@ func init() {
 	}
 
 	type account struct {
-		Address  string            `json:"address"`
-		Metadata metadata.Metadata `json:"metadata"`
+		Address  string         `json:"address"`
+		Metadata map[string]any `json:"metadata"`
 	}
 
 	ledgerUrl := func(ctx modules.PostInstallContext) string {
 		return fmt.Sprintf("http://ledger.%s.svc.cluster.local:%d/wallets-002",
 			ctx.Stack.Name,
-			ctx.Stack.Status.Ports["ledger"]["ledger"],
-		)
+			ctx.Stack.Status.Ports["ledger"]["ledger"])
 	}
 
 	updateAccountMetadata := func(ctx modules.PostInstallContext, account account) error {
 
-		customMetadataAsString := account.Metadata["wallets/custom_data"]
-		decodedMetadata := metadata.Metadata{}
-		if err := json.Unmarshal([]byte(customMetadataAsString), &decodedMetadata); err != nil {
-			return errors.Wrap(err, "decoding original metadata")
-		}
+		customMetadataRaw := account.Metadata["wallets/custom_data"]
 		newMetadata := account.Metadata
 		newMetadata["wallets/custom_data"] = ""
-		for key, value := range decodedMetadata {
-			newMetadata["wallets/custom_data_"+key] = value
+
+		switch v := customMetadataRaw.(type) {
+		case string:
+			decodedMetadata := metadata.Metadata{}
+			if err := json.Unmarshal([]byte(v), &decodedMetadata); err != nil {
+				return errors.Wrap(err, "decoding original metadata")
+			}
+			for key, value := range decodedMetadata {
+				newMetadata["wallets/custom_data_"+key] = value
+			}
+		case map[string]any:
+			for k, v := range v {
+				newMetadata["wallets/custom_data_"+k] = v
+			}
+		default:
+			panic("should not happen")
 		}
 
 		data, err := json.Marshal(newMetadata)
