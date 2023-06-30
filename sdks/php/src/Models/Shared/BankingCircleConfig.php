@@ -23,6 +23,14 @@ class BankingCircleConfig
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $password;
     
+	#[\JMS\Serializer\Annotation\SerializedName('userCertificate')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $userCertificate;
+    
+	#[\JMS\Serializer\Annotation\SerializedName('userCertificateKey')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $userCertificateKey;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('username')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $username;
@@ -32,6 +40,8 @@ class BankingCircleConfig
 		$this->authorizationEndpoint = "";
 		$this->endpoint = "";
 		$this->password = "";
+		$this->userCertificate = "";
+		$this->userCertificateKey = "";
 		$this->username = "";
 	}
 }

@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230614"
+    "version": "v1.0.20230630"
   },
   "servers": [
     {
@@ -4917,6 +4917,9 @@
                         },
                         {
                           "$ref": "#/components/schemas/TaskBankingCircle"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TaskMangoPay"
                         }
                       ]
                     }
@@ -5036,6 +5039,9 @@
               },
               {
                 "$ref": "#/components/schemas/TaskBankingCircle"
+              },
+              {
+                "$ref": "#/components/schemas/TaskMangoPay"
               }
             ]
           }
@@ -5096,7 +5102,8 @@
           "WISE",
           "MODULR",
           "CURRENCY-CLOUD",
-          "BANKING-CIRCLE"
+          "BANKING-CIRCLE",
+          "MANGOPAY"
         ]
       },
       "ConnectorConfig": {
@@ -5118,6 +5125,9 @@
           },
           {
             "$ref": "#/components/schemas/BankingCircleConfig"
+          },
+          {
+            "$ref": "#/components/schemas/MangoPayConfig"
           }
         ]
       },
@@ -5210,7 +5220,9 @@
           "username",
           "password",
           "endpoint",
-          "authorizationEndpoint"
+          "authorizationEndpoint",
+          "userCertificate",
+          "userCertificateKey"
         ],
         "properties": {
           "username": {
@@ -5226,6 +5238,36 @@
             "example": "XXX"
           },
           "authorizationEndpoint": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "userCertificate": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "userCertificateKey": {
+            "type": "string",
+            "example": "XXX"
+          }
+        }
+      },
+      "MangoPayConfig": {
+        "type": "object",
+        "required": [
+          "clientID",
+          "apiKey",
+          "endpoint"
+        ],
+        "properties": {
+          "clientID": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "apiKey": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "endpoint": {
             "type": "string",
             "example": "XXX"
           }
@@ -5628,6 +5670,35 @@
                     "type": "string"
                   },
                   "key": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TaskMangoPay": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "descriptor"
+            ],
+            "properties": {
+              "descriptor": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  },
+                  "userID": {
                     "type": "string"
                   }
                 }

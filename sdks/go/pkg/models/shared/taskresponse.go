@@ -17,6 +17,7 @@ const (
 	TaskResponseDataTypeTaskDummyPay      TaskResponseDataType = "TaskDummyPay"
 	TaskResponseDataTypeTaskModulr        TaskResponseDataType = "TaskModulr"
 	TaskResponseDataTypeTaskBankingCircle TaskResponseDataType = "TaskBankingCircle"
+	TaskResponseDataTypeTaskMangoPay      TaskResponseDataType = "TaskMangoPay"
 )
 
 type TaskResponseData struct {
@@ -26,6 +27,7 @@ type TaskResponseData struct {
 	TaskDummyPay      *TaskDummyPay
 	TaskModulr        *TaskModulr
 	TaskBankingCircle *TaskBankingCircle
+	TaskMangoPay      *TaskMangoPay
 
 	Type TaskResponseDataType
 }
@@ -81,6 +83,15 @@ func CreateTaskResponseDataTaskBankingCircle(taskBankingCircle TaskBankingCircle
 	return TaskResponseData{
 		TaskBankingCircle: &taskBankingCircle,
 		Type:              typ,
+	}
+}
+
+func CreateTaskResponseDataTaskMangoPay(taskMangoPay TaskMangoPay) TaskResponseData {
+	typ := TaskResponseDataTypeTaskMangoPay
+
+	return TaskResponseData{
+		TaskMangoPay: &taskMangoPay,
+		Type:         typ,
 	}
 }
 
@@ -141,6 +152,15 @@ func (u *TaskResponseData) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
+	taskMangoPay := new(TaskMangoPay)
+	d = json.NewDecoder(bytes.NewReader(data))
+	d.DisallowUnknownFields()
+	if err := d.Decode(&taskMangoPay); err == nil {
+		u.TaskMangoPay = taskMangoPay
+		u.Type = TaskResponseDataTypeTaskMangoPay
+		return nil
+	}
+
 	return errors.New("could not unmarshal into supported union types")
 }
 
@@ -167,6 +187,10 @@ func (u TaskResponseData) MarshalJSON() ([]byte, error) {
 
 	if u.TaskBankingCircle != nil {
 		return json.Marshal(u.TaskBankingCircle)
+	}
+
+	if u.TaskMangoPay != nil {
+		return json.Marshal(u.TaskMangoPay)
 	}
 
 	return nil, nil

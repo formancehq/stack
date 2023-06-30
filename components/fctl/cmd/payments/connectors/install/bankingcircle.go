@@ -2,6 +2,7 @@ package install
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -14,8 +15,10 @@ import (
 
 func NewBankingCircleCommand() *cobra.Command {
 	const (
-		endpointFlag              = "endpoint"
-		authorizationEndpointFlag = "authorization-endpoint"
+		endpointFlag                   = "endpoint"
+		authorizationEndpointFlag      = "authorization-endpoint"
+		userCertificateFilePathFlag    = "user-certificate"
+		userCertificateKeyFilePathFlag = "user-certificate-key"
 
 		defaultEndpoint              = "https://sandbox.bankingcircle.com"
 		defaultAuthorizationEndpoint = "https://authorizationsandbox.bankingcircleconnect.com"
@@ -25,6 +28,8 @@ func NewBankingCircleCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(endpointFlag, defaultEndpoint, "API endpoint"),
 		fctl.WithStringFlag(authorizationEndpointFlag, defaultAuthorizationEndpoint, "Authorization endpoint"),
+		fctl.WithStringFlag(userCertificateFilePathFlag, "", "User certificate"),
+		fctl.WithStringFlag(userCertificateKeyFilePathFlag, "", "User certificate key"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
 			if err != nil {
@@ -50,6 +55,16 @@ func NewBankingCircleCommand() *cobra.Command {
 				return err
 			}
 
+			certificate, err := ioutil.ReadFile(fctl.GetString(cmd, userCertificateFilePathFlag))
+			if err != nil {
+				return errors.Wrap(err, "reading user certificate")
+			}
+
+			key, err := ioutil.ReadFile(fctl.GetString(cmd, userCertificateKeyFilePathFlag))
+			if err != nil {
+				return errors.Wrap(err, "reading user certificate key")
+			}
+
 			request := operations.InstallConnectorRequest{
 				Connector: shared.ConnectorBankingCircle,
 				RequestBody: shared.BankingCircleConfig{
@@ -57,6 +72,8 @@ func NewBankingCircleCommand() *cobra.Command {
 					Password:              args[1],
 					Endpoint:              fctl.GetString(cmd, endpointFlag),
 					AuthorizationEndpoint: fctl.GetString(cmd, authorizationEndpointFlag),
+					UserCertificate:       string(certificate),
+					UserCertificateKey:    string(key),
 				},
 			}
 			response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)
