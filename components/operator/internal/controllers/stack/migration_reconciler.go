@@ -119,6 +119,7 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		migration.Status.Err = returnedError.Error()
 	} else {
 		migration.Status.Terminated = true
+		migration.Status.Err = ""
 	}
 
 	if err := r.Client.Status().Update(ctx, migration); err != nil {
