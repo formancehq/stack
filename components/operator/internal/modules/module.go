@@ -283,7 +283,7 @@ func (module Module) preInstall(ctx Context, deployer *ResourceDeployer, portAll
 
 	var chosenVersion Version
 	for _, version := range versions {
-		if !moduleContext.HasVersionHigher(version) {
+		if !moduleContext.HasVersionHigherOrEqual(version) {
 			break
 		}
 		chosenVersion = module.Versions[version]
