@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -41,8 +42,8 @@ type Balance struct {
 	Priority  int        `json:"priority"`
 }
 
-func (b Balance) LedgerMetadata(walletID string) Metadata {
-	m := Metadata{
+func (b Balance) LedgerMetadata(walletID string) metadata.Metadata {
+	m := metadata.Metadata{
 		MetadataKeyWalletID:         walletID,
 		MetadataKeyWalletBalance:    TrueValue,
 		MetadataKeyBalanceName:      b.Name,

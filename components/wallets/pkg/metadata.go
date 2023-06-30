@@ -1,7 +1,7 @@
 package wallet
 
 import (
-	"encoding/json"
+	"strings"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
@@ -11,7 +11,6 @@ const (
 	MetadataKeyWalletSpecType        = "wallets/spec/type"
 	MetadataKeyWalletID              = "wallets/id"
 	MetadataKeyWalletName            = "wallets/name"
-	MetadataKeyWalletCustomData      = "wallets/custom_data"
 	MetadataKeyHoldWalletID          = "wallets/holds/wallet_id"
 	MetadataKeyHoldAsset             = "wallets/holds/asset"
 	MetadataKeyHoldSubject           = "wallets/holds/subject"
@@ -29,20 +28,17 @@ const (
 	HoldWallet    = "wallets.hold"
 
 	TrueValue = "true"
+
+	MetadataKeyWalletCustomDataPrefix = "wallets/custom_data_"
 )
 
 func TransactionMetadata(customMetadata metadata.Metadata) metadata.Metadata {
 	if customMetadata == nil {
 		customMetadata = metadata.Metadata{}
 	}
-	marshalledCustomMetadata, err := json.Marshal(customMetadata)
-	if err != nil {
-		panic(err)
-	}
 	return metadata.Metadata{
 		MetadataKeyWalletTransaction: "true",
-		MetadataKeyWalletCustomData:  string(marshalledCustomMetadata),
-	}
+	}.Merge(EncodeCustomMetadata(customMetadata))
 }
 
 func TransactionBaseMetadataFilter() metadata.Metadata {
@@ -65,4 +61,22 @@ func GetMetadata(v metadata.Owner, key string) string {
 
 func HasMetadata(v metadata.Owner, key, value string) bool {
 	return GetMetadata(v, key) == value
+}
+
+func ExtractCustomMetadata(account metadata.Owner) metadata.Metadata {
+	ret := metadata.Metadata{}
+	for key, value := range account.GetMetadata() {
+		if strings.HasPrefix(key, MetadataKeyWalletCustomDataPrefix) {
+			ret[strings.TrimPrefix(key, MetadataKeyWalletCustomDataPrefix)] = value
+		}
+	}
+	return ret
+}
+
+func EncodeCustomMetadata(m metadata.Metadata) metadata.Metadata {
+	ret := metadata.Metadata{}
+	for key, value := range m {
+		ret[MetadataKeyWalletCustomDataPrefix+key] = value
+	}
+	return ret
 }

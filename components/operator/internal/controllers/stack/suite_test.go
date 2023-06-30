@@ -2,7 +2,6 @@ package stack_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	v1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
+	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/controllers/stack"
 	"github.com/formancehq/operator/internal/modules"
 	"github.com/onsi/ginkgo/v2"
@@ -24,6 +23,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -99,6 +99,9 @@ var _ = ginkgo.BeforeEach(func() {
 	err = ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta3.Migration{}).
 		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+			log := log.FromContext(ctx, "migration", request.NamespacedName)
+			log.Info("Starting reconciliation")
+
 			migration := &v1beta3.Migration{}
 			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
 				Namespace: request.Namespace,
@@ -117,6 +120,8 @@ var _ = ginkgo.BeforeEach(func() {
 	err = ctrl.NewControllerManagedBy(mgr).
 		For(&v1.Deployment{}).
 		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+			log := log.FromContext(ctx, "deployment", request.NamespacedName)
+			log.Info("Starting reconciliation")
 
 			deployment := &v1.Deployment{}
 			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
@@ -138,7 +143,7 @@ var _ = ginkgo.BeforeEach(func() {
 			if err := mgr.GetClient().Status().Update(ctx, deployment); err != nil {
 				return reconcile.Result{}, err
 			}
-			fmt.Println("updated properly")
+
 			return reconcile.Result{}, nil
 		}))
 	gomega.Expect(err)

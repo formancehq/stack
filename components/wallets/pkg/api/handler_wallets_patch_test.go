@@ -41,21 +41,20 @@ func TestWalletsPatch(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md wallet.Metadata) error {
+		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md metadata.Metadata) error {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
 			require.EqualValues(t, metadata.Metadata{
 				wallet.MetadataKeyWalletID:       w.ID,
 				wallet.MetadataKeyWalletName:     w.Name,
 				wallet.MetadataKeyWalletSpecType: wallet.PrimaryWallet,
-				wallet.MetadataKeyWalletCustomData: metadata.MarshalValue(metadata.Metadata{
-					"role": "admin",
-					"foo":  "baz",
-				}),
-				wallet.MetadataKeyBalanceName:   wallet.MainBalance,
-				wallet.MetadataKeyWalletBalance: wallet.TrueValue,
-				wallet.MetadataKeyCreatedAt:     w.CreatedAt.UTC().Format(time.RFC3339Nano),
-			}, md)
+				wallet.MetadataKeyBalanceName:    wallet.MainBalance,
+				wallet.MetadataKeyWalletBalance:  wallet.TrueValue,
+				wallet.MetadataKeyCreatedAt:      w.CreatedAt.UTC().Format(time.RFC3339Nano),
+			}.Merge(wallet.EncodeCustomMetadata(metadata.Metadata{
+				"role": "admin",
+				"foo":  "baz",
+			})), md)
 			return nil
 		}),
 	)

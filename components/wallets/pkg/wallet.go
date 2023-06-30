@@ -81,16 +81,15 @@ func (w WithBalances) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (w Wallet) LedgerMetadata() Metadata {
-	return Metadata{
-		MetadataKeyWalletSpecType:   PrimaryWallet,
-		MetadataKeyWalletName:       w.Name,
-		MetadataKeyWalletCustomData: metadata.MarshalValue(w.Metadata),
-		MetadataKeyWalletID:         w.ID,
-		MetadataKeyWalletBalance:    TrueValue,
-		MetadataKeyBalanceName:      MainBalance,
-		MetadataKeyCreatedAt:        w.CreatedAt.UTC().Format(time.RFC3339Nano),
-	}
+func (w Wallet) LedgerMetadata() metadata.Metadata {
+	return metadata.Metadata{
+		MetadataKeyWalletSpecType: PrimaryWallet,
+		MetadataKeyWalletName:     w.Name,
+		MetadataKeyWalletID:       w.ID,
+		MetadataKeyWalletBalance:  TrueValue,
+		MetadataKeyBalanceName:    MainBalance,
+		MetadataKeyCreatedAt:      w.CreatedAt.UTC().Format(time.RFC3339Nano),
+	}.Merge(EncodeCustomMetadata(w.Metadata))
 }
 
 func NewWallet(name, ledger string, m metadata.Metadata) Wallet {
@@ -115,7 +114,7 @@ func FromAccount(ledger string, account Account) Wallet {
 	return Wallet{
 		ID:        GetMetadata(account, MetadataKeyWalletID),
 		Name:      GetMetadata(account, MetadataKeyWalletName),
-		Metadata:  metadata.UnmarshalValue[metadata.Metadata](GetMetadata(account, MetadataKeyWalletCustomData)),
+		Metadata:  ExtractCustomMetadata(account),
 		CreatedAt: createdAt,
 		Ledger:    ledger,
 	}

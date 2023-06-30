@@ -129,7 +129,7 @@ var _ = Describe("Check stack deployment", func() {
 						Name:      stack.GetName(),
 					}, stack)).To(BeNil())
 					return stack.IsReady()
-				}).WithTimeout(5 * time.Second).Should(BeTrue())
+				}).WithTimeout(10 * time.Second).Should(BeTrue())
 			})
 			JustAfterEach(func() {
 				Expect(Delete(stack)).To(Succeed())

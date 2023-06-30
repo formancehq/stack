@@ -16,8 +16,9 @@ type DebitHold struct {
 	Description string            `json:"description"`
 }
 
-func (h DebitHold) LedgerMetadata(chart *Chart) Metadata {
-	return Metadata{
+func (h DebitHold) LedgerMetadata(chart *Chart) metadata.Metadata {
+
+	ret := metadata.Metadata{
 		MetadataKeyWalletSpecType: HoldWallet,
 		MetadataKeyHoldWalletID:   h.WalletID,
 		MetadataKeyHoldID:         h.ID,
@@ -30,7 +31,6 @@ func (h DebitHold) LedgerMetadata(chart *Chart) Metadata {
 			"type":  "account",
 			"value": h.Destination.getAccount(chart),
 		}),
-		MetadataKeyWalletCustomData:      metadata.MarshalValue(h.Metadata),
 		MetadataKeyWalletHoldDescription: h.Description,
 		MetadataKeyHoldSubject: metadata.MarshalValue(map[string]any{
 			"type":       h.Destination.Type,
@@ -38,6 +38,10 @@ func (h DebitHold) LedgerMetadata(chart *Chart) Metadata {
 			"balance":    h.Destination.Balance,
 		}),
 	}
+
+	ret = ret.Merge(EncodeCustomMetadata(h.Metadata))
+
+	return ret
 }
 
 func NewDebitHold(walletID string, destination Subject, asset, description string, md metadata.Metadata) DebitHold {
@@ -59,8 +63,9 @@ func DebitHoldFromLedgerAccount(account Account) DebitHold {
 	hold.WalletID = account.GetMetadata()[MetadataKeyHoldWalletID]
 	hold.Destination = subject
 	hold.Asset = account.GetMetadata()[MetadataKeyHoldAsset]
-	hold.Metadata = metadata.UnmarshalValue[metadata.Metadata](account.GetMetadata()[MetadataKeyWalletCustomData])
 	hold.Description = account.GetMetadata()[MetadataKeyWalletHoldDescription]
+	hold.Metadata = ExtractCustomMetadata(account)
+
 	return hold
 }
 

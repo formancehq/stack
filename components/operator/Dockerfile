@@ -3,6 +3,7 @@ FROM golang:1.19-alpine as builder
 WORKDIR /src
 ENV CGO_ENABLED=0
 COPY libs/go-libs libs/go-libs
+COPY components/payments components/payments
 COPY components/search components/search
 COPY components/operator components/operator
 WORKDIR /src/components/operator
