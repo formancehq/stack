@@ -54,9 +54,7 @@ var _ = Describe("Check stack deployment", func() {
 		if !dirEntry.IsDir() {
 			continue
 		}
-		if dirEntry.Name() != "multipod-latest" {
-			continue
-		}
+
 		name := strings.ReplaceAll(dirEntry.Name(), ".", "-")
 		dirName := dirEntry.Name()
 
