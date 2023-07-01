@@ -32,11 +32,11 @@ const (
 )
 
 type CaseResult struct {
-	Printed       []internal.Value
-	Postings      []Posting
-	Metadata      map[string]internal.Value
-	Error         string
-	ErrorContains string
+	Printed  []internal.Value
+	Postings []Posting
+	Metadata map[string]internal.Value
+	// Error         string
+	Error string
 }
 
 type TestCase struct {
@@ -54,7 +54,7 @@ func NewTestCase() TestCase {
 			Printed:  []internal.Value{},
 			Postings: []Posting{},
 			Metadata: make(map[string]internal.Value),
-			Error:    "",
+			// Error:    "",
 		},
 	}
 }
@@ -108,9 +108,9 @@ func test(t *testing.T, tc TestCase) {
 	if tc.expected.Error != "" {
 		require.ErrorContains(t, err, tc.expected.Error)
 		return
-	} else {
-		require.NoError(t, err)
 	}
+	require.NoError(t, err)
+
 	if tc.expected.Postings == nil {
 		tc.expected.Postings = make([]Posting, 0)
 	}
@@ -570,7 +570,7 @@ func TestMetadata(t *testing.T) {
 	tc.setVarsFromJSON(t, `{
 		"sale": "sales:042"
 	}`)
-	tc.setMeta("sales:042", "seller", "@users:053")
+	tc.setMeta("sales:042", "seller", "users:053")
 	tc.setMeta("users:053", "commission", "125/1000")
 	tc.setBalance("sales:042", "EUR/2", 2500)
 	tc.setBalance("users:053", "EUR/2", 500)
@@ -932,7 +932,7 @@ func TestSetAccountMeta(t *testing.T) {
 		require.NoError(t, err)
 
 		m := NewMachine(EmptyStore, map[string]string{
-			"acc": "@test",
+			"acc": "test",
 		})
 
 		err = m.Execute(*p)
@@ -1144,7 +1144,7 @@ func TestVariableBalance(t *testing.T) {
 		tc.compile(t, script)
 		tc.setBalance("world", "USD/2", -40)
 		tc.expected = CaseResult{
-			ErrorContains: "must be non-negative",
+			Error: "must be non-negative",
 		}
 		test(t, tc)
 	})
@@ -1454,7 +1454,7 @@ func TestVariablesErrors(t *testing.T) {
 	tc.expected = CaseResult{
 		Printed:  []internal.Value{},
 		Postings: []Posting{},
-		Error:    "non-negative",
+		Error:    "negative amount",
 	}
 	test(t, tc)
 }

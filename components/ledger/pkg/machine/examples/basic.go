@@ -3,8 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 
-	"github.com/formancehq/ledger/pkg/machine/internal"
+	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/machine/script/compiler"
 	"github.com/formancehq/ledger/pkg/machine/vm"
 )
@@ -32,23 +33,29 @@ func main() {
 	s, _ := json.MarshalIndent(program, "", "\t")
 	fmt.Println(string(s))
 
-	ledger := vm.MockupLedger(map[string]vm.MockupAccount{
+	store := vm.StaticStore(map[string]*vm.AccountWithBalances{
 		"alice": {
-			Balances: map[string]internal.MonetaryInt{
-				"COIN": *internal.NewMonetaryInt(10),
+			Account: core.Account{
+				Address:  "alice",
+				Metadata: map[string]string{},
 			},
-			Meta: map[string]internal.Value{},
+			Balances: map[string]*big.Int{
+				"COIN": big.NewInt(10),
+			},
 		},
 		"bob": {
-			Balances: map[string]internal.MonetaryInt{
-				"COIN": *internal.NewMonetaryInt(100),
+			Account: core.Account{
+				Address:  "bob",
+				Metadata: map[string]string{},
 			},
-			Meta: map[string]internal.Value{},
+			Balances: map[string]*big.Int{
+				"COIN": big.NewInt(100),
+			},
 		},
 	})
 
-	m := vm.NewMachine(ledger, map[string]internal.Value{
-		"dest": internal.AccountAddress("charlie"),
+	m := vm.NewMachine(store, map[string]string{
+		"dest": "charlie",
 	})
 
 	err = m.Execute(*program)

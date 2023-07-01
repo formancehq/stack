@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 	"testing"
@@ -37,8 +36,6 @@ func test(t *testing.T, c TestCase) {
 	require.NotNil(t, p)
 
 	if !assert.Equal(t, c.Expected.Program, *p) {
-		s, _ := json.MarshalIndent(p, "", "\t")
-		fmt.Println(string(s))
 		t.FailNow()
 	}
 }
@@ -67,13 +64,11 @@ func TestCompositeExpr(t *testing.T) {
 			Program: Program{
 				Statements: []Statement{
 					StatementPrint{
-						Expr: ExprInfix{
-							Lhs: ExprInfix{
+						Expr: ExprNumberSub{
+							Lhs: ExprNumberAdd{
 								Lhs: ExprLiteral{Value: internal.NewNumber(29)},
-								Op:  OP_ADD,
 								Rhs: ExprLiteral{Value: internal.NewNumber(15)},
 							},
-							Op:  OP_SUB,
 							Rhs: ExprLiteral{Value: internal.NewNumber(2)},
 						},
 					},
@@ -1299,10 +1294,8 @@ func TestPrint(t *testing.T) {
 			Program: Program{
 				Statements: []Statement{
 					StatementPrint{
-						Expr: ExprInfix{
-							Op: OP_SUB,
-							Lhs: ExprInfix{
-								Op:  OP_ADD,
+						Expr: ExprNumberAdd{
+							Lhs: ExprNumberAdd{
 								Lhs: ExprLiteral{Value: internal.NewNumber(1)},
 								Rhs: ExprLiteral{Value: internal.NewNumber(2)},
 							},
@@ -1344,12 +1337,9 @@ func TestSendWithArithmetic(t *testing.T) {
 					Statements: []Statement{
 						StatementAllocate{
 							Funding: ExprTake{
-								Amount: ExprInfix{
-									Op: OP_SUB,
-									Lhs: ExprInfix{
-										Op: OP_ADD,
-										Lhs: ExprInfix{
-											Op: OP_ADD,
+								Amount: ExprMonetarySub{
+									Lhs: ExprMonetaryAdd{
+										Lhs: ExprMonetaryAdd{
 											Lhs: ExprMonetaryNew{
 												Asset:  ExprLiteral{Value: internal.Asset("EUR")},
 												Amount: ExprLiteral{Value: internal.NewMonetaryInt(1)},
@@ -1366,19 +1356,13 @@ func TestSendWithArithmetic(t *testing.T) {
 										Amount: ExprLiteral{Value: internal.NewMonetaryInt(4)},
 									},
 								},
-								Source: nil,
+								Source: ValueAwareSourceSource{
+									Source: SourceAccount{
+										Account: ExprLiteral{Value: internal.AccountAddress("a")},
+									}},
 							},
-							Destination: nil,
-						},
-						StatementPrint{
-							Expr: ExprInfix{
-								Op: OP_SUB,
-								Lhs: ExprInfix{
-									Op:  OP_ADD,
-									Lhs: ExprLiteral{Value: internal.NewNumber(1)},
-									Rhs: ExprLiteral{Value: internal.NewNumber(2)},
-								},
-								Rhs: ExprLiteral{Value: internal.NewNumber(3)},
+							Destination: DestinationAccount{
+								Expr: ExprLiteral{Value: internal.AccountAddress("b")},
 							},
 						},
 					},
@@ -1396,7 +1380,7 @@ func TestSendWithArithmetic(t *testing.T) {
 		test(t, TestCase{
 			Case: script,
 			Expected: CaseResult{
-				Error: "tried to do an arithmetic operation with incompatible left and right-hand side operand types: monetary and number",
+				Error: "wrong type",
 			},
 		})
 	})
@@ -1414,7 +1398,7 @@ func TestSendWithArithmetic(t *testing.T) {
 		test(t, TestCase{
 			Case: script,
 			Expected: CaseResult{
-				Error: "tried to do an arithmetic operation with incompatible left and right-hand side operand types: monetary and number",
+				Error: "wrong type",
 			},
 		})
 	})
@@ -1580,7 +1564,7 @@ func TestSaveFromAccount(t *testing.T) {
 						StatementAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetaryNew{
-									Asset:  ExprVariable("ass"),
+									Asset:  ExprLiteral{Value: internal.Asset("EUR")},
 									Amount: ExprLiteral{Value: internal.NewNumber(20)},
 								},
 								Source: ValueAwareSourceSource{
@@ -1605,7 +1589,7 @@ func TestSaveFromAccount(t *testing.T) {
 				save 30 from @alice
 			`,
 			Expected: CaseResult{
-				Error: "save monetary from account: the first expression should be of type 'monetary' instead of 'number'",
+				Error: "wrong type",
 			},
 		})
 	})
@@ -1616,7 +1600,7 @@ func TestSaveFromAccount(t *testing.T) {
 				save [EUR 30] from ALICE
 			`,
 			Expected: CaseResult{
-				Error: "save monetary from account: the second expression should be of type 'account' instead of 'asset'",
+				Error: "wrong type",
 			},
 		})
 	})

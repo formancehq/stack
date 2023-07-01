@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/big"
 
 	"github.com/formancehq/ledger/pkg/machine/internal"
 	"github.com/formancehq/ledger/pkg/machine/vm/program"
@@ -93,9 +94,11 @@ func (m *Machine) Execute(script program.Program) error {
 			if err != nil {
 				return err
 			}
+			var newAmt big.Int
+			newAmt.Set(amt)
 			balance := internal.Monetary{
 				Asset:  *asset,
-				Amount: internal.NewMonetaryIntFromBigInt(amt),
+				Amount: internal.NewMonetaryIntFromBigInt(&newAmt),
 			}
 			err = m.checkVar(balance)
 			if err != nil {
@@ -103,6 +106,7 @@ func (m *Machine) Execute(script program.Program) error {
 			}
 			m.vars[var_decl.Name] = balance
 		case nil:
+			fmt.Printf("aa %v\n", var_decl)
 			val, err := internal.NewValueFromString(var_decl.Typ, m.providedVars[var_decl.Name])
 			if err != nil {
 				return fmt.Errorf("failed to parse variable: %s", err)
@@ -484,29 +488,58 @@ func (m *Machine) Eval(expr program.Expr) (internal.Value, error) {
 	switch expr := expr.(type) {
 	case program.ExprLiteral:
 		return expr.Value, nil
-	case program.ExprInfix:
-		switch expr.Op {
-		case program.OP_ADD:
-			lhs, err := EvalAs[internal.Number](m, expr.Lhs)
-			if err != nil {
-				return nil, err
-			}
-			rhs, err := EvalAs[internal.Number](m, expr.Rhs)
-			if err != nil {
-				return nil, err
-			}
-			return (*lhs).Add(*rhs), nil
-		case program.OP_SUB:
-			lhs, err := EvalAs[internal.Number](m, expr.Lhs)
-			if err != nil {
-				return nil, err
-			}
-			rhs, err := EvalAs[internal.Number](m, expr.Rhs)
-			if err != nil {
-				return nil, err
-			}
-			return (*lhs).Sub(*rhs), nil
+	case program.ExprNumberAdd:
+		lhs, err := EvalAs[internal.Number](m, expr.Lhs)
+		if err != nil {
+			return nil, err
 		}
+		rhs, err := EvalAs[internal.Number](m, expr.Rhs)
+		if err != nil {
+			return nil, err
+		}
+		return (*lhs).Add(*rhs), nil
+	case program.ExprNumberSub:
+		lhs, err := EvalAs[internal.Number](m, expr.Lhs)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := EvalAs[internal.Number](m, expr.Rhs)
+		if err != nil {
+			return nil, err
+		}
+		return (*lhs).Sub(*rhs), nil
+	case program.ExprMonetaryAdd:
+		lhs, err := EvalAs[internal.Monetary](m, expr.Lhs)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := EvalAs[internal.Monetary](m, expr.Rhs)
+		if err != nil {
+			return nil, err
+		}
+		if lhs.Asset != rhs.Asset {
+			return nil, errors.New("mismatching assets")
+		}
+		return internal.Monetary{
+			Asset:  lhs.Asset,
+			Amount: lhs.Amount.Add(rhs.Amount),
+		}, nil
+	case program.ExprMonetarySub:
+		lhs, err := EvalAs[internal.Monetary](m, expr.Lhs)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := EvalAs[internal.Monetary](m, expr.Rhs)
+		if err != nil {
+			return nil, err
+		}
+		if lhs.Asset != rhs.Asset {
+			return nil, errors.New("mismatching assets")
+		}
+		return internal.Monetary{
+			Asset:  lhs.Asset,
+			Amount: lhs.Amount.Add(rhs.Amount),
+		}, nil
 	case program.ExprMonetaryNew:
 		asset, err := EvalAs[internal.Asset](m, expr.Asset)
 		if err != nil {

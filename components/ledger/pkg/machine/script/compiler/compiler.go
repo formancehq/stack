@@ -27,6 +27,9 @@ func (p *parseVisitor) isWorld(expr parser.IExpressionContext) bool {
 
 func (p *parseVisitor) CompileExprTy(c parser.IExpressionContext, ty internal.Type) (program.Expr, *CompileError) {
 	exprTy, expr, err := p.CompileExpr(c)
+	if err != nil {
+		return nil, err
+	}
 	if exprTy != ty {
 		return nil, LogicError(c, fmt.Errorf("wrong type: expected %v and found %v", ty, exprTy))
 	}
@@ -36,32 +39,52 @@ func (p *parseVisitor) CompileExprTy(c parser.IExpressionContext, ty internal.Ty
 func (p *parseVisitor) CompileExpr(c parser.IExpressionContext) (internal.Type, program.Expr, *CompileError) {
 	switch c := c.(type) {
 	case *parser.ExprAddSubContext:
-		ty, lhs, err := p.CompileExpr(c.GetLhs())
+		lhsType, lhs, err := p.CompileExpr(c.GetLhs())
 		if err != nil {
 			return 0, nil, err
 		}
-		if ty != internal.TypeNumber {
+		switch lhsType {
+		case internal.TypeNumber:
+			rhs, err := p.CompileExprTy(c.GetRhs(), internal.TypeNumber)
+			if err != nil {
+				return 0, nil, err
+			}
+			var expr program.Expr
+			switch c.GetOp().GetTokenType() {
+			case parser.NumScriptLexerOP_ADD:
+				expr = program.ExprNumberAdd{
+					Lhs: lhs,
+					Rhs: rhs,
+				}
+			case parser.NumScriptLexerOP_SUB:
+				expr = program.ExprNumberSub{
+					Lhs: lhs,
+					Rhs: rhs,
+				}
+			}
+			return internal.TypeNumber, expr, nil
+		case internal.TypeMonetary:
+			rhs, err := p.CompileExprTy(c.GetRhs(), internal.TypeMonetary)
+			if err != nil {
+				return 0, nil, err
+			}
+			var expr program.Expr
+			switch c.GetOp().GetTokenType() {
+			case parser.NumScriptLexerOP_ADD:
+				expr = program.ExprMonetaryAdd{
+					Lhs: lhs,
+					Rhs: rhs,
+				}
+			case parser.NumScriptLexerOP_SUB:
+				expr = program.ExprMonetarySub{
+					Lhs: lhs,
+					Rhs: rhs,
+				}
+			}
+			return internal.TypeMonetary, expr, nil
+		default:
 			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
 		}
-		ty, rhs, err := p.CompileExpr(c.GetRhs())
-		if err != nil {
-			return 0, nil, err
-		}
-		if ty != internal.TypeNumber {
-			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
-		}
-		var op byte
-		switch c.GetOp().GetTokenType() {
-		case parser.NumScriptLexerOP_ADD:
-			op = program.OP_ADD
-		case parser.NumScriptLexerOP_SUB:
-			op = program.OP_SUB
-		}
-		return internal.TypeNumber, program.ExprInfix{
-			Op:  op,
-			Lhs: lhs,
-			Rhs: rhs,
-		}, nil
 	case *parser.ExprLiteralContext:
 		ty, value, err := p.CompileLit(c.GetLit())
 		if err != nil {
@@ -199,20 +222,33 @@ func (p *parseVisitor) CompileSetAccountMeta(ctx *parser.SetAccountMetaContext) 
 }
 
 func (p *parseVisitor) CompileSave(ctx *parser.SaveFromAccountContext) (program.Statement, *CompileError) {
-	typ, amt_expr, err := p.CompileExpr(ctx.GetMon())
-	if err != nil {
-		return nil, err
-	}
-	acc_expr, err := p.CompileExprTy(ctx.GetAcc(), internal.TypeAccount)
-	if err != nil {
-		return nil, err
-	}
-	switch typ {
-	case internal.TypeAsset:
-		return program.StatementSaveAll{Asset: amt_expr, Account: acc_expr}, nil
-	case internal.TypeMonetary:
-		return program.StatementSave{Amount: amt_expr, Account: acc_expr}, nil
-	default:
+	if monAll := ctx.GetMonAll(); monAll != nil {
+		asset, err := p.CompileExprTy(ctx.MonetaryAll().GetAsset(), internal.TypeAsset)
+		if err != nil {
+			return nil, err
+		}
+		account, err := p.CompileExprTy(ctx.GetAcc(), internal.TypeAccount)
+		if err != nil {
+			return nil, err
+		}
+		return program.StatementSaveAll{
+			Asset:   asset,
+			Account: account,
+		}, nil
+	} else if mon := ctx.GetMon(); mon != nil {
+		mon, err := p.CompileExprTy(ctx.GetMon(), internal.TypeMonetary)
+		if err != nil {
+			return nil, err
+		}
+		account, err := p.CompileExprTy(ctx.GetAcc(), internal.TypeAccount)
+		if err != nil {
+			return nil, err
+		}
+		return program.StatementSave{
+			Amount:  mon,
+			Account: account,
+		}, nil
+	} else {
 		return nil, InternalError(ctx)
 	}
 }

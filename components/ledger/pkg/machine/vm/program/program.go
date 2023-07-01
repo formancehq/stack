@@ -21,13 +21,33 @@ type ExprLiteral struct {
 
 func (e ExprLiteral) isExpr() {}
 
-type ExprInfix struct {
-	Op  byte
+type ExprNumberAdd struct {
 	Lhs Expr
 	Rhs Expr
 }
 
-func (e ExprInfix) isExpr() {}
+func (e ExprNumberAdd) isExpr() {}
+
+type ExprNumberSub struct {
+	Lhs Expr
+	Rhs Expr
+}
+
+func (e ExprNumberSub) isExpr() {}
+
+type ExprMonetaryAdd struct {
+	Lhs Expr
+	Rhs Expr
+}
+
+func (e ExprMonetaryAdd) isExpr() {}
+
+type ExprMonetarySub struct {
+	Lhs Expr
+	Rhs Expr
+}
+
+func (e ExprMonetarySub) isExpr() {}
 
 type ExprVariable string
 
