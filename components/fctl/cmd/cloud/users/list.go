@@ -7,8 +7,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type User struct {
+	ID    string `json:"id"`
+	Email string `json:"email"`
+}
+
 type ListStore struct {
-	Users [][]string `json:"users"`
+	Users []User `json:"users"`
 }
 type ListController struct {
 	store *ListStore
@@ -59,8 +64,8 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	c.store.Users = fctl.Map(usersResponse.Data, func(i membershipclient.User) []string {
-		return []string{
+	c.store.Users = fctl.Map(usersResponse.Data, func(i membershipclient.User) User {
+		return User{
 			i.Id,
 			i.Email,
 		}
@@ -70,7 +75,15 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Prepend(c.store.Users, []string{"ID", "Email"})
+
+	usersRow := fctl.Map(c.store.Users, func(i User) []string {
+		return []string{
+			i.ID,
+			i.Email,
+		}
+	})
+
+	tableData := fctl.Prepend(usersRow, []string{"ID", "Email"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
