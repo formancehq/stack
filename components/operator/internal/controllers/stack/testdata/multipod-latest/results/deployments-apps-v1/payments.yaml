@@ -111,8 +111,8 @@ spec:
             terminationGracePeriodSeconds: 30
 status:
     conditions:
-        - lastTransitionTime: "2023-06-30T15:11:08Z"
-          lastUpdateTime: "2023-06-30T15:11:08Z"
+        - lastTransitionTime: "2023-07-03T14:15:57Z"
+          lastUpdateTime: "2023-07-03T14:15:57Z"
           status: "True"
           type: Available
     observedGeneration: 1
