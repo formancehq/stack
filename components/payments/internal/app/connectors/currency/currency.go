@@ -134,3 +134,14 @@ func FormatAsset(cur string) models.PaymentAsset {
 
 	return models.PaymentAsset(fmt.Sprintf("%s/%d", asset, def.decimals))
 }
+
+func GetPrecision(cur string) int {
+	asset := strings.ToUpper(string(cur))
+
+	def, ok := currencies()[asset]
+	if !ok {
+		return 0
+	}
+
+	return def.decimals
+}

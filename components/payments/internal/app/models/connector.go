@@ -48,6 +48,7 @@ const (
 	ConnectorProviderStripe        ConnectorProvider = "STRIPE"
 	ConnectorProviderWise          ConnectorProvider = "WISE"
 	ConnectorProviderMangopay      ConnectorProvider = "MANGOPAY"
+	ConnectorProviderMoneycorp     ConnectorProvider = "MONEYCORP"
 )
 
 func (p ConnectorProvider) String() string {
