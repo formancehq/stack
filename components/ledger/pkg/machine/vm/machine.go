@@ -26,27 +26,25 @@ const InternalError = "internal interpreter error, please report to the issue tr
 // }
 
 type Machine struct {
-	store        Store
-	ctx          context.Context
-	providedVars map[string]string
-	vars         map[string]internal.Value
-	balances     map[internal.AccountAddress]map[internal.Asset]internal.Number
-	Postings     []Posting
-	TxMeta       map[string]internal.Value
-	AccountMeta  map[internal.AccountAddress]map[string]internal.Value
-	Printed      []internal.Value
+	store       Store
+	ctx         context.Context
+	vars        map[string]internal.Value
+	balances    map[internal.AccountAddress]map[internal.Asset]internal.Number
+	Postings    []Posting
+	TxMeta      map[string]internal.Value
+	AccountMeta map[internal.AccountAddress]map[string]internal.Value
+	Printed     []internal.Value
 }
 
-func NewMachine(store Store, vars map[string]string) Machine {
+func NewMachine(store Store) Machine {
 	return Machine{
-		store:        store,
-		providedVars: vars,
-		vars:         make(map[string]internal.Value),
-		balances:     make(map[internal.AccountAddress]map[internal.Asset]internal.Number),
-		Postings:     make([]Posting, 0),
-		TxMeta:       make(map[string]internal.Value),
-		AccountMeta:  make(map[internal.AccountAddress]map[string]internal.Value),
-		Printed:      make([]internal.Value, 0),
+		store:       store,
+		vars:        make(map[string]internal.Value),
+		balances:    make(map[internal.AccountAddress]map[internal.Asset]internal.Number),
+		Postings:    make([]Posting, 0),
+		TxMeta:      make(map[string]internal.Value),
+		AccountMeta: make(map[internal.AccountAddress]map[string]internal.Value),
+		Printed:     make([]internal.Value, 0),
 	}
 }
 
@@ -60,7 +58,7 @@ func (m *Machine) checkVar(value internal.Value) error {
 	return nil
 }
 
-func (m *Machine) Execute(script program.Program) error {
+func (m *Machine) Execute(script program.Program, providedVars map[string]string) error {
 	for _, var_decl := range script.VarsDecl {
 		switch o := var_decl.Origin.(type) {
 		case program.VarOriginMeta:
@@ -106,8 +104,11 @@ func (m *Machine) Execute(script program.Program) error {
 			}
 			m.vars[var_decl.Name] = balance
 		case nil:
-			fmt.Printf("aa %v\n", var_decl)
-			val, err := internal.NewValueFromString(var_decl.Typ, m.providedVars[var_decl.Name])
+			if _, ok := providedVars[var_decl.Name]; !ok {
+				return fmt.Errorf("missing variable $%v", var_decl.Name)
+			}
+			val, err := internal.NewValueFromString(var_decl.Typ, providedVars[var_decl.Name])
+			delete(providedVars, var_decl.Name)
 			if err != nil {
 				return fmt.Errorf("failed to parse variable: %s", err)
 			}
@@ -118,6 +119,12 @@ func (m *Machine) Execute(script program.Program) error {
 			m.vars[var_decl.Name] = val
 		default:
 			return errors.New(InternalError)
+		}
+	}
+
+	if len(providedVars) > 0 {
+		for p := range providedVars {
+			return fmt.Errorf("extraneous variable $%v", p)
 		}
 	}
 
@@ -132,6 +139,36 @@ func (m *Machine) Execute(script program.Program) error {
 			}
 			m.Printed = append(m.Printed, v)
 			fmt.Printf("%v\n", s.Expr)
+
+		case program.StatementSave:
+			account, err := EvalAs[internal.AccountAddress](m, s.Account)
+			if err != nil {
+				return err
+			}
+			amt, err := EvalAs[internal.Monetary](m, s.Amount)
+			if err != nil {
+				return err
+			}
+			bal, err := m.BalanceOf(*account, amt.Asset)
+			if err != nil {
+				return err
+			}
+			*bal = *bal.Sub(amt.Amount)
+		case program.StatementSaveAll:
+			account, err := EvalAs[internal.AccountAddress](m, s.Account)
+			if err != nil {
+				return err
+			}
+			asset, err := EvalAs[internal.Asset](m, s.Asset)
+			if err != nil {
+				return err
+			}
+			bal, err := m.BalanceOf(*account, *asset)
+			if err != nil {
+				return err
+			}
+			*bal = *internal.Zero
+
 		case program.StatementAllocate:
 			funding, err := EvalAs[internal.Funding](m, s.Funding)
 			if err != nil {
@@ -440,14 +477,18 @@ func (m *Machine) WithdrawAll(account internal.AccountAddress, asset internal.As
 	if err != nil {
 		return nil, fmt.Errorf("failed to withdraw %s", err)
 	}
-	withdrawn := balance.Add(overdraft)
-	*balance = *overdraft.Neg()
+	amountTaken := internal.Zero
+	balanceWithOverdraft := balance.Add(overdraft)
+	if balanceWithOverdraft.Gt(internal.Zero) {
+		amountTaken = balanceWithOverdraft
+		*balance = *overdraft.Neg()
+	}
 	return &internal.Funding{
 		Asset: asset,
 		Parts: []internal.FundingPart{
 			{
 				Account: account,
-				Amount:  withdrawn,
+				Amount:  amountTaken,
 			},
 		},
 	}, nil

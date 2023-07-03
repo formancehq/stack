@@ -54,11 +54,11 @@ func main() {
 		},
 	})
 
-	m := vm.NewMachine(store, map[string]string{
+	m := vm.NewMachine(store)
+
+	err = m.Execute(*program, map[string]string{
 		"dest": "charlie",
 	})
-
-	err = m.Execute(*program)
 	if err != nil {
 		panic(err)
 	}
