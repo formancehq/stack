@@ -8,7 +8,7 @@ import (
 )
 
 type ListStore struct {
-	ConfigInfoResponse *shared.ConfigInfoResponse `json:"config_info_response"`
+	ConfigInfo *shared.ConfigInfo `json:"config_info_response"`
 }
 type ListController struct {
 	store *ListStore
@@ -18,7 +18,7 @@ var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
 func NewDefaultListStore() *ListStore {
 	return &ListStore{
-		ConfigInfoResponse: &shared.ConfigInfoResponse{},
+		ConfigInfo: &shared.ConfigInfo{},
 	}
 }
 
@@ -68,13 +68,13 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	c.store.ConfigInfoResponse = response.ConfigInfoResponse
+	c.store.ConfigInfo = response.ConfigInfoResponse.Data
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.ConfigInfoResponse.Config.Storage.Ledgers, func(ledger string) []string {
+	tableData := fctl.Map(c.store.ConfigInfo.Config.Storage.Ledgers, func(ledger string) []string {
 		return []string{
 			ledger,
 		}

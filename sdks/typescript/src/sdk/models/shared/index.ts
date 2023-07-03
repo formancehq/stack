@@ -35,6 +35,7 @@ export * from "./client";
 export * from "./clientsecret";
 export * from "./config";
 export * from "./configchangesecret";
+export * from "./configinfo";
 export * from "./configinforesponse";
 export * from "./configresponse";
 export * from "./configsresponse";

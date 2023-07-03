@@ -10,7 +10,7 @@ import (
 )
 
 type ServerInfoStore struct {
-	ConfigInfoResponse *shared.ConfigInfoResponse `json:"config_info_response"`
+	ConfigInfoResponse *shared.ConfigInfo `json:"config_info_response"`
 }
 type ServerInfoController struct {
 	store *ServerInfoStore
@@ -20,7 +20,7 @@ var _ fctl.Controller[*ServerInfoStore] = (*ServerInfoController)(nil)
 
 func NewDefaultServerInfoStore() *ServerInfoStore {
 	return &ServerInfoStore{
-		ConfigInfoResponse: &shared.ConfigInfoResponse{},
+		ConfigInfoResponse: &shared.ConfigInfo{},
 	}
 }
 
@@ -69,7 +69,7 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, err
 	}
 
-	c.store.ConfigInfoResponse = response.ConfigInfoResponse
+	c.store.ConfigInfoResponse = response.ConfigInfoResponse.Data
 
 	return c, nil
 }
@@ -91,7 +91,6 @@ func (c *ServerInfoController) Render(cmd *cobra.Command, args []string) error {
 	if err := pterm.DefaultBulletList.
 		WithWriter(cmd.OutOrStdout()).
 		WithItems(fctl.Map(c.store.ConfigInfoResponse.Config.Storage.Ledgers, func(ledger string) pterm.BulletListItem {
-			fmt.Println(ledger)
 			return pterm.BulletListItem{
 				Text:        ledger,
 				TextStyle:   pterm.NewStyle(pterm.FgDefault),

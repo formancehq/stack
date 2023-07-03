@@ -17,22 +17,13 @@ namespace formance\stack\Models\Shared;
  */
 class ConfigInfoResponse
 {
-	#[\JMS\Serializer\Annotation\SerializedName('config')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\Config')]
-    public Config $config;
-    
-	#[\JMS\Serializer\Annotation\SerializedName('server')]
-    #[\JMS\Serializer\Annotation\Type('string')]
-    public string $server;
-    
-	#[\JMS\Serializer\Annotation\SerializedName('version')]
-    #[\JMS\Serializer\Annotation\Type('string')]
-    public string $version;
+	#[\JMS\Serializer\Annotation\SerializedName('data')]
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\ConfigInfo')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?ConfigInfo $data = null;
     
 	public function __construct()
 	{
-		$this->config = new \formance\stack\Models\Shared\Config();
-		$this->server = "";
-		$this->version = "";
+		$this->data = null;
 	}
 }
