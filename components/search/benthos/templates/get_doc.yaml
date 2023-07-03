@@ -13,7 +13,7 @@ mapping: |
       "processors": [
         {
           "http": {
-            "url": "%s/%s/_doc/%s".format(env("OPENSEARCH_URL"), env("OPENSEARCH_INDEX"), this.id),
+            "url": "%s/%s/_doc/%s-%s".format(env("OPENSEARCH_URL"), env("OPENSEARCH_INDEX"), env("STACK"), this.id),
             "verb": "GET",
             "basic_auth": {
               "enabled": env("BASIC_AUTH_ENABLED") == "true",
