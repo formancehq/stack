@@ -11,8 +11,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type Workflow struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
 type WorkflowsListStore struct {
-	Workflows []shared.Workflow `json:"workflows"`
+	Workflows []Workflow `json:"workflows"`
 }
 type WorkflowsListController struct {
 	store *WorkflowsListStore
@@ -67,7 +74,19 @@ func (c *WorkflowsListController) Run(cmd *cobra.Command, args []string) (fctl.R
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Workflows = response.ListWorkflowsResponse.Data
+	c.store.Workflows = fctl.Map(response.ListWorkflowsResponse.Data, func(src shared.Workflow) Workflow {
+		return Workflow{
+			ID: src.ID,
+			Name: func() string {
+				if src.Config.Name != nil {
+					return *src.Config.Name
+				}
+				return ""
+			}(),
+			CreatedAt: src.CreatedAt.Format(time.RFC3339),
+			UpdatedAt: src.UpdatedAt.Format(time.RFC3339),
+		}
+	})
 
 	return c, nil
 }
@@ -84,17 +103,12 @@ func (c *WorkflowsListController) Render(cmd *cobra.Command, args []string) erro
 		WithData(
 			fctl.Prepend(
 				fctl.Map(c.store.Workflows,
-					func(src shared.Workflow) []string {
+					func(src Workflow) []string {
 						return []string{
 							src.ID,
-							func() string {
-								if src.Config.Name != nil {
-									return *src.Config.Name
-								}
-								return ""
-							}(),
-							src.CreatedAt.Format(time.RFC3339),
-							src.UpdatedAt.Format(time.RFC3339),
+							src.Name,
+							src.CreatedAt,
+							src.UpdatedAt,
 						}
 					}),
 				[]string{"ID", "Name", "Created at", "Updated at"},
