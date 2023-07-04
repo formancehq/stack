@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 	"unsafe"
 
 	"github.com/formancehq/formance-sdk-go"
@@ -17,6 +18,42 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"golang.org/x/mod/semver"
 )
+
+// Copy from SDK, + fix int64 to big.Int
+type Transaction struct {
+	Metadata  map[string]interface{} `json:"metadata"`
+	Postings  []*shared.Posting      `json:"postings"`
+	Reference *string                `json:"reference,omitempty"`
+	Timestamp time.Time              `json:"timestamp"`
+	Txid      int64                  `json:"txid"`
+}
+
+// Copy from SDK, + change metadata type to map[string]interface{}
+// The is 2 types of metadata, one is map[string]interface{}, another is map[string]string
+type ExpandedTransaction struct {
+	Metadata          map[string]interface{}               `json:"metadata"`
+	PostCommitVolumes map[string]map[string]*shared.Volume `json:"postCommitVolumes"`
+	Postings          []*shared.Posting                    `json:"postings"`
+	PreCommitVolumes  map[string]map[string]*shared.Volume `json:"preCommitVolumes"`
+	Reference         *string                              `json:"reference,omitempty"`
+	Timestamp         time.Time                            `json:"timestamp"`
+	Txid              int64                                `json:"txid"`
+}
+
+// CreateTransactionResponse - OK
+type CreateTransactionResponse struct {
+	Data []Transaction `json:"data"`
+}
+
+type CreateTransactionWrapper struct {
+	ContentType string
+	// OK
+	CreateTransactionResponse *CreateTransactionResponse
+	// Error
+	ErrorResponse *shared.ErrorResponse
+	StatusCode    int
+	RawResponse   *http.Response
+}
 
 func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.Formance, ledger, id string) (int64, error) {
 	if strings.HasPrefix(id, "last") {
@@ -54,21 +91,6 @@ func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.Formance, 
 	}
 
 	return strconv.ParseInt(id, 10, 64)
-}
-
-// CreateTransactionResponse - OK
-type CreateTransactionResponse struct {
-	Data []shared.Transaction `json:"data"`
-}
-
-type CreateTransactionWrapper struct {
-	ContentType string
-	// OK
-	CreateTransactionResponse *CreateTransactionResponse
-	// Error
-	ErrorResponse *shared.ErrorResponse
-	StatusCode    int
-	RawResponse   *http.Response
 }
 
 // CreateTransaction - Create a new transaction to a ledger
@@ -146,7 +168,7 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 	return res, nil
 }
 
-func CreateTransaction(client *formance.Formance, ctx context.Context, request operations.CreateTransactionRequest) (*shared.Transaction, error) {
+func CreateTransaction(client *formance.Formance, ctx context.Context, request operations.CreateTransactionRequest) (*Transaction, error) {
 
 	versionsResponse, err := client.GetVersions(ctx)
 	if err != nil {
@@ -167,7 +189,6 @@ func CreateTransaction(client *formance.Formance, ctx context.Context, request o
 		if err != nil {
 			return nil, err
 		}
-
 		return &v.CreateTransactionResponse.Data[0], nil
 	} else {
 		response, err := client.Ledger.CreateTransaction(ctx, request)
@@ -177,6 +198,24 @@ func CreateTransaction(client *formance.Formance, ctx context.Context, request o
 		if response.StatusCode > 300 {
 			return nil, fmt.Errorf("unexpected status code %d when creating transaction", response.StatusCode)
 		}
-		return &response.CreateTransactionResponse.Data, nil
+
+		st := &response.CreateTransactionResponse.Data
+
+		metadata := make(map[string]interface{})
+		if st.Metadata != nil {
+			for k, v := range st.Metadata {
+				metadata[k] = v
+			}
+		}
+
+		t := &Transaction{
+			Txid:      st.Txid,
+			Postings:  make([]*shared.Posting, len(st.Postings)),
+			Reference: st.Reference,
+			Timestamp: st.Timestamp,
+			Metadata:  metadata,
+		}
+
+		return t, nil
 	}
 }
