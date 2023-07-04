@@ -45,7 +45,6 @@ func NewListCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithBoolFlag(deletedFlag, false, "Display deleted stacks"),
 		fctl.WithController[*StackListStore](NewStackListController()),
-		// fctl.WrapOutputPostRunE(view),
 	)
 }
 func (c *StackListController) GetStore() *StackListStore {
@@ -78,18 +77,21 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, errors.Wrap(err, "listing stacks")
 	}
 
+	c.profile = profile
 	if len(rsp.Data) == 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "No stacks found.")
-		return nil, nil
+		return c, nil
 	}
 
 	c.store.Stacks = rsp.Data
-	c.profile = profile
 
 	return c, nil
 }
 
 func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
+	if len(c.store.Stacks) == 0 {
+		fmt.Fprintln(cmd.OutOrStdout(), "No stacks found.")
+		return nil
+	}
 
 	tableData := fctl.Map(c.store.Stacks, func(stack membershipclient.Stack) []string {
 		data := []string{

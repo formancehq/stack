@@ -1,8 +1,10 @@
 package fctl
 
 import (
+	"encoding/json"
 	"fmt"
 
+	"github.com/TylerBrock/colorjson"
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"
@@ -247,6 +249,40 @@ func WithController[T any](c Controller[T]) CommandOptionFn {
 
 			return nil
 		}
+	}
+}
+func WithRender[T any](cmd *cobra.Command, args []string, c Controller[T], r Renderable) error {
+	flags := GetString(cmd, OutputFlag)
+
+	switch flags {
+	case "json":
+		// Inject into export struct
+		export := ExportedData{
+			Data: c.GetStore(),
+		}
+
+		// Marshal to JSON then print to stdout
+		out, err := json.Marshal(export)
+		if err != nil {
+			return err
+		}
+
+		raw := make(map[string]any)
+		if err := json.Unmarshal(out, &raw); err == nil {
+			f := colorjson.NewFormatter()
+			f.Indent = 2
+			colorized, err := f.Marshal(raw)
+			if err != nil {
+				panic(err)
+			}
+			cmd.OutOrStdout().Write(colorized)
+			return nil
+		} else {
+			cmd.OutOrStdout().Write(out)
+			return nil
+		}
+	default:
+		return r.Render(cmd, args)
 	}
 }
 
