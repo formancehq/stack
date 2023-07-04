@@ -15,8 +15,15 @@ const (
 	deletedFlag = "deleted"
 )
 
+type Stack struct {
+	Id        string  `json:"id"`
+	Name      string  `json:"name"`
+	Dashboard string  `json:"dashboard"`
+	RegionID  string  `json:"region"`
+	DeletedAt *string `json:"deleted_at"`
+}
 type StackListStore struct {
-	Stacks []membershipclient.Stack `json:"stacks"`
+	Stacks []Stack `json:"stacks"`
 }
 
 type StackListController struct {
@@ -28,7 +35,7 @@ var _ fctl.Controller[*StackListStore] = (*StackListController)(nil)
 
 func NewDefaultStackListStore() *StackListStore {
 	return &StackListStore{
-		Stacks: []membershipclient.Stack{},
+		Stacks: []Stack{},
 	}
 }
 
@@ -82,7 +89,21 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return c, nil
 	}
 
-	c.store.Stacks = rsp.Data
+	c.store.Stacks = fctl.Map(rsp.Data, func(stack membershipclient.Stack) Stack {
+		return Stack{
+			Id:        stack.Id,
+			Name:      stack.Name,
+			Dashboard: c.profile.ServicesBaseUrl(&stack).String(),
+			RegionID:  stack.RegionID,
+			DeletedAt: func() *string {
+				if stack.DeletedAt != nil {
+					t := stack.DeletedAt.Format(time.RFC3339)
+					return &t
+				}
+				return nil
+			}(),
+		}
+	})
 
 	return c, nil
 }
@@ -93,16 +114,16 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	tableData := fctl.Map(c.store.Stacks, func(stack membershipclient.Stack) []string {
+	tableData := fctl.Map(c.store.Stacks, func(stack Stack) []string {
 		data := []string{
 			stack.Id,
 			stack.Name,
-			c.profile.ServicesBaseUrl(&stack).String(),
+			stack.Dashboard,
 			stack.RegionID,
 		}
 		if fctl.GetBool(cmd, deletedFlag) {
 			if stack.DeletedAt != nil {
-				data = append(data, stack.DeletedAt.Format(time.RFC3339))
+				data = append(data, *stack.DeletedAt)
 			} else {
 				data = append(data, "")
 			}
