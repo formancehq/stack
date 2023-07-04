@@ -4,5 +4,5 @@ package shared
 
 // CreateTransactionResponse - OK
 type CreateTransactionResponse struct {
-	Data Transaction `json:"data"`
+	Data []Transaction `json:"data"`
 }
