@@ -28,7 +28,7 @@ type GetTransactionResponse struct {
 	RawResponse            *http.Response
 }
 
-func GetTransaction(client formance.Formance, ctx context.Context, baseURL string, request operations.GetTransactionRequest) (*GetTransactionResponse, error) {
+func GetTransaction(client *formance.Formance, ctx context.Context, baseURL string, request operations.GetTransactionRequest) (*GetTransactionResponse, error) {
 
 	// Dirty hack to get the http client from the sdk client struct
 	field := reflect.ValueOf(client).Elem().FieldByName("_securityClient")

@@ -46,7 +46,7 @@ func NewShowCommand() *cobra.Command {
 			baseUrl := profile.ServicesBaseUrl(stack).String()
 
 			response, err := internal.GetTransaction(
-				*ledgerClient,
+				ledgerClient,
 				cmd.Context(),
 				baseUrl,
 				operations.GetTransactionRequest{
