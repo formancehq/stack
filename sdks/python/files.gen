@@ -220,6 +220,7 @@ src/sdk/models/shared/taskdummypay.py
 src/sdk/models/shared/taskmodulr.py
 src/sdk/models/shared/taskbankingcircle.py
 src/sdk/models/shared/taskmangopay.py
+src/sdk/models/shared/taskmoneycorp.py
 src/sdk/models/shared/paymentresponse.py
 src/sdk/models/shared/stripeconfig.py
 src/sdk/models/shared/dummypayconfig.py
@@ -228,6 +229,7 @@ src/sdk/models/shared/modulrconfig.py
 src/sdk/models/shared/currencycloudconfig.py
 src/sdk/models/shared/bankingcircleconfig.py
 src/sdk/models/shared/mangopayconfig.py
+src/sdk/models/shared/moneycorpconfig.py
 src/sdk/models/shared/connectorsresponse.py
 src/sdk/models/shared/connectorsconfigsresponse.py
 src/sdk/models/shared/taskscursor.py

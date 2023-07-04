@@ -132,7 +132,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetConnectorTask(ctx, operations.GetConnectorTaskRequest{
-        Connector: shared.ConnectorMangopay,
+        Connector: shared.ConnectorMoneycorp,
         TaskID: "sint",
     })
     if err != nil {
@@ -213,7 +213,7 @@ func main() {
             FileGenerationPeriod: formance.String("60s"),
             FilePollingPeriod: formance.String("60s"),
         },
-        Connector: shared.ConnectorMangopay,
+        Connector: shared.ConnectorMoneycorp,
     })
     if err != nil {
         log.Fatal(err)
@@ -319,7 +319,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.ListConnectorTasks(ctx, operations.ListConnectorTasksRequest{
-        Connector: shared.ConnectorMangopay,
+        Connector: shared.ConnectorMoneycorp,
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         PageSize: formance.Int64(680056),
     })

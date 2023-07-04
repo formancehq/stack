@@ -91,7 +91,7 @@ public class Application {
 
             ConnectorsTransferRequest req = new ConnectorsTransferRequest(                new TransferRequest(100L, "USD", "acct_1Gqj58KZcSIg2N2q") {{
                                 source = "acct_1Gqj58KZcSIg2N2q";
-                            }};, Connector.CURRENCY_CLOUD);            
+                            }};, Connector.BANKING_CIRCLE);            
 
             ConnectorsTransferResponse res = sdk.payments.connectorsTransfer(req);
 
@@ -129,7 +129,7 @@ public class Application {
                 }})
                 .build();
 
-            GetConnectorTaskRequest req = new GetConnectorTaskRequest(Connector.MODULR, "sapiente");            
+            GetConnectorTaskRequest req = new GetConnectorTaskRequest(Connector.CURRENCY_CLOUD, "sapiente");            
 
             GetConnectorTaskResponse res = sdk.payments.getConnectorTask(req);
 
@@ -198,6 +198,7 @@ import com.formance.formance_sdk.models.shared.CurrencyCloudConfig;
 import com.formance.formance_sdk.models.shared.DummyPayConfig;
 import com.formance.formance_sdk.models.shared.MangoPayConfig;
 import com.formance.formance_sdk.models.shared.ModulrConfig;
+import com.formance.formance_sdk.models.shared.MoneycorpConfig;
 import com.formance.formance_sdk.models.shared.Security;
 import com.formance.formance_sdk.models.shared.StripeConfig;
 import com.formance.formance_sdk.models.shared.WiseConfig;
@@ -211,8 +212,10 @@ public class Application {
                 }})
                 .build();
 
-            InstallConnectorRequest req = new InstallConnectorRequest(                new WiseConfig("XXX") {{
+            InstallConnectorRequest req = new InstallConnectorRequest(                new ModulrConfig("XXX", "XXX") {{
                                 apiKey = "XXX";
+                                apiSecret = "XXX";
+                                endpoint = "XXX";
                             }}, Connector.CURRENCY_CLOUD);            
 
             InstallConnectorResponse res = sdk.payments.installConnector(req);
@@ -360,7 +363,7 @@ public class Application {
                 }})
                 .build();
 
-            ListConnectorsTransfersRequest req = new ListConnectorsTransfersRequest(Connector.CURRENCY_CLOUD);            
+            ListConnectorsTransfersRequest req = new ListConnectorsTransfersRequest(Connector.BANKING_CIRCLE);            
 
             ListConnectorsTransfersResponse res = sdk.payments.listConnectorsTransfers(req);
 
@@ -519,7 +522,7 @@ public class Application {
                 }})
                 .build();
 
-            ReadConnectorConfigRequest req = new ReadConnectorConfigRequest(Connector.MODULR);            
+            ReadConnectorConfigRequest req = new ReadConnectorConfigRequest(Connector.CURRENCY_CLOUD);            
 
             ReadConnectorConfigResponse res = sdk.payments.readConnectorConfig(req);
 

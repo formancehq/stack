@@ -227,6 +227,7 @@ pkg/models/shared/taskdummypay.go
 pkg/models/shared/taskmodulr.go
 pkg/models/shared/taskbankingcircle.go
 pkg/models/shared/taskmangopay.go
+pkg/models/shared/taskmoneycorp.go
 pkg/models/shared/paymentresponse.go
 pkg/models/shared/stripeconfig.go
 pkg/models/shared/dummypayconfig.go
@@ -235,6 +236,7 @@ pkg/models/shared/modulrconfig.go
 pkg/models/shared/currencycloudconfig.go
 pkg/models/shared/bankingcircleconfig.go
 pkg/models/shared/mangopayconfig.go
+pkg/models/shared/moneycorpconfig.go
 pkg/models/shared/connectorsresponse.go
 pkg/models/shared/connectorsconfigsresponse.go
 pkg/models/shared/taskscursor.go

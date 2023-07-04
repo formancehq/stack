@@ -321,6 +321,8 @@ src/Models/Shared/TaskBankingCircleDescriptor.php
 src/Models/Shared/TaskBankingCircle.php
 src/Models/Shared/TaskMangoPayDescriptor.php
 src/Models/Shared/TaskMangoPay.php
+src/Models/Shared/TaskMoneycorpDescriptor.php
+src/Models/Shared/TaskMoneycorp.php
 src/Models/Shared/PaymentResponse.php
 src/Models/Shared/StripeConfig.php
 src/Models/Shared/DummyPayConfig.php
@@ -329,6 +331,7 @@ src/Models/Shared/ModulrConfig.php
 src/Models/Shared/CurrencyCloudConfig.php
 src/Models/Shared/BankingCircleConfig.php
 src/Models/Shared/MangoPayConfig.php
+src/Models/Shared/MoneycorpConfig.php
 src/Models/Shared/ConnectorsResponseData.php
 src/Models/Shared/ConnectorsResponse.php
 src/Models/Shared/ConnectorsConfigsResponseDataConnectorKey.php

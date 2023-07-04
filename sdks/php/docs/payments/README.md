@@ -120,7 +120,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetConnectorTaskRequest();
-    $request->connector = Connector::MANGOPAY;
+    $request->connector = Connector::MONEYCORP;
     $request->taskId = 'sint';
 
     $response = $sdk->payments->getConnectorTask($request);
@@ -192,7 +192,7 @@ try {
     $request->requestBody->directory = '/tmp/dummypay';
     $request->requestBody->fileGenerationPeriod = '60s';
     $request->requestBody->filePollingPeriod = '60s';
-    $request->connector = Connector::MANGOPAY;
+    $request->connector = Connector::MONEYCORP;
 
     $response = $sdk->payments->installConnector($request);
 
@@ -284,7 +284,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new ListConnectorTasksRequest();
-    $request->connector = Connector::MANGOPAY;
+    $request->connector = Connector::MONEYCORP;
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
     $request->pageSize = 680056;
 
