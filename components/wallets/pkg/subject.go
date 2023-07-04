@@ -12,7 +12,7 @@ const (
 type Subject struct {
 	Type       string `json:"type"`
 	Identifier string `json:"identifier"`
-	Balance    string `json:"balance"`
+	Balance    string `json:"balance,omitempty"`
 }
 
 func (s Subject) getAccount(chart *Chart) string {
