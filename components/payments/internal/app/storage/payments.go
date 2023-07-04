@@ -126,7 +126,14 @@ func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorP
 
 	_, err = s.db.NewInsert().
 		Model(&payments).
-		On("CONFLICT (reference) DO NOTHING").
+		On("CONFLICT (reference) DO UPDATE").
+		Set("amount = EXCLUDED.amount").
+		Set("type = EXCLUDED.type").
+		Set("status = EXCLUDED.status").
+		Set("raw_data = EXCLUDED.raw_data").
+		Set("scheme = EXCLUDED.scheme").
+		Set("asset = EXCLUDED.asset").
+		Set("account_id = EXCLUDED.account_id").
 		Exec(ctx)
 	if err != nil {
 		return e("failed to create payments", err)
