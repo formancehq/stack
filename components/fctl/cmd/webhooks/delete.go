@@ -5,13 +5,15 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type DeleteWebhookStore struct {
-	Success bool `json:"success"`
+	ErrorResponse *shared.ErrorResponse `json:"err"`
+	Success       bool                  `json:"success"`
 }
 
 type DeleteWebhookController struct {
@@ -43,6 +45,7 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
+	c.config = cfg
 
 	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
 	if err != nil {
@@ -72,6 +75,11 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 	}
 
 	if response.ErrorResponse != nil {
+		if response.ErrorResponse.ErrorCode == "NOT_FOUND" {
+			c.store.ErrorResponse = response.ErrorResponse
+			c.store.Success = false
+			return c, nil
+		}
 		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
@@ -81,12 +89,20 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 
 	c.store.Success = response.StatusCode == 200
 
-	c.config = cfg
-
 	return c, nil
 }
 
 func (c *DeleteWebhookController) Render(cmd *cobra.Command, args []string) error {
+	if !c.store.Success {
+		pterm.Warning.WithShowLineNumber(false).Printfln("Config %s not found", args[0])
+		return nil
+	}
+
+	if c.store.ErrorResponse != nil {
+		pterm.Warning.WithShowLineNumber(false).Printfln(c.store.ErrorResponse.ErrorMessage)
+		return nil
+	}
+
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config deleted successfully")
 
 	return nil
