@@ -101,12 +101,6 @@ type SourceInOrder []Source
 
 func (s SourceInOrder) isSource() {}
 
-type SourceArrayInOrder struct {
-	Array Expr
-}
-
-func (s SourceArrayInOrder) isSource() {}
-
 // invariant: if remaining then expr == nil
 type AllotmentPortion struct {
 	Expr      Expr
@@ -196,13 +190,6 @@ type StatementAllocate struct {
 }
 
 func (s StatementAllocate) isStatement() {}
-
-type StatementLet struct {
-	Name string
-	Expr Expr
-}
-
-func (s StatementLet) isStatement() {}
 
 type StatementSetTxMeta struct {
 	Key   string

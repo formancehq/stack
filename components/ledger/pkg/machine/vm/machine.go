@@ -179,12 +179,6 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 				return err
 			}
 			m.Repay(*kept)
-		case program.StatementLet:
-			value, err := m.Eval(s.Expr)
-			if err != nil {
-				return err
-			}
-			m.vars[s.Name] = value
 		case program.StatementSetTxMeta:
 			value, err := m.Eval(s.Value)
 			if err != nil {
@@ -477,7 +471,7 @@ func (m *Machine) TakeFromSource(source program.Source, asset internal.Asset) (*
 				return nil, nil, fmt.Errorf("failed to take from source: %v", err)
 			}
 			if subsource_fallback != nil && i != nb_sources-1 {
-				return nil, nil, errors.New("fallback is not in the last position") // shouldn't we let this slide?
+				return nil, nil, errors.New("fallback is not in the last position") // FIXME: shouldn't we let this slide?
 			}
 			fallback = subsource_fallback
 			total, err = total.Concat(*subsource_taken)
@@ -486,20 +480,6 @@ func (m *Machine) TakeFromSource(source program.Source, asset internal.Asset) (*
 			}
 		}
 		return &total, fallback, nil
-		// case program.SourceArrayInOrder:
-		// 	list := EvalAs[internal.AccountAddress](m, s.Array)
-		// 	total := internal.Funding{
-		// 		Asset: asset,
-		// 		Parts: make([]internal.FundingPart, 0),
-		// 	}
-		// 	for _, account := range list {
-		// 		withdrawn := m.WithdrawAll(account, asset, internal.NewNumber(0))
-		// 		total, err = total.Concat(withdrawn)
-		// 		if err != nil {
-		// 			panic("mismatching assets")
-		// 		}
-		// 	}
-		// 	return total, nil
 	}
 	return nil, nil, errors.New(InternalError)
 }
