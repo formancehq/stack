@@ -100,7 +100,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetConnectorTaskRequest(
-    connector=shared.Connector.MANGOPAY,
+    connector=shared.Connector.MONEYCORP,
     task_id='sint',
 )
 
@@ -158,7 +158,7 @@ req = operations.InstallConnectorRequest(
         file_generation_period='60s',
         file_polling_period='60s',
     ),
-    connector=shared.Connector.MANGOPAY,
+    connector=shared.Connector.MONEYCORP,
 )
 
 res = s.payments.install_connector(req)
@@ -230,7 +230,7 @@ s = sdk.SDK(
 )
 
 req = operations.ListConnectorTasksRequest(
-    connector=shared.Connector.MANGOPAY,
+    connector=shared.Connector.MONEYCORP,
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
     page_size=680056,
 )

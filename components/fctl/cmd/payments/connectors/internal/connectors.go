@@ -7,6 +7,7 @@ const (
 	StripeConnector        = "stripe"
 	WiseConnector          = "wise"
 	MangoPayConnector      = "mangopay"
+	MoneycorpConnector     = "moneycorp"
 )
 
 var AllConnectors = []string{
@@ -16,4 +17,5 @@ var AllConnectors = []string{
 	StripeConnector,
 	WiseConnector,
 	MangoPayConnector,
+	MoneycorpConnector,
 }

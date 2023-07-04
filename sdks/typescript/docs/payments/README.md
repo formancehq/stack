@@ -100,7 +100,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getConnectorTask({
-  connector: Connector.Mangopay,
+  connector: Connector.Moneycorp,
   taskId: "sint",
 }).then((res: GetConnectorTaskResponse) => {
   if (res.statusCode == 200) {
@@ -158,7 +158,7 @@ sdk.payments.installConnector({
     fileGenerationPeriod: "60s",
     filePollingPeriod: "60s",
   },
-  connector: Connector.Mangopay,
+  connector: Connector.Moneycorp,
 }).then((res: InstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -231,7 +231,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorTasks({
-  connector: Connector.Mangopay,
+  connector: Connector.Moneycorp,
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   pageSize: 680056,
 }).then((res: ListConnectorTasksResponse) => {

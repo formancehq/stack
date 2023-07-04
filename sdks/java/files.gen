@@ -332,6 +332,8 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/TaskBankingCircleDescr
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskBankingCircle.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskMangoPayDescriptor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskMangoPay.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/TaskMoneycorpDescriptor.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/TaskMoneycorp.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/StripeConfig.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/DummyPayConfig.java
@@ -340,6 +342,7 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/ModulrConfig.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/CurrencyCloudConfig.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/BankingCircleConfig.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/MangoPayConfig.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/MoneycorpConfig.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConnectorsResponseData.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConnectorsResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConnectorsConfigsResponseDataConnectorKey.java

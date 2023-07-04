@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230630"
+    "version": "v1.0.20230704"
   },
   "servers": [
     {
@@ -4920,6 +4920,9 @@
                         },
                         {
                           "$ref": "#/components/schemas/TaskMangoPay"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TaskMoneycorp"
                         }
                       ]
                     }
@@ -5042,6 +5045,9 @@
               },
               {
                 "$ref": "#/components/schemas/TaskMangoPay"
+              },
+              {
+                "$ref": "#/components/schemas/TaskMoneycorp"
               }
             ]
           }
@@ -5103,7 +5109,8 @@
           "MODULR",
           "CURRENCY-CLOUD",
           "BANKING-CIRCLE",
-          "MANGOPAY"
+          "MANGOPAY",
+          "MONEYCORP"
         ]
       },
       "ConnectorConfig": {
@@ -5128,6 +5135,9 @@
           },
           {
             "$ref": "#/components/schemas/MangoPayConfig"
+          },
+          {
+            "$ref": "#/components/schemas/MoneycorpConfig"
           }
         ]
       },
@@ -5252,6 +5262,28 @@
         }
       },
       "MangoPayConfig": {
+        "type": "object",
+        "required": [
+          "clientID",
+          "apiKey",
+          "endpoint"
+        ],
+        "properties": {
+          "clientID": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "apiKey": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "endpoint": {
+            "type": "string",
+            "example": "XXX"
+          }
+        }
+      },
+      "MoneycorpConfig": {
         "type": "object",
         "required": [
           "clientID",
@@ -5699,6 +5731,35 @@
                     "type": "string"
                   },
                   "userID": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TaskMoneycorp": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "descriptor"
+            ],
+            "properties": {
+              "descriptor": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  },
+                  "accountID": {
                     "type": "string"
                   }
                 }
