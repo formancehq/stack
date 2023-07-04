@@ -88,11 +88,16 @@ func (c *InstancesListController) Run(cmd *cobra.Command, args []string) (fctl.R
 
 	c.store.WorkflowInstance = fctl.Map(response.ListRunsResponse.Data, func(src shared.WorkflowInstance) WorkflowInstance {
 		return WorkflowInstance{
-			InstanceID:   src.ID,
-			WorkflowID:   src.WorkflowID,
-			CreatedAt:    src.CreatedAt.Format(time.RFC3339),
-			UpdatedAt:    src.UpdatedAt.Format(time.RFC3339),
-			TerminatedAt: src.TerminatedAt.Format(time.RFC3339),
+			InstanceID: src.ID,
+			WorkflowID: src.WorkflowID,
+			CreatedAt:  src.CreatedAt.Format(time.RFC3339),
+			UpdatedAt:  src.UpdatedAt.Format(time.RFC3339),
+			TerminatedAt: func() string {
+				if src.TerminatedAt == nil {
+					return ""
+				}
+				return src.TerminatedAt.Format(time.RFC3339)
+			}(),
 		}
 	})
 
