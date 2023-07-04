@@ -174,10 +174,11 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 			if err != nil {
 				return err
 			}
-			err = m.Allocate(*funding, s.Destination)
+			kept, err := m.Allocate(*funding, s.Destination)
 			if err != nil {
 				return err
 			}
+			m.Repay(*kept)
 		case program.StatementLet:
 			value, err := m.Eval(s.Expr)
 			if err != nil {
@@ -230,25 +231,58 @@ func (m *Machine) Send(funding internal.Funding, account internal.AccountAddress
 	return nil
 }
 
-func (m *Machine) Allocate(funding internal.Funding, destination program.Destination) error {
+// Allocates a funding to a destination
+// Part of the funding might be kept, and returned
+// The kept part will always be the end of the original funding
+func (m *Machine) Allocate(funding internal.Funding, destination program.Destination) (*internal.Funding, error) {
+	kept := internal.Funding{
+		Asset: funding.Asset,
+	}
 	switch d := destination.(type) {
 	case program.DestinationAccount:
 		account, err := EvalAs[internal.AccountAddress](m, d.Expr)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		m.Send(funding, *account)
+
 	case program.DestinationInOrder:
 		for _, part := range d.Parts {
 			max, err := EvalAs[internal.Monetary](m, part.Max)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			taken, remainder := funding.TakeMax(max.Amount)
-			funding = remainder
-			m.AllocateOrKeep(taken, part.Kod)
+			subdestKept, err := m.AllocateOrKeep(&taken, part.Kod)
+			if err != nil {
+				return nil, err
+			}
+
+			keptAmt := subdestKept.Total()
+			funding, err = subdestKept.Concat(remainder)
+			if err != nil {
+				return nil, err
+			}
+
+			var resultingKept internal.Funding
+			resultingKept, funding, err = funding.TakeFromBottom(keptAmt)
+			if err != nil {
+				return nil, err
+			}
+
+			kept, err = resultingKept.Concat(kept)
+			if err != nil {
+				return nil, err
+			}
 		}
-		m.AllocateOrKeep(funding, d.Remaining)
+		subdestKept, err := m.AllocateOrKeep(&funding, d.Remaining)
+		if err != nil {
+			return nil, err
+		}
+		kept, err = subdestKept.Concat(kept)
+		if err != nil {
+			return nil, err
+		}
 	case program.DestinationAllotment:
 		portions := make([]internal.Portion, 0)
 		sub_dests := make([]program.KeptOrDestination, 0)
@@ -258,7 +292,7 @@ func (m *Machine) Allocate(funding internal.Funding, destination program.Destina
 			} else {
 				portion, err := EvalAs[internal.Portion](m, part.Portion.Expr)
 				if err != nil {
-					return err
+					return nil, err
 				}
 				portions = append(portions, *portion)
 			}
@@ -266,30 +300,39 @@ func (m *Machine) Allocate(funding internal.Funding, destination program.Destina
 		}
 		allotment, err := internal.NewAllotment(portions)
 		if err != nil {
-			return fmt.Errorf("failed to create allotment: %v", err)
+			return nil, fmt.Errorf("failed to create allotment: %v", err)
 		}
 		for i, part := range allotment.Allocate(funding.Total()) {
 			taken, remainder, err := funding.Take(part)
 			if err != nil {
-				return fmt.Errorf("failed to allocate to destination: %v", err)
+				return nil, fmt.Errorf("failed to allocate to destination: %v", err)
 			}
-			funding = remainder
-			m.AllocateOrKeep(taken, sub_dests[i])
+			kept, err := m.AllocateOrKeep(&taken, sub_dests[i])
+			if err != nil {
+				return nil, err
+			}
+			funding, err = kept.Concat(remainder)
+			if err != nil {
+				return nil, err
+			}
 		}
+		kept = funding
 	}
-	return nil
+	return &kept, nil
 }
 
-func (m *Machine) AllocateOrKeep(funding internal.Funding, kod program.KeptOrDestination) error {
+// Allocates a funding to a destination or keeps it entirely
+// The kept part of the funding is returned
+func (m *Machine) AllocateOrKeep(funding *internal.Funding, kod program.KeptOrDestination) (kept *internal.Funding, err error) {
 	if kod.Kept {
-		m.Repay(funding)
+		kept = funding
 	} else {
-		err := m.Allocate(funding, kod.Destination)
+		kept, err = m.Allocate(*funding, kod.Destination)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return kept, nil
 }
 
 func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon internal.Monetary) (*internal.Funding, error) {

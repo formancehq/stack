@@ -46,6 +46,39 @@ func TestKeptDestinationAllotment(t *testing.T) {
 	test(t, tc)
 }
 
+func TestKeptDestinationInOrder(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [GEM 100] (
+		source = {
+			@a
+			@world
+		}
+		destination = {
+			max [GEM 8] to @x
+			remaining kept
+		}
+	)`)
+	tc.setBalance("a", "GEM", 1)
+	tc.expected = CaseResult{
+		Printed: []internal.Value{},
+		Postings: []Posting{
+			{
+				Asset:       "GEM",
+				Amount:      internal.NewMonetaryInt(1),
+				Source:      "a",
+				Destination: "x",
+			},
+			{
+				Asset:       "GEM",
+				Amount:      internal.NewMonetaryInt(7),
+				Source:      "world",
+				Destination: "x",
+			},
+		},
+	}
+	test(t, tc)
+}
+
 func TestKeptComplex(t *testing.T) {
 	tc := NewTestCase()
 	tc.compile(t, `send [GEM 100] (
