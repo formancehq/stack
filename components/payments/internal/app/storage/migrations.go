@@ -314,7 +314,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-					ALTER TYPE connector_provider ADD VALUE 'MANGOPAY';
+					ALTER TYPE connector_provider ADD VALUE IF NOT EXISTS 'MANGOPAY';
 				`)
 				if err != nil {
 					return err
@@ -326,7 +326,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-					ALTER TYPE connector_provider ADD VALUE 'MONEYCORP';
+					ALTER TYPE connector_provider ADD VALUE IF NOT EXISTS 'MONEYCORP';
 				`)
 				if err != nil {
 					return err
