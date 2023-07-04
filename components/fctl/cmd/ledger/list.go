@@ -2,13 +2,12 @@ package ledger
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type ListStore struct {
-	ConfigInfo *shared.ConfigInfo `json:"config_info_response"`
+	Ledgers []string `json:"ledgers"`
 }
 type ListController struct {
 	store *ListStore
@@ -18,7 +17,7 @@ var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
 func NewDefaultListStore() *ListStore {
 	return &ListStore{
-		ConfigInfo: &shared.ConfigInfo{},
+		Ledgers: []string{},
 	}
 }
 
@@ -68,13 +67,13 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	c.store.ConfigInfo = response.ConfigInfoResponse.Data
+	c.store.Ledgers = response.ConfigInfoResponse.Data.Config.Storage.Ledgers
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.ConfigInfo.Config.Storage.Ledgers, func(ledger string) []string {
+	tableData := fctl.Map(c.store.Ledgers, func(ledger string) []string {
 		return []string{
 			ledger,
 		}
