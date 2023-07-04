@@ -4,13 +4,15 @@ import (
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type ServerInfoStore struct {
-	ConfigInfoResponse *shared.ConfigInfo `json:"config_info_response"`
+	Server        string   `json:"server"`
+	Version       string   `json:"version"`
+	StorageDriver string   `json:"storage_driver"`
+	Ledgers       []string `json:"ledgers"`
 }
 type ServerInfoController struct {
 	store *ServerInfoStore
@@ -20,7 +22,10 @@ var _ fctl.Controller[*ServerInfoStore] = (*ServerInfoController)(nil)
 
 func NewDefaultServerInfoStore() *ServerInfoStore {
 	return &ServerInfoStore{
-		ConfigInfoResponse: &shared.ConfigInfo{},
+		Server:        "unknown",
+		Version:       "unknown",
+		StorageDriver: "unknown",
+		Ledgers:       []string{},
 	}
 }
 
@@ -69,16 +74,19 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, err
 	}
 
-	c.store.ConfigInfoResponse = response.ConfigInfoResponse.Data
+	c.store.Server = response.ConfigInfoResponse.Data.Server
+	c.store.Version = response.ConfigInfoResponse.Data.Version
+	c.store.StorageDriver = response.ConfigInfoResponse.Data.Config.Storage.Driver
+	c.store.Ledgers = response.ConfigInfoResponse.Data.Config.Storage.Ledgers
 
 	return c, nil
 }
 
 func (c *ServerInfoController) Render(cmd *cobra.Command, args []string) error {
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("Server"), fmt.Sprint(c.store.ConfigInfoResponse.Server)})
-	tableData = append(tableData, []string{pterm.LightCyan("Version"), fmt.Sprint(c.store.ConfigInfoResponse.Version)})
-	tableData = append(tableData, []string{pterm.LightCyan("Storage driver"), fmt.Sprint(c.store.ConfigInfoResponse.Config.Storage.Driver)})
+	tableData = append(tableData, []string{pterm.LightCyan("Server"), fmt.Sprint(c.store.Server)})
+	tableData = append(tableData, []string{pterm.LightCyan("Version"), fmt.Sprint(c.store.Version)})
+	tableData = append(tableData, []string{pterm.LightCyan("Storage driver"), fmt.Sprint(c.store.StorageDriver)})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
@@ -90,7 +98,7 @@ func (c *ServerInfoController) Render(cmd *cobra.Command, args []string) error {
 	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Ledgers :")
 	if err := pterm.DefaultBulletList.
 		WithWriter(cmd.OutOrStdout()).
-		WithItems(fctl.Map(c.store.ConfigInfoResponse.Config.Storage.Ledgers, func(ledger string) pterm.BulletListItem {
+		WithItems(fctl.Map(c.store.Ledgers, func(ledger string) pterm.BulletListItem {
 			return pterm.BulletListItem{
 				Text:        ledger,
 				TextStyle:   pterm.NewStyle(pterm.FgDefault),
