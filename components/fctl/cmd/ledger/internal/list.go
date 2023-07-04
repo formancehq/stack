@@ -88,7 +88,7 @@ func ListTransaction(client *formance.Formance, ctx context.Context, baseURL str
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 	req.Header.Set("Accept", "application/json;q=1, application/json;q=0")
-	req.Header.Set("Content-Type", "application/json") // Le doute m'habite
+	req.Header.Set("Content-Type", "application/json")
 
 	utils.PopulateHeaders(ctx, req, request)
 

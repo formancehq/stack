@@ -189,7 +189,6 @@ func CreateTransaction(client *formance.Formance, ctx context.Context, request o
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("eazeaz", v.CreateTransactionResponse)
 		return &v.CreateTransactionResponse.Data[0], nil
 	} else {
 		response, err := client.Ledger.CreateTransaction(ctx, request)
