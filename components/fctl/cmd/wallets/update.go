@@ -11,6 +11,7 @@ import (
 )
 
 type UpdateStore struct {
+	Success bool `json:"success"`
 }
 type UpdateController struct {
 	store        *UpdateStore
@@ -95,6 +96,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
+	c.store.Success = true
 	return c, nil
 }
 
