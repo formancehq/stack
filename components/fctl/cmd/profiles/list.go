@@ -6,26 +6,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type Profile struct {
+	Name   string `json:"name"`
+	Active string `json:"active"`
+}
 type ProfilesListStore struct {
-	Profiles []string `json:"profiles"`
+	Profiles []*Profile `json:"profiles"`
 }
 type ProfilesListController struct {
-	store              *ProfilesListStore
-	currentProfileName string
+	store *ProfilesListStore
 }
 
 var _ fctl.Controller[*ProfilesListStore] = (*ProfilesListController)(nil)
 
 func NewDefaultProfilesListStore() *ProfilesListStore {
 	return &ProfilesListStore{
-		Profiles: []string{},
+		Profiles: []*Profile{},
 	}
 }
 
 func NewProfilesListController() *ProfilesListController {
 	return &ProfilesListController{
-		store:              NewDefaultProfilesListStore(),
-		currentProfileName: "",
+		store: NewDefaultProfilesListStore(),
 	}
 }
 
@@ -39,21 +41,31 @@ func (c *ProfilesListController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, err
 	}
 
-	c.store.Profiles = fctl.MapKeys(cfg.GetProfiles())
+	p := fctl.MapKeys(cfg.GetProfiles())
+	currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
 
-	c.currentProfileName = fctl.GetCurrentProfileName(cmd, cfg)
+	for _, k := range p {
+		c.store.Profiles = append(c.store.Profiles, &Profile{
+			Name: k,
+			Active: func(k string) string {
+				if currentProfileName == k {
+					return "Yes"
+				}
+				return "No"
+			}(k),
+		})
+	}
 
 	return c, nil
 
 }
 
 func (c *ProfilesListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.Profiles, func(p string) []string {
-		isCurrent := "No"
-		if p == c.currentProfileName {
-			isCurrent = "Yes"
+	tableData := fctl.Map(c.store.Profiles, func(p *Profile) []string {
+		return []string{
+			p.Name,
+			p.Active,
 		}
-		return []string{p, isCurrent}
 	})
 	tableData = fctl.Prepend(tableData, []string{"Name", "Active"})
 
