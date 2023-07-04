@@ -94,6 +94,14 @@ func init() {
 					return paymentsServices(ctx, env)
 				},
 			},
+			"v0.6.8": {
+				PreUpgrade: func(ctx modules.Context) error {
+					return paymentsPreUpgradeMigration(ctx)
+				},
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return paymentsServices(ctx, env)
+				},
+			},
 		},
 	})
 }
