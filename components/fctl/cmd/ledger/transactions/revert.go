@@ -51,7 +51,15 @@ func NewRevertCommand() *cobra.Command {
 				Txid:   txId,
 			}
 
-			response, err := ledgerClient.Ledger.RevertTransaction(cmd.Context(), request)
+			profile := fctl.GetCurrentProfile(cmd, cfg)
+			baseUrl := profile.ServicesBaseUrl(stack).String()
+
+			response, err := internal.RevertTransaction(
+				ledgerClient,
+				cmd.Context(),
+				baseUrl,
+				request,
+			)
 			if err != nil {
 				return err
 			}

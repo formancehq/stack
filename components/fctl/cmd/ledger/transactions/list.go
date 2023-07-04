@@ -6,8 +6,6 @@ import (
 
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -82,9 +80,14 @@ func NewListCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			response, err := ledgerClient.Ledger.ListTransactions(
+			profile := fctl.GetCurrentProfile(cmd, cfg)
+			baseUrl := profile.ServicesBaseUrl(stack).String()
+
+			response, err := internal.ListTransaction(
+				ledgerClient,
 				cmd.Context(),
-				operations.ListTransactionsRequest{
+				baseUrl,
+				internal.ListTransactionsRequest{
 					Account:     fctl.Ptr(fctl.GetString(cmd, accountFlag)),
 					Destination: fctl.Ptr(fctl.GetString(cmd, destinationFlag)),
 					EndTime:     &endTime,
@@ -114,7 +117,7 @@ func NewListCommand() *cobra.Command {
 				return nil
 			}
 
-			tableData := fctl.Map(transactionResponse.Cursor.Data, func(tx shared.ExpandedTransaction) []string {
+			tableData := fctl.Map(transactionResponse.Cursor.Data, func(tx internal.ExpandedTransaction) []string {
 				return []string{
 					fmt.Sprintf("%d", tx.Txid),
 					func() string {
@@ -124,7 +127,7 @@ func NewListCommand() *cobra.Command {
 						return *tx.Reference
 					}(),
 					tx.Timestamp.Format(time.RFC3339),
-					fctl.MetadataAsShortString(tx.Metadata),
+					internal.MetadataInterfaceAsShortString(tx.Metadata),
 				}
 			})
 			tableData = fctl.Prepend(tableData, []string{"ID", "Reference", "Date", "Metadata"})

@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"time"
@@ -14,7 +15,7 @@ func printCommonInformation(
 	out io.Writer,
 	txID int64,
 	reference string,
-	postings []shared.Posting,
+	postings []*shared.Posting,
 	timestamp time.Time,
 ) error {
 	fctl.Section.WithWriter(out).Println("Information")
@@ -51,7 +52,7 @@ func printCommonInformation(
 	return nil
 }
 
-func PrintExpandedTransaction(out io.Writer, transaction shared.ExpandedTransaction) error {
+func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) error {
 
 	if err := printCommonInformation(
 		out,
@@ -87,13 +88,13 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.ExpandedTransact
 	}
 
 	fmt.Fprintln(out, "")
-	if err := fctl.PrintMetadata(out, transaction.Metadata); err != nil {
+	if err := PrintMetadata(out, transaction.Metadata); err != nil {
 		return err
 	}
 	return nil
 }
 
-func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
+func PrintTransaction(out io.Writer, transaction Transaction) error {
 
 	if err := printCommonInformation(
 		out,
@@ -105,8 +106,28 @@ func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
 		return err
 	}
 
-	if err := fctl.PrintMetadata(out, transaction.Metadata); err != nil {
+	if err := PrintMetadata(out, transaction.Metadata); err != nil {
 		return err
 	}
 	return nil
+}
+func PrintMetadata(out io.Writer, metadata Metadata) error {
+	fctl.Section.WithWriter(out).Println("Metadata")
+	if len(metadata) == 0 {
+		fmt.Println("No metadata.")
+		return nil
+	}
+	tableData := pterm.TableData{}
+	for k, v := range metadata {
+		asJson, err := json.Marshal(v)
+		if err != nil {
+			return err
+		}
+		tableData = append(tableData, []string{pterm.LightCyan(k), string(asJson)})
+	}
+
+	return pterm.DefaultTable.
+		WithWriter(out).
+		WithData(tableData).
+		Render()
 }

@@ -42,8 +42,13 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			response, err := ledgerClient.Ledger.GetTransaction(
+			profile := fctl.GetCurrentProfile(cmd, cfg)
+			baseUrl := profile.ServicesBaseUrl(stack).String()
+
+			response, err := internal.GetTransaction(
+				*ledgerClient,
 				cmd.Context(),
+				baseUrl,
 				operations.GetTransactionRequest{
 					Ledger: ledger,
 					Txid:   txId,
