@@ -49,8 +49,10 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 	}
 
 	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_NOW,
-		Duration:       0,
+		// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
+		// and their transactions.
+		ScheduleOption: models.OPTIONS_RUN_INDEFINITELY,
+		Duration:       c.cfg.PollingPeriod.Duration,
 		// No need to restart this task, since the connector is not existing or
 		// was uninstalled previously, the task does not exists in the database
 		Restart: false,

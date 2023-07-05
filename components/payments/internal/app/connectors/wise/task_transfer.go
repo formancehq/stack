@@ -7,17 +7,17 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/formancehq/payments/internal/app/connectors/wise/client"
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskTransfer(logger logging.Logger, client *client, transfer Transfer) task.Task {
+func taskTransfer(logger logging.Logger, client *client.Client, transfer Transfer) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,
 	) error {
-		profiles, err := client.getProfiles()
+		profiles, err := client.GetProfiles()
 		if err != nil {
 			return err
 		}
@@ -30,7 +30,7 @@ func taskTransfer(logger logging.Logger, client *client, transfer Transfer) task
 			}
 		}
 
-		quote, err := client.createQuote(profileID, transfer.Currency, transfer.Amount)
+		quote, err := client.CreateQuote(profileID, transfer.Currency, transfer.Amount)
 		if err != nil {
 			return err
 		}
@@ -42,7 +42,7 @@ func taskTransfer(logger logging.Logger, client *client, transfer Transfer) task
 
 		transactionID := uuid.New().String()
 
-		err = client.createTransfer(quote, destinationAccount, transactionID)
+		err = client.CreateTransfer(quote, destinationAccount, transactionID)
 		if err != nil {
 			return err
 		}

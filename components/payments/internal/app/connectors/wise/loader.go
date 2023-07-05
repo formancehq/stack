@@ -1,6 +1,8 @@
 package wise
 
 import (
+	"time"
+
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -23,6 +25,10 @@ func (l *Loader) Load(logger logging.Logger, config Config) integration.Connecto
 }
 
 func (l *Loader) ApplyDefaults(cfg Config) Config {
+	if cfg.PollingPeriod.Duration == 0 {
+		cfg.PollingPeriod.Duration = 2 * time.Minute
+	}
+
 	return cfg
 }
 
