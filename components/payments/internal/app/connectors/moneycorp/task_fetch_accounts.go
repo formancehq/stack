@@ -33,7 +33,10 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 				return err
 			}
 
-			err = scheduler.Schedule(ctx, transactionsTask, false)
+			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				Restart:        true,
+			})
 			if err != nil {
 				return err
 			}

@@ -33,7 +33,10 @@ func taskFetchProfiles(logger logging.Logger, client *client) task.Task {
 				return err
 			}
 
-			err = scheduler.Schedule(ctx, descriptor, true)
+			err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				Restart:        true,
+			})
 			if err != nil {
 				return err
 			}

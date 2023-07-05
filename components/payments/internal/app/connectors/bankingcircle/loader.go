@@ -23,7 +23,10 @@ func NewLoader() integration.Loader[Config] {
 						return err
 					}
 
-					return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, false)
+					return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, models.TaskSchedulerOptions{
+						ScheduleOption: models.OPTIONS_RUN_NOW,
+						Restart:        false,
+					})
 				}).
 				WithResolve(resolveTasks(logger, config)).
 				Build()

@@ -116,7 +116,10 @@ func TestUninstallConnector(t *testing.T) {
 			}
 		}).
 		WithInstall(func(ctx task.ConnectorContext) error {
-			return ctx.Scheduler().Schedule(ctx.Context(), []byte(uuid.New().String()), false)
+			return ctx.Scheduler().Schedule(ctx.Context(), []byte(uuid.New().String()), models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				Restart:        false,
+			})
 		}).
 		WithUninstall(func(ctx context.Context) error {
 			close(uninstalled)

@@ -36,7 +36,12 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return fmt.Errorf("failed to create read files task descriptor: %w", err)
 	}
 
-	if err = ctx.Scheduler().Schedule(ctx.Context(), readFilesDescriptor, true); err != nil {
+	if err = ctx.Scheduler().Schedule(ctx.Context(), readFilesDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		// No need to restart this task, since the connector is not existing or
+		// was uninstalled previously, the task does not exists in the database
+		Restart: false,
+	}); err != nil {
 		return fmt.Errorf("failed to schedule task to read files: %w", err)
 	}
 
@@ -45,7 +50,10 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return fmt.Errorf("failed to create generate files task descriptor: %w", err)
 	}
 
-	if err = ctx.Scheduler().Schedule(ctx.Context(), generateFilesDescriptor, true); err != nil {
+	if err = ctx.Scheduler().Schedule(ctx.Context(), generateFilesDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		Restart:        false,
+	}); err != nil {
 		return fmt.Errorf("failed to schedule task to generate files: %w", err)
 	}
 

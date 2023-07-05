@@ -86,7 +86,10 @@ func TestTaskScheduler(t *testing.T) {
 			}), 1)
 
 		descriptor := newDescriptor()
-		err := scheduler.Schedule(context.TODO(), descriptor, false)
+		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        false,
+		})
 		require.NoError(t, err)
 
 		require.Eventually(t, TaskActive(store, provider, descriptor), time.Second, 100*time.Millisecond)
@@ -109,11 +112,17 @@ func TestTaskScheduler(t *testing.T) {
 			}), 1)
 
 		descriptor := newDescriptor()
-		err := scheduler.Schedule(context.TODO(), descriptor, false)
+		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        false,
+		})
 		require.NoError(t, err)
 		require.Eventually(t, TaskActive(store, provider, descriptor), time.Second, 100*time.Millisecond)
 
-		err = scheduler.Schedule(context.TODO(), descriptor, false)
+		err = scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        false,
+		})
 		require.Equal(t, ErrAlreadyScheduled, err)
 	})
 
@@ -130,7 +139,10 @@ func TestTaskScheduler(t *testing.T) {
 			}), 1)
 
 		descriptor := newDescriptor()
-		err := scheduler.Schedule(context.TODO(), descriptor, false)
+		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        false,
+		})
 		require.NoError(t, err)
 		require.Eventually(t, TaskFailed(store, provider, descriptor, "test"), time.Second,
 			100*time.Millisecond)
@@ -173,8 +185,14 @@ func TestTaskScheduler(t *testing.T) {
 				panic("unknown descriptor")
 			}), 1)
 
-		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor1, false))
-		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor2, false))
+		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor1, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        false,
+		}))
+		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor2, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        false,
+		}))
 		require.Eventually(t, TaskActive(store, provider, descriptor1), time.Second, 100*time.Millisecond)
 		require.Eventually(t, TaskPending(store, provider, descriptor2), time.Second, 100*time.Millisecond)
 		close(task1Terminated)
@@ -198,14 +216,20 @@ func TestTaskScheduler(t *testing.T) {
 				case string(mainDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) {
 						<-ctx.Done()
-						require.NoError(t, scheduler.Schedule(ctx, workerDescriptor, false))
+						require.NoError(t, scheduler.Schedule(ctx, workerDescriptor, models.TaskSchedulerOptions{
+							ScheduleOption: models.OPTIONS_RUN_NOW,
+							Restart:        false,
+						}))
 					}
 				default:
 					panic("should not be called")
 				}
 			}), 1)
 
-		require.NoError(t, scheduler.Schedule(context.TODO(), mainDescriptor, false))
+		require.NoError(t, scheduler.Schedule(context.TODO(), mainDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        false,
+		}))
 		require.Eventually(t, TaskActive(store, provider, mainDescriptor), time.Second, 100*time.Millisecond)
 		require.NoError(t, scheduler.Shutdown(context.TODO()))
 		require.Eventually(t, TaskTerminated(store, provider, mainDescriptor), time.Second, 100*time.Millisecond)

@@ -46,7 +46,10 @@ func taskReadFiles(config Config, fs fs) task.Task {
 					}
 
 					// schedule a task to ingest the file into the payments system.
-					err = scheduler.Schedule(ctx, descriptor, true)
+					err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+						ScheduleOption: models.OPTIONS_RUN_NOW,
+						Restart:        true,
+					})
 					if err != nil {
 						return fmt.Errorf("failed to schedule task to ingest file '%s': %w", file, err)
 					}

@@ -25,7 +25,7 @@ func (mcc *mockConnectorContext) Context() context.Context {
 	return mcc.ctx
 }
 
-func (mcc mockScheduler) Schedule(ctx context.Context, p models.TaskDescriptor, restart bool) error {
+func (mcc mockScheduler) Schedule(ctx context.Context, p models.TaskDescriptor, options models.TaskSchedulerOptions) error {
 	return nil
 }
 

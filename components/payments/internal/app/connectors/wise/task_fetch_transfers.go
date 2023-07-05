@@ -121,7 +121,10 @@ func taskFetchTransfers(logger logging.Logger, client *client, profileID uint64)
 			return err
 		}
 
-		return scheduler.Schedule(ctx, descriptor, true)
+		return scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        true,
+		})
 	}
 }
 
