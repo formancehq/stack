@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/cmd"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 func init() {
@@ -62,24 +63,12 @@ func init() {
 					return paymentsPreUpgradeMigration(ctx)
 				},
 				PostUpgrade: func(ctx modules.PostInstallContext) error {
-					if err := resetConnectors(ctx, "stripe"); err != nil {
-						return err
-					}
-					if err := resetConnectors(ctx, "wise"); err != nil {
-						return err
-					}
-					if err := resetConnectors(ctx, "modulr"); err != nil {
-						return err
-					}
-					if err := resetConnectors(ctx, "banking-circle"); err != nil {
-						return err
-					}
-					if err := resetConnectors(ctx, "currency-cloud"); err != nil {
-						return err
-					}
-					if err := resetConnectors(ctx, "dummy-pay"); err != nil {
-						return err
-					}
+					resetConnectors(ctx, "stripe")
+					resetConnectors(ctx, "wise")
+					resetConnectors(ctx, "modulr")
+					resetConnectors(ctx, "banking-circle")
+					resetConnectors(ctx, "currency-cloud")
+					resetConnectors(ctx, "dummy-pay")
 					return nil
 				},
 				Services: func(ctx modules.ModuleContext) modules.Services {
@@ -97,6 +86,25 @@ func init() {
 			"v0.6.8": {
 				PreUpgrade: func(ctx modules.Context) error {
 					return paymentsPreUpgradeMigration(ctx)
+				},
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return paymentsServices(ctx, env)
+				},
+			},
+			"v0.7.0": {
+				PreUpgrade: func(ctx modules.Context) error {
+					return paymentsPreUpgradeMigration(ctx)
+				},
+				PostUpgrade: func(ctx modules.PostInstallContext) error {
+					resetConnectors(ctx, "stripe")
+					resetConnectors(ctx, "wise")
+					resetConnectors(ctx, "modulr")
+					resetConnectors(ctx, "banking-circle")
+					resetConnectors(ctx, "currency-cloud")
+					resetConnectors(ctx, "dummy-pay")
+					resetConnectors(ctx, "mangopay")
+					resetConnectors(ctx, "moneycorp")
+					return nil
 				},
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return paymentsServices(ctx, env)
@@ -148,7 +156,7 @@ func paymentsServices(
 	}}
 }
 
-func resetConnectors(ctx modules.PostInstallContext, connector string) error {
+func resetConnectors(ctx modules.PostInstallContext, connector string) {
 	endpoint := fmt.Sprintf(
 		"http://payments.%s.svc:%d/connectors/%s/reset",
 		ctx.Stack.Name,
@@ -156,5 +164,9 @@ func resetConnectors(ctx modules.PostInstallContext, connector string) error {
 		connector,
 	)
 	_, err := http.Post(endpoint, "", nil)
-	return err
+	if err != nil {
+		logger := log.FromContext(ctx)
+		logger.WithValues("endpoint", endpoint).Error(err, "failed to reset connector")
+		// Do not return any error here, as the connector is not required to be installed
+	}
 }
