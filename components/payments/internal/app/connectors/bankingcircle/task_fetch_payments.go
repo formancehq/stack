@@ -4,21 +4,20 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/formancehq/payments/internal/app/models"
-
+	"github.com/formancehq/payments/internal/app/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchPayments(logger logging.Logger, client *client) task.Task {
+func taskFetchPayments(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
-		paymentsList, err := client.getAllPayments(ctx)
+		paymentsList, err := client.GetAllPayments(ctx)
 		if err != nil {
 			return err
 		}

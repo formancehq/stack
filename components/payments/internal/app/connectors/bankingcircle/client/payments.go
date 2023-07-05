@@ -1,136 +1,13 @@
-package bankingcircle
+package client
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
-
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
-
-type client struct {
-	httpClient *http.Client
-
-	username string
-	password string
-
-	endpoint              string
-	authorizationEndpoint string
-
-	logger logging.Logger
-
-	accessToken          string
-	accessTokenExpiresAt time.Time
-}
-
-func newHTTPClient(userCertificate, userCertificateKey string) (*http.Client, error) {
-	cert, err := tls.X509KeyPair([]byte(userCertificate), []byte(userCertificateKey))
-	if err != nil {
-		return nil, err
-	}
-
-	tr := http.DefaultTransport.(*http.Transport).Clone()
-	tr.TLSClientConfig = &tls.Config{
-		Certificates: []tls.Certificate{cert},
-	}
-
-	return &http.Client{
-		Timeout:   10 * time.Second,
-		Transport: otelhttp.NewTransport(tr),
-	}, nil
-}
-
-func newClient(
-	username, password,
-	endpoint, authorizationEndpoint,
-	uCertificate, uCertificateKey string,
-	logger logging.Logger) (*client, error) {
-	httpClient, err := newHTTPClient(uCertificate, uCertificateKey)
-	if err != nil {
-		return nil, err
-	}
-
-	c := &client{
-		httpClient: httpClient,
-
-		username:              username,
-		password:              password,
-		endpoint:              endpoint,
-		authorizationEndpoint: authorizationEndpoint,
-
-		logger: logger,
-	}
-
-	if err := c.login(context.TODO()); err != nil {
-		return nil, err
-	}
-
-	return c, nil
-}
-
-func (c *client) login(ctx context.Context) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
-		c.authorizationEndpoint+"/api/v1/authorizations/authorize", http.NoBody)
-	if err != nil {
-		return fmt.Errorf("failed to create login request: %w", err)
-	}
-
-	req.SetBasicAuth(c.username, c.password)
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to login: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			c.logger.Error(err)
-		}
-	}()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read login response body: %w", err)
-	}
-
-	//nolint:tagliatelle // allow for client-side structures
-	type response struct {
-		AccessToken string `json:"access_token"`
-		ExpiresIn   string `json:"expires_in"`
-	}
-
-	var res response
-
-	if err = json.Unmarshal(responseBody, &res); err != nil {
-		return fmt.Errorf("failed to unmarshal login response: %w", err)
-	}
-
-	c.accessToken = res.AccessToken
-
-	expiresIn, err := strconv.Atoi(res.ExpiresIn)
-	if err != nil {
-		return fmt.Errorf("failed to convert expires_in to int: %w", err)
-	}
-
-	c.accessTokenExpiresAt = time.Now().Add(time.Duration(expiresIn) * time.Second)
-
-	return nil
-}
-
-func (c *client) ensureAccessTokenIsValid(ctx context.Context) error {
-	if c.accessTokenExpiresAt.After(time.Now()) {
-		return nil
-	}
-
-	return c.login(ctx)
-}
 
 //nolint:tagliatelle // allow for client-side structures
 type payment struct {
@@ -201,7 +78,7 @@ type payment struct {
 	} `json:"creditorInformation"`
 }
 
-func (c *client) getAllPayments(ctx context.Context) ([]*payment, error) {
+func (c *Client) GetAllPayments(ctx context.Context) ([]*payment, error) {
 	var payments []*payment
 
 	for page := 1; ; page++ {
@@ -220,7 +97,7 @@ func (c *client) getAllPayments(ctx context.Context) ([]*payment, error) {
 	return payments, nil
 }
 
-func (c *client) getPayments(ctx context.Context, page int) ([]*payment, error) {
+func (c *Client) getPayments(ctx context.Context, page int) ([]*payment, error) {
 	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
 		return nil, err
 	}

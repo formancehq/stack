@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/formancehq/payments/internal/app/connectors"
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
 
@@ -16,12 +17,13 @@ import (
 // openssl pkcs12 -in PC20230412293693.pfx -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > clientcert.cer
 // openssl pkcs12 -in PC20230412293693.pfx -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > clientcert.key
 type Config struct {
-	Username              string `json:"username" yaml:"username" bson:"username"`
-	Password              string `json:"password" yaml:"password" bson:"password"`
-	Endpoint              string `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
-	AuthorizationEndpoint string `json:"authorizationEndpoint" yaml:"authorizationEndpoint" bson:"authorizationEndpoint"`
-	UserCertificate       string `json:"userCertificate" yaml:"userCertificate" bson:"userCertificate"`
-	UserCertificateKey    string `json:"userCertificateKey" yaml:"userCertificateKey" bson:"userCertificateKey"`
+	Username              string              `json:"username" yaml:"username" bson:"username"`
+	Password              string              `json:"password" yaml:"password" bson:"password"`
+	Endpoint              string              `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
+	AuthorizationEndpoint string              `json:"authorizationEndpoint" yaml:"authorizationEndpoint" bson:"authorizationEndpoint"`
+	UserCertificate       string              `json:"userCertificate" yaml:"userCertificate" bson:"userCertificate"`
+	UserCertificateKey    string              `json:"userCertificateKey" yaml:"userCertificateKey" bson:"userCertificateKey"`
+	PollingPeriod         connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
 
 // String obfuscates sensitive fields and returns a string representation of the config.
@@ -71,6 +73,7 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("authorizationEndpoint", configtemplate.TypeString, true)
 	cfg.AddParameter("userCertificate", configtemplate.TypeLongString, true)
 	cfg.AddParameter("userCertificateKey", configtemplate.TypeLongString, true)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
 
 	return Name.String(), cfg
 }
