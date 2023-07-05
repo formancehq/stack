@@ -2,6 +2,7 @@ package modulr
 
 import (
 	"context"
+	"errors"
 
 	"github.com/formancehq/payments/internal/app/models"
 
@@ -39,7 +40,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 				ScheduleOption: models.OPTIONS_RUN_NOW,
 				Restart:        true,
 			})
-			if err != nil {
+			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 				return err
 			}
 		}

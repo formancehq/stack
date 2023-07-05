@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/formancehq/payments/internal/app/connectors"
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
 
 type Config struct {
-	APIKey    string `json:"apiKey" bson:"apiKey"`
-	APISecret string `json:"apiSecret" bson:"apiSecret"`
-	Endpoint  string `json:"endpoint" bson:"endpoint"`
+	APIKey        string              `json:"apiKey" bson:"apiKey"`
+	APISecret     string              `json:"apiSecret" bson:"apiSecret"`
+	Endpoint      string              `json:"endpoint" bson:"endpoint"`
+	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
 
 // String obfuscates sensitive fields and returns a string representation of the config.
@@ -41,6 +43,7 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
 	cfg.AddParameter("apiSecret", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, false)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
 
 	return Name.String(), cfg
 }
