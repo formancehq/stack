@@ -32,13 +32,13 @@ func (p *parseVisitor) CompileDestination(c parser.IDestinationContext) (program
 				Kod: *kod,
 			})
 		}
-		remaining_kod, err := p.VisitKeptOrDestination(c.DestinationInOrder().GetRemainingDest())
+		remainingKod, err := p.VisitKeptOrDestination(c.DestinationInOrder().GetRemainingDest())
 		if err != nil {
 			return nil, err
 		}
 		return program.DestinationInOrder{
 			Parts:     parts,
-			Remaining: *remaining_kod,
+			Remaining: *remainingKod,
 		}, nil
 	case *parser.DestAllotmentContext:
 		parts := []program.DestinationAllotmentPart{}

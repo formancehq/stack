@@ -97,7 +97,7 @@ func (p *parseVisitor) CompileSource(c parser.ISourceContext) (program.Source, b
 	case *parser.SrcInOrderContext:
 		sources := c.SourceInOrder().GetSources()
 
-		res_sources := []program.Source{}
+		resSources := []program.Source{}
 		fallback := false
 
 		n := len(sources)
@@ -105,14 +105,14 @@ func (p *parseVisitor) CompileSource(c parser.ISourceContext) (program.Source, b
 			if fallback {
 				return nil, false, LogicError(c, errors.New("source is already unlimited at this point"))
 			}
-			subsource, subsource_fallback, err := p.CompileSource(sources[i])
+			subsource, subsourceFallback, err := p.CompileSource(sources[i])
 			if err != nil {
 				return nil, false, err
 			}
-			res_sources = append(res_sources, subsource)
-			fallback = fallback || subsource_fallback
+			resSources = append(resSources, subsource)
+			fallback = fallback || subsourceFallback
 		}
-		return program.SourceInOrder(res_sources), fallback, nil
+		return program.SourceInOrder(resSources), fallback, nil
 	}
 	return nil, false, InternalError(c)
 }

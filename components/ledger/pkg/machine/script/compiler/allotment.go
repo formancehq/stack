@@ -11,7 +11,7 @@ import (
 )
 
 func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []parser.IAllotmentPortionContext) ([]program.AllotmentPortion, *CompileError) {
-	res_portions := []program.AllotmentPortion{}
+	resPortions := []program.AllotmentPortion{}
 	total := big.NewRat(0, 1)
 	hasVariable := false
 	hasRemaining := false
@@ -25,7 +25,7 @@ func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []pa
 			}
 			rat := *portion.Specific
 			total.Add(&rat, total)
-			res_portions = append(res_portions, program.AllotmentPortion{
+			resPortions = append(resPortions, program.AllotmentPortion{
 				Expr:      program.ExprLiteral{Value: *portion},
 				Remaining: false,
 			})
@@ -39,7 +39,7 @@ func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []pa
 				return nil, LogicError(c, errors.New("wrong type, expected portion"))
 			}
 			portion := program.ExprVariable(name)
-			res_portions = append(res_portions, program.AllotmentPortion{
+			resPortions = append(resPortions, program.AllotmentPortion{
 				Expr:      portion,
 				Remaining: false,
 			})
@@ -50,7 +50,7 @@ func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []pa
 					errors.New("two uses of `remaining` in the same allocation"),
 				)
 			}
-			res_portions = append(res_portions, program.AllotmentPortion{
+			resPortions = append(resPortions, program.AllotmentPortion{
 				Expr:      nil,
 				Remaining: true,
 			})
@@ -77,5 +77,5 @@ func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []pa
 			errors.New("known portions are already equal to 100%"),
 		)
 	}
-	return res_portions, nil
+	return resPortions, nil
 }

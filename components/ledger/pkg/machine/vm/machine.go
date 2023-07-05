@@ -20,11 +20,6 @@ type Posting struct {
 
 const InternalError = "internal interpreter error, please report to the issue tracker"
 
-// type LedgerReader interface {
-// 	GetBalance(account internal.AccountAddress, asset internal.Asset) internal.Number
-// 	GetMeta(account internal.AccountAddress, key string) internal.Value
-// }
-
 type Machine struct {
 	store       Store
 	ctx         context.Context
@@ -58,9 +53,9 @@ func (m *Machine) checkVar(value internal.Value) error {
 	return nil
 }
 
-func (m *Machine) Execute(script program.Program, providedVars map[string]string) error {
-	for _, var_decl := range script.VarsDecl {
-		switch o := var_decl.Origin.(type) {
+func (m *Machine) Execute(prog program.Program, providedVars map[string]string) error {
+	for _, varDecl := range prog.VarsDecl {
+		switch o := varDecl.Origin.(type) {
 		case program.VarOriginMeta:
 			account, err := EvalAs[internal.AccountAddress](m, o.Account)
 			if err != nil {
@@ -70,7 +65,7 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 			if err != nil {
 				return fmt.Errorf("failed to get metadata of account %s for key %s: %s", account, o.Key, err)
 			}
-			value, err := internal.NewValueFromString(var_decl.Typ, metadata)
+			value, err := internal.NewValueFromString(varDecl.Typ, metadata)
 			if err != nil {
 				return fmt.Errorf("failed to parse variable: %s", err)
 			}
@@ -78,7 +73,7 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 			if err != nil {
 				return fmt.Errorf("failed to get metadata of account %s for key %s: %s", account, o.Key, err)
 			}
-			m.vars[var_decl.Name] = value
+			m.vars[varDecl.Name] = value
 		case program.VarOriginBalance:
 			account, err := EvalAs[internal.AccountAddress](m, o.Account)
 			if err != nil {
@@ -102,13 +97,13 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 			if err != nil {
 				return fmt.Errorf("failed to get balance of account %s for asset %s: %s", account, asset, err)
 			}
-			m.vars[var_decl.Name] = balance
+			m.vars[varDecl.Name] = balance
 		case nil:
-			if _, ok := providedVars[var_decl.Name]; !ok {
-				return fmt.Errorf("missing variable $%v", var_decl.Name)
+			if _, ok := providedVars[varDecl.Name]; !ok {
+				return fmt.Errorf("missing variable $%v", varDecl.Name)
 			}
-			val, err := internal.NewValueFromString(var_decl.Typ, providedVars[var_decl.Name])
-			delete(providedVars, var_decl.Name)
+			val, err := internal.NewValueFromString(varDecl.Typ, providedVars[varDecl.Name])
+			delete(providedVars, varDecl.Name)
 			if err != nil {
 				return fmt.Errorf("failed to parse variable: %s", err)
 			}
@@ -116,7 +111,7 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 			if err != nil {
 				return fmt.Errorf("variable passed is incorrect: %s", err)
 			}
-			m.vars[var_decl.Name] = val
+			m.vars[varDecl.Name] = val
 		default:
 			return errors.New(InternalError)
 		}
@@ -128,11 +123,11 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 		}
 	}
 
-	for _, stmt := range script.Statements {
+	for _, stmt := range prog.Instruction {
 		switch s := stmt.(type) {
-		case program.StatementFail:
+		case program.InstructionFail:
 			return errors.New("failed")
-		case program.StatementPrint:
+		case program.InstructionPrint:
 			v, err := m.Eval(s.Expr)
 			if err != nil {
 				return err
@@ -140,7 +135,7 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 			m.Printed = append(m.Printed, v)
 			fmt.Printf("%v\n", s.Expr)
 
-		case program.StatementSave:
+		case program.InstructionSave:
 			account, err := EvalAs[internal.AccountAddress](m, s.Account)
 			if err != nil {
 				return err
@@ -154,7 +149,7 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 				return err
 			}
 			*bal = *bal.Sub(amt.Amount)
-		case program.StatementSaveAll:
+		case program.InstructionSaveAll:
 			account, err := EvalAs[internal.AccountAddress](m, s.Account)
 			if err != nil {
 				return err
@@ -169,7 +164,7 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 			}
 			*bal = *internal.Zero
 
-		case program.StatementAllocate:
+		case program.InstructionAllocate:
 			funding, err := EvalAs[internal.Funding](m, s.Funding)
 			if err != nil {
 				return err
@@ -179,13 +174,13 @@ func (m *Machine) Execute(script program.Program, providedVars map[string]string
 				return err
 			}
 			m.Repay(*kept)
-		case program.StatementSetTxMeta:
+		case program.InstructionSetTxMeta:
 			value, err := m.Eval(s.Value)
 			if err != nil {
 				return err
 			}
 			m.TxMeta[s.Key] = value
-		case program.StatementSetAccountMeta:
+		case program.InstructionSetAccountMeta:
 			account, err := EvalAs[internal.AccountAddress](m, s.Account)
 			if err != nil {
 				return err
@@ -279,7 +274,7 @@ func (m *Machine) Allocate(funding internal.Funding, destination program.Destina
 		}
 	case program.DestinationAllotment:
 		portions := make([]internal.Portion, 0)
-		sub_dests := make([]program.KeptOrDestination, 0)
+		subDests := make([]program.KeptOrDestination, 0)
 		for _, part := range d {
 			if part.Portion.Remaining {
 				portions = append(portions, internal.NewPortionRemaining())
@@ -290,7 +285,7 @@ func (m *Machine) Allocate(funding internal.Funding, destination program.Destina
 				}
 				portions = append(portions, *portion)
 			}
-			sub_dests = append(sub_dests, part.Kod)
+			subDests = append(subDests, part.Kod)
 		}
 		allotment, err := internal.NewAllotment(portions)
 		if err != nil {
@@ -301,7 +296,7 @@ func (m *Machine) Allocate(funding internal.Funding, destination program.Destina
 			if err != nil {
 				return nil, fmt.Errorf("failed to allocate to destination: %v", err)
 			}
-			kept, err := m.AllocateOrKeep(&taken, sub_dests[i])
+			kept, err := m.AllocateOrKeep(&taken, subDests[i])
 			if err != nil {
 				return nil, err
 			}
@@ -343,11 +338,11 @@ func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon 
 				Amount: mon.Amount.Sub(taken.Total()),
 			}
 			if fallback != nil {
-				missing_taken, err := m.WithdrawAlways(*fallback, missing)
+				missingTaken, err := m.WithdrawAlways(*fallback, missing)
 				if err != nil {
 					return nil, err
 				}
-				taken, err = taken.Concat(*missing_taken)
+				taken, err = taken.Concat(*missingTaken)
 				if err != nil {
 					return nil, errors.New("mismatching assets")
 				}
@@ -464,17 +459,17 @@ func (m *Machine) TakeFromSource(source program.Source, asset internal.Asset) (*
 			Parts: make([]internal.FundingPart, 0),
 		}
 		var fallback *internal.AccountAddress
-		nb_sources := len(s)
+		nbSources := len(s)
 		for i, source := range s {
-			subsource_taken, subsource_fallback, err := m.TakeFromSource(source, asset)
+			subsourceTaken, subsourceFallback, err := m.TakeFromSource(source, asset)
 			if err != nil {
 				return nil, nil, fmt.Errorf("failed to take from source: %v", err)
 			}
-			if subsource_fallback != nil && i != nb_sources-1 {
+			if subsourceFallback != nil && i != nbSources-1 {
 				return nil, nil, errors.New("fallback is not in the last position") // FIXME: shouldn't we let this slide?
 			}
-			fallback = subsource_fallback
-			total, err = total.Concat(*subsource_taken)
+			fallback = subsourceFallback
+			total, err = total.Concat(*subsourceTaken)
 			if err != nil {
 				return nil, nil, errors.New("mismatching assets")
 			}

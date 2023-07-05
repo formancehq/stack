@@ -45,8 +45,8 @@ func TestSimplePrint(t *testing.T) {
 		Case: "print 1",
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementPrint{
+				Instruction: []Instruction{
+					InstructionPrint{
 						Expr: ExprLiteral{
 							Value: internal.NewNumber(1),
 						},
@@ -62,8 +62,8 @@ func TestCompositeExpr(t *testing.T) {
 		Case: "print 29 + 15 - 2",
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementPrint{
+				Instruction: []Instruction{
+					InstructionPrint{
 						Expr: ExprNumberSub{
 							Lhs: ExprNumberAdd{
 								Lhs: ExprLiteral{Value: internal.NewNumber(29)},
@@ -83,8 +83,8 @@ func TestFail(t *testing.T) {
 		Case: "fail",
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementFail{},
+				Instruction: []Instruction{
+					InstructionFail{},
 				},
 			},
 		},
@@ -96,11 +96,11 @@ func TestCRLF(t *testing.T) {
 		Case: "print @a\r\nprint @b",
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementPrint{
+				Instruction: []Instruction{
+					InstructionPrint{
 						Expr: ExprLiteral{Value: internal.AccountAddress("a")},
 					},
-					StatementPrint{
+					InstructionPrint{
 						Expr: ExprLiteral{Value: internal.AccountAddress("b")},
 					},
 				},
@@ -115,8 +115,8 @@ func TestConstant(t *testing.T) {
 		Case: "print @user:U001",
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementPrint{
+				Instruction: []Instruction{
+					InstructionPrint{
 						Expr: ExprLiteral{Value: user},
 					},
 				},
@@ -137,31 +137,31 @@ func TestSetTxMeta(t *testing.T) {
 		`,
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementSetTxMeta{
+				Instruction: []Instruction{
+					InstructionSetTxMeta{
 						Key:   "aaa",
 						Value: ExprLiteral{Value: internal.AccountAddress("platform")},
 					},
-					StatementSetTxMeta{
+					InstructionSetTxMeta{
 						Key:   "bbb",
 						Value: ExprLiteral{Value: internal.Asset("GEM")},
 					},
-					StatementSetTxMeta{
+					InstructionSetTxMeta{
 						Key:   "ccc",
 						Value: ExprLiteral{Value: internal.NewNumber(42)},
 					},
-					StatementSetTxMeta{
+					InstructionSetTxMeta{
 						Key:   "ddd",
 						Value: ExprLiteral{Value: internal.String("test")},
 					},
-					StatementSetTxMeta{
+					InstructionSetTxMeta{
 						Key: "eee",
 						Value: ExprMonetaryNew{
 							Asset:  ExprLiteral{Value: internal.Asset("COIN")},
 							Amount: ExprLiteral{Value: internal.NewNumber(30)},
 						},
 					},
-					StatementSetTxMeta{
+					InstructionSetTxMeta{
 						Key: "fff",
 						Value: ExprLiteral{Value: internal.Portion{
 							Remaining: false,
@@ -190,8 +190,8 @@ func TestSetTxMetaVars(t *testing.T) {
 						Name: "commission",
 					},
 				},
-				Statements: []Statement{
-					StatementSetTxMeta{
+				Instruction: []Instruction{
+					InstructionSetTxMeta{
 						Key:   "fee",
 						Value: ExprVariable("commission"),
 					},
@@ -220,8 +220,8 @@ func TestComments(t *testing.T) {
 						Name: "a",
 					},
 				},
-				Statements: []Statement{
-					StatementPrint{
+				Instruction: []Instruction{
+					InstructionPrint{
 						Expr: ExprVariable("a"),
 					},
 				},
@@ -282,8 +282,8 @@ func TestDestinationAllotment(t *testing.T) {
 		)`,
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementAllocate{
+				Instruction: []Instruction{
+					InstructionAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
 								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
@@ -339,8 +339,8 @@ func TestDestinationInOrder(t *testing.T) {
 		)`,
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementAllocate{
+				Instruction: []Instruction{
+					InstructionAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
 								Asset:  ExprLiteral{Value: internal.Asset("COIN")},
@@ -389,8 +389,8 @@ func TestAllocationPercentages(t *testing.T) {
 		)`,
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementAllocate{
+				Instruction: []Instruction{
+					InstructionAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
 								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
@@ -458,8 +458,8 @@ func TestSend(t *testing.T) {
 		Case: script,
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementAllocate{
+				Instruction: []Instruction{
+					InstructionAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
 								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
@@ -487,8 +487,8 @@ func TestSendAll(t *testing.T) {
 		)`,
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementAllocate{
+				Instruction: []Instruction{
+					InstructionAllocate{
 						Funding: ExprTakeAll{
 							Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
 							Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("alice")}},
@@ -542,8 +542,8 @@ func TestMetadata(t *testing.T) {
 						},
 					},
 				},
-				Statements: []Statement{
-					StatementAllocate{
+				Instruction: []Instruction{
+					InstructionAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{
 								Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
@@ -916,28 +916,28 @@ func TestSetAccountMeta(t *testing.T) {
 			`,
 			Expected: CaseResult{
 				Program: Program{
-					Statements: []Statement{
-						StatementSetAccountMeta{
+					Instruction: []Instruction{
+						InstructionSetAccountMeta{
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "aaa",
 							Value:   ExprLiteral{Value: internal.AccountAddress("platform")},
 						},
-						StatementSetAccountMeta{
+						InstructionSetAccountMeta{
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "bbb",
 							Value:   ExprLiteral{Value: internal.Asset("GEM")},
 						},
-						StatementSetAccountMeta{
+						InstructionSetAccountMeta{
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "ccc",
 							Value:   ExprLiteral{Value: internal.NewNumber(42)},
 						},
-						StatementSetAccountMeta{
+						InstructionSetAccountMeta{
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "ddd",
 							Value:   ExprLiteral{Value: internal.String("test")},
 						},
-						StatementSetAccountMeta{
+						InstructionSetAccountMeta{
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "eee",
 							Value: ExprMonetaryNew{
@@ -945,7 +945,7 @@ func TestSetAccountMeta(t *testing.T) {
 								Amount: ExprLiteral{Value: internal.NewNumber(30)},
 							},
 						},
-						StatementSetAccountMeta{
+						InstructionSetAccountMeta{
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 							Key:     "fff",
 							Value: ExprLiteral{Value: internal.Portion{
@@ -977,8 +977,8 @@ func TestSetAccountMeta(t *testing.T) {
 							Name: "acc",
 						},
 					},
-					Statements: []Statement{
-						StatementAllocate{
+					Instruction: []Instruction{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetaryNew{
 									Asset:  ExprLiteral{Value: internal.Asset("EUR/2")},
@@ -992,7 +992,7 @@ func TestSetAccountMeta(t *testing.T) {
 								Expr: ExprVariable("acc"),
 							},
 						},
-						StatementSetAccountMeta{
+						InstructionSetAccountMeta{
 							Account: ExprVariable("acc"),
 							Key:     "fees",
 							Value: ExprLiteral{Value: internal.Portion{
@@ -1059,8 +1059,8 @@ func TestVariableBalance(t *testing.T) {
 							},
 						},
 					},
-					Statements: []Statement{
-						StatementAllocate{
+					Instruction: []Instruction{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprVariable("bal"),
 								Source: ValueAwareSourceSource{
@@ -1103,8 +1103,8 @@ func TestVariableBalance(t *testing.T) {
 							},
 						},
 					},
-					Statements: []Statement{
-						StatementAllocate{
+					Instruction: []Instruction{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprVariable("bal"),
 								Source: ValueAwareSourceSource{
@@ -1248,8 +1248,8 @@ func TestVariableAsset(t *testing.T) {
 						},
 					},
 				},
-				Statements: []Statement{
-					StatementAllocate{
+				Instruction: []Instruction{
+					InstructionAllocate{
 						Funding: ExprTakeAll{
 							Asset:  ExprVariable("ass"),
 							Source: SourceAccount{Account: ExprLiteral{Value: internal.AccountAddress("alice")}},
@@ -1258,7 +1258,7 @@ func TestVariableAsset(t *testing.T) {
 							Expr: ExprLiteral{Value: internal.AccountAddress("bob")},
 						},
 					},
-					StatementAllocate{
+					InstructionAllocate{
 						Funding: ExprTake{
 							Amount: ExprMonetaryNew{Asset: ExprVariable("ass"), Amount: ExprLiteral{Value: internal.NewNumber(1)}},
 							Source: ValueAwareSourceSource{
@@ -1269,7 +1269,7 @@ func TestVariableAsset(t *testing.T) {
 							Expr: ExprLiteral{Value: internal.AccountAddress("alice")},
 						},
 					},
-					StatementAllocate{
+					InstructionAllocate{
 						Funding: ExprTake{
 							Amount: ExprVariable("bal"),
 							Source: ValueAwareSourceSource{
@@ -1292,8 +1292,8 @@ func TestPrint(t *testing.T) {
 		Case: script,
 		Expected: CaseResult{
 			Program: Program{
-				Statements: []Statement{
-					StatementPrint{
+				Instruction: []Instruction{
+					InstructionPrint{
 						Expr: ExprNumberAdd{
 							Lhs: ExprNumberAdd{
 								Lhs: ExprLiteral{Value: internal.NewNumber(1)},
@@ -1334,8 +1334,8 @@ func TestSendWithArithmetic(t *testing.T) {
 							Name: "mon",
 						},
 					},
-					Statements: []Statement{
-						StatementAllocate{
+					Instruction: []Instruction{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetarySub{
 									Lhs: ExprMonetaryAdd{
@@ -1416,15 +1416,15 @@ func TestSaveFromAccount(t *testing.T) {
  			)`,
 			Expected: CaseResult{
 				Program: Program{
-					Statements: []Statement{
-						StatementSave{
+					Instruction: []Instruction{
+						InstructionSave{
 							Amount: ExprMonetaryNew{
 								Asset:  ExprLiteral{Value: internal.Asset("EUR")},
 								Amount: ExprLiteral{Value: internal.NewNumber(10)},
 							},
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 						},
-						StatementAllocate{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetaryNew{
 									Asset:  ExprLiteral{Value: internal.Asset("EUR")},
@@ -1457,12 +1457,12 @@ func TestSaveFromAccount(t *testing.T) {
  			)`,
 			Expected: CaseResult{
 				Program: Program{
-					Statements: []Statement{
-						StatementSaveAll{
+					Instruction: []Instruction{
+						InstructionSaveAll{
 							Asset:   ExprLiteral{Value: internal.Asset("EUR")},
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 						},
-						StatementAllocate{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetaryNew{
 									Asset:  ExprLiteral{Value: internal.Asset("EUR")},
@@ -1505,15 +1505,15 @@ func TestSaveFromAccount(t *testing.T) {
 							Name: "ass",
 						},
 					},
-					Statements: []Statement{
-						StatementSave{
+					Instruction: []Instruction{
+						InstructionSave{
 							Amount: ExprMonetaryNew{
 								Asset:  ExprVariable("ass"),
 								Amount: ExprLiteral{Value: internal.NewNumber(10)},
 							},
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 						},
-						StatementAllocate{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetaryNew{
 									Asset:  ExprVariable("ass"),
@@ -1556,12 +1556,12 @@ func TestSaveFromAccount(t *testing.T) {
 							Name: "mon",
 						},
 					},
-					Statements: []Statement{
-						StatementSave{
+					Instruction: []Instruction{
+						InstructionSave{
 							Amount:  ExprVariable("mon"),
 							Account: ExprLiteral{Value: internal.AccountAddress("alice")},
 						},
-						StatementAllocate{
+						InstructionAllocate{
 							Funding: ExprTake{
 								Amount: ExprMonetaryNew{
 									Asset:  ExprLiteral{Value: internal.Asset("EUR")},

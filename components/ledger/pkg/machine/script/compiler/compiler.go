@@ -144,12 +144,12 @@ func (p *parseVisitor) CompileLit(c parser.ILiteralContext) (internal.Type, inte
 	}
 }
 
-func (p *parseVisitor) CompileSend(c *parser.SendContext) (program.Statement, *CompileError) {
+func (p *parseVisitor) CompileSend(c *parser.SendContext) (program.Instruction, *CompileError) {
 	mon, err := p.CompileExprTy(c.GetMon(), internal.TypeMonetary)
 	if err != nil {
 		return nil, err
 	}
-	value_aware_source, err := p.CompileValueAwareSource(c.GetSrc())
+	valueAwareSource, err := p.CompileValueAwareSource(c.GetSrc())
 	if err != nil {
 		return nil, err
 	}
@@ -157,17 +157,17 @@ func (p *parseVisitor) CompileSend(c *parser.SendContext) (program.Statement, *C
 	if err != nil {
 		return nil, err
 	}
-	return program.StatementAllocate{
+	return program.InstructionAllocate{
 		Funding: program.ExprTake{
 			Amount: mon,
-			Source: value_aware_source,
+			Source: valueAwareSource,
 		},
 		Destination: destination,
 	}, nil
 }
 
-func (p *parseVisitor) CompileSendAll(c *parser.SendAllContext) (program.Statement, *CompileError) {
-	source, has_fallback, err := p.CompileSource(c.GetSrc())
+func (p *parseVisitor) CompileSendAll(c *parser.SendAllContext) (program.Instruction, *CompileError) {
+	source, hasFallback, err := p.CompileSource(c.GetSrc())
 	if err != nil {
 		return nil, err
 	}
@@ -175,14 +175,14 @@ func (p *parseVisitor) CompileSendAll(c *parser.SendAllContext) (program.Stateme
 	if err != nil {
 		return nil, err
 	}
-	if has_fallback {
+	if hasFallback {
 		return nil, LogicError(c, errors.New("cannot take all balance of an unlimited source"))
 	}
 	destination, err := p.CompileDestination(c.GetDest())
 	if err != nil {
 		return nil, err
 	}
-	return program.StatementAllocate{
+	return program.InstructionAllocate{
 		Funding: program.ExprTakeAll{
 			Asset:  asset,
 			Source: source,
@@ -191,19 +191,19 @@ func (p *parseVisitor) CompileSendAll(c *parser.SendAllContext) (program.Stateme
 	}, nil
 }
 
-func (p *parseVisitor) CompileSetTxMeta(ctx *parser.SetTxMetaContext) (program.Statement, *CompileError) {
+func (p *parseVisitor) CompileSetTxMeta(ctx *parser.SetTxMetaContext) (program.Instruction, *CompileError) {
 	_, value, err := p.CompileExpr(ctx.GetValue())
 	if err != nil {
 		return nil, err
 	}
-	return program.StatementSetTxMeta{
+	return program.InstructionSetTxMeta{
 		Key:   strings.Trim(ctx.GetKey().GetText(), `"`),
 		Value: value,
 	}, nil
 
 }
 
-func (p *parseVisitor) CompileSetAccountMeta(ctx *parser.SetAccountMetaContext) (program.Statement, *CompileError) {
+func (p *parseVisitor) CompileSetAccountMeta(ctx *parser.SetAccountMetaContext) (program.Instruction, *CompileError) {
 	account, err := p.CompileExprTy(ctx.GetAcc(), internal.TypeAccount)
 	if err != nil {
 		return nil, err
@@ -214,14 +214,14 @@ func (p *parseVisitor) CompileSetAccountMeta(ctx *parser.SetAccountMetaContext) 
 		return nil, err
 	}
 
-	return program.StatementSetAccountMeta{
+	return program.InstructionSetAccountMeta{
 		Account: account,
 		Key:     strings.Trim(ctx.GetKey().GetText(), `"`),
 		Value:   value,
 	}, nil
 }
 
-func (p *parseVisitor) CompileSave(ctx *parser.SaveFromAccountContext) (program.Statement, *CompileError) {
+func (p *parseVisitor) CompileSave(ctx *parser.SaveFromAccountContext) (program.Instruction, *CompileError) {
 	if monAll := ctx.GetMonAll(); monAll != nil {
 		asset, err := p.CompileExprTy(ctx.MonetaryAll().GetAsset(), internal.TypeAsset)
 		if err != nil {
@@ -231,7 +231,7 @@ func (p *parseVisitor) CompileSave(ctx *parser.SaveFromAccountContext) (program.
 		if err != nil {
 			return nil, err
 		}
-		return program.StatementSaveAll{
+		return program.InstructionSaveAll{
 			Asset:   asset,
 			Account: account,
 		}, nil
@@ -244,7 +244,7 @@ func (p *parseVisitor) CompileSave(ctx *parser.SaveFromAccountContext) (program.
 		if err != nil {
 			return nil, err
 		}
-		return program.StatementSave{
+		return program.InstructionSave{
 			Amount:  mon,
 			Account: account,
 		}, nil
@@ -253,16 +253,16 @@ func (p *parseVisitor) CompileSave(ctx *parser.SaveFromAccountContext) (program.
 	}
 }
 
-func (p *parseVisitor) CompilePrint(ctx *parser.PrintContext) (program.Statement, *CompileError) {
+func (p *parseVisitor) CompilePrint(ctx *parser.PrintContext) (program.Instruction, *CompileError) {
 	_, expr, err := p.CompileExpr(ctx.GetExpr())
 	if err != nil {
 		return nil, err
 	}
-	return program.StatementPrint{Expr: expr}, nil
+	return program.InstructionPrint{Expr: expr}, nil
 }
 
 func (p *parseVisitor) CompileVars(c *parser.VarListDeclContext) ([]program.VarDecl, *CompileError) {
-	vars_decl := make([]program.VarDecl, 0)
+	varsDecl := make([]program.VarDecl, 0)
 
 	for _, v := range c.GetV() {
 		name := v.GetName().GetText()[1:]
@@ -289,7 +289,7 @@ func (p *parseVisitor) CompileVars(c *parser.VarListDeclContext) ([]program.VarD
 
 		p.vars[name] = ty
 
-		var_decl := program.VarDecl{
+		varDecl := program.VarDecl{
 			Typ:    ty,
 			Name:   name,
 			Origin: nil,
@@ -302,7 +302,7 @@ func (p *parseVisitor) CompileVars(c *parser.VarListDeclContext) ([]program.VarD
 				return nil, compErr
 			}
 			key := strings.Trim(c.GetKey().GetText(), `"`)
-			var_decl.Origin = program.VarOriginMeta{
+			varDecl.Origin = program.VarOriginMeta{
 				Account: account,
 				Key:     key,
 			}
@@ -319,20 +319,20 @@ func (p *parseVisitor) CompileVars(c *parser.VarListDeclContext) ([]program.VarD
 			if compErr != nil {
 				return nil, compErr
 			}
-			var_decl.Origin = program.VarOriginBalance{
+			varDecl.Origin = program.VarOriginBalance{
 				Account: account,
 				Asset:   asset,
 			}
 		}
-		vars_decl = append(vars_decl, var_decl)
+		varsDecl = append(varsDecl, varDecl)
 	}
 
-	return vars_decl, nil
+	return varsDecl, nil
 }
 
 func (p *parseVisitor) CompileScript(c parser.IScriptContext) (*program.Program, *CompileError) {
-	var vars_decl []program.VarDecl
-	var statements []program.Statement
+	var varsDecl []program.VarDecl
+	var instructions []program.Instruction
 	var err *CompileError
 	switch c := c.(type) {
 	case *parser.ScriptContext:
@@ -340,7 +340,7 @@ func (p *parseVisitor) CompileScript(c parser.IScriptContext) (*program.Program,
 		if vars != nil {
 			switch c := vars.(type) {
 			case *parser.VarListDeclContext:
-				vars_decl, err = p.CompileVars(c)
+				varsDecl, err = p.CompileVars(c)
 				if err != nil {
 					return nil, err
 				}
@@ -350,38 +350,38 @@ func (p *parseVisitor) CompileScript(c parser.IScriptContext) (*program.Program,
 		}
 
 		for _, statement := range c.GetStmts() {
-			var stmt program.Statement
+			var instr program.Instruction
 			var err *CompileError
 			switch c := statement.(type) {
 			case *parser.PrintContext:
-				stmt, err = p.CompilePrint(c)
+				instr, err = p.CompilePrint(c)
 			case *parser.FailContext:
-				stmt = program.StatementFail{}
+				instr = program.InstructionFail{}
 			case *parser.SaveFromAccountContext:
-				stmt, err = p.CompileSave(c)
+				instr, err = p.CompileSave(c)
 			case *parser.SendContext:
-				stmt, err = p.CompileSend(c)
+				instr, err = p.CompileSend(c)
 			case *parser.SendAllContext:
-				stmt, err = p.CompileSendAll(c)
+				instr, err = p.CompileSendAll(c)
 			case *parser.SetTxMetaContext:
-				stmt, err = p.CompileSetTxMeta(c)
+				instr, err = p.CompileSetTxMeta(c)
 			case *parser.SetAccountMetaContext:
-				stmt, err = p.CompileSetAccountMeta(c)
+				instr, err = p.CompileSetAccountMeta(c)
 			default:
 				return nil, InternalError(c)
 			}
 			if err != nil {
 				return nil, err
 			}
-			statements = append(statements, stmt)
+			instructions = append(instructions, instr)
 		}
 	default:
 		return nil, InternalError(c)
 	}
 
 	return &program.Program{
-		VarsDecl:   vars_decl,
-		Statements: statements,
+		VarsDecl:    varsDecl,
+		Instruction: instructions,
 	}, nil
 }
 

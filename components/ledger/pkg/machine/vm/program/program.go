@@ -158,53 +158,53 @@ type DestinationAllotment []DestinationAllotmentPart
 
 func (d DestinationAllotment) isDestination() {}
 
-type Statement interface {
-	isStatement()
+type Instruction interface {
+	isInstruction()
 }
 
-type StatementFail struct{}
+type InstructionFail struct{}
 
-func (s StatementFail) isStatement() {}
+func (s InstructionFail) isInstruction() {}
 
-type StatementPrint struct{ Expr Expr }
+type InstructionPrint struct{ Expr Expr }
 
-func (s StatementPrint) isStatement() {}
+func (s InstructionPrint) isInstruction() {}
 
-type StatementSave struct {
+type InstructionSave struct {
 	Amount  Expr
 	Account Expr
 }
 
-func (s StatementSave) isStatement() {}
+func (s InstructionSave) isInstruction() {}
 
-type StatementSaveAll struct {
+type InstructionSaveAll struct {
 	Asset   Expr
 	Account Expr
 }
 
-func (s StatementSaveAll) isStatement() {}
+func (s InstructionSaveAll) isInstruction() {}
 
-type StatementAllocate struct {
+type InstructionAllocate struct {
 	Funding     Expr
 	Destination Destination
 }
 
-func (s StatementAllocate) isStatement() {}
+func (s InstructionAllocate) isInstruction() {}
 
-type StatementSetTxMeta struct {
+type InstructionSetTxMeta struct {
 	Key   string
 	Value Expr
 }
 
-func (s StatementSetTxMeta) isStatement() {}
+func (s InstructionSetTxMeta) isInstruction() {}
 
-type StatementSetAccountMeta struct {
+type InstructionSetAccountMeta struct {
 	Account Expr
 	Key     string
 	Value   Expr
 }
 
-func (s StatementSetAccountMeta) isStatement() {}
+func (s InstructionSetAccountMeta) isInstruction() {}
 
 type VarOrigin interface {
 	isVarOrigin()
@@ -231,8 +231,8 @@ type VarDecl struct {
 }
 
 type Program struct {
-	VarsDecl   []VarDecl
-	Statements []Statement
+	VarsDecl    []VarDecl
+	Instruction []Instruction
 }
 
 // func (p *Program) ParseVariables(vars map[string]internal.Value) (map[string]internal.Value, error) {
@@ -285,22 +285,22 @@ type Program struct {
 
 func (p *Program) ParseVariablesJSON(vars map[string]string) (map[string]internal.Value, error) {
 	variables := make(map[string]internal.Value)
-	for _, var_decl := range p.VarsDecl {
-		if var_decl.Origin != nil {
+	for _, varDecl := range p.VarsDecl {
+		if varDecl.Origin != nil {
 			continue
 		}
-		data, ok := vars[var_decl.Name]
+		data, ok := vars[varDecl.Name]
 		if !ok {
-			return nil, fmt.Errorf("missing variable $%s", var_decl.Name)
+			return nil, fmt.Errorf("missing variable $%s", varDecl.Name)
 		}
-		val, err := internal.NewValueFromString(var_decl.Typ, data)
+		val, err := internal.NewValueFromString(varDecl.Typ, data)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"invalid JSON value for variable $%s of type %v: %w",
-				var_decl.Name, var_decl.Typ, err)
+				varDecl.Name, varDecl.Typ, err)
 		}
-		variables[var_decl.Name] = val
-		delete(vars, var_decl.Name)
+		variables[varDecl.Name] = val
+		delete(vars, varDecl.Name)
 	}
 	for name := range vars {
 		return nil, fmt.Errorf("extraneous variable $%s", name)
