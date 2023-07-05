@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type payment struct {
+type Payment struct {
 	Id             string `json:"Id"`
 	Tag            string `json:"Tag"`
 	CreationDate   int64  `json:"CreationDate"`
@@ -35,26 +35,7 @@ type payment struct {
 	DebitedWalletID  string `json:"DebitedWalletId"`
 }
 
-func (c *Client) GetAllTransactions(ctx context.Context, userID string) ([]*payment, error) {
-	var payments []*payment
-
-	for page := 1; ; page++ {
-		pagedPayments, err := c.getTransactions(ctx, userID, page)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(pagedPayments) == 0 {
-			break
-		}
-
-		payments = append(payments, pagedPayments...)
-	}
-
-	return payments, nil
-}
-
-func (c *Client) getTransactions(ctx context.Context, userID string, page int) ([]*payment, error) {
+func (c *Client) GetTransactions(ctx context.Context, userID string, page int) ([]*Payment, error) {
 	endpoint := fmt.Sprintf("%s/v2.01/%s/users/%s/transactions", c.endpoint, c.clientID, userID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {
@@ -78,7 +59,7 @@ func (c *Client) getTransactions(ctx context.Context, userID string, page int) (
 		}
 	}()
 
-	var payments []*payment
+	var payments []*Payment
 	if err := json.NewDecoder(resp.Body).Decode(&payments); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal login response body: %w", err)
 	}

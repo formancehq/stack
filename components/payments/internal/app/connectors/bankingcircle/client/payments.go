@@ -10,7 +10,7 @@ import (
 )
 
 //nolint:tagliatelle // allow for client-side structures
-type payment struct {
+type Payment struct {
 	PaymentID            string      `json:"paymentId"`
 	TransactionReference string      `json:"transactionReference"`
 	ConcurrencyToken     string      `json:"concurrencyToken"`
@@ -78,26 +78,7 @@ type payment struct {
 	} `json:"creditorInformation"`
 }
 
-func (c *Client) GetAllPayments(ctx context.Context) ([]*payment, error) {
-	var payments []*payment
-
-	for page := 1; ; page++ {
-		pagedPayments, err := c.getPayments(ctx, page)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(pagedPayments) == 0 {
-			break
-		}
-
-		payments = append(payments, pagedPayments...)
-	}
-
-	return payments, nil
-}
-
-func (c *Client) getPayments(ctx context.Context, page int) ([]*payment, error) {
+func (c *Client) GetPayments(ctx context.Context, page int) ([]*Payment, error) {
 	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
 		return nil, err
 	}
@@ -108,7 +89,7 @@ func (c *Client) getPayments(ctx context.Context, page int) ([]*payment, error) 
 	}
 
 	q := req.URL.Query()
-	q.Add("PageSize", "5000")
+	q.Add("PageSize", "100")
 	q.Add("PageNumber", fmt.Sprint(page))
 
 	req.URL.RawQuery = q.Encode()
@@ -133,7 +114,7 @@ func (c *Client) getPayments(ctx context.Context, page int) ([]*payment, error) 
 	}
 
 	type response struct {
-		Result   []*payment `json:"result"`
+		Result   []*Payment `json:"result"`
 		PageInfo struct {
 			CurrentPage int `json:"currentPage"`
 			PageSize    int `json:"pageSize"`

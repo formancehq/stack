@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+const (
+	pageSize = 100
+)
+
 type accountsResponse struct {
 	Accounts []account `json:"data"`
 }

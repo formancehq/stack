@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"crypto/tls"
-	_ "embed"
 	"net/http"
 	"time"
 
