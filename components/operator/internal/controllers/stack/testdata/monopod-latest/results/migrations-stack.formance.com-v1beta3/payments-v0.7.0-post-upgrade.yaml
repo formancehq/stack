@@ -1,0 +1,18 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    annotations:
+        reloader.stakater.com/auto: "true"
+    generation: 1
+    labels:
+        stack: "true"
+    name: payments-v0.7.0-post-upgrade
+    namespace: monopod-latest
+spec:
+    configuration: monopod-latest
+    module: payments
+    postUpgrade: true
+    targetedVersion: v0.7.0
+    version: monopod-latest
+status:
+    terminated: true

@@ -9,10 +9,6 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
-const (
-	pageSize = 1000
-)
-
 type Client struct {
 	httpClient *http.Client
 

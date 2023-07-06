@@ -1,0 +1,18 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    annotations:
+        reloader.stakater.com/auto: "true"
+    generation: 1
+    labels:
+        stack: "true"
+    name: payments-v0.7.0-pre-upgrade
+    namespace: multipod-latest
+spec:
+    configuration: multipod-latest
+    module: payments
+    postUpgrade: false
+    targetedVersion: v0.7.0
+    version: multipod-latest
+status:
+    terminated: true

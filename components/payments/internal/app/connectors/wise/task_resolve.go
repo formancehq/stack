@@ -5,12 +5,13 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/formancehq/payments/internal/app/connectors/wise/client"
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const (
+	taskNameMain           = "main"
 	taskNameFetchTransfers = "fetch-transfers"
 	taskNameFetchProfiles  = "fetch-profiles"
 	taskNameTransfer       = "transfer"
@@ -33,10 +34,12 @@ type Transfer struct {
 }
 
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
-	client := newClient(config.APIKey)
+	client := client.NewClient(config.APIKey)
 
 	return func(taskDefinition TaskDescriptor) task.Task {
 		switch taskDefinition.Key {
+		case taskNameMain:
+			return taskMain(logger)
 		case taskNameFetchProfiles:
 			return taskFetchProfiles(logger, client)
 		case taskNameFetchTransfers:

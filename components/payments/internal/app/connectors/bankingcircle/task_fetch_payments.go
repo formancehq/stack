@@ -4,61 +4,80 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/formancehq/payments/internal/app/models"
-
+	"github.com/formancehq/payments/internal/app/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchPayments(logger logging.Logger, client *client) task.Task {
+func taskFetchPayments(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
-		paymentsList, err := client.getAllPayments(ctx)
-		if err != nil {
-			return err
-		}
-
-		batch := ingestion.PaymentBatch{}
-
-		for _, paymentEl := range paymentsList {
-			logger.Info(paymentEl)
-
-			raw, err := json.Marshal(paymentEl)
+		for page := 1; ; page++ {
+			pagedPayments, err := client.GetPayments(ctx, page)
 			if err != nil {
 				return err
 			}
 
-			paymentType := matchPaymentType(paymentEl.Classification)
-
-			batchElement := ingestion.PaymentBatchElement{
-				Payment: &models.Payment{
-					ID: models.PaymentID{
-						PaymentReference: models.PaymentReference{
-							Reference: paymentEl.TransactionReference,
-							Type:      paymentType,
-						},
-						Provider: models.ConnectorProviderBankingCircle,
-					},
-					Reference: paymentEl.TransactionReference,
-					Type:      paymentType,
-					Status:    matchPaymentStatus(paymentEl.Status),
-					Scheme:    models.PaymentSchemeOther,
-					Amount:    int64(paymentEl.Transfer.Amount.Amount * 100),
-					Asset:     models.PaymentAsset(paymentEl.Transfer.Amount.Currency + "/2"),
-					RawData:   raw,
-				},
+			if len(pagedPayments) == 0 {
+				break
 			}
 
-			batch = append(batch, batchElement)
+			if err := ingestBatch(ctx, ingester, pagedPayments); err != nil {
+				return err
+			}
 		}
 
-		return ingester.IngestPayments(ctx, batch, struct{}{})
+		return nil
 	}
+}
+
+func ingestBatch(
+	ctx context.Context,
+	ingester ingestion.Ingester,
+	payments []*client.Payment,
+) error {
+	batch := ingestion.PaymentBatch{}
+
+	for _, paymentEl := range payments {
+		raw, err := json.Marshal(paymentEl)
+		if err != nil {
+			return err
+		}
+
+		paymentType := matchPaymentType(paymentEl.Classification)
+
+		batchElement := ingestion.PaymentBatchElement{
+			Payment: &models.Payment{
+				ID: models.PaymentID{
+					PaymentReference: models.PaymentReference{
+						Reference: paymentEl.TransactionReference,
+						Type:      paymentType,
+					},
+					Provider: models.ConnectorProviderBankingCircle,
+				},
+				Reference: paymentEl.TransactionReference,
+				Type:      paymentType,
+				Status:    matchPaymentStatus(paymentEl.Status),
+				Scheme:    models.PaymentSchemeOther,
+				Amount:    int64(paymentEl.Transfer.Amount.Amount * 100),
+				Asset:     models.PaymentAsset(paymentEl.Transfer.Amount.Currency + "/2"),
+				RawData:   raw,
+			},
+		}
+
+		batch = append(batch, batchElement)
+	}
+
+	if err := ingester.IngestPayments(ctx, batch, struct{}{}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func matchPaymentStatus(paymentStatus string) models.PaymentStatus {

@@ -51,7 +51,14 @@ func (s *Storage) UpdateTaskState(ctx context.Context, provider models.Connector
 	return nil
 }
 
-func (s *Storage) FindAndUpsertTask(ctx context.Context, provider models.ConnectorProvider, descriptor models.TaskDescriptor, status models.TaskStatus, taskErr string) (*models.Task, error) {
+func (s *Storage) FindAndUpsertTask(
+	ctx context.Context,
+	provider models.ConnectorProvider,
+	descriptor models.TaskDescriptor,
+	status models.TaskStatus,
+	schedulerOptions models.TaskSchedulerOptions,
+	taskErr string,
+) (*models.Task, error) {
 	_, err := s.GetTaskByDescriptor(ctx, provider, descriptor)
 	if err != nil && !errors.Is(err, ErrNotFound) {
 		return nil, e("failed to get task", err)
@@ -63,7 +70,7 @@ func (s *Storage) FindAndUpsertTask(ctx context.Context, provider models.Connect
 			return nil, e("failed to update task", err)
 		}
 	} else {
-		err = s.CreateTask(ctx, provider, descriptor, status)
+		err = s.CreateTask(ctx, provider, descriptor, status, schedulerOptions)
 		if err != nil {
 			return nil, e("failed to upsert task", err)
 		}
@@ -72,16 +79,17 @@ func (s *Storage) FindAndUpsertTask(ctx context.Context, provider models.Connect
 	return s.GetTaskByDescriptor(ctx, provider, descriptor)
 }
 
-func (s *Storage) CreateTask(ctx context.Context, provider models.ConnectorProvider, descriptor models.TaskDescriptor, status models.TaskStatus) error {
+func (s *Storage) CreateTask(ctx context.Context, provider models.ConnectorProvider, descriptor models.TaskDescriptor, status models.TaskStatus, schedulerOptions models.TaskSchedulerOptions) error {
 	connector, err := s.GetConnector(ctx, provider)
 	if err != nil {
 		return e("failed to get connector", err)
 	}
 
 	_, err = s.db.NewInsert().Model(&models.Task{
-		ConnectorID: connector.ID,
-		Descriptor:  descriptor.ToMessage(),
-		Status:      status,
+		ConnectorID:      connector.ID,
+		Descriptor:       descriptor.ToMessage(),
+		Status:           status,
+		SchedulerOptions: schedulerOptions,
 	}).Exec(ctx)
 	if err != nil {
 		return e("failed to create task", err)

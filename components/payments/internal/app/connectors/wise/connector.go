@@ -33,7 +33,10 @@ func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, true)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		Restart:        true,
+	})
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
@@ -45,7 +48,15 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, true)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
+		// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
+		// and their transactions.
+		ScheduleOption: models.OPTIONS_RUN_INDEFINITELY,
+		Duration:       c.cfg.PollingPeriod.Duration,
+		// No need to restart this task, since the connector is not existing or
+		// was uninstalled previously, the task does not exists in the database
+		Restart: false,
+	})
 }
 
 func (c *Connector) Uninstall(ctx context.Context) error {

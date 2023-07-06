@@ -15,6 +15,10 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
+const (
+	pageSize = 100
+)
+
 func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
@@ -22,55 +26,75 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 	) error {
 		logger.Info("Fetching transactions for account", accountID)
 
-		transactions, err := client.GetAllTransactions(ctx, accountID)
-		if err != nil {
-			return err
+		for page := 0; ; page++ {
+			pagedTransactions, err := client.GetTransactions(ctx, accountID, page, pageSize)
+			if err != nil {
+				return err
+			}
+
+			if len(pagedTransactions) == 0 {
+				break
+			}
+
+			if err := ingestBatch(ctx, ingester, pagedTransactions); err != nil {
+				return err
+			}
+
+			if len(pagedTransactions) < pageSize {
+				break
+			}
 		}
 
-		batch := ingestion.PaymentBatch{}
-		for _, transaction := range transactions {
-			logger.Info(transaction)
-
-			rawData, err := json.Marshal(transaction)
-			if err != nil {
-				return fmt.Errorf("failed to marshal transaction: %w", err)
-			}
-
-			paymentType, shouldBeRecorded := matchPaymentType(transaction.Attributes.Type, transaction.Attributes.Direction)
-			if !shouldBeRecorded {
-				continue
-			}
-
-			createdAt, err := time.Parse("2006-01-02T15:04:05.999999999", transaction.Attributes.CreatedAt)
-			if err != nil {
-				return fmt.Errorf("failed to parse transaction date: %w", err)
-			}
-
-			batchElement := ingestion.PaymentBatchElement{
-				Payment: &models.Payment{
-					ID: models.PaymentID{
-						PaymentReference: models.PaymentReference{
-							Reference: transaction.ID,
-							Type:      paymentType,
-						},
-						Provider: models.ConnectorProviderMoneycorp,
-					},
-					CreatedAt: createdAt,
-					Reference: transaction.ID,
-					Amount:    int64(transaction.Attributes.Amount * math.Pow(10, float64(currency.GetPrecision(transaction.Attributes.Currency)))),
-					Asset:     currency.FormatAsset(transaction.Attributes.Currency),
-					Type:      paymentType,
-					Status:    models.PaymentStatusSucceeded,
-					Scheme:    models.PaymentSchemeOther,
-					RawData:   rawData,
-				},
-			}
-
-			batch = append(batch, batchElement)
-		}
-
-		return ingester.IngestPayments(ctx, batch, struct{}{})
+		return nil
 	}
+}
+
+func ingestBatch(
+	ctx context.Context,
+	ingester ingestion.Ingester,
+	transactions []*client.Transaction,
+) error {
+	batch := ingestion.PaymentBatch{}
+	for _, transaction := range transactions {
+		rawData, err := json.Marshal(transaction)
+		if err != nil {
+			return fmt.Errorf("failed to marshal transaction: %w", err)
+		}
+
+		paymentType, shouldBeRecorded := matchPaymentType(transaction.Attributes.Type, transaction.Attributes.Direction)
+		if !shouldBeRecorded {
+			continue
+		}
+
+		createdAt, err := time.Parse("2006-01-02T15:04:05.999999999", transaction.Attributes.CreatedAt)
+		if err != nil {
+			return fmt.Errorf("failed to parse transaction date: %w", err)
+		}
+
+		batchElement := ingestion.PaymentBatchElement{
+			Payment: &models.Payment{
+				ID: models.PaymentID{
+					PaymentReference: models.PaymentReference{
+						Reference: transaction.ID,
+						Type:      paymentType,
+					},
+					Provider: models.ConnectorProviderMoneycorp,
+				},
+				CreatedAt: createdAt,
+				Reference: transaction.ID,
+				Amount:    int64(transaction.Attributes.Amount * math.Pow(10, float64(currency.GetPrecision(transaction.Attributes.Currency)))),
+				Asset:     currency.FormatAsset(transaction.Attributes.Currency),
+				Type:      paymentType,
+				Status:    models.PaymentStatusSucceeded,
+				Scheme:    models.PaymentSchemeOther,
+				RawData:   rawData,
+			},
+		}
+
+		batch = append(batch, batchElement)
+	}
+
+	return ingester.IngestPayments(ctx, batch, struct{}{})
 }
 
 func matchPaymentType(transactionType string, transactionDirection string) (models.PaymentType, bool) {

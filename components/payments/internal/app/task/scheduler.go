@@ -29,7 +29,7 @@ var (
 )
 
 type Scheduler interface {
-	Schedule(ctx context.Context, p models.TaskDescriptor, restart bool) error
+	Schedule(ctx context.Context, p models.TaskDescriptor, options models.TaskSchedulerOptions) error
 }
 
 type taskHolder struct {
@@ -69,7 +69,7 @@ func (s *DefaultTaskScheduler) ReadTaskByDescriptor(ctx context.Context, descrip
 	return s.store.GetTaskByDescriptor(ctx, s.provider, taskDescriptor)
 }
 
-func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.TaskDescriptor, restart bool) error {
+func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -82,7 +82,7 @@ func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.T
 		return ErrAlreadyScheduled
 	}
 
-	if !restart {
+	if !options.Restart {
 		_, err := s.ReadTaskByDescriptor(ctx, descriptor)
 		if err == nil {
 			return nil
@@ -98,7 +98,7 @@ func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.T
 		return nil
 	}
 
-	if err := s.startTask(ctx, descriptor); err != nil {
+	if err := s.startTask(ctx, descriptor, options); err != nil {
 		return errors.Wrap(err, "starting task")
 	}
 
@@ -141,7 +141,7 @@ func (s *DefaultTaskScheduler) Restore(ctx context.Context) error {
 	}
 
 	for _, task := range tasks {
-		err = s.startTask(ctx, task.GetDescriptor())
+		err = s.startTask(ctx, task.GetDescriptor(), task.SchedulerOptions)
 		if err != nil {
 			s.logger(ctx).Errorf("Unable to restore task %s: %s", task.ID, err)
 		}
@@ -203,7 +203,9 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 		return
 	}
 
-	err = s.startTask(ctx, oldestPendingTask.GetDescriptor())
+	err = s.startTask(ctx, oldestPendingTask.GetDescriptor(), models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+	})
 	if err != nil {
 		logging.FromContext(ctx).Error(err)
 	}
@@ -211,9 +213,9 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 
 type StopChan chan chan struct{}
 
-func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor) error {
+func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) error {
 	task, err := s.store.FindAndUpsertTask(ctx, s.provider, descriptor,
-		models.TaskStatusActive, "")
+		models.TaskStatusActive, options, "")
 	if err != nil {
 		return errors.Wrap(err, "finding task and update")
 	}
@@ -298,35 +300,90 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 
 	s.tasks[taskID] = holder
 
-	go func() {
-		logger.Infof("Starting task...")
+	switch options.ScheduleOption {
+	case models.OPTIONS_RUN_NOW:
+		options.Duration = 0
+		fallthrough
+	case models.OPTIONS_RUN_IN_DURATION:
+		go func() {
+			if options.Duration > 0 {
+				logger.Infof("Waiting %s before starting task...", options.Duration)
+				time.Sleep(options.Duration)
+			}
 
-		defer func() {
-			defer span.End()
-			defer s.deleteTask(ctx, holder)
+			logger.Infof("Starting task...")
 
-			if e := recover(); e != nil {
-				s.registerTaskError(ctx, holder, e)
-				debug.PrintStack()
+			defer func() {
+				defer span.End()
+				defer s.deleteTask(ctx, holder)
+
+				if e := recover(); e != nil {
+					s.registerTaskError(ctx, holder, e)
+					debug.PrintStack()
+
+					return
+				}
+			}()
+
+			err = container.Invoke(taskResolver)
+			if err != nil {
+				s.registerTaskError(ctx, holder, err)
 
 				return
 			}
+
+			logger.Infof("Task terminated with success")
+
+			err = s.store.UpdateTaskStatus(ctx, s.provider, descriptor, models.TaskStatusTerminated, "")
+			if err != nil {
+				logger.Error("Error updating task status: %s", err)
+			}
 		}()
+	case models.OPTIONS_RUN_INDEFINITELY:
+		go func() {
+			defer func() {
+				defer span.End()
+				defer s.deleteTask(ctx, holder)
 
-		err = container.Invoke(taskResolver)
-		if err != nil {
-			s.registerTaskError(ctx, holder, err)
+				if e := recover(); e != nil {
+					s.registerTaskError(ctx, holder, e)
+					debug.PrintStack()
 
-			return
-		}
+					return
+				}
+			}()
 
-		logger.Infof("Task terminated with success")
+			// launch it once before starting the ticker
+			err = container.Invoke(taskResolver)
+			if err != nil {
+				s.registerTaskError(ctx, holder, err)
 
-		err = s.store.UpdateTaskStatus(ctx, s.provider, descriptor, models.TaskStatusTerminated, "")
-		if err != nil {
-			logger.Error("Error updating task status: %s", err)
-		}
-	}()
+				return
+			}
+
+			logger.Infof("Starting task...")
+			ticker := time.NewTicker(options.Duration)
+			for {
+				select {
+				case ch := <-holder.stopChan:
+					logger.Infof("Stopping task...")
+					close(ch)
+					return
+				case <-ctx.Done():
+					return
+				case <-ticker.C:
+					logger.Infof("Polling trigger, running task...")
+					err = container.Invoke(taskResolver)
+					if err != nil {
+						s.registerTaskError(ctx, holder, err)
+
+						return
+					}
+				}
+			}
+
+		}()
+	}
 
 	return nil
 }

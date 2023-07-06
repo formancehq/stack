@@ -21,47 +21,63 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, userID 
 	) error {
 		logger.Info("Fetching transactions for user", userID)
 
-		transactions, err := client.GetAllTransactions(ctx, userID)
-		if err != nil {
-			return err
-		}
-
-		batch := ingestion.PaymentBatch{}
-		for _, transaction := range transactions {
-			logger.Info(transaction)
-
-			rawData, err := json.Marshal(transaction)
+		for page := 1; ; page++ {
+			pagedPayments, err := client.GetTransactions(ctx, userID, page)
 			if err != nil {
-				return fmt.Errorf("failed to marshal transaction: %w", err)
+				return err
 			}
 
-			paymentType := matchPaymentType(transaction.Type)
-
-			batchElement := ingestion.PaymentBatchElement{
-				Payment: &models.Payment{
-					ID: models.PaymentID{
-						PaymentReference: models.PaymentReference{
-							Reference: transaction.Id,
-							Type:      paymentType,
-						},
-						Provider: models.ConnectorProviderMangopay,
-					},
-					CreatedAt: time.Unix(transaction.CreationDate, 0),
-					Reference: transaction.Id,
-					Amount:    transaction.DebitedFunds.Amount,
-					Type:      paymentType,
-					Status:    matchPaymentStatus(transaction.Status),
-					Scheme:    models.PaymentSchemeOther,
-					Asset:     currency.FormatAsset(transaction.DebitedFunds.Currency),
-					RawData:   rawData,
-				},
+			if len(pagedPayments) == 0 {
+				break
 			}
 
-			batch = append(batch, batchElement)
+			if err := ingestBatch(ctx, ingester, pagedPayments); err != nil {
+				return err
+			}
 		}
 
-		return ingester.IngestPayments(ctx, batch, struct{}{})
+		return nil
 	}
+}
+
+func ingestBatch(
+	ctx context.Context,
+	ingester ingestion.Ingester,
+	payments []*client.Payment,
+) error {
+	batch := ingestion.PaymentBatch{}
+	for _, payment := range payments {
+		rawData, err := json.Marshal(payment)
+		if err != nil {
+			return fmt.Errorf("failed to marshal transaction: %w", err)
+		}
+
+		paymentType := matchPaymentType(payment.Type)
+
+		batchElement := ingestion.PaymentBatchElement{
+			Payment: &models.Payment{
+				ID: models.PaymentID{
+					PaymentReference: models.PaymentReference{
+						Reference: payment.Id,
+						Type:      paymentType,
+					},
+					Provider: models.ConnectorProviderMangopay,
+				},
+				CreatedAt: time.Unix(payment.CreationDate, 0),
+				Reference: payment.Id,
+				Amount:    payment.DebitedFunds.Amount,
+				Type:      paymentType,
+				Status:    matchPaymentStatus(payment.Status),
+				Scheme:    models.PaymentSchemeOther,
+				Asset:     currency.FormatAsset(payment.DebitedFunds.Currency),
+				RawData:   rawData,
+			},
+		}
+
+		batch = append(batch, batchElement)
+	}
+
+	return ingester.IngestPayments(ctx, batch, struct{}{})
 }
 
 func matchPaymentType(paymentType string) models.PaymentType {

@@ -24,14 +24,22 @@ func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
 	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-		Name: "Fetch accounts from client",
-		Key:  taskNameFetchAccounts,
+		Name: "Main task to periodically fetch accounts and transactions",
+		Key:  taskNameMain,
 	})
 	if err != nil {
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, false)
+	return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, models.TaskSchedulerOptions{
+		// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
+		// and their transactions.
+		ScheduleOption: models.OPTIONS_RUN_INDEFINITELY,
+		Duration:       c.cfg.PollingPeriod.Duration,
+		// No need to restart this task, since the connector is not existing or
+		// was uninstalled previously, the task does not exists in the database
+		Restart: false,
+	})
 }
 
 func (c *Connector) Uninstall(ctx context.Context) error {

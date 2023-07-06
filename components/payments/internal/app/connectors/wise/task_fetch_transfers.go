@@ -6,20 +6,20 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/payments/internal/app/models"
-
+	"github.com/formancehq/payments/internal/app/connectors/wise/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchTransfers(logger logging.Logger, client *client, profileID uint64) task.Task {
+func taskFetchTransfers(logger logging.Logger, c *client.Client, profileID uint64) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
-		transfers, err := client.getTransfers(ctx, &profile{
+		transfers, err := c.GetTransfers(ctx, &client.Profile{
 			ID: profileID,
 		})
 		if err != nil {
@@ -56,7 +56,7 @@ func taskFetchTransfers(logger logging.Logger, client *client, profileID uint64)
 						},
 						Provider: models.ConnectorProviderWise,
 					},
-					CreatedAt: transfer.createdAt,
+					CreatedAt: transfer.CreatedAt,
 					Reference: fmt.Sprintf("%d", transfer.ID),
 					Type:      models.PaymentTypeTransfer,
 					Status:    matchTransferStatus(transfer.Status),
@@ -121,7 +121,10 @@ func taskFetchTransfers(logger logging.Logger, client *client, profileID uint64)
 			return err
 		}
 
-		return scheduler.Schedule(ctx, descriptor, true)
+		return scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        true,
+		})
 	}
 }
 

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -48,7 +47,7 @@ func newHTTPClient() *http.Client {
 }
 
 // NewClient creates a new client for the CurrencyCloud API.
-func NewClient(ctx context.Context, loginID, apiKey, endpoint string) (*Client, error) {
+func NewClient(loginID, apiKey, endpoint string) (*Client, error) {
 	if endpoint == "" {
 		endpoint = devAPIEndpoint
 	}
@@ -60,7 +59,7 @@ func NewClient(ctx context.Context, loginID, apiKey, endpoint string) (*Client, 
 		apiKey:     apiKey,
 	}
 
-	authToken, err := c.authenticate(ctx)
+	authToken, err := c.authenticate()
 	if err != nil {
 		return nil, err
 	}

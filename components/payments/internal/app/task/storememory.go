@@ -144,8 +144,13 @@ func (s *InMemoryStore) ListTasksByStatus(ctx context.Context,
 	return ret, nil
 }
 
-func (s *InMemoryStore) FindAndUpsertTask(ctx context.Context,
-	provider models.ConnectorProvider, descriptor models.TaskDescriptor, status models.TaskStatus, taskErr string,
+func (s *InMemoryStore) FindAndUpsertTask(
+	ctx context.Context,
+	provider models.ConnectorProvider,
+	descriptor models.TaskDescriptor,
+	status models.TaskStatus,
+	options models.TaskSchedulerOptions,
+	taskErr string,
 ) (*models.Task, error) {
 	err := s.UpdateTaskStatus(ctx, provider, descriptor, status, taskErr)
 	if err != nil {

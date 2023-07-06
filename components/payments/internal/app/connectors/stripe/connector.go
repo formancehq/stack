@@ -29,7 +29,12 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, false)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		// No need to restart this task, since the connector is not existing or
+		// was uninstalled previously, the task does not exists in the database
+		Restart: false,
+	})
 }
 
 func (c *Connector) Uninstall(ctx context.Context) error {
@@ -62,7 +67,10 @@ func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, false)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		Restart:        false,
+	})
 }
 
 var _ integration.Connector = &Connector{}

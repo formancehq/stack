@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
 
@@ -22,16 +21,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, config 
 		ctx context.Context,
 		ingester ingestion.Ingester,
 	) error {
-		for {
-			select {
-			case <-ctx.Done():
-				return nil
-			case <-time.After(config.PollingPeriod.Duration()):
-				if err := ingestTransactions(ctx, logger, client, ingester); err != nil {
-					return err
-				}
-			}
-		}
+		return ingestTransactions(ctx, logger, client, ingester)
 	}
 }
 

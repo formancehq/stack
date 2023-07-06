@@ -11,24 +11,39 @@ import (
 	"github.com/google/uuid"
 )
 
+type ScheduleOption int
+
+const (
+	OPTIONS_RUN_NOW ScheduleOption = iota
+	OPTIONS_RUN_IN_DURATION
+	OPTIONS_RUN_INDEFINITELY
+)
+
 type Task struct {
 	bun.BaseModel `bun:"tasks.task"`
 
-	ID          uuid.UUID `bun:",pk,nullzero"`
-	ConnectorID uuid.UUID
-	CreatedAt   time.Time `bun:",nullzero"`
-	UpdatedAt   time.Time `bun:",nullzero"`
-	Name        string
-	Descriptor  json.RawMessage
-	Status      TaskStatus
-	Error       string
-	State       json.RawMessage
+	ID               uuid.UUID `bun:",pk,nullzero"`
+	ConnectorID      uuid.UUID
+	CreatedAt        time.Time `bun:",nullzero"`
+	UpdatedAt        time.Time `bun:",nullzero"`
+	Name             string
+	Descriptor       json.RawMessage
+	SchedulerOptions TaskSchedulerOptions
+	Status           TaskStatus
+	Error            string
+	State            json.RawMessage
 
 	Connector *Connector `bun:"rel:belongs-to,join:connector_id=id"`
 }
 
 func (t Task) GetDescriptor() TaskDescriptor {
 	return TaskDescriptor(t.Descriptor)
+}
+
+type TaskSchedulerOptions struct {
+	ScheduleOption ScheduleOption
+	Duration       time.Duration
+	Restart        bool
 }
 
 type TaskDescriptor json.RawMessage

@@ -3,14 +3,13 @@ package bankingcircle
 import (
 	"fmt"
 
-	"github.com/formancehq/payments/internal/app/models"
-
+	"github.com/formancehq/payments/internal/app/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const (
+	taskNameMain          = "main"
 	taskNameFetchPayments = "fetch-payments"
 )
 
@@ -20,8 +19,8 @@ type TaskDescriptor struct {
 	Key  string `json:"key" yaml:"key" bson:"key"`
 }
 
-func resolveTasks(logger logging.Logger, config Config) func(taskDefinition models.TaskDescriptor) task.Task {
-	bankingCircleClient, err := newClient(
+func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
+	bankingCircleClient, err := client.NewClient(
 		config.Username,
 		config.Password,
 		config.Endpoint,
@@ -36,15 +35,10 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition mode
 		return nil
 	}
 
-	return func(taskDefinition models.TaskDescriptor) task.Task {
-		taskDescriptor, err := models.DecodeTaskDescriptor[TaskDescriptor](taskDefinition)
-		if err != nil {
-			logger.Error(err)
-
-			return nil
-		}
-
+	return func(taskDescriptor TaskDescriptor) task.Task {
 		switch taskDescriptor.Key {
+		case taskNameMain:
+			return taskMain(logger)
 		case taskNameFetchPayments:
 			return taskFetchPayments(logger, bankingCircleClient)
 		}

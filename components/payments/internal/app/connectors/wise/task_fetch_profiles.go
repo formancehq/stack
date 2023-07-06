@@ -4,19 +4,18 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/formancehq/payments/internal/app/connectors/wise/client"
 	"github.com/formancehq/payments/internal/app/models"
-
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchProfiles(logger logging.Logger, client *client) task.Task {
+func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,
 	) error {
-		profiles, err := client.getProfiles()
+		profiles, err := client.GetProfiles()
 		if err != nil {
 			return err
 		}
@@ -33,7 +32,10 @@ func taskFetchProfiles(logger logging.Logger, client *client) task.Task {
 				return err
 			}
 
-			err = scheduler.Schedule(ctx, descriptor, true)
+			err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				Restart:        true,
+			})
 			if err != nil {
 				return err
 			}

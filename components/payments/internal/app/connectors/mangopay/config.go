@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/formancehq/payments/internal/app/connectors"
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
 
 type Config struct {
-	ClientID string `json:"clientID" yaml:"clientID" bson:"clientID"`
-	APIKey   string `json:"apiKey" yaml:"apiKey" bson:"apiKey"`
-	Endpoint string `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
+	ClientID      string              `json:"clientID" yaml:"clientID" bson:"clientID"`
+	APIKey        string              `json:"apiKey" yaml:"apiKey" bson:"apiKey"`
+	Endpoint      string              `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
+	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
 
 func (c Config) String() string {
@@ -43,6 +45,7 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("clientID", configtemplate.TypeString, true)
 	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, true)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
 
 	return Name.String(), cfg
 }

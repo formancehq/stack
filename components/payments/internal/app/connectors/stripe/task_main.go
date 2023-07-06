@@ -43,7 +43,10 @@ func ingest(
 			return errors.Wrap(err, "failed to transform task descriptor")
 		}
 
-		err = scheduler.Schedule(ctx, descriptor, true)
+		err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        true,
+		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			return errors.Wrap(err, "scheduling connected account")
 		}

@@ -3,16 +3,16 @@ package currencycloud
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors"
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
 
 type Config struct {
-	LoginID       string   `json:"loginID" bson:"loginID"`
-	APIKey        string   `json:"apiKey" bson:"apiKey"`
-	Endpoint      string   `json:"endpoint" bson:"endpoint"`
-	PollingPeriod Duration `json:"pollingPeriod" bson:"pollingPeriod"`
+	LoginID       string              `json:"loginID" bson:"loginID"`
+	APIKey        string              `json:"apiKey" bson:"apiKey"`
+	Endpoint      string              `json:"endpoint" bson:"endpoint"`
+	PollingPeriod connectors.Duration `json:"pollingPeriod" bson:"pollingPeriod"`
 }
 
 // String obfuscates sensitive fields and returns a string representation of the config.
@@ -30,55 +30,11 @@ func (c Config) Validate() error {
 		return ErrMissingLoginID
 	}
 
-	if c.PollingPeriod == 0 {
-		return ErrMissingPollingPeriod
-	}
-
 	return nil
 }
 
 func (c Config) Marshal() ([]byte, error) {
 	return json.Marshal(c)
-}
-
-type Duration time.Duration
-
-func (d *Duration) String() string {
-	return time.Duration(*d).String()
-}
-
-func (d *Duration) Duration() time.Duration {
-	return time.Duration(*d)
-}
-
-func (d *Duration) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Duration(*d).String())
-}
-
-func (d *Duration) UnmarshalJSON(b []byte) error {
-	var durationValue interface{}
-
-	if err := json.Unmarshal(b, &durationValue); err != nil {
-		return err
-	}
-
-	switch value := durationValue.(type) {
-	case float64:
-		*d = Duration(time.Duration(value))
-
-		return nil
-	case string:
-		tmp, err := time.ParseDuration(value)
-		if err != nil {
-			return err
-		}
-
-		*d = Duration(tmp)
-
-		return nil
-	default:
-		return ErrDurationInvalid
-	}
 }
 
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
@@ -87,7 +43,7 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("loginID", configtemplate.TypeString, true)
 	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, false)
-	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, true)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
 
 	return Name.String(), cfg
 }

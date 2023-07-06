@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	taskNameMain              = "main"
 	taskNameFetchAccounts     = "fetch-accounts"
 	taskNameFetchTransactions = "fetch-transactions"
 )
@@ -36,6 +37,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		switch taskDescriptor.Key {
+		case taskNameMain:
+			return taskMain(logger)
 		case taskNameFetchAccounts:
 			return taskFetchAccounts(logger, moneycorpClient)
 		case taskNameFetchTransactions:
