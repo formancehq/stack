@@ -13,7 +13,7 @@ import (
 )
 
 type CreateStore struct {
-	BalanceName string `json:"balance_name"`
+	BalanceName string `json:"balanceName"`
 }
 type CreateController struct {
 	store *CreateStore

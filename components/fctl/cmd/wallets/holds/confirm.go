@@ -13,7 +13,7 @@ import (
 
 type ConfirmStore struct {
 	Success bool   `json:"success"`
-	HoldId  string `json:"hold_id"`
+	HoldId  string `json:"holdId"`
 }
 type ConfirmController struct {
 	store      *ConfirmStore

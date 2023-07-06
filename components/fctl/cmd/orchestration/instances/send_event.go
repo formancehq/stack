@@ -12,7 +12,7 @@ import (
 
 type InstancesSendEventStore struct {
 	Success    bool   `json:"success"`
-	InstanceID string `json:"instance_id"`
+	InstanceID string `json:"instanceId"`
 	Event      string `json:"event"`
 }
 type InstancesSendEventController struct {

@@ -7,8 +7,8 @@ import (
 )
 
 type UnlinkStore struct {
-	OrganizationID string `json:"organization_id"`
-	UserID         string `json:"user_id"`
+	OrganizationID string `json:"organizationId"`
+	UserID         string `json:"userId"`
 }
 type UnlinkController struct {
 	store *UnlinkStore

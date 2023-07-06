@@ -16,7 +16,7 @@ import (
 )
 
 type InstancesDescribeStore struct {
-	WorkflowInstancesHistory []shared.WorkflowInstanceHistory `json:"workflow_instance_history"`
+	WorkflowInstancesHistory []shared.WorkflowInstanceHistory `json:"workflowInstanceHistory"`
 }
 type InstancesDescribeController struct {
 	store  *InstancesDescribeStore

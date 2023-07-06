@@ -7,7 +7,7 @@ import (
 )
 
 type DeleteStore struct {
-	OrganizationId string `json:"organization_id"`
+	OrganizationId string `json:"organizationId"`
 	Success        bool   `json:"success"`
 }
 type DeleteController struct {

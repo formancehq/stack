@@ -11,7 +11,7 @@ import (
 )
 
 type CreateStore struct {
-	WalletID string `json:"wallet_id"`
+	WalletID string `json:"walletId"`
 }
 type CreateController struct {
 	store        *CreateStore

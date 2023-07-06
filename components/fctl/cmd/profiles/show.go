@@ -8,8 +8,8 @@ import (
 )
 
 type ProfilesShowStore struct {
-	MembershipURI       string `json:"membership_uri"`
-	DefaultOrganization string `json:"default_organization"`
+	MembershipURI       string `json:"membershipUri"`
+	DefaultOrganization string `json:"defaultOrganization"`
 }
 type ProfilesShowController struct {
 	store *ProfilesShowStore

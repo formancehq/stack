@@ -10,9 +10,9 @@ import (
 type OrgRow struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
-	OwnerID    string `json:"owner_id"`
-	OwnerEmail string `json:"owner_email"`
-	IsMine     string `json:"is_mine"`
+	OwnerID    string `json:"ownerId"`
+	OwnerEmail string `json:"ownerEmail"`
+	IsMine     string `json:"isMine"`
 }
 
 type ListStore struct {

@@ -13,7 +13,7 @@ import (
 )
 
 type ListStore struct {
-	Transaction shared.TransactionsCursorResponseCursor `json:"transaction_cursor"`
+	Transaction shared.TransactionsCursorResponseCursor `json:"transactionCursor"`
 }
 type ListController struct {
 	store           *ListStore

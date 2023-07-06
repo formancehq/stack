@@ -15,7 +15,7 @@ import (
 )
 
 type WorkflowsRunStore struct {
-	WorkflowInstance shared.WorkflowInstance `json:"workflow_instance"`
+	WorkflowInstance shared.WorkflowInstance `json:"workflowInstance"`
 }
 type WorkflowsRunController struct {
 	store        *WorkflowsRunStore

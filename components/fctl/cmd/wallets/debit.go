@@ -14,7 +14,7 @@ import (
 )
 
 type DebitWalletStore struct {
-	HoldID  *string `json:"hold_id"`
+	HoldID  *string `json:"holdId"`
 	Success bool    `json:"success"`
 }
 type DebitWalletController struct {

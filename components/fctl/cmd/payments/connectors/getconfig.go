@@ -18,7 +18,7 @@ var (
 )
 
 type PaymentsGetConfigStore struct {
-	ConnectorConfig *shared.ConnectorConfigResponse `json:"connector_config"`
+	ConnectorConfig *shared.ConnectorConfigResponse `json:"connectorConfig"`
 }
 type PaymentsGetConfigController struct {
 	store *PaymentsGetConfigStore

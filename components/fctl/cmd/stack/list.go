@@ -20,7 +20,7 @@ type Stack struct {
 	Name      string  `json:"name"`
 	Dashboard string  `json:"dashboard"`
 	RegionID  string  `json:"region"`
-	DeletedAt *string `json:"deleted_at"`
+	DeletedAt *string `json:"deletedAt"`
 }
 type StackListStore struct {
 	Stacks []Stack `json:"stacks"`

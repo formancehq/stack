@@ -14,7 +14,7 @@ import (
 
 type PaymentsConnectorsMoneycorpStore struct {
 	Success       bool   `json:"success"`
-	ConnectorName string `json:"connector_name"`
+	ConnectorName string `json:"connectorName"`
 }
 type PaymentsConnectorsMoneycorpController struct {
 	store           *PaymentsConnectorsMoneycorpStore

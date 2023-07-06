@@ -11,7 +11,7 @@ import (
 type ServerInfoStore struct {
 	Server        string   `json:"server"`
 	Version       string   `json:"version"`
-	StorageDriver string   `json:"storage_driver"`
+	StorageDriver string   `json:"storageDriver"`
 	Ledgers       []string `json:"ledgers"`
 }
 type ServerInfoController struct {

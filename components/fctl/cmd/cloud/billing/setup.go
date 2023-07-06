@@ -7,8 +7,8 @@ import (
 )
 
 type SetupStore struct {
-	FoundBrowser bool   `json:"found_browser"`
-	BillingUrl   string `json:"billing_url"`
+	FoundBrowser bool   `json:"foundBrowser"`
+	BillingUrl   string `json:"billingUrl"`
 }
 type SetupController struct {
 	store *SetupStore

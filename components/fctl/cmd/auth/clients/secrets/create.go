@@ -11,7 +11,7 @@ import (
 )
 
 type CreateStore struct {
-	SecretId string `json:"secret_id"`
+	SecretId string `json:"secretId"`
 	Name     string `json:"name"`
 	Clear    string `json:"clear"`
 }

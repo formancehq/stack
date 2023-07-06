@@ -8,7 +8,7 @@ import (
 )
 
 type CreateStore struct {
-	RegionId string `json:"region_id"`
+	RegionId string `json:"regionId"`
 	Secret   string `json:"secret"`
 }
 type CreateController struct {

@@ -13,7 +13,7 @@ import (
 )
 
 type ListStore struct {
-	BalancesNames [][]string `json:"balances_names"`
+	BalancesNames [][]string `json:"balancesNames"`
 }
 type ListController struct {
 	store *ListStore

@@ -8,8 +8,8 @@ import (
 )
 
 type CreateStore struct {
-	OrganizationId   string `json:"organization_id"`
-	OrganizationName string `json:"organization_name"`
+	OrganizationId   string `json:"organizationId"`
+	OrganizationName string `json:"organizationName"`
 }
 type CreateController struct {
 	store *CreateStore

@@ -12,7 +12,7 @@ import (
 
 type InstancesStopStore struct {
 	Success    bool   `json:"success"`
-	InstanceID string `json:"instance_id"`
+	InstanceID string `json:"instanceId"`
 }
 type InstancesStopController struct {
 	store *InstancesStopStore

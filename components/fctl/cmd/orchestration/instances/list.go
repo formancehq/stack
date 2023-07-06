@@ -13,15 +13,15 @@ import (
 )
 
 type WorkflowInstance struct {
-	InstanceID   string `json:"instance_id"`
-	WorkflowID   string `json:"workflow_id"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
-	TerminatedAt string `json:"terminated_at"`
+	InstanceID   string `json:"instanceId"`
+	WorkflowID   string `json:"workflowId"`
+	CreatedAt    string `json:"createdAt"`
+	UpdatedAt    string `json:"updatedAt"`
+	TerminatedAt string `json:"terminatedAt"`
 }
 
 type InstancesListStore struct {
-	WorkflowInstance []WorkflowInstance `json:"workflow_instances"`
+	WorkflowInstance []WorkflowInstance `json:"workflowInstances"`
 }
 type InstancesListController struct {
 	store        *InstancesListStore

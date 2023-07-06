@@ -8,7 +8,7 @@ import (
 
 type DeclineStore struct {
 	Success      bool   `json:"success"`
-	InvitationId string `json:"invitation_id"`
+	InvitationId string `json:"invitationId"`
 }
 type DeclineController struct {
 	store *DeclineStore

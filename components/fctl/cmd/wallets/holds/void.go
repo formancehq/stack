@@ -12,7 +12,7 @@ import (
 
 type VoidStore struct {
 	Success bool   `json:"success"`
-	HoldId  string `json:"hold_id"`
+	HoldId  string `json:"holdId"`
 }
 type VoidController struct {
 	store *VoidStore

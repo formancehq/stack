@@ -10,8 +10,8 @@ import (
 )
 
 type UiStruct struct {
-	UIUrl        string `json:"stack_url"`
-	FoundBrowser bool   `json:"browser_found"`
+	UIUrl        string `json:"stackUrl"`
+	FoundBrowser bool   `json:"browserFound"`
 }
 
 type UiController struct {

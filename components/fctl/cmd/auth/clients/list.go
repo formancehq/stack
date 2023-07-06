@@ -15,7 +15,7 @@ type Client struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Scope       string `json:"scope"`
-	IsPublic    string `json:"is_public"`
+	IsPublic    string `json:"isPublic"`
 }
 
 type ListStore struct {

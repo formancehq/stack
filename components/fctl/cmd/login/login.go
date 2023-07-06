@@ -19,9 +19,9 @@ func (fn DialogFn) DisplayURIAndCode(uri, code string) {
 
 type LoginStore struct {
 	profile    *fctl.Profile `json:"-"`
-	DeviceCode string        `json:"device_code"`
-	LoginURI   string        `json:"login_uri"`
-	BrowserURL string        `json:"browser_url"`
+	DeviceCode string        `json:"deviceCode"`
+	LoginURI   string        `json:"loginUri"`
+	BrowserURL string        `json:"browserUrl"`
 	Success    bool          `json:"success"`
 }
 type LoginController struct {

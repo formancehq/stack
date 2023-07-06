@@ -13,9 +13,9 @@ var (
 )
 
 type VersionStore struct {
-	Version   string `json:"version" yaml:"version"`
-	BuildDate string `json:"buildDate" yaml:"buildDate"`
-	Commit    string `json:"commit" yaml:"commit"`
+	Version   string `json:"version"`
+	BuildDate string `json:"buildDate"`
+	Commit    string `json:"commit"`
 }
 type VersionController struct {
 	store *VersionStore

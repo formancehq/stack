@@ -14,9 +14,9 @@ type CreateClient struct {
 	ID                    string `json:"id"`
 	Name                  string `json:"name"`
 	Description           string `json:"description"`
-	IsPublic              string `json:"is_public"`
-	RedirectUri           string `json:"redirect_uri"`
-	PostLogoutRedirectUri string `json:"post_logout_redirect_uri"`
+	IsPublic              string `json:"isPublic"`
+	RedirectUri           string `json:"redirectUri"`
+	PostLogoutRedirectUri string `json:"postLogoutRedirectUri"`
 }
 
 type CreateStore struct {

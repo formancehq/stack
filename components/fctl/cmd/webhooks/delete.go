@@ -12,7 +12,7 @@ import (
 )
 
 type DeleteWebhookStore struct {
-	ErrorResponse *shared.ErrorResponse `json:"err"`
+	ErrorResponse *shared.ErrorResponse `json:"error"`
 	Success       bool                  `json:"success"`
 }
 

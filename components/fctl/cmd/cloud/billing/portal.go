@@ -7,8 +7,8 @@ import (
 )
 
 type PortalStore struct {
-	FoundBrowser   bool   `json:"found_browser"`
-	BillingPlanUrl string `json:"billing_plan_url"`
+	FoundBrowser   bool   `json:"foundBrowser"`
+	BillingPlanUrl string `json:"billingPlanUrl"`
 }
 type PortalController struct {
 	store *PortalStore
