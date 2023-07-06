@@ -77,34 +77,35 @@ var _ = Given("An empty environment", func() {
 
 			ret = response.ListWorkflowsResponse
 		})
-		It("should respond with a list of 1 element", func() {
+		It("should respond with a list of 1 elements", func() {
 			Expect(ret.Data).ToNot(BeEmpty())
 			Expect(ret.Data).Should(HaveLen(1))
 		})
-	})
-	When("Deleting a workflow", func() {
-		BeforeEach(func() {
-			response, err := Client().Orchestration.DeleteWorkflow(
-				TestContext(),
-				operations.DeleteWorkflowRequest{
-					FlowID: workflow.ID,
-				},
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+		Then("Deleting a workflow", func() {
+			BeforeEach(func() {
+				response, err := Client().Orchestration.DeleteWorkflow(
+					TestContext(),
+					operations.DeleteWorkflowRequest{
+						FlowID: workflow.ID,
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(204))
 
-		})
-		It("Should retrieve workflows", func() {
-			response, err := Client().Orchestration.ListWorkflows(
-				TestContext(),
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
+			})
+			It("should be empty", func() {
+				response, err := Client().Orchestration.ListWorkflows(
+					TestContext(),
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
 
-			ret = response.ListWorkflowsResponse
-		})
-		It("should have a list of 0 element", func() {
-			Expect(ret.Data).To(BeEmpty())
+				ret = response.ListWorkflowsResponse
+
+			})
+			It("should have a list of 0 element", func() {
+				Expect(ret.Data).To(BeEmpty())
+			})
 		})
 	})
 })

@@ -10,10 +10,10 @@ import (
 )
 
 var _ = Given("An empty environment", func() {
-	var (
-		workflow *shared.Workflow
-	)
 	When("populating 1 workflow", func() {
+		var (
+			workflow *shared.Workflow
+		)
 		BeforeEach(func() {
 			response, err := Client().Orchestration.CreateWorkflow(
 				TestContext(),
@@ -52,9 +52,7 @@ var _ = Given("An empty environment", func() {
 		It("should be ok", func() {
 			Expect(workflow.ID).NotTo(BeEmpty())
 		})
-	})
-	When("Deleting a workflow", func() {
-		BeforeEach(func() {
+		It("calling the route", func() {
 			response, err := Client().Orchestration.DeleteWorkflow(
 				TestContext(),
 				operations.DeleteWorkflowRequest{
