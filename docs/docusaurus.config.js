@@ -14,7 +14,7 @@ const config = {
   baseUrl: '/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/f-shape.ico',
   organizationName: 'formancehq', // Usually your GitHub org/user name.
   projectName: 'docs', // Usually your repo name.
 
@@ -93,7 +93,7 @@ const config = {
         },
         items: [
           {
-            label: '⚡️ Stack API Reference',
+            label: '⚡️ API Reference',
             position: 'right',
             items: [
               {

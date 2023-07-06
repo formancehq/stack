@@ -29,97 +29,19 @@ const sidebars = {
       items: [
         {
           type: 'doc',
-          id: 'getting-started/quick-start',
+          id: 'getting-started/fctl-quick-start',
           customProps: {
             // icon: '💾',
           }
         },
         {
           type: 'doc',
-          id: 'help',
-          label: 'Getting Help',
+          id: 'guides/newSandbox',
         }
       ],
     },
     {
-      label: 'Platform Reference',
-      type: 'category',
-      collapsible: true,
-      collapsed: true,
-      items: [
-        {
-          type: 'doc',
-          id: 'stack/architecture',
-          label: 'Architecture',
-        },
-        {
-          type: 'doc',
-          id: 'stack/deployment',
-          label: 'Deployment',
-        },
-        {
-          type: 'doc',
-          id: 'stack/authentication/index',
-          label: 'Authentication',
-        },
-        {
-          type: 'doc',
-          id: 'stack/sdk/index',
-          label: 'SDKs',
-        },
-        {
-          type: 'doc',
-          id: 'stack/fctl',
-          label: 'Formance CLI',
-        },
-        {
-          type: 'doc',
-          id: 'stack/unambiguous-monetary-notation',
-          label: 'Monetary Notation (UMN)',
-        },
-        {
-          label: 'Cloud',
-          type: 'category',
-          collapsible: true,
-          collapsed: true,
-          items: [
-            {
-              type: 'doc',
-              id: 'cloud/production',
-              label: 'Production',
-            },
-            {
-              type: 'doc',
-              id: 'cloud/authentication',
-              label: 'Authentication',
-            },
-          ],
-        },
-       {
-         type: 'category',
-         label: 'Self-hosting',
-         items: [
-           {
-             type: 'doc',
-             id: 'stack/reference/docker',
-             label: 'Docker',
-           },
-           {
-             type: 'doc',
-             id: 'stack/reference/operator',
-             label: 'Kubernetes (operator)',
-           },
-         ],
-       },
-//        // {
-        //   type: 'doc',
-        //   id: 'stack/telemetry/index',
-        //   label: 'Telemetry',
-        // },
-      ],
-    },
-    {
-      label: 'Services Reference',
+      label: 'Products',
       type: 'category',
       collapsible: true,
       collapsed: false,
@@ -374,20 +296,6 @@ const sidebars = {
             },
           ]
         },
-
-        {
-          label: 'Webhooks',
-          type: 'category',
-          collapsible: true,
-          collapsed: true,
-          items: [
-            {
-              type: 'doc',
-              id: 'webhooks/index',
-              label: 'Introduction'
-            },
-          ]
-        },
         {
           label: 'Wallets (beta)',
           type: 'category',
@@ -517,30 +425,124 @@ const sidebars = {
         }
       ]
     },
-
     {
-      label: 'Guides',
       type: 'category',
-      collapsible: true,
-      collapsed: false,
+      label: 'Deployment',
+      link: {
+        type: 'doc',
+        id: 'deployment/introduction',
+      },
+      items: [
+        // {
+        //   type: 'category',
+        //   label: 'Formance Cloud',
+        //   link: {
+        //     type: 'doc',
+        //     id: 'deployment/cloud/intro',
+        //   },
+        //   items: [
+        //     {
+        //       type: 'doc',
+        //       id: 'deployment/cloud/regions',
+        //       label: 'Regions',
+        //     }
+        //   ],
+        // },
+        {
+          type: 'category',
+          label: 'Formance CloudPrem',
+          link: { type: 'doc', id: 'deployment/cloudprem/intro' },
+          items: [
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/cluster-config',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/private-regions',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/operator',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/usage',
+            },
+          ],
+        },
+        // {
+        //   type: 'category',
+        //   label: 'Elements',
+        //   link: {
+        //     type: 'doc',
+        //     id: 'deployment/elements/intro',
+        //   },
+        //   items: [
+        //     {
+        //       type: 'doc',
+        //       id: 'deployment/elements/docker',
+        //       label: 'Docker',
+        //     },
+        //     {
+        //       type: 'doc',
+        //       id: 'deployment/elements/kubernetes',
+        //     }
+        //   ],
+        // },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'SDKs',
       items: [
         {
           type: 'doc',
-          id: 'guides/newSandbox',
-          label: 'How to create a sandbox ?',
+          id: 'stack/sdk/index',
         },
-        {
-          type: 'doc',
-          id: 'guides/privateRegion',
-          label: 'How to create a private region ?',
-        },
-        {
-          type: 'doc',
-          id: 'guides/configOperator',
-          label: 'How to config Formance Operator ?',
-        },
-      ]
+      ],
     },
+    {
+      label: 'Resources',
+      type: 'category',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        {
+          type: 'doc',
+          id: 'stack/architecture',
+        },
+        {
+          type: 'doc',
+          id: 'stack/authentication/index',
+          label: 'Authentication',
+        },
+        {
+          type: 'doc',
+          id: 'stack/unambiguous-monetary-notation',
+          label: 'Monetary Notation (UMN)',
+        }
+//        // {
+        //   type: 'doc',
+        //   id: 'stack/telemetry/index',
+        //   label: 'Telemetry',
+        // },
+      ],
+    },
+    {
+      type: 'doc',
+      id: 'help',
+      label: 'Getting Help',
+    },
+    // {
+    //   label: 'Guides',
+    //   type: 'category',
+    //   collapsible: true,
+    //   collapsed: false,
+    //   items: [
+        
+    //   ]
+    // },
   ],
 };
 

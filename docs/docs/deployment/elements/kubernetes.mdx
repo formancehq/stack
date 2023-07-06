@@ -1,14 +1,16 @@
 ---
-title: Formance Platform Operator
-description: How to install Formance Platform on K8S with Operator
+title: Kubernetes deployment
 ---
-import Warning from '../partials/installation/_complexity_warning.mdx';
 
-In order to streamline feature-complete deployments of the Formance Platform, we provide a Kubernetes operator. The operator source code is available on [Github](https://github.com/formancehq/stack/tree/main/components/operator).
+In order to streamline feature-complete deployments of Formance Elements, we recommend to use our official Formance Kubernetes operator. The operator source code is available on [Github](https://github.com/formancehq/stack/tree/main/components/operator).
 
 <Warning/>
 
 ## Dependencies
+
+:::tip
+The operator needs [Cert-Manager](https://cert-manager.io/docs/installation/helm/) to run, and needs to be installed before installing the operator itself.
+:::
 
 Deploying the Formance Kubes Operator requires some downstream dependencies — here is below our recommendations for each of them:
 
