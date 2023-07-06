@@ -42,7 +42,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-					CREATE TYPE connector_provider AS ENUM ('BANKING-CIRCLE', 'CURRENCY-CLOUD', 'DUMMY-PAY', 'MODULR', 'STRIPE', 'WISE');;
+					CREATE TYPE "public".connector_provider AS ENUM ('BANKING-CIRCLE', 'CURRENCY-CLOUD', 'DUMMY-PAY', 'MODULR', 'STRIPE', 'WISE');;
 					CREATE TABLE connectors.connector (
 					   id uuid  NOT NULL DEFAULT gen_random_uuid(),
 					   created_at timestamp with time zone  NOT NULL DEFAULT NOW() CHECK (created_at<=NOW()),
@@ -62,7 +62,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-					CREATE TYPE task_status AS ENUM ('STOPPED', 'PENDING', 'ACTIVE', 'TERMINATED', 'FAILED');;
+					CREATE TYPE "public".task_status AS ENUM ('STOPPED', 'PENDING', 'ACTIVE', 'TERMINATED', 'FAILED');;
 					CREATE TABLE tasks.task (
 						id uuid  NOT NULL DEFAULT gen_random_uuid(),
 						connector_id uuid  NOT NULL,
@@ -93,7 +93,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-					CREATE TYPE account_type AS ENUM('SOURCE', 'TARGET', 'UNKNOWN');;
+					CREATE TYPE "public".account_type AS ENUM('SOURCE', 'TARGET', 'UNKNOWN');;
 
 					CREATE TABLE accounts.account (
 						id uuid  NOT NULL DEFAULT gen_random_uuid(),
@@ -114,8 +114,8 @@ func registerMigrations(migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-					CREATE TYPE payment_type AS ENUM ('PAY-IN', 'PAYOUT', 'TRANSFER', 'OTHER');
-					CREATE TYPE payment_status AS ENUM ('SUCCEEDED', 'CANCELLED', 'FAILED', 'PENDING', 'OTHER');;
+					CREATE TYPE "public".payment_type AS ENUM ('PAY-IN', 'PAYOUT', 'TRANSFER', 'OTHER');
+					CREATE TYPE "public".payment_status AS ENUM ('SUCCEEDED', 'CANCELLED', 'FAILED', 'PENDING', 'OTHER');;
 
 					CREATE TABLE payments.adjustment (
 						id uuid  NOT NULL DEFAULT gen_random_uuid(),
@@ -235,7 +235,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-					CREATE TYPE transfer_status AS ENUM ('PENDING', 'SUCCEEDED', 'FAILED');
+					CREATE TYPE "public".transfer_status AS ENUM ('PENDING', 'SUCCEEDED', 'FAILED');
 
 					CREATE TABLE payments.transfers (
 						id uuid  NOT NULL DEFAULT gen_random_uuid(),
