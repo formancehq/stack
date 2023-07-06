@@ -49,18 +49,15 @@ func (p *parseVisitor) CompileExpr(c parser.IExpressionContext) (internal.Type, 
 			if err != nil {
 				return 0, nil, err
 			}
-			var expr program.Expr
+			expr := program.ExprNumberOperation{
+				Lhs: lhs,
+				Rhs: rhs,
+			}
 			switch c.GetOp().GetTokenType() {
 			case parser.NumScriptLexerOP_ADD:
-				expr = program.ExprNumberAdd{
-					Lhs: lhs,
-					Rhs: rhs,
-				}
+				expr.Op = program.OP_ADD
 			case parser.NumScriptLexerOP_SUB:
-				expr = program.ExprNumberSub{
-					Lhs: lhs,
-					Rhs: rhs,
-				}
+				expr.Op = program.OP_SUB
 			}
 			return internal.TypeNumber, expr, nil
 		case internal.TypeMonetary:
@@ -68,18 +65,15 @@ func (p *parseVisitor) CompileExpr(c parser.IExpressionContext) (internal.Type, 
 			if err != nil {
 				return 0, nil, err
 			}
-			var expr program.Expr
+			expr := program.ExprMonetaryOperation{
+				Lhs: lhs,
+				Rhs: rhs,
+			}
 			switch c.GetOp().GetTokenType() {
 			case parser.NumScriptLexerOP_ADD:
-				expr = program.ExprMonetaryAdd{
-					Lhs: lhs,
-					Rhs: rhs,
-				}
+				expr.Op = program.OP_ADD
 			case parser.NumScriptLexerOP_SUB:
-				expr = program.ExprMonetarySub{
-					Lhs: lhs,
-					Rhs: rhs,
-				}
+				expr.Op = program.OP_SUB
 			}
 			return internal.TypeMonetary, expr, nil
 		default:

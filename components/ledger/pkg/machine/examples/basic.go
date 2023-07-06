@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 
@@ -30,8 +29,9 @@ func main() {
 		panic(err)
 	}
 
-	s, _ := json.MarshalIndent(program, "", "\t")
-	fmt.Println(string(s))
+	fmt.Printf("%v\n", program)
+
+	// spew.Dump("%#v", program)
 
 	store := vm.StaticStore(map[string]*vm.AccountWithBalances{
 		"alice": {

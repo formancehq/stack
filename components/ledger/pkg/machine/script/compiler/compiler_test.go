@@ -64,8 +64,10 @@ func TestCompositeExpr(t *testing.T) {
 			Program: Program{
 				Instruction: []Instruction{
 					InstructionPrint{
-						Expr: ExprNumberSub{
-							Lhs: ExprNumberAdd{
+						Expr: ExprNumberOperation{
+							Op: OP_SUB,
+							Lhs: ExprNumberOperation{
+								Op:  OP_ADD,
 								Lhs: ExprLiteral{Value: internal.NewNumber(29)},
 								Rhs: ExprLiteral{Value: internal.NewNumber(15)},
 							},
@@ -1294,8 +1296,10 @@ func TestPrint(t *testing.T) {
 			Program: Program{
 				Instruction: []Instruction{
 					InstructionPrint{
-						Expr: ExprNumberAdd{
-							Lhs: ExprNumberAdd{
+						Expr: ExprNumberOperation{
+							Op: OP_ADD,
+							Lhs: ExprNumberOperation{
+								Op:  OP_ADD,
 								Lhs: ExprLiteral{Value: internal.NewNumber(1)},
 								Rhs: ExprLiteral{Value: internal.NewNumber(2)},
 							},
@@ -1337,9 +1341,12 @@ func TestSendWithArithmetic(t *testing.T) {
 					Instruction: []Instruction{
 						InstructionAllocate{
 							Funding: ExprTake{
-								Amount: ExprMonetarySub{
-									Lhs: ExprMonetaryAdd{
-										Lhs: ExprMonetaryAdd{
+								Amount: ExprMonetaryOperation{
+									Op: OP_SUB,
+									Lhs: ExprMonetaryOperation{
+										Op: OP_ADD,
+										Lhs: ExprMonetaryOperation{
+											Op: OP_ADD,
 											Lhs: ExprMonetaryNew{
 												Asset:  ExprLiteral{Value: internal.Asset("EUR")},
 												Amount: ExprLiteral{Value: internal.NewMonetaryInt(1)},
