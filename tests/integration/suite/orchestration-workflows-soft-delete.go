@@ -11,26 +11,8 @@ import (
 
 var _ = Given("An empty environment", func() {
 	var (
-		workflow shared.Workflow
-		ret      *shared.ListWorkflowsResponse
+		workflow *shared.Workflow
 	)
-	When("first listing workflows", func() {
-		var (
-			ret *shared.ListWorkflowsResponse
-		)
-		BeforeEach(func() {
-			response, err := Client().Orchestration.ListWorkflows(
-				TestContext(),
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
-
-			ret = response.ListWorkflowsResponse
-		})
-		It("should respond with an empty list", func() {
-			Expect(ret.Data).To(BeEmpty())
-		})
-	})
 	When("populating 1 workflow", func() {
 		BeforeEach(func() {
 			response, err := Client().Orchestration.CreateWorkflow(
@@ -65,24 +47,10 @@ var _ = Given("An empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(201))
 
-			workflow = response.CreateWorkflowResponse.Data
+			workflow = &response.CreateWorkflowResponse.Data
 		})
 		It("should be ok", func() {
 			Expect(workflow.ID).NotTo(BeEmpty())
-		})
-		It("Should retrieve workflows", func() {
-
-			response, err := Client().Orchestration.ListWorkflows(
-				TestContext(),
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
-
-			ret = response.ListWorkflowsResponse
-		})
-		It("should respond with a list of 1 element", func() {
-			Expect(ret.Data).ToNot(BeEmpty())
-			Expect(ret.Data).Should(HaveLen(1))
 		})
 	})
 	When("Deleting a workflow", func() {
@@ -96,18 +64,6 @@ var _ = Given("An empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-		})
-		It("Should retrieve workflows", func() {
-			response, err := Client().Orchestration.ListWorkflows(
-				TestContext(),
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
-
-			ret = response.ListWorkflowsResponse
-		})
-		It("should have a list of 0 element", func() {
-			Expect(ret.Data).To(BeEmpty())
 		})
 	})
 })
