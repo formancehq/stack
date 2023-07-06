@@ -52,7 +52,6 @@ func TestListInstances(t *testing.T) {
 		require.Len(t, instances, 6)
 
 		// Delete the workflow
-		fmt.Println("Deleting workflow", w.ID)
 		req = httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/workflows/%s/", w.ID), nil)
 		rec = httptest.NewRecorder()
 
