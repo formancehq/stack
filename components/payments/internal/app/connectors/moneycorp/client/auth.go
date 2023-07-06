@@ -39,7 +39,7 @@ func (t *apiTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func (t *apiTransport) ensureAccessTokenIsValid(ctx context.Context) error {
-	if t.accessTokenExpiresAt.After(time.Now()) {
+	if t.accessTokenExpiresAt.After(time.Now().Add(5 * time.Second)) {
 		return nil
 	}
 
