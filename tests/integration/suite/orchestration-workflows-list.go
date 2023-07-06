@@ -15,9 +15,6 @@ var _ = Given("An empty environment", func() {
 		ret      *shared.ListWorkflowsResponse
 	)
 	When("first listing workflows", func() {
-		var (
-			ret *shared.ListWorkflowsResponse
-		)
 		BeforeEach(func() {
 			response, err := Client().Orchestration.ListWorkflows(
 				TestContext(),
