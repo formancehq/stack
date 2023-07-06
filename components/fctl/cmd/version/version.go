@@ -7,7 +7,9 @@ import (
 )
 
 var (
-	Version = "develop"
+	Version   = "develop"
+	Commit    = "-"
+	BuildDate = "-"
 )
 
 type VersionStore struct {
@@ -23,9 +25,9 @@ var _ fctl.Controller[*VersionStore] = (*VersionController)(nil)
 
 func NewDefaultVersionStore() *VersionStore {
 	return &VersionStore{
-		Version:   "develop",
-		BuildDate: "-",
-		Commit:    "-",
+		Version:   Version,
+		BuildDate: BuildDate,
+		Commit:    Commit,
 	}
 }
 
