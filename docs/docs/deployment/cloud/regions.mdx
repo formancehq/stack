@@ -1,0 +1,46 @@
+---
+title: Formance Cloud
+---
+
+In addition to sandbox deployments, Formance Cloud provides an environment which can be used to deploy your production applications. Informations regarding the available plans can be found on the [Formance Cloud Pricing](https://formance.com/pricing) page.
+
+## Available regions
+
+Formance Cloud is available in the following regions:
+
+<!-- markdown table with regions -->
+| Region Identifier | Description | Availability
+| --- | --- | --- |
+| `aws-us-west-2-hosting` | US, Oregon (AWS) | General Availability ✅ |
+| `aws-af-south-1-hosting` | Africa, Cape Town (AWS) | General Availability ✅ |
+| `aws-eu-west-1-hosting` | EU, Ireland (AWS) | General Availability ✅ |
+| `aws-sa-east-1-hosting` | SA, São Paulo (AWS) | General Availability ✅ |
+| `aws-us-east-1-production` | US, Virginia (AWS) | Available upon request |
+| `aws-ap-southeast-1-production` | APAC, Singapore (AWS) | Available upon request |
+
+## Creating a production deployment
+
+Once you have set up a billing account (by reaching out to us), your available production deployments quota will be increased. You can then create a production deployment by selecting one of the regions listed above in the stack creation command:
+
+```shell
+fctl stack create my-stack
+```
+
+To list all available regions, you can run the following command:
+
+```shell
+fctl cloud regions ls
+```
+
+More informations about a specific region can be also be obtained by running the following command:
+
+```shell
+fctl cloud regions show aws-eu-west-1-hosting
+```
+
+
+## Information and requests
+
+For more information and any requests regarding the Formance Cloud offering, please contact us at [support@formance.com](mailto:support@formance.com).
+
+As a SOC-2 Type II certified company, we take security and privacy seriously — and will be happy to answer any questions you may have, as well as provide you with a copy of our SOC-2 report upon request.

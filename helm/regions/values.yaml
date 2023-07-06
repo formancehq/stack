@@ -1,6 +1,31 @@
-
 operator:
   enabled: true
-
+  fullnameOverride: "operator"
+  nameOverride: "operator"
+  image:
+    repository: "ghcr.io/formancehq/operator"
+    tag: "v0.14.1"
+  operator:
+    disableWebhooks: false
+    region: "private"
+    env: "private"
+    metricsAddr: ":8080"
+    probeAddr: ":8081"
+    enableLeaderElection: true
 agent:
   enabled: true
+  image:
+    tag: v0.3.0
+  server:
+    address: "app.formance.cloud:443"
+    tls:
+      enabled: true
+      insecureSkipVerify: true
+  agent:
+    id: "aws-eu-west-1-sandbox"
+    baseUrl: https://sandbox.formance.cloud
+    authentication:
+        mode: bearer
+        issuer: https://app.formance.cloud/api
+        clientID: "REGION_ID"
+        clientSecret: ""

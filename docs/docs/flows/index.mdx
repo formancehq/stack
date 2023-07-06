@@ -1,0 +1,41 @@
+---
+title: Introduction to Formance Flows
+pagination_next: null
+pagination_prev: null
+# hide_table_of_contents: true
+# the above sets the doc column width to 100% when set to true,
+# landing a less-than-ideal look
+toc_min_heading_level: 3
+---
+
+import {DocCardGrid,DocCard} from '@site/src/components/DocCard';
+
+# Formance Flows
+
+Formance Flows is a handy service that lets you quickly set up end-to-end money flows, without the headache of piecing together APIs and untangling complex systems.
+
+With a clever compatibility model, you can easily move value between different ledgers, wallets, and payment processors. Plus, Formance Flows takes care of translating and interpreting the transactions for you.
+
+On top of that, Formance Flows comes with flexible workflow capabilities, so you can create complex flows that account for delays or external events, as well as retry and fallback options. All of this helps make your financial management smoother and stress-free.
+
+:::caution
+Flows is currently in [private beta](https://formance.com/products/flows) and made available as a technical preview. As a result, its documentation is still a work in progress and, more importantly, the service itself is subject to breaking API changes and glitches.
+:::
+
+## Examples
+
+<DocCardGrid>
+
+<DocCard headline="Ledger to Payout" cta="Learn More" link="/flows/examples/stripe-payout" highlight="true">
+  Learn how to initate a Stripe Connect transfer, sourcing funds from a Formance ledger account.
+</DocCard>
+
+<DocCard headline="Deposit on Wallet" cta="Learn More" link="/flows/examples/payment-to-wallet" highlight="true">
+  Learn how to automate the deposit of funds on a user wallet once a payment is received.
+</DocCard>
+
+<DocCard headline="Multiple Ledgers" cta="Learn More" link="/flows/examples/ledger-to-ledger" highlight="true">
+  Learn how to move funds between accounts existing on different ledgers using Flows.
+</DocCard>
+
+</DocCardGrid>

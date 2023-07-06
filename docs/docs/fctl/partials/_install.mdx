@@ -1,0 +1,43 @@
+import HomebrewStackInstall from '../../fctl/partials/_install_homebrew.mdx';
+import BinaryInstall from '../../fctl/partials/_install_binary.mdx';
+import AptInstall from '../../fctl/partials/_install_apt.mdx';
+
+### Homebrew
+
+<HomebrewStackInstall />
+
+### Binary
+
+<BinaryInstall />
+
+### Debian/Ubuntu
+
+<AptInstall />
+
+### Installation check
+
+You can check that Formance CLI was installed correctly by trying the following command:
+
+```shell
+fctl version
+```
+
+You should see something like
+
+```
+Version | 0.10.1
+Date    | 2023-05-11T10:21:28Z
+Commit  | f5f577ce
+```
+
+If you don't, then recheck the steps above, or [reach out to us](/help) to ask for help.
+
+## Logging In
+
+Finally, you'll need to either log into or create your Formance Cloud account. You can do that from the CLI:
+
+```shell
+fctl login
+```
+
+This will take you to a page for creating an account or logging in to your existing account.

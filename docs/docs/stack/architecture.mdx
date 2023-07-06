@@ -1,12 +1,72 @@
 ---
-title: Formance Stack Architecture
-description: Learn how the Formance Stack is architected and how its components work together to provide a reliable and highly modular platform.
+title: Platform Architecture
+description: Learn more on the design and architecture of the Formance Platform.
 ---
 
-The Formance Stack is composed of a number of components that work together to provide a reliable and highly modular platform. These components are either considered are core services that enable a specific goal, or support services that provide horizontal functionality to the platform.
+<!-- The Formance Platform is composed of a number of components that work together to provide a reliable and highly modular platform. These components are either considered are core services that enable a specific goal, or support services that provide horizontal functionality to the platform. -->
 
-## Overview
+The Formance Platform embraces a cloud native architecture, enabling seamless deployments in various environments such as Formance Cloud, on-prem, or hybrid approaches.
+
+:::info
+Formance Cloud offers minimal effort deployments with sane defaults and rolled-in support. Alternatively, on-prem and hybrid options provide a great level of flexibility — which has proven to be beneficial for deployments existing within the infrastructure of regulated financial institutions and platforms.
+:::
+
+## Planes
+
+The Formance Platform is composed of two main planes: the control plane, and the data plane. The control plane is responsible for managing the platform and provisioning its components, while the data plane is responsible for delivering the actual core functions of the platform.
+
+:::tip trivia
+<!-- The data plane terminology originally comes the networking world before gaining greater adoption in the context of cloud infrastructure and services. -->
+One non-intuitive thing to note is: _data_ in the control plane / data plane terminology, does not only refer to data storage — but to the data storage and compute of services providing core functionality of the platform.
+:::
+
+## Control plane
+
+The control plane server is responsible for managing the platform and its components, while the control plane client is responsible for provisioning the data plane according to the desired state, and facilitate communication between the data plane and the control plane server.
+
+### Components
+
+| Component         | Description                                               | License     | Source Available | Group   |
+|-------------------|-----------------------------------------------------------|-------------|------------------|---------|
+| Console           | Administration user interface                             | Proprietary | Not available    | Server  |
+| Server            | Internal Formance Cloud API                               | Proprietary | Not available    | Server  |
+| Agent             | Agent queuing request from the control plane server       | AGPL        | Yes              | Client  |
+| Operator          | Kubernetes operator provisioning the data plane components| AGPL        | Yes              | Client  |
+
+
+## Data plane
+
+The data plane is composed of a number of components that work together to provide the core functionality of the platform. These components are either considered core services that deliver a specific piece of functionnality to the platform (identified below as group "product"), or support services that provide horizontal support to the platform (identified below as group "system").
+
+### Components
+
+| Name          | License | Source available | Group    | Repository |
+|---------------|---------|------------------|---------|------------|
+| Orchestration | EE      | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/orchestration) |
+| Ledger        | MIT     | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/ledger) |
+| Payments      | MIT     | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/payments) |
+| Wallets       | MIT     | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/wallets) |
+| Search        | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/search) |
+| Auth          | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/auth) |
+| Gateway       | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/gateway) |
+| Webhooks      | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/webhooks) |
+| Stargate      | MIT    | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/stargate) |
+
+<!-- | Name          | Description | License | Source available | Group    | Repository |
+|---------------|-------------|---------|------------------|---------|------------|
+| Orchestration |             | EE      | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/orchestration) |
+| Ledger        |             | MIT     | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/ledger) |
+| Payments      |             | MIT     | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/payments) |
+| Wallets       |             | MIT     | Yes              | Product | [Github](https://github.com/formancehq/stack/tree/main/components/wallets) |
+| Search        |             | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/search) |
+| Auth          |             | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/auth) |
+| Gateway       |             | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/gateway) |
+| Webhooks      |             | MIT     | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/webhooks) |
+| Stargate      |             | MIT    | Yes              | System  | [Github](https://github.com/formancehq/stack/tree/main/components/stargate) | -->
+
+
+<!-- ## Overview
 
 ![arch](/img/stack-architecture.png)
 
-[1]: As highlighted in the diagram, MongoDB usage is deprecated and will be removed in a future release.
+[1]: As highlighted in the diagram, MongoDB usage is deprecated and will be removed in a future release. -->

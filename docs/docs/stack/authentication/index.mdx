@@ -1,19 +1,34 @@
 ---
-title: Formance Stack Authentication
-description: How to configure Formance Stack Authentication
+title: Authentication
+description: How to authenticate users and applications against The Formance Platform.
 ---
 import CloudToken from '../../fctl/partials/_cloud_token.mdx';
 import {StackCmd} from '@site/src/components/StackCmd';
 
-The Formance Stack uses the standard OpenID Connect (OIDC) and OAuth 2.0 protocols, along with JSON Web Tokens (JWTs) to authenticate users and applications.
+The Formance Platform uses the standard OpenID Connect (OIDC) and OAuth 2.0 protocols, along with JSON Web Tokens (JWTs) to authenticate users and applications.
 
 ## Clients
 
-The auth service of the Formance Stack authenticates users and applications through clients. Clients are registered in the auth service and are assigned a client ID and secret, which can be traded for a JWT token. The JWT token can then be used to authenticate against the other services of the Formance Stack.
+The auth service of The Formance Platform authenticates users and applications through OAuth clients.
+
+Clients are registered in the auth service, and are assigned a client ID.
+Secrets can be added to clients, which can then be used to generate a JWT token, which can itself subsequently be used to authenticate against the other services of The Formance Platform.
+
+| Client Type | Description | Usage |
+| --- | --- | --- |
+| Dynamic Client | A client created through the auth service API. | Cloud, self-hosted. |
+| Static Client | A client passed to the auth service configuration file | Self-hosted deployments (details) |
+
+## Tokens
+
+| Token Type | Description |
+| --- | --- |
+| Platform Token | A JWT token issued by the Formance Platform, not scoped to any specific environment. |
+| Environment Token | A JWT token issued by the auth service of The Formance Platform, scoped to a specific environment. |
 
 ### Static Clients
 
-If you used the main [docker-compose.yml](https://github.com/formancehq/stack/blob/main/docker-compose.yml) file to run or deploy the Formance Stack, a default static client was automatically provisioned for you, with the following credentials:
+If you used the main [docker-compose.yml](https://github.com/formancehq/stack/blob/main/docker-compose.yml) file to run or deploy The Formance Platform, a default static client was automatically provisioned for you, with the following credentials:
 
 - Client ID: `testing`
 - Client Secret: `testing`
@@ -64,7 +79,7 @@ curl -v http://localhost/api/ledger/quickstart/transactions -H "Authorization: B
 
 ## M2M (Machine to Machine)
 
-The Formance Stack supports the [client_credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) flow for machine-to-machine authentication. This flow is used to authenticate a client application against the auth service, which then issues a JWT token that can be used to authenticate against the other services of the Formance Stack.
+The Formance Platform supports the [client_credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) flow for machine-to-machine authentication. This flow is used to authenticate a client application against the auth service, which then issues a JWT token that can be used to authenticate against the other services of The Formance Platform.
 
 Acquiring a token using the `client_credentials` flow is a two-step process:
 
@@ -82,7 +97,75 @@ curl -X POST $tokenUrl -d "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&gra
 | jq .access_token -r
 ```
 
-Once acquired, the JWT token can be used to authenticate against the other services of the Formance Stack.
+Once acquired, the JWT token can be used to authenticate against the other services of The Formance Platform.
 
 
 <!-- ## Three-legged Flows (User through third-party application) -->
+
+---
+
+Formance Cloud exposes the same authentication types as Open Source Formance Platform. You can use the same authentication types in your Formance Cloud application as you would in a self-hosted Formance Platform, as described in the [Formance Platform Authentication](/stack/authentication) documentation.
+
+:::info
+In addition to the standard described in the main documentation, this section describes how to create OAuth2 clients and secrets, and how to provision OAuth2 clients and JWT tokens in the context of Formance Cloud.
+:::
+
+## Creating clients
+
+The following command creates a new OAuth2 client with the name `my-backend`:
+
+```shell
+fctl auth clients create my-backend
+```
+
+Now, we can use the returned client ID to create a secret for the client:
+
+```shell
+# Replace <your-client-id> with the client ID returned by the previous command
+fctl auth clients secrets create <your-client-id> default-secret
+```
+
+You should get an output like this:
+
+```
+ID    | <your-secret-id>
+Name  | default-secret
+Clear | 1234567-xxx-yyy-zzz-12341234
+```
+
+Take note of the secret ID and the clear text secret. It will only be shown once and you will not be able to retrieve it later. This is the secret that you'll be able to use in your application to get a JWT token with the `client_credentials` OAuth2 grant type.
+
+:::info
+It is recommended to create as many secrets as you have separate applications that need to access Formance Cloud. This way, you can revoke a secret without affecting other applications.
+:::
+
+## Machine-to-machine Authentication
+
+Formance Cloud exposes the `/api/auth/oauth/token` token generation endpoint that you can use to generate a JWT token with the `client_credentials` OAuth2 grant type.
+
+```shell
+http \
+post 'https://<your-sandbox-id>.sandbox.formance.cloud/api/auth/oauth/token' \
+grant_type=='client_credentials' \
+client_secret=='18bc5303-62ca-4ad9-a822-a1f883abbd19' \
+client_id=='38072a09-7c00-447e-8ecc-839ba0949ce8'
+```
+
+
+## Personal authentication
+
+Personal tokens provide an easy way to authenticate yourself against the Formance Cloud Platform, without having to go through the OAuth2 flow. This method is recommended as a quick way to issue API calls from the command line. Generated tokens are valid for 5 minutes.
+
+<CloudToken />
+
+This saves the personal token into an environment variable called `FORMANCE_TOKEN` that we can use in further command lines. We can check the contents of the envronment variable to be sure that we have a valid token like this:
+
+```shell
+echo $FORMANCE_TOKEN
+```
+
+You should see a very long string of random characters that looks like this:
+```
+YiLCJhdWQiOlsiZmN0bCJdLCJqdGkiOiIn0.CRr7dc7omdlnbR1EhVmiaV0Aw84brAhZtMIp9e3gNil0KakkSNkYqJZsJ7KGmFKPVgjEx0QDsP5LtgRLvBa8SzikjXhjdJlfJ1neoviJiifWB8xs72OSe4pvaBWOmAhAk2BECe4NEERz4sksGca7KxQFXwfCJe8NTBZZiqnDh2fj1e6Az3nJUbiwp01DOzpyMufOQaEkHS4GCUfz5f7eI62Imo2f3v9XyuM95QGYE2rozGRDnGYIvbJDCfM2MpAwcMo5ef9PsJtOpdiCTwMeydJ4ow31visNnmg4BBPiaB.tiGRqtw2Qkb7ck4zXPiwZ4P5UcHcnwuHQnhDEOP9Ua5KI3G8p2JsKXLefeAIWJWZ9oNAgejP1LABNQ8zms3Ui7ZYNBNaxk432koCKOslRDXrxOFZRh60oFsjaPBS5xg02gbBnPjap9pb90P1YiN7agciJYEm5NOKlfmZpyI7srsB4LgDxo5o8d4Sk9r3qDzZIUqT2DvD9WWqxaSHeo1ez26Othbx5y3iKk3bLQmwy7PWzmGFMds9TZ4mpx5l15qRWJdZp7JyuOAfcGc9V2w74PudDdazzXwGebTjZGdSlW7HQMxwUR0otWtfO7N7XQypeya6pB9Wm1inaiE7KsGdhw
+```
+If you see something else, such as an error message, make sure you have a sandbox environment set up first.
