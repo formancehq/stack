@@ -28,6 +28,7 @@ func newRouter(m *workflow.Manager, info ServiceInfo, healthController *health.H
 			r.Get("/", listWorkflows(m))
 			r.Post("/", createWorkflow(m))
 			r.Route("/{workflowId}", func(r chi.Router) {
+				r.Delete("/", deleteWorkflow(m))
 				r.Get("/", readWorkflow(m))
 				r.Route("/instances", func(r chi.Router) {
 					r.Post("/", runWorkflow(m))

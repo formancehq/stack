@@ -40,8 +40,9 @@ req = shared.StripeTransferRequest(
     asset='USD',
     destination='acct_1Gqj58KZcSIg2N2q',
     metadata={
-        "non": 'eligendi',
-        "sint": 'aliquid',
+        "labore": 'delectus',
+        "eum": 'non',
+        "eligendi": 'sint',
     },
 )
 
@@ -74,7 +75,7 @@ req = operations.ConnectorsTransferRequest(
         destination='acct_1Gqj58KZcSIg2N2q',
         source='acct_1Gqj58KZcSIg2N2q',
     ),
-    connector=shared.Connector.CURRENCY_CLOUD,
+    connector=shared.Connector.MODULR,
 )
 
 res = s.payments.connectors_transfer(req)
@@ -100,8 +101,8 @@ s = sdk.SDK(
 )
 
 req = operations.GetConnectorTaskRequest(
-    connector=shared.Connector.MONEYCORP,
-    task_id='sint',
+    connector=shared.Connector.CURRENCY_CLOUD,
+    task_id='necessitatibus',
 )
 
 res = s.payments.get_connector_task(req)
@@ -127,7 +128,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetPaymentRequest(
-    payment_id='officia',
+    payment_id='sint',
 )
 
 res = s.payments.get_payment(req)
@@ -153,12 +154,15 @@ s = sdk.SDK(
 )
 
 req = operations.InstallConnectorRequest(
-    request_body=shared.DummyPayConfig(
-        directory='/tmp/dummypay',
-        file_generation_period='60s',
-        file_polling_period='60s',
+    request_body=shared.BankingCircleConfig(
+        authorization_endpoint='XXX',
+        endpoint='XXX',
+        password='XXX',
+        user_certificate='XXX',
+        user_certificate_key='XXX',
+        username='XXX',
     ),
-    connector=shared.Connector.MONEYCORP,
+    connector=shared.Connector.DUMMY_PAY,
 )
 
 res = s.payments.install_connector(req)
@@ -232,7 +236,7 @@ s = sdk.SDK(
 req = operations.ListConnectorTasksRequest(
     connector=shared.Connector.MONEYCORP,
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=680056,
+    page_size=952749,
 )
 
 res = s.payments.list_connector_tasks(req)
@@ -258,7 +262,7 @@ s = sdk.SDK(
 )
 
 req = operations.ListConnectorsTransfersRequest(
-    connector=shared.Connector.MODULR,
+    connector=shared.Connector.BANKING_CIRCLE,
 )
 
 res = s.payments.list_connectors_transfers(req)
@@ -285,12 +289,10 @@ s = sdk.SDK(
 
 req = operations.ListPaymentsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=449198,
+    page_size=447125,
     sort=[
+        'illum',
         'maiores',
-        'rerum',
-        'dicta',
-        'magnam',
     ],
 )
 
@@ -341,12 +343,9 @@ s = sdk.SDK(
 
 req = operations.PaymentslistAccountsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=767024,
+    page_size=699479,
     sort=[
-        'ea',
-        'aliquid',
-        'laborum',
-        'accusamus',
+        'magnam',
     ],
 )
 
@@ -373,7 +372,7 @@ s = sdk.SDK(
 )
 
 req = operations.ReadConnectorConfigRequest(
-    connector=shared.Connector.DUMMY_PAY,
+    connector=shared.Connector.MANGOPAY,
 )
 
 res = s.payments.read_connector_config(req)
@@ -401,7 +400,7 @@ s = sdk.SDK(
 )
 
 req = operations.ResetConnectorRequest(
-    connector=shared.Connector.CURRENCY_CLOUD,
+    connector=shared.Connector.MANGOPAY,
 )
 
 res = s.payments.reset_connector(req)
@@ -427,7 +426,7 @@ s = sdk.SDK(
 )
 
 req = operations.UninstallConnectorRequest(
-    connector=shared.Connector.WISE,
+    connector=shared.Connector.MODULR,
 )
 
 res = s.payments.uninstall_connector(req)
@@ -454,9 +453,9 @@ s = sdk.SDK(
 
 req = operations.UpdateMetadataRequest(
     payment_metadata=shared.PaymentMetadata(
-        key='accusamus',
+        key='aliquid',
     ),
-    payment_id='delectus',
+    payment_id='laborum',
 )
 
 res = s.payments.update_metadata(req)

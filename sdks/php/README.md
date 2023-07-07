@@ -116,6 +116,7 @@ try {
 
 * [cancelEvent](docs/orchestration/README.md#cancelevent) - Cancel a running workflow
 * [createWorkflow](docs/orchestration/README.md#createworkflow) - Create workflow
+* [deleteWorkflow](docs/orchestration/README.md#deleteworkflow) - Delete a flow by id
 * [getInstance](docs/orchestration/README.md#getinstance) - Get a workflow instance by id
 * [getInstanceHistory](docs/orchestration/README.md#getinstancehistory) - Get a workflow instance history by id
 * [getInstanceStageHistory](docs/orchestration/README.md#getinstancestagehistory) - Get a workflow instance stage history

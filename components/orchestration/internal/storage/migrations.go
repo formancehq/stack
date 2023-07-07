@@ -69,5 +69,15 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				if _, err := tx.Exec(`
+					alter table "workflows" add column deleted_at timestamp default null;
+				`); err != nil {
+					return err
+				}
+				return nil
+			},
+		},
 	)
 }

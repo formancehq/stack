@@ -57,6 +57,7 @@ pkg/models/operations/readstats.go
 pkg/models/operations/reverttransaction.go
 pkg/models/operations/cancelevent.go
 pkg/models/operations/createworkflow.go
+pkg/models/operations/deleteworkflow.go
 pkg/models/operations/getinstance.go
 pkg/models/operations/getinstancehistory.go
 pkg/models/operations/getinstancestagehistory.go

@@ -92,6 +92,8 @@ src/Models/Operations/RevertTransactionResponse.php
 src/Models/Operations/CancelEventRequest.php
 src/Models/Operations/CancelEventResponse.php
 src/Models/Operations/CreateWorkflowResponse.php
+src/Models/Operations/DeleteWorkflowRequest.php
+src/Models/Operations/DeleteWorkflowResponse.php
 src/Models/Operations/GetInstanceRequest.php
 src/Models/Operations/GetInstanceResponse.php
 src/Models/Operations/GetInstanceHistoryRequest.php

@@ -9,10 +9,11 @@ import (
 
 type Workflow struct {
 	bun.BaseModel `bun:"table:workflows"`
-	ID            string    `json:"id" bun:",pk"`
-	Config        Config    `json:"config"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            string     `json:"id" bun:",pk"`
+	Config        Config     `json:"config"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
+	DeletedAt     *time.Time `json:"deletedAt"`
 }
 
 func New(config Config) Workflow {

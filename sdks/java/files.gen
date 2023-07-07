@@ -103,6 +103,8 @@ lib/src/main/java/com/formance/formance_sdk/models/operations/RevertTransactionR
 lib/src/main/java/com/formance/formance_sdk/models/operations/CancelEventRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/CancelEventResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/CreateWorkflowResponse.java
+lib/src/main/java/com/formance/formance_sdk/models/operations/DeleteWorkflowRequest.java
+lib/src/main/java/com/formance/formance_sdk/models/operations/DeleteWorkflowResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetInstanceRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetInstanceResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetInstanceHistoryRequest.java

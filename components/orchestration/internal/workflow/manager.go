@@ -17,6 +17,7 @@ import (
 
 var (
 	ErrInstanceNotFound = errors.New("Instance not found")
+	ErrWorkflowNotFound = errors.New("Workflow not found")
 )
 
 const (
@@ -49,6 +50,27 @@ func (m *Manager) Create(ctx context.Context, config Config) (*Workflow, error) 
 	}
 
 	return &workflow, nil
+}
+
+func (m *Manager) DeleteWorkflow(ctx context.Context, id string) error {
+
+	var workflow Workflow
+
+	res, err := m.db.NewUpdate().Model(&workflow).Where("id = ?", id).Set("deleted_at = ?", time.Now()).Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	r, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if r == 0 {
+		return ErrWorkflowNotFound
+	}
+
+	return nil
 }
 
 func (m *Manager) RunWorkflow(ctx context.Context, id string, variables map[string]string) (Instance, error) {
@@ -101,6 +123,7 @@ func (m *Manager) ListWorkflows(ctx context.Context) ([]Workflow, error) {
 	workflows := make([]Workflow, 0)
 	if err := m.db.NewSelect().
 		Model(&workflows).
+		Where("deleted_at IS NULL").
 		Scan(ctx); err != nil {
 		return nil, err
 	}
@@ -152,12 +175,16 @@ func (m *Manager) AbortRun(ctx context.Context, instanceID string) error {
 func (m *Manager) ListInstances(ctx context.Context, workflowID string, running bool) ([]Instance, error) {
 	instances := make([]Instance, 0)
 	query := m.db.NewSelect().Model(&instances)
+
+	query.Join("JOIN workflows ON workflows.id = u.workflow_id").Where("workflows.deleted_at IS NULL")
+
 	if workflowID != "" {
-		query = query.Where("workflow_id = ?", workflowID)
+		query = query.Where("workflows.workflow_id = ?", workflowID)
 	}
 	if running {
-		query = query.Where("terminated = false")
+		query = query.Where("u.terminated = false")
 	}
+
 	if err := query.Scan(ctx); err != nil {
 		return nil, errors.Wrap(err, "retrieving workflow")
 	}

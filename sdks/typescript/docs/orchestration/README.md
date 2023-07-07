@@ -4,6 +4,7 @@
 
 * [cancelEvent](#cancelevent) - Cancel a running workflow
 * [createWorkflow](#createworkflow) - Create workflow
+* [deleteWorkflow](#deleteworkflow) - Delete a flow by id
 * [getInstance](#getinstance) - Get a workflow instance by id
 * [getInstanceHistory](#getinstancehistory) - Get a workflow instance history by id
 * [getInstanceStageHistory](#getinstancestagehistory) - Get a workflow instance stage history
@@ -79,6 +80,32 @@ sdk.orchestration.createWorkflow({
 });
 ```
 
+## deleteWorkflow
+
+Delete a flow by id
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { DeleteWorkflowResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ErrorErrorCode } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.orchestration.deleteWorkflow({
+  flowId: "quibusdam",
+}).then((res: DeleteWorkflowResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
 ## getInstance
 
 Get a workflow instance by id
@@ -97,7 +124,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstance({
-  instanceID: "quibusdam",
+  instanceID: "labore",
 }).then((res: GetInstanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -123,7 +150,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstanceHistory({
-  instanceID: "labore",
+  instanceID: "modi",
 }).then((res: GetInstanceHistoryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -149,8 +176,8 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstanceStageHistory({
-  instanceID: "modi",
-  number: 183191,
+  instanceID: "qui",
+  number: 397821,
 }).then((res: GetInstanceStageHistoryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -176,7 +203,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getWorkflow({
-  flowId: "aliquid",
+  flowId: "cupiditate",
 }).then((res: GetWorkflowResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -203,7 +230,7 @@ const sdk = new SDK({
 
 sdk.orchestration.listInstances({
   running: false,
-  workflowID: "cupiditate",
+  workflowID: "quos",
 }).then((res: ListInstancesResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -278,12 +305,10 @@ const sdk = new SDK({
 
 sdk.orchestration.runWorkflow({
   requestBody: {
-    "perferendis": "magni",
-    "assumenda": "ipsam",
-    "alias": "fugit",
+    "magni": "assumenda",
   },
   wait: false,
-  workflowID: "dolorum",
+  workflowID: "ipsam",
 }).then((res: RunWorkflowResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -310,9 +335,9 @@ const sdk = new SDK({
 
 sdk.orchestration.sendEvent({
   requestBody: {
-    name: "Eddie Prosacco",
+    name: "Denise Pagac",
   },
-  instanceID: "delectus",
+  instanceID: "facilis",
 }).then((res: SendEventResponse) => {
   if (res.statusCode == 200) {
     // handle response

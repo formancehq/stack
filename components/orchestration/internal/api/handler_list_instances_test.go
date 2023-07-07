@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -16,7 +17,7 @@ import (
 
 func TestListInstances(t *testing.T) {
 	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
-
+		// Create a workflow with 10 instances
 		w := workflow.New(workflow.Config{})
 		_, err := db.NewInsert().Model(&w).Exec(context.TODO())
 		require.NoError(t, err)
@@ -34,8 +35,9 @@ func TestListInstances(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		router.ServeHTTP(rec, req)
-
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
+
+		// Retrieve only running instances
 		instances := make([]workflow.Instance, 0)
 		apitesting.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 10)
@@ -48,5 +50,25 @@ func TestListInstances(t *testing.T) {
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 		apitesting.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 6)
+
+		// Delete the workflow
+		req = httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/workflows/%s/", w.ID), nil)
+		rec = httptest.NewRecorder()
+
+		router.ServeHTTP(rec, req)
+
+		require.Equal(t, http.StatusNoContent, rec.Result().StatusCode)
+
+		// Try to retrieve instances for the deleted workflow
+		req = httptest.NewRequest(http.MethodGet, "/instances", nil)
+		rec = httptest.NewRecorder()
+
+		router.ServeHTTP(rec, req)
+
+		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
+		instances = make([]workflow.Instance, 0)
+		apitesting.ReadResponse(t, rec, &instances)
+		require.Len(t, instances, 0)
+
 	})
 }

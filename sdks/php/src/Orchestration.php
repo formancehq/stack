@@ -124,6 +124,46 @@ class Orchestration
     }
 	
     /**
+     * Delete a flow by id
+     * 
+     * Delete a flow by id
+     * 
+     * @param \formance\stack\Models\Operations\DeleteWorkflowRequest $request
+     * @return \formance\stack\Models\Operations\DeleteWorkflowResponse
+     */
+	public function deleteWorkflow(
+        \formance\stack\Models\Operations\DeleteWorkflowRequest $request,
+    ): \formance\stack\Models\Operations\DeleteWorkflowResponse
+    {
+        $baseUrl = $this->_serverUrl;
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/orchestration/workflows/{flowId}', \formance\stack\Models\Operations\DeleteWorkflowRequest::class, $request);
+        
+        $options = ['http_errors' => false];
+        $options['headers']['Accept'] = 'application/json';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
+        
+        $httpResponse = $this->_securityClient->request('DELETE', $url, $options);
+        
+        $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
+
+        $response = new \formance\stack\Models\Operations\DeleteWorkflowResponse();
+        $response->statusCode = $httpResponse->getStatusCode();
+        $response->contentType = $contentType;
+        $response->rawResponse = $httpResponse;
+        
+        if ($httpResponse->getStatusCode() === 204) {
+        }
+        else {
+            if (Utils\Utils::matchContentType($contentType, 'application/json')) {
+                $serializer = Utils\JSON::createSerializer();
+                $response->error = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\Error', 'json');
+            }
+        }
+
+        return $response;
+    }
+	
+    /**
      * Get a workflow instance by id
      * 
      * Get a workflow instance by id

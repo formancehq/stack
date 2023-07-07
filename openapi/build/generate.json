@@ -3387,6 +3387,22 @@
             "$ref": "#/components/responses/ErrorResponse"
           }
         }
+      },
+      "delete": {
+        "summary": "Delete a flow by id",
+        "tags": [
+          "Orchestration"
+        ],
+        "description": "Delete a flow by id",
+        "operationId": "deleteWorkflow",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
       }
     },
     "/api/orchestration/workflows/{workflowID}/instances": {

@@ -50,6 +50,7 @@ src/sdk/models/operations/readstats.py
 src/sdk/models/operations/reverttransaction.py
 src/sdk/models/operations/cancelevent.py
 src/sdk/models/operations/createworkflow.py
+src/sdk/models/operations/deleteworkflow.py
 src/sdk/models/operations/getinstance.py
 src/sdk/models/operations/getinstancehistory.py
 src/sdk/models/operations/getinstancestagehistory.py

@@ -30,6 +30,7 @@ export * from "./deletescope";
 export * from "./deletescopefromclient";
 export * from "./deletesecret";
 export * from "./deletetransientscope";
+export * from "./deleteworkflow";
 export * from "./getaccount";
 export * from "./getbalance";
 export * from "./getbalances";

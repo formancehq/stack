@@ -91,6 +91,7 @@ func main() {
 
 * [CancelEvent](docs/orchestration/README.md#cancelevent) - Cancel a running workflow
 * [CreateWorkflow](docs/orchestration/README.md#createworkflow) - Create workflow
+* [DeleteWorkflow](docs/orchestration/README.md#deleteworkflow) - Delete a flow by id
 * [GetInstance](docs/orchestration/README.md#getinstance) - Get a workflow instance by id
 * [GetInstanceHistory](docs/orchestration/README.md#getinstancehistory) - Get a workflow instance history by id
 * [GetInstanceStageHistory](docs/orchestration/README.md#getinstancestagehistory) - Get a workflow instance stage history
