@@ -67,7 +67,7 @@ var _ = Given("An empty environment", func() {
 		It("should be ok", func() {
 			Expect(workflow.ID).NotTo(BeEmpty())
 		})
-		It("Should retrieve workflows", func() {
+		JustBeforeEach(func() {
 
 			response, err := Client().Orchestration.ListWorkflows(
 				TestContext(),
@@ -93,7 +93,7 @@ var _ = Given("An empty environment", func() {
 				Expect(response.StatusCode).To(Equal(204))
 
 			})
-			It("should be empty", func() {
+			JustBeforeEach(func() {
 				response, err := Client().Orchestration.ListWorkflows(
 					TestContext(),
 				)
