@@ -12,7 +12,7 @@ import (
 var _ = Given("An empty environment", func() {
 	var (
 		workflow shared.Workflow
-		ret      *shared.ListWorkflowsResponse
+		list     []shared.Workflow
 	)
 	When("first listing workflows", func() {
 		BeforeEach(func() {
@@ -22,13 +22,13 @@ var _ = Given("An empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			ret = response.ListWorkflowsResponse
+			list = response.ListWorkflowsResponse.Data
 		})
 		It("should respond with an empty list", func() {
-			Expect(ret.Data).To(BeEmpty())
+			Expect(list).To(BeEmpty())
 		})
 	})
-	When("populating 1 workflow", func() {
+	FWhen("populating 1 workflow", func() {
 		BeforeEach(func() {
 			response, err := Client().Orchestration.CreateWorkflow(
 				TestContext(),
@@ -75,14 +75,14 @@ var _ = Given("An empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			ret = response.ListWorkflowsResponse
+			list = response.ListWorkflowsResponse.Data
 		})
 		It("should respond with a list of 1 elements", func() {
-			Expect(ret.Data).ToNot(BeEmpty())
-			Expect(ret.Data).Should(HaveLen(1))
+			Expect(list).ToNot(BeEmpty())
+			Expect(list).Should(HaveLen(1))
 		})
-		Then("Deleting a workflow", func() {
-			BeforeEach(func() {
+		When("Deleting a workflow", func() {
+			JustBeforeEach(func() {
 				response, err := Client().Orchestration.DeleteWorkflow(
 					TestContext(),
 					operations.DeleteWorkflowRequest{
@@ -100,11 +100,11 @@ var _ = Given("An empty environment", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				ret = response.ListWorkflowsResponse
+				list = response.ListWorkflowsResponse.Data
 
 			})
 			It("should have a list of 0 element", func() {
-				Expect(ret.Data).To(BeEmpty())
+				Expect(list).To(BeEmpty())
 			})
 		})
 	})
