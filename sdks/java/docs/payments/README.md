@@ -216,6 +216,7 @@ public class Application {
                                 apiKey = "XXX";
                                 apiSecret = "XXX";
                                 endpoint = "XXX";
+                                pollingPeriod = "60s";
                             }}, Connector.CURRENCY_CLOUD);            
 
             InstallConnectorResponse res = sdk.payments.installConnector(req);

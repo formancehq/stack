@@ -4,6 +4,8 @@
 
 package com.formance.formance_sdk.models.shared;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WiseConfig {
@@ -12,6 +14,19 @@ public class WiseConfig {
 
     public WiseConfig withApiKey(String apiKey) {
         this.apiKey = apiKey;
+        return this;
+    }
+    
+    /**
+     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+     * 
+     */
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("pollingPeriod")
+    public String pollingPeriod;
+
+    public WiseConfig withPollingPeriod(String pollingPeriod) {
+        this.pollingPeriod = pollingPeriod;
         return this;
     }
     

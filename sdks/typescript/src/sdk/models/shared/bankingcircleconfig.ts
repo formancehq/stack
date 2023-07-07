@@ -18,6 +18,16 @@ export class BankingCircleConfig extends SpeakeasyBase {
   @Expose({ name: "password" })
   password: string;
 
+  /**
+   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+   *
+   * @remarks
+   *
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "pollingPeriod" })
+  pollingPeriod?: string;
+
   @SpeakeasyMetadata()
   @Expose({ name: "userCertificate" })
   userCertificate: string;

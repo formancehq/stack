@@ -31,7 +31,7 @@ public class CountAccountsRequest {
     }
     
     /**
-     * Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&amp;metadata[a.nested.key]=value2
+     * Filter accounts by metadata key value pairs. The filter can be used like this -&gt; metadata[key]=value1&amp;metadata[a.nested.key]=value2
      */
     @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
     public java.util.Map<String, Object> metadata;

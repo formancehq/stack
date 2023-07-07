@@ -23,10 +23,23 @@ class MoneycorpConfig
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $endpoint;
     
+    /**
+     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+     * 
+     * 
+     * 
+     * @var ?string $pollingPeriod
+     */
+	#[\JMS\Serializer\Annotation\SerializedName('pollingPeriod')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?string $pollingPeriod = null;
+    
 	public function __construct()
 	{
 		$this->apiKey = "";
 		$this->clientID = "";
 		$this->endpoint = "";
+		$this->pollingPeriod = null;
 	}
 }

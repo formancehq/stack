@@ -4,6 +4,8 @@
 
 package com.formance.formance_sdk.models.shared;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MoneycorpConfig {
@@ -28,6 +30,19 @@ public class MoneycorpConfig {
 
     public MoneycorpConfig withEndpoint(String endpoint) {
         this.endpoint = endpoint;
+        return this;
+    }
+    
+    /**
+     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+     * 
+     */
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("pollingPeriod")
+    public String pollingPeriod;
+
+    public MoneycorpConfig withPollingPeriod(String pollingPeriod) {
+        this.pollingPeriod = pollingPeriod;
         return this;
     }
     

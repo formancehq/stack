@@ -17,9 +17,11 @@ type PaymentsConnectorsMoneycorpStore struct {
 	ConnectorName string `json:"connectorName"`
 }
 type PaymentsConnectorsMoneycorpController struct {
-	store           *PaymentsConnectorsMoneycorpStore
-	endpointFlag    string
-	defaultEndpoint string
+	store                *PaymentsConnectorsMoneycorpStore
+	endpointFlag         string
+	defaultEndpoint      string
+	pollingPeriodFlag    string
+	defaultpollingPeriod string
 }
 
 func NewDefaultPaymentsConnectorsMoneycorpStore() *PaymentsConnectorsMoneycorpStore {
@@ -30,9 +32,11 @@ func NewDefaultPaymentsConnectorsMoneycorpStore() *PaymentsConnectorsMoneycorpSt
 }
 func NewPaymentsConnectorsMoneycorpController() *PaymentsConnectorsMoneycorpController {
 	return &PaymentsConnectorsMoneycorpController{
-		store:           NewDefaultPaymentsConnectorsMoneycorpStore(),
-		endpointFlag:    "endpoint",
-		defaultEndpoint: "https://sandbox-corpapi.moneycorp.com",
+		store:                NewDefaultPaymentsConnectorsMoneycorpStore(),
+		endpointFlag:         "endpoint",
+		defaultEndpoint:      "https://sandbox-corpapi.moneycorp.com",
+		pollingPeriodFlag:    "polling-period",
+		defaultpollingPeriod: "2m",
 	}
 }
 func NewMoneycorpCommand() *cobra.Command {
@@ -42,6 +46,7 @@ func NewMoneycorpCommand() *cobra.Command {
 		fctl.WithShortDescription("Install a Moneycorp connector"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
+		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
 		fctl.WithController[*PaymentsConnectorsMoneycorpStore](c),
 	)
 }
@@ -78,9 +83,10 @@ func (c *PaymentsConnectorsMoneycorpController) Run(cmd *cobra.Command, args []s
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorMoneycorp,
 		RequestBody: shared.MoneycorpConfig{
-			ClientID: args[0],
-			APIKey:   args[1],
-			Endpoint: fctl.GetString(cmd, c.endpointFlag),
+			ClientID:      args[0],
+			APIKey:        args[1],
+			Endpoint:      fctl.GetString(cmd, c.endpointFlag),
+			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)

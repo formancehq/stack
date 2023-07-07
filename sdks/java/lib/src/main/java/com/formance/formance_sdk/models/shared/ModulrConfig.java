@@ -34,6 +34,19 @@ public class ModulrConfig {
         return this;
     }
     
+    /**
+     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+     * 
+     */
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("pollingPeriod")
+    public String pollingPeriod;
+
+    public ModulrConfig withPollingPeriod(String pollingPeriod) {
+        this.pollingPeriod = pollingPeriod;
+        return this;
+    }
+    
     public ModulrConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("apiSecret") String apiSecret) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;

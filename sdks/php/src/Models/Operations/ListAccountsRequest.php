@@ -59,7 +59,7 @@ class ListAccountsRequest
     public string $ledger;
     
     /**
-     * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+     * Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
      * 
      * @var ?array<string, string> $metadata
      */

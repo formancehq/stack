@@ -22,6 +22,8 @@ type PaymentsConnectorsBankingCircleController struct {
 	authorizationEndpointFlag    string
 	defaultEndpoint              string
 	defaultAuthorizationEndpoint string
+	pollingPeriodFlag            string
+	defaultpollingPeriod         string
 }
 
 var _ fctl.Controller[*PaymentsConnectorsBankingCircleStore] = (*PaymentsConnectorsBankingCircleController)(nil)
@@ -39,6 +41,8 @@ func NewPaymentsConnectorsBankingCircleController() *PaymentsConnectorsBankingCi
 		authorizationEndpointFlag:    "authorization-endpoint",
 		defaultEndpoint:              "https://sandbox.bankingcircle.com",
 		defaultAuthorizationEndpoint: "https://authorizationsandbox.bankingcircleconnect.com",
+		pollingPeriodFlag:            "polling-period",
+		defaultpollingPeriod:         "2m",
 	}
 }
 
@@ -49,6 +53,7 @@ func NewBankingCircleCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
 		fctl.WithStringFlag(c.authorizationEndpointFlag, c.defaultAuthorizationEndpoint, "Authorization endpoint"),
+		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
 		fctl.WithController[*PaymentsConnectorsBankingCircleStore](c),
 	)
 }
@@ -75,6 +80,7 @@ func (c *PaymentsConnectorsBankingCircleController) Run(cmd *cobra.Command, args
 			Password:              args[1],
 			Endpoint:              fctl.GetString(cmd, c.endpointFlag),
 			AuthorizationEndpoint: fctl.GetString(cmd, c.authorizationEndpointFlag),
+			PollingPeriod:         fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)

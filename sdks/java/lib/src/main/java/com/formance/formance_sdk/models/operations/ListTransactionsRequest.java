@@ -71,7 +71,7 @@ public class ListTransactionsRequest {
     }
     
     /**
-     * Filter transactions by metadata key value pairs.
+     * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
     @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
     public java.util.Map<String, String> metadata;

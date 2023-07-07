@@ -17,9 +17,11 @@ type PaymentsConnectorsModulrStore struct {
 	ConnectorName string `json:"connectorName"`
 }
 type PaymentsConnectorsModulrController struct {
-	store           *PaymentsConnectorsModulrStore
-	endpointFlag    string
-	defaultEndpoint string
+	store                *PaymentsConnectorsModulrStore
+	endpointFlag         string
+	defaultEndpoint      string
+	pollingPeriodFlag    string
+	defaultpollingPeriod string
 }
 
 var _ fctl.Controller[*PaymentsConnectorsModulrStore] = (*PaymentsConnectorsModulrController)(nil)
@@ -32,9 +34,11 @@ func NewDefaultPaymentsConnectorsModulrStore() *PaymentsConnectorsModulrStore {
 
 func NewPaymentsConnectorsModulrController() *PaymentsConnectorsModulrController {
 	return &PaymentsConnectorsModulrController{
-		store:           NewDefaultPaymentsConnectorsModulrStore(),
-		endpointFlag:    "endpoint",
-		defaultEndpoint: "https://api-sandbox.modulrfinance.com",
+		store:                NewDefaultPaymentsConnectorsModulrStore(),
+		endpointFlag:         "endpoint",
+		defaultEndpoint:      "https://api-sandbox.modulrfinance.com",
+		pollingPeriodFlag:    "polling-period",
+		defaultpollingPeriod: "2m",
 	}
 }
 
@@ -44,6 +48,7 @@ func NewModulrCommand() *cobra.Command {
 		fctl.WithShortDescription("Install a Modulr connector"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
+		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
 		fctl.WithController[*PaymentsConnectorsModulrStore](c),
 	)
 }
@@ -70,9 +75,10 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		RequestBody: shared.ModulrConfig{
-			APIKey:    args[0],
-			APISecret: args[1],
-			Endpoint:  endpoint,
+			APIKey:        args[0],
+			APISecret:     args[1],
+			Endpoint:      endpoint,
+			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
 		},
 		Connector: shared.ConnectorModulr,
 	})

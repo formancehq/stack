@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230703"
+    "version": "v1.0.20230707"
   },
   "servers": [
     {
@@ -754,7 +754,7 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2",
+            "description": "Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "explode": true,
             "schema": {
@@ -834,7 +834,7 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "schema": {
               "type": "object",
@@ -1168,7 +1168,7 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "schema": {
               "type": "object",
@@ -1304,7 +1304,7 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter transactions by metadata key value pairs.",
+            "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
             "schema": {
               "type": "object",
@@ -5204,6 +5204,12 @@
           "apiKey": {
             "type": "string",
             "example": "XXX"
+          },
+          "pollingPeriod": {
+            "type": "string",
+            "example": "60s",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "default": "120s"
           }
         }
       },
@@ -5225,6 +5231,12 @@
           "endpoint": {
             "type": "string",
             "example": "XXX"
+          },
+          "pollingPeriod": {
+            "type": "string",
+            "example": "60s",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "default": "120s"
           }
         }
       },
@@ -5262,6 +5274,12 @@
           "userCertificateKey": {
             "type": "string",
             "example": "XXX"
+          },
+          "pollingPeriod": {
+            "type": "string",
+            "example": "60s",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "default": "120s"
           }
         }
       },
@@ -5273,6 +5291,12 @@
           "endpoint"
         ],
         "properties": {
+          "pollingPeriod": {
+            "type": "string",
+            "example": "60s",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "default": "120s"
+          },
           "clientID": {
             "type": "string",
             "example": "XXX"
@@ -5306,6 +5330,12 @@
           "endpoint": {
             "type": "string",
             "example": "XXX"
+          },
+          "pollingPeriod": {
+            "type": "string",
+            "example": "60s",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "default": "120s"
           }
         }
       },
@@ -5328,7 +5358,8 @@
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
-            "description": "The frequency at which the connector will fetch transactions"
+            "description": "The frequency at which the connector will fetch transactions",
+            "default": "120s"
           },
           "endpoint": {
             "type": "string",
