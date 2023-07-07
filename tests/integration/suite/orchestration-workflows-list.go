@@ -28,7 +28,7 @@ var _ = Given("An empty environment", func() {
 			Expect(list).To(BeEmpty())
 		})
 	})
-	FWhen("populating 1 workflow", func() {
+	When("populating 1 workflow", func() {
 		BeforeEach(func() {
 			response, err := Client().Orchestration.CreateWorkflow(
 				TestContext(),
