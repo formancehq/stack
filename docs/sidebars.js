@@ -286,6 +286,16 @@ const sidebars = {
                   type: 'doc',
                   id: 'payments/connectors/bankingcircle',
                   label: 'BankingCircle',
+                },
+                {
+                  type: 'doc',
+                  id: 'payments/connectors/mangopay',
+                  label: 'Mangopay',
+                },
+                {
+                  type: 'doc',
+                  id: 'payments/connectors/moneycorp',
+                  label: 'Moneycorp',
                 }
               ],
             },

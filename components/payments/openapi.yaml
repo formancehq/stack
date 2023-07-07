@@ -618,6 +618,12 @@ components:
         apiKey:
           type: string
           example: 'XXX'
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+          default: '120s'
     ModulrConfig:
       type: object
       required:
@@ -633,6 +639,12 @@ components:
         endpoint:
           type: string
           example: 'XXX'
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+          default: '120s'
     BankingCircleConfig:
       type: object
       required:
@@ -661,6 +673,12 @@ components:
         userCertificateKey:
           type: string
           example: 'XXX'
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+          default: '120s'
     MangoPayConfig:
       type: object
       required:
@@ -668,6 +686,12 @@ components:
         - apiKey
         - endpoint
       properties:
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+          default: '120s'
         clientID:
           type: string
           example: 'XXX'
@@ -693,6 +717,12 @@ components:
         endpoint:
           type: string
           example: 'XXX'
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+          default: '120s'
     CurrencyCloudConfig:
       type: object
       required:
@@ -710,6 +740,7 @@ components:
           type: string
           example: '60s'
           description: The frequency at which the connector will fetch transactions
+          default: '120s'
         endpoint:
           type: string
           example: 'XXX'
