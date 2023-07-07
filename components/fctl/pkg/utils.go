@@ -55,7 +55,5 @@ func Open(url string) error {
 		args = append(args, url)
 		return exec.Command(cmd, args...).Start()
 	}
-
-	// SetSharedAdditionnalData("browser_url", url)
 	return errors.New("error_opening_browser")
 }
