@@ -4,4 +4,7 @@ package shared
 
 type WiseConfig struct {
 	APIKey string `json:"apiKey"`
+	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+	//
+	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }

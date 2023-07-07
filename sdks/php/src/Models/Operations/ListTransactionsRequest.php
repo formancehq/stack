@@ -60,7 +60,7 @@ class ListTransactionsRequest
     public string $ledger;
     
     /**
-     * Filter transactions by metadata key value pairs.
+     * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      * 
      * @var ?array<string, string> $metadata
      */

@@ -161,3 +161,65 @@ This connector is used only for testing purposes. It does not connect to any rea
   "fileGenerationPeriod": "10s"
 }
 ```
+
+### Mangopay
+
+Docs: [https://mangopay.com/docs/api-basics/introduction](https://mangopay.com/docs/api-basics/introduction)
+
+```golang
+    ClientID       string `json:"clientID" bson:"clientID"`
+    APIKey         string `json:"apiKey" bson:"apiKey"`
+    Endpoint       string `json:"endpoint" bson:"endpoint"`
+    PollingPeriod  connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
+```
+
+#### Sandbox defaults
+```json
+{
+    "clientID": "clientID",
+    "apiKey": "apiKey",
+    "endpoint": "https://api.sandbox.mangopay.com",
+    "pollingPeriod": "2m"
+}
+```
+
+#### Production defaults
+```json
+{
+    "clientID": "clientID",
+    "apiKey": "apiKey",
+    "endpoint": "endpoint",
+    "pollingPeriod": "2m"
+}
+```
+
+### Moneycorp
+
+Docs: [https://corpapi.moneycorp.com/redoc/index.html](https://corpapi.moneycorp.com/redoc/index.html)
+
+```golang
+    ClientID       string `json:"clientID" bson:"clientID"`
+    APIKey         string `json:"apiKey" bson:"apiKey"`
+    Endpoint       string `json:"endpoint" bson:"endpoint"`
+    PollingPeriod  connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
+```
+
+#### Sandbox defaults
+```json
+{
+    "clientID": "clientID",
+    "apiKey": "apiKey",
+    "endpoint": "https://sandbox-corpapi.moneycorp.com",
+    "pollingPeriod": "2m"
+}
+```
+
+#### Production defaults
+```json
+{
+    "clientID": "clientID",
+    "apiKey": "apiKey",
+    "endpoint": "endpoint",
+    "pollingPeriod": "2m"
+}
+```

@@ -12,7 +12,7 @@ type CountAccountsRequest struct {
 	Address *string `queryParam:"style=form,explode=true,name=address"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-	// Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
+	// Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
 	Metadata map[string]interface{} `queryParam:"style=deepObject,explode=true,name=metadata"`
 }
 

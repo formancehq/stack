@@ -36,7 +36,7 @@ class ListAccountsRequest:
     No other parameters can be set when this parameter is set.
     """
     metadata: Optional[dict[str, str]] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'metadata', 'style': 'deepObject', 'explode': True }})
-    r"""Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below."""
+    r"""Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2"""
     page_size: Optional[int] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'pageSize', 'style': 'form', 'explode': True }})
     r"""The maximum number of results to return per page."""
     

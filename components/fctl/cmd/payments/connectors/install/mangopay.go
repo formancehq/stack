@@ -17,9 +17,11 @@ type PaymentsConnectorsMangoPayStore struct {
 	ConnectorName string `json:"connectorName"`
 }
 type PaymentsConnectorsMangoPayController struct {
-	store           *PaymentsConnectorsMangoPayStore
-	endpointFlag    string
-	defaultEndpoint string
+	store                *PaymentsConnectorsMangoPayStore
+	endpointFlag         string
+	defaultEndpoint      string
+	pollingPeriodFlag    string
+	defaultpollingPeriod string
 }
 
 func NewDefaultPaymentsConnectorsMangoPayStore() *PaymentsConnectorsMangoPayStore {
@@ -30,9 +32,11 @@ func NewDefaultPaymentsConnectorsMangoPayStore() *PaymentsConnectorsMangoPayStor
 }
 func NewPaymentsConnectorsMangoPayController() *PaymentsConnectorsMangoPayController {
 	return &PaymentsConnectorsMangoPayController{
-		store:           NewDefaultPaymentsConnectorsMangoPayStore(),
-		endpointFlag:    "endpoint",
-		defaultEndpoint: "https://api.sandbox.mangopay.com",
+		store:                NewDefaultPaymentsConnectorsMangoPayStore(),
+		endpointFlag:         "endpoint",
+		defaultEndpoint:      "https://api.sandbox.mangopay.com",
+		pollingPeriodFlag:    "polling-period",
+		defaultpollingPeriod: "2m",
 	}
 }
 
@@ -42,6 +46,7 @@ func NewMangoPayCommand() *cobra.Command {
 		fctl.WithShortDescription("Install a MangoPay connector"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
+		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
 		fctl.WithController[*PaymentsConnectorsMangoPayStore](c),
 	)
 }
@@ -78,9 +83,10 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorMangopay,
 		RequestBody: shared.MangoPayConfig{
-			ClientID: args[0],
-			APIKey:   args[1],
-			Endpoint: fctl.GetString(cmd, c.endpointFlag),
+			ClientID:      args[0],
+			APIKey:        args[1],
+			Endpoint:      fctl.GetString(cmd, c.endpointFlag),
+			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)

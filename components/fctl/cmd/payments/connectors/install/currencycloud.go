@@ -17,9 +17,11 @@ type PaymentsConnectorsCurrencyCloudStore struct {
 	ConnectorName string `json:"connectorName"`
 }
 type PaymentsConnectorsCurrencyCloudController struct {
-	store           *PaymentsConnectorsCurrencyCloudStore
-	endpointFlag    string
-	defaultEndpoint string
+	store                *PaymentsConnectorsCurrencyCloudStore
+	endpointFlag         string
+	defaultEndpoint      string
+	pollingPeriodFlag    string
+	defaultpollingPeriod string
 }
 
 var _ fctl.Controller[*PaymentsConnectorsCurrencyCloudStore] = (*PaymentsConnectorsCurrencyCloudController)(nil)
@@ -32,9 +34,11 @@ func NewDefaultPaymentsConnectorsCurrencyCloudStore() *PaymentsConnectorsCurrenc
 
 func NewPaymentsConnectorsCurrencyCloudController() *PaymentsConnectorsCurrencyCloudController {
 	return &PaymentsConnectorsCurrencyCloudController{
-		store:           NewDefaultPaymentsConnectorsCurrencyCloudStore(),
-		endpointFlag:    "endpoint",
-		defaultEndpoint: "https://devapi.currencycloud.com",
+		store:                NewDefaultPaymentsConnectorsCurrencyCloudStore(),
+		endpointFlag:         "endpoint",
+		defaultEndpoint:      "https://devapi.currencycloud.com",
+		pollingPeriodFlag:    "polling-period",
+		defaultpollingPeriod: "2m",
 	}
 }
 
@@ -44,6 +48,7 @@ func NewCurrencyCloudCommand() *cobra.Command {
 		fctl.WithShortDescription("Install a Currency Cloud connector"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
+		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
 		fctl.WithController[*PaymentsConnectorsCurrencyCloudStore](c),
 	)
 }
@@ -71,9 +76,10 @@ func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		RequestBody: shared.CurrencyCloudConfig{
-			APIKey:   args[1],
-			LoginID:  args[0],
-			Endpoint: endpoint,
+			APIKey:        args[1],
+			LoginID:       args[0],
+			Endpoint:      endpoint,
+			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
 		},
 		Connector: shared.ConnectorCurrencyCloud,
 	})

@@ -1,0 +1,40 @@
+---
+title: Mangopay Connector
+description: Learn how to use the Mangopay Connector to connect your Formance Stack with your Mangopay account.
+---
+import {StackCmd} from '@site/src/components/StackCmd';
+import ApiWarning from '../partials/_api_key.mdx';
+
+## Prerequisites
+
+Before you begin, you need to have a Mangopay account. If you don't have one, you can [sign up for a Mangopay account](https://mangopay.com/contact) here. Make sure you have a Mangopay clientID and API key, with the least amount of permissions required to access the functionality of the Mangopay Connector you plan to use.
+
+<ApiWarning/>
+
+## Setup
+
+<StackCmd>
+
+```shell
+read "CLIENT_ID"
+read "API_KEY"
+read "ENDPOINT"
+fctl payments connectors install mangopay $CLIENT_ID $API_KEY
+```
+
+```shell
+STACK="stack_123" \
+read "CLIENT_ID" && \
+read API_KEY && \
+read "ENDPOINT" && \
+echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/mangopay" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $TOKEN" \
+-d "{ \
+  \"clientID\": \"$CLIENT_ID\",
+  \"apiKey\": \"$API_KEY\", \
+  \"endpoint\": \"$ENDPOINT\" \
+}"
+```
+
+</StackCmd>

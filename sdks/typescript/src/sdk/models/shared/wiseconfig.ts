@@ -9,4 +9,14 @@ export class WiseConfig extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "apiKey" })
   apiKey: string;
+
+  /**
+   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+   *
+   * @remarks
+   *
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "pollingPeriod" })
+  pollingPeriod?: string;
 }

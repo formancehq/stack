@@ -17,11 +17,9 @@ type PaymentsConnectorsWiseStore struct {
 	ConnectorName string `json:"connectorName"`
 }
 type PaymentsConnectorsWiseController struct {
-	store                        *PaymentsConnectorsWiseStore
-	endpointFlag                 string
-	authorizationEndpointFlag    string
-	defaultEndpoint              string
-	defaultAuthorizationEndpoint string
+	store                *PaymentsConnectorsWiseStore
+	pollingPeriodFlag    string
+	defaultpollingPeriod string
 }
 
 var _ fctl.Controller[*PaymentsConnectorsWiseStore] = (*PaymentsConnectorsWiseController)(nil)
@@ -34,11 +32,9 @@ func NewDefaultPaymentsConnectorsWiseStore() *PaymentsConnectorsWiseStore {
 
 func NewPaymentsConnectorsWiseController() *PaymentsConnectorsWiseController {
 	return &PaymentsConnectorsWiseController{
-		store:                        NewDefaultPaymentsConnectorsWiseStore(),
-		endpointFlag:                 "endpoint",
-		authorizationEndpointFlag:    "authorization-endpoint",
-		defaultEndpoint:              "https://sandbox.Wise.com",
-		defaultAuthorizationEndpoint: "https://authorizationsandbox.Wiseconnect.com",
+		store:                NewDefaultPaymentsConnectorsWiseStore(),
+		pollingPeriodFlag:    "polling-period",
+		defaultpollingPeriod: "2m",
 	}
 }
 
@@ -47,6 +43,7 @@ func NewWiseCommand() *cobra.Command {
 	return fctl.NewCommand(internal.WiseConnector+" <api-key>",
 		fctl.WithShortDescription("Install a Wise connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
 		fctl.WithController[*PaymentsConnectorsWiseStore](c),
 	)
 }
@@ -68,7 +65,8 @@ func (c *PaymentsConnectorsWiseController) Run(cmd *cobra.Command, args []string
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		RequestBody: shared.WiseConfig{
-			APIKey: args[1],
+			APIKey:        args[1],
+			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
 		},
 		Connector: shared.ConnectorWise,
 	})

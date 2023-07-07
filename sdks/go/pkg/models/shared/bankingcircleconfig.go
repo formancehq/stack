@@ -6,7 +6,10 @@ type BankingCircleConfig struct {
 	AuthorizationEndpoint string `json:"authorizationEndpoint"`
 	Endpoint              string `json:"endpoint"`
 	Password              string `json:"password"`
-	UserCertificate       string `json:"userCertificate"`
-	UserCertificateKey    string `json:"userCertificateKey"`
-	Username              string `json:"username"`
+	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+	//
+	PollingPeriod      *string `json:"pollingPeriod,omitempty"`
+	UserCertificate    string  `json:"userCertificate"`
+	UserCertificateKey string  `json:"userCertificateKey"`
+	Username           string  `json:"username"`
 }

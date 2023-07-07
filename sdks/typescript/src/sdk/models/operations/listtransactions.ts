@@ -58,7 +58,7 @@ export class ListTransactionsRequest extends SpeakeasyBase {
   ledger: string;
 
   /**
-   * Filter transactions by metadata key value pairs.
+   * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
    */
   @SpeakeasyMetadata({
     data: "queryParam, style=deepObject;explode=true;name=metadata",
