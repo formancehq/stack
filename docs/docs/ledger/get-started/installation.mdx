@@ -2,75 +2,17 @@
 title: Quick Install
 description: How to install Formance Ledger for development.
 ---
-import HomebrewStackInstall from '../../fctl/partials/_install_homebrew.mdx';
-import BinaryInstall from '../../fctl/partials/_install_binary.mdx';
-import AptInstall from '../../fctl/partials/_install_apt.mdx';
+import Install from '../../fctl/partials/_install.mdx';
+import CreateStack from '../../partials/_create_stack.mdx';
 
 # Installation
 
 Interested in trying Formance Ledger out? The simplest way is to create yourself a Cloud Sandbox using the Formance CLI.
 
-Formance CLI is a command-line tool for creating and managing Formance deployments in the cloud. It will give you access for free to a whole Formance Stack in the cloud, including a Formance Ledger service. And, as you'd expect, it's available for Linux, macOS, and Windows.
-
 :::tip
-Formance Ledger can also be used and installed locally or deployed as a standalone component without bringing the whole Formance Stack to the party. You can find more details about installing it this way the ledger [reference](/ledger/operations/installation).
+Formance Ledger can also be used and installed locally or deployed as a standalone component without bringing the whole Formance Platform to the party. You can find more details about installing it this way the ledger [reference](/ledger/operations/installation).
 :::
 
-## Homebrew
+<Install />
 
-<HomebrewStackInstall />
-
-## Binary
-
-<BinaryInstall />
-
-## Debian/Ubuntu
-
-<AptInstall />
-
-<!-- :::info
-Consider renaming the executable `numary` (without the `.exe` suffix) to make it easier to type, and so the example commands in the rest of the tutorial will work without having to edit them.
-::: -->
-
-## Installation check
-
-You can check that Formance CLI was installed correctly by trying the following command:
-
-```shell
-fctl version
-```
-
-You should see something like
-
-```
-Version | 0.5.1
-Date    | 2022-11-14T11:09:43Z
-Commit  | 9fe16ac
-```
-
-If you don't, then recheck the steps above, or [reach out to us](/help) to ask for help.
-
-
-## Logging In
-
-Finally, you'll need to either log into or create your Formance Cloud account. You can do that from the CLI:
-
-```shell
-fctl login
-```
-
-This will take you to a page for creating an account or logging in to your existing account.
-
-## Creating your first stack
-
-Once you're logged in, you are able to create one stack for free, with as many ledgers as you want. You can do that with the following command:
-
-```shell
-fctl stack create helloworld
-```
-
-This will create a new stack called `helloworld` and set it as the default stack for your account. You can check that it was created successfully by running:
-
-```shell
-fctl stack list
-```
+<CreateStack />

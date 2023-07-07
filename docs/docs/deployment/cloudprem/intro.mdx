@@ -1,0 +1,44 @@
+---
+title: Formance CloudPrem
+---
+
+Formance CloudPrem is the easiest way to deploy Formance in a standardized way, while still. It relies on the usage of Kubernetes, and the Formance Operator to deploy and manage resources in your cluster.
+
+This sections details the specifics of deploying Formance as a CloudPrem Type I deployment, where the control plane is hosted by Formance, and the data plane is hosted in your own Kubernetes cluster.
+
+<!-- Estimated time: 4h — varies on your cloud provider specifics -->
+<!-- Experience required: Kubernetes, cloud provider -->
+
+:::info
+Deploying the control plane have not yet reached general availability, please reach out to us if that's something you want to do.
+:::
+
+## Requirements
+
+Before moving on to the installation, make sure you match the following prerequisites:
+
+* You have installed fctl, and authenticated it against your Formance account
+* You have a Kubernetes cluster available and ready to be used
+  <!-- * You have set up an ingress controller
+  * You have set up a load balancer, or can allow some inbound traffic to the cluster
+  * Either the ingress controller or the load balancer are set-up with SSL support -->
+* You have a publicly accessible domain name, on which you can create DNS records
+
+<!-- ## Architecture
+
+Formance cloud containers (control plane)
+Your private region (data plane)
+Your stacks
+
+-->
+
+## Installation
+
+In this section, we'll cover the steps to deploy Formance as a CloudPrem Type I deployment, covering in order:
+
+1. Cluster configuration
+2. Private region creation
+3. Operator deployment
+4. Stack creation
+
+After completing these four steps you'll have your own Formance stack — running its data plane in your Kubernetes cluster, in sync with the Formance Cloud control plane. Let's get started!

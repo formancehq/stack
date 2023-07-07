@@ -1,0 +1,40 @@
+---
+title: Your private region
+description: Learn how to setup a private region for Formance CloudPrem deployment
+---
+
+Every Formance resource deployed will belong to a stack, itself exising within a specific region. By creating a private region, we will provide a home for stacks that will be deployed on your own infrastructure.
+
+:::info
+Imagine being able to select `my-datacenter-1` instead of `eu-west-1` on AWS, and creating e.g. an EC2 instance there — to be deployed on your own machine, while still being managed by AWS. This is the essence of what private regions are about.
+:::
+
+<!-- Beyond the public regions made available on the Formance Cloud,  -->
+
+<!-- Private regions are a way to deploy Formance CloudPrem in your own infrastructure, while still being able to use the Formance Cloud management tools. It is a solution striving to provide the best of both worlds: the flexibility of a self-hosted solution, with the user experience of a managed service. -->
+
+## Creating a region
+
+The simplest way to create your private region is through fctl, issuing the following command:
+
+```bash
+fctl cloud regions create my_region
+```
+
+This will create a region within your organization, returning a region ID and a region secret in the process. You will need to keep these values at hand for the next steps.
+
+You can verify that the region was created by listing your private regions with the following command:
+
+```bash
+fctl cloud regions list
+```
+
+And inspect a your newly created region with:
+
+```bash
+fctl cloud regions show REGION_ID
+```
+
+## Summary
+
+We have now created a private region, which will be used to deploy Formance CloudPrem. Now comes the time to link that region to an actual Kubernetes cluster, using the Formance Operator.

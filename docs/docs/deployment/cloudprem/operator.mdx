@@ -1,0 +1,200 @@
+---
+title: Operator deployment
+description: How to install Formance Platform on K8S with Operator
+---
+import Warning from '../../stack/partials/installation/_complexity_warning.mdx';
+
+Private regions resources deployment are orchestrated by the Formance Kubernetes Operator, which waits for instructions from the Formance Cloud control plane and reconcile them against the cluster current state.
+
+This essentially means that the operator will be creating and maintaining pods, services, and other resources on your cluster for you. It is also the last mile of this setup guide before we get to actually use our private region — let's get started!
+
+## Setup
+
+We can now install the Formance Operator on our cluster using Helm, and bind it to our private region. We will first create a values file, with the following keys:
+
+<!-- agent, operator  -->
+
+* `REGION_ID`
+  * The private region identifier, as per given by fctl
+* `REGION_SECRET`
+  * The private region secret, as per given by fctl
+* `REGION_URL`
+  * The public base URL you want to assign to your private region
+  * Stacks created in this region will be assigned a subdomain in the form of `https://{organisationID}—{stackID}.{REGION_URL}`
+
+:::info
+Subdomains of `REGION_URL` will need to be publicly accessible in order to function properly with fctl and the Formance Cloud console.
+:::
+
+```yaml
+# region.values.yaml
+agent:
+  agent:
+    id: "REGION_ID"
+    baseUrl: "REGION_URL"
+    authentication:
+        clientID: "REGION_ID"
+        clientSecret: "REGION_SECRET"
+```
+
+With this file in place, we can deploy our private region using Helm:
+
+```bash
+helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
+--version 0.1.1 \
+--namespace formance-system \
+--create-namespace \
+--values region.values.yaml
+```
+
+## Custom resource definitions
+
+Two CRDs will be used by the Formance Operator to provision resources in our cluster: the configuration CRD, and the versions CRD.
+
+### Versions CRD
+
+The "Versions" CRD defines the versions that we want to deploy — this allows the operator to provision the created stacks with a fixed set of versions for each stack service.
+
+```yaml
+# versions.crd.yml
+apiVersion: stack.formance.com/v1beta3
+kind: Versions
+metadata:
+    name: default
+spec:
+    auth: latest
+    control: latest
+    gateway: latest
+    ledger: latest
+    orchestration: latest
+    payments: latest
+    search: latest
+    wallets: latest
+    webhooks: latest
+```
+
+:::tip
+Thanks to this CRD, you can also deploy a custom version of a service, including one you've modified yourself.
+:::
+
+Saving the CRD is as simple as running the following command:
+
+```bash
+kubectl apply -f versions.crd.yml
+```
+
+### Configuration CRD
+
+The "Configuration" CRD defines the configuration of our application. This includes configuration settings such as listening ports, environment variables, and secrets.
+
+```yaml
+# configuration.crd.yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Configuration
+metadata:
+  name: stacks
+spec:
+  broker:
+    nats:
+      url: NATS_URL
+  ingress:
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+  light: true
+  services:
+    auth:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    control: {}
+    ledger:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    orchestration:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    payments:
+      encryptionKey: DEFAULT_ENCRYPTION_KEY
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    search:
+      batching:
+        count: 50
+        period: 1s
+      elasticSearch:
+        host: ELASTICSEARCH_URL
+        pathPrefix: ''
+        port: 443
+        scheme: https
+        tls: {}
+    wallets:
+      debug: false
+      dev: false
+    webhooks:
+      debug: false
+      dev: false
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+  temporal:
+    address: TEMPORAL_ADDRESS
+    namespace: TEMPORAL_NAMESPACE
+    tls:
+      crt: TEMPORAL_TLS_CERT
+      key: TEMPORAL_TLS_KEY
+```
+
+Before saving the CRD, make sure to replace the following values with your own:
+
+-   `NATS_URL`: The URL of your NATS instance
+-   `POSTGRESQL_HOST`: The host of your PostgreSQL instance
+-   `POSTGRESQL_PORT`: The port of your PostgreSQL instance
+-   `POSTGRESQL_USERNAME`: The username of your PostgreSQL instance
+-   `POSTGRESQL_PASSWORD`: The password of your PostgreSQL instance
+-   `DEFAULT_ENCRYPTION_KEY`: The encryption key to use for the payments service
+-   `ELASTICSEARCH_URL`: The URL of your Elasticsearch instance
+
+And the following values if you want to use Temporal:
+-   `TEMPORAL_ADDRESS`: The address of your Temporal instance
+-   `TEMPORAL_NAMESPACE`: The namespace of your Temporal instance
+-   `TEMPORAL_TLS_CERT`: The TLS certificate of your Temporal instance
+-   `TEMPORAL_TLS_KEY`: The TLS key of your Temporal instance
+
+Saving the CRD is then simply done by running the following command:
+
+```bash
+kubectl apply -f configuration.crd.yml
+```
+
+
+## Liveness check
+
+We now have a private region running on our cluster — let's check that it is active, and that it has successfully bind itself to the Formance Cloud control plane. We can do so by inspecting the region with fctl:
+
+```
+fctl cloud regions show REGION_ID
+```
+
+If you see an `Active: Yes` line in the region description — congratulations! You have successfully linked your private region to the Formance Cloud control plane, through the Formance operator.
+
+:::tip
+You can see the resources involved in this setup by listing everything under the formance-system namespace with `kubectl get all -n formance-system`.
+:::

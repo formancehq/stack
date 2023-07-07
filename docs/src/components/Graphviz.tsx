@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import Graphviz from 'graphviz-react';
 import React from 'react';
 
-const PostingsGraph = ({ postings, caption }) => {
+const PostingsGraph = ({ postings, caption, additionnals =[] }) => {
   const graph : string[] = [];
 
   postings.map((posting) => {
@@ -13,15 +13,26 @@ const PostingsGraph = ({ postings, caption }) => {
 
     // Dot language is escaping semicolon from label.
     // To use semicolon as label we need to use dot special char <> encoding
-    if (splitSource.length > 0) {
-      source = `<${posting.source}>`;
-    }
-    if (splitDest.length > 0) {
-      destination = `<${posting.destination}>`;
-    }
+    source = `<${posting.source}>`;
+    destination = `<${posting.destination}>`;
 
+    const fillcolor = posting.fillcolor || 'white';
     const color = posting.color || 'black';
     const style = posting.style || 'solid';
+
+    const shape = posting.shape || 'ellipse';
+
+    graph.push(`${source} [
+      label="${posting.source}"
+      shape="${shape}"
+      fillcolor="${fillcolor}"
+    ];`);
+
+    graph.push(`${destination} [
+      label="${posting.destination}"
+      shape="${shape}"
+      fillcolor="${fillcolor}"
+    ];`);
 
     graph.push(`${source} -> ${destination} [
       label="${posting.asset} ${posting.amount}",
@@ -29,6 +40,19 @@ const PostingsGraph = ({ postings, caption }) => {
       color="${color}",
       style="${style}",
     ];`);
+
+    for (let additional of additionnals) {
+      const color = additional.color || 'black';
+      const style = additional.style || 'solid';
+
+      graph.push(`<${additional.from}> -> <${additional.to}> [
+        label="${additional.label || ''}",
+        color="${color}",
+        style="${style}",
+      ];`);
+    }
+
+    console.log(additionnals, graph);
   });
 
   const dot = `digraph {\nrankdir=LR\n${graph.join('\n')}\n}`;
@@ -49,7 +73,7 @@ const PostingsGraph = ({ postings, caption }) => {
           height: 300,
           fit: true,
           useWorker: false,
-          useSharedWorker: false,
+          // useSharedWorker: false,
         }}
         dot={dot}/>
       <Box sx={{

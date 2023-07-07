@@ -29,20 +29,19 @@ const sidebars = {
       items: [
         {
           type: 'doc',
-          id: 'stack/tutorials/installation',
+          id: 'getting-started/fctl-quick-start',
           customProps: {
             // icon: '💾',
           }
         },
         {
           type: 'doc',
-          id: 'help',
-          label: 'Getting Help',
+          id: 'guides/newSandbox',
         }
       ],
     },
     {
-      label: 'Services Reference',
+      label: 'Products',
       type: 'category',
       collapsible: true,
       collapsed: false,
@@ -357,10 +356,154 @@ const sidebars = {
             }
           ]
         },
+        {
+          label: 'Flows (beta)',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'flows/index',
+              label: 'Introduction',
+            },
+            {
+              type: 'doc',
+              id: 'flows/definition',
+              label: 'Workflows definition',
+            },
+            {
+              type: 'doc',
+              id: 'flows/execution',
+              label: 'Workflows execution',
+            },
+            {
+              type: 'category',
+              label: 'Stages reference',
+              collapsible: true,
+              collapsed: false,
+              items: [
+                {
+                  type: 'doc',
+                  id: 'flows/stages/send',
+                  label: 'Send',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/stages/wait-event',
+                  label: 'Waiting for events',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/stages/wait-delay',
+                  label: 'Waiting for a delay',
+                }
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Examples',
+              items: [
+                {
+                  type: 'doc',
+                  id: 'flows/examples/ledger-to-ledger',
+                  label: 'Ledger to Ledger',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/examples/payment-to-wallet',
+                  label: 'Payment to Wallet',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/examples/stripe-payout',
+                  label: 'Ledger to Payout',
+                }
+              ],
+            }
+          ],
+        }
       ]
     },
     {
-      label: 'Stack Reference',
+      type: 'category',
+      label: 'Deployment',
+      link: {
+        type: 'doc',
+        id: 'deployment/introduction',
+      },
+      items: [
+        // {
+        //   type: 'category',
+        //   label: 'Formance Cloud',
+        //   link: {
+        //     type: 'doc',
+        //     id: 'deployment/cloud/intro',
+        //   },
+        //   items: [
+        //     {
+        //       type: 'doc',
+        //       id: 'deployment/cloud/regions',
+        //       label: 'Regions',
+        //     }
+        //   ],
+        // },
+        {
+          type: 'category',
+          label: 'Formance CloudPrem',
+          link: { type: 'doc', id: 'deployment/cloudprem/intro' },
+          items: [
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/cluster-config',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/private-regions',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/operator',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/cloudprem/usage',
+            },
+          ],
+        },
+        // {
+        //   type: 'category',
+        //   label: 'Elements',
+        //   link: {
+        //     type: 'doc',
+        //     id: 'deployment/elements/intro',
+        //   },
+        //   items: [
+        //     {
+        //       type: 'doc',
+        //       id: 'deployment/elements/docker',
+        //       label: 'Docker',
+        //     },
+        //     {
+        //       type: 'doc',
+        //       id: 'deployment/elements/kubernetes',
+        //     }
+        //   ],
+        // },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'SDKs',
+      items: [
+        {
+          type: 'doc',
+          id: 'stack/sdk/index',
+        },
+      ],
+    },
+    {
+      label: 'Resources',
       type: 'category',
       collapsible: true,
       collapsed: true,
@@ -368,7 +511,6 @@ const sidebars = {
         {
           type: 'doc',
           id: 'stack/architecture',
-          label: 'Architecture',
         },
         {
           type: 'doc',
@@ -377,41 +519,10 @@ const sidebars = {
         },
         {
           type: 'doc',
-          id: 'stack/sdk/index',
-          label: 'SDKs',
-        },
-        {
-          type: 'doc',
-          id: 'stack/webhooks/index',
-          label: 'Webhooks',
-        },
-        {
-          type: 'doc',
           id: 'stack/unambiguous-monetary-notation',
           label: 'Monetary Notation (UMN)',
-        },
-        {
-          type: 'category',
-          label: 'Self-hosting',
-          items: [
-            {
-              type: 'doc',
-              id: 'stack/reference/docker',
-              label: 'Docker',
-            },
-            {
-              type: 'doc',
-              id: 'stack/reference/helm',
-              label: 'Kubernetes / Helm',
-            },
-            // {
-            //   type: 'doc',
-            //   id: 'stack/reference/production',
-            //   label: 'Production checklist',
-            // }
-          ],
-        },
-        // {
+        }
+//        // {
         //   type: 'doc',
         //   id: 'stack/telemetry/index',
         //   label: 'Telemetry',
@@ -419,44 +530,19 @@ const sidebars = {
       ],
     },
     {
-      label: 'Cloud',
-      type: 'category',
-      collapsible: true,
-      collapsed: true,
-      items: [
-        {
-          type: 'doc',
-          id: 'stack/fctl',
-          label: 'Formance CLI',
-        },
-        {
-          type: 'doc',
-          id: 'cloud/sandboxes',
-          label: 'Sandbox environment',
-        },
-        {
-          type: 'doc',
-          id: 'cloud/production',
-          label: 'Production environment',
-        },
-        {
-          type: 'doc',
-          id: 'cloud/authentication',
-          label: 'Authentication',
-        },
-        // {
-        //   type: 'category',
-        //   label: 'Conventions',
-        //   items: [
-        //     {
-        //       type: 'doc',
-        //       id: 'stack/unambiguous-monetary-notation',
-        //       label: 'Monetary Notation',
-        //     }
-        //   ],
-        // },
-      ],
+      type: 'doc',
+      id: 'help',
+      label: 'Getting Help',
     },
+    // {
+    //   label: 'Guides',
+    //   type: 'category',
+    //   collapsible: true,
+    //   collapsed: false,
+    //   items: [
+
+    //   ]
+    // },
   ],
 };
 

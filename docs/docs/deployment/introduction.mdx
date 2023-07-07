@@ -1,0 +1,50 @@
+---
+title: Deploying Formance
+description: Learn about the different deployment options for the Formance Platform.
+---
+
+With a modular and cloud-native architecture, the Formance Platform is designed to be deployed in a variety of ways depending on your requirements, ranging from fully managed to fully self-hosted. More details on the platform architecture can be found in the [Architecture](/stack/architecture) section.
+
+## Hosting options
+
+|                        | Formance Cloud | CloudPrem (Tier I)     | CloudPrem (Tier 2)     | Formance Elements      |
+|------------------------|----------------|------------------------|------------------------|------------------------|
+| Control plane (server) | Formance       | Formance               | Self-hosted            | _N/A_                  |
+| Control plane (client) | Formance       | Self-hosted            | Self-hosted            | Self-hosted            |
+| Data plane             | Formance       | Self-hosted            | Self-hosted            | Self-hosted            |
+
+### Formance Cloud
+
+Formance Cloud is a fully managed deployment of the Formance Platform, which is hosted and managed by Formance. It is the easiest way to get started, and the recommended deployment option for companies looking to minimize the infrastructure overhead of running the platform.
+
+This deployment option is available to all companies, as part of the Formance Cloud starter plan.
+
+Specifics of the Formance Cloud deployment are detailed in the [Formance Cloud](/deployment/cloud/regions) section.
+
+### CloudPrem (Tier I)
+
+CloudPrem (Tier I) is a hybrid deployment of the Formance Platform, in which the control plane is hosted and managed by Formance, while the data plane is self-hosted. It strives to provide the best of both worlds, by offering an experience close to Cloud in usage, while allowing for greater control over the data plane.
+
+This deployment option is available as part of the Formance Cloud Enterprise plan.
+
+Specifics of the CloudPrem (Tier I) deployment are detailed in the [CloudPrem](/deployment/cloudprem/private-regions) section.
+
+### CloudPrem (Tier II)
+
+CloudPrem (Tier II) is fully self-hosted deployment of the Formance Platform, in which both the control plane and the data plane are self-hosted on your infrastructure. This deployment method requires a greater level of technical expertise and effort, but provides the highest level of flexibility and control over the platform.
+
+:::info
+It is worth mentioning that upgrading from CloudPrem Tier I to CloudPrem Tier II can be done at a later stage if desired, thanks to the separation of the control plane and the data plane.
+:::
+
+Specifics of the CloudPrem (Tier I) deployment are detailed in the [CloudPrem](/deployment/cloudprem/private-regions) section.
+
+### Formance Elements
+
+Formance Elements is a community edition of the Formance Platform, which can be fully self-hosted. When deployed, it will exist as a headless deployment — fully detached from any control plane server. Support for Formance Elements is provided by the community.
+
+:::tip
+Components of the data plane are also available as standalone packages. As an example, you can self-host the Formance Ledger as a standalone package, which can live without the rest of the Formance Platform.
+:::
+
+Specifics of the Formance Elements deployment are detailed in the [Formance Elements](/deployment/elements/kubernetes) section.

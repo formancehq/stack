@@ -1,0 +1,57 @@
+---
+title: Creating a sandbox
+description: How to create a sandbox in Formance Platform.
+---
+import Install from '../fctl/partials/_install.mdx';
+
+The fastest way to get started with Formance Platform is to create a sandbox on Formance Cloud. Sandboxes are free, fully functional Formance Platform instances that you can use to design and develop your applications. Sandboxes are available to all users.
+
+:::caution
+Sandbox environments are not suitable for production use, and intended testing purposes only. Data persistence is not guaranteed, and data may be lost at any time without prior notice. They also enter a sleep mode after a prolonged period of inactivity, which can result in a longer startup time. If you need a production-ready managed cloud environment, please checkout the [Production Cloud](/cloud/production) section.
+:::
+
+
+## Prerequisites
+
+* Having installed the [Formance CLI](/getting-started/fctl-quick-start) on your machine
+* Having authenticated fctl against a Formance Cloud account
+
+## Creating a Sandbox
+
+Let's create a Cloud sandbox:
+
+```shell
+fctl stack create playground
+```
+
+You'll be prompted to select a region for your stack named `playground`. While multiple regions are available, you will need to select one ending with `-sandbox` in order to create a free sandbox type stack.
+
+Make sure to let the command a few seconds to complete: this will create and provision a sandbox deployment in your account, and your local fctl will be automatically authorized against it.
+
+You can now check that your sandbox was created successfully by running the following command:
+
+```shell
+fctl stack list
+fctl stack show --name=playground
+```
+
+## Using your Sandbox
+
+Now that you have a sandbox ready to be fiddled with, you can use it freely for test and development. The Formance CLI ships with a number of commands that you can use to interact with your sandbox from your terminal:
+
+```shell
+# let's commit an example transaction to the quickstart ledger,
+# increasing the balance of the @foo account by $1.00
+fctl ledger send world foo 100 USD/2 --ledger=quickstart
+
+# list transactions in the quickstart ledger
+fctl ledger transactions list --ledger=quickstart
+```
+
+## Managing your Sandbox
+
+Once you are done playing with your sandbox, you can delete it to free up resources. Accounts have a limitation of one active sandbox at any given time, so make sure to delete the sandboxes you are not using before creating a new one.
+
+```shell
+fctl stack delete --name=playground
+```
