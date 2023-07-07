@@ -18,6 +18,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type prompt struct {
+	promptColor   goprompt.Color
+	history       []string
+	userEmail     string
+	actualProfile string
+}
+
 func (p *prompt) completionsFromCommand(subCommand *cobra.Command, completionsArgs []string, d goprompt.Document) []goprompt.Suggest {
 
 	defer func() {
@@ -153,13 +160,6 @@ func (p *prompt) executePromptCommand(cmd *cobra.Command, t string) error {
 		return errors.New("malformed command")
 	}
 	return nil
-}
-
-type prompt struct {
-	promptColor   goprompt.Color
-	history       []string
-	userEmail     string
-	actualProfile string
 }
 
 func (p *prompt) refreshUserEmail(cmd *cobra.Command, cfg *fctl.Config) error {

@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 import dataclasses
-from ..shared import config as shared_config
+from ..shared import configinfo as shared_configinfo
 from dataclasses_json import Undefined, dataclass_json
 from sdk import utils
+from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -12,7 +13,5 @@ from sdk import utils
 class ConfigInfoResponse:
     r"""OK"""
     
-    config: shared_config.Config = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('config') }})
-    server: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('server') }})
-    version: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('version') }})
+    data: Optional[shared_configinfo.ConfigInfo] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data'), 'exclude': lambda f: f is None }})
     

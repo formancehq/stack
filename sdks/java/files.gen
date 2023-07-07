@@ -230,6 +230,7 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursorResponse
 lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursorResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AggregateBalancesResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConfigInfoResponse.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/ConfigInfo.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/Config.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/LedgerStorage.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/LedgerInfoResponse.java

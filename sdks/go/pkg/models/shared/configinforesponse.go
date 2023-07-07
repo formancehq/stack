@@ -4,7 +4,5 @@ package shared
 
 // ConfigInfoResponse - OK
 type ConfigInfoResponse struct {
-	Config  Config `json:"config"`
-	Server  string `json:"server"`
-	Version string `json:"version"`
+	Data *ConfigInfo `json:"data,omitempty"`
 }

@@ -1,6 +1,7 @@
 package fctl
 
 import (
+	"errors"
 	"os/exec"
 	"runtime"
 )
@@ -25,6 +26,15 @@ func Prepend[V any](array []V, items ...V) []V {
 	return append(items, array...)
 }
 
+func ContainValue[V comparable](array []V, value V) bool {
+	for _, v := range array {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
 func Open(url string) error {
 	var (
 		cmd  string
@@ -45,6 +55,5 @@ func Open(url string) error {
 		args = append(args, url)
 		return exec.Command(cmd, args...).Start()
 	}
-	Printfln("Unable to find a browser, please open the following link: %s", url)
-	return nil
+	return errors.New("error_opening_browser")
 }

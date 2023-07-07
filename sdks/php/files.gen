@@ -219,6 +219,7 @@ src/Models/Shared/BalancesCursorResponseCursor.php
 src/Models/Shared/BalancesCursorResponse.php
 src/Models/Shared/AggregateBalancesResponse.php
 src/Models/Shared/ConfigInfoResponse.php
+src/Models/Shared/ConfigInfo.php
 src/Models/Shared/Config.php
 src/Models/Shared/LedgerStorage.php
 src/Models/Shared/LedgerInfoResponse.php

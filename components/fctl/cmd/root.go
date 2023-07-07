@@ -12,11 +12,14 @@ import (
 	"github.com/formancehq/fctl/cmd/auth"
 	"github.com/formancehq/fctl/cmd/cloud"
 	"github.com/formancehq/fctl/cmd/ledger"
+	"github.com/formancehq/fctl/cmd/login"
 	"github.com/formancehq/fctl/cmd/orchestration"
 	"github.com/formancehq/fctl/cmd/payments"
 	"github.com/formancehq/fctl/cmd/profiles"
 	"github.com/formancehq/fctl/cmd/search"
 	"github.com/formancehq/fctl/cmd/stack"
+	"github.com/formancehq/fctl/cmd/ui"
+	"github.com/formancehq/fctl/cmd/version"
 	"github.com/formancehq/fctl/cmd/wallets"
 	"github.com/formancehq/fctl/cmd/webhooks"
 	"github.com/formancehq/fctl/membershipclient"
@@ -38,9 +41,9 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithShortDescription("Formance Control CLI"),
 		fctl.WithSilenceUsage(),
 		fctl.WithChildCommands(
-			NewUICommand(),
-			NewVersionCommand(),
-			NewLoginCommand(),
+			ui.NewCommand(),
+			version.NewCommand(),
+			login.NewCommand(),
 			NewPromptCommand(),
 			ledger.NewCommand(),
 			payments.NewCommand(),
@@ -56,10 +59,11 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentStringPFlag(fctl.ProfileFlag, "p", "", "config profile to use"),
 		fctl.WithPersistentStringPFlag(fctl.FileFlag, "c", fmt.Sprintf("%s/.formance/fctl.config", homedir), "Debug mode"),
 		fctl.WithPersistentBoolPFlag(fctl.DebugFlag, "d", false, "Debug mode"),
+		fctl.WithPersistentStringPFlag(fctl.OutputFlag, "o", "plain", "Output format (plain, json)"),
 		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
 		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
 	)
-	cmd.Version = Version
+	cmd.Version = version.Version
 	cmd.RegisterFlagCompletionFunc(fctl.ProfileFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		cfg, err := fctl.GetConfig(cmd)
 		if err != nil {

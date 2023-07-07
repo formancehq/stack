@@ -141,6 +141,7 @@ pkg/models/shared/accountwithvolumesandbalances.go
 pkg/models/shared/balancescursorresponse.go
 pkg/models/shared/aggregatebalancesresponse.go
 pkg/models/shared/configinforesponse.go
+pkg/models/shared/configinfo.go
 pkg/models/shared/config.go
 pkg/models/shared/ledgerstorage.go
 pkg/models/shared/ledgerinforesponse.go

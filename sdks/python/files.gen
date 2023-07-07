@@ -135,6 +135,7 @@ src/sdk/models/shared/accountwithvolumesandbalances.py
 src/sdk/models/shared/balancescursorresponse.py
 src/sdk/models/shared/aggregatebalancesresponse.py
 src/sdk/models/shared/configinforesponse.py
+src/sdk/models/shared/configinfo.py
 src/sdk/models/shared/config.py
 src/sdk/models/shared/ledgerstorage.py
 src/sdk/models/shared/ledgerinforesponse.py

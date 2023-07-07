@@ -146,6 +146,7 @@ src/sdk/models/shared/accountwithvolumesandbalances.ts
 src/sdk/models/shared/balancescursorresponse.ts
 src/sdk/models/shared/aggregatebalancesresponse.ts
 src/sdk/models/shared/configinforesponse.ts
+src/sdk/models/shared/configinfo.ts
 src/sdk/models/shared/config.ts
 src/sdk/models/shared/ledgerstorage.ts
 src/sdk/models/shared/ledgerinforesponse.ts

@@ -1,8 +1,10 @@
 package fctl
 
 import (
+	"encoding/json"
 	"fmt"
 
+	"github.com/TylerBrock/colorjson"
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"
@@ -14,12 +16,55 @@ const (
 	stackFlag              = "stack"
 	organizationFlag       = "organization"
 	DefaultSegmentWriteKey = ""
+	outputFlag             = "output"
 )
 
 var (
 	ErrOrganizationNotSpecified   = errors.New("organization not specified")
 	ErrMultipleOrganizationsFound = errors.New("found more than one organization and no organization specified")
 )
+
+type StackOrganizationConfig struct {
+	OrganizationID string
+	Stack          *membershipclient.Stack
+	Config         *Config
+}
+
+func GetStackOrganizationConfig(cmd *cobra.Command) (*StackOrganizationConfig, error) {
+	cfg, err := GetConfig(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	organizationID, err := ResolveOrganizationID(cmd, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	stack, err := ResolveStack(cmd, cfg, organizationID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &StackOrganizationConfig{
+		OrganizationID: organizationID,
+		Stack:          stack,
+		Config:         cfg,
+	}, nil
+}
+
+func GetStackOrganizationConfigApprobation(cmd *cobra.Command, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
+	soc, err := GetStackOrganizationConfig(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	if !CheckStackApprobation(cmd, soc.Stack, disclaimer, args...) {
+		return nil, ErrMissingApproval
+	}
+
+	return soc, nil
+}
 
 func GetSelectedOrganization(cmd *cobra.Command) string {
 	return GetString(cmd, organizationFlag)
@@ -171,6 +216,73 @@ func WithHidden() CommandOptionFn {
 func WithRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = fn
+	}
+}
+
+func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.PreRunE = fn
+	}
+}
+
+func WithController[T any](c Controller[T]) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.RunE = func(cmd *cobra.Command, args []string) error {
+			renderable, err := c.Run(cmd, args)
+
+			// If the controller return an argument error, we want to print the usage
+			// of the command instead of the error message.
+			// if errors.Is(err, ErrArgument) {
+			// 	_ = cmd.help()
+			// 	return nil
+			// }
+
+			if err != nil {
+				return err
+			}
+
+			err = WithRender(cmd, args, c, renderable)
+
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}
+	}
+}
+func WithRender[T any](cmd *cobra.Command, args []string, c Controller[T], r Renderable) error {
+	flags := GetString(cmd, OutputFlag)
+
+	switch flags {
+	case "json":
+		// Inject into export struct
+		export := ExportedData{
+			Data: c.GetStore(),
+		}
+
+		// Marshal to JSON then print to stdout
+		out, err := json.Marshal(export)
+		if err != nil {
+			return err
+		}
+
+		raw := make(map[string]any)
+		if err := json.Unmarshal(out, &raw); err == nil {
+			f := colorjson.NewFormatter()
+			f.Indent = 2
+			colorized, err := f.Marshal(raw)
+			if err != nil {
+				panic(err)
+			}
+			cmd.OutOrStdout().Write(colorized)
+			return nil
+		} else {
+			cmd.OutOrStdout().Write(out)
+			return nil
+		}
+	default:
+		return r.Render(cmd, args)
 	}
 }
 
