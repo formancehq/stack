@@ -5,7 +5,8 @@ option go_package = "github.com/formancehq/membership/internal/grpc/generated";
 package server;
 
 service Server {
-  rpc Connect(ConnectRequest) returns (stream ConnectResponse) {}
+  rpc Connect(ConnectRequest) returns (stream Order) {}
+  rpc Join(stream StatusChanged) returns (stream Order) {}
 }
 
 message ConnectRequest {
@@ -15,7 +16,7 @@ message ConnectRequest {
   bool production = 4;
 }
 
-message ConnectResponse {
+message Order {
   oneof message {
     Connected connected = 1;
     Stack existingStack = 2;
@@ -37,6 +38,16 @@ message Stack {
   AuthConfig authConfig = 3;
   repeated AuthClient staticClients = 4;
   StargateConfig stargateConfig = 5;
+}
+
+enum StackStatus {
+  Progressing = 0;
+  Ready = 1;
+}
+
+message StatusChanged {
+  string stackId = 1;
+  StackStatus status = 2;
 }
 
 message StargateConfig {

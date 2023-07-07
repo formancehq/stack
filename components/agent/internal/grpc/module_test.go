@@ -17,14 +17,15 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/watch"
 )
 
 type mockServer struct {
 	generated.UnimplementedServerServer
-	connectServer generated.Server_ConnectServer
+	connectServer generated.Server_JoinServer
 }
 
-func (m *mockServer) Connect(request *generated.ConnectRequest, server generated.Server_ConnectServer) error {
+func (m *mockServer) Join(server generated.Server_JoinServer) error {
 	m.connectServer = server
 	<-server.Context().Done()
 	return nil
@@ -32,6 +33,10 @@ func (m *mockServer) Connect(request *generated.ConnectRequest, server generated
 
 type k8sClient struct {
 	stacks map[string]*v1beta3.Stack
+}
+
+func (k *k8sClient) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+	return watch.NewFake(), nil
 }
 
 func (k *k8sClient) Get(ctx context.Context, name string, options metav1.GetOptions) (*v1beta3.Stack, error) {
@@ -114,8 +119,8 @@ func TestModule(t *testing.T) {
 			Id:     uuid.NewString(),
 		}},
 	}
-	require.NoError(t, mockServer.connectServer.Send(&generated.ConnectResponse{
-		Message: &generated.ConnectResponse_ExistingStack{
+	require.NoError(t, mockServer.connectServer.Send(&generated.Order{
+		Message: &generated.Order_ExistingStack{
 			ExistingStack: &createdStack,
 		},
 	}))
