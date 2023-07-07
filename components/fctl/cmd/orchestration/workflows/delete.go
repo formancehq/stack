@@ -10,54 +10,85 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type WorkflowsDeleteStore struct {
+	WorkflowId string `json:"workflowId"`
+	Success    bool   `json:"success"`
+}
+type WorkflowsDeleteController struct {
+	store *WorkflowsDeleteStore
+}
+
+var _ fctl.Controller[*WorkflowsDeleteStore] = (*WorkflowsDeleteController)(nil)
+
+func NewDefaultWorkflowsDeleteStore() *WorkflowsDeleteStore {
+	return &WorkflowsDeleteStore{}
+}
+
+func NewWorkflowsDeleteController() *WorkflowsDeleteController {
+	return &WorkflowsDeleteController{
+		store: NewDefaultWorkflowsDeleteStore(),
+	}
+}
 func NewDeleteCommand() *cobra.Command {
 	return fctl.NewCommand("delete <workflow-id>",
 		fctl.WithAliases("del", "d"),
 		fctl.WithShortDescription("Soft delete a workflow"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
-
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return errors.Wrap(err, "retrieving config")
-			}
-
-			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-			if err != nil {
-				return err
-			}
-
-			client, err := fctl.NewStackClient(cmd, cfg, stack)
-			if err != nil {
-				return errors.Wrap(err, "creating stack client")
-			}
-
-			response, err := client.Orchestration.DeleteWorkflow(
-				cmd.Context(),
-				operations.DeleteWorkflowRequest{
-					FlowID: args[0],
-				},
-			)
-
-			if err != nil {
-				return err
-			}
-
-			if response.Error != nil {
-				return fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
-			}
-
-			if response.StatusCode >= 300 {
-				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
-			}
-
-			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow %s deleted!", args[0])
-			return nil
-		}),
+		fctl.WithController[*WorkflowsDeleteStore](NewWorkflowsDeleteController()),
 	)
+}
+
+func (c *WorkflowsDeleteController) GetStore() *WorkflowsDeleteStore {
+	return c.store
+}
+
+func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	cfg, err := fctl.GetConfig(cmd)
+	if err != nil {
+		return nil, errors.Wrap(err, "retrieving config")
+	}
+
+	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	if err != nil {
+		return nil, errors.Wrap(err, "creating stack client")
+	}
+
+	response, err := client.Orchestration.DeleteWorkflow(
+		cmd.Context(),
+		operations.DeleteWorkflowRequest{
+			FlowID: args[0],
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if response.Error != nil {
+		return nil, fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
+	}
+
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
+
+	c.store.WorkflowId = args[0]
+	c.store.Success = true
+
+	return c, nil
+}
+
+func (c *WorkflowsDeleteController) Render(cmd *cobra.Command, args []string) error {
+	pterm.Success.WithShowLineNumber().Printfln("Workflow %s Deleted!", c.store.WorkflowId)
+	return nil
 }
