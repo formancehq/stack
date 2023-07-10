@@ -81,7 +81,7 @@ func (c *serverClient) Join(ctx context.Context, opts ...grpc.CallOption) (Serve
 }
 
 type Server_JoinClient interface {
-	Send(*StatusChanged) error
+	Send(*Message) error
 	Recv() (*Order, error)
 	grpc.ClientStream
 }
@@ -90,7 +90,7 @@ type serverJoinClient struct {
 	grpc.ClientStream
 }
 
-func (x *serverJoinClient) Send(m *StatusChanged) error {
+func (x *serverJoinClient) Send(m *Message) error {
 	return x.ClientStream.SendMsg(m)
 }
 
@@ -161,7 +161,7 @@ func _Server_Join_Handler(srv interface{}, stream grpc.ServerStream) error {
 
 type Server_JoinServer interface {
 	Send(*Order) error
-	Recv() (*StatusChanged, error)
+	Recv() (*Message, error)
 	grpc.ServerStream
 }
 
@@ -173,8 +173,8 @@ func (x *serverJoinServer) Send(m *Order) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *serverJoinServer) Recv() (*StatusChanged, error) {
-	m := new(StatusChanged)
+func (x *serverJoinServer) Recv() (*Message, error) {
+	m := new(Message)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}

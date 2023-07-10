@@ -6,7 +6,7 @@ package server;
 
 service Server {
   rpc Connect(ConnectRequest) returns (stream Order) {}
-  rpc Join(stream StatusChanged) returns (stream Order) {}
+  rpc Join(stream Message) returns (stream Order) {}
 }
 
 message ConnectRequest {
@@ -28,9 +28,18 @@ message Order {
   }
 }
 
+message Message {
+  oneof message {
+    StatusChanged statusChanged = 1;
+    Pong pong = 2;
+  }
+}
+
 message Connected {}
 
 message Ping {}
+
+message Pong {}
 
 message Stack {
   string clusterName = 1;
