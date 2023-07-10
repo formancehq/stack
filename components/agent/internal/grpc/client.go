@@ -216,14 +216,18 @@ func (client *client) Start(ctx context.Context) error {
 		case k8sUpdate := <-watcher.ResultChan():
 			stack := k8sUpdate.Object.(*v1beta3.Stack)
 			sharedlogging.FromContext(ctx).Infof("Got update for stack '%s'", stack.Name)
-			if err := client.connectClient.SendMsg(&generated.StatusChanged{
-				StackId: stack.Name,
-				Status: func() generated.StackStatus {
-					if stack.IsReady() {
-						return generated.StackStatus_Ready
-					}
-					return generated.StackStatus_Progressing
-				}(),
+			if err := client.connectClient.SendMsg(&generated.Message{
+				Message: &generated.Message_StatusChanged{
+					StatusChanged: &generated.StatusChanged{
+						StackId: stack.Name,
+						Status: func() generated.StackStatus {
+							if stack.IsReady() {
+								return generated.StackStatus_Ready
+							}
+							return generated.StackStatus_Progressing
+						}(),
+					},
+				},
 			}); err != nil {
 				sharedlogging.FromContext(ctx).Errorf("Unable to send stack status to server: %s", err)
 			}
@@ -235,62 +239,63 @@ func (client *client) Start(ctx context.Context) error {
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
 						if _, err := client.k8sClient.Create(ctx, crd); err != nil {
-							sharedlogging.FromContext(ctx).Errorf("creating stack cluster side: %s", err)
+							sharedlogging.FromContext(ctx).Errorf("Creating stack cluster side: %s", err)
+							continue
 						}
-						sharedlogging.FromContext(ctx).Infof("stack %s created", crd.Name)
+						sharedlogging.FromContext(ctx).Infof("Stack %s created", crd.Name)
 						continue
 					}
-					sharedlogging.FromContext(ctx).Errorf("reading stack cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Reading stack cluster side: %s", err)
 					continue
 				}
 				existingStack.Spec = crd.Spec
 				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
-					sharedlogging.FromContext(ctx).Errorf("updating stack cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}
-				sharedlogging.FromContext(ctx).Infof("stack %s updated", crd.Name)
+				sharedlogging.FromContext(ctx).Infof("Stack %s updated", crd.Name)
 
 			case *generated.Order_DeletedStack:
 				if err := client.k8sClient.Delete(ctx, msg.DeletedStack.ClusterName); err != nil {
-					sharedlogging.FromContext(ctx).Errorf("creating deleting cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Creating deleting cluster side: %s", err)
 				}
-				sharedlogging.FromContext(ctx).Infof("stack %s deleted", msg.DeletedStack.ClusterName)
+				sharedlogging.FromContext(ctx).Infof("Stack %s deleted", msg.DeletedStack.ClusterName)
 			case *generated.Order_DisabledStack:
 				existingStack, err := client.k8sClient.Get(ctx, msg.DisabledStack.ClusterName, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
-						sharedlogging.FromContext(ctx).Infof("cannot disable not existing stack: %s", msg.DisabledStack.ClusterName)
+						sharedlogging.FromContext(ctx).Infof("Cannot disable not existing stack: %s", msg.DisabledStack.ClusterName)
 						continue
 					}
-					sharedlogging.FromContext(ctx).Errorf("reading stack cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Reading stack cluster side: %s", err)
 					continue
 				}
 				existingStack.Spec.Disabled = true
 				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
-					sharedlogging.FromContext(ctx).Errorf("updating stack cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}
-				sharedlogging.FromContext(ctx).Infof("stack %s disabled", msg.DisabledStack.ClusterName)
+				sharedlogging.FromContext(ctx).Infof("Stack %s disabled", msg.DisabledStack.ClusterName)
 			case *generated.Order_EnabledStack:
 				existingStack, err := client.k8sClient.Get(ctx, msg.EnabledStack.ClusterName, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
-						sharedlogging.FromContext(ctx).Infof("cannot enable not existing stack: %s", msg.EnabledStack.ClusterName)
+						sharedlogging.FromContext(ctx).Infof("Cannot enable not existing stack: %s", msg.EnabledStack.ClusterName)
 						continue
 					}
-					sharedlogging.FromContext(ctx).Errorf("reading stack cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Reading stack cluster side: %s", err)
 					continue
 				}
 				existingStack.Spec.Disabled = false
 				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
-					sharedlogging.FromContext(ctx).Errorf("updating stack cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}
-				sharedlogging.FromContext(ctx).Infof("stack %s enabled", msg.EnabledStack.ClusterName)
+				sharedlogging.FromContext(ctx).Infof("Stack %s enabled", msg.EnabledStack.ClusterName)
 			case *generated.Order_UpdateUsageReport:
 				total, err := CountDocument(msg.UpdateUsageReport.ClusterName)
 				if err != nil {
-					sharedlogging.FromContext(ctx).Errorf("counting documents: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Counting documents: %s", err)
 					continue
 				}
 
@@ -305,10 +310,19 @@ func (client *client) Start(ctx context.Context) error {
 				_, err = usagerecord.New(params)
 
 				if err != nil {
-					sharedlogging.FromContext(ctx).Errorf("creating usage record: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Creating usage record: %s", err)
 					continue
 				}
-				sharedlogging.FromContext(ctx).Infof("usage record: %s", total)
+				sharedlogging.FromContext(ctx).Infof("Usage record: %s", total)
+			case *generated.Order_Ping:
+				sharedlogging.FromContext(ctx).Debugf("Receive ping")
+				if err := client.connectClient.SendMsg(&generated.Message{
+					Message: &generated.Message_Pong{
+						Pong: &generated.Pong{},
+					},
+				}); err != nil {
+					sharedlogging.FromContext(ctx).Errorf("Unable to send pong to server: %s", err)
+				}
 			}
 		}
 	}
