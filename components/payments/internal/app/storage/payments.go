@@ -74,7 +74,7 @@ func (s *Storage) GetPayment(ctx context.Context, id string) (*models.Payment, e
 		Where("payment.id = ?", id).
 		Scan(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get payment %s: %w", id, err)
+		return nil, e(fmt.Sprintf("failed to get payment %s", id), err)
 	}
 
 	return &payment, nil

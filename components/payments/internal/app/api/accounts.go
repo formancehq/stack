@@ -76,7 +76,7 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 
 		ret, paginationDetails, err := repo.ListAccounts(r.Context(), pagination)
 		if err != nil {
-			handleServerError(w, r, err)
+			handleStorageErrors(w, r, err)
 
 			return
 		}

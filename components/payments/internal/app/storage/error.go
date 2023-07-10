@@ -15,7 +15,7 @@ func e(msg string, err error) error {
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return fmt.Errorf("%s: %w", msg, ErrNotFound)
+		return ErrNotFound
 	}
 
 	return fmt.Errorf("%s: %w", msg, err)

@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"sort"
 	"time"
 
@@ -162,13 +161,13 @@ func (s *Storage) ListTasks(ctx context.Context, provider models.ConnectorProvid
 
 		hasPrevious, err = pagination.hasPrevious(ctx, query, "task.created_at", firstReference)
 		if err != nil {
-			return nil, PaginationDetails{}, fmt.Errorf("failed to check if there is a previous page: %w", err)
+			return nil, PaginationDetails{}, e("failed to check if there is a previous page", err)
 		}
 	}
 
 	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
 	if err != nil {
-		return nil, PaginationDetails{}, fmt.Errorf("failed to get pagination details: %w", err)
+		return nil, PaginationDetails{}, e("failed to get pagination details", err)
 	}
 
 	return tasks, paginationDetails, nil

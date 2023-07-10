@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"runtime/debug"
 	"strconv"
@@ -15,6 +16,7 @@ import (
 	"github.com/formancehq/payments/internal/app/connectors/currencycloud"
 	"github.com/formancehq/payments/internal/app/connectors/mangopay"
 	"github.com/formancehq/payments/internal/app/connectors/moneycorp"
+	"github.com/formancehq/payments/internal/app/storage"
 
 	"github.com/formancehq/payments/internal/app/connectors/dummypay"
 	"github.com/formancehq/payments/internal/app/connectors/modulr"
@@ -75,12 +77,32 @@ func httpServeFunc(handler http.Handler) http.Handler {
 	})
 }
 
+func handleStorageErrors(w http.ResponseWriter, r *http.Request, err error) {
+	if errors.Is(err, storage.ErrNotFound) {
+		handleNotFoundError(w, r, err)
+	} else {
+		handleServerError(w, r, err)
+	}
+}
+
 func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 	logging.FromContext(r.Context()).Error(err)
 	// TODO: Opentracing
 	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "INTERNAL",
+		ErrorMessage: err.Error(),
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func handleNotFoundError(w http.ResponseWriter, r *http.Request, err error) {
+	w.WriteHeader(http.StatusNotFound)
+	logging.FromContext(r.Context()).Error(err)
+	err = json.NewEncoder(w).Encode(api.ErrorResponse{
+		ErrorCode:    "NOT_FOUND",
 		ErrorMessage: err.Error(),
 	})
 	if err != nil {

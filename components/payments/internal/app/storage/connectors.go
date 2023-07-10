@@ -31,12 +31,12 @@ func (s *Storage) GetConfig(ctx context.Context, connectorProvider models.Connec
 		Where("provider = ?", connectorProvider).
 		Scan(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get config for connector %s: %w", connectorProvider, err)
+		return e(fmt.Sprintf("failed to get config for connector %s", connectorProvider), err)
 	}
 
 	err = json.Unmarshal(connector.Config, destination)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal config for connector %s: %w", connectorProvider, err)
+		return e(fmt.Sprintf("failed to unmarshal config for connector %s", connectorProvider), err)
 	}
 
 	return nil

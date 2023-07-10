@@ -92,7 +92,7 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 
 		ret, paginationDetails, err := repo.ListPayments(r.Context(), pagination)
 		if err != nil {
-			handleServerError(w, r, err)
+			handleStorageErrors(w, r, err)
 
 			return
 		}
@@ -170,7 +170,7 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 
 		payment, err := repo.GetPayment(r.Context(), paymentID)
 		if err != nil {
-			handleServerError(w, r, err)
+			handleStorageErrors(w, r, err)
 
 			return
 		}

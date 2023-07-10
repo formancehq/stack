@@ -109,7 +109,7 @@ func (p Paginator) hasPrevious(ctx context.Context, query *bun.SelectQuery, colu
 
 	exists, err := query.Exists(ctx)
 	if err != nil {
-		return false, fmt.Errorf("error checking if previous page exists: %w", err)
+		return false, e("error checking if previous page exists", err)
 	}
 
 	return exists, nil
