@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/storage"
 
@@ -114,7 +112,7 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 				Adjustments:   make([]paymentAdjustment, len(ret[i].Adjustments)),
 			}
 
-			if ret[i].AccountID != uuid.Nil {
+			if ret[i].AccountID != nil {
 				data[i].AccountID = ret[i].AccountID.String()
 			}
 
@@ -185,7 +183,7 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			Adjustments:   make([]paymentAdjustment, len(payment.Adjustments)),
 		}
 
-		if payment.AccountID != uuid.Nil {
+		if payment.AccountID != nil {
 			data.AccountID = payment.AccountID.String()
 		}
 

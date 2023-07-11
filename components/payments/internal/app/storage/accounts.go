@@ -9,26 +9,28 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 )
 
-func (s *Storage) UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []models.Account) error {
+func (s *Storage) UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []*models.Account) error {
 	if len(accounts) == 0 {
 		return nil
 	}
 
-	accountsMap := make(map[string]models.Account)
+	accountsMap := make(map[string]*models.Account)
 	for _, account := range accounts {
 		accountsMap[account.Reference] = account
 	}
 
-	accounts = make([]models.Account, 0, len(accountsMap))
+	accounts = make([]*models.Account, 0, len(accountsMap))
 	for _, account := range accountsMap {
 		accounts = append(accounts, account)
 	}
 
 	_, err := s.db.NewInsert().
 		Model(&accounts).
-		On("CONFLICT (reference) DO UPDATE").
+		On("CONFLICT (id) DO UPDATE").
 		Set("provider = EXCLUDED.provider").
-		Set("type = EXCLUDED.type").
+		Set("raw_data = EXCLUDED.raw_data").
+		Set("default_currency = EXCLUDED.default_currency").
+		Set("account_name = EXCLUDED.account_name").
 		Exec(ctx)
 	if err != nil {
 		return e("failed to create accounts", err)

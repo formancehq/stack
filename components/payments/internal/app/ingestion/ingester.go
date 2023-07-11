@@ -25,7 +25,7 @@ type DefaultIngester struct {
 }
 
 type Repository interface {
-	UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []models.Account) error
+	UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []*models.Account) error
 	UpsertPayments(ctx context.Context, provider models.ConnectorProvider, payments []*models.Payment) error
 	UpdateTaskState(ctx context.Context, provider models.ConnectorProvider, descriptor models.TaskDescriptor, state json.RawMessage) error
 

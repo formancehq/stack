@@ -117,7 +117,7 @@ func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorP
 			if payments[i].Account != nil && payments[i].Account.Reference != "" {
 				for j := range accounts {
 					if accounts[j].Reference == payments[i].Account.Reference {
-						payments[i].AccountID = accounts[j].ID
+						payments[i].AccountID = &accounts[j].ID
 					}
 				}
 			}
