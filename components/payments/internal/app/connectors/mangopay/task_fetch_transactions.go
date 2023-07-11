@@ -63,6 +63,10 @@ func ingestBatch(
 					},
 					Provider: models.ConnectorProviderMangopay,
 				},
+				AccountID: &models.AccountID{
+					Reference: payment.CreditedWalletID,
+					Provider:  models.ConnectorProviderMangopay,
+				},
 				CreatedAt: time.Unix(payment.CreationDate, 0),
 				Reference: payment.Id,
 				Amount:    payment.DebitedFunds.Amount,

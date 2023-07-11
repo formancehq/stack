@@ -13,6 +13,7 @@ const (
 	taskNameMain              = "main"
 	taskNameFetchUsers        = "fetch-users"
 	taskNameFetchTransactions = "fetch-transactions"
+	taskNameFetchWallets      = "fetch-wallets"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -20,6 +21,7 @@ type TaskDescriptor struct {
 	Name          string              `json:"name" yaml:"name" bson:"name"`
 	Key           string              `json:"key" yaml:"key" bson:"key"`
 	UserID        string              `json:"userID" yaml:"userID" bson:"userID"`
+	WalletID      string              `json:"walletID" yaml:"walletID" bson:"walletID"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
 
@@ -44,7 +46,9 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameFetchUsers:
 			return taskFetchUsers(logger, mangopayClient)
 		case taskNameFetchTransactions:
-			return taskFetchTransactions(logger, mangopayClient, taskDescriptor.UserID)
+			return taskFetchTransactions(logger, mangopayClient, taskDescriptor.WalletID)
+		case taskNameFetchWallets:
+			return taskFetchWallets(logger, mangopayClient, taskDescriptor.UserID)
 		}
 
 		// This should never happen.

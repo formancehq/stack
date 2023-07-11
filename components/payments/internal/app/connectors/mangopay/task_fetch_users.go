@@ -25,16 +25,16 @@ func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 		for _, user := range users {
 			logger.Infof("scheduling fetch-transactions: %s", user.ID)
 
-			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
-				Name:   "Fetch transactions from client by user",
-				Key:    taskNameFetchTransactions,
+			walletsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+				Name:   "Fetch wallets from client by user",
+				Key:    taskNameFetchWallets,
 				UserID: user.ID,
 			})
 			if err != nil {
 				return err
 			}
 
-			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
+			err = scheduler.Schedule(ctx, walletsTask, models.TaskSchedulerOptions{
 				ScheduleOption: models.OPTIONS_RUN_NOW,
 				Restart:        true,
 			})
