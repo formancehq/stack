@@ -56,6 +56,11 @@ processes:
     environment:
       - "OTEL_SERVICE_NAME=payments"
 
+  payments-migrate:
+    command: payments migrate up --postgres-uri postgresql://formance:formance@postgres/payments?sslmode=disable
+    availability:
+      restart: always
+
   search:
     command: search serve --open-search-scheme http --open-search-service opensearch:9200 --es-indices formance
     availability:
