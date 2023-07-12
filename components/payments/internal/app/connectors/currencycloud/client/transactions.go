@@ -10,6 +10,7 @@ import (
 //nolint:tagliatelle // allow different styled tags in client
 type Transaction struct {
 	ID        string `json:"id"`
+	AccountID string `json:"account_id"`
 	Currency  string `json:"currency"`
 	Type      string `json:"type"`
 	Status    string `json:"status"`

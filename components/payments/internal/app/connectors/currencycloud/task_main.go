@@ -17,15 +17,15 @@ func taskMain(logger logging.Logger) task.Task {
 	) error {
 		logger.Info(taskNameMain)
 
-		taskUsers, err := models.EncodeTaskDescriptor(TaskDescriptor{
-			Name: "Fetch transactions from client",
-			Key:  taskNameFetchTransactions,
+		taskAccounts, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name: "Fetch accounts from client",
+			Key:  taskNameFetchAccounts,
 		})
 		if err != nil {
 			return err
 		}
 
-		err = scheduler.Schedule(ctx, taskUsers, models.TaskSchedulerOptions{
+		err = scheduler.Schedule(ctx, taskAccounts, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
 			Restart:        true,
 		})
