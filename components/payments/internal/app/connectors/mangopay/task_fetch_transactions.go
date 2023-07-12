@@ -63,10 +63,6 @@ func ingestBatch(
 					},
 					Provider: models.ConnectorProviderMangopay,
 				},
-				AccountID: &models.AccountID{
-					Reference: payment.CreditedWalletID,
-					Provider:  models.ConnectorProviderMangopay,
-				},
 				CreatedAt: time.Unix(payment.CreationDate, 0),
 				Reference: payment.Id,
 				Amount:    payment.DebitedFunds.Amount,
@@ -76,6 +72,20 @@ func ingestBatch(
 				Asset:     currency.FormatAsset(payment.DebitedFunds.Currency),
 				RawData:   rawData,
 			},
+		}
+
+		if payment.DebitedWalletID != "" {
+			batchElement.Payment.SourceAccountID = &models.AccountID{
+				Reference: payment.DebitedWalletID,
+				Provider:  models.ConnectorProviderMangopay,
+			}
+		}
+
+		if payment.CreditedWalletID != "" {
+			batchElement.Payment.DestinationAccountID = &models.AccountID{
+				Reference: payment.CreditedWalletID,
+				Provider:  models.ConnectorProviderMangopay,
+			}
 		}
 
 		batch = append(batch, batchElement)

@@ -88,7 +88,7 @@ func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
 				ID:              ret[i].ID.String(),
 				Reference:       ret[i].Reference,
 				CreatedAt:       ret[i].CreatedAt,
-				Provider:        ret[i].Provider,
+				Provider:        ret[i].Provider.String(),
 				DefaultCurrency: ret[i].DefaultCurrency,
 				AccountName:     ret[i].AccountName,
 				Raw:             ret[i].RawData,

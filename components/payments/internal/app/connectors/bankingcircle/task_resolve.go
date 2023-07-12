@@ -11,6 +11,7 @@ import (
 const (
 	taskNameMain          = "main"
 	taskNameFetchPayments = "fetch-payments"
+	taskNameFetchAccounts = "fetch-accounts"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -41,6 +42,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskMain(logger)
 		case taskNameFetchPayments:
 			return taskFetchPayments(logger, bankingCircleClient)
+		case taskNameFetchAccounts:
+			return taskFetchAccounts(logger, bankingCircleClient)
 		}
 
 		// This should never happen.

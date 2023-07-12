@@ -25,7 +25,7 @@ func NewEventSavedAccounts(accounts []*models.Account) events.EventMessage {
 			ID:              account.ID.String(),
 			CreatedAt:       account.CreatedAt,
 			Reference:       account.Reference,
-			Provider:        account.Provider,
+			Provider:        account.Provider.String(),
 			DefaultCurrency: account.DefaultCurrency,
 			AccountName:     account.AccountName,
 			Type:            string(account.Type),

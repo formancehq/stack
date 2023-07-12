@@ -18,14 +18,12 @@ type Account struct {
 	ID              AccountID `bun:",pk,nullzero"`
 	CreatedAt       time.Time `bun:",nullzero"`
 	Reference       string
-	Provider        string
+	Provider        ConnectorProvider
 	DefaultCurrency string // Is optional and default to ''
 	AccountName     string // Is optional and default to ''
 	Type            AccountType
 
 	RawData json.RawMessage
-
-	Payments []*Payment `bun:"rel:has-many,join:id=account_id"`
 }
 
 type AccountType string

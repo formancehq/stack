@@ -87,9 +87,9 @@ type Payment struct {
 
 	RawData json.RawMessage
 
-	AccountID *AccountID `bun:",nullzero"`
+	SourceAccountID      *AccountID `bun:",nullzero"`
+	DestinationAccountID *AccountID `bun:",nullzero"`
 
-	Account     *Account      `bun:"rel:has-one,join:account_id=id"`
 	Adjustments []*Adjustment `bun:"rel:has-many,join:id=payment_id"`
 	Metadata    []*Metadata   `bun:"rel:has-many,join:id=payment_id"`
 	Connector   *Connector    `bun:"rel:has-one,join:connector_id=id"`

@@ -58,7 +58,7 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 						},
 						CreatedAt:       time.Unix(wallet.CreationDate, 0),
 						Reference:       wallet.ID,
-						Provider:        string(models.ConnectorProviderMangopay),
+						Provider:        models.ConnectorProviderMangopay,
 						DefaultCurrency: wallet.Currency,
 						AccountName:     wallet.Description,
 						// Wallets are internal accounts on our side, since we
