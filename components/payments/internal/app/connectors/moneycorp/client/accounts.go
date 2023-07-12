@@ -8,42 +8,18 @@ import (
 	"strconv"
 )
 
-const (
-	pageSize = 100
-)
-
 type accountsResponse struct {
-	Accounts []account `json:"data"`
+	Accounts []*Account `json:"data"`
 }
 
-type account struct {
-	ID string `json:"id"`
+type Account struct {
+	ID         string `json:"id"`
+	Attributes struct {
+		AccountName string `json:"accountName"`
+	} `json:"attributes"`
 }
 
-func (c *Client) GetAllAccounts(ctx context.Context) ([]account, error) {
-	var accounts []account
-
-	for page := 0; ; page++ {
-		pagedAccounts, err := c.getAccounts(ctx, page, pageSize)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(pagedAccounts) == 0 {
-			break
-		}
-
-		accounts = append(accounts, pagedAccounts...)
-
-		if len(pagedAccounts) < pageSize {
-			break
-		}
-	}
-
-	return accounts, nil
-}
-
-func (c *Client) getAccounts(ctx context.Context, page int, pageSize int) ([]account, error) {
+func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Account, error) {
 	endpoint := fmt.Sprintf("%s/accounts", c.endpoint)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {
