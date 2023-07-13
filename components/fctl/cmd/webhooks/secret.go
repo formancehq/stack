@@ -36,7 +36,7 @@ func NewChangeSecretWebhookController() *ChangeSecretWebhookController {
 func (c *ChangeSecretWebhookController) GetStore() *ChangeSecretStore {
 	return c.store
 }
-func (c *ChangeSecretWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ChangeSecretWebhookController) Run() (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
@@ -91,7 +91,7 @@ func (c *ChangeSecretWebhookController) Run(cmd *cobra.Command, args []string) (
 	return c, nil
 }
 
-func (c *ChangeSecretWebhookController) Render(cmd *cobra.Command, args []string) error {
+func (c *ChangeSecretWebhookController) Render() error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
 		"Config '%s' updated successfully with new secret", c.store.ID)
 	return nil

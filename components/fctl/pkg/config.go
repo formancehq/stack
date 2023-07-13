@@ -2,9 +2,9 @@ package fctl
 
 import (
 	"encoding/json"
+	"flag"
 
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 )
 
 type persistedConfig struct {
@@ -107,16 +107,16 @@ func (c *Config) SetCurrentProfileName(s string) {
 	c.currentProfile = s
 }
 
-func GetConfig(cmd *cobra.Command) (*Config, error) {
-	return GetConfigManager(cmd).Load()
+func GetConfig(flagSet *flag.FlagSet) (*Config, error) {
+	return GetConfigManager(flagSet).Load()
 }
 
-func GetConfigManager(cmd *cobra.Command) *ConfigManager {
-	return NewConfigManager(GetString(cmd, FileFlag))
+func GetConfigManager(flagSet *flag.FlagSet) *ConfigManager {
+	return NewConfigManager(GetString(flagSet, FileFlag))
 }
 
-func GetCurrentProfileName(cmd *cobra.Command, config *Config) string {
-	if profile := GetString(cmd, ProfileFlag); profile != "" {
+func GetCurrentProfileName(flags *flag.FlagSet, config *Config) string {
+	if profile := GetString(flags, ProfileFlag); profile != "" {
 		return profile
 	}
 	currentProfileName := config.GetCurrentProfileName()
@@ -126,6 +126,6 @@ func GetCurrentProfileName(cmd *cobra.Command, config *Config) string {
 	return currentProfileName
 }
 
-func GetCurrentProfile(cmd *cobra.Command, cfg *Config) *Profile {
-	return cfg.GetProfileOrDefault(GetCurrentProfileName(cmd, cfg), DefaultMembershipURI)
+func GetCurrentProfile(flags *flag.FlagSet, cfg *Config) *Profile {
+	return cfg.GetProfileOrDefault(GetCurrentProfileName(flags, cfg), DefaultMembershipURI)
 }

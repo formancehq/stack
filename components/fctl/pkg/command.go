@@ -1,7 +1,9 @@
 package fctl
 
 import (
+	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 
 	"github.com/TylerBrock/colorjson"
@@ -30,18 +32,18 @@ type StackOrganizationConfig struct {
 	Config         *Config
 }
 
-func GetStackOrganizationConfig(cmd *cobra.Command) (*StackOrganizationConfig, error) {
-	cfg, err := GetConfig(cmd)
+func GetStackOrganizationConfig(flags *flag.FlagSet) (*StackOrganizationConfig, error) {
+	cfg, err := GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := ResolveOrganizationID(cmd, cfg)
+	organizationID, err := ResolveOrganizationID(flags, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := ResolveStack(cmd, cfg, organizationID)
+	stack, err := ResolveStack(flags, cfg, organizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -53,45 +55,45 @@ func GetStackOrganizationConfig(cmd *cobra.Command) (*StackOrganizationConfig, e
 	}, nil
 }
 
-func GetStackOrganizationConfigApprobation(cmd *cobra.Command, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
-	soc, err := GetStackOrganizationConfig(cmd)
+func GetStackOrganizationConfigApprobation(flags *flag.FlagSet, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
+	soc, err := GetStackOrganizationConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	if !CheckStackApprobation(cmd, soc.Stack, disclaimer, args...) {
+	if !CheckStackApprobation(flags, soc.Stack, disclaimer, args...) {
 		return nil, ErrMissingApproval
 	}
 
 	return soc, nil
 }
 
-func GetSelectedOrganization(cmd *cobra.Command) string {
-	return GetString(cmd, organizationFlag)
+func GetSelectedOrganization(flags *flag.FlagSet) string {
+	return GetString(flags, organizationFlag)
 }
 
-func RetrieveOrganizationIDFromFlagOrProfile(cmd *cobra.Command, cfg *Config) (string, error) {
-	if id := GetSelectedOrganization(cmd); id != "" {
+func RetrieveOrganizationIDFromFlagOrProfile(flags *flag.FlagSet, cfg *Config) (string, error) {
+	if id := GetSelectedOrganization(flags); id != "" {
 		return id, nil
 	}
 
-	if defaultOrganization := GetCurrentProfile(cmd, cfg).GetDefaultOrganization(); defaultOrganization != "" {
+	if defaultOrganization := GetCurrentProfile(flags, cfg).GetDefaultOrganization(); defaultOrganization != "" {
 		return defaultOrganization, nil
 	}
 	return "", ErrOrganizationNotSpecified
 }
 
-func ResolveOrganizationID(cmd *cobra.Command, cfg *Config) (string, error) {
-	if id, err := RetrieveOrganizationIDFromFlagOrProfile(cmd, cfg); err == nil {
+func ResolveOrganizationID(flags *flag.FlagSet, ctx context.Context, cfg *Config) (string, error) {
+	if id, err := RetrieveOrganizationIDFromFlagOrProfile(flags, cfg); err == nil {
 		return id, nil
 	}
 
-	client, err := NewMembershipClient(cmd, cfg)
+	client, err := NewMembershipClient(flags, ctx, cfg)
 	if err != nil {
 		return "", err
 	}
 
-	organizations, _, err := client.DefaultApi.ListOrganizations(cmd.Context()).Execute()
+	organizations, _, err := client.DefaultApi.ListOrganizations(ctx).Execute()
 	if err != nil {
 		return "", errors.Wrap(err, "listing organizations")
 	}
@@ -107,17 +109,17 @@ func ResolveOrganizationID(cmd *cobra.Command, cfg *Config) (string, error) {
 	return organizations.Data[0].Id, nil
 }
 
-func GetSelectedStackID(cmd *cobra.Command) string {
-	return GetString(cmd, stackFlag)
+func GetSelectedStackID(flags *flag.FlagSet) string {
+	return GetString(flags, stackFlag)
 }
 
-func ResolveStack(cmd *cobra.Command, cfg *Config, organizationID string) (*membershipclient.Stack, error) {
-	client, err := NewMembershipClient(cmd, cfg)
+func ResolveStack(flags *flag.FlagSet, ctx context.Context, cfg *Config, organizationID string) (*membershipclient.Stack, error) {
+	client, err := NewMembershipClient(flags, ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
-	if id := GetSelectedStackID(cmd); id != "" {
-		response, _, err := client.DefaultApi.ReadStack(cmd.Context(), organizationID, id).Execute()
+	if id := GetSelectedStackID(flags); id != "" {
+		response, _, err := client.DefaultApi.ReadStack(ctx, organizationID, id).Execute()
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +127,7 @@ func ResolveStack(cmd *cobra.Command, cfg *Config, organizationID string) (*memb
 		return response.Data, nil
 	}
 
-	stacks, _, err := client.DefaultApi.ListStacks(cmd.Context(), organizationID).Execute()
+	stacks, _, err := client.DefaultApi.ListStacks(ctx, organizationID).Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "listing stacks")
 	}
@@ -228,7 +230,7 @@ func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOption
 func WithController[T any](c Controller[T]) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
-			renderable, err := c.Run(cmd, args)
+			renderable, err := c.Run()
 
 			// If the controller return an argument error, we want to print the usage
 			// of the command instead of the error message.
@@ -241,7 +243,7 @@ func WithController[T any](c Controller[T]) CommandOptionFn {
 				return err
 			}
 
-			err = WithRender(cmd, args, c, renderable)
+			err = WithRender(c.GetFlags(), args, c, renderable)
 
 			if err != nil {
 				return err
@@ -251,10 +253,10 @@ func WithController[T any](c Controller[T]) CommandOptionFn {
 		}
 	}
 }
-func WithRender[T any](cmd *cobra.Command, args []string, c Controller[T], r Renderable) error {
-	flags := GetString(cmd, OutputFlag)
+func WithRender[T any](flags *flag.FlagSet, args []string, c Controller[T], r Renderable) error {
+	flag := GetString(flags, OutputFlag)
 
-	switch flags {
+	switch flag {
 	case "json":
 		// Inject into export struct
 		export := ExportedData{
@@ -275,14 +277,14 @@ func WithRender[T any](cmd *cobra.Command, args []string, c Controller[T], r Ren
 			if err != nil {
 				panic(err)
 			}
-			cmd.OutOrStdout().Write(colorized)
+			fmt.Print(string(colorized))
 			return nil
 		} else {
-			cmd.OutOrStdout().Write(out)
+			fmt.Print(out)
 			return nil
 		}
 	default:
-		return r.Render(cmd, args)
+		return r.Render()
 	}
 }
 
@@ -347,18 +349,20 @@ func NewStackCommand(use string, opts ...CommandOption) *cobra.Command {
 		)...,
 	)
 	cmd.RegisterFlagCompletionFunc("stack", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		cfg, err := GetConfig(cmd)
+		flags := ConvertPFlagSetToFlagSet(cmd.Flags())
+
+		cfg, err := GetConfig(flags)
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
-		profile := GetCurrentProfile(cmd, cfg)
+		profile := GetCurrentProfile(flags, cfg)
 
-		claims, err := profile.GetUserInfo(cmd)
+		claims, err := profile.GetUserInfo()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
 
-		selectedOrganization := GetSelectedOrganization(cmd)
+		selectedOrganization := GetSelectedOrganization(flags)
 		if selectedOrganization == "" {
 			selectedOrganization = profile.defaultOrganization
 		}
@@ -385,14 +389,14 @@ func NewMembershipCommand(use string, opts ...CommandOption) *cobra.Command {
 		)...,
 	)
 	cmd.RegisterFlagCompletionFunc("organization", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-
-		cfg, err := GetConfig(cmd)
+		flags := ConvertPFlagSetToFlagSet(cmd.Flags())
+		cfg, err := GetConfig(flags)
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
-		profile := GetCurrentProfile(cmd, cfg)
+		profile := GetCurrentProfile(flags, cfg)
 
-		claims, err := profile.GetUserInfo(cmd)
+		claims, err := profile.GetUserInfo()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
@@ -411,8 +415,11 @@ func NewCommand(use string, opts ...CommandOption) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: use,
 		PersistentPostRun: func(cmd *cobra.Command, args []string) {
-			if GetBool(cmd, TelemetryFlag) {
-				cfg, err := GetConfig(cmd)
+
+			flags := ConvertPFlagSetToFlagSet(cmd.Flags())
+
+			if GetBool(flags, TelemetryFlag) {
+				cfg, err := GetConfig(flags)
 				if err != nil {
 					return
 				}

@@ -4,19 +4,19 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
 
 	"github.com/TylerBrock/colorjson"
-	"github.com/spf13/cobra"
 )
 
-func GetHttpClient(cmd *cobra.Command, defaultHeaders map[string][]string) *http.Client {
+func GetHttpClient(flags *flag.FlagSet, defaultHeaders map[string][]string) *http.Client {
 	return NewHTTPClient(
-		GetBool(cmd, InsecureTlsFlag),
-		GetBool(cmd, DebugFlag),
+		GetBool(flags, InsecureTlsFlag),
+		GetBool(flags, DebugFlag),
 		defaultHeaders,
 	)
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"runtime/debug"
@@ -162,13 +163,13 @@ func (p *prompt) executePromptCommand(cmd *cobra.Command, t string) error {
 	return nil
 }
 
-func (p *prompt) refreshUserEmail(cmd *cobra.Command, cfg *fctl.Config) error {
-	profile := fctl.GetCurrentProfile(cmd, cfg)
+func (p *prompt) refreshUserEmail(flags *flag.FlagSet, cfg *fctl.Config) error {
+	profile := fctl.GetCurrentProfile(flags, cfg)
 	if !profile.IsConnected() {
 		p.userEmail = ""
 		return nil
 	}
-	userInfo, err := profile.GetUserInfo(cmd)
+	userInfo, err := profile.GetUserInfo()
 	if err != nil {
 		p.userEmail = ""
 		return nil
@@ -177,35 +178,36 @@ func (p *prompt) refreshUserEmail(cmd *cobra.Command, cfg *fctl.Config) error {
 	return nil
 }
 
-func (p *prompt) displayHeader(cmd *cobra.Command, cfg *fctl.Config) error {
-	header := fctl.GetCurrentProfileName(cmd, cfg)
+func (p *prompt) displayHeader(flags *flag.FlagSet, cfg *fctl.Config) error {
+	header := fctl.GetCurrentProfileName(flags, cfg)
 	if p.userEmail != "" {
 		header += " / " + p.userEmail
-		if organizationID := fctl.GetCurrentProfile(cmd, cfg).GetDefaultOrganization(); organizationID != "" {
+		if organizationID := fctl.GetCurrentProfile(flags, cfg).GetDefaultOrganization(); organizationID != "" {
 			header += " / " + organizationID
 		}
 	}
 	header += " #"
-	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln(header)
+	fctl.BasicTextCyan.WithWriter(os.Stdout).Printfln(header)
 	return nil
 }
 
 func (p *prompt) nextCommand(cmd *cobra.Command) error {
+	flags := fctl.ConvertPFlagSetToFlagSet(cmd.Flags())
 
-	cfg, err := fctl.GetConfig(cmd)
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return err
 	}
 
-	currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
+	currentProfileName := fctl.GetCurrentProfileName(flags, cfg)
 	if currentProfileName != p.actualProfile || p.userEmail == "" {
-		if err := p.refreshUserEmail(cmd, cfg); err != nil {
+		if err := p.refreshUserEmail(flags, cfg); err != nil {
 			return err
 		}
 		p.actualProfile = currentProfileName
 	}
 
-	if err := p.displayHeader(cmd, cfg); err != nil {
+	if err := p.displayHeader(flags, cfg); err != nil {
 		return err
 	}
 

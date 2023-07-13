@@ -1,12 +1,13 @@
 package fctl
 
 import (
+	"flag"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/iancoleman/strcase"
-	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 const (
@@ -19,8 +20,18 @@ const (
 	TelemetryFlag     = "telemetry"
 )
 
-func GetBool(cmd *cobra.Command, flagName string) bool {
-	v, err := cmd.Flags().GetBool(flagName)
+func GetBool(flags *flag.FlagSet, flagName string) bool {
+	flag := flags.Lookup(flagName)
+	if flag == nil {
+		return false
+	}
+
+	value := flag.Value.String()
+	if value == "" {
+		return false
+	}
+	v, err := strconv.ParseBool(value)
+
 	if err != nil {
 		fromEnv := strings.ToLower(os.Getenv(strcase.ToScreamingSnake(flagName)))
 		return fromEnv == "true" || fromEnv == "1"
@@ -28,17 +39,34 @@ func GetBool(cmd *cobra.Command, flagName string) bool {
 	return v
 }
 
-func GetString(cmd *cobra.Command, flagName string) string {
-	v, err := cmd.Flags().GetString(flagName)
-	if err != nil || v == "" {
+func GetString(flagSet *flag.FlagSet, flagName string) string {
+	flag := flagSet.Lookup(flagName)
+
+	if flag == nil {
+		return ""
+	}
+
+	v := flag.Value.String()
+	if v == "" {
 		return os.Getenv(strcase.ToScreamingSnake(flagName))
 	}
 	return v
 }
 
-func GetStringSlice(cmd *cobra.Command, flagName string) []string {
-	v, err := cmd.Flags().GetStringSlice(flagName)
-	if err != nil || len(v) == 0 {
+func GetStringSlice(flagSet *flag.FlagSet, flagName string) []string {
+
+	flag := flagSet.Lookup(flagName)
+	if flag == nil {
+		return []string{}
+	}
+
+	value := flag.Value.String()
+	v := strings.Split(value, " ")
+	if value == "" {
+		return []string{}
+	}
+
+	if len(v) == 0 {
 		envVar := os.Getenv(strcase.ToScreamingSnake(flagName))
 		if envVar == "" {
 			return []string{}
@@ -48,8 +76,19 @@ func GetStringSlice(cmd *cobra.Command, flagName string) []string {
 	return v
 }
 
-func GetInt(cmd *cobra.Command, flagName string) int {
-	v, err := cmd.Flags().GetInt(flagName)
+func GetInt(flagSet *flag.FlagSet, flagName string) int {
+
+	flag := flagSet.Lookup(flagName)
+	if flag == nil {
+		return 0
+	}
+
+	value := flag.Value.String()
+	if value == "" {
+		return 0
+	}
+
+	v, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
 		v := os.Getenv(strcase.ToScreamingSnake(flagName))
 		if v != "" {
@@ -61,7 +100,18 @@ func GetInt(cmd *cobra.Command, flagName string) int {
 		}
 		return 0
 	}
-	return v
+	return int(v)
+}
+
+func ConvertPFlagSetToFlagSet(pFlagSet *pflag.FlagSet) *flag.FlagSet {
+
+	flagSet := flag.NewFlagSet("fctl", flag.ExitOnError)
+
+	pFlagSet.VisitAll(func(f *pflag.Flag) {
+		flagSet.Var(f.Value, f.Name, f.Usage)
+	})
+
+	return flagSet
 }
 
 func Ptr[T any](t T) *T {

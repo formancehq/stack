@@ -1,13 +1,13 @@
 package fctl
 
 import (
+	"flag"
 	"fmt"
 	"strings"
 
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
-	"github.com/spf13/cobra"
 )
 
 var ErrMissingApproval = errors.New("Missing approval.")
@@ -30,21 +30,21 @@ func IsProtectedStack(stack *membershipclient.Stack) bool {
 	return stack.Metadata != nil && (stack.Metadata)[ProtectedStackMetadata] == "Yes"
 }
 
-func NeedConfirm(cmd *cobra.Command, stack *membershipclient.Stack) bool {
+func NeedConfirm(flags *flag.FlagSet, stack *membershipclient.Stack) bool {
 	if !IsProtectedStack(stack) {
 		return false
 	}
-	if GetBool(cmd, confirmFlag) {
+	if GetBool(flags, confirmFlag) {
 		return false
 	}
 	return true
 }
 
-func CheckStackApprobation(cmd *cobra.Command, stack *membershipclient.Stack, disclaimer string, args ...any) bool {
+func CheckStackApprobation(flags *flag.FlagSet, stack *membershipclient.Stack, disclaimer string, args ...any) bool {
 	if !IsProtectedStack(stack) {
 		return true
 	}
-	if GetBool(cmd, confirmFlag) {
+	if GetBool(flags, confirmFlag) {
 		return true
 	}
 
@@ -57,8 +57,8 @@ func CheckStackApprobation(cmd *cobra.Command, stack *membershipclient.Stack, di
 	return strings.ToLower(result) == "y"
 }
 
-func CheckOrganizationApprobation(cmd *cobra.Command, disclaimer string, args ...any) bool {
-	if GetBool(cmd, confirmFlag) {
+func CheckOrganizationApprobation(flags *flag.FlagSet, disclaimer string, args ...any) bool {
+	if GetBool(flags, confirmFlag) {
 		return true
 	}
 

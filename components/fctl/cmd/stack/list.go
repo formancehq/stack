@@ -1,7 +1,11 @@
 package stack
 
 import (
+	"context"
+	"flag"
 	"fmt"
+	"io"
+	"os"
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
@@ -13,6 +17,8 @@ import (
 
 const (
 	deletedFlag = "deleted"
+	use         = "list"
+	description = "List stacks"
 )
 
 type Stack struct {
@@ -22,21 +28,60 @@ type Stack struct {
 	RegionID  string  `json:"region"`
 	DeletedAt *string `json:"deletedAt"`
 }
+
 type StackListStore struct {
 	Stacks []Stack `json:"stacks"`
 }
-
-type StackListController struct {
-	store   *StackListStore
-	profile *fctl.Profile
-}
-
-var _ fctl.Controller[*StackListStore] = (*StackListController)(nil)
 
 func NewDefaultStackListStore() *StackListStore {
 	return &StackListStore{
 		Stacks: []Stack{},
 	}
+}
+
+type StackListControllerConfig struct {
+	context     context.Context
+	use         string
+	description string
+	aliases     []string
+	out         io.Writer
+	flags       *flag.FlagSet
+}
+
+func NewStackListControllerConfig() *StackListControllerConfig {
+	flags := flag.NewFlagSet(use, flag.ExitOnError)
+	flags.Bool(deletedFlag, false, "Show deleted stacks")
+	return &StackListControllerConfig{
+		use:         use,
+		description: description,
+		aliases: []string{
+			"ls",
+			"l",
+		},
+		out:   os.Stdout,
+		flags: flags,
+	}
+}
+
+func NewListCommand() *cobra.Command {
+	config := NewStackListControllerConfig()
+
+	options := []fctl.CommandOption{
+		fctl.WithAliases(config.aliases...),
+		fctl.WithShortDescription(config.description),
+		fctl.WithArgs(cobra.ExactArgs(0)), //////////////// <--- This is used by cobra to validate the number of arguments passed to the command
+		fctl.WithController[*StackListStore](NewStackListController()),
+	}
+
+	return fctl.NewMembershipCommand(config.use, options...)
+}
+
+var _ fctl.Controller[*StackListStore] = (*StackListController)(nil)
+
+type StackListController struct {
+	store   *StackListStore
+	profile *fctl.Profile
+	config  *StackListControllerConfig
 }
 
 func NewStackListController() *StackListController {
@@ -45,40 +90,44 @@ func NewStackListController() *StackListController {
 	}
 }
 
-func NewListCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("list",
-		fctl.WithAliases("ls", "l"),
-		fctl.WithShortDescription("List stacks"),
-		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithBoolFlag(deletedFlag, false, "Display deleted stacks"),
-		fctl.WithController[*StackListStore](NewStackListController()),
-	)
+func (c *StackListController) GetFlags() *flag.FlagSet {
+	return c.config.flags
 }
+
 func (c *StackListController) GetStore() *StackListStore {
 	return c.store
 }
 
-func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *StackListController) Init() error {
+	if c.config == nil {
+		c.config = NewStackListControllerConfig()
+	}
 
-	cfg, err := fctl.GetConfig(cmd)
+	return nil
+}
+
+func (c *StackListController) Run() (fctl.Renderable, error) {
+	flags := c.config.flags
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
+	profile := fctl.GetCurrentProfile(flags, cfg)
 
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organization, err := fctl.ResolveOrganizationID(flags, cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "searching default organization")
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, c.config.context, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).
-		Deleted(fctl.GetBool(cmd, deletedFlag)).
+	rsp, _, err := apiClient.DefaultApi.ListStacks(c.config.context, organization).
+		Deleted(fctl.GetBool(flags, deletedFlag)).
 		Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "listing stacks")
@@ -108,9 +157,9 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 	return c, nil
 }
 
-func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
+func (c *StackListController) Render() error {
 	if len(c.store.Stacks) == 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "No stacks found.")
+		fmt.Fprintln(os.Stdout, "No stacks found.")
 		return nil
 	}
 
@@ -121,7 +170,7 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 			stack.Dashboard,
 			stack.RegionID,
 		}
-		if fctl.GetBool(cmd, deletedFlag) {
+		if fctl.GetBool(c.config.flags, deletedFlag) {
 			if stack.DeletedAt != nil {
 				data = append(data, *stack.DeletedAt)
 			} else {
@@ -132,7 +181,7 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 	})
 
 	headers := []string{"ID", "Name", "Dashboard", "Region"}
-	if fctl.GetBool(cmd, deletedFlag) {
+	if fctl.GetBool(c.config.flags, deletedFlag) {
 		headers = append(headers, "Deleted at")
 	}
 
@@ -140,7 +189,7 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 
 	return pterm.DefaultTable.
 		WithHasHeader().
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(os.Stdout).
 		WithData(tableData).
 		Render()
 }

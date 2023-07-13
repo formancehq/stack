@@ -1,15 +1,16 @@
 package fctl
 
 import (
-	"github.com/spf13/cobra"
+	"flag"
 )
 
 type Renderable interface {
-	Render(cmd *cobra.Command, args []string) error
+	Render() error
 }
 type Controller[T any] interface {
 	GetStore() T
-	Run(cmd *cobra.Command, args []string) (Renderable, error)
+	GetFlags() *flag.FlagSet
+	Run() (Renderable, error)
 }
 type ExportedData struct {
 	Data interface{} `json:"data"`
