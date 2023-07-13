@@ -7,15 +7,12 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
-	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/usagerecord"
-	oidcclient "github.com/zitadel/oidc/pkg/client"
+	oidcclient "github.com/zitadel/oidc/v2/pkg/client"
 	"golang.org/x/oauth2/clientcredentials"
 	"google.golang.org/grpc/metadata"
 	controllererrors "k8s.io/apimachinery/pkg/api/errors"
@@ -292,28 +289,6 @@ func (client *client) Start(ctx context.Context) error {
 					continue
 				}
 				sharedlogging.FromContext(ctx).Infof("Stack %s enabled", msg.EnabledStack.ClusterName)
-			case *generated.Order_UpdateUsageReport:
-				total, err := CountDocument(msg.UpdateUsageReport.ClusterName)
-				if err != nil {
-					sharedlogging.FromContext(ctx).Errorf("Counting documents: %s", err)
-					continue
-				}
-
-				stripe.Key = msg.UpdateUsageReport.StripeKey
-
-				params := &stripe.UsageRecordParams{
-					Action:           stripe.String(stripe.UsageRecordActionSet),
-					SubscriptionItem: stripe.String(msg.UpdateUsageReport.StripeSubscriptionId),
-					Quantity:         stripe.Int64(total),
-					Timestamp:        stripe.Int64(time.Now().Unix()),
-				}
-				_, err = usagerecord.New(params)
-
-				if err != nil {
-					sharedlogging.FromContext(ctx).Errorf("Creating usage record: %s", err)
-					continue
-				}
-				sharedlogging.FromContext(ctx).Infof("Usage record: %s", total)
 			case *generated.Order_Ping:
 				sharedlogging.FromContext(ctx).Debugf("Receive ping")
 				if err := client.connectClient.SendMsg(&generated.Message{

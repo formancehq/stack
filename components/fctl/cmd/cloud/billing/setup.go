@@ -35,6 +35,7 @@ func NewSetupCommand() *cobra.Command {
 		fctl.WithShortDescription("Create a new billing account"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithController[*SetupStore](NewSetupController()),
+		fctl.WithDeprecated("Please contact Formances Sales Team."),
 	)
 }
 
