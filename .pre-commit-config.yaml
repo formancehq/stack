@@ -19,12 +19,3 @@ repos:
     args: [--allow-missing-credentials]
   - id: detect-private-key
     exclude: components/operator/garden|components/auth/cmd/serve.go|components/payments/internal/app/connectors/bankingcircle/config.go|docs/docs/payments/connectors/bankingcircle.mdx
-- repo: local
-  hooks:
-  - id: moon
-    name: moon
-    entry: moon run :lint :test :mod :helm :sync :docs --affected --status=staged
-    language: system
-    description: "Runs `moon`"
-    require_serial: true
-    pass_filenames: false
