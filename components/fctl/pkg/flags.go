@@ -11,13 +11,13 @@ import (
 )
 
 const (
-	MembershipURIFlag = "membership-uri"
-	FileFlag          = "config"
-	ProfileFlag       = "profile"
-	OutputFlag        = "output"
-	DebugFlag         = "debug"
-	InsecureTlsFlag   = "insecure-tls"
-	TelemetryFlag     = "telemetry"
+	MembershipURIFlag string = "membership-uri"
+	FileFlag          string = "config"
+	ProfileFlag       string = "profile"
+	OutputFlag        string = "output"
+	DebugFlag         string = "debug"
+	InsecureTlsFlag   string = "insecure-tls"
+	TelemetryFlag     string = "telemetry"
 )
 
 func GetBool(flags *flag.FlagSet, flagName string) bool {
@@ -101,6 +101,10 @@ func GetInt(flagSet *flag.FlagSet, flagName string) int {
 		return 0
 	}
 	return int(v)
+}
+
+func WithConfirmFlag(flagSet *flag.FlagSet) *bool {
+	return flagSet.Bool("confirm", false, "Confirm the action")
 }
 
 func ConvertPFlagSetToFlagSet(pFlagSet *pflag.FlagSet) *flag.FlagSet {

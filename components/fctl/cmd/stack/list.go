@@ -17,7 +17,7 @@ import (
 
 const (
 	deletedFlag = "deleted"
-	use         = "list"
+	useList     = "list"
 	description = "List stacks"
 )
 
@@ -46,13 +46,18 @@ type StackListControllerConfig struct {
 	aliases     []string
 	out         io.Writer
 	flags       *flag.FlagSet
+	args        []string
 }
 
 func NewStackListControllerConfig() *StackListControllerConfig {
-	flags := flag.NewFlagSet(use, flag.ExitOnError)
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
 	flags.Bool(deletedFlag, false, "Show deleted stacks")
+
+	fctl.WithGlobalFlags(flags)
+
 	return &StackListControllerConfig{
-		use:         use,
+		context:     nil,
+		use:         useList,
 		description: description,
 		aliases: []string{
 			"ls",
@@ -60,20 +65,8 @@ func NewStackListControllerConfig() *StackListControllerConfig {
 		},
 		out:   os.Stdout,
 		flags: flags,
+		args:  []string{},
 	}
-}
-
-func NewListCommand() *cobra.Command {
-	config := NewStackListControllerConfig()
-
-	options := []fctl.CommandOption{
-		fctl.WithAliases(config.aliases...),
-		fctl.WithShortDescription(config.description),
-		fctl.WithArgs(cobra.ExactArgs(0)), //////////////// <--- This is used by cobra to validate the number of arguments passed to the command
-		fctl.WithController[*StackListStore](NewStackListController()),
-	}
-
-	return fctl.NewMembershipCommand(config.use, options...)
 }
 
 var _ fctl.Controller[*StackListStore] = (*StackListController)(nil)
@@ -81,12 +74,13 @@ var _ fctl.Controller[*StackListStore] = (*StackListController)(nil)
 type StackListController struct {
 	store   *StackListStore
 	profile *fctl.Profile
-	config  *StackListControllerConfig
+	config  StackListControllerConfig
 }
 
-func NewStackListController() *StackListController {
+func NewStackListController(config StackListControllerConfig) *StackListController {
 	return &StackListController{
-		store: NewDefaultStackListStore(),
+		store:  NewDefaultStackListStore(),
+		config: config,
 	}
 }
 
@@ -94,20 +88,25 @@ func (c *StackListController) GetFlags() *flag.FlagSet {
 	return c.config.flags
 }
 
+func (c *StackListController) GetContext() context.Context {
+	return c.config.context
+}
+
+func (c *StackListController) SetContext(ctx context.Context) {
+	c.config.context = ctx
+}
+
 func (c *StackListController) GetStore() *StackListStore {
 	return c.store
 }
 
-func (c *StackListController) Init() error {
-	if c.config == nil {
-		c.config = NewStackListControllerConfig()
-	}
-
-	return nil
+func (c *StackListController) SetArgs(args []string) {
+	c.config.args = append([]string{}, args...)
 }
 
 func (c *StackListController) Run() (fctl.Renderable, error) {
 	flags := c.config.flags
+	ctx := c.config.context
 
 	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
@@ -116,17 +115,17 @@ func (c *StackListController) Run() (fctl.Renderable, error) {
 
 	profile := fctl.GetCurrentProfile(flags, cfg)
 
-	organization, err := fctl.ResolveOrganizationID(flags, cfg)
+	organization, err := fctl.ResolveOrganizationID(flags, ctx, cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "searching default organization")
 	}
 
-	apiClient, err := fctl.NewMembershipClient(flags, c.config.context, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, _, err := apiClient.DefaultApi.ListStacks(c.config.context, organization).
+	rsp, _, err := apiClient.DefaultApi.ListStacks(ctx, organization).
 		Deleted(fctl.GetBool(flags, deletedFlag)).
 		Execute()
 	if err != nil {
@@ -192,4 +191,18 @@ func (c *StackListController) Render() error {
 		WithWriter(os.Stdout).
 		WithData(tableData).
 		Render()
+}
+
+func NewListCommand() *cobra.Command {
+	config := NewStackListControllerConfig()
+
+	options := []fctl.CommandOption{
+		fctl.WithAliases(config.aliases...),
+		fctl.WithShortDescription(config.description),
+		fctl.WithArgs(cobra.ExactArgs(0)), //////////////// <--- This is used by cobra to validate the number of arguments passed to the command
+		fctl.WithGoFlagSet(config.flags),
+		fctl.WithController[*StackListStore](NewStackListController(*config)),
+	}
+
+	return fctl.NewMembershipCommand(config.use, options...)
 }

@@ -2,6 +2,7 @@ package fctl
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 )
@@ -43,7 +44,7 @@ func (m *ConfigManager) UpdateConfig(config *Config) error {
 	if err := os.MkdirAll(path.Dir(m.configFilePath), 0700); err != nil {
 		return err
 	}
-
+	fmt.Println("configFilePath", m.configFilePath)
 	f, err := os.OpenFile(m.configFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err

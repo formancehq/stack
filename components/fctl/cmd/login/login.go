@@ -1,11 +1,20 @@
 package login
 
 import (
+	"context"
+	"flag"
 	"fmt"
+	"io"
+	"os"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+)
+
+const (
+	useLogin         = "login"
+	descriptionLogin = "Login to the service"
 )
 
 type Dialog interface {
@@ -24,9 +33,6 @@ type LoginStore struct {
 	BrowserURL string        `json:"browserUrl"`
 	Success    bool          `json:"success"`
 }
-type LoginController struct {
-	store *LoginStore
-}
 
 func NewDefaultLoginStore() *LoginStore {
 	return &LoginStore{
@@ -37,38 +43,90 @@ func NewDefaultLoginStore() *LoginStore {
 		Success:    false,
 	}
 }
+
+type LoginControllerConfig struct {
+	context     context.Context
+	use         string
+	description string
+	aliases     []string
+	out         io.Writer
+	flags       *flag.FlagSet
+	args        []string
+}
+
+func NewLoginControllerConfig() *LoginControllerConfig {
+	flags := flag.NewFlagSet(useLogin, flag.ExitOnError)
+	flags.String(fctl.MembershipURIFlag, "", "service url")
+	fctl.WithGlobalFlags(flags)
+
+	return &LoginControllerConfig{
+		context:     nil,
+		use:         useLogin,
+		description: descriptionLogin,
+		aliases:     []string{},
+		out:         os.Stdout,
+		flags:       flags,
+		args:        []string{},
+	}
+}
+
+var _ fctl.Controller[*LoginStore] = (*LoginController)(nil)
+
+type LoginController struct {
+	store  *LoginStore
+	config LoginControllerConfig
+}
+
+func NewLoginController(config LoginControllerConfig) *LoginController {
+	return &LoginController{
+		store:  NewDefaultLoginStore(),
+		config: config,
+	}
+}
+
+func (c *LoginController) GetFlags() *flag.FlagSet {
+	return c.config.flags
+}
+
+func (c *LoginController) GetContext() context.Context {
+	return c.config.context
+}
+
+func (c *LoginController) SetContext(ctx context.Context) {
+	c.config.context = ctx
+}
+
 func (c *LoginController) GetStore() *LoginStore {
 	return c.store
 }
-func NewLoginController() *LoginController {
-	return &LoginController{
-		store: NewDefaultLoginStore(),
-	}
+
+func (c *LoginController) SetArgs(args []string) {
+	c.config.args = append([]string{}, args...)
 }
-func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *LoginController) Run() (fctl.Renderable, error) {
+	flags := c.config.flags
+	ctx := c.config.context
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	membershipUri, err := cmd.Flags().GetString(fctl.MembershipURIFlag)
-	if err != nil {
-		return nil, err
-	}
+	profile := fctl.GetCurrentProfile(flags, cfg)
+	membershipUri := fctl.GetString(flags, fctl.MembershipURIFlag)
 	if membershipUri == "" {
 		membershipUri = profile.GetMembershipURI()
 	}
 
-	relyingParty, err := fctl.GetAuthRelyingParty(fctl.GetHttpClient(cmd, map[string][]string{}), membershipUri)
+	relyingParty, err := fctl.GetAuthRelyingParty(fctl.GetHttpClient(flags, map[string][]string{}), membershipUri)
 	if err != nil {
 		return nil, err
 	}
 
 	c.store.profile = profile
 
-	ret, err := LogIn(cmd.Context(), DialogFn(func(uri, code string) {
+	ret, err := LogIn(ctx, DialogFn(func(uri, code string) {
 		c.store.DeviceCode = code
 		c.store.LoginURI = uri
 	}), relyingParty)
@@ -86,14 +144,14 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	profile.SetMembershipURI(membershipUri)
 	profile.UpdateToken(ret)
 
-	currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
+	currentProfileName := fctl.GetCurrentProfileName(flags, cfg)
 
 	cfg.SetCurrentProfile(currentProfileName, profile)
 
 	return c, cfg.Persist()
 }
 
-func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
+func (c *LoginController) Render() error {
 
 	fmt.Println("Please enter the following code on your browser:", c.store.DeviceCode)
 	fmt.Println("Link:", c.store.LoginURI)
@@ -104,7 +162,7 @@ func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
 	}
 
 	if c.store.Success {
-		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
+		pterm.Success.WithWriter(c.config.out).Printfln("Logged!")
 	}
 
 	return nil
@@ -112,11 +170,11 @@ func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
 }
 
 func NewCommand() *cobra.Command {
-	return fctl.NewCommand("login",
-		fctl.WithStringFlag(fctl.MembershipURIFlag, "", "service url"),
-		fctl.WithHiddenFlag(fctl.MembershipURIFlag),
-		fctl.WithShortDescription("Login"),
+	config := NewLoginControllerConfig()
+	return fctl.NewCommand(config.use,
+		fctl.WithShortDescription(config.description),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithController[*LoginStore](NewLoginController()),
+		fctl.WithGoFlagSet(config.flags),
+		fctl.WithController[*LoginStore](NewLoginController(*config)),
 	)
 }

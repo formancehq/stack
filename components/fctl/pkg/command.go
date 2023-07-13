@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/TylerBrock/colorjson"
 	"github.com/formancehq/fctl/membershipclient"
@@ -32,18 +33,18 @@ type StackOrganizationConfig struct {
 	Config         *Config
 }
 
-func GetStackOrganizationConfig(flags *flag.FlagSet) (*StackOrganizationConfig, error) {
+func GetStackOrganizationConfig(flags *flag.FlagSet, ctx context.Context) (*StackOrganizationConfig, error) {
 	cfg, err := GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := ResolveOrganizationID(flags, cfg)
+	organizationID, err := ResolveOrganizationID(flags, ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := ResolveStack(flags, cfg, organizationID)
+	stack, err := ResolveStack(flags, ctx, cfg, organizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +56,8 @@ func GetStackOrganizationConfig(flags *flag.FlagSet) (*StackOrganizationConfig, 
 	}, nil
 }
 
-func GetStackOrganizationConfigApprobation(flags *flag.FlagSet, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
-	soc, err := GetStackOrganizationConfig(flags)
+func GetStackOrganizationConfigApprobation(flags *flag.FlagSet, ctx context.Context, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
+	soc, err := GetStackOrganizationConfig(flags, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -149,6 +150,12 @@ func (fn CommandOptionFn) apply(cmd *cobra.Command) {
 	fn(cmd)
 }
 
+func WithGoFlagSet(flags *flag.FlagSet) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.Flags().AddGoFlagSet(flags)
+	}
+}
+
 func WithPersistentStringFlag(name, defaultValue, help string) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.PersistentFlags().String(name, defaultValue, help)
@@ -227,8 +234,40 @@ func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOption
 	}
 }
 
+func WithGlobalFlags(flags *flag.FlagSet) *flag.FlagSet {
+
+	if flags == nil {
+		flags = flag.NewFlagSet("global", flag.ContinueOnError)
+	}
+
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+
+	flags.Bool(InsecureTlsFlag, false, "Insecure TLS")
+	flags.Bool(TelemetryFlag, false, "Telemetry enabled")
+	flags.String(ProfileFlag, "", "config profile to use")
+	flags.String(FileFlag, fmt.Sprintf("%s/.formance/fctl.config", homedir), "Debug mode")
+	flags.Bool(DebugFlag, false, "Debug mode")
+	flags.String(outputFlag, "plain", "Output format (plain, json)")
+
+	return flags
+}
+
 func WithController[T any](c Controller[T]) CommandOptionFn {
 	return func(cmd *cobra.Command) {
+		cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+			if c.GetContext() == nil {
+				c.SetContext(cmd.Context())
+			}
+
+			if len(args) > 0 {
+				c.SetArgs(args)
+			}
+
+			return nil
+		}
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
 			renderable, err := c.Run()
 
@@ -336,10 +375,6 @@ func WithSilenceError() CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.SilenceErrors = true
 	}
-}
-
-func WithConfirmFlag() CommandOptionFn {
-	return WithBoolFlag(confirmFlag, false, "Confirm action")
 }
 
 func NewStackCommand(use string, opts ...CommandOption) *cobra.Command {
