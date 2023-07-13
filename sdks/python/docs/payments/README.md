@@ -158,6 +158,7 @@ req = operations.InstallConnectorRequest(
         authorization_endpoint='XXX',
         endpoint='XXX',
         password='XXX',
+        polling_period='60s',
         user_certificate='XXX',
         user_certificate_key='XXX',
         username='XXX',

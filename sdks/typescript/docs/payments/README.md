@@ -158,6 +158,7 @@ sdk.payments.installConnector({
     authorizationEndpoint: "XXX",
     endpoint: "XXX",
     password: "XXX",
+    pollingPeriod: "60s",
     userCertificate: "XXX",
     userCertificateKey: "XXX",
     username: "XXX",

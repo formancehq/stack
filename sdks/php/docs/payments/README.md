@@ -193,6 +193,7 @@ try {
     $request->requestBody->authorizationEndpoint = 'XXX';
     $request->requestBody->endpoint = 'XXX';
     $request->requestBody->password = 'XXX';
+    $request->requestBody->pollingPeriod = '60s';
     $request->requestBody->userCertificate = 'XXX';
     $request->requestBody->userCertificateKey = 'XXX';
     $request->requestBody->username = 'XXX';

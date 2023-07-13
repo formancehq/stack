@@ -213,6 +213,7 @@ func main() {
             AuthorizationEndpoint: "XXX",
             Endpoint: "XXX",
             Password: "XXX",
+            PollingPeriod: formance.String("60s"),
             UserCertificate: "XXX",
             UserCertificateKey: "XXX",
             Username: "XXX",
