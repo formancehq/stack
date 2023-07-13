@@ -35,6 +35,7 @@ func NewPortalCommand() *cobra.Command {
 		fctl.WithShortDescription("Access to Billing Portal"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithController[*PortalStore](NewPortalController()),
+		fctl.WithDeprecated("Please contact Formances Sales Team."),
 	)
 }
 

@@ -225,6 +225,12 @@ func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOption
 	}
 }
 
+func WithDeprecated(message string) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.Deprecated = message
+	}
+}
+
 func WithController[T any](c Controller[T]) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
