@@ -13,7 +13,7 @@ import (
 	"github.com/stripe/stripe-go/v72"
 )
 
-func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward bool) (ingestion.PaymentBatchElement, bool) {
+func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account string, forward bool) (ingestion.PaymentBatchElement, bool) {
 	var payment models.Payment // reference   payments.Referenced
 	// paymentData *payments.Data
 	// adjustment  *payments.Adjustment
@@ -60,6 +60,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 			Scheme:    models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt: time.Unix(balanceTransaction.Created, 0),
 		}
+
+		if account != "" {
+			payment.DestinationAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypePayout:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -87,6 +95,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 			}(),
 			CreatedAt: time.Unix(balanceTransaction.Created, 0),
 		}
+
+		if account != "" {
+			payment.SourceAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypeTransfer:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -105,6 +121,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 			Scheme:    models.PaymentSchemeOther,
 			CreatedAt: time.Unix(balanceTransaction.Created, 0),
 		}
+
+		if account != "" {
+			payment.SourceAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypeRefund:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -126,6 +150,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 				},
 			},
 		}
+
+		if account != "" {
+			payment.SourceAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypePayment:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -144,6 +176,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 			Scheme:    models.PaymentSchemeOther,
 			CreatedAt: time.Unix(balanceTransaction.Created, 0),
 		}
+
+		if account != "" {
+			payment.DestinationAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypePayoutCancel:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -166,6 +206,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 				},
 			},
 		}
+
+		if account != "" {
+			payment.SourceAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypePayoutFailure:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -188,6 +236,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 				},
 			},
 		}
+
+		if account != "" {
+			payment.DestinationAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypePaymentRefund:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -210,6 +266,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 				},
 			},
 		}
+
+		if account != "" {
+			payment.SourceAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypeAdjustment:
 		payment = models.Payment{
 			ID: models.PaymentID{
@@ -231,6 +295,14 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, forward b
 				},
 			},
 		}
+
+		if account != "" {
+			payment.SourceAccountID = &models.AccountID{
+				Reference: account,
+				Provider:  models.ConnectorProviderStripe,
+			}
+		}
+
 	case stripe.BalanceTransactionTypeStripeFee:
 		return ingestion.PaymentBatchElement{}, false
 	default:

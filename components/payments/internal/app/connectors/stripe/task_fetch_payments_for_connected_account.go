@@ -9,13 +9,13 @@ import (
 	"github.com/stripe/stripe-go/v72"
 )
 
-func ingestBatch(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
+func ingestBatch(ctx context.Context, account string, logger logging.Logger, ingester ingestion.Ingester,
 	bts []*stripe.BalanceTransaction, commitState TimelineState, tail bool,
 ) error {
 	batch := ingestion.PaymentBatch{}
 
 	for i := range bts {
-		batchElement, handled := CreateBatchElement(bts[i], !tail)
+		batchElement, handled := CreateBatchElement(bts[i], account, !tail)
 
 		if !handled {
 			logger.Debugf("Balance transaction type not handled: %s", bts[i].Type)
@@ -42,7 +42,7 @@ func ingestBatch(ctx context.Context, logger logging.Logger, ingester ingestion.
 	return nil
 }
 
-func ConnectedAccountTask(config Config, account string) func(ctx context.Context, logger logging.Logger,
+func ConnectedAccountTask(config Config, account string, client *DefaultClient) func(ctx context.Context, logger logging.Logger,
 	ingester ingestion.Ingester, resolver task.StateResolver) error {
 	return func(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
 		resolver task.StateResolver,
@@ -51,11 +51,17 @@ func ConnectedAccountTask(config Config, account string) func(ctx context.Contex
 
 		trigger := NewTimelineTrigger(
 			logger,
-			IngesterFn(func(ctx context.Context, bts []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
-				return ingestBatch(ctx, logger, ingester, bts, commitState, tail)
-			}),
-			NewTimeline(NewDefaultClient(config.APIKey).
+			NewIngester(
+				func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
+					return ingestBatch(ctx, account, logger, ingester, batch, commitState, tail)
+				},
+				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
+					return nil
+				},
+			),
+			NewTimeline(client.
 				ForAccount(account), config.TimelineConfig, task.MustResolveTo(ctx, resolver, TimelineState{})),
+			TimelineTriggerTypeTransactions,
 		)
 
 		return trigger.Fetch(ctx)

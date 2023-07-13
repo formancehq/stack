@@ -92,6 +92,12 @@ func (m *ClientMock) ForAccount(account string) Client {
 	return m
 }
 
+func (m *ClientMock) Accounts(ctx context.Context,
+	options ...ClientOption,
+) ([]*stripe.Account, bool, error) {
+	return nil, false, nil
+}
+
 func (m *ClientMock) BalanceTransactions(ctx context.Context,
 	options ...ClientOption,
 ) ([]*stripe.BalanceTransaction, bool, error) {

@@ -34,7 +34,7 @@ func TestTimeline(t *testing.T) {
 		RespondsWith(true, tx1, tx2)
 
 	ret := make([]*stripe.BalanceTransaction, 0)
-	hasMore, state, commit, err := timeline.Tail(context.TODO(), &ret)
+	hasMore, state, commit, err := timeline.TransactionsTail(context.TODO(), &ret)
 	require.NoError(t, err)
 	require.True(t, hasMore)
 	require.Equal(t, TimelineState{
@@ -54,7 +54,7 @@ func TestTimeline(t *testing.T) {
 
 	mock.Expect().Limit(2).StartingAfter(tx2.ID).RespondsWith(false, tx3)
 
-	hasMore, state, _, err = timeline.Tail(context.TODO(), &ret)
+	hasMore, state, _, err = timeline.TransactionsTail(context.TODO(), &ret)
 	require.NoError(t, err)
 	require.False(t, hasMore)
 	require.Equal(t, TimelineState{
