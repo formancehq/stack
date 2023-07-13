@@ -30,6 +30,9 @@ type Transfer struct {
 	Rate float64 `json:"rate"`
 	User uint64  `json:"user"`
 
+	SourceBalanceID      uint64 `json:"-"`
+	DestinationBalanceID uint64 `json:"-"`
+
 	CreatedAt time.Time `json:"-"`
 }
 
@@ -97,6 +100,76 @@ func (w *Client) GetTransfers(ctx context.Context, profile *Profile) ([]Transfer
 		err = json.Unmarshal(body, &transferList)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal transfers: %w", err)
+		}
+
+		for i, transfer := range transferList {
+			var sourceProfileID, targetProfileID uint64
+			if transfer.SourceAccount != 0 {
+				recipientAccount, err := w.GetRecipientAccount(ctx, transfer.SourceAccount)
+				if err != nil {
+					return nil, fmt.Errorf("failed to get source profile id: %w", err)
+				}
+
+				sourceProfileID = recipientAccount.Profile
+			}
+
+			if transfer.TargetAccount != 0 {
+				recipientAccount, err := w.GetRecipientAccount(ctx, transfer.TargetAccount)
+				if err != nil {
+					return nil, fmt.Errorf("failed to get target profile id: %w", err)
+				}
+
+				targetProfileID = recipientAccount.Profile
+			}
+
+			// TODO(polo): fetching balances for each transfer is not efficient
+			// and can be quite long. We should consider caching balances, but
+			// at the same time we will develop a feature soon to get balances
+			// for every accounts, so caching is not a solution.
+			switch {
+			case sourceProfileID == 0 && targetProfileID == 0:
+				// Do nothing
+			case sourceProfileID == targetProfileID && sourceProfileID != 0:
+				// Same profile id for target and source
+				balances, err := w.GetBalances(ctx, sourceProfileID)
+				if err != nil {
+					return nil, fmt.Errorf("failed to get balances: %w", err)
+				}
+				for _, balance := range balances {
+					if balance.Currency == transfer.SourceCurrency {
+						transferList[i].SourceBalanceID = balance.ID
+					}
+
+					if balance.Currency == transfer.TargetCurrency {
+						transferList[i].DestinationBalanceID = balance.ID
+					}
+				}
+			default:
+				if sourceProfileID != 0 {
+					balances, err := w.GetBalances(ctx, sourceProfileID)
+					if err != nil {
+						return nil, fmt.Errorf("failed to get balances: %w", err)
+					}
+					for _, balance := range balances {
+						if balance.Currency == transfer.SourceCurrency {
+							transferList[i].SourceBalanceID = balance.ID
+						}
+					}
+				}
+
+				if targetProfileID != 0 {
+					balances, err := w.GetBalances(ctx, targetProfileID)
+					if err != nil {
+						return nil, fmt.Errorf("failed to get balances: %w", err)
+					}
+					for _, balance := range balances {
+						if balance.Currency == transfer.TargetCurrency {
+							transferList[i].DestinationBalanceID = balance.ID
+						}
+					}
+				}
+
+			}
 		}
 
 		transfers = append(transfers, transferList...)

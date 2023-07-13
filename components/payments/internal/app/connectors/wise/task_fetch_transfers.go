@@ -66,40 +66,22 @@ func taskFetchTransfers(logger logging.Logger, c *client.Client, profileID uint6
 				},
 			}
 
-			// if transfer.SourceAccount != 0 {
-			// 	ref := fmt.Sprintf("%d", transfer.SourceAccount)
+			if transfer.SourceBalanceID != 0 {
+				batchElement.Payment.SourceAccountID = &models.AccountID{
+					Reference: fmt.Sprintf("%d", transfer.SourceBalanceID),
+					Provider:  models.ConnectorProviderWise,
+				}
+			}
 
-			// 	accountBatch = append(accountBatch,
-			// 		ingestion.AccountBatchElement{
-			// 			Reference: ref,
-			// 		},
-			// 	)
-
-			// 	batchElement.Payment.Account = &models.Account{Reference: ref}
-			// }
-
-			// if transfer.TargetAccount != 0 {
-			// 	ref := fmt.Sprintf("%d", transfer.TargetAccount)
-
-			// 	accountBatch = append(accountBatch,
-			// 		ingestion.AccountBatchElement{
-			// 			Reference: ref,
-			// 			Provider:  models.ConnectorProviderWise.String(),
-			// 		},
-			// 	)
-
-			// 	batchElement.Payment.Account = &models.Account{Reference: ref}
-			// }
+			if transfer.DestinationBalanceID != 0 {
+				batchElement.Payment.DestinationAccountID = &models.AccountID{
+					Reference: fmt.Sprintf("%d", transfer.DestinationBalanceID),
+					Provider:  models.ConnectorProviderWise,
+				}
+			}
 
 			paymentBatch = append(paymentBatch, batchElement)
 		}
-
-		// if len(accountBatch) > 0 {
-		// 	err = ingester.IngestAccounts(ctx, accountBatch)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// }
 
 		return ingester.IngestPayments(ctx, paymentBatch, struct{}{})
 	}
