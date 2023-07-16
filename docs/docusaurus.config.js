@@ -166,7 +166,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © 2021-2023 Numaire, Inc`,
+        copyright: `Copyright © 2021-2023 Formance, Inc`,
       },
       prism: {
         theme: darkCodeTheme,
