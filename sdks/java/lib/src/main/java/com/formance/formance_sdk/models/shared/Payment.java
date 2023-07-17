@@ -12,14 +12,6 @@ import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
 public class Payment {
-    @JsonProperty("accountID")
-    public String accountID;
-
-    public Payment withAccountID(String accountID) {
-        this.accountID = accountID;
-        return this;
-    }
-    
     @JsonProperty("adjustments")
     public PaymentAdjustment[] adjustments;
 
@@ -43,6 +35,14 @@ public class Payment {
 
     public Payment withCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+        return this;
+    }
+    
+    @JsonProperty("destinationAccountID")
+    public String destinationAccountID;
+
+    public Payment withDestinationAccountID(String destinationAccountID) {
+        this.destinationAccountID = destinationAccountID;
         return this;
     }
     
@@ -102,6 +102,14 @@ public class Payment {
         return this;
     }
     
+    @JsonProperty("sourceAccountID")
+    public String sourceAccountID;
+
+    public Payment withSourceAccountID(String sourceAccountID) {
+        this.sourceAccountID = sourceAccountID;
+        return this;
+    }
+    
     @JsonProperty("status")
     public PaymentStatus status;
 
@@ -118,11 +126,11 @@ public class Payment {
         return this;
     }
     
-    public Payment(@JsonProperty("accountID") String accountID, @JsonProperty("adjustments") PaymentAdjustment[] adjustments, @JsonProperty("asset") String asset, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("id") String id, @JsonProperty("initialAmount") Long initialAmount, @JsonProperty("metadata") PaymentMetadata metadata, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("scheme") PaymentScheme scheme, @JsonProperty("status") PaymentStatus status, @JsonProperty("type") PaymentType type) {
-        this.accountID = accountID;
+    public Payment(@JsonProperty("adjustments") PaymentAdjustment[] adjustments, @JsonProperty("asset") String asset, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("id") String id, @JsonProperty("initialAmount") Long initialAmount, @JsonProperty("metadata") PaymentMetadata metadata, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("scheme") PaymentScheme scheme, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("status") PaymentStatus status, @JsonProperty("type") PaymentType type) {
         this.adjustments = adjustments;
         this.asset = asset;
         this.createdAt = createdAt;
+        this.destinationAccountID = destinationAccountID;
         this.id = id;
         this.initialAmount = initialAmount;
         this.metadata = metadata;
@@ -130,6 +138,7 @@ public class Payment {
         this.raw = raw;
         this.reference = reference;
         this.scheme = scheme;
+        this.sourceAccountID = sourceAccountID;
         this.status = status;
         this.type = type;
   }

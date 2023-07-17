@@ -38,10 +38,6 @@ export enum PaymentType {
 }
 
 export class Payment extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "accountID" })
-  accountID: string;
-
   @SpeakeasyMetadata({ elemType: PaymentAdjustment })
   @Expose({ name: "adjustments" })
   @Type(() => PaymentAdjustment)
@@ -55,6 +51,10 @@ export class Payment extends SpeakeasyBase {
   @Expose({ name: "createdAt" })
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
   createdAt: Date;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "destinationAccountID" })
+  destinationAccountID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "id" })
@@ -84,6 +84,10 @@ export class Payment extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "scheme" })
   scheme: PaymentScheme;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "sourceAccountID" })
+  sourceAccountID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "status" })

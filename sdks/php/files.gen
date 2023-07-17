@@ -349,7 +349,6 @@ src/Models/Shared/PaymentsCursorCursor.php
 src/Models/Shared/PaymentsCursor.php
 src/Models/Shared/AccountsCursorCursor.php
 src/Models/Shared/AccountsCursor.php
-src/Models/Shared/PaymentsAccountType.php
 src/Models/Shared/PaymentsAccount.php
 src/Models/Shared/ConnectorConfigResponse.php
 src/Models/Shared/ResponseCursorTotal.php

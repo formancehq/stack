@@ -750,7 +750,8 @@ components:
       required:
         - id
         - reference
-        - accountID
+        - sourceAccountID
+        - destinationAccountID
         - type
         - provider
         - status
@@ -767,7 +768,9 @@ components:
           example: XXX
         reference:
           type: string
-        accountID:
+        sourceAccountID:
+          type: string
+        destinationAccountID:
           type: string
         type:
           type: string
@@ -857,7 +860,9 @@ components:
         - createdAt
         - provider
         - reference
-        - type
+        - defaultCurrency
+        - accountName
+        - raw
       properties:
         id:
           type: string
@@ -868,11 +873,13 @@ components:
           $ref: '#/components/schemas/Connector'
         reference:
           type: string
-        type:
+        defaultCurrency:
           type: string
-          enum:
-            - TARGET
-            - SOURCE
+        accountName:
+          type: string
+        raw:
+          type: object
+          nullable: true
     TaskBase:
       type: object
       required:

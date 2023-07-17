@@ -12,6 +12,14 @@ import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
 public class PaymentsAccount {
+    @JsonProperty("accountName")
+    public String accountName;
+
+    public PaymentsAccount withAccountName(String accountName) {
+        this.accountName = accountName;
+        return this;
+    }
+    
     @JsonSerialize(using = DateTimeSerializer.class)
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonProperty("createdAt")
@@ -19,6 +27,14 @@ public class PaymentsAccount {
 
     public PaymentsAccount withCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+        return this;
+    }
+    
+    @JsonProperty("defaultCurrency")
+    public String defaultCurrency;
+
+    public PaymentsAccount withDefaultCurrency(String defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
         return this;
     }
     
@@ -38,6 +54,14 @@ public class PaymentsAccount {
         return this;
     }
     
+    @JsonProperty("raw")
+    public java.util.Map<String, Object> raw;
+
+    public PaymentsAccount withRaw(java.util.Map<String, Object> raw) {
+        this.raw = raw;
+        return this;
+    }
+    
     @JsonProperty("reference")
     public String reference;
 
@@ -46,19 +70,13 @@ public class PaymentsAccount {
         return this;
     }
     
-    @JsonProperty("type")
-    public PaymentsAccountType type;
-
-    public PaymentsAccount withType(PaymentsAccountType type) {
-        this.type = type;
-        return this;
-    }
-    
-    public PaymentsAccount(@JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("reference") String reference, @JsonProperty("type") PaymentsAccountType type) {
+    public PaymentsAccount(@JsonProperty("accountName") String accountName, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("defaultCurrency") String defaultCurrency, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference) {
+        this.accountName = accountName;
         this.createdAt = createdAt;
+        this.defaultCurrency = defaultCurrency;
         this.id = id;
         this.provider = provider;
+        this.raw = raw;
         this.reference = reference;
-        this.type = type;
   }
 }

@@ -5389,7 +5389,8 @@
         "required": [
           "id",
           "reference",
-          "accountID",
+          "sourceAccountID",
+          "destinationAccountID",
           "type",
           "provider",
           "status",
@@ -5409,7 +5410,10 @@
           "reference": {
             "type": "string"
           },
-          "accountID": {
+          "sourceAccountID": {
+            "type": "string"
+          },
+          "destinationAccountID": {
             "type": "string"
           },
           "type": {
@@ -5526,7 +5530,9 @@
           "createdAt",
           "provider",
           "reference",
-          "type"
+          "defaultCurrency",
+          "accountName",
+          "raw"
         ],
         "properties": {
           "id": {
@@ -5542,12 +5548,15 @@
           "reference": {
             "type": "string"
           },
-          "type": {
-            "type": "string",
-            "enum": [
-              "TARGET",
-              "SOURCE"
-            ]
+          "defaultCurrency": {
+            "type": "string"
+          },
+          "accountName": {
+            "type": "string"
+          },
+          "raw": {
+            "type": "object",
+            "nullable": true
           }
         }
       },
