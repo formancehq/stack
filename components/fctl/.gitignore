@@ -5,3 +5,4 @@ dist/
 autocomplete.*
 fctl
 coverage.*
+completions
