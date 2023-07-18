@@ -112,6 +112,7 @@ func init() {
 			},
 			"v0.8.0": {
 				PreUpgrade: func(ctx modules.Context) error {
+					// Add payment accounts
 					return paymentsPreUpgradeMigration(ctx)
 				},
 				PostUpgrade: func(ctx modules.PostInstallContext) error {

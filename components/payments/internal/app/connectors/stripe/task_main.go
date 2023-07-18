@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Launch accounts and payments tasks
 func MainTask(logger logging.Logger) task.Task {
 	return func(
 		ctx context.Context,
