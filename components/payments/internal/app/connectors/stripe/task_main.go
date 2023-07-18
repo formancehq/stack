@@ -32,6 +32,22 @@ func MainTask(logger logging.Logger) task.Task {
 			return err
 		}
 
+		taskPayments, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name: "Fetch payments from client",
+			Key:  taskNameFetchPayments,
+		})
+		if err != nil {
+			return err
+		}
+
+		err = scheduler.Schedule(ctx, taskPayments, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        true,
+		})
+		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			return err
+		}
+
 		return nil
 	}
 }

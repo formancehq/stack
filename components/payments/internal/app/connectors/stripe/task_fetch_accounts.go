@@ -29,7 +29,30 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 
 				},
 				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
-					return ingestAccountsBatch(ctx, ingester, batch)
+					if err := ingestAccountsBatch(ctx, ingester, batch); err != nil {
+						return err
+					}
+
+					for _, account := range batch {
+						descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+							Name:    "Fetch balance transactions for a specific connected account",
+							Key:     taskNameFetchPaymentsForAccounts,
+							Account: account.ID,
+						})
+						if err != nil {
+							return errors.Wrap(err, "failed to transform task descriptor")
+						}
+
+						err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+							ScheduleOption: models.OPTIONS_RUN_NOW,
+							Restart:        true,
+						})
+						if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+							return errors.Wrap(err, "scheduling connected account")
+						}
+					}
+
+					return nil
 				},
 			),
 			NewTimeline(client,
@@ -38,22 +61,6 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			return err
-		}
-
-		taskPayments, err := models.EncodeTaskDescriptor(TaskDescriptor{
-			Name: "Fetch payments from client",
-			Key:  taskNameFetchPayments,
-		})
-		if err != nil {
-			return err
-		}
-
-		err = scheduler.Schedule(ctx, taskPayments, models.TaskSchedulerOptions{
-			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        true,
-		})
-		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			return err
 		}
 
