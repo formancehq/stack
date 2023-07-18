@@ -351,7 +351,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					ALTER TABLE accounts.account DROP COLUMN IF EXISTS "type";
-					DROP TYPE "public".account_type;
+					DROP TYPE IF EXISTS "public".account_type;
 					CREATE TYPE "public".account_type AS ENUM('INTERNAL', 'EXTERNAL', 'UNKNOWN');;
 					ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS "type" "public".account_type;
 
@@ -382,6 +382,21 @@ func registerMigrations(migrator *migrations.Migrator) {
 					NOT DEFERRABLE
 					INITIALLY IMMEDIATE
 				;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				// Since only one connector is inserting accounts,
+				// let's just truncate the table, since connectors will be
+				// resetted.
+				_, err := tx.Exec(`
+					TRUNCATE accounts.account CASCADE;
 				`)
 				if err != nil {
 					return err
