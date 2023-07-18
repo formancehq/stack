@@ -361,12 +361,13 @@ func registerMigrations(migrator *migrations.Migrator) {
 					ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS "account_name" text NOT NULL DEFAULT '';
 
 					ALTER TABLE accounts.account ALTER COLUMN id DROP DEFAULT;
-					ALTER TABLE payments.payment drop constraint IF EXISTS payment_account;
+					ALTER TABLE payments.payment DROP CONSTRAINT IF EXISTS payment_account;
 					ALTER TABLE payments.payment DROP COLUMN IF EXISTS "account_id";
 					ALTER TABLE payments.payment ADD COLUMN IF NOT EXISTS "source_account_id" CHARACTER VARYING;
 					ALTER TABLE payments.payment ADD COLUMN IF NOT EXISTS "destination_account_id" CHARACTER VARYING;
 					ALTER TABLE accounts.account ALTER COLUMN id TYPE CHARACTER VARYING;
 
+					ALTER TABLE payments.payment DROP CONSTRAINT IF EXISTS payment_source_account;
 					ALTER TABLE payments.payment ADD CONSTRAINT payment_source_account
 						FOREIGN KEY (source_account_id)
 						REFERENCES accounts.account (id)
@@ -375,13 +376,14 @@ func registerMigrations(migrator *migrations.Migrator) {
 						INITIALLY IMMEDIATE
 					;
 
+					ALTER TABLE payments.payment DROP CONSTRAINT IF EXISTS payment_destination_account;
 					ALTER TABLE payments.payment ADD CONSTRAINT payment_destination_account
-					FOREIGN KEY (destination_account_id)
-					REFERENCES accounts.account (id)
-					ON DELETE CASCADE
-					NOT DEFERRABLE
-					INITIALLY IMMEDIATE
-				;
+						FOREIGN KEY (destination_account_id)
+						REFERENCES accounts.account (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
 				`)
 				if err != nil {
 					return err
