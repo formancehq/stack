@@ -27,7 +27,6 @@ func (w *Client) GetProfiles() ([]Profile, error) {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	fmt.Println(string(body))
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
