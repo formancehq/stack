@@ -2,6 +2,7 @@ package holds
 
 import (
 	"fmt"
+	"math/big"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -78,7 +79,7 @@ func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	request := operations.ConfirmHoldRequest{
 		HoldID: args[0],
 		ConfirmHoldRequest: &shared.ConfirmHoldRequest{
-			Amount: &amount,
+			Amount: big.NewInt(amount),
 			Final:  &final,
 		},
 	}

@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"math/big"
 	"sort"
 	"time"
 
@@ -26,7 +27,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:foo",
@@ -47,7 +48,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      200,
+								Amount:      big.NewInt(200),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:bar",
@@ -71,19 +72,19 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.BalancesCursorResponse.Cursor.Data).To(HaveLen(3))
-			Expect(response.BalancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]int64{
+			Expect(response.BalancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]*big.Int{
 				"world": {
-					"USD": -300,
+					"USD": big.NewInt(-300),
 				},
 			}))
-			Expect(response.BalancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]int64{
+			Expect(response.BalancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]*big.Int{
 				"foo:foo": {
-					"USD": 100,
+					"USD": big.NewInt(100),
 				},
 			}))
-			Expect(response.BalancesCursorResponse.Cursor.Data[2]).To(Equal(map[string]map[string]int64{
+			Expect(response.BalancesCursorResponse.Cursor.Data[2]).To(Equal(map[string]map[string]*big.Int{
 				"foo:bar": {
-					"USD": 200,
+					"USD": big.NewInt(200),
 				},
 			}))
 		})
@@ -100,14 +101,14 @@ var _ = Given("some empty environment", func() {
 
 			balancesCursorResponse := response.BalancesCursorResponse
 			Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(2))
-			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]int64{
+			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]*big.Int{
 				"foo:foo": {
-					"USD": 100,
+					"USD": big.NewInt(100),
 				},
 			}))
-			Expect(balancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]int64{
+			Expect(balancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]*big.Int{
 				"foo:bar": {
-					"USD": 200,
+					"USD": big.NewInt(200),
 				},
 			}))
 
@@ -123,9 +124,9 @@ var _ = Given("some empty environment", func() {
 
 			balancesCursorResponse = response.BalancesCursorResponse
 			Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(1))
-			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]int64{
+			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]*big.Int{
 				"foo:foo": {
-					"USD": 100,
+					"USD": big.NewInt(100),
 				},
 			}))
 		})
@@ -140,8 +141,8 @@ var _ = Given("some empty environment", func() {
 			Expect(response.StatusCode).To(Equal(200))
 
 			balances := response.AggregateBalancesResponse
-			Expect(balances.Data).To(Equal(map[string]int64{
-				"USD": 0,
+			Expect(balances.Data).To(Equal(map[string]*big.Int{
+				"USD": big.NewInt(0),
 			}))
 		})
 		It("should be listed on api with GetBalancesAggregated using accounts filter", func() {
@@ -156,9 +157,9 @@ var _ = Given("some empty environment", func() {
 			Expect(response.StatusCode).To(Equal(200))
 
 			balances := response.AggregateBalancesResponse
-			Expect(balances.Data).To(Equal(map[string]int64{
+			Expect(balances.Data).To(Equal(map[string]*big.Int{
 				// Should be the sum of the two accounts foo:foo and foo:bar
-				"USD": 300,
+				"USD": big.NewInt(300),
 			}))
 		})
 	})
@@ -190,7 +191,7 @@ var _ = Given("some empty environment", func() {
 			Expect(response.StatusCode).To(Equal(200))
 
 			balances := response.AggregateBalancesResponse
-			Expect(balances.Data).To(Equal(map[string]int64{}))
+			Expect(balances.Data).To(Equal(map[string]*big.Int{}))
 		})
 	})
 })
@@ -202,7 +203,7 @@ var _ = Given("some environment with accounts and transactions", func() {
 	)
 	When("creating transactions", func() {
 		var (
-			balances []map[string]map[string]int64
+			balances []map[string]map[string]*big.Int
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(transactionCounts); i++ {
@@ -219,7 +220,7 @@ var _ = Given("some environment with accounts and transactions", func() {
 							Metadata: map[string]string{},
 							Postings: []shared.Posting{
 								{
-									Amount:      100,
+									Amount:      big.NewInt(100),
 									Asset:       asset,
 									Source:      "world",
 									Destination: fmt.Sprintf("foo:%d", i),
@@ -232,9 +233,9 @@ var _ = Given("some environment with accounts and transactions", func() {
 				)
 				Expect(err).ToNot(HaveOccurred())
 
-				balances = append(balances, map[string]map[string]int64{
+				balances = append(balances, map[string]map[string]*big.Int{
 					fmt.Sprintf("foo:%d", i): {
-						asset: 100,
+						asset: big.NewInt(100),
 					},
 				})
 			}
@@ -253,11 +254,11 @@ var _ = Given("some environment with accounts and transactions", func() {
 				return name1 > name2
 			})
 
-			balances = append([]map[string]map[string]int64{
+			balances = append([]map[string]map[string]*big.Int{
 				{
 					"world": {
-						"USD": -transactionCounts / 2 * 100,
-						"EUR": -transactionCounts / 2 * 100,
+						"USD": big.NewInt(-transactionCounts / 2 * 100),
+						"EUR": big.NewInt(-transactionCounts / 2 * 100),
 					},
 				},
 			}, balances...)

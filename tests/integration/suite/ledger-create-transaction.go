@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"math/big"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -34,7 +35,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "alice",
@@ -74,32 +75,32 @@ var _ = Given("some empty environment", func() {
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  0,
-							Balance: ptr(int64(0)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(0),
 						},
 					},
 					"alice": {
 						"USD": {
-							Input:   0,
-							Output:  0,
-							Balance: ptr(int64(0)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(0),
 						},
 					},
 				},
 				PostCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  100,
-							Balance: ptr(int64(-100)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(100),
+							Balance: big.NewInt(-100),
 						},
 					},
 					"alice": {
 						"USD": {
-							Input:   100,
-							Output:  0,
-							Balance: ptr(int64(100)),
+							Input:   big.NewInt(100),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(100),
 						},
 					},
 				},
@@ -119,15 +120,15 @@ var _ = Given("some empty environment", func() {
 			Expect(accountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
 				Address:  "alice",
 				Metadata: metadata.Metadata{},
-				Volumes: map[string]map[string]int64{
+				Volumes: map[string]map[string]*big.Int{
 					"USD": {
-						"input":   100,
-						"output":  0,
-						"balance": 100,
+						"input":   big.NewInt(100),
+						"output":  big.NewInt(0),
+						"balance": big.NewInt(100),
 					},
 				},
-				Balances: map[string]int64{
-					"USD": 100,
+				Balances: map[string]*big.Int{
+					"USD": big.NewInt(100),
 				},
 			}))
 		})
@@ -258,7 +259,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "bob",
 								Destination: "alice",
@@ -297,7 +298,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "alice",

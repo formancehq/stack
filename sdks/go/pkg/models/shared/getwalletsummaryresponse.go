@@ -2,11 +2,15 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 // GetWalletSummaryResponse - Wallet summary
 type GetWalletSummaryResponse struct {
-	AvailableFunds map[string]int64    `json:"availableFunds"`
+	AvailableFunds map[string]*big.Int `json:"availableFunds"`
 	Balances       []BalanceWithAssets `json:"balances"`
-	ExpirableFunds map[string]int64    `json:"expirableFunds"`
-	ExpiredFunds   map[string]int64    `json:"expiredFunds"`
-	HoldFunds      map[string]int64    `json:"holdFunds"`
+	ExpirableFunds map[string]*big.Int `json:"expirableFunds"`
+	ExpiredFunds   map[string]*big.Int `json:"expiredFunds"`
+	HoldFunds      map[string]*big.Int `json:"holdFunds"`
 }

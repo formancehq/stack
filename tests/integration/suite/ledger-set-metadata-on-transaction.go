@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"math/big"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -25,7 +26,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "alice",

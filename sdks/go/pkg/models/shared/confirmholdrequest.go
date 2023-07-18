@@ -2,9 +2,13 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 type ConfirmHoldRequest struct {
 	// Define the amount to transfer.
-	Amount *int64 `json:"amount,omitempty"`
+	Amount *big.Int `json:"amount,omitempty"`
 	// Define a final confirmation. Remaining funds will be returned to the wallet.
 	Final *bool `json:"final,omitempty"`
 }

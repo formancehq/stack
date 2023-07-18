@@ -2,6 +2,7 @@ package suite
 
 import (
 	"encoding/json"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -120,7 +121,7 @@ var _ = Given("An empty environment", func() {
 						Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(1))
 						Expect(balancesCursorResponse.Cursor.Data[0]).To(HaveLen(1))
 						Expect(balancesCursorResponse.Cursor.Data[0]["bank"]).To(HaveLen(1))
-						Expect(balancesCursorResponse.Cursor.Data[0]["bank"]["EUR/2"]).To(Equal(int64(100)))
+						Expect(balancesCursorResponse.Cursor.Data[0]["bank"]["EUR/2"]).To(Equal(big.NewInt(100)))
 					})
 				})
 				Then("reading history", func() {
@@ -154,7 +155,7 @@ var _ = Given("An empty environment", func() {
 						Expect(stageSend).
 							To(Equal(shared.StageSend{
 								Amount: &shared.Monetary{
-									Amount: 100,
+									Amount: big.NewInt(100),
 									Asset:  "EUR/2",
 								},
 								Destination: &shared.StageSendDestination{
@@ -190,7 +191,7 @@ var _ = Given("An empty environment", func() {
 							Expect(getWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Error).To(BeNil())
 							postings := []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "EUR/2",
 								Destination: "bank",
 								Source:      "world",

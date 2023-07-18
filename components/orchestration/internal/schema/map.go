@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+	"math/big"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -38,6 +39,35 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 	switch spec.Kind() {
 	case reflect.Pointer:
 		if raw == nil {
+			return nil
+		}
+		if _, isBigInt := spec.Interface().(*big.Int); isBigInt {
+			switch json := raw.(type) {
+			case string:
+				interpolated := interpolate(ctx, json)
+				if interpolated == "" {
+					interpolated = tag.defaultValue
+				}
+				bigIntValue, ok := big.NewInt(0).SetString(interpolated, 10)
+				if !ok {
+					return fmt.Errorf("unable to parse '%s' as big int", interpolated)
+				}
+				spec.Set(reflect.ValueOf(bigIntValue))
+			case float64:
+				spec.Set(reflect.ValueOf(big.NewInt(int64(json))))
+			case nil:
+				defaultValue := tag.defaultValue
+				if defaultValue == "" {
+					return nil
+				}
+				bigIntValue, ok := big.NewInt(0).SetString(defaultValue, 10)
+				if !ok {
+					panic(fmt.Errorf("unable to parse '%s' as big int", defaultValue))
+				}
+				spec.Set(reflect.ValueOf(bigIntValue))
+			default:
+				return fmt.Errorf("expected big int or interpolated string but was %T", json)
+			}
 			return nil
 		}
 		spec.Set(reflect.New(spec.Type().Elem()))

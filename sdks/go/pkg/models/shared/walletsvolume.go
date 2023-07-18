@@ -2,8 +2,12 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 type WalletsVolume struct {
-	Balance int64 `json:"balance"`
-	Input   int64 `json:"input"`
-	Output  int64 `json:"output"`
+	Balance *big.Int `json:"balance"`
+	Input   *big.Int `json:"input"`
+	Output  *big.Int `json:"output"`
 }

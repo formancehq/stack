@@ -1,6 +1,7 @@
 package send
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -52,7 +53,7 @@ func TestSendSchemaValidation(t *testing.T) {
 					},
 				},
 				Amount: &shared.Monetary{
-					Amount: 100,
+					Amount: big.NewInt(100),
 					Asset:  "USD",
 				},
 			},
@@ -91,7 +92,7 @@ func TestSendSchemaValidation(t *testing.T) {
 				},
 				Amount: &shared.Monetary{
 					Asset:  "USD",
-					Amount: 100,
+					Amount: big.NewInt(100),
 				},
 			},
 		},
@@ -110,7 +111,7 @@ var (
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -140,7 +141,7 @@ var (
 						Ledger: internalLedger,
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
@@ -161,7 +162,7 @@ var (
 						Ledger: internalLedger,
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
@@ -197,7 +198,7 @@ var (
 						ID: "wallet1",
 						Data: &shared.CreditWalletRequest{
 							Amount: shared.Monetary{
-								Amount: 100,
+								Amount: big.NewInt(100),
 								Asset:  "USD",
 							},
 							Sources: []shared.Subject{{
@@ -229,7 +230,7 @@ var (
 				Ledger: "default",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -259,7 +260,7 @@ var (
 						Ledger: internalLedger,
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
@@ -280,7 +281,7 @@ var (
 						Ledger: internalLedger,
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
@@ -302,7 +303,7 @@ var (
 						Ledger: "default",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "foo",
 								Source:      "world",
@@ -330,7 +331,7 @@ var (
 				Ledger: "default",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -360,7 +361,7 @@ var (
 						Ledger: internalLedger,
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
@@ -379,7 +380,7 @@ var (
 						Ledger: internalLedger,
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
@@ -401,7 +402,7 @@ var (
 						Ledger: "default",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "foo",
 								Source:      "world",
@@ -430,7 +431,7 @@ var (
 				Ledger: "default",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -442,7 +443,7 @@ var (
 						Ledger: "default",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "bar",
 								Source:      "foo",
@@ -469,7 +470,7 @@ var (
 				Ledger: "ledger2",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -481,7 +482,7 @@ var (
 						Ledger: "ledger1",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "account1",
@@ -503,7 +504,7 @@ var (
 						Ledger: "ledger2",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "account2",
 								Source:      "world",
@@ -532,7 +533,7 @@ var (
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -555,7 +556,7 @@ var (
 						ID: "bar",
 						Data: &shared.CreditWalletRequest{
 							Amount: shared.Monetary{
-								Amount: 100,
+								Amount: big.NewInt(100),
 								Asset:  "USD",
 							},
 							Sources: []shared.Subject{{
@@ -585,7 +586,7 @@ var (
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -608,7 +609,7 @@ var (
 						Ledger: "ledger1",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "account1",
@@ -630,7 +631,7 @@ var (
 						ID: "wallet",
 						Data: &shared.CreditWalletRequest{
 							Amount: shared.Monetary{
-								Amount: 100,
+								Amount: big.NewInt(100),
 								Asset:  "USD",
 							},
 							Sources: []shared.Subject{{
@@ -663,7 +664,7 @@ var (
 				Metadata: "stripeConnectID",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -701,7 +702,7 @@ var (
 						Ledger: "default",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "foo",
@@ -728,7 +729,7 @@ var (
 				Ledger: "default",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -756,7 +757,7 @@ var (
 						Data: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Asset:  "USD",
-								Amount: 100,
+								Amount: big.NewInt(100),
 							},
 							Destination: &shared.Subject{
 								LedgerAccountSubject: &shared.LedgerAccountSubject{
@@ -785,7 +786,7 @@ var (
 				Ledger: "ledger2",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -810,7 +811,7 @@ var (
 						Data: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Asset:  "USD",
-								Amount: 100,
+								Amount: big.NewInt(100),
 							},
 							Balances: []string{"main"},
 							Metadata: metadata.Metadata{
@@ -828,7 +829,7 @@ var (
 						Ledger: "ledger2",
 						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "account",
 								Source:      "world",
@@ -857,7 +858,7 @@ var (
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -892,7 +893,7 @@ var (
 						Data: &shared.CreditWalletRequest{
 							Amount: shared.Monetary{
 								Asset:  "USD",
-								Amount: 100,
+								Amount: big.NewInt(100),
 							},
 							Sources: []shared.Subject{{
 								WalletSubject: &shared.WalletSubject{
@@ -923,7 +924,7 @@ var (
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -958,7 +959,7 @@ var (
 						Data: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Asset:  "USD",
-								Amount: 100,
+								Amount: big.NewInt(100),
 							},
 							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
@@ -977,7 +978,7 @@ var (
 						Data: &shared.CreditWalletRequest{
 							Amount: shared.Monetary{
 								Asset:  "USD",
-								Amount: 100,
+								Amount: big.NewInt(100),
 							},
 							Balance: ptrString("main"),
 							Metadata: metadata.Metadata{
@@ -1002,7 +1003,7 @@ var (
 				Metadata: "stripeConnectID",
 			}),
 			Amount: &shared.Monetary{
-				Amount: 100,
+				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
 		},
@@ -1039,7 +1040,7 @@ var (
 						Data: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Asset:  "USD",
-								Amount: 100,
+								Amount: big.NewInt(100),
 							},
 							Balances: []string{"main"},
 						},

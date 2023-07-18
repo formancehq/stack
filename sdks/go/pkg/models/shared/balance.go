@@ -3,11 +3,12 @@
 package shared
 
 import (
+	"math/big"
 	"time"
 )
 
 type Balance struct {
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 	Name      string     `json:"name"`
-	Priority  *int64     `json:"priority,omitempty"`
+	Priority  *big.Int   `json:"priority,omitempty"`
 }

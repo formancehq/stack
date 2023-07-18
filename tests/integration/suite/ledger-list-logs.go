@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"math/big"
 	"sort"
 	"time"
 
@@ -33,7 +34,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:foo",
@@ -54,7 +55,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: m1,
 						Postings: []shared.Posting{
 							{
-								Amount:      200,
+								Amount:      big.NewInt(200),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:bar",
@@ -267,7 +268,7 @@ var _ = Given("some environment with accounts", func() {
 							Metadata: map[string]string{},
 							Postings: []shared.Posting{
 								{
-									Amount:      100,
+									Amount:      big.NewInt(100),
 									Asset:       "USD",
 									Source:      "world",
 									Destination: fmt.Sprintf("foo:%d", i),

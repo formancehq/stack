@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 
@@ -52,7 +53,7 @@ var _ = Given("An environment configured with a webhook sent on created transact
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "alice",
