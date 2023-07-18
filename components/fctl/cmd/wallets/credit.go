@@ -3,7 +3,6 @@ package wallets
 import (
 	"fmt"
 	"math/big"
-	"strconv"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -96,9 +95,9 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, errors.New("You need to specify wallet id using --id or --name flags")
 	}
 
-	amount, err := strconv.ParseUint(amountStr, 10, 64)
-	if err != nil {
-		return nil, errors.Wrap(err, "parsing amount")
+	amount, ok := big.NewInt(0).SetString(amountStr, 10)
+	if !ok {
+		return nil, fmt.Errorf("unable to parse '%s' as big int", amountStr)
 	}
 
 	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
@@ -120,7 +119,7 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		CreditWalletRequest: &shared.CreditWalletRequest{
 			Amount: shared.Monetary{
 				Asset:  asset,
-				Amount: big.NewInt(int64(amount)),
+				Amount: amount,
 			},
 			Metadata: metadata,
 			Sources:  sources,

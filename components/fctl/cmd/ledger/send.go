@@ -1,8 +1,8 @@
 package ledger
 
 import (
+	"fmt"
 	"math/big"
-	"strconv"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -90,9 +90,9 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		asset = args[3]
 	}
 
-	amount, err := strconv.ParseInt(amountStr, 10, 64)
-	if err != nil {
-		return nil, err
+	amount, ok := big.NewInt(0).SetString(amountStr, 10)
+	if !ok {
+		return nil, fmt.Errorf("unable to parse '%s' as big int", amountStr)
 	}
 
 	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
@@ -107,7 +107,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 			Metadata: metadata,
 			Postings: []shared.Posting{
 				{
-					Amount:      big.NewInt(amount),
+					Amount:      amount,
 					Asset:       asset,
 					Destination: destination,
 					Source:      source,
