@@ -36,6 +36,21 @@ func (c *Client) login(ctx context.Context) error {
 		return fmt.Errorf("failed to read login response body: %w", err)
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		type responseError struct {
+			ErrorCode string `json:"errorCode"`
+			ErrorText string `json:"errorText"`
+		}
+		var errors []responseError
+		if err = json.Unmarshal(responseBody, &errors); err != nil {
+			return fmt.Errorf("failed to unmarshal login response: %w", err)
+		}
+		if len(errors) > 0 {
+			return fmt.Errorf("failed to login: %s %s", errors[0].ErrorCode, errors[0].ErrorText)
+		}
+		return fmt.Errorf("failed to login: %s", resp.Status)
+	}
+
 	//nolint:tagliatelle // allow for client-side structures
 	type response struct {
 		AccessToken string `json:"access_token"`
