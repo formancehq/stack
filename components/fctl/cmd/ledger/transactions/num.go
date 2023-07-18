@@ -2,7 +2,7 @@ package transactions
 
 import (
 	"fmt"
-	"strconv"
+	"math/big"
 	"strings"
 	"time"
 
@@ -123,9 +123,9 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 			return nil, fmt.Errorf("malformed var: %s", v)
 		}
 
-		amount, err := strconv.ParseInt(amountParts[0], 10, 64)
-		if err != nil {
-			return nil, fmt.Errorf("malformed var: %s", v)
+		amount, ok := big.NewInt(0).SetString(amountParts[0], 10)
+		if !ok {
+			return nil, fmt.Errorf("unable to parse '%s' as big int", amountParts[0])
 		}
 
 		vars[parts[0]] = map[string]any{

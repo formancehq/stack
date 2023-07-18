@@ -3,7 +3,6 @@ package wallets
 import (
 	"fmt"
 	"math/big"
-	"strconv"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -112,9 +111,9 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	description := fctl.GetString(cmd, c.descriptionFlag)
 
-	amount, err := strconv.ParseInt(amountStr, 10, 32)
-	if err != nil {
-		return nil, errors.Wrap(err, "parsing amount")
+	amount, ok := big.NewInt(0).SetString(amountStr, 10)
+	if !ok {
+		return nil, fmt.Errorf("unable to parse '%s' as big int", amountStr)
 	}
 
 	var destination *shared.Subject
@@ -129,7 +128,7 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		DebitWalletRequest: &shared.DebitWalletRequest{
 			Amount: shared.Monetary{
 				Asset:  asset,
-				Amount: big.NewInt(amount),
+				Amount: amount,
 			},
 			Pending:     &pending,
 			Metadata:    metadata,
