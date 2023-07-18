@@ -110,6 +110,26 @@ func init() {
 					return paymentsServices(ctx, env)
 				},
 			},
+			"v0.8.0": {
+				PreUpgrade: func(ctx modules.Context) error {
+					// Add payment accounts
+					return paymentsPreUpgradeMigration(ctx)
+				},
+				PostUpgrade: func(ctx modules.PostInstallContext) error {
+					resetConnectors(ctx, "stripe")
+					resetConnectors(ctx, "wise")
+					resetConnectors(ctx, "modulr")
+					resetConnectors(ctx, "banking-circle")
+					resetConnectors(ctx, "currency-cloud")
+					resetConnectors(ctx, "dummy-pay")
+					resetConnectors(ctx, "mangopay")
+					resetConnectors(ctx, "moneycorp")
+					return nil
+				},
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return paymentsServices(ctx, env)
+				},
+			},
 		},
 	})
 }

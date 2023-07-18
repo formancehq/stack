@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/currency"
@@ -89,6 +90,31 @@ func ingestBatch(
 				Scheme:    models.PaymentSchemeOther,
 				RawData:   rawData,
 			},
+		}
+
+		switch paymentType {
+		case models.PaymentTypePayIn:
+			batchElement.Payment.DestinationAccountID = &models.AccountID{
+				Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
+				Provider:  models.ConnectorProviderMoneycorp,
+			}
+		case models.PaymentTypePayOut:
+			batchElement.Payment.SourceAccountID = &models.AccountID{
+				Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
+				Provider:  models.ConnectorProviderMoneycorp,
+			}
+		default:
+			if transaction.Attributes.Direction == "Debit" {
+				batchElement.Payment.SourceAccountID = &models.AccountID{
+					Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
+					Provider:  models.ConnectorProviderMoneycorp,
+				}
+			} else {
+				batchElement.Payment.DestinationAccountID = &models.AccountID{
+					Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
+					Provider:  models.ConnectorProviderMoneycorp,
+				}
+			}
 		}
 
 		batch = append(batch, batchElement)

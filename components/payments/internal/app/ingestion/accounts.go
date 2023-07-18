@@ -14,9 +14,7 @@ import (
 )
 
 type AccountBatchElement struct {
-	Reference string
-	Provider  string
-	Type      models.AccountType
+	Account *models.Account
 }
 
 type AccountBatch []AccountBatchElement
@@ -35,14 +33,9 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 		"startingAt": startingAt,
 	}).Debugf("Ingest accounts batch")
 
-	accounts := make([]models.Account, len(batch))
-
+	accounts := make([]*models.Account, len(batch))
 	for batchIdx := range batch {
-		accounts[batchIdx] = models.Account{
-			Reference: batch[batchIdx].Reference,
-			Provider:  batch[batchIdx].Provider,
-			Type:      batch[batchIdx].Type,
-		}
+		accounts[batchIdx] = batch[batchIdx].Account
 	}
 
 	if err := i.repo.UpsertAccounts(ctx, i.provider, accounts); err != nil {

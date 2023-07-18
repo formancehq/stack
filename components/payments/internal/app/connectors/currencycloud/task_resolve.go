@@ -13,6 +13,7 @@ import (
 const (
 	taskNameMain              = "main"
 	taskNameFetchTransactions = "fetch-transactions"
+	taskNameFetchAccounts     = "fetch-accounts"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -41,6 +42,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		switch taskDescriptor.Key {
 		case taskNameMain:
 			return taskMain(logger)
+		case taskNameFetchAccounts:
+			return taskFetchAccounts(logger, currencyCloudClient)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, currencyCloudClient, config)
 		}

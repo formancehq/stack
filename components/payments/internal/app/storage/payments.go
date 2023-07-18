@@ -6,8 +6,6 @@ import (
 	"sort"
 	"time"
 
-	"github.com/uptrace/bun"
-
 	"github.com/formancehq/payments/internal/app/models"
 )
 
@@ -16,7 +14,6 @@ func (s *Storage) ListPayments(ctx context.Context, pagination Paginator) ([]*mo
 
 	query := s.db.NewSelect().
 		Model(&payments).
-		Relation("Account").
 		Relation("Connector").
 		Relation("Metadata").
 		Relation("Adjustments")
@@ -93,35 +90,8 @@ func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorP
 		return fmt.Errorf("failed to get connector: %w", err)
 	}
 
-	var accountReferences []string
-
 	for i := range payments {
 		payments[i].ConnectorID = connector.ID
-
-		if payments[i].Account != nil && payments[i].Account.Reference != "" {
-			accountReferences = append(accountReferences, payments[i].Account.Reference)
-		}
-	}
-
-	if len(accountReferences) > 0 {
-		var accounts []models.Account
-
-		err = s.db.NewSelect().Model(&accounts).
-			Where("reference IN (?)", bun.In(accountReferences)).
-			Scan(ctx)
-		if err != nil {
-			return e("failed to get accounts", err)
-		}
-
-		for i := range payments {
-			if payments[i].Account != nil && payments[i].Account.Reference != "" {
-				for j := range accounts {
-					if accounts[j].Reference == payments[i].Account.Reference {
-						payments[i].AccountID = accounts[j].ID
-					}
-				}
-			}
-		}
 	}
 
 	_, err = s.db.NewInsert().
@@ -133,7 +103,8 @@ func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorP
 		Set("raw_data = EXCLUDED.raw_data").
 		Set("scheme = EXCLUDED.scheme").
 		Set("asset = EXCLUDED.asset").
-		Set("account_id = EXCLUDED.account_id").
+		Set("source_account_id = EXCLUDED.source_account_id").
+		Set("destination_account_id = EXCLUDED.destination_account_id").
 		Exec(ctx)
 	if err != nil {
 		return e("failed to create payments", err)

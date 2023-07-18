@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	lru "github.com/hashicorp/golang-lru/v2"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -22,6 +23,8 @@ func (t *apiTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 type Client struct {
 	httpClient *http.Client
+
+	recipientAccountsCache *lru.Cache[uint64, *RecipientAccount]
 }
 
 func (w *Client) endpoint(path string) string {
@@ -29,6 +32,7 @@ func (w *Client) endpoint(path string) string {
 }
 
 func NewClient(apiKey string) *Client {
+	recipientsCache, _ := lru.New[uint64, *RecipientAccount](2048)
 	httpClient := &http.Client{
 		Transport: &apiTransport{
 			APIKey:     apiKey,
@@ -37,6 +41,7 @@ func NewClient(apiKey string) *Client {
 	}
 
 	return &Client{
-		httpClient: httpClient,
+		httpClient:             httpClient,
+		recipientAccountsCache: recipientsCache,
 	}
 }

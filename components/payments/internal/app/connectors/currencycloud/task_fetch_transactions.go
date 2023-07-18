@@ -84,6 +84,19 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 				},
 			}
 
+			switch paymentType {
+			case models.PaymentTypePayOut:
+				batchElement.Payment.SourceAccountID = &models.AccountID{
+					Reference: transaction.AccountID,
+					Provider:  models.ConnectorProviderCurrencyCloud,
+				}
+			default:
+				batchElement.Payment.DestinationAccountID = &models.AccountID{
+					Reference: transaction.AccountID,
+					Provider:  models.ConnectorProviderCurrencyCloud,
+				}
+			}
+
 			batch = append(batch, batchElement)
 		}
 

@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/storage"
 
@@ -22,19 +20,20 @@ type listPaymentsRepository interface {
 }
 
 type paymentResponse struct {
-	ID            string                   `json:"id"`
-	Reference     string                   `json:"reference"`
-	AccountID     string                   `json:"accountID"`
-	Type          string                   `json:"type"`
-	Provider      models.ConnectorProvider `json:"provider"`
-	Status        models.PaymentStatus     `json:"status"`
-	InitialAmount int64                    `json:"initialAmount"`
-	Scheme        models.PaymentScheme     `json:"scheme"`
-	Asset         string                   `json:"asset"`
-	CreatedAt     time.Time                `json:"createdAt"`
-	Raw           interface{}              `json:"raw"`
-	Adjustments   []paymentAdjustment      `json:"adjustments"`
-	Metadata      map[string]string        `json:"metadata"`
+	ID                   string                   `json:"id"`
+	Reference            string                   `json:"reference"`
+	SourceAccountID      string                   `json:"sourceAccountID"`
+	DestinationAccountID string                   `json:"destinationAccountID"`
+	Type                 string                   `json:"type"`
+	Provider             models.ConnectorProvider `json:"provider"`
+	Status               models.PaymentStatus     `json:"status"`
+	InitialAmount        int64                    `json:"initialAmount"`
+	Scheme               models.PaymentScheme     `json:"scheme"`
+	Asset                string                   `json:"asset"`
+	CreatedAt            time.Time                `json:"createdAt"`
+	Raw                  interface{}              `json:"raw"`
+	Adjustments          []paymentAdjustment      `json:"adjustments"`
+	Metadata             map[string]string        `json:"metadata"`
 }
 
 type paymentAdjustment struct {
@@ -114,8 +113,12 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 				Adjustments:   make([]paymentAdjustment, len(ret[i].Adjustments)),
 			}
 
-			if ret[i].AccountID != uuid.Nil {
-				data[i].AccountID = ret[i].AccountID.String()
+			if ret[i].SourceAccountID != nil {
+				data[i].SourceAccountID = ret[i].SourceAccountID.String()
+			}
+
+			if ret[i].DestinationAccountID != nil {
+				data[i].DestinationAccountID = ret[i].DestinationAccountID.String()
 			}
 
 			for adjustmentIdx := range ret[i].Adjustments {
@@ -185,8 +188,12 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			Adjustments:   make([]paymentAdjustment, len(payment.Adjustments)),
 		}
 
-		if payment.AccountID != uuid.Nil {
-			data.AccountID = payment.AccountID.String()
+		if payment.SourceAccountID != nil {
+			data.SourceAccountID = payment.SourceAccountID.String()
+		}
+
+		if payment.DestinationAccountID != nil {
+			data.DestinationAccountID = payment.DestinationAccountID.String()
 		}
 
 		for i := range payment.Adjustments {

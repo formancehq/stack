@@ -3,8 +3,6 @@ package stripe
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	"github.com/formancehq/payments/internal/app/models"
 
 	"github.com/formancehq/payments/internal/app/integration"
@@ -30,7 +28,8 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 	}
 
 	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_NOW,
+		ScheduleOption: models.OPTIONS_RUN_INDEFINITELY,
+		Duration:       c.cfg.PollingPeriod.Duration,
 		// No need to restart this task, since the connector is not existing or
 		// was uninstalled previously, the task does not exists in the database
 		Restart: false,
@@ -47,15 +46,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 		panic(err)
 	}
 
-	if taskDescriptor.Main {
-		return MainTask(c.cfg)
-	}
-
-	if taskDescriptor.TransferID != uuid.Nil {
-		return TransferTask(c.cfg, taskDescriptor.TransferID)
-	}
-
-	return ConnectedAccountTask(c.cfg, taskDescriptor.Account)
+	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
 }
 
 func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {

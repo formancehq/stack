@@ -23,7 +23,7 @@ type Account struct {
 	CreatedDate string `json:"createdDate"`
 }
 
-func (m *Client) GetAccounts() ([]Account, error) {
+func (m *Client) GetAccounts() ([]*Account, error) {
 	resp, err := m.httpClient.Get(m.buildEndpoint("accounts"))
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (m *Client) GetAccounts() ([]Account, error) {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var res responseWrapper[[]Account]
+	var res responseWrapper[[]*Account]
 	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return nil, err
 	}

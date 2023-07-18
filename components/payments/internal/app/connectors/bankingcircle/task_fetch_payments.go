@@ -14,7 +14,6 @@ import (
 func taskFetchPayments(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
-		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
 		for page := 1; ; page++ {
@@ -68,6 +67,20 @@ func ingestBatch(
 				Asset:     models.PaymentAsset(paymentEl.Transfer.Amount.Currency + "/2"),
 				RawData:   raw,
 			},
+		}
+
+		if paymentEl.DebtorInformation.AccountID != "" {
+			batchElement.Payment.SourceAccountID = &models.AccountID{
+				Reference: paymentEl.DebtorInformation.AccountID,
+				Provider:  models.ConnectorProviderBankingCircle,
+			}
+		}
+
+		if paymentEl.CreditorInformation.AccountID != "" {
+			batchElement.Payment.DestinationAccountID = &models.AccountID{
+				Reference: paymentEl.CreditorInformation.AccountID,
+				Provider:  models.ConnectorProviderBankingCircle,
+			}
 		}
 
 		batch = append(batch, batchElement)

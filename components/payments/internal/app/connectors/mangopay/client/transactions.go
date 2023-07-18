@@ -35,8 +35,8 @@ type Payment struct {
 	DebitedWalletID  string `json:"DebitedWalletId"`
 }
 
-func (c *Client) GetTransactions(ctx context.Context, userID string, page int) ([]*Payment, error) {
-	endpoint := fmt.Sprintf("%s/v2.01/%s/users/%s/transactions", c.endpoint, c.clientID, userID)
+func (c *Client) GetTransactions(ctx context.Context, walletsID string, page int) ([]*Payment, error) {
+	endpoint := fmt.Sprintf("%s/v2.01/%s/wallets/%s/transactions", c.endpoint, c.clientID, walletsID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create login request: %w", err)

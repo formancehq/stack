@@ -25,12 +25,17 @@ func TestTimelineTrigger(t *testing.T) {
 	ingestedTx := make([]*stripe.BalanceTransaction, 0)
 	trigger := NewTimelineTrigger(
 		logging.FromContext(context.TODO()),
-		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
-			ingestedTx = append(ingestedTx, batch...)
-
-			return nil
-		}),
+		NewIngester(
+			func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
+				ingestedTx = append(ingestedTx, batch...)
+				return nil
+			},
+			func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
+				return nil
+			},
+		),
 		timeline,
+		TimelineTriggerTypeTransactions,
 	)
 
 	allTxs := make([]*stripe.BalanceTransaction, txCount)
@@ -74,13 +79,19 @@ func TestCancelTimelineTrigger(t *testing.T) {
 	waiting := make(chan struct{})
 	trigger := NewTimelineTrigger(
 		logging.FromContext(context.TODO()),
-		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
-			close(waiting) // Instruct the test the trigger is in fetching state
-			<-ctx.Done()
+		NewIngester(
+			func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
+				close(waiting) // Instruct the test the trigger is in fetching state
+				<-ctx.Done()
 
-			return nil
-		}),
+				return nil
+			},
+			func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
+				return nil
+			},
+		),
 		timeline,
+		TimelineTriggerTypeTransactions,
 	)
 
 	allTxs := make([]*stripe.BalanceTransaction, txCount)

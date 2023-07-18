@@ -347,5 +347,65 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE accounts.account DROP COLUMN IF EXISTS "type";
+					DROP TYPE IF EXISTS "public".account_type;
+					CREATE TYPE "public".account_type AS ENUM('INTERNAL', 'EXTERNAL', 'UNKNOWN');;
+					ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS "type" "public".account_type;
+
+					ALTER TABLE accounts.account drop constraint IF EXISTS account_reference_key;
+					ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS "raw_data" json;
+					ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS "default_currency" text NOT NULL DEFAULT '';
+					ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS "account_name" text NOT NULL DEFAULT '';
+
+					ALTER TABLE accounts.account ALTER COLUMN id DROP DEFAULT;
+					ALTER TABLE payments.payment DROP CONSTRAINT IF EXISTS payment_account;
+					ALTER TABLE payments.payment DROP COLUMN IF EXISTS "account_id";
+					ALTER TABLE payments.payment ADD COLUMN IF NOT EXISTS "source_account_id" CHARACTER VARYING;
+					ALTER TABLE payments.payment ADD COLUMN IF NOT EXISTS "destination_account_id" CHARACTER VARYING;
+					ALTER TABLE accounts.account ALTER COLUMN id TYPE CHARACTER VARYING;
+
+					ALTER TABLE payments.payment DROP CONSTRAINT IF EXISTS payment_source_account;
+					ALTER TABLE payments.payment ADD CONSTRAINT payment_source_account
+						FOREIGN KEY (source_account_id)
+						REFERENCES accounts.account (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
+
+					ALTER TABLE payments.payment DROP CONSTRAINT IF EXISTS payment_destination_account;
+					ALTER TABLE payments.payment ADD CONSTRAINT payment_destination_account
+						FOREIGN KEY (destination_account_id)
+						REFERENCES accounts.account (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				// Since only one connector is inserting accounts,
+				// let's just truncate the table, since connectors will be
+				// resetted. Truncate it cascade, or we will have an error
+				_, err := tx.Exec(`
+					TRUNCATE accounts.account CASCADE;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

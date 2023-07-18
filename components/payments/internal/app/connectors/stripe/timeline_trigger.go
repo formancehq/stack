@@ -9,27 +9,37 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
+type TimelineTriggerType string
+
+const (
+	TimelineTriggerTypeTransactions TimelineTriggerType = "transactions"
+	TimelineTriggerTypeAccounts     TimelineTriggerType = "accounts"
+)
+
 func NewTimelineTrigger(
 	logger logging.Logger,
 	ingester Ingester,
 	timeline *Timeline,
+	timelineType TimelineTriggerType,
 ) *TimelineTrigger {
 	return &TimelineTrigger{
 		logger: logger.WithFields(map[string]interface{}{
 			"component": "timeline-trigger",
 		}),
-		ingester: ingester,
-		timeline: timeline,
-		sem:      semaphore.NewWeighted(1),
+		ingester:     ingester,
+		timeline:     timeline,
+		timelineType: timelineType,
+		sem:          semaphore.NewWeighted(1),
 	}
 }
 
 type TimelineTrigger struct {
-	logger   logging.Logger
-	ingester Ingester
-	timeline *Timeline
-	sem      *semaphore.Weighted
-	cancel   func()
+	logger       logging.Logger
+	ingester     Ingester
+	timeline     *Timeline
+	timelineType TimelineTriggerType
+	sem          *semaphore.Weighted
+	cancel       func()
 }
 
 func (t *TimelineTrigger) Fetch(ctx context.Context) error {
@@ -94,28 +104,56 @@ func (t *TimelineTrigger) triggerPage(ctx context.Context, tail bool) (bool, err
 
 	logger.Debugf("Trigger page")
 
-	ret := make([]*stripe.BalanceTransaction, 0)
-	method := t.timeline.Head
-
-	if tail {
-		method = t.timeline.Tail
-	}
-
-	hasMore, futureState, commitFn, err := method(ctx, &ret)
-	if err != nil {
-		return false, errors.Wrap(err, "fetching timeline")
-	}
-
-	logger.Debug("Ingest batch")
-
-	if len(ret) > 0 {
-		err = t.ingester.Ingest(ctx, ret, futureState, tail)
-		if err != nil {
-			return false, errors.Wrap(err, "ingesting batch")
+	var hasMore bool
+	switch t.timelineType {
+	case TimelineTriggerTypeTransactions:
+		ret := make([]*stripe.BalanceTransaction, 0)
+		method := t.timeline.TransactionsHead
+		if tail {
+			method = t.timeline.TransactionsTail
 		}
-	}
 
-	commitFn()
+		more, futureState, commitFn, err := method(ctx, &ret)
+		if err != nil {
+			return false, errors.Wrap(err, "fetching timeline")
+		}
+		hasMore = more
+
+		logger.Debug("Ingest transactions batch")
+
+		if len(ret) > 0 {
+			err = t.ingester.IngestTransactions(ctx, ret, futureState, tail)
+			if err != nil {
+				return false, errors.Wrap(err, "ingesting batch")
+			}
+		}
+
+		commitFn()
+
+	case TimelineTriggerTypeAccounts:
+		ret := make([]*stripe.Account, 0)
+		method := t.timeline.AccountsHead
+		if tail {
+			method = t.timeline.AccountsTail
+		}
+
+		more, futureState, commitFn, err := method(ctx, &ret)
+		if err != nil {
+			return false, errors.Wrap(err, "fetching timeline")
+		}
+		hasMore = more
+
+		logger.Debug("Ingest transactions batch")
+
+		if len(ret) > 0 {
+			err = t.ingester.IngestAccounts(ctx, ret, futureState, tail)
+			if err != nil {
+				return false, errors.Wrap(err, "ingesting batch")
+			}
+		}
+
+		commitFn()
+	}
 
 	return hasMore, nil
 }

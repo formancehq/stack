@@ -360,7 +360,6 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsCursorCursor.j
 lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsCursor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AccountsCursorCursor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AccountsCursor.java
-lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsAccountType.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsAccount.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConnectorConfigResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ResponseCursorTotal.java

@@ -11,6 +11,7 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
+// TODO(polo): Fetch Client wallets (FEES, ...) in the future
 type Client struct {
 	httpClient *http.Client
 

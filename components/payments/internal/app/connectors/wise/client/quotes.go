@@ -39,7 +39,7 @@ func (w *Client) CreateQuote(profileID uint64, currency string, amount int64) (Q
 
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return response, fmt.Errorf("failed to unmarshal profiles: %w", err)
+		return response, fmt.Errorf("failed to get response from quote: %w", err)
 	}
 
 	return response, nil

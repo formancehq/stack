@@ -58,6 +58,31 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 				},
 			}
 
+			switch paymentType {
+			case models.PaymentTypePayIn:
+				batchElement.Payment.DestinationAccountID = &models.AccountID{
+					Reference: accountID,
+					Provider:  models.ConnectorProviderModulr,
+				}
+			case models.PaymentTypePayOut:
+				batchElement.Payment.SourceAccountID = &models.AccountID{
+					Reference: accountID,
+					Provider:  models.ConnectorProviderModulr,
+				}
+			default:
+				if transaction.Credit {
+					batchElement.Payment.DestinationAccountID = &models.AccountID{
+						Reference: accountID,
+						Provider:  models.ConnectorProviderModulr,
+					}
+				} else {
+					batchElement.Payment.SourceAccountID = &models.AccountID{
+						Reference: accountID,
+						Provider:  models.ConnectorProviderModulr,
+					}
+				}
+			}
+
 			batch = append(batch, batchElement)
 		}
 

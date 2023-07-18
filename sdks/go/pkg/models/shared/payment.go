@@ -117,17 +117,18 @@ func (e *PaymentType) UnmarshalJSON(data []byte) error {
 }
 
 type Payment struct {
-	AccountID     string                 `json:"accountID"`
-	Adjustments   []PaymentAdjustment    `json:"adjustments"`
-	Asset         string                 `json:"asset"`
-	CreatedAt     time.Time              `json:"createdAt"`
-	ID            string                 `json:"id"`
-	InitialAmount int64                  `json:"initialAmount"`
-	Metadata      PaymentMetadata        `json:"metadata"`
-	Provider      Connector              `json:"provider"`
-	Raw           map[string]interface{} `json:"raw"`
-	Reference     string                 `json:"reference"`
-	Scheme        PaymentScheme          `json:"scheme"`
-	Status        PaymentStatus          `json:"status"`
-	Type          PaymentType            `json:"type"`
+	Adjustments          []PaymentAdjustment    `json:"adjustments"`
+	Asset                string                 `json:"asset"`
+	CreatedAt            time.Time              `json:"createdAt"`
+	DestinationAccountID string                 `json:"destinationAccountID"`
+	ID                   string                 `json:"id"`
+	InitialAmount        int64                  `json:"initialAmount"`
+	Metadata             PaymentMetadata        `json:"metadata"`
+	Provider             Connector              `json:"provider"`
+	Raw                  map[string]interface{} `json:"raw"`
+	Reference            string                 `json:"reference"`
+	Scheme               PaymentScheme          `json:"scheme"`
+	SourceAccountID      string                 `json:"sourceAccountID"`
+	Status               PaymentStatus          `json:"status"`
+	Type                 PaymentType            `json:"type"`
 }

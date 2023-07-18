@@ -85,7 +85,7 @@ func (c *Client) GetPayments(ctx context.Context, page int) ([]*Payment, error) 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpoint+"/api/v1/payments/singles", http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create login request: %w", err)
+		return nil, fmt.Errorf("failed to create payments request: %w", err)
 	}
 
 	q := req.URL.Query()
@@ -98,7 +98,7 @@ func (c *Client) GetPayments(ctx context.Context, page int) ([]*Payment, error) 
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to login: %w", err)
+		return nil, fmt.Errorf("failed to get payments: %w", err)
 	}
 
 	defer func() {
@@ -110,7 +110,7 @@ func (c *Client) GetPayments(ctx context.Context, page int) ([]*Payment, error) 
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read login response body: %w", err)
+		return nil, fmt.Errorf("failed to read payments response body: %w", err)
 	}
 
 	type response struct {
@@ -124,7 +124,7 @@ func (c *Client) GetPayments(ctx context.Context, page int) ([]*Payment, error) 
 	var res response
 
 	if err = json.Unmarshal(responseBody, &res); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal login response: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal payments response: %w", err)
 	}
 
 	return res.Result, nil

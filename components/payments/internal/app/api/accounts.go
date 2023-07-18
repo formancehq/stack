@@ -19,11 +19,13 @@ type listAccountsRepository interface {
 }
 
 type accountResponse struct {
-	ID        string             `json:"id"`
-	Reference string             `json:"reference"`
-	CreatedAt time.Time          `json:"createdAt"`
-	Provider  string             `json:"provider"`
-	Type      models.AccountType `json:"type"`
+	ID              string      `json:"id"`
+	Reference       string      `json:"reference"`
+	CreatedAt       time.Time   `json:"createdAt"`
+	Provider        string      `json:"provider"`
+	DefaultCurrency string      `json:"defaultCurrency"`
+	AccountName     string      `json:"accountName"`
+	Raw             interface{} `json:"raw"`
 }
 
 func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
@@ -83,11 +85,13 @@ func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
 
 		for i := range ret {
 			data[i] = &accountResponse{
-				ID:        ret[i].ID.String(),
-				Reference: ret[i].Reference,
-				CreatedAt: ret[i].CreatedAt,
-				Provider:  ret[i].Provider,
-				Type:      ret[i].Type,
+				ID:              ret[i].ID.String(),
+				Reference:       ret[i].Reference,
+				CreatedAt:       ret[i].CreatedAt,
+				Provider:        ret[i].Provider.String(),
+				DefaultCurrency: ret[i].DefaultCurrency,
+				AccountName:     ret[i].AccountName,
+				Raw:             ret[i].RawData,
 			}
 		}
 

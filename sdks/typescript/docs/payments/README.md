@@ -335,7 +335,7 @@ List accounts
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { PaymentslistAccountsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector, PaymentsAccountType } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {

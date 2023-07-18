@@ -6,16 +6,19 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Connector } from "./connector";
 import { Expose, Transform } from "class-transformer";
 
-export enum PaymentsAccountType {
-  Target = "TARGET",
-  Source = "SOURCE",
-}
-
 export class PaymentsAccount extends SpeakeasyBase {
+  @SpeakeasyMetadata()
+  @Expose({ name: "accountName" })
+  accountName: string;
+
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
   createdAt: Date;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "defaultCurrency" })
+  defaultCurrency: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "id" })
@@ -26,10 +29,10 @@ export class PaymentsAccount extends SpeakeasyBase {
   provider: Connector;
 
   @SpeakeasyMetadata()
-  @Expose({ name: "reference" })
-  reference: string;
+  @Expose({ name: "raw" })
+  raw: Record<string, any>;
 
   @SpeakeasyMetadata()
-  @Expose({ name: "type" })
-  type: PaymentsAccountType;
+  @Expose({ name: "reference" })
+  reference: string;
 }
