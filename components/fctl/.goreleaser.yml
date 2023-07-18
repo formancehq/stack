@@ -1,3 +1,5 @@
+# source about auto completion = https://carlosbecker.com/posts/golang-completions-cobra/
+
 project_name: fctl
 includes:
   - from_file:
@@ -25,6 +27,10 @@ builds:
       - amd64
       - arm64
 
+before:
+  hooks:
+  - ./scripts/completions.sh
+
 archives:
   - id: "{{.ProjectName}}"
     builds:
@@ -34,6 +40,8 @@ archives:
         format: zip
     format: tar.gz
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
+    files:
+    - completions/*
 
 brews:
   - tap:
@@ -47,3 +55,6 @@ brews:
       system "#{bin}/fctl version"
     install: |
       bin.install "fctl"
+      bash_completion.install "completions/fctl.bash" => "fctl"
+      zsh_completion.install "completions/fctl.zsh" => "_fctl"
+      fish_completion.install "completions/fctl.fish"
