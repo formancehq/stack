@@ -2,7 +2,11 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 // AggregateBalancesResponse - OK
 type AggregateBalancesResponse struct {
-	Data map[string]int64 `json:"data"`
+	Data map[string]*big.Int `json:"data"`
 }

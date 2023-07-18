@@ -2,6 +2,7 @@ package suite
 
 import (
 	"database/sql"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -54,7 +55,7 @@ var _ = Given("an environment configured with a webhook sent on created transact
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "alice",

@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"math/big"
 	"strconv"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
@@ -106,7 +107,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 			Metadata: metadata,
 			Postings: []shared.Posting{
 				{
-					Amount:      amount,
+					Amount:      big.NewInt(amount),
 					Asset:       asset,
 					Destination: destination,
 					Source:      source,

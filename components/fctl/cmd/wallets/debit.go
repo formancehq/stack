@@ -2,6 +2,7 @@ package wallets
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
@@ -128,7 +129,7 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		DebitWalletRequest: &shared.DebitWalletRequest{
 			Amount: shared.Monetary{
 				Asset:  asset,
-				Amount: amount,
+				Amount: big.NewInt(amount),
 			},
 			Pending:     &pending,
 			Metadata:    metadata,

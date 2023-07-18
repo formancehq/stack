@@ -2,8 +2,12 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 type Volume struct {
-	Balance *int64 `json:"balance,omitempty"`
-	Input   int64  `json:"input"`
-	Output  int64  `json:"output"`
+	Balance *big.Int `json:"balance,omitempty"`
+	Input   *big.Int `json:"input"`
+	Output  *big.Int `json:"output"`
 }

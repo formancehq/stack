@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -32,7 +33,7 @@ var _ = Given("some empty environment", func() {
 							Metadata: map[string]string{},
 							Postings: []shared.Posting{
 								{
-									Amount:      100,
+									Amount:      big.NewInt(100),
 									Asset:       "USD",
 									Source:      "world",
 									Destination: fmt.Sprintf("account:%d", i),
@@ -57,32 +58,32 @@ var _ = Given("some empty environment", func() {
 						PreCommitVolumes: map[string]map[string]shared.Volume{
 							"world": {
 								"USD": {
-									Input:   0,
-									Output:  int64(i * 100),
-									Balance: ptr(int64(-i * 100)),
+									Input:   big.NewInt(0),
+									Output:  big.NewInt(int64(i * 100)),
+									Balance: big.NewInt(int64(-i * 100)),
 								},
 							},
 							fmt.Sprintf("account:%d", i): {
 								"USD": {
-									Input:   0,
-									Output:  0,
-									Balance: ptr(int64(0)),
+									Input:   big.NewInt(0),
+									Output:  big.NewInt(0),
+									Balance: big.NewInt(0),
 								},
 							},
 						},
 						PostCommitVolumes: map[string]map[string]shared.Volume{
 							"world": {
 								"USD": {
-									Input:   0,
-									Output:  int64((i + 1) * 100),
-									Balance: ptr(int64(-(i + 1) * 100)),
+									Input:   big.NewInt(0),
+									Output:  big.NewInt(int64((i + 1) * 100)),
+									Balance: big.NewInt(int64(-(i + 1) * 100)),
 								},
 							},
 							fmt.Sprintf("account:%d", i): {
 								"USD": {
-									Input:   100,
-									Output:  0,
-									Balance: ptr(int64(100)),
+									Input:   big.NewInt(100),
+									Output:  big.NewInt(0),
+									Balance: big.NewInt(int64(100)),
 								},
 							},
 						},
@@ -186,7 +187,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: m1,
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:foo",
@@ -210,32 +211,32 @@ var _ = Given("some empty environment", func() {
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  0,
-							Balance: ptr(int64(0)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(int64(0)),
 						},
 					},
 					"foo:foo": {
 						"USD": {
-							Input:   0,
-							Output:  0,
-							Balance: ptr(int64(0)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(int64(0)),
 						},
 					},
 				},
 				PostCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  100,
-							Balance: ptr(int64(-100)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(100),
+							Balance: big.NewInt(int64(-100)),
 						},
 					},
 					"foo:foo": {
 						"USD": {
-							Input:   100,
-							Output:  0,
-							Balance: ptr(int64(100)),
+							Input:   big.NewInt(100),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(int64(100)),
 						},
 					},
 				},
@@ -248,7 +249,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: m1,
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:bar",
@@ -272,32 +273,32 @@ var _ = Given("some empty environment", func() {
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  100,
-							Balance: ptr(int64(-100)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(100),
+							Balance: big.NewInt(int64(-100)),
 						},
 					},
 					"foo:bar": {
 						"USD": {
-							Input:   0,
-							Output:  0,
-							Balance: ptr(int64(0)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(int64(0)),
 						},
 					},
 				},
 				PostCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  200,
-							Balance: ptr(int64(-200)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(200),
+							Balance: big.NewInt(int64(-200)),
 						},
 					},
 					"foo:bar": {
 						"USD": {
-							Input:   100,
-							Output:  0,
-							Balance: ptr(int64(100)),
+							Input:   big.NewInt(100),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(int64(100)),
 						},
 					},
 				},
@@ -310,7 +311,7 @@ var _ = Given("some empty environment", func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      100,
+								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:baz",
@@ -334,32 +335,32 @@ var _ = Given("some empty environment", func() {
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  200,
-							Balance: ptr(int64(-200)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(200),
+							Balance: big.NewInt(int64(-200)),
 						},
 					},
 					"foo:baz": {
 						"USD": {
-							Input:   0,
-							Output:  0,
-							Balance: ptr(int64(0)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(int64(0)),
 						},
 					},
 				},
 				PostCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
-							Input:   0,
-							Output:  300,
-							Balance: ptr(int64(-300)),
+							Input:   big.NewInt(0),
+							Output:  big.NewInt(300),
+							Balance: big.NewInt(int64(-300)),
 						},
 					},
 					"foo:baz": {
 						"USD": {
-							Input:   100,
-							Output:  0,
-							Balance: ptr(int64(100)),
+							Input:   big.NewInt(100),
+							Output:  big.NewInt(0),
+							Balance: big.NewInt(int64(100)),
 						},
 					},
 				},

@@ -2,6 +2,10 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 type ExpandedDebitHold struct {
 	Description string   `json:"description"`
 	Destination *Subject `json:"destination,omitempty"`
@@ -10,9 +14,9 @@ type ExpandedDebitHold struct {
 	// Metadata associated with the hold.
 	Metadata map[string]string `json:"metadata"`
 	// Original amount on hold
-	OriginalAmount int64 `json:"originalAmount"`
+	OriginalAmount *big.Int `json:"originalAmount"`
 	// Remaining amount on hold
-	Remaining int64 `json:"remaining"`
+	Remaining *big.Int `json:"remaining"`
 	// The ID of the wallet the hold is associated with.
 	WalletID string `json:"walletID"`
 }

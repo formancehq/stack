@@ -2,6 +2,10 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 type AssetHolder struct {
-	Assets map[string]int64 `json:"assets"`
+	Assets map[string]*big.Int `json:"assets"`
 }

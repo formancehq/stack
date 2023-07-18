@@ -3,12 +3,13 @@
 package shared
 
 import (
+	"math/big"
 	"time"
 )
 
 type BalanceWithAssets struct {
-	Assets    map[string]int64 `json:"assets"`
-	ExpiresAt *time.Time       `json:"expiresAt,omitempty"`
-	Name      string           `json:"name"`
-	Priority  *int64           `json:"priority,omitempty"`
+	Assets    map[string]*big.Int `json:"assets"`
+	ExpiresAt *time.Time          `json:"expiresAt,omitempty"`
+	Name      string              `json:"name"`
+	Priority  *big.Int            `json:"priority,omitempty"`
 }

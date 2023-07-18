@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/big"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -69,9 +70,10 @@ func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) er
 	tableData = append(tableData, []string{"Account", "Asset", "Movement", "Final balance"})
 	for account, postCommitVolume := range transaction.PostCommitVolumes {
 		for asset, volumes := range postCommitVolume {
-			movement := *volumes.Balance - *(transaction.PreCommitVolumes)[account][asset].Balance
+			movement := big.NewInt(0)
+			movement = movement.Sub(volumes.Balance, (transaction.PreCommitVolumes)[account][asset].Balance)
 			movementStr := fmt.Sprint(movement)
-			if movement > 0 {
+			if movement.Cmp(big.NewInt(0)) > 0 {
 				movementStr = "+" + movementStr
 			}
 			tableData = append(tableData, []string{

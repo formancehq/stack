@@ -507,7 +507,7 @@ components:
           description: The asset of the monetary value.
         amount:
           type: integer
-          format: int64
+          format: bigint
           description: The amount of the monetary value.
     Wallet:
       type: object
@@ -603,12 +603,12 @@ components:
             type: integer
             description: Remaining amount on hold
             example: 10
-            format: int64
+            format: bigint
           originalAmount:
             type: integer
             description: Original amount on hold
             example: 100
-            format: int64
+            format: bigint
     ListWalletsResponse:
       type: object
       required:
@@ -657,7 +657,7 @@ components:
       properties:
         amount:
           type: integer
-          format: int64
+          format: bigint
           minimum: 0
           example: 100
         asset:
@@ -784,13 +784,13 @@ components:
       properties:
         input:
           type: integer
-          format: int64
+          format: bigint
         output:
           type: integer
-          format: int64
+          format: bigint
         balance:
           type: integer
-          format: int64
+          format: bigint
       required:
       - input
       - output
@@ -817,7 +817,7 @@ components:
       properties:
         amount:
           type: integer
-          format: int64
+          format: bigint
           example: 100
           description: Define the amount to transfer.
         final:
@@ -934,7 +934,7 @@ components:
           type: object
           additionalProperties:
             type: integer
-            format: int64
+            format: bigint
     Balance:
       type: object
       required:
@@ -947,7 +947,7 @@ components:
           format: date-time
         priority:
           type: integer
-          format: int64
+          format: bigint
     BalanceWithAssets:
       allOf:
       - $ref: '#/components/schemas/Balance'
@@ -969,18 +969,22 @@ components:
           type: object
           additionalProperties:
             type: integer
+            format: bigint
         expiredFunds:
           type: object
           additionalProperties:
             type: integer
+            format: bigint
         expirableFunds:
           type: object
           additionalProperties:
             type: integer
+            format: bigint
         holdFunds:
           type: object
           additionalProperties:
             type: integer
+            format: bigint
     ListBalancesResponse:
       type: object
       required:

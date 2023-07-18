@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"math/big"
 	"reflect"
 	"time"
 
@@ -55,8 +56,8 @@ var _ = Given("some empty environment", func() {
 			Expect(response.AccountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
 				Address:  "foo",
 				Metadata: metadata,
-				Volumes:  map[string]map[string]int64{},
-				Balances: map[string]int64{},
+				Volumes:  map[string]map[string]*big.Int{},
+				Balances: map[string]*big.Int{},
 			}))
 		})
 		It("should trigger a new event", func() {

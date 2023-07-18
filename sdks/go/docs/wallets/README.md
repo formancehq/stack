@@ -34,6 +34,7 @@ import(
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"math/big"
 )
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Wallets.ConfirmHold(ctx, operations.ConfirmHoldRequest{
         ConfirmHoldRequest: &shared.ConfirmHoldRequest{
-            Amount: formance.Int64(100),
+            Amount: big.NewInt(100),
             Final: formance.Bool(true),
         },
         HoldID: "blanditiis",
@@ -77,6 +78,7 @@ import(
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/types"
+	"math/big"
 )
 
 func main() {
@@ -91,7 +93,7 @@ func main() {
         CreateBalanceRequest: &shared.CreateBalanceRequest{
             ExpiresAt: types.MustTimeFromString("2021-02-02T01:24:52.629Z"),
             Name: "Sandy Huels",
-            Priority: formance.Int64(606393),
+            Priority: big.NewInt(606393),
         },
         ID: "7074ba44-69b6-4e21-8195-9890afa563e2",
     })
@@ -161,6 +163,7 @@ import(
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"math/big"
 )
 
 func main() {
@@ -174,7 +177,7 @@ func main() {
     res, err := s.Wallets.CreditWallet(ctx, operations.CreditWalletRequest{
         CreditWalletRequest: &shared.CreditWalletRequest{
             Amount: shared.Monetary{
-                Amount: 100226,
+                Amount: big.NewInt(100226),
                 Asset: "architecto",
             },
             Balance: formance.String("repudiandae"),
@@ -217,6 +220,7 @@ import(
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"math/big"
 )
 
 func main() {
@@ -230,7 +234,7 @@ func main() {
     res, err := s.Wallets.DebitWallet(ctx, operations.DebitWalletRequest{
         DebitWalletRequest: &shared.DebitWalletRequest{
             Amount: shared.Monetary{
-                Amount: 764912,
+                Amount: big.NewInt(764912),
                 Asset: "corporis",
             },
             Balances: []string{

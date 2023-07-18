@@ -1,6 +1,8 @@
 package suite
 
 import (
+	"math/big"
+
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -100,7 +102,7 @@ var _ = Given("An empty environment", func() {
 								Ledger: ptr("default"),
 								Data: &shared.PostTransaction{
 									Postings: []shared.Posting{{
-										Amount:      100,
+										Amount:      big.NewInt(100),
 										Asset:       "EUR/2",
 										Destination: "bank",
 										Source:      "empty:account",

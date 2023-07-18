@@ -216,6 +216,7 @@ import(
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"math/big"
 	"github.com/formancehq/formance-sdk-go/pkg/types"
 )
 
@@ -237,13 +238,13 @@ func main() {
             },
             Postings: []shared.Posting{
                 shared.Posting{
-                    Amount: 100,
+                    Amount: big.NewInt(100),
                     Asset: "COIN",
                     Destination: "users:002",
                     Source: "users:001",
                 },
                 shared.Posting{
-                    Amount: 100,
+                    Amount: big.NewInt(100),
                     Asset: "COIN",
                     Destination: "users:002",
                     Source: "users:001",
@@ -520,6 +521,7 @@ import(
 	"log"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"math/big"
 )
 
 func main() {
@@ -532,7 +534,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Ledger.ListAccounts(ctx, operations.ListAccountsRequest{
         Address: formance.String("users:.+"),
-        Balance: formance.Int64(2400),
+        Balance: big.NewInt(2400),
         BalanceOperator: operations.ListAccountsBalanceOperatorGte.ToPointer(),
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Ledger: "ledger001",

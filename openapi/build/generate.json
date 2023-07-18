@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230713"
+    "version": "v1.0.20230718"
   },
   "servers": [
     {
@@ -853,7 +853,7 @@
             "description": "Filter accounts by their balance (default operator is gte)",
             "schema": {
               "type": "integer",
-              "format": "int64",
+              "format": "bigint",
               "example": 2400
             }
           },
@@ -4352,7 +4352,7 @@
               "type": "object",
               "additionalProperties": {
                 "type": "integer",
-                "format": "int64",
+                "format": "bigint",
                 "minimum": 0
               }
             },
@@ -4367,7 +4367,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "integer",
-              "format": "int64"
+              "format": "bigint"
             },
             "example": {
               "COIN": 100
@@ -4395,7 +4395,7 @@
         "type": "object",
         "additionalProperties": {
           "type": "integer",
-          "format": "int64"
+          "format": "bigint"
         },
         "example": {
           "USD": 100,
@@ -4407,7 +4407,7 @@
         "properties": {
           "amount": {
             "type": "integer",
-            "format": "int64",
+            "format": "bigint",
             "minimum": 0,
             "example": 100
           },
@@ -4662,15 +4662,15 @@
         "properties": {
           "input": {
             "type": "integer",
-            "format": "int64"
+            "format": "bigint"
           },
           "output": {
             "type": "integer",
-            "format": "int64"
+            "format": "bigint"
           },
           "balance": {
             "type": "integer",
-            "format": "int64"
+            "format": "bigint"
           }
         },
         "required": [
@@ -6223,7 +6223,7 @@
           },
           "amount": {
             "type": "integer",
-            "format": "int64",
+            "format": "bigint",
             "description": "The amount of the monetary value."
           }
         }
@@ -6357,13 +6357,13 @@
                 "type": "integer",
                 "description": "Remaining amount on hold",
                 "example": 10,
-                "format": "int64"
+                "format": "bigint"
               },
               "originalAmount": {
                 "type": "integer",
                 "description": "Original amount on hold",
                 "example": 100,
-                "format": "int64"
+                "format": "bigint"
               }
             }
           }
@@ -6606,15 +6606,15 @@
         "properties": {
           "input": {
             "type": "integer",
-            "format": "int64"
+            "format": "bigint"
           },
           "output": {
             "type": "integer",
-            "format": "int64"
+            "format": "bigint"
           },
           "balance": {
             "type": "integer",
-            "format": "int64"
+            "format": "bigint"
           }
         },
         "required": [
@@ -6651,7 +6651,7 @@
         "properties": {
           "amount": {
             "type": "integer",
-            "format": "int64",
+            "format": "bigint",
             "example": 100,
             "description": "Define the amount to transfer."
           },
@@ -6811,7 +6811,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "integer",
-              "format": "int64"
+              "format": "bigint"
             }
           }
         }
@@ -6831,7 +6831,7 @@
           },
           "priority": {
             "type": "integer",
-            "format": "int64"
+            "format": "bigint"
           }
         }
       },
@@ -6864,25 +6864,29 @@
           "availableFunds": {
             "type": "object",
             "additionalProperties": {
-              "type": "integer"
+              "type": "integer",
+              "format": "bigint"
             }
           },
           "expiredFunds": {
             "type": "object",
             "additionalProperties": {
-              "type": "integer"
+              "type": "integer",
+              "format": "bigint"
             }
           },
           "expirableFunds": {
             "type": "object",
             "additionalProperties": {
-              "type": "integer"
+              "type": "integer",
+              "format": "bigint"
             }
           },
           "holdFunds": {
             "type": "object",
             "additionalProperties": {
-              "type": "integer"
+              "type": "integer",
+              "format": "bigint"
             }
           }
         }
