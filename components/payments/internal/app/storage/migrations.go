@@ -394,7 +394,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			Up: func(tx bun.Tx) error {
 				// Since only one connector is inserting accounts,
 				// let's just truncate the table, since connectors will be
-				// resetted.
+				// resetted. Truncate it cascade, or we will have an error
 				_, err := tx.Exec(`
 					TRUNCATE accounts.account CASCADE;
 				`)
