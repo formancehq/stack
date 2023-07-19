@@ -183,6 +183,7 @@ func v2EnvVars(runID string, configuration LedgerConfiguration) []string {
 		"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
 		"OTEL_METRICS_RUNTIME=true",
 		"OTEL_RESOURCE_ATTRIBUTES=runID=" + runID,
+		"DEBUG=true",
 	}
 }
 
