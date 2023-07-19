@@ -6,7 +6,7 @@ import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js';
 export function setup() {
     return extension.startLedger({
         //version: 'v1.10.3', // Can be passed using "LEDGER_VERSION" env var
-        version: 'a0d25961bbfcff67219387b9af346bf45a962b95'
+        version: '13644f2fe711feb83948aeec5732a4d9e47389d5'
     });
 }
 

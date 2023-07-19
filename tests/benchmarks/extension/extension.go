@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/ory/dockertest/v3"
 	"github.com/sirupsen/logrus"
 	"go.k6.io/k6/js/modules"
@@ -55,10 +56,12 @@ type Extension struct {
 	pool     *dockertest.Pool
 	resource *dockertest.Resource
 	logger   *logrus.Logger
+	runID    string `json:"runID"`
 }
 
 func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 
+	c.runID = uuid.New().String()
 	logger := c.logger.WithFields(map[string]interface{}{
 		"configuration": configuration,
 	})
@@ -92,9 +95,9 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 
 	var envVars []string
 	if semver.IsValid(configuration.Version) && semver.Compare(configuration.Version, "v2.0.0") < 0 {
-		envVars = v1EnvVars(configuration)
+		envVars = v1EnvVars(c.runID, configuration)
 	} else {
-		envVars = v2EnvVars(configuration)
+		envVars = v2EnvVars(c.runID, configuration)
 	}
 
 	var networkID string
@@ -145,7 +148,7 @@ func (c *Extension) StopLedger() {
 	c.logger.Infof("Ledger stopped!")
 }
 
-func v1EnvVars(configuration LedgerConfiguration) []string {
+func v1EnvVars(runID string, configuration LedgerConfiguration) []string {
 	return []string{
 		"NUMARY_SERVER_HTTP_BIND_ADDRESS=:3068",
 		"NUMARY_STORAGE_DRIVER=postgres",
@@ -158,10 +161,11 @@ func v1EnvVars(configuration LedgerConfiguration) []string {
 		"NUMARY_OTEL_METRICS_EXPORTER=otlp",
 		"NUMARY_OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
 		"NUMARY_OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
+		"NUMARY_OTEL_RESOURCE_ATTRIBUTES=runID=" + runID,
 	}
 }
 
-func v2EnvVars(configuration LedgerConfiguration) []string {
+func v2EnvVars(runID string, configuration LedgerConfiguration) []string {
 	return []string{
 		"BIND=:3068",
 		"STORAGE_DRIVER=postgres",
@@ -174,6 +178,8 @@ func v2EnvVars(configuration LedgerConfiguration) []string {
 		"OTEL_METRICS_EXPORTER=otlp",
 		"OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
 		"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
+		"OTEL_METRICS_RUNTIME=true",
+		"OTEL_RESOURCE_ATTRIBUTES=runID=" + runID,
 	}
 }
 
