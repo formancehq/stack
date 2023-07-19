@@ -4,14 +4,20 @@ tasks:
   tools:
     dir: ./tools
     cmds:
-    - docker compose up -d
+      - docker compose up -d
+
+  build:
+    dir: ./scripts
+    cmds:
+      - npm run build
 
   run:
     deps:
-    - tools
+      - tools
+      - build
     cmds:
-    - xk6 build --with extension=$(pwd)/extension
-    - ./k6 run scripts/main.js --vus 10 --duration 10s
+      - xk6 build --with extension=$(pwd)/extension
+      - ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" scripts/dist/ledger-simple-write.js
     env:
       POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledger?sslmode=disable
       OTLP_ENDPOINT: otel:4317
@@ -20,5 +26,4 @@ tasks:
   cleanup:
     dir: ./tools
     cmds:
-    - docker compose down -v
-
+      - docker compose down -v

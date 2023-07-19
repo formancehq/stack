@@ -1,0 +1,12 @@
+vars {
+  account $wallet
+  account $payment_in
+}
+send [EUR/2 10000] (
+  source = @world
+  destination = $payment_in
+)
+send [EUR/2 10000] (
+  source = $payment_in
+  destination = $wallet
+)
