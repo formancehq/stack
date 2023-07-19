@@ -141,6 +141,9 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 
 func (c *Extension) StopLedger() {
 	c.logger.Infof("Shutting down ledger container...")
+	if err := c.pool.Client.StopContainer(c.resource.Container.ID, 30); err != nil {
+		panic(err)
+	}
 	if err := c.pool.Purge(c.resource); err != nil {
 		panic(err)
 	}
