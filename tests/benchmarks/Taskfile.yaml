@@ -1,0 +1,24 @@
+version: '3'
+
+tasks:
+  tools:
+    dir: ./tools
+    cmds:
+    - docker compose up -d
+
+  run:
+    deps:
+    - tools
+    cmds:
+    - xk6 build --with extension=$(pwd)/extension
+    - ./k6 run scripts/main.js --vus 10 --duration 10s
+    env:
+      POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledger?sslmode=disable
+      OTLP_ENDPOINT: otel:4317
+      DOCKER_NETWORK: tools_benchmarks
+
+  cleanup:
+    dir: ./tools
+    cmds:
+    - docker compose down -v
+
