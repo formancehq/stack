@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
 	"github.com/sirupsen/logrus"
 	"go.k6.io/k6/js/modules"
 	"golang.org/x/mod/semver"
@@ -141,7 +142,10 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 
 func (c *Extension) StopLedger() {
 	c.logger.Infof("Shutting down ledger container...")
-	if err := c.pool.Client.StopContainer(c.resource.Container.ID, 30); err != nil {
+	if err := c.pool.Client.KillContainer(docker.KillContainerOptions{
+		ID:     c.resource.Container.ID,
+		Signal: 15,
+	}); err != nil {
 		panic(err)
 	}
 	if err := c.pool.Purge(c.resource); err != nil {
