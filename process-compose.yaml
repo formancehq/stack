@@ -69,7 +69,14 @@ processes:
       - "OTEL_SERVICE_NAME=search"
 
   webhooks:
-    command: webhooks serve --listen 0.0.0.0:8084 --worker --storage-postgres-conn-string postgresql://formance:formance@postgres/webhooks?sslmode=disable --kafka-topics ledger payments --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-nats-client-id webhooks
+    command: webhooks serve --listen 0.0.0.0:8084 --storage-postgres-conn-string postgresql://formance:formance@postgres/webhooks?sslmode=disable --kafka-topics ledger payments --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-nats-client-id webhooks
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=webhooks"
+
+  webhooks-worker:
+    command: webhooks worker --listen 0.0.0.0:8085 --storage-postgres-conn-string postgresql://formance:formance@postgres/webhooks?sslmode=disable --kafka-topics ledger payments --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-nats-client-id webhooks
     availability:
       restart: always
     environment:
