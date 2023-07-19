@@ -63,13 +63,7 @@ func init() {
 					return paymentsPreUpgradeMigration(ctx)
 				},
 				PostUpgrade: func(ctx modules.PostInstallContext) error {
-					resetConnectors(ctx, "stripe")
-					resetConnectors(ctx, "wise")
-					resetConnectors(ctx, "modulr")
-					resetConnectors(ctx, "banking-circle")
-					resetConnectors(ctx, "currency-cloud")
-					resetConnectors(ctx, "dummy-pay")
-					return nil
+					return resetConnectors(ctx)
 				},
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return paymentsServices(ctx, env)
@@ -96,15 +90,7 @@ func init() {
 					return paymentsPreUpgradeMigration(ctx)
 				},
 				PostUpgrade: func(ctx modules.PostInstallContext) error {
-					resetConnectors(ctx, "stripe")
-					resetConnectors(ctx, "wise")
-					resetConnectors(ctx, "modulr")
-					resetConnectors(ctx, "banking-circle")
-					resetConnectors(ctx, "currency-cloud")
-					resetConnectors(ctx, "dummy-pay")
-					resetConnectors(ctx, "mangopay")
-					resetConnectors(ctx, "moneycorp")
-					return nil
+					return resetConnectors(ctx)
 				},
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return paymentsServices(ctx, env)
@@ -116,15 +102,15 @@ func init() {
 					return paymentsPreUpgradeMigration(ctx)
 				},
 				PostUpgrade: func(ctx modules.PostInstallContext) error {
-					resetConnectors(ctx, "stripe")
-					resetConnectors(ctx, "wise")
-					resetConnectors(ctx, "modulr")
-					resetConnectors(ctx, "banking-circle")
-					resetConnectors(ctx, "currency-cloud")
-					resetConnectors(ctx, "dummy-pay")
-					resetConnectors(ctx, "mangopay")
-					resetConnectors(ctx, "moneycorp")
-					return nil
+					return resetConnectors(ctx)
+				},
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return paymentsServices(ctx, env)
+				},
+			},
+			"v0.8.1": {
+				PostUpgrade: func(ctx modules.PostInstallContext) error {
+					return resetConnectors(ctx)
 				},
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return paymentsServices(ctx, env)
@@ -176,17 +162,58 @@ func paymentsServices(
 	}}
 }
 
-func resetConnectors(ctx modules.PostInstallContext, connector string) {
+func resetConnectors(ctx modules.PostInstallContext) error {
+	if err := resetConnector(ctx, "stripe"); err != nil {
+		return err
+	}
+	if err := resetConnector(ctx, "wise"); err != nil {
+		return err
+	}
+	if err := resetConnector(ctx, "modulr"); err != nil {
+		return err
+	}
+	if err := resetConnector(ctx, "banking-circle"); err != nil {
+		return err
+	}
+	if err := resetConnector(ctx, "currency-cloud"); err != nil {
+		return err
+	}
+	if err := resetConnector(ctx, "dummy-pay"); err != nil {
+		return err
+	}
+	if err := resetConnector(ctx, "mangopay"); err != nil {
+		return err
+	}
+	if err := resetConnector(ctx, "moneycorp"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func resetConnector(ctx modules.PostInstallContext, connector string) error {
 	endpoint := fmt.Sprintf(
 		"http://payments.%s.svc:%d/connectors/%s/reset",
 		ctx.Stack.Name,
 		ctx.Stack.Status.Ports[ctx.ModuleName]["payments"],
 		connector,
 	)
-	_, err := http.Post(endpoint, "", nil)
+	res, err := http.Post(endpoint, "", nil)
 	if err != nil {
 		logger := log.FromContext(ctx)
 		logger.WithValues("endpoint", endpoint).Error(err, "failed to reset connector")
-		// Do not return any error here, as the connector is not required to be installed
+		return err
+	}
+
+	switch res.StatusCode {
+	case http.StatusOK, http.StatusNoContent:
+		return nil
+	case http.StatusBadRequest:
+		// Connector is not installed, we can directly return nil, nothing to do
+		return nil
+	default:
+		// Return an error to retry the migration. It can be the case when the
+		// pod is up, but not the http server.
+		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 }
