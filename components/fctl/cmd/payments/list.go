@@ -85,13 +85,14 @@ func (c *PaymentsListController) Render(cmd *cobra.Command, args []string) error
 			string(payment.Status),
 			string(payment.Scheme),
 			payment.Reference,
-			payment.AccountID,
+			payment.SourceAccountID,
+			payment.DestinationAccountID,
 			string(payment.Provider),
 			payment.CreatedAt.Format(time.RFC3339),
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"ID", "Type", "Amount", "Asset", "Status",
-		"Scheme", "Reference", "Account ID", "Provider", "Created at"})
+		"Scheme", "Reference", "Source Account ID", "Destination Account ID", "Provider", "Created at"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
