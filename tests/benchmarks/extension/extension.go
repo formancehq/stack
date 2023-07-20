@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/prometheus/client_golang/api"
@@ -81,7 +80,6 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 		panic(err)
 	}
 
-	c.runID = uuid.New().String()
 	logger := c.logger.WithFields(map[string]interface{}{
 		"version": configuration.Version,
 		"testid":  configuration.TestID,
