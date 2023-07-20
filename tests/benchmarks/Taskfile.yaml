@@ -16,8 +16,8 @@ tasks:
       - tools
       - build
     cmds:
-      - xk6 build --with extension=$(pwd)/extension
-      - ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" scripts/dist/ledger-simple-write.js
+      - docker run --rm -u "$(id -u):$(id -g)" -v "${PWD}:/xk6" grafana/xk6 build --with extension=/xk6/extension
+      - ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" scripts/dist/ledger-simple-all.js
     env:
       POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledger?sslmode=disable
       OTLP_ENDPOINT: otel:4317

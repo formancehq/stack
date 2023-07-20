@@ -13,22 +13,73 @@ export function setup() {
 
 export let options = {
     scenarios: {
-        contacts: {
-            executor: 'per-vu-iterations',
+        write_constant: {
+            executor: 'constant-vus',
+            exec: 'write',
             vus: 10,
-            iterations: 100,
-            maxDuration: '10m',
+            duration: '10m',
         },
-    },
+        read_constant: {
+            executor: 'constant-vus',
+            exec: 'read',
+            vus: 10,
+            duration: '10m',
+        },
+        read_spike: {
+            executor: 'ramping-vus',
+            exec: 'read',
+            startVUs: 0,
+            stages: [
+                { duration: '2m', target: 0 },
+                { duration: '10s', target: 20 },
+                { duration: '2m', target: 0 },
+                { duration: '20s', target: 20 },
+                { duration: '2m', target: 0 },
+                { duration: '10s', target: 20 },
+                { duration: '2m', target: 0 },
+                { duration: '20s', target: 20 },
+                { duration: '1m', target: 0 },
+            ],
+            gracefulRampDown: '0s',
+        }
+    }
+    //     read: {
+    //         executor: 'per-vu-iterations',
+    //         exec: 'read',
+    //         vus: 10,
+    //         iterations: 100,
+    //         maxDuration: '10m',
+    //     },
+    //     read2: {
+    //         exec: 'read',
+    //         executor: 'constant-arrival-rate',
+    //         rate: 90,
+    //         timeUnit: '1m',
+    //         duration: '5m',
+    //         preAllocatedVUs: 10,
+    //     },
+    //     write: {
+    //         executor: 'per-vu-iterations',
+    //         exec: 'write',
+    //         vus: 10,
+    //         iterations: 100,
+    //         maxDuration: '10m',
+    //     },
+    // },
 };
 
-export default function (ledger) {
+export function read(ledger) {
     const url = ledger.url + "/tests01"
 
     ReadTransactions(ledger.url);
     ReadAccounts(url);
     ReadBalances(url);
     ReadAggregateBalances(url);
+}
+
+export function write(ledger) {
+    const url = ledger.url + "/tests01"
+
     WriteTransactions(url);
 }
 
