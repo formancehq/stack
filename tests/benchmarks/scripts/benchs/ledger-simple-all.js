@@ -27,24 +27,24 @@ export let options = {
             duration: '10m',
             tags: { testid: __ENV.TEST_ID}
         },
-        // read_spike: {
-        //     executor: 'ramping-vus',
-        //     exec: 'read',
-        //     startVUs: 0,
-        //     stages: [
-        //         { duration: '2m', target: 0 },
-        //         { duration: '10s', target: 20 },
-        //         { duration: '2m', target: 0 },
-        //         { duration: '20s', target: 20 },
-        //         { duration: '2m', target: 0 },
-        //         { duration: '10s', target: 20 },
-        //         { duration: '2m', target: 0 },
-        //         { duration: '20s', target: 20 },
-        //         { duration: '1m', target: 0 },
-        //     ],
-        //     gracefulRampDown: '0s',
-        //     tags: { testid: __ENV.TEST_ID}
-        // }
+        read_spike: {
+            executor: 'ramping-vus',
+            exec: 'read',
+            startVUs: 0,
+            stages: [
+                { duration: '2m', target: 0 },
+                { duration: '10s', target: 20 },
+                { duration: '2m', target: 0 },
+                { duration: '20s', target: 20 },
+                { duration: '2m', target: 0 },
+                { duration: '10s', target: 20 },
+                { duration: '2m', target: 0 },
+                { duration: '20s', target: 20 },
+                { duration: '1m', target: 0 },
+            ],
+            gracefulRampDown: '0s',
+            tags: { testid: __ENV.TEST_ID}
+        }
     }
     //     read: {
     //         executor: 'per-vu-iterations',
