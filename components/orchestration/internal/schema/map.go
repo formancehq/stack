@@ -47,6 +47,9 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 				interpolated := interpolate(ctx, json)
 				if interpolated == "" {
 					interpolated = tag.defaultValue
+					if interpolated == "" {
+						return nil
+					}
 				}
 				bigIntValue, ok := big.NewInt(0).SetString(interpolated, 10)
 				if !ok {
