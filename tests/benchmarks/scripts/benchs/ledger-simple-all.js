@@ -7,7 +7,7 @@ import {startLedger, stopLedger, exportResults} from 'k6/x/formancehq/benchmarks
 export function setup() {
     return startLedger({
         //version: 'v1.10.3', // Can be passed using "LEDGER_VERSION" env var
-        version: '13644f2fe711feb83948aeec5732a4d9e47389d5',
+        version: '13644f2fe711feb83948aeec5732a4d9e47389d5',        
     });
 }
 
@@ -23,28 +23,28 @@ export let options = {
         read_constant: {
             executor: 'constant-vus',
             exec: 'read',
-            vus: 10,
+            vus: 20,
             duration: '10m',
             tags: { testid: __ENV.TEST_ID}
         },
-        read_spike: {
-            executor: 'ramping-vus',
-            exec: 'read',
-            startVUs: 0,
-            stages: [
-                { duration: '2m', target: 0 },
-                { duration: '10s', target: 20 },
-                { duration: '2m', target: 0 },
-                { duration: '20s', target: 20 },
-                { duration: '2m', target: 0 },
-                { duration: '10s', target: 20 },
-                { duration: '2m', target: 0 },
-                { duration: '20s', target: 20 },
-                { duration: '1m', target: 0 },
-            ],
-            gracefulRampDown: '0s',
-            tags: { testid: __ENV.TEST_ID}
-        }
+        // read_spike: {
+        //     executor: 'ramping-vus',
+        //     exec: 'read',
+        //     startVUs: 0,
+        //     stages: [
+        //         { duration: '2m', target: 0 },
+        //         { duration: '10s', target: 20 },
+        //         { duration: '2m', target: 0 },
+        //         { duration: '20s', target: 20 },
+        //         { duration: '2m', target: 0 },
+        //         { duration: '10s', target: 20 },
+        //         { duration: '2m', target: 0 },
+        //         { duration: '20s', target: 20 },
+        //         { duration: '1m', target: 0 },
+        //     ],
+        //     gracefulRampDown: '0s',
+        //     tags: { testid: __ENV.TEST_ID}
+        // }
     }
     //     read: {
     //         executor: 'per-vu-iterations',

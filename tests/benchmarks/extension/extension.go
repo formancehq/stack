@@ -22,7 +22,6 @@ type LedgerConfiguration struct {
 	Version     string `json:"version"`
 	PostgresDSN string `json:"postgresDSN"`
 	Network     string `json:"network"`
-	CPUCount    int64  `json:"cpuCount"`
 	TestID      string `json:"testID"`
 }
 
@@ -103,9 +102,9 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 
 	var envVars []string
 	if semver.IsValid(configuration.Version) && semver.Compare(configuration.Version, "v2.0.0") < 0 {
-		envVars = v1EnvVars(c.testID, configuration)
+		envVars = v1EnvVars(configuration.TestID, configuration)
 	} else {
-		envVars = v2EnvVars(c.testID, configuration)
+		envVars = v2EnvVars(configuration.TestID, configuration)
 	}
 
 	var networkID string
@@ -119,14 +118,15 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 	}
 
 	options := make([]func(config *docker.HostConfig), 0)
-	if configuration.CPUCount != 0 {
-		options = append(options, func(config *docker.HostConfig) {
-			config.CPUCount = configuration.CPUCount
-		})
-	}
-
+	options = append(options, func(config *docker.HostConfig) {
+		config.AutoRemove = true
+		config.CPUShares = 4
+		config.Memory = 1024 * 1024 * 1024
+	})
+	
 	logger.Infof("Starting ledger container...")
 	c.resource, err = c.pool.RunWithOptions(&dockertest.RunOptions{
+		Name:         fmt.Sprintf("ledger-%s", configuration.TestID),
 		Repository:   "ghcr.io/formancehq/ledger",
 		Tag:          configuration.Version,
 		Env:          envVars,

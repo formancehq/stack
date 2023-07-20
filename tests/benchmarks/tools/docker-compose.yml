@@ -18,6 +18,12 @@ services:
       retries: 5
     networks:
     - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "6"
+            memory: 32G
 
   prometheus:
     image: prom/prometheus:latest
@@ -34,6 +40,12 @@ services:
     - "9090:9090"
     networks:
     - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "1"
+            memory: 512M
 
   otel:
     image: "otel/opentelemetry-collector-contrib:0.81.0"
@@ -44,16 +56,44 @@ services:
     - 4317:4317
     networks:
     - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "1"
+            memory: 512M
 
   grafana:
     image: grafana/grafana-enterprise
     restart: unless-stopped
     networks:
     - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "1"
+            memory: 512M
     ports:
      - '3000:3000'
     volumes:
      - 'grafana_storage:/var/lib/grafana'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+    - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "1"
+            memory: 512M
 
 volumes:
   grafana_storage: {}
