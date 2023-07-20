@@ -2,25 +2,25 @@
 { system ? builtins.currentSystem, pkgs, lib, fetchurl, installShellFiles }:
 let
   shaMap = {
-    x86_64-linux = "6a8f85070870258a1a875e4aba9d9fbf853172ee7bfe38ec9f8d88ae761ec281";
-    aarch64-linux = "b86ddceed89615fe75f9c2c3e3d0002bf8fa11da784fa8887ac9dbb8324208a2";
-    x86_64-darwin = "82558ca055bfee4fa44feb5e0c114153f11a3314ec8966e1d630bd36504fb597";
-    aarch64-darwin = "9e4d2954a40675ebbb5789a46a8a3b50c1374575e45204ce4863ed2bc11fb4b8";
+    x86_64-linux = "e51f209dc332a9f5d54880b8bc0d2f09b9fc912e608ed3220021fcd65ba22b9a";
+    aarch64-linux = "afc000e9541fc99ac6210fec0429a676b974115944c0461496a34bb4291d8b47";
+    x86_64-darwin = "918177be33d3780536684082fffa5d45ffa70e9bdeea93d365482bf4295555b8";
+    aarch64-darwin = "cbf6b05fdabff5fe663545894b9c098bff3d947eaba0a7286642e1d52806193e";
   };
 
   urlMap = {
     x86_64-linux =
-      "https://github.com/moonrepo/moon/releases/download/v1.10.0/moon-x86_64-unknown-linux-gnu";
+      "https://github.com/moonrepo/moon/releases/download/v1.10.1/moon-x86_64-unknown-linux-gnu";
     aarch64-linux =
-      "https://github.com/moonrepo/moon/releases/download/v1.10.0/moon-aarch64-unknown-linux-gnu";
+      "https://github.com/moonrepo/moon/releases/download/v1.10.1/moon-aarch64-unknown-linux-gnu";
     x86_64-darwin =
-      "https://github.com/moonrepo/moon/releases/download/v1.10.0/moon-x86_64-apple-darwin";
+      "https://github.com/moonrepo/moon/releases/download/v1.10.1/moon-x86_64-apple-darwin";
     aarch64-darwin =
-      "https://github.com/moonrepo/moon/releases/download/v1.10.0/moon-aarch64-apple-darwin";
+      "https://github.com/moonrepo/moon/releases/download/v1.10.1/moon-aarch64-apple-darwin";
   };
 in pkgs.stdenv.mkDerivation {
   pname = "moon";
-  version = "1.10.0";
+  version = "1.10.1";
   src = fetchurl {
     url = urlMap.${system};
     sha256 = shaMap.${system};
