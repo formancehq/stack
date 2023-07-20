@@ -29,6 +29,7 @@ type LedgerConfiguration struct {
 	Version     string `json:"version"`
 	PostgresDSN string `json:"postgresDSN"`
 	Network     string `json:"network"`
+	CPUCount    int64  `json:"cpuCount"`
 	TestID      string `json:"testID"`
 }
 
@@ -40,7 +41,7 @@ func (c *LedgerConfiguration) resolve() error {
 	if c.TestID == "" {
 		c.TestID = os.Getenv("TEST_ID")
 		if c.TestID == "" {
-			return errors.New("missing testid")
+			return errors.New("missing test id")
 		}
 	}
 	if c.Version == "" {
@@ -124,6 +125,13 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 		networkID = network[0].Network.ID
 	}
 
+	options := make([]func(config *docker.HostConfig), 0)
+	if configuration.CPUCount != 0 {
+		options = append(options, func(config *docker.HostConfig) {
+			config.CPUCount = configuration.CPUCount
+		})
+	}
+
 	logger.Infof("Starting ledger container...")
 	c.resource, err = c.pool.RunWithOptions(&dockertest.RunOptions{
 		Repository:   "ghcr.io/formancehq/ledger",
@@ -131,7 +139,7 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 		Env:          envVars,
 		NetworkID:    networkID,
 		ExposedPorts: []string{"3068/tcp"},
-	})
+	}, options...)
 	if err != nil {
 		panic(err)
 	}
@@ -231,10 +239,6 @@ func (c *Extension) ExportResults() {
 		if err := enc.Encode(timeSeries); err != nil {
 			panic(err)
 		}
-		//_, err = f.WriteString("\r\n")
-		//if err != nil {
-		//	panic(err)
-		//}
 	}
 }
 

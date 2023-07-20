@@ -16,7 +16,7 @@ tasks:
       - tools
       - build
     cmds:
-      - docker run --rm -u "$(id -u):$(id -g)" -v "${PWD}:/xk6" grafana/xk6 build --with extension=/xk6/extension
+      - xk6 build --with extension=$(pwd)/extension
       - TEST_ID=$(date +%s) K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out experimental-prometheus-rw scripts/dist/ledger-simple-all.js
     env:
       POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledger?sslmode=disable
