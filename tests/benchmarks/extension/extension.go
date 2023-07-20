@@ -119,7 +119,7 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 
 	options := make([]func(config *docker.HostConfig), 0)
 	options = append(options, func(config *docker.HostConfig) {
-		config.AutoRemove = true
+		config.AutoRemove = false
 		config.CPUShares = 4
 		config.Memory = 1024 * 1024 * 1024
 	})
