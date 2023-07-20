@@ -1,13 +1,21 @@
 package extension
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	"github.com/prometheus/client_golang/api"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"github.com/prometheus/common/model"
 	"github.com/sirupsen/logrus"
 	"go.k6.io/k6/js/modules"
 	"golang.org/x/mod/semver"
@@ -65,6 +73,7 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 	c.runID = uuid.New().String()
 	logger := c.logger.WithFields(map[string]interface{}{
 		"configuration": configuration,
+		"runID":         c.runID,
 	})
 
 	defer func() {
@@ -155,6 +164,67 @@ func (c *Extension) StopLedger() {
 	c.logger.Infof("Ledger stopped!")
 }
 
+func (c *Extension) ExportResults() {
+	client, err := api.NewClient(api.Config{
+		Address: "http://localhost:9090", // TODO: Use env var
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	<-time.After(5 * time.Second) // TODO: Check if the delay is enough
+
+	v1api := v1.NewAPI(client)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	labels, warnings, err := v1api.Series(ctx, []string{fmt.Sprintf(`{runID="%s"}`, c.runID)}, time.Now().Add(-3*time.Hour), time.Now())
+	if err != nil {
+		panic(err)
+	}
+	if len(warnings) > 0 {
+		c.logger.Warnf("Warnings: %v", warnings)
+	}
+
+	visitedLabel := map[model.LabelValue]struct{}{}
+
+	if err := os.MkdirAll(filepath.Join(".", "results"), 0755); err != nil {
+		panic(err)
+	}
+
+	f, err := os.Create(filepath.Join("results", fmt.Sprintf("%s.txt", c.runID)))
+	if err != nil {
+		panic(err)
+	}
+
+	enc := json.NewEncoder(f)
+
+	for _, labelSet := range labels {
+		name := labelSet["__name__"]
+		_, alreadyVisited := visitedLabel[name]
+		if alreadyVisited {
+			continue
+		}
+		visitedLabel[name] = struct{}{}
+
+		timeSeries, warnings, err := v1api.Query(ctx, fmt.Sprintf(`%s{runID="%s"}[1h]`, name, c.runID), time.Time{}, v1.WithTimeout(5*time.Second))
+		if err != nil {
+			panic(err)
+		}
+		if len(warnings) > 0 {
+			c.logger.Warnf("Warnings: %v", warnings)
+		}
+
+		if err := enc.Encode(timeSeries); err != nil {
+			panic(err)
+		}
+		//_, err = f.WriteString("\r\n")
+		//if err != nil {
+		//	panic(err)
+		//}
+	}
+}
+
 func v1EnvVars(runID string, configuration LedgerConfiguration) []string {
 	return []string{
 		"NUMARY_SERVER_HTTP_BIND_ADDRESS=:3068",
@@ -187,7 +257,7 @@ func v2EnvVars(runID string, configuration LedgerConfiguration) []string {
 		"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
 		"OTEL_METRICS_RUNTIME=true",
 		"OTEL_RESOURCE_ATTRIBUTES=runID=" + runID,
-		"DEBUG=true",
+		//"DEBUG=true",
 	}
 }
 

@@ -4,16 +4,8 @@ receivers:
       grpc:
 
 exporters:
-  prometheus:
-    endpoint: "0.0.0.0:8889"
-    #    namespace: test-space
-    #    const_labels:
-    #      label1: value1
-    #      'another label': spaced value
-    send_timestamps: true
-    #    enable_open_metrics: true
-    #    add_metric_suffixes: false
-    #    metric_expiration: 180m
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
     resource_to_telemetry_conversion:
       enabled: true
   logging:
@@ -51,4 +43,4 @@ service:
     metrics:
       receivers: [otlp, spanmetrics]
       #      processors: [batch]
-      exporters: [prometheus]
+      exporters: [prometheusremotewrite]
