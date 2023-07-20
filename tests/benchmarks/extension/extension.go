@@ -1,20 +1,13 @@
 package extension
 
 import (
-	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
-	"github.com/prometheus/client_golang/api"
-	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
-	"github.com/prometheus/common/model"
 	"github.com/sirupsen/logrus"
 	"go.k6.io/k6/js/modules"
 	"golang.org/x/mod/semver"
@@ -186,60 +179,60 @@ func (c *Extension) StopLedger() {
 }
 
 func (c *Extension) ExportResults() {
-	client, err := api.NewClient(api.Config{
-		Address: "http://localhost:9090", // TODO: Use env var
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	<-time.After(5 * time.Second) // TODO: Check if the delay is enough
-
-	v1api := v1.NewAPI(client)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	labels, warnings, err := v1api.Series(ctx, []string{fmt.Sprintf(`{testID="%s"}`, c.testID)}, time.Now().Add(-3*time.Hour), time.Now())
-	if err != nil {
-		panic(err)
-	}
-	if len(warnings) > 0 {
-		c.logger.Warnf("Warnings: %v", warnings)
-	}
-
-	visitedLabel := map[model.LabelValue]struct{}{}
-
-	if err := os.MkdirAll(filepath.Join(".", "results"), 0755); err != nil {
-		panic(err)
-	}
-
-	f, err := os.Create(filepath.Join("results", fmt.Sprintf("%s.txt", c.testID)))
-	if err != nil {
-		panic(err)
-	}
-
-	enc := json.NewEncoder(f)
-
-	for _, labelSet := range labels {
-		name := labelSet["__name__"]
-		_, alreadyVisited := visitedLabel[name]
-		if alreadyVisited {
-			continue
-		}
-		visitedLabel[name] = struct{}{}
-
-		timeSeries, warnings, err := v1api.Query(ctx, fmt.Sprintf(`%s{testID="%s"}[1h]`, name, c.testID), time.Time{}, v1.WithTimeout(5*time.Second))
-		if err != nil {
-			panic(err)
-		}
-		if len(warnings) > 0 {
-			c.logger.Warnf("Warnings: %v", warnings)
-		}
-
-		if err := enc.Encode(timeSeries); err != nil {
-			panic(err)
-		}
-	}
+	//client, err := api.NewClient(api.Config{
+	//	Address: "http://localhost:9090", // TODO: Use env var
+	//})
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//<-time.After(5 * time.Second) // TODO: Check if the delay is enough
+	//
+	//v1api := v1.NewAPI(client)
+	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//defer cancel()
+	//
+	//labels, warnings, err := v1api.Series(ctx, []string{fmt.Sprintf(`{testID="%s"}`, c.testID)}, time.Now().Add(-3*time.Hour), time.Now())
+	//if err != nil {
+	//	panic(err)
+	//}
+	//if len(warnings) > 0 {
+	//	c.logger.Warnf("Warnings: %v", warnings)
+	//}
+	//
+	//visitedLabel := map[model.LabelValue]struct{}{}
+	//
+	//if err := os.MkdirAll(filepath.Join(".", "results"), 0755); err != nil {
+	//	panic(err)
+	//}
+	//
+	//f, err := os.Create(filepath.Join("results", fmt.Sprintf("%s.txt", c.testID)))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//enc := json.NewEncoder(f)
+	//
+	//for _, labelSet := range labels {
+	//	name := labelSet["__name__"]
+	//	_, alreadyVisited := visitedLabel[name]
+	//	if alreadyVisited {
+	//		continue
+	//	}
+	//	visitedLabel[name] = struct{}{}
+	//
+	//	timeSeries, warnings, err := v1api.Query(ctx, fmt.Sprintf(`%s{testID="%s"}[1h]`, name, c.testID), time.Time{}, v1.WithTimeout(5*time.Second))
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	if len(warnings) > 0 {
+	//		c.logger.Warnf("Warnings: %v", warnings)
+	//	}
+	//
+	//	if err := enc.Encode(timeSeries); err != nil {
+	//		panic(err)
+	//	}
+	//}
 }
 
 func v1EnvVars(testID string, configuration LedgerConfiguration) []string {
