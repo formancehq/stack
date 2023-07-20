@@ -1,8 +1,8 @@
 import {WriteTransactions} from "../src/steps/transactions";
-import extension from 'k6/x/formancehq/benchmarks';
+import {startLedger, stopLedger, exportResults} from 'k6/x/formancehq/benchmarks';
 
 export function setup() {
-    return extension.startLedger({
+    return startLedger({
         //version: 'v1.10.3', // Can be passed using "LEDGER_VERSION" env var
         version: '13644f2fe711feb83948aeec5732a4d9e47389d5'
     });
@@ -25,5 +25,6 @@ export default function (ledger) {
 }
 
 export function teardown(data) {
-    extension.stopLedger();
+    stopLedger();
+    exportResults();
 }
