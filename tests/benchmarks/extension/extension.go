@@ -30,6 +30,7 @@ type LedgerConfiguration struct {
 	Version     string `json:"version"`
 	PostgresDSN string `json:"postgresDSN"`
 	Network     string `json:"network"`
+	TestID      string `json:"testID"`
 }
 
 type Ledger struct {
@@ -37,6 +38,12 @@ type Ledger struct {
 }
 
 func (c *LedgerConfiguration) resolve() error {
+	if c.TestID == "" {
+		c.TestID = os.Getenv("TEST_ID")
+		if c.TestID == "" {
+			return errors.New("missing testid")
+		}
+	}
 	if c.Version == "" {
 		c.Version = os.Getenv("LEDGER_VERSION")
 		if c.Version == "" {
@@ -65,15 +72,19 @@ type Extension struct {
 	pool     *dockertest.Pool
 	resource *dockertest.Resource
 	logger   *logrus.Logger
-	runID    string `json:"runID"`
+	testID   string `json:"testID"`
 }
 
 func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
+	var err error
+	if err := configuration.resolve(); err != nil {
+		panic(err)
+	}
 
 	c.runID = uuid.New().String()
 	logger := c.logger.WithFields(map[string]interface{}{
-		"configuration": configuration,
-		"runID":         c.runID,
+		"version": configuration.Version,
+		"testid":  configuration.TestID,
 	})
 
 	defer func() {
@@ -86,11 +97,6 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 			panic(e)
 		}
 	}()
-	var err error
-
-	if err := configuration.resolve(); err != nil {
-		panic(err)
-	}
 
 	logger.Infof("Connecting to docker server...")
 	c.pool, err = dockertest.NewPool("")
@@ -105,9 +111,9 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 
 	var envVars []string
 	if semver.IsValid(configuration.Version) && semver.Compare(configuration.Version, "v2.0.0") < 0 {
-		envVars = v1EnvVars(c.runID, configuration)
+		envVars = v1EnvVars(c.testID, configuration)
 	} else {
-		envVars = v2EnvVars(c.runID, configuration)
+		envVars = v2EnvVars(c.testID, configuration)
 	}
 
 	var networkID string
@@ -187,7 +193,7 @@ func (c *Extension) ExportResults() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	labels, warnings, err := v1api.Series(ctx, []string{fmt.Sprintf(`{runID="%s"}`, c.runID)}, time.Now().Add(-3*time.Hour), time.Now())
+	labels, warnings, err := v1api.Series(ctx, []string{fmt.Sprintf(`{testID="%s"}`, c.testID)}, time.Now().Add(-3*time.Hour), time.Now())
 	if err != nil {
 		panic(err)
 	}
@@ -201,7 +207,7 @@ func (c *Extension) ExportResults() {
 		panic(err)
 	}
 
-	f, err := os.Create(filepath.Join("results", fmt.Sprintf("%s.txt", c.runID)))
+	f, err := os.Create(filepath.Join("results", fmt.Sprintf("%s.txt", c.testID)))
 	if err != nil {
 		panic(err)
 	}
@@ -216,7 +222,7 @@ func (c *Extension) ExportResults() {
 		}
 		visitedLabel[name] = struct{}{}
 
-		timeSeries, warnings, err := v1api.Query(ctx, fmt.Sprintf(`%s{runID="%s"}[1h]`, name, c.runID), time.Time{}, v1.WithTimeout(5*time.Second))
+		timeSeries, warnings, err := v1api.Query(ctx, fmt.Sprintf(`%s{testID="%s"}[1h]`, name, c.testID), time.Time{}, v1.WithTimeout(5*time.Second))
 		if err != nil {
 			panic(err)
 		}
@@ -234,7 +240,7 @@ func (c *Extension) ExportResults() {
 	}
 }
 
-func v1EnvVars(runID string, configuration LedgerConfiguration) []string {
+func v1EnvVars(testID string, configuration LedgerConfiguration) []string {
 	return []string{
 		"NUMARY_SERVER_HTTP_BIND_ADDRESS=:3068",
 		"NUMARY_STORAGE_DRIVER=postgres",
@@ -247,11 +253,11 @@ func v1EnvVars(runID string, configuration LedgerConfiguration) []string {
 		"NUMARY_OTEL_METRICS_EXPORTER=otlp",
 		"NUMARY_OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
 		"NUMARY_OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
-		"NUMARY_OTEL_RESOURCE_ATTRIBUTES=runID=" + runID,
+		"NUMARY_OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
 	}
 }
 
-func v2EnvVars(runID string, configuration LedgerConfiguration) []string {
+func v2EnvVars(testID string, configuration LedgerConfiguration) []string {
 	return []string{
 		"BIND=:3068",
 		"STORAGE_DRIVER=postgres",
@@ -265,7 +271,7 @@ func v2EnvVars(runID string, configuration LedgerConfiguration) []string {
 		"OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
 		"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
 		"OTEL_METRICS_RUNTIME=true",
-		"OTEL_RESOURCE_ATTRIBUTES=runID=" + runID,
+		"OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
 		"DEBUG=true",
 	}
 }

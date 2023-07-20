@@ -44,3 +44,16 @@ services:
     - 4317:4317
     networks:
     - benchmarks
+
+  grafana:
+    image: grafana/grafana-enterprise
+    restart: unless-stopped
+    networks:
+    - benchmarks
+    ports:
+     - '3000:3000'
+    volumes:
+     - 'grafana_storage:/var/lib/grafana'
+
+volumes:
+  grafana_storage: {}
