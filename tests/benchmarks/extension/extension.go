@@ -157,6 +157,15 @@ func (c *Extension) StopLedger() {
 	}); err != nil {
 		panic(err)
 	}
+
+	exitCode, err := c.pool.Client.WaitContainer(c.resource.Container.ID)
+	if err != nil {
+		panic(err)
+	}
+	if exitCode != 0 {
+		panic(fmt.Errorf("unexpected status code %d when stopping the ledger", exitCode))
+	}
+
 	if err := c.pool.Purge(c.resource); err != nil {
 		panic(err)
 	}
