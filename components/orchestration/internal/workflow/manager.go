@@ -179,7 +179,7 @@ func (m *Manager) ListInstances(ctx context.Context, workflowID string, running 
 	query.Join("JOIN workflows ON workflows.id = u.workflow_id").Where("workflows.deleted_at IS NULL")
 
 	if workflowID != "" {
-		query = query.Where("workflows.workflow_id = ?", workflowID)
+		query = query.Where("workflows.id = ?", workflowID)
 	}
 	if running {
 		query = query.Where("u.terminated = false")
