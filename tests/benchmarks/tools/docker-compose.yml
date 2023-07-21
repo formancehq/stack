@@ -22,7 +22,7 @@ services:
       replicas: 1
       resources:
           limits:
-            cpus: "6"
+            cpus: "${POSTGRES_CPU_COUNT:-6}"
             memory: 32G
 
   prometheus:

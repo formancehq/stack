@@ -123,7 +123,7 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 		config.CPUShares = 4
 		config.Memory = 1024 * 1024 * 1024
 	})
-	
+
 	logger.Infof("Starting ledger container...")
 	c.resource, err = c.pool.RunWithOptions(&dockertest.RunOptions{
 		Name:         fmt.Sprintf("ledger-%s", configuration.TestID),
@@ -158,7 +158,7 @@ func (c *Extension) StopLedger() {
 	c.logger.Infof("Shutting down ledger container...")
 	if err := c.pool.Client.KillContainer(docker.KillContainerOptions{
 		ID:     c.resource.Container.ID,
-		Signal: 15,
+		Signal: 30,
 	}); err != nil {
 		panic(err)
 	}
@@ -267,6 +267,7 @@ func v2EnvVars(testID string, configuration LedgerConfiguration) []string {
 		"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
 		"OTEL_METRICS_RUNTIME=true",
 		"OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
+		"OTEL_METRICS_EXPORTER_PUSH_INTERVAL=1s",
 		"DEBUG=true",
 	}
 }
