@@ -59,7 +59,7 @@ func TestListInstances(t *testing.T) {
 
 		require.Equal(t, http.StatusNoContent, rec.Result().StatusCode)
 
-		// Try to retrieve instances for the deleted workflow
+		// Try to retrieve instances for all workflows
 		req = httptest.NewRequest(http.MethodGet, "/instances", nil)
 		rec = httptest.NewRecorder()
 
@@ -70,5 +70,15 @@ func TestListInstances(t *testing.T) {
 		apitesting.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 0)
 
+		// Try to retrieve instances for the deleted workflow
+		req = httptest.NewRequest(http.MethodGet, "/instances?workflowID="+w.ID, nil)
+		rec = httptest.NewRecorder()
+
+		router.ServeHTTP(rec, req)
+
+		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
+		instances = make([]workflow.Instance, 0)
+		apitesting.ReadResponse(t, rec, &instances)
+		require.Len(t, instances, 0)
 	})
 }
