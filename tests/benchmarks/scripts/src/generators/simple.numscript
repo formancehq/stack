@@ -1,12 +1,9 @@
 vars {
-  account $wallet
+  account $wallets
   account $payment_in
+  account $world
 }
 send [EUR/2 10000] (
   source = @world
   destination = $payment_in
-)
-send [EUR/2 10000] (
-  source = $payment_in
-  destination = $wallet
 )

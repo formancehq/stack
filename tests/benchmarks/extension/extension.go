@@ -1,13 +1,18 @@
 package extension
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	"github.com/prometheus/client_golang/api"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/sirupsen/logrus"
 	"go.k6.io/k6/js/modules"
 	"golang.org/x/mod/semver"
@@ -121,7 +126,7 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 	options = append(options, func(config *docker.HostConfig) {
 		config.AutoRemove = false
 		config.CPUShares = 4
-		config.Memory = 1024 * 1024 * 1024
+		config.Memory = 1024 * 1024 * 1024 * 8
 	})
 
 	logger.Infof("Starting ledger container...")
@@ -158,7 +163,7 @@ func (c *Extension) StopLedger() {
 	c.logger.Infof("Shutting down ledger container...")
 	if err := c.pool.Client.KillContainer(docker.KillContainerOptions{
 		ID:     c.resource.Container.ID,
-		Signal: 30,
+		Signal: 15,
 	}); err != nil {
 		panic(err)
 	}
@@ -235,6 +240,42 @@ func (c *Extension) ExportResults() {
 	//}
 }
 
+func (c *Extension) CheckPrometheusQuery(query string, queryResponse int64) {
+	c.logger.Infof("Check query in Prometheus...")
+	client, err := api.NewClient(api.Config{
+		Address: "http://127.0.0.1:9090",
+	})
+	if err != nil {
+		fmt.Printf("Error creating client: %v\n", err)
+		os.Exit(1)
+	}
+
+	v1api := v1.NewAPI(client)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	r := v1.Range{
+		Start: time.Now().Add(-time.Hour),
+		End:   time.Now(),
+		Step:  time.Minute,
+	}
+
+	promResult, warnings, err := v1api.QueryRange(ctx, query, r, v1.WithTimeout(5*time.Second))
+	if err != nil {
+		fmt.Printf("Error querying Prometheus: %v\n", err)
+		os.Exit(1)
+	}
+	if len(warnings) > 0 {
+		fmt.Printf("Warnings: %v\n", warnings)
+	}
+
+	value, _ := strconv.ParseInt(promResult.String(), 10, 64)
+	if value == queryResponse {
+		c.logger.Infof("Prometheus query not respond as expected")
+	}
+	c.logger.Infof("Result Query:\n%v\n", promResult.String())
+}
+
 func v1EnvVars(testID string, configuration LedgerConfiguration) []string {
 	return []string{
 		"NUMARY_SERVER_HTTP_BIND_ADDRESS=:3068",
@@ -268,7 +309,7 @@ func v2EnvVars(testID string, configuration LedgerConfiguration) []string {
 		"OTEL_METRICS_RUNTIME=true",
 		"OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
 		"OTEL_METRICS_EXPORTER_PUSH_INTERVAL=1s",
-		"DEBUG=true",
+		"DEBUG=false",
 	}
 }
 

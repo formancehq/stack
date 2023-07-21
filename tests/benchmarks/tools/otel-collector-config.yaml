@@ -4,6 +4,10 @@ receivers:
       grpc:
 
 exporters:
+  otlp/uptrace:
+    endpoint: otlp.uptrace.dev:4317
+    headers:
+      uptrace-dsn: 'https://9qJ3nuUHGYeIKr-W4TMN6A@uptrace.dev/1133'
   prometheusremotewrite:
     endpoint: http://prometheus:9090/api/v1/write
     resource_to_telemetry_conversion:
@@ -38,8 +42,8 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      #      processors: [batch]
-      exporters: [spanmetrics]
+      processors: [batch]
+      exporters: [otlp/uptrace, spanmetrics]
     metrics:
       receivers: [otlp, spanmetrics]
       #      processors: [batch]

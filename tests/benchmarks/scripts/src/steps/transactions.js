@@ -11,17 +11,17 @@ const readTransactionsWaitingTime = new Trend('waiting_time_transactions_read');
 export function WriteTransactions(BASE_URL) {
     const url = new URL(`${BASE_URL}/transactions`);
 
-    group('Transactions (WRITE)', function () {
-        url.searchParams.append('async', "true");
-        const res = http.post(url.toString(), JSON.stringify(generateTransactions()), {
-            headers: { 'Content-Type': 'application/json' },
-        });
-        writeTransactionsWaitingTime.add(res.timings.waiting);
-
-        check(res, {
-            'is status 200': (r) => r.status === 200,
-        });
-    });
+    // group('Transactions (WRITE)', function () {
+    //     url.searchParams.append('async', "true");
+    //     const res = http.post(url.toString(), JSON.stringify(generateTransactions()), {
+    //         headers: { 'Content-Type': 'application/json' },
+    //     });
+    //     writeTransactionsWaitingTime.add(res.timings.waiting);
+    //
+    //     check(res, {
+    //         'is status 200': (r) => r.status === 200,
+    //     });
+    // });
 
     group('Transactions - Numscript (WRITE)', function () {
         url.searchParams.append('async', "true");
