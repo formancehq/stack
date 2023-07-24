@@ -134,7 +134,7 @@ spec:
   search: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
   wallets: v0.3.5
   webhooks: v0.6.2
-  stargateClient: v0.1.0
+  stargate: v0.1.0
 ---
 apiVersion: stack.formance.com/v1beta3
 kind: Stack
