@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"crypto/tls"
 	"net/http"
 	"time"
@@ -61,10 +60,6 @@ func NewClient(
 		authorizationEndpoint: authorizationEndpoint,
 
 		logger: logger,
-	}
-
-	if err := c.login(context.TODO()); err != nil {
-		return nil, err
 	}
 
 	return c, nil

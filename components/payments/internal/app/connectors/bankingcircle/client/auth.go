@@ -76,6 +76,10 @@ func (c *Client) login(ctx context.Context) error {
 }
 
 func (c *Client) ensureAccessTokenIsValid(ctx context.Context) error {
+	if c.accessToken == "" {
+		return c.login(ctx)
+	}
+
 	if c.accessTokenExpiresAt.After(time.Now().Add(5 * time.Second)) {
 		return nil
 	}
