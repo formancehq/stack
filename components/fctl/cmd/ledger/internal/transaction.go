@@ -189,13 +189,27 @@ func CreateTransaction(client *formance.Formance, ctx context.Context, request o
 		if err != nil {
 			return nil, err
 		}
+
+		if v.ErrorResponse != nil {
+			return nil, fmt.Errorf("%s: %s", v.ErrorResponse.ErrorCode, v.ErrorResponse.ErrorMessage)
+		}
+
+		if v.StatusCode >= 300 {
+			return nil, fmt.Errorf("unexpected status code: %d", v.StatusCode)
+		}
+
 		return &v.CreateTransactionResponse.Data[0], nil
 	} else {
 		response, err := client.Ledger.CreateTransaction(ctx, request)
 		if err != nil {
 			return nil, err
 		}
-		if response.StatusCode > 300 {
+
+		if response.ErrorResponse != nil {
+			return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		}
+
+		if response.StatusCode >= 300 {
 			return nil, fmt.Errorf("unexpected status code %d when creating transaction", response.StatusCode)
 		}
 

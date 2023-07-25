@@ -59,9 +59,16 @@ func (c *InstancesShowController) Run(cmd *cobra.Command, args []string) (fctl.R
 	res, err := client.Orchestration.GetInstance(cmd.Context(), operations.GetInstanceRequest{
 		InstanceID: args[0],
 	})
-
 	if err != nil {
 		return nil, errors.Wrap(err, "reading instance")
+	}
+
+	if res.Error != nil {
+		return nil, fmt.Errorf("%s: %s", res.Error.ErrorCode, res.Error.ErrorMessage)
+	}
+
+	if res.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
 	c.store.WorkflowInstance = res.GetWorkflowInstanceResponse.Data

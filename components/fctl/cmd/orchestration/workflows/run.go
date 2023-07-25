@@ -112,6 +112,14 @@ func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error
 			panic(err)
 		}
 
+		if w.Error != nil {
+			panic(fmt.Sprintf("%s: %s", w.Error.ErrorCode, w.Error.ErrorMessage))
+		}
+
+		if w.StatusCode >= 300 {
+			panic(fmt.Sprintf("unexpected status code: %d", w.StatusCode))
+		}
+
 		return internal.PrintWorkflowInstance(cmd.OutOrStdout(), w.GetWorkflowResponse.Data, c.store.WorkflowInstance)
 	}
 	return nil
