@@ -74,6 +74,14 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, err
 	}
 
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	}
+
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
+
 	c.store.Server = response.ConfigInfoResponse.Data.Server
 	c.store.Version = response.ConfigInfoResponse.Data.Version
 	c.store.StorageDriver = response.ConfigInfoResponse.Data.Config.Storage.Driver
