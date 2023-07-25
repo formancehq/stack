@@ -7,6 +7,9 @@ import { Expose } from "class-transformer";
 
 export enum WalletsErrorResponseErrorCode {
   Validation = "VALIDATION",
+  InternalError = "INTERNAL_ERROR",
+  InsufficientFund = "INSUFFICIENT_FUND",
+  HoldClosed = "HOLD_CLOSED",
 }
 
 /**

@@ -3,61 +3,13 @@
 package operations
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"math/big"
 	"net/http"
 )
-
-// ListAccountsBalanceOperator - Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
-type ListAccountsBalanceOperator string
-
-const (
-	ListAccountsBalanceOperatorGte ListAccountsBalanceOperator = "gte"
-	ListAccountsBalanceOperatorLte ListAccountsBalanceOperator = "lte"
-	ListAccountsBalanceOperatorGt  ListAccountsBalanceOperator = "gt"
-	ListAccountsBalanceOperatorLt  ListAccountsBalanceOperator = "lt"
-	ListAccountsBalanceOperatorE   ListAccountsBalanceOperator = "e"
-	ListAccountsBalanceOperatorNe  ListAccountsBalanceOperator = "ne"
-)
-
-func (e ListAccountsBalanceOperator) ToPointer() *ListAccountsBalanceOperator {
-	return &e
-}
-
-func (e *ListAccountsBalanceOperator) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-	switch v {
-	case "gte":
-		fallthrough
-	case "lte":
-		fallthrough
-	case "gt":
-		fallthrough
-	case "lt":
-		fallthrough
-	case "e":
-		fallthrough
-	case "ne":
-		*e = ListAccountsBalanceOperator(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for ListAccountsBalanceOperator: %v", v)
-	}
-}
 
 type ListAccountsRequest struct {
 	// Filter accounts by address pattern (regular expression placed between ^ and $).
 	Address *string `queryParam:"style=form,explode=true,name=address"`
-	// Filter accounts by their balance (default operator is gte)
-	Balance *big.Int `queryParam:"style=form,explode=true,name=balance"`
-	// Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
-	//
-	BalanceOperator *ListAccountsBalanceOperator `queryParam:"style=form,explode=true,name=balanceOperator"`
 	// Parameter used in pagination requests. Maximum page size is set to 15.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.

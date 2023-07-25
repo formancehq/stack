@@ -402,8 +402,6 @@ s = sdk.SDK(
 
 req = operations.ListAccountsRequest(
     address='users:.+',
-    balance=2400,
-    balance_operator=operations.ListAccountsBalanceOperator.GTE,
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
     ledger='ledger001',
     metadata={

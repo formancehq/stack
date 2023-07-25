@@ -20,24 +20,6 @@ class ListAccountsRequest
     public ?string $address = null;
     
     /**
-     * Filter accounts by their balance (default operator is gte)
-     * 
-     * @var ?int $balance
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=balance')]
-    public ?int $balance = null;
-    
-    /**
-     * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
-     * 
-     * 
-     * 
-     * @var ?\formance\stack\Models\Operations\ListAccountsBalanceOperator $balanceOperator
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=balanceOperator')]
-    public ?ListAccountsBalanceOperator $balanceOperator = null;
-    
-    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * 
      * Set to the value of next for the next page of results.
@@ -79,8 +61,6 @@ class ListAccountsRequest
 	public function __construct()
 	{
 		$this->address = null;
-		$this->balance = null;
-		$this->balanceOperator = null;
 		$this->cursor = null;
 		$this->ledger = "";
 		$this->metadata = null;

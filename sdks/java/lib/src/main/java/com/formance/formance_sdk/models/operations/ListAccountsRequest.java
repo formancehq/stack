@@ -20,29 +20,6 @@ public class ListAccountsRequest {
     }
     
     /**
-     * Filter accounts by their balance (default operator is gte)
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=balance")
-    public Long balance;
-
-    public ListAccountsRequest withBalance(Long balance) {
-        this.balance = balance;
-        return this;
-    }
-    
-    /**
-     * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
-     * 
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=balanceOperator")
-    public ListAccountsBalanceOperator balanceOperator;
-
-    public ListAccountsRequest withBalanceOperator(ListAccountsBalanceOperator balanceOperator) {
-        this.balanceOperator = balanceOperator;
-        return this;
-    }
-    
-    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * Set to the value of next for the next page of results.
      * Set to the value of previous for the previous page of results.

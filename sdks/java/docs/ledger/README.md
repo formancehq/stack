@@ -521,7 +521,6 @@ List accounts from a ledger, sorted by address in descending order.
 package hello.world;
 
 import com.formance.formance_sdk.SDK;
-import com.formance.formance_sdk.models.operations.ListAccountsBalanceOperator;
 import com.formance.formance_sdk.models.operations.ListAccountsRequest;
 import com.formance.formance_sdk.models.operations.ListAccountsResponse;
 import com.formance.formance_sdk.models.shared.Security;
@@ -537,8 +536,6 @@ public class Application {
 
             ListAccountsRequest req = new ListAccountsRequest("ledger001") {{
                 address = "users:.+";
-                balance = 2400L;
-                balanceOperator = ListAccountsBalanceOperator.GTE;
                 cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
                 metadata = new java.util.HashMap<String, String>() {{
                     put("maiores", "dicta");

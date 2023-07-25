@@ -6,21 +6,6 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
-/**
- * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
- *
- * @remarks
- *
- */
-export enum ListAccountsBalanceOperator {
-  Gte = "gte",
-  Lte = "lte",
-  Gt = "gt",
-  Lt = "lt",
-  E = "e",
-  Ne = "ne",
-}
-
 export class ListAccountsRequest extends SpeakeasyBase {
   /**
    * Filter accounts by address pattern (regular expression placed between ^ and $).
@@ -29,25 +14,6 @@ export class ListAccountsRequest extends SpeakeasyBase {
     data: "queryParam, style=form;explode=true;name=address",
   })
   address?: string;
-
-  /**
-   * Filter accounts by their balance (default operator is gte)
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=balance",
-  })
-  balance?: number;
-
-  /**
-   * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
-   *
-   * @remarks
-   *
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=balanceOperator",
-  })
-  balanceOperator?: ListAccountsBalanceOperator;
 
   /**
    * Parameter used in pagination requests. Maximum page size is set to 15.

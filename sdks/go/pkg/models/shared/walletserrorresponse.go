@@ -10,7 +10,10 @@ import (
 type WalletsErrorResponseErrorCode string
 
 const (
-	WalletsErrorResponseErrorCodeValidation WalletsErrorResponseErrorCode = "VALIDATION"
+	WalletsErrorResponseErrorCodeValidation       WalletsErrorResponseErrorCode = "VALIDATION"
+	WalletsErrorResponseErrorCodeInternalError    WalletsErrorResponseErrorCode = "INTERNAL_ERROR"
+	WalletsErrorResponseErrorCodeInsufficientFund WalletsErrorResponseErrorCode = "INSUFFICIENT_FUND"
+	WalletsErrorResponseErrorCodeHoldClosed       WalletsErrorResponseErrorCode = "HOLD_CLOSED"
 )
 
 func (e WalletsErrorResponseErrorCode) ToPointer() *WalletsErrorResponseErrorCode {
@@ -24,6 +27,12 @@ func (e *WalletsErrorResponseErrorCode) UnmarshalJSON(data []byte) error {
 	}
 	switch v {
 	case "VALIDATION":
+		fallthrough
+	case "INTERNAL_ERROR":
+		fallthrough
+	case "INSUFFICIENT_FUND":
+		fallthrough
+	case "HOLD_CLOSED":
 		*e = WalletsErrorResponseErrorCode(v)
 		return nil
 	default:

@@ -521,7 +521,6 @@ import(
 	"log"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"math/big"
 )
 
 func main() {
@@ -534,8 +533,6 @@ func main() {
     ctx := context.Background()
     res, err := s.Ledger.ListAccounts(ctx, operations.ListAccountsRequest{
         Address: formance.String("users:.+"),
-        Balance: big.NewInt(2400),
-        BalanceOperator: operations.ListAccountsBalanceOperatorGte.ToPointer(),
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Ledger: "ledger001",
         Metadata: map[string]string{
