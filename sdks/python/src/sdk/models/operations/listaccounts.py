@@ -5,17 +5,7 @@ import dataclasses
 import requests as requests_http
 from ..shared import accountscursorresponse as shared_accountscursorresponse
 from ..shared import errorresponse as shared_errorresponse
-from enum import Enum
 from typing import Optional
-
-class ListAccountsBalanceOperator(str, Enum):
-    r"""Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not."""
-    GTE = 'gte'
-    LTE = 'lte'
-    GT = 'gt'
-    LT = 'lt'
-    E = 'e'
-    NE = 'ne'
 
 
 @dataclasses.dataclass
@@ -25,10 +15,6 @@ class ListAccountsRequest:
     r"""Name of the ledger."""
     address: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'address', 'style': 'form', 'explode': True }})
     r"""Filter accounts by address pattern (regular expression placed between ^ and $)."""
-    balance: Optional[int] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'balance', 'style': 'form', 'explode': True }})
-    r"""Filter accounts by their balance (default operator is gte)"""
-    balance_operator: Optional[ListAccountsBalanceOperator] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'balanceOperator', 'style': 'form', 'explode': True }})
-    r"""Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not."""
     cursor: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'cursor', 'style': 'form', 'explode': True }})
     r"""Parameter used in pagination requests. Maximum page size is set to 15.
     Set to the value of next for the next page of results.

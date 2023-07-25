@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230718"
+    "version": "v1.0.20230725"
   },
   "servers": [
     {
@@ -845,33 +845,6 @@
             },
             "example": {
               "admin": "true"
-            }
-          },
-          {
-            "name": "balance",
-            "in": "query",
-            "description": "Filter accounts by their balance (default operator is gte)",
-            "schema": {
-              "type": "integer",
-              "format": "bigint",
-              "example": 2400
-            }
-          },
-          {
-            "name": "balanceOperator",
-            "in": "query",
-            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.\n",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "gte",
-                "lte",
-                "gt",
-                "lt",
-                "e",
-                "ne"
-              ],
-              "example": "gte"
             }
           },
           {
@@ -6964,7 +6937,10 @@
           "errorCode": {
             "type": "string",
             "enum": [
-              "VALIDATION"
+              "VALIDATION",
+              "INTERNAL_ERROR",
+              "INSUFFICIENT_FUND",
+              "HOLD_CLOSED"
             ]
           },
           "errorMessage": {

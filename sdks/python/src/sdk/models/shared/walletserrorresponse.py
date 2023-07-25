@@ -8,6 +8,9 @@ from sdk import utils
 
 class WalletsErrorResponseErrorCode(str, Enum):
     VALIDATION = 'VALIDATION'
+    INTERNAL_ERROR = 'INTERNAL_ERROR'
+    INSUFFICIENT_FUND = 'INSUFFICIENT_FUND'
+    HOLD_CLOSED = 'HOLD_CLOSED'
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)

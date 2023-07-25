@@ -391,7 +391,7 @@ List accounts from a ledger, sorted by address in descending order.
 
 ```typescript
 import { SDK } from "@formance/formance-sdk";
-import { ListAccountsBalanceOperator, ListAccountsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ListAccountsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
 import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
@@ -402,8 +402,6 @@ const sdk = new SDK({
 
 sdk.ledger.listAccounts({
   address: "users:.+",
-  balance: 2400,
-  balanceOperator: ListAccountsBalanceOperator.Gte,
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   ledger: "ledger001",
   metadata: {

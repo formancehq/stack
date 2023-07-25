@@ -464,7 +464,6 @@ require_once 'vendor/autoload.php';
 use \formance\stack\SDK;
 use \formance\stack\Models\Shared\Security;
 use \formance\stack\Models\Operations\ListAccountsRequest;
-use \formance\stack\Models\Operations\ListAccountsBalanceOperator;
 
 $sdk = SDK::builder()
     ->build();
@@ -472,8 +471,6 @@ $sdk = SDK::builder()
 try {
     $request = new ListAccountsRequest();
     $request->address = 'users:.+';
-    $request->balance = 2400;
-    $request->balanceOperator = ListAccountsBalanceOperator::GTE;
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
     $request->ledger = 'ledger001';
     $request->metadata = [

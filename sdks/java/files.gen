@@ -89,7 +89,6 @@ lib/src/main/java/com/formance/formance_sdk/models/operations/GetLedgerInfoReque
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetLedgerInfoResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetTransactionRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetTransactionResponse.java
-lib/src/main/java/com/formance/formance_sdk/models/operations/ListAccountsBalanceOperator.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/ListAccountsRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/ListAccountsResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/ListLogsRequest.java

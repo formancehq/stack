@@ -78,7 +78,6 @@ src/Models/Operations/GetLedgerInfoRequest.php
 src/Models/Operations/GetLedgerInfoResponse.php
 src/Models/Operations/GetTransactionRequest.php
 src/Models/Operations/GetTransactionResponse.php
-src/Models/Operations/ListAccountsBalanceOperator.php
 src/Models/Operations/ListAccountsRequest.php
 src/Models/Operations/ListAccountsResponse.php
 src/Models/Operations/ListLogsRequest.php

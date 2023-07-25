@@ -1028,5 +1028,8 @@ components:
           type: string
           enum:
           - VALIDATION
+          - INTERNAL_ERROR
+          - INSUFFICIENT_FUND
+          - HOLD_CLOSED
         errorMessage:
           type: string
