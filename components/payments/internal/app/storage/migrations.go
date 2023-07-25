@@ -407,5 +407,39 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				// Since only one connector is inserting accounts,
+				// let's just delete the table, since connectors will be
+				// resetted. Delete it cascade, or we will have an error
+				_, err := tx.Exec(`
+					CREATE TABLE accounts.balances (
+						created_at timestamp with time zone  NOT NULL,
+						account_id CHARACTER VARYING NOT NULL,
+						currency text  NOT NULL,
+						balance numeric NOT NULL DEFAULT 0,
+						last_updated_at timestamp with time zone  NOT NULL,
+						PRIMARY KEY (account_id, created_at, currency)
+					);
+
+					CREATE INDEX idx_created_at_account_id_currency ON accounts.balances(account_id, last_updated_at desc, currency);
+
+					ALTER TABLE accounts.balances ADD CONSTRAINT balances_account
+						FOREIGN KEY (account_id)
+						REFERENCES accounts.account (id)
+						ON DELETE CASCADE
+						NOT DEFERRABLE
+						INITIALLY IMMEDIATE
+					;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
+
+// insert into balances_v2 (created_at, account_id, currency, balance) SELECT '2023-08-26 03:12:59.063894', '954', 'EUR', 3000 WHERE 2862 != (select balance from balances_v2 where created_at < '2023-06-26 03:13:59.063894' and account_id = '954' and currency = 'EUR');

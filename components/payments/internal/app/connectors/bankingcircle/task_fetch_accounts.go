@@ -62,8 +62,10 @@ func ingestAccountsBatch(
 	ingester ingestion.Ingester,
 	accounts []*client.Account,
 ) error {
-	batch := ingestion.AccountBatch{}
+	accountsBatch := ingestion.AccountBatch{}
+	balanceBatch := ingestion.BalanceBatch{}
 
+	now := time.Now()
 	for _, account := range accounts {
 		raw, err := json.Marshal(account)
 		if err != nil {
@@ -75,26 +77,40 @@ func ingestAccountsBatch(
 			return fmt.Errorf("failed to parse opening date: %w", err)
 		}
 
-		batchElement := ingestion.AccountBatchElement{
-			Account: &models.Account{
-				ID: models.AccountID{
+		accountsBatch = append(accountsBatch, &models.Account{
+			ID: models.AccountID{
+				Reference: account.AccountID,
+				Provider:  models.ConnectorProviderBankingCircle,
+			},
+			CreatedAt:       openingDate,
+			Reference:       account.AccountID,
+			Provider:        models.ConnectorProviderBankingCircle,
+			DefaultCurrency: account.Currency,
+			AccountName:     account.AccountDescription,
+			Type:            models.AccountTypeInternal,
+			RawData:         raw,
+		})
+
+		for _, balance := range account.Balances {
+			balanceBatch = append(balanceBatch, &models.Balance{
+				AccountID: models.AccountID{
 					Reference: account.AccountID,
 					Provider:  models.ConnectorProviderBankingCircle,
 				},
-				CreatedAt:       openingDate,
-				Reference:       account.AccountID,
-				Provider:        models.ConnectorProviderBankingCircle,
-				DefaultCurrency: account.Currency,
-				AccountName:     account.AccountDescription,
-				Type:            models.AccountTypeInternal,
-				RawData:         raw,
-			},
+				// TODO(polo): check currency for banking circle
+				Currency:      balance.Currency + "/2",
+				Balance:       int64(balance.IntraDayAmount * 100),
+				CreatedAt:     now,
+				LastUpdatedAt: now,
+			})
 		}
-
-		batch = append(batch, batchElement)
 	}
 
-	if err := ingester.IngestAccounts(ctx, batch); err != nil {
+	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
+		return err
+	}
+
+	if err := ingester.IngestBalances(ctx, balanceBatch); err != nil {
 		return err
 	}
 

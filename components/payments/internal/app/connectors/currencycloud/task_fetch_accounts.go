@@ -70,20 +70,18 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		batch = append(batch, ingestion.AccountBatchElement{
-			Account: &models.Account{
-				ID: models.AccountID{
-					Reference: account.ID,
-					Provider:  models.ConnectorProviderCurrencyCloud,
-				},
-				// Moneycorp does not send the opening date of the account
-				CreatedAt:   account.CreatedAt,
-				Reference:   account.ID,
-				Provider:    models.ConnectorProviderCurrencyCloud,
-				AccountName: account.AccountName,
-				Type:        models.AccountTypeInternal,
-				RawData:     raw,
+		batch = append(batch, &models.Account{
+			ID: models.AccountID{
+				Reference: account.ID,
+				Provider:  models.ConnectorProviderCurrencyCloud,
 			},
+			// Moneycorp does not send the opening date of the account
+			CreatedAt:   account.CreatedAt,
+			Reference:   account.ID,
+			Provider:    models.ConnectorProviderCurrencyCloud,
+			AccountName: account.AccountName,
+			Type:        models.AccountTypeInternal,
+			RawData:     raw,
 		})
 	}
 

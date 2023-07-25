@@ -79,21 +79,19 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		batch = append(batch, ingestion.AccountBatchElement{
-			Account: &models.Account{
-				ID: models.AccountID{
-					Reference: fmt.Sprintf("%d", balance.ID),
-					Provider:  models.ConnectorProviderWise,
-				},
-				// Moneycorp does not send the opening date of the account
-				CreatedAt:       balance.CreationTime,
-				Reference:       fmt.Sprintf("%d", balance.ID),
-				Provider:        models.ConnectorProviderWise,
-				DefaultCurrency: balance.Currency,
-				AccountName:     balance.Name,
-				Type:            models.AccountTypeInternal,
-				RawData:         raw,
+		batch = append(batch, &models.Account{
+			ID: models.AccountID{
+				Reference: fmt.Sprintf("%d", balance.ID),
+				Provider:  models.ConnectorProviderWise,
 			},
+			// Moneycorp does not send the opening date of the account
+			CreatedAt:       balance.CreationTime,
+			Reference:       fmt.Sprintf("%d", balance.ID),
+			Provider:        models.ConnectorProviderWise,
+			DefaultCurrency: balance.Currency,
+			AccountName:     balance.Name,
+			Type:            models.AccountTypeInternal,
+			RawData:         raw,
 		})
 	}
 

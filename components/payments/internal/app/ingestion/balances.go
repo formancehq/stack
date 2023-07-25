@@ -6,36 +6,34 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/messages"
+	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
-
-	"github.com/formancehq/payments/internal/app/models"
 )
 
-type AccountBatch []*models.Account
+type BalanceBatch []*models.Balance
 
-type AccountIngesterFn func(ctx context.Context, batch AccountBatch, commitState any) error
+type BalanceIngesterFn func(ctx context.Context, batch BalanceBatch) error
 
-func (fn AccountIngesterFn) IngestAccounts(ctx context.Context, batch AccountBatch, commitState any) error {
-	return fn(ctx, batch, commitState)
+func (fn BalanceIngesterFn) IngestBalances(ctx context.Context, batch BalanceBatch) error {
+	return fn(ctx, batch)
 }
 
-func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch) error {
+func (i *DefaultIngester) IngestBalances(ctx context.Context, batch BalanceBatch) error {
 	startingAt := time.Now()
 
 	logging.FromContext(ctx).WithFields(map[string]interface{}{
 		"size":       len(batch),
 		"startingAt": startingAt,
-	}).Debugf("Ingest accounts batch")
+	}).Debugf("Ingest balances batch")
 
-	if err := i.repo.UpsertAccounts(ctx, i.provider, batch); err != nil {
-		return fmt.Errorf("error upserting accounts: %w", err)
+	if err := i.repo.InsertBalances(ctx, batch); err != nil {
+		return fmt.Errorf("error inserting balances: %w", err)
 	}
 
-	err := i.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedAccounts(batch)))
-	if err != nil {
+	if err := i.publisher.Publish(events.TopicPayments,
+		publish.NewMessage(ctx, messages.NewEventSavedBalances(batch))); err != nil {
 		logging.FromContext(ctx).Errorf("Publishing message: %w", err)
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/ingestion"
@@ -62,7 +63,9 @@ func ingestAccountsBatch(
 	ingester ingestion.Ingester,
 	accounts []*client.Account,
 ) error {
-	batch := ingestion.AccountBatch{}
+	accountsBatch := ingestion.AccountBatch{}
+	balancesBatch := ingestion.BalanceBatch{}
+
 	for _, account := range accounts {
 		raw, err := json.Marshal(account)
 		if err != nil {
@@ -74,24 +77,39 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		batch = append(batch, ingestion.AccountBatchElement{
-			Account: &models.Account{
-				ID: models.AccountID{
-					Reference: account.ID,
-					Provider:  models.ConnectorProviderModulr,
-				},
-				CreatedAt:       openingDate,
-				Reference:       account.ID,
-				Provider:        models.ConnectorProviderModulr,
-				DefaultCurrency: account.Currency,
-				AccountName:     account.Name,
-				Type:            models.AccountTypeInternal,
-				RawData:         raw,
+		accountsBatch = append(accountsBatch, &models.Account{
+			ID: models.AccountID{
+				Reference: account.ID,
+				Provider:  models.ConnectorProviderModulr,
 			},
+			CreatedAt:       openingDate,
+			Reference:       account.ID,
+			Provider:        models.ConnectorProviderModulr,
+			DefaultCurrency: account.Currency,
+			AccountName:     account.Name,
+			Type:            models.AccountTypeInternal,
+			RawData:         raw,
+		})
+
+		// TODO(polo): bigint
+		balance, err := strconv.ParseFloat(account.Balance, 64)
+		if err != nil {
+			return err
+		}
+
+		balancesBatch = append(balancesBatch, &models.Balance{
+			AccountID: models.AccountID{
+				Reference: account.ID,
+				Provider:  models.ConnectorProviderModulr,
+			},
+			Currency:      account.Currency,
+			Balance:       int64(balance * 100),
+			CreatedAt:     time.Time{},
+			LastUpdatedAt: time.Time{},
 		})
 	}
 
-	if err := ingester.IngestAccounts(ctx, batch); err != nil {
+	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
 		return err
 	}
 

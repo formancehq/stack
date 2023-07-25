@@ -13,6 +13,7 @@ import (
 type Ingester interface {
 	IngestPayments(ctx context.Context, batch PaymentBatch, commitState any) error
 	IngestAccounts(ctx context.Context, batch AccountBatch) error
+	IngestBalances(ctx context.Context, batch BalanceBatch) error
 	GetTransfer(ctx context.Context, transferID uuid.UUID) (models.Transfer, error)
 	UpdateTransferStatus(ctx context.Context, transferID uuid.UUID, status models.TransferStatus, reference, err string) error
 }
@@ -27,6 +28,7 @@ type DefaultIngester struct {
 type Repository interface {
 	UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []*models.Account) error
 	UpsertPayments(ctx context.Context, provider models.ConnectorProvider, payments []*models.Payment) error
+	InsertBalances(ctx context.Context, balances []*models.Balance) error
 	UpdateTaskState(ctx context.Context, provider models.ConnectorProvider, descriptor models.TaskDescriptor, state json.RawMessage) error
 
 	GetTransfer(ctx context.Context, transferID uuid.UUID) (models.Transfer, error)

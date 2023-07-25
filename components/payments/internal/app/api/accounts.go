@@ -14,8 +14,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-type listAccountsRepository interface {
+type accountsRepository interface {
 	ListAccounts(ctx context.Context, pagination storage.Paginator) ([]*models.Account, storage.PaginationDetails, error)
+	GetAccount(ctx context.Context, accountID models.AccountID) (*models.Account, error)
 }
 
 type accountResponse struct {
@@ -28,7 +29,7 @@ type accountResponse struct {
 	Raw             interface{} `json:"raw"`
 }
 
-func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
+func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -109,5 +110,11 @@ func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
 
 			return
 		}
+	}
+}
+
+func readAccountHandler(repo accountsRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO(polo)
 	}
 }

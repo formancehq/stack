@@ -32,7 +32,9 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 			}
 
 			var accountBatch ingestion.AccountBatch
+			var balanceBatch ingestion.BalanceBatch
 			var transactionTasks []models.TaskDescriptor
+			now := time.Now()
 			for _, wallet := range pagedWallets {
 				transactionTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 					Name:     "Fetch transactions from client by user and wallets",
@@ -50,26 +52,39 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 				}
 
 				transactionTasks = append(transactionTasks, transactionTask)
-				accountBatch = append(accountBatch, ingestion.AccountBatchElement{
-					Account: &models.Account{
-						ID: models.AccountID{
-							Reference: wallet.ID,
-							Provider:  models.ConnectorProviderMangopay,
-						},
-						CreatedAt:       time.Unix(wallet.CreationDate, 0),
-						Reference:       wallet.ID,
-						Provider:        models.ConnectorProviderMangopay,
-						DefaultCurrency: wallet.Currency,
-						AccountName:     wallet.Description,
-						// Wallets are internal accounts on our side, since we
-						// can have their balances.
-						Type:    models.AccountTypeInternal,
-						RawData: buf,
+				accountBatch = append(accountBatch, &models.Account{
+					ID: models.AccountID{
+						Reference: wallet.ID,
+						Provider:  models.ConnectorProviderMangopay,
 					},
+					CreatedAt:       time.Unix(wallet.CreationDate, 0),
+					Reference:       wallet.ID,
+					Provider:        models.ConnectorProviderMangopay,
+					DefaultCurrency: wallet.Currency,
+					AccountName:     wallet.Description,
+					// Wallets are internal accounts on our side, since we
+					// can have their balances.
+					Type:    models.AccountTypeInternal,
+					RawData: buf,
+				})
+
+				balanceBatch = append(balanceBatch, &models.Balance{
+					AccountID: models.AccountID{
+						Reference: wallet.ID,
+						Provider:  models.ConnectorProviderMangopay,
+					},
+					Currency:      wallet.Balance.Currency,
+					Balance:       wallet.Balance.Amount,
+					CreatedAt:     now,
+					LastUpdatedAt: now,
 				})
 			}
 
 			if err := ingester.IngestAccounts(ctx, accountBatch); err != nil {
+				return err
+			}
+
+			if err := ingester.IngestBalances(ctx, balanceBatch); err != nil {
 				return err
 			}
 

@@ -80,19 +80,17 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		batch = append(batch, ingestion.AccountBatchElement{
-			Account: &models.Account{
-				ID: models.AccountID{
-					Reference: account.ID,
-					Provider:  models.ConnectorProviderStripe,
-				},
-				CreatedAt:       time.Unix(account.Created, 0),
-				Reference:       account.ID,
-				Provider:        models.ConnectorProviderStripe,
-				DefaultCurrency: string(account.DefaultCurrency),
-				Type:            models.AccountTypeInternal,
-				RawData:         raw,
+		batch = append(batch, &models.Account{
+			ID: models.AccountID{
+				Reference: account.ID,
+				Provider:  models.ConnectorProviderStripe,
 			},
+			CreatedAt:       time.Unix(account.Created, 0),
+			Reference:       account.ID,
+			Provider:        models.ConnectorProviderStripe,
+			DefaultCurrency: string(account.DefaultCurrency),
+			Type:            models.AccountTypeInternal,
+			RawData:         raw,
 		})
 	}
 

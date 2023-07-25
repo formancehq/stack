@@ -89,3 +89,8 @@ func (s *Storage) ListAccounts(ctx context.Context, pagination Paginator) ([]*mo
 
 	return accounts, paginationDetails, nil
 }
+
+func (s *Storage) GetAccount(ctx context.Context, accountID models.AccountID) (*models.Account, error) {
+	// TODO(polo)
+	return nil, nil
+}
