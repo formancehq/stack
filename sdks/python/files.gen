@@ -216,7 +216,7 @@ src/sdk/models/shared/stripetransferrequest.py
 src/sdk/models/shared/transferresponse.py
 src/sdk/models/shared/transferrequest.py
 src/sdk/models/shared/balancescursor.py
-src/sdk/models/shared/balance.py
+src/sdk/models/shared/accountbalance.py
 src/sdk/models/shared/taskresponse.py
 src/sdk/models/shared/taskstripe.py
 src/sdk/models/shared/taskwise.py
@@ -248,7 +248,7 @@ src/sdk/models/shared/query.py
 src/sdk/models/shared/walletserrorresponse.py
 src/sdk/models/shared/confirmholdrequest.py
 src/sdk/models/shared/createbalanceresponse.py
-src/sdk/models/shared/walletsbalance.py
+src/sdk/models/shared/balance.py
 src/sdk/models/shared/createbalancerequest.py
 src/sdk/models/shared/createwalletresponse.py
 src/sdk/models/shared/wallet.py

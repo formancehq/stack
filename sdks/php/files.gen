@@ -312,7 +312,7 @@ src/Models/Shared/TransferResponse.php
 src/Models/Shared/TransferRequest.php
 src/Models/Shared/BalancesCursorCursor.php
 src/Models/Shared/BalancesCursor.php
-src/Models/Shared/Balance.php
+src/Models/Shared/AccountBalance.php
 src/Models/Shared/TaskResponse.php
 src/Models/Shared/TaskStripeDescriptor.php
 src/Models/Shared/TaskStripe.php
@@ -363,7 +363,7 @@ src/Models/Shared/WalletsErrorResponseErrorCode.php
 src/Models/Shared/WalletsErrorResponse.php
 src/Models/Shared/ConfirmHoldRequest.php
 src/Models/Shared/CreateBalanceResponse.php
-src/Models/Shared/WalletsBalance.php
+src/Models/Shared/Balance.php
 src/Models/Shared/CreateBalanceRequest.php
 src/Models/Shared/CreateWalletResponse.php
 src/Models/Shared/Wallet.php

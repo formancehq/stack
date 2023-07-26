@@ -3,13 +3,12 @@
 package shared
 
 import (
+	"math/big"
 	"time"
 )
 
 type Balance struct {
-	AccountID     string    `json:"accountId"`
-	Balance       int64     `json:"balance"`
-	CreatedAt     time.Time `json:"createdAt"`
-	Currency      string    `json:"currency"`
-	LastUpdatedAt time.Time `json:"lastUpdatedAt"`
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	Name      string     `json:"name"`
+	Priority  *big.Int   `json:"priority,omitempty"`
 }

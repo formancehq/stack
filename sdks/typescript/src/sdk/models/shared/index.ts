@@ -3,6 +3,7 @@
  */
 
 export * from "./account";
+export * from "./accountbalance";
 export * from "./accountresponse";
 export * from "./accountscursor";
 export * from "./accountscursorresponse";
@@ -159,7 +160,6 @@ export * from "./user";
 export * from "./version";
 export * from "./volume";
 export * from "./wallet";
-export * from "./walletsbalance";
 export * from "./walletserrorresponse";
 export * from "./walletstransaction";
 export * from "./walletsubject";

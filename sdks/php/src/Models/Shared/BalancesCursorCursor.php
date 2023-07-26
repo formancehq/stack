@@ -14,10 +14,10 @@ class BalancesCursorCursor
     /**
      * $data
      * 
-     * @var array<\formance\stack\Models\Shared\Balance> $data
+     * @var array<\formance\stack\Models\Shared\AccountBalance> $data
      */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\Balance>')]
+    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\AccountBalance>')]
     public array $data;
     
 	#[\JMS\Serializer\Annotation\SerializedName('hasMore')]

@@ -1977,7 +1977,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Balances"
+            "$ref": "#/components/responses/AccountBalances"
           }
         }
       }
@@ -4966,7 +4966,7 @@
                   "data": {
                     "type": "array",
                     "items": {
-                      "$ref": "#/components/schemas/Balance"
+                      "$ref": "#/components/schemas/AccountBalance"
                     }
                   }
                 }
@@ -5636,7 +5636,7 @@
           }
         }
       },
-      "Balance": {
+      "AccountBalance": {
         "type": "object",
         "required": [
           "accountId",
@@ -6931,7 +6931,7 @@
           }
         }
       },
-      "walletsBalance": {
+      "Balance": {
         "type": "object",
         "required": [
           "name"
@@ -6953,7 +6953,7 @@
       "BalanceWithAssets": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/walletsBalance"
+            "$ref": "#/components/schemas/Balance"
           },
           {
             "$ref": "#/components/schemas/AssetHolder"
@@ -7021,7 +7021,7 @@
                 "properties": {
                   "data": {
                     "items": {
-                      "$ref": "#/components/schemas/walletsBalance"
+                      "$ref": "#/components/schemas/Balance"
                     },
                     "type": "array"
                   }
@@ -7047,7 +7047,7 @@
         }
       },
       "CreateBalanceRequest": {
-        "$ref": "#/components/schemas/walletsBalance"
+        "$ref": "#/components/schemas/Balance"
       },
       "CreateBalanceResponse": {
         "type": "object",
@@ -7056,7 +7056,7 @@
         ],
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/walletsBalance"
+            "$ref": "#/components/schemas/Balance"
           }
         }
       },
@@ -7790,7 +7790,7 @@
           }
         }
       },
-      "Balances": {
+      "AccountBalances": {
         "description": "OK",
         "content": {
           "application/json": {

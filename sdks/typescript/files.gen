@@ -227,7 +227,7 @@ src/sdk/models/shared/stripetransferrequest.ts
 src/sdk/models/shared/transferresponse.ts
 src/sdk/models/shared/transferrequest.ts
 src/sdk/models/shared/balancescursor.ts
-src/sdk/models/shared/balance.ts
+src/sdk/models/shared/accountbalance.ts
 src/sdk/models/shared/taskresponse.ts
 src/sdk/models/shared/taskstripe.ts
 src/sdk/models/shared/taskwise.ts
@@ -259,7 +259,7 @@ src/sdk/models/shared/query.ts
 src/sdk/models/shared/walletserrorresponse.ts
 src/sdk/models/shared/confirmholdrequest.ts
 src/sdk/models/shared/createbalanceresponse.ts
-src/sdk/models/shared/walletsbalance.ts
+src/sdk/models/shared/balance.ts
 src/sdk/models/shared/createbalancerequest.ts
 src/sdk/models/shared/createwalletresponse.ts
 src/sdk/models/shared/wallet.ts

@@ -18,11 +18,11 @@ namespace formance\stack\Models\Shared;
 class CreateBalanceResponse
 {
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\WalletsBalance')]
-    public WalletsBalance $data;
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\Balance')]
+    public Balance $data;
     
 	public function __construct()
 	{
-		$this->data = new \formance\stack\Models\Shared\WalletsBalance();
+		$this->data = new \formance\stack\Models\Shared\Balance();
 	}
 }

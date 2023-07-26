@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BalancesCursorCursor {
     @JsonProperty("data")
-    public Balance[] data;
+    public AccountBalance[] data;
 
-    public BalancesCursorCursor withData(Balance[] data) {
+    public BalancesCursorCursor withData(AccountBalance[] data) {
         this.data = data;
         return this;
     }
@@ -51,7 +51,7 @@ public class BalancesCursorCursor {
         return this;
     }
     
-    public BalancesCursorCursor(@JsonProperty("data") Balance[] data, @JsonProperty("hasMore") Boolean hasMore, @JsonProperty("pageSize") Long pageSize) {
+    public BalancesCursorCursor(@JsonProperty("data") AccountBalance[] data, @JsonProperty("hasMore") Boolean hasMore, @JsonProperty("pageSize") Long pageSize) {
         this.data = data;
         this.hasMore = hasMore;
         this.pageSize = pageSize;

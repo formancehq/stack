@@ -4,5 +4,5 @@ package shared
 
 // CreateBalanceResponse - Created balance
 type CreateBalanceResponse struct {
-	Data WalletsBalance `json:"data"`
+	Data Balance `json:"data"`
 }

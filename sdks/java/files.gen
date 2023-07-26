@@ -323,7 +323,7 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/TransferResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TransferRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursorCursor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursor.java
-lib/src/main/java/com/formance/formance_sdk/models/shared/Balance.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/AccountBalance.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskStripeDescriptor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskStripe.java
@@ -374,7 +374,7 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/WalletsErrorResponseEr
 lib/src/main/java/com/formance/formance_sdk/models/shared/WalletsErrorResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConfirmHoldRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/CreateBalanceResponse.java
-lib/src/main/java/com/formance/formance_sdk/models/shared/WalletsBalance.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/Balance.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/CreateBalanceRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/CreateWalletResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/Wallet.java

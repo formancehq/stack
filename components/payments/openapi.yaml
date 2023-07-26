@@ -116,7 +116,7 @@ paths:
         - $ref: '#/components/parameters/Sort'
       responses:
         '200':
-          $ref: '#/components/responses/Balances'
+          $ref: '#/components/responses/AccountBalances'
   /connectors:
     get:
       summary: List all installed connectors
@@ -343,7 +343,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AccountsCursor'
-    Balances:
+    AccountBalances:
       description: OK
       content:
         application/json:
@@ -496,7 +496,7 @@ components:
                 data:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Balance'
+                    $ref: '#/components/schemas/AccountBalance'
     TasksCursor:
       type: object
       required:
@@ -955,7 +955,7 @@ components:
         raw:
           type: object
           nullable: true
-    Balance:
+    AccountBalance:
       type: object
       required:
         - accountId

@@ -14,10 +14,10 @@ class ListBalancesResponseCursor
     /**
      * $data
      * 
-     * @var array<\formance\stack\Models\Shared\WalletsBalance> $data
+     * @var array<\formance\stack\Models\Shared\Balance> $data
      */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\WalletsBalance>')]
+    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\Balance>')]
     public array $data;
     
 	#[\JMS\Serializer\Annotation\SerializedName('hasMore')]

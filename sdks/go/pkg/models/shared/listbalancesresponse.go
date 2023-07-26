@@ -3,11 +3,11 @@
 package shared
 
 type ListBalancesResponseCursor struct {
-	Data     []WalletsBalance `json:"data"`
-	HasMore  *bool            `json:"hasMore,omitempty"`
-	Next     *string          `json:"next,omitempty"`
-	PageSize int64            `json:"pageSize"`
-	Previous *string          `json:"previous,omitempty"`
+	Data     []Balance `json:"data"`
+	HasMore  *bool     `json:"hasMore,omitempty"`
+	Next     *string   `json:"next,omitempty"`
+	PageSize int64     `json:"pageSize"`
+	Previous *string   `json:"previous,omitempty"`
 }
 
 // ListBalancesResponse - Balances list
