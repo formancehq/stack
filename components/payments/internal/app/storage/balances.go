@@ -7,7 +7,7 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 )
 
-func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance) error {
+func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance, checkIfAccountExists bool) error {
 	if len(balances) == 0 {
 		return nil
 	}
@@ -19,7 +19,7 @@ func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance
 	}
 	insertedBalances := make([]insertedBalance, 0)
 
-	err := s.db.NewInsert().
+	query := s.db.NewInsert().
 		Model((*models.Balance)(nil)).
 		With("cte1", s.db.NewValues(&balances)).
 		Column(
@@ -29,14 +29,23 @@ func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance
 			"currency",
 			"last_updated_at",
 		).
-		TableExpr(`
-			(SELECT *
-				FROM cte1
-				WHERE cte1.balance != COALESCE((SELECT balance FROM accounts.balances WHERE account_id = cte1.account_id AND last_updated_at < cte1.last_updated_at AND currency = cte1.currency ORDER BY last_updated_at DESC LIMIT 1), cte1.balance+1)
-			) data
-		`).
-		Returning("created_at, account_id, currency").
-		Scan(ctx, &insertedBalances)
+		Returning("created_at, account_id, currency")
+	if checkIfAccountExists {
+		query = query.TableExpr(`
+		(SELECT *
+			FROM cte1
+			WHERE EXISTS (SELECT 1 FROM accounts.account WHERE id = cte1.account_id)
+				AND cte1.balance != COALESCE((SELECT balance FROM accounts.balances WHERE account_id = cte1.account_id AND last_updated_at < cte1.last_updated_at AND currency = cte1.currency ORDER BY last_updated_at DESC LIMIT 1), cte1.balance+1)
+		) data`)
+	} else {
+		query = query.TableExpr(`
+		(SELECT *
+			FROM cte1
+			WHERE cte1.balance != COALESCE((SELECT balance FROM accounts.balances WHERE account_id = cte1.account_id AND last_updated_at < cte1.last_updated_at AND currency = cte1.currency ORDER BY last_updated_at DESC LIMIT 1), cte1.balance+1)
+		) data`)
+	}
+
+	err := query.Scan(ctx, &insertedBalances)
 	if err != nil {
 		return e("failed to create balances", err)
 	}

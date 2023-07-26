@@ -54,6 +54,23 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 				if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 					return err
 				}
+
+				balancesTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+					Name:      "Fetch balances from client by account",
+					Key:       taskNameFetchBalances,
+					AccountID: account.ID,
+				})
+
+				if err != nil {
+					return err
+				}
+				err = scheduler.Schedule(ctx, balancesTask, models.TaskSchedulerOptions{
+					ScheduleOption: models.OPTIONS_RUN_NOW,
+					Restart:        true,
+				})
+				if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+					return err
+				}
 			}
 
 			if len(pagedAccounts) < pageSize {

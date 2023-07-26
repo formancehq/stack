@@ -34,8 +34,8 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 					}
 
 					for _, account := range batch {
-						descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-							Name:    "Fetch balance transactions for a specific connected account",
+						transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+							Name:    "Fetch transactions for a specific connected account",
 							Key:     taskNameFetchPaymentsForAccounts,
 							Account: account.ID,
 						})
@@ -43,7 +43,24 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 							return errors.Wrap(err, "failed to transform task descriptor")
 						}
 
-						err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+						err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
+							ScheduleOption: models.OPTIONS_RUN_NOW,
+							Restart:        true,
+						})
+						if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+							return errors.Wrap(err, "scheduling connected account")
+						}
+
+						balancesTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+							Name:    "Fetch balance for a specific connected account",
+							Key:     taskNameFetchBalances,
+							Account: account.ID,
+						})
+						if err != nil {
+							return errors.Wrap(err, "failed to transform task descriptor")
+						}
+
+						err = scheduler.Schedule(ctx, balancesTask, models.TaskSchedulerOptions{
 							ScheduleOption: models.OPTIONS_RUN_NOW,
 							Restart:        true,
 						})

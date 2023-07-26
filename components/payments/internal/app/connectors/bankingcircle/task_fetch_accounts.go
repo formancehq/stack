@@ -97,7 +97,9 @@ func ingestAccountsBatch(
 					Reference: account.AccountID,
 					Provider:  models.ConnectorProviderBankingCircle,
 				},
-				// TODO(polo): check currency for banking circle
+				// Note(polo): same thing as payments
+				// TODO(polo): do a complete pass on all connectors to
+				// normalize the currencies
 				Currency:      balance.Currency + "/2",
 				Balance:       int64(balance.IntraDayAmount * 100),
 				CreatedAt:     now,
@@ -110,7 +112,7 @@ func ingestAccountsBatch(
 		return err
 	}
 
-	if err := ingester.IngestBalances(ctx, balanceBatch); err != nil {
+	if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
 		return err
 	}
 

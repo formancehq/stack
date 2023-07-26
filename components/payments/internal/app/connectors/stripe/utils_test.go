@@ -98,6 +98,12 @@ func (m *ClientMock) Accounts(ctx context.Context,
 	return nil, false, nil
 }
 
+func (m *ClientMock) Balance(ctx context.Context,
+	options ...ClientOption,
+) (*stripe.Balance, error) {
+	return nil, nil
+}
+
 func (m *ClientMock) BalanceTransactions(ctx context.Context,
 	options ...ClientOption,
 ) ([]*stripe.BalanceTransaction, bool, error) {

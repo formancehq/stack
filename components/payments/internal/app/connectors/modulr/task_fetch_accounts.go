@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -66,6 +67,7 @@ func ingestAccountsBatch(
 	accountsBatch := ingestion.AccountBatch{}
 	balancesBatch := ingestion.BalanceBatch{}
 
+	now := time.Now()
 	for _, account := range accounts {
 		raw, err := json.Marshal(account)
 		if err != nil {
@@ -91,7 +93,7 @@ func ingestAccountsBatch(
 			RawData:         raw,
 		})
 
-		// TODO(polo): bigint
+		// TODO(polo): move to bigints
 		balance, err := strconv.ParseFloat(account.Balance, 64)
 		if err != nil {
 			return err
@@ -102,14 +104,18 @@ func ingestAccountsBatch(
 				Reference: account.ID,
 				Provider:  models.ConnectorProviderModulr,
 			},
-			Currency:      account.Currency,
+			Currency:      fmt.Sprintf("%s/2", account.Currency),
 			Balance:       int64(balance * 100),
-			CreatedAt:     time.Time{},
-			LastUpdatedAt: time.Time{},
+			CreatedAt:     now,
+			LastUpdatedAt: now,
 		})
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
+		return err
+	}
+
+	if err := ingester.IngestBalances(ctx, balancesBatch, false); err != nil {
 		return err
 	}
 

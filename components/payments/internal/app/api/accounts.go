@@ -16,7 +16,6 @@ import (
 
 type accountsRepository interface {
 	ListAccounts(ctx context.Context, pagination storage.Paginator) ([]*models.Account, storage.PaginationDetails, error)
-	GetAccount(ctx context.Context, accountID models.AccountID) (*models.Account, error)
 }
 
 type accountResponse struct {

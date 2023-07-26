@@ -38,6 +38,7 @@ func QueryParam(key, value string) ClientOptionFn {
 type Client interface {
 	Accounts(ctx context.Context, options ...ClientOption) ([]*stripe.Account, bool, error)
 	BalanceTransactions(ctx context.Context, options ...ClientOption) ([]*stripe.BalanceTransaction, bool, error)
+	Balance(ctx context.Context, options ...ClientOption) (*stripe.Balance, error)
 	ForAccount(account string) Client
 }
 
@@ -120,6 +121,10 @@ func (d *DefaultClient) BalanceTransactions(ctx context.Context,
 	}
 
 	return asBalanceTransactions, rsp.HasMore, nil
+}
+
+type BalanceResponse struct {
+	*stripe.Balance
 }
 
 func (d *DefaultClient) Accounts(ctx context.Context,

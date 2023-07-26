@@ -20,7 +20,7 @@ func (fn BalanceIngesterFn) IngestBalances(ctx context.Context, batch BalanceBat
 	return fn(ctx, batch)
 }
 
-func (i *DefaultIngester) IngestBalances(ctx context.Context, batch BalanceBatch) error {
+func (i *DefaultIngester) IngestBalances(ctx context.Context, batch BalanceBatch, checkIfAccountExists bool) error {
 	startingAt := time.Now()
 
 	logging.FromContext(ctx).WithFields(map[string]interface{}{
@@ -28,7 +28,7 @@ func (i *DefaultIngester) IngestBalances(ctx context.Context, batch BalanceBatch
 		"startingAt": startingAt,
 	}).Debugf("Ingest balances batch")
 
-	if err := i.repo.InsertBalances(ctx, batch); err != nil {
+	if err := i.repo.InsertBalances(ctx, batch, checkIfAccountExists); err != nil {
 		return fmt.Errorf("error inserting balances: %w", err)
 	}
 

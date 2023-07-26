@@ -16,7 +16,7 @@ type Balance struct {
 	Attributes struct {
 		CurrencyCode     string  `json:"currencyCode"`
 		OverallBalance   float64 `json:"overallBalance"`
-		AvaliableBalance float64 `json:"avaliableBalance"`
+		AvailableBalance float64 `json:"availableBalance"`
 		ClearedBalance   float64 `json:"clearedBalance"`
 		ReservedBalance  float64 `json:"reservedBalance"`
 		UnclearedBalance float64 `json:"unclearedBalance"`

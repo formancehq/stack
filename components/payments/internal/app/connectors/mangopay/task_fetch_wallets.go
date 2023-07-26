@@ -84,7 +84,7 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 				return err
 			}
 
-			if err := ingester.IngestBalances(ctx, balanceBatch); err != nil {
+			if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
 				return err
 			}
 

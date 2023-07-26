@@ -10,6 +10,7 @@ const (
 	taskNameFetchAccounts            = "fetch_accounts"
 	taskNameFetchPaymentsForAccounts = "fetch_transactions"
 	taskNameFetchPayments            = "fetch_payments"
+	taskNameFetchBalances            = "fetch_balance"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -41,6 +42,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return FetchAccountsTask(config, client)
 		case taskNameFetchPaymentsForAccounts:
 			return ConnectedAccountTask(config, taskDescriptor.Account, client)
+		case taskNameFetchBalances:
+			return BalancesTask(config, taskDescriptor.Account, client)
 		default:
 			// For compatibility with old tasks
 			return ConnectedAccountTask(config, taskDescriptor.Account, client)
