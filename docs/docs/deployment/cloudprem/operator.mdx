@@ -19,7 +19,8 @@ We can now install the Formance Operator on our cluster using Helm, and bind it 
 * `REGION_SECRET`
   * The private region secret, as per given by fctl
 * `REGION_URL`
-  * The public base URL you want to assign to your private region
+  * The base URL you want to assign to your private region
+  * The URL must begin with the http schema (eg: https://sandbox.formance.cloud)
   * Stacks created in this region will be assigned a subdomain in the form of `https://{organisationID}—{stackID}.{REGION_URL}`
 
 :::info
