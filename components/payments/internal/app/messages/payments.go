@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
@@ -18,8 +19,8 @@ type paymentMessagePayload struct {
 	Asset     models.PaymentAsset  `json:"asset"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
-	InitialAmount int64 `json:"initialAmount"`
-	Amount        int64 `json:"amount"`
+	InitialAmount *big.Int `json:"initialAmount"`
+	Amount        *big.Int `json:"amount"`
 }
 
 func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorProvider) events.EventMessage {

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"math/big"
 	"net/http"
 	"time"
 
@@ -254,16 +255,16 @@ func reset[Config models.ConnectorConfigObject](connectorManager *integration.Co
 }
 
 type transferRequest struct {
-	Amount      int64  `json:"amount"`
-	Source      string `json:"source"`
-	Destination string `json:"destination"`
-	Asset       string `json:"asset"`
+	Amount      *big.Int `json:"amount"`
+	Source      string   `json:"source"`
+	Destination string   `json:"destination"`
+	Asset       string   `json:"asset"`
 
 	currency string
 }
 
 func (req *transferRequest) validate() error {
-	if req.Amount <= 0 {
+	if req.Amount.Cmp(big.NewInt(0)) <= 0 {
 		return errors.New("amount must be greater than 0")
 	}
 
@@ -346,13 +347,13 @@ func initiateTransfer[Config models.ConnectorConfigObject](connectorManager *int
 }
 
 type listTransfersResponseElement struct {
-	ID          string  `json:"id"`
-	Source      string  `json:"source"`
-	Destination string  `json:"destination"`
-	Amount      int64   `json:"amount"`
-	Currency    string  `json:"asset"`
-	Status      string  `json:"status"`
-	Error       *string `json:"error"`
+	ID          string   `json:"id"`
+	Source      string   `json:"source"`
+	Destination string   `json:"destination"`
+	Amount      *big.Int `json:"amount"`
+	Currency    string   `json:"asset"`
+	Status      string   `json:"status"`
+	Error       *string  `json:"error"`
 }
 
 func listTransfers[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],

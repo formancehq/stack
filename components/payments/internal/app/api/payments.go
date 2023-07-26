@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"math/big"
 	"net/http"
 	"strings"
 	"time"
@@ -27,7 +28,7 @@ type paymentResponse struct {
 	Type                 string                   `json:"type"`
 	Provider             models.ConnectorProvider `json:"provider"`
 	Status               models.PaymentStatus     `json:"status"`
-	InitialAmount        int64                    `json:"initialAmount"`
+	InitialAmount        *big.Int                 `json:"initialAmount"`
 	Scheme               models.PaymentScheme     `json:"scheme"`
 	Asset                string                   `json:"asset"`
 	CreatedAt            time.Time                `json:"createdAt"`

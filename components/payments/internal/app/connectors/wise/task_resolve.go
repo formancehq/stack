@@ -2,6 +2,7 @@ package wise
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/google/uuid"
 
@@ -29,7 +30,7 @@ type Transfer struct {
 	ID          uuid.UUID `json:"id" yaml:"id" bson:"id"`
 	Source      string    `json:"source" yaml:"source" bson:"source"`
 	Destination string    `json:"destination" yaml:"destination" bson:"destination"`
-	Amount      int64     `json:"amount" yaml:"amount" bson:"amount"`
+	Amount      *big.Int  `json:"amount" yaml:"amount" bson:"amount"`
 	Currency    string    `json:"currency" yaml:"currency" bson:"currency"`
 }
 

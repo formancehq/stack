@@ -3,6 +3,8 @@ package bankingcircle
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"math/big"
 
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
@@ -50,6 +52,15 @@ func ingestBatch(
 
 		paymentType := matchPaymentType(paymentEl.Classification)
 
+		var amount big.Float
+		_, ok := amount.SetString(paymentEl.Transfer.Amount.Amount.String())
+		if !ok {
+			return fmt.Errorf("failed to parse amount %s", paymentEl.Transfer.Amount.Amount.String())
+		}
+
+		var amountInt big.Int
+		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
 				ID: models.PaymentID{
@@ -63,7 +74,7 @@ func ingestBatch(
 				Type:      paymentType,
 				Status:    matchPaymentStatus(paymentEl.Status),
 				Scheme:    models.PaymentSchemeOther,
-				Amount:    int64(paymentEl.Transfer.Amount.Amount * 100),
+				Amount:    &amountInt,
 				Asset:     models.PaymentAsset(paymentEl.Transfer.Amount.Currency + "/2"),
 				RawData:   raw,
 			},

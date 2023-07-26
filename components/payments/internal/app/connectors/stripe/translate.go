@@ -3,6 +3,7 @@ package stripe
 import (
 	"encoding/json"
 	"log"
+	"math/big"
 	"runtime/debug"
 	"time"
 
@@ -54,7 +55,7 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 			Reference: balanceTransaction.ID,
 			Type:      models.PaymentTypePayIn,
 			Status:    models.PaymentStatusSucceeded,
-			Amount:    balanceTransaction.Source.Charge.Amount,
+			Amount:    big.NewInt(balanceTransaction.Source.Charge.Amount),
 			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
 			RawData:   rawData,
 			Scheme:    models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
@@ -80,7 +81,7 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 			Reference: balanceTransaction.ID,
 			Type:      models.PaymentTypePayOut,
 			Status:    convertPayoutStatus(balanceTransaction.Source.Payout.Status),
-			Amount:    balanceTransaction.Source.Payout.Amount,
+			Amount:    big.NewInt(balanceTransaction.Source.Payout.Amount),
 			RawData:   rawData,
 			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Payout.Currency)),
 			Scheme: func() models.PaymentScheme {
@@ -115,7 +116,7 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 			Reference: balanceTransaction.ID,
 			Type:      models.PaymentTypePayOut,
 			Status:    models.PaymentStatusSucceeded,
-			Amount:    balanceTransaction.Source.Transfer.Amount,
+			Amount:    big.NewInt(balanceTransaction.Source.Transfer.Amount),
 			RawData:   rawData,
 			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Transfer.Currency)),
 			Scheme:    models.PaymentSchemeOther,
@@ -170,7 +171,7 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 			Reference: balanceTransaction.ID,
 			Type:      models.PaymentTypePayIn,
 			Status:    models.PaymentStatusSucceeded,
-			Amount:    balanceTransaction.Source.Charge.Amount,
+			Amount:    big.NewInt(balanceTransaction.Source.Charge.Amount),
 			RawData:   rawData,
 			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
 			Scheme:    models.PaymentSchemeOther,

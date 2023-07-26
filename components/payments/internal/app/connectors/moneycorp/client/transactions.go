@@ -16,14 +16,14 @@ type Transaction struct {
 	ID         string `json:"id"`
 	Type       string `json:"type"`
 	Attributes struct {
-		AccountID            int32   `json:"accountId"`
-		CreatedAt            string  `json:"createdAt"`
-		Currency             string  `json:"transactionCurrency"`
-		Amount               float64 `json:"transactionAmount"`
-		Direction            string  `json:"transactionDirection"`
-		Type                 string  `json:"transactionType"`
-		ClientReference      string  `json:"clientReference"`
-		TransactionReference string  `json:"transactionReference"`
+		AccountID            int32       `json:"accountId"`
+		CreatedAt            string      `json:"createdAt"`
+		Currency             string      `json:"transactionCurrency"`
+		Amount               json.Number `json:"transactionAmount"`
+		Direction            string      `json:"transactionDirection"`
+		Type                 string      `json:"transactionType"`
+		ClientReference      string      `json:"clientReference"`
+		TransactionReference string      `json:"transactionReference"`
 	} `json:"attributes"`
 }
 

@@ -11,17 +11,17 @@ import (
 )
 
 type Transfer struct {
-	ID             uint64  `json:"id"`
-	Reference      string  `json:"reference"`
-	Status         string  `json:"status"`
-	SourceAccount  uint64  `json:"sourceAccount"`
-	SourceCurrency string  `json:"sourceCurrency"`
-	SourceValue    float64 `json:"sourceValue"`
-	TargetAccount  uint64  `json:"targetAccount"`
-	TargetCurrency string  `json:"targetCurrency"`
-	TargetValue    float64 `json:"targetValue"`
-	Business       uint64  `json:"business"`
-	Created        string  `json:"created"`
+	ID             uint64      `json:"id"`
+	Reference      string      `json:"reference"`
+	Status         string      `json:"status"`
+	SourceAccount  uint64      `json:"sourceAccount"`
+	SourceCurrency string      `json:"sourceCurrency"`
+	SourceValue    json.Number `json:"sourceValue"`
+	TargetAccount  uint64      `json:"targetAccount"`
+	TargetCurrency string      `json:"targetCurrency"`
+	TargetValue    json.Number `json:"targetValue"`
+	Business       uint64      `json:"business"`
+	Created        string      `json:"created"`
 	//nolint:tagliatelle // allow for clients
 	CustomerTransactionID string `json:"customerTransactionId"`
 	Details               struct {

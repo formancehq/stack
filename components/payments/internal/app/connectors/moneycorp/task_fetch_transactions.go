@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
 	"time"
 
@@ -72,6 +73,15 @@ func ingestBatch(
 			return fmt.Errorf("failed to parse transaction date: %w", err)
 		}
 
+		var amount big.Float
+		_, ok := amount.SetString(transaction.Attributes.Amount.String())
+		if !ok {
+			return fmt.Errorf("failed to parse amount %s", transaction.Attributes.Amount.String())
+		}
+
+		var amountInt big.Int
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(currency.GetPrecision(transaction.Attributes.Currency))))).Int(&amountInt)
+
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
 				ID: models.PaymentID{
@@ -83,7 +93,7 @@ func ingestBatch(
 				},
 				CreatedAt: createdAt,
 				Reference: transaction.ID,
-				Amount:    int64(transaction.Attributes.Amount * math.Pow(10, float64(currency.GetPrecision(transaction.Attributes.Currency)))),
+				Amount:    &amountInt,
 				Asset:     currency.FormatAsset(transaction.Attributes.Currency),
 				Type:      paymentType,
 				Status:    models.PaymentStatusSucceeded,

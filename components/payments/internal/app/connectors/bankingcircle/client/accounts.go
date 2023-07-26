@@ -23,12 +23,12 @@ type Account struct {
 	OwnedByCompanyID string `json:"ownedByCompanyId"`
 	ProtectionType   string `json:"protectionType"`
 	Balances         []struct {
-		Type                     string  `json:"type"`
-		Currency                 string  `json:"currency"`
-		BeginOfDayAmount         float64 `json:"beginOfDayAmount"`
-		FinancialDate            string  `json:"financialDate"`
-		IntraDayAmount           float64 `json:"intraDayAmount"`
-		LastTransactionTimestamp string  `json:"lastTransactionTimestamp"`
+		Type                     string      `json:"type"`
+		Currency                 string      `json:"currency"`
+		BeginOfDayAmount         json.Number `json:"beginOfDayAmount"`
+		FinancialDate            string      `json:"financialDate"`
+		IntraDayAmount           json.Number `json:"intraDayAmount"`
+		LastTransactionTimestamp string      `json:"lastTransactionTimestamp"`
 	} `json:"balances"`
 }
 

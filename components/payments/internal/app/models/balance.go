@@ -1,6 +1,7 @@
 package models
 
 import (
+	"math/big"
 	"time"
 
 	"github.com/uptrace/bun"
@@ -11,7 +12,7 @@ type Balance struct {
 
 	AccountID     AccountID `bun:"type:character varying,nullzero"`
 	Currency      string
-	Balance       int64
+	Balance       *big.Int `bun:"type:numeric"`
 	CreatedAt     time.Time
 	LastUpdatedAt time.Time
 }

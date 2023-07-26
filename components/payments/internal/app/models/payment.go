@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/gibson042/canonicaljson-go"
@@ -79,7 +80,7 @@ type Payment struct {
 	ConnectorID uuid.UUID `bun:",nullzero"`
 	CreatedAt   time.Time `bun:",nullzero"`
 	Reference   string
-	Amount      int64
+	Amount      *big.Int `bun:"type:numeric"`
 	Type        PaymentType
 	Status      PaymentStatus
 	Scheme      PaymentScheme

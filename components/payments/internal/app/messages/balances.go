@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
@@ -11,7 +12,7 @@ type balanceMessagePayload struct {
 	CreatedAt time.Time `json:"createdAt"`
 	AccountID string    `json:"accountID"`
 	Currency  string    `json:"currency"`
-	Balance   int64     `json:"balance"`
+	Balance   *big.Int  `json:"balance"`
 }
 
 func NewEventSavedBalances(balances []*models.Balance) events.EventMessage {

@@ -3,7 +3,7 @@ package currencycloud
 import (
 	"context"
 	"fmt"
-	"strconv"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/currencycloud/client"
@@ -50,10 +50,14 @@ func ingestBalancesBatch(
 	batch := ingestion.BalanceBatch{}
 	now := time.Now()
 	for _, balance := range balances {
-		amount, err := strconv.ParseFloat(balance.Amount, 64)
-		if err != nil {
-			return err
+		var amount big.Float
+		_, ok := amount.SetString(balance.Amount)
+		if !ok {
+			return fmt.Errorf("failed to parse amount %s", balance.Amount)
 		}
+
+		var amountInt big.Int
+		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
 
 		batch = append(batch, &models.Balance{
 			AccountID: models.AccountID{
@@ -61,7 +65,7 @@ func ingestBalancesBatch(
 				Provider:  models.ConnectorProviderCurrencyCloud,
 			},
 			Currency:      fmt.Sprintf("%s/2", balance.Currency),
-			Balance:       int64(amount * 100),
+			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
 		})

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
+	"math/big"
 
 	"github.com/formancehq/payments/internal/app/models"
 
@@ -49,12 +49,14 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 		for _, transaction := range transactions {
 			logger.Info(transaction)
 
-			var amount float64
-
-			amount, err = strconv.ParseFloat(transaction.Amount, 64)
-			if err != nil {
-				return fmt.Errorf("failed to parse amount: %w", err)
+			var amount big.Float
+			_, ok := amount.SetString(transaction.Amount)
+			if !ok {
+				return fmt.Errorf("failed to parse amount %s", transaction.Amount)
 			}
+
+			var amountInt big.Int
+			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
 
 			var rawData json.RawMessage
 
@@ -78,7 +80,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 					Type:      paymentType,
 					Status:    matchTransactionStatus(transaction.Status),
 					Scheme:    models.PaymentSchemeOther,
-					Amount:    int64(amount * 100),
+					Amount:    &amountInt,
 					Asset:     models.PaymentAsset(fmt.Sprintf("%s/2", transaction.Currency)),
 					RawData:   rawData,
 				},

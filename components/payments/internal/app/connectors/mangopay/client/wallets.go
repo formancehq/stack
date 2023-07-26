@@ -13,8 +13,8 @@ type wallet struct {
 	CreationDate int64  `json:"CreationDate"`
 	Currency     string `json:"Currency"`
 	Balance      struct {
-		Currency string `json:"Currency"`
-		Amount   int64  `json:"Amount"`
+		Currency string      `json:"Currency"`
+		Amount   json.Number `json:"Amount"`
 	} `json:"Balance"`
 }
 

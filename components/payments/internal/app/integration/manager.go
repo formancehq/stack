@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"math/big"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/app/messages"
@@ -271,7 +272,7 @@ type Transfer struct {
 	Source      string
 	Destination string
 	Currency    string
-	Amount      int64
+	Amount      *big.Int
 }
 
 func (l *ConnectorManager[ConnectorConfig]) InitiateTransfer(ctx context.Context, transfer Transfer) (uuid.UUID, error) {

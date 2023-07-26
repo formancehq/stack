@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/ingestion"
@@ -93,11 +93,14 @@ func ingestAccountsBatch(
 			RawData:         raw,
 		})
 
-		// TODO(polo): move to bigints
-		balance, err := strconv.ParseFloat(account.Balance, 64)
-		if err != nil {
-			return err
+		var amount big.Float
+		_, ok := amount.SetString(account.Balance)
+		if !ok {
+			return fmt.Errorf("failed to parse amount %s", account.Balance)
 		}
+
+		var balance big.Int
+		amount.Mul(&amount, big.NewFloat(100)).Int(&balance)
 
 		balancesBatch = append(balancesBatch, &models.Balance{
 			AccountID: models.AccountID{
@@ -105,7 +108,7 @@ func ingestAccountsBatch(
 				Provider:  models.ConnectorProviderModulr,
 			},
 			Currency:      fmt.Sprintf("%s/2", account.Currency),
-			Balance:       int64(balance * 100),
+			Balance:       &balance,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
 		})

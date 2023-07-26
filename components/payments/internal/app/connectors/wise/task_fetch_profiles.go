@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/wise/client"
@@ -97,13 +98,22 @@ func ingestAccountsBatch(
 			RawData:         raw,
 		})
 
+		var amount big.Float
+		_, ok := amount.SetString(balance.Amount.Value.String())
+		if !ok {
+			return fmt.Errorf("failed to parse amount %s", balance.Amount.Value.String())
+		}
+
+		var amountInt big.Int
+		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+
 		balancesBatch = append(balancesBatch, &models.Balance{
 			AccountID: models.AccountID{
 				Reference: fmt.Sprintf("%d", balance.ID),
 				Provider:  models.ConnectorProviderWise,
 			},
 			Currency:      models.PaymentAsset(fmt.Sprintf("%s/2", balance.Amount.Currency)).String(),
-			Balance:       int64(balance.Amount.Value * 100),
+			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
 		})

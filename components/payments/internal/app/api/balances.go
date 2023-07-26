@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,7 +25,7 @@ type balancesResponse struct {
 	CreatedAt     time.Time `json:"createdAt"`
 	LastUpdatedAt time.Time `json:"lastUpdatedAt"`
 	Currency      string    `json:"currency"`
-	Balance       int64     `json:"balance"`
+	Balance       *big.Int  `json:"balance"`
 }
 
 func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {

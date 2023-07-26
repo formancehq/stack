@@ -34,8 +34,8 @@ type Payment struct {
 		} `json:"viban"`
 		InstructedDate interface{} `json:"instructedDate"`
 		DebitAmount    struct {
-			Currency string  `json:"currency"`
-			Amount   float64 `json:"amount"`
+			Currency string      `json:"currency"`
+			Amount   json.Number `json:"amount"`
 		} `json:"debitAmount"`
 		DebitValueDate time.Time   `json:"debitValueDate"`
 		FxRate         interface{} `json:"fxRate"`
@@ -46,8 +46,8 @@ type Payment struct {
 		DebtorName    interface{} `json:"debtorName"`
 		DebtorAddress interface{} `json:"debtorAddress"`
 		Amount        struct {
-			Currency string  `json:"currency"`
-			Amount   float64 `json:"amount"`
+			Currency string      `json:"currency"`
+			Amount   json.Number `json:"amount"`
 		} `json:"amount"`
 		ValueDate             interface{} `json:"valueDate"`
 		ChargeBearer          interface{} `json:"chargeBearer"`
@@ -70,8 +70,8 @@ type Payment struct {
 			Country              string `json:"country"`
 		} `json:"viban"`
 		CreditAmount struct {
-			Currency string  `json:"currency"`
-			Amount   float64 `json:"amount"`
+			Currency string      `json:"currency"`
+			Amount   json.Number `json:"amount"`
 		} `json:"creditAmount"`
 		CreditValueDate time.Time   `json:"creditValueDate"`
 		FxRate          interface{} `json:"fxRate"`
