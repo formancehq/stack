@@ -481,25 +481,25 @@ const sidebars = {
             },
           ],
         },
-        // {
-        //   type: 'category',
-        //   label: 'Elements',
-        //   link: {
-        //     type: 'doc',
-        //     id: 'deployment/elements/intro',
-        //   },
-        //   items: [
-        //     {
-        //       type: 'doc',
-        //       id: 'deployment/elements/docker',
-        //       label: 'Docker',
-        //     },
-        //     {
-        //       type: 'doc',
-        //       id: 'deployment/elements/kubernetes',
-        //     }
-        //   ],
-        // },
+        {
+          type: 'category',
+          label: 'Elements',
+          link: {
+            type: 'doc',
+            id: 'deployment/elements/intro',
+          },
+          items: [
+            {
+              type: 'doc',
+              id: 'deployment/elements/docker',
+              label: 'Docker',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/elements/kubernetes',
+            }
+          ],
+        },
       ],
     },
     {
