@@ -2,15 +2,19 @@
 
 package shared
 
+import (
+	"math/big"
+)
+
 type TransfersResponseData struct {
-	Amount      *int64  `json:"amount,omitempty"`
-	Asset       *string `json:"asset,omitempty"`
-	Currency    *string `json:"currency,omitempty"`
-	Destination *string `json:"destination,omitempty"`
-	Error       *string `json:"error,omitempty"`
-	ID          *string `json:"id,omitempty"`
-	Source      *string `json:"source,omitempty"`
-	Status      *string `json:"status,omitempty"`
+	Amount      *big.Int `json:"amount,omitempty"`
+	Asset       *string  `json:"asset,omitempty"`
+	Currency    *string  `json:"currency,omitempty"`
+	Destination *string  `json:"destination,omitempty"`
+	Error       *string  `json:"error,omitempty"`
+	ID          *string  `json:"id,omitempty"`
+	Source      *string  `json:"source,omitempty"`
+	Status      *string  `json:"status,omitempty"`
 }
 
 // TransfersResponse - OK

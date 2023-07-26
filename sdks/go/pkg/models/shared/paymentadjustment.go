@@ -3,12 +3,13 @@
 package shared
 
 import (
+	"math/big"
 	"time"
 )
 
 type PaymentAdjustment struct {
 	Absolute bool                   `json:"absolute"`
-	Amount   int64                  `json:"amount"`
+	Amount   *big.Int               `json:"amount"`
 	Date     time.Time              `json:"date"`
 	Raw      map[string]interface{} `json:"raw"`
 	Status   PaymentStatus          `json:"status"`
