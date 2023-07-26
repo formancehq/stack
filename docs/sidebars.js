@@ -460,7 +460,7 @@ const sidebars = {
         // },
         {
           type: 'category',
-          label: 'Formance CloudPrem',
+          label: 'CloudPrem',
           link: { type: 'doc', id: 'deployment/cloudprem/intro' },
           items: [
             {
@@ -489,11 +489,11 @@ const sidebars = {
             id: 'deployment/elements/intro',
           },
           items: [
-            {
-              type: 'doc',
-              id: 'deployment/elements/docker',
-              label: 'Docker',
-            },
+            // {
+            //   type: 'doc',
+            //   id: 'deployment/elements/docker',
+            //   label: 'Docker',
+            // },
             {
               type: 'doc',
               id: 'deployment/elements/kubernetes',
