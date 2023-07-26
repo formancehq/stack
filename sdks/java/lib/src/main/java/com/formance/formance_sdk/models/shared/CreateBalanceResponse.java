@@ -11,14 +11,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class CreateBalanceResponse {
     @JsonProperty("data")
-    public Balance data;
+    public WalletsBalance data;
 
-    public CreateBalanceResponse withData(Balance data) {
+    public CreateBalanceResponse withData(WalletsBalance data) {
         this.data = data;
         return this;
     }
     
-    public CreateBalanceResponse(@JsonProperty("data") Balance data) {
+    public CreateBalanceResponse(@JsonProperty("data") WalletsBalance data) {
         this.data = data;
   }
 }

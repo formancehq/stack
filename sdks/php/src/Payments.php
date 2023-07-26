@@ -124,6 +124,43 @@ class Payments
     }
 	
     /**
+     * Get account balances
+     * 
+     * @param \formance\stack\Models\Operations\GetAccountBalancesRequest $request
+     * @return \formance\stack\Models\Operations\GetAccountBalancesResponse
+     */
+	public function getAccountBalances(
+        \formance\stack\Models\Operations\GetAccountBalancesRequest $request,
+    ): \formance\stack\Models\Operations\GetAccountBalancesResponse
+    {
+        $baseUrl = $this->_serverUrl;
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/accounts/{accountID}/balances', \formance\stack\Models\Operations\GetAccountBalancesRequest::class, $request);
+        
+        $options = ['http_errors' => false];
+        $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\GetAccountBalancesRequest::class, $request, null));
+        $options['headers']['Accept'] = 'application/json';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
+        
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
+        
+        $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
+
+        $response = new \formance\stack\Models\Operations\GetAccountBalancesResponse();
+        $response->statusCode = $httpResponse->getStatusCode();
+        $response->contentType = $contentType;
+        $response->rawResponse = $httpResponse;
+        
+        if ($httpResponse->getStatusCode() === 200) {
+            if (Utils\Utils::matchContentType($contentType, 'application/json')) {
+                $serializer = Utils\JSON::createSerializer();
+                $response->balancesCursor = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\BalancesCursor', 'json');
+            }
+        }
+
+        return $response;
+    }
+	
+    /**
      * Read a specific task of the connector
      * 
      * Get a specific task associated to the connector.

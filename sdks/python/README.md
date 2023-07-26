@@ -106,6 +106,7 @@ if res.get_versions_response is not None:
 
 * [connectors_stripe_transfer](docs/payments/README.md#connectors_stripe_transfer) - Transfer funds between Stripe accounts
 * [connectors_transfer](docs/payments/README.md#connectors_transfer) - Transfer funds between Connector accounts
+* [get_account_balances](docs/payments/README.md#get_account_balances) - Get account balances
 * [get_connector_task](docs/payments/README.md#get_connector_task) - Read a specific task of the connector
 * [get_payment](docs/payments/README.md#get_payment) - Get a payment
 * [install_connector](docs/payments/README.md#install_connector) - Install a connector

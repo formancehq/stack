@@ -124,6 +124,8 @@ lib/src/main/java/com/formance/formance_sdk/models/operations/SendEventResponse.
 lib/src/main/java/com/formance/formance_sdk/models/operations/ConnectorsStripeTransferResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/ConnectorsTransferRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/ConnectorsTransferResponse.java
+lib/src/main/java/com/formance/formance_sdk/models/operations/GetAccountBalancesRequest.java
+lib/src/main/java/com/formance/formance_sdk/models/operations/GetAccountBalancesResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetConnectorTaskRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetConnectorTaskResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetPaymentRequest.java
@@ -319,6 +321,9 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/RunWorkflowResponse.ja
 lib/src/main/java/com/formance/formance_sdk/models/shared/StripeTransferRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TransferResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TransferRequest.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursorCursor.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursor.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/Balance.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskStripeDescriptor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/TaskStripe.java
@@ -369,7 +374,7 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/WalletsErrorResponseEr
 lib/src/main/java/com/formance/formance_sdk/models/shared/WalletsErrorResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConfirmHoldRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/CreateBalanceResponse.java
-lib/src/main/java/com/formance/formance_sdk/models/shared/Balance.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/WalletsBalance.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/CreateBalanceRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/CreateWalletResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/Wallet.java

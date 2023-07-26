@@ -69,6 +69,7 @@ pkg/models/operations/runworkflow.go
 pkg/models/operations/sendevent.go
 pkg/models/operations/connectorsstripetransfer.go
 pkg/models/operations/connectorstransfer.go
+pkg/models/operations/getaccountbalances.go
 pkg/models/operations/getconnectortask.go
 pkg/models/operations/getpayment.go
 pkg/models/operations/installconnector.go
@@ -221,6 +222,8 @@ pkg/models/shared/runworkflowresponse.go
 pkg/models/shared/stripetransferrequest.go
 pkg/models/shared/transferresponse.go
 pkg/models/shared/transferrequest.go
+pkg/models/shared/balancescursor.go
+pkg/models/shared/balance.go
 pkg/models/shared/taskresponse.go
 pkg/models/shared/taskstripe.go
 pkg/models/shared/taskwise.go
@@ -252,7 +255,7 @@ pkg/models/shared/query.go
 pkg/models/shared/walletserrorresponse.go
 pkg/models/shared/confirmholdrequest.go
 pkg/models/shared/createbalanceresponse.go
-pkg/models/shared/balance.go
+pkg/models/shared/walletsbalance.go
 pkg/models/shared/createbalancerequest.go
 pkg/models/shared/createwalletresponse.go
 pkg/models/shared/wallet.go

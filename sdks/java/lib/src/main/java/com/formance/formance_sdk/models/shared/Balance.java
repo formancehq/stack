@@ -4,8 +4,6 @@
 
 package com.formance.formance_sdk.models.shared;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -14,35 +12,55 @@ import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
 public class Balance {
-    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("accountId")
+    public String accountId;
+
+    public Balance withAccountId(String accountId) {
+        this.accountId = accountId;
+        return this;
+    }
+    
+    @JsonProperty("balance")
+    public Long balance;
+
+    public Balance withBalance(Long balance) {
+        this.balance = balance;
+        return this;
+    }
+    
     @JsonSerialize(using = DateTimeSerializer.class)
     @JsonDeserialize(using = DateTimeDeserializer.class)
-    @JsonProperty("expiresAt")
-    public OffsetDateTime expiresAt;
+    @JsonProperty("createdAt")
+    public OffsetDateTime createdAt;
 
-    public Balance withExpiresAt(OffsetDateTime expiresAt) {
-        this.expiresAt = expiresAt;
+    public Balance withCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
     
-    @JsonProperty("name")
-    public String name;
+    @JsonProperty("currency")
+    public String currency;
 
-    public Balance withName(String name) {
-        this.name = name;
+    public Balance withCurrency(String currency) {
+        this.currency = currency;
         return this;
     }
     
-    @JsonInclude(Include.NON_ABSENT)
-    @JsonProperty("priority")
-    public Long priority;
+    @JsonSerialize(using = DateTimeSerializer.class)
+    @JsonDeserialize(using = DateTimeDeserializer.class)
+    @JsonProperty("lastUpdatedAt")
+    public OffsetDateTime lastUpdatedAt;
 
-    public Balance withPriority(Long priority) {
-        this.priority = priority;
+    public Balance withLastUpdatedAt(OffsetDateTime lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
         return this;
     }
     
-    public Balance(@JsonProperty("name") String name) {
-        this.name = name;
+    public Balance(@JsonProperty("accountId") String accountId, @JsonProperty("balance") Long balance, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("currency") String currency, @JsonProperty("lastUpdatedAt") OffsetDateTime lastUpdatedAt) {
+        this.accountId = accountId;
+        this.balance = balance;
+        this.createdAt = createdAt;
+        this.currency = currency;
+        this.lastUpdatedAt = lastUpdatedAt;
   }
 }

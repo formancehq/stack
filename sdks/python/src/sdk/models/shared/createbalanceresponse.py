@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import dataclasses
-from ..shared import balance as shared_balance
+from ..shared import walletsbalance as shared_walletsbalance
 from dataclasses_json import Undefined, dataclass_json
 from sdk import utils
 
@@ -12,5 +12,5 @@ from sdk import utils
 class CreateBalanceResponse:
     r"""Created balance"""
     
-    data: shared_balance.Balance = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
+    data: shared_walletsbalance.WalletsBalance = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     

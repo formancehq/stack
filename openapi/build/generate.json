@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230725"
+    "version": "v1.0.20230726"
   },
   "servers": [
     {
@@ -1904,6 +1904,80 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/Accounts"
+          }
+        }
+      }
+    },
+    "/api/payments/accounts/{accountID}/balances": {
+      "get": {
+        "summary": "Get account balances",
+        "operationId": "getAccountBalances",
+        "tags": [
+          "Payments"
+        ],
+        "parameters": [
+          {
+            "name": "accountID",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The account ID.",
+            "example": "XXX",
+            "required": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of results to return per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "description": "Filter balances by currency.\nIf not specified, all account's balances will be returned.\n",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Filter balances by date.\nIf not specified, all account's balances will be returned.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Filter balances by date.\nIf not specified, default will be set to now.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Balances"
           }
         }
       }
@@ -4872,6 +4946,35 @@
           }
         }
       },
+      "BalancesCursor": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Balance"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
       "TasksCursor": {
         "type": "object",
         "required": [
@@ -5530,6 +5633,36 @@
           "raw": {
             "type": "object",
             "nullable": true
+          }
+        }
+      },
+      "Balance": {
+        "type": "object",
+        "required": [
+          "accountId",
+          "createdAt",
+          "lastUpdatedAt",
+          "currency",
+          "balance"
+        ],
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -6798,7 +6931,7 @@
           }
         }
       },
-      "Balance": {
+      "walletsBalance": {
         "type": "object",
         "required": [
           "name"
@@ -6820,7 +6953,7 @@
       "BalanceWithAssets": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Balance"
+            "$ref": "#/components/schemas/walletsBalance"
           },
           {
             "$ref": "#/components/schemas/AssetHolder"
@@ -6888,7 +7021,7 @@
                 "properties": {
                   "data": {
                     "items": {
-                      "$ref": "#/components/schemas/Balance"
+                      "$ref": "#/components/schemas/walletsBalance"
                     },
                     "type": "array"
                   }
@@ -6914,7 +7047,7 @@
         }
       },
       "CreateBalanceRequest": {
-        "$ref": "#/components/schemas/Balance"
+        "$ref": "#/components/schemas/walletsBalance"
       },
       "CreateBalanceResponse": {
         "type": "object",
@@ -6923,7 +7056,7 @@
         ],
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Balance"
+            "$ref": "#/components/schemas/walletsBalance"
           }
         }
       },
@@ -7653,6 +7786,16 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/AccountsCursor"
+            }
+          }
+        }
+      },
+      "Balances": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BalancesCursor"
             }
           }
         }

@@ -7,15 +7,24 @@ import { Expose, Transform } from "class-transformer";
 
 export class Balance extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "expiresAt" })
+  @Expose({ name: "accountId" })
+  accountId: string;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "balance" })
+  balance: number;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "createdAt" })
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  expiresAt?: Date;
+  createdAt: Date;
 
   @SpeakeasyMetadata()
-  @Expose({ name: "name" })
-  name: string;
+  @Expose({ name: "currency" })
+  currency: string;
 
   @SpeakeasyMetadata()
-  @Expose({ name: "priority" })
-  priority?: number;
+  @Expose({ name: "lastUpdatedAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  lastUpdatedAt: Date;
 }

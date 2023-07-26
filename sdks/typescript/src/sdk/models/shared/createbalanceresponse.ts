@@ -3,7 +3,7 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { Balance } from "./balance";
+import { WalletsBalance } from "./walletsbalance";
 import { Expose, Type } from "class-transformer";
 
 /**
@@ -12,6 +12,6 @@ import { Expose, Type } from "class-transformer";
 export class CreateBalanceResponse extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "data" })
-  @Type(() => Balance)
-  data: Balance;
+  @Type(() => WalletsBalance)
+  data: WalletsBalance;
 }

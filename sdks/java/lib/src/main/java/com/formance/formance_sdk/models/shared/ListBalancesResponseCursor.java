@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ListBalancesResponseCursor {
     @JsonProperty("data")
-    public Balance[] data;
+    public WalletsBalance[] data;
 
-    public ListBalancesResponseCursor withData(Balance[] data) {
+    public ListBalancesResponseCursor withData(WalletsBalance[] data) {
         this.data = data;
         return this;
     }
@@ -52,7 +52,7 @@ public class ListBalancesResponseCursor {
         return this;
     }
     
-    public ListBalancesResponseCursor(@JsonProperty("data") Balance[] data, @JsonProperty("pageSize") Long pageSize) {
+    public ListBalancesResponseCursor(@JsonProperty("data") WalletsBalance[] data, @JsonProperty("pageSize") Long pageSize) {
         this.data = data;
         this.pageSize = pageSize;
   }

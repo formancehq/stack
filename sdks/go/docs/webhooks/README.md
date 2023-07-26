@@ -243,6 +243,7 @@ func main() {
             "TYPE1",
             "TYPE1",
             "TYPE1",
+            "TYPE1",
         },
         Secret: formance.String("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"),
     })

@@ -3,14 +3,14 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { Balance } from "./balance";
+import { WalletsBalance } from "./walletsbalance";
 import { Expose, Type } from "class-transformer";
 
 export class ListBalancesResponseCursor extends SpeakeasyBase {
-  @SpeakeasyMetadata({ elemType: Balance })
+  @SpeakeasyMetadata({ elemType: WalletsBalance })
   @Expose({ name: "data" })
-  @Type(() => Balance)
-  data: Balance[];
+  @Type(() => WalletsBalance)
+  data: WalletsBalance[];
 
   @SpeakeasyMetadata()
   @Expose({ name: "hasMore" })

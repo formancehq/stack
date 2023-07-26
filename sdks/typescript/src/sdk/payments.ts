@@ -186,6 +186,67 @@ export class Payments {
   }
 
   /**
+   * Get account balances
+   */
+  async getAccountBalances(
+    req: operations.GetAccountBalancesRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.GetAccountBalancesResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.GetAccountBalancesRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/accounts/{accountID}/balances",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    const queryParams: string = utils.serializeQueryParams(req);
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url + queryParams,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.GetAccountBalancesResponse =
+      new operations.GetAccountBalancesResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.balancesCursor = utils.objectToClass(
+            httpRes?.data,
+            shared.BalancesCursor
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
    * Read a specific task of the connector
    *
    * @remarks
