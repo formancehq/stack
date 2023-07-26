@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,10 +20,11 @@ type balancesRepository interface {
 }
 
 type balancesResponse struct {
-	AccountID string    `json:"accountId"`
-	CreatedAt time.Time `json:"createdAt"`
-	Currency  string    `json:"currency"`
-	Balance   int64     `json:"balance"`
+	AccountID     string    `json:"accountId"`
+	CreatedAt     time.Time `json:"createdAt"`
+	LastUpdatedAt time.Time `json:"lastUpdatedAt"`
+	Currency      string    `json:"currency"`
+	Balance       int64     `json:"balance"`
 }
 
 func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
@@ -79,7 +81,8 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 		}
 
 		balanceQuery := storage.NewBalanceQuery(pagination).
-			WithAccountID(accountID)
+			WithAccountID(accountID).
+			WithCurrency(r.URL.Query().Get("currency"))
 
 		var startTimeParsed, endTimeParsed time.Time
 		from, to := r.URL.Query().Get("from"), r.URL.Query().Get("to")
@@ -99,11 +102,22 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 				return
 			}
 		}
+		if r.URL.Query().Get("limit") != "" {
+			limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64)
+			if err != nil {
+				handleValidationError(w, r, err)
+
+				return
+			}
+
+			if limit > 0 {
+				balanceQuery = balanceQuery.WithLimit(int(limit))
+			}
+		}
 
 		switch {
 		case startTimeParsed.IsZero() && endTimeParsed.IsZero():
 			balanceQuery = balanceQuery.
-				WithLimit(1).
 				WithTo(time.Now())
 		case !startTimeParsed.IsZero() && endTimeParsed.IsZero():
 			balanceQuery = balanceQuery.
@@ -128,10 +142,11 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 		data := make([]*balancesResponse, len(ret))
 		for i := range ret {
 			data[i] = &balancesResponse{
-				AccountID: ret[i].AccountID.String(),
-				CreatedAt: ret[i].CreatedAt,
-				Currency:  ret[i].Currency,
-				Balance:   ret[i].Balance,
+				AccountID:     ret[i].AccountID.String(),
+				CreatedAt:     ret[i].CreatedAt,
+				Currency:      ret[i].Currency,
+				Balance:       ret[i].Balance,
+				LastUpdatedAt: ret[i].LastUpdatedAt,
 			}
 		}
 
