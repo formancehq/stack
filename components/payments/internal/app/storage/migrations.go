@@ -441,5 +441,3 @@ func registerMigrations(migrator *migrations.Migrator) {
 		},
 	)
 }
-
-// insert into balances_v2 (created_at, account_id, currency, balance) SELECT '2023-08-26 03:12:59.063894', '954', 'EUR', 3000 WHERE 2862 != (select balance from balances_v2 where created_at < '2023-06-26 03:13:59.063894' and account_id = '954' and currency = 'EUR');
