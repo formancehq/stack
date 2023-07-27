@@ -1,8 +1,8 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/palenight');
+// const lightCodeTheme = require('prism-react-renderer/themes/github');
+// const darkCodeTheme = require('prism-react-renderer/themes/palenight');
 const math = require('remark-math');
 const katex = require('rehype-katex');
 
@@ -168,9 +168,9 @@ const config = {
         ],
         copyright: `Copyright © 2021-2023 Formance, Inc`,
       },
-      prism: {
-        theme: darkCodeTheme,
-      },
+      // prism: {
+      //   theme: darkCodeTheme,
+      // },
       posthog: {
         apiKey: 'phc_hRDv01yOHJNUM7l5SmXPUtSQUuNw4r5am9FtV83Z9om',
         appUrl: 'https://app.posthog.com',  // optional
