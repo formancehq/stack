@@ -106,6 +106,7 @@ func main() {
 
 * [ConnectorsStripeTransfer](docs/payments/README.md#connectorsstripetransfer) - Transfer funds between Stripe accounts
 * [ConnectorsTransfer](docs/payments/README.md#connectorstransfer) - Transfer funds between Connector accounts
+* [GetAccountBalances](docs/payments/README.md#getaccountbalances) - Get account balances
 * [GetConnectorTask](docs/payments/README.md#getconnectortask) - Read a specific task of the connector
 * [GetPayment](docs/payments/README.md#getpayment) - Get a payment
 * [InstallConnector](docs/payments/README.md#installconnector) - Install a connector

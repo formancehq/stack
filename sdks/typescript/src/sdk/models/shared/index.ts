@@ -3,6 +3,7 @@
  */
 
 export * from "./account";
+export * from "./accountbalance";
 export * from "./accountresponse";
 export * from "./accountscursor";
 export * from "./accountscursorresponse";
@@ -28,6 +29,7 @@ export * from "./assetholder";
 export * from "./attempt";
 export * from "./attemptresponse";
 export * from "./balance";
+export * from "./balancescursor";
 export * from "./balancescursorresponse";
 export * from "./balancewithassets";
 export * from "./bankingcircleconfig";

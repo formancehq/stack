@@ -13,6 +13,7 @@ const (
 
 	EventTypeSavedPayments  = "SAVED_PAYMENT"
 	EventTypeSavedAccounts  = "SAVED_ACCOUNT"
+	EventTypeSavedBalances  = "SAVED_BALANCE"
 	EventTypeConnectorReset = "CONNECTOR_RESET"
 )
 

@@ -64,6 +64,59 @@ paths:
         responses:
           '200':
             $ref: '#/components/responses/Accounts'
+  /accounts/{accountID}/balances:
+    get:
+      summary: Get account balances
+      operationId: getAccountBalances
+      tags:
+        - Payments
+      parameters:
+        - name: accountID
+          in: path
+          schema:
+            type: string
+          description: The account ID.
+          example: XXX
+          required: true
+        - name: limit
+          in: query
+          description: The maximum number of results to return per page.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: currency
+          in: query
+          description: |
+            Filter balances by currency.
+            If not specified, all account's balances will be returned.
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          description: |
+            Filter balances by date.
+            If not specified, all account's balances will be returned.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: |
+            Filter balances by date.
+            If not specified, default will be set to now.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          $ref: '#/components/responses/AccountBalances'
   /connectors:
     get:
       summary: List all installed connectors
@@ -290,6 +343,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AccountsCursor'
+    AccountBalances:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BalancesCursor'
     Connectors:
       description: OK
       content:
@@ -422,6 +481,22 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/Account'
+    BalancesCursor:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/CursorBase'
+            - type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AccountBalance'
     TasksCursor:
       type: object
       required:
@@ -880,6 +955,28 @@ components:
         raw:
           type: object
           nullable: true
+    AccountBalance:
+      type: object
+      required:
+        - accountId
+        - createdAt
+        - lastUpdatedAt
+        - currency
+        - balance
+      properties:
+        accountId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastUpdatedAt:
+          type: string
+          format: date-time
+        currency:
+          type: string
+        balance:
+          type: integer
+          format: int64
     TaskBase:
       type: object
       required:

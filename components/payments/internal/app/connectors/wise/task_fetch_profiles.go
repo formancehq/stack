@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/wise/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
@@ -72,32 +73,47 @@ func ingestAccountsBatch(
 		return nil
 	}
 
-	batch := ingestion.AccountBatch{}
+	accountsBatch := ingestion.AccountBatch{}
+	balancesBatch := ingestion.BalanceBatch{}
+	now := time.Now()
 	for _, balance := range balances {
 		raw, err := json.Marshal(balance)
 		if err != nil {
 			return err
 		}
 
-		batch = append(batch, ingestion.AccountBatchElement{
-			Account: &models.Account{
-				ID: models.AccountID{
-					Reference: fmt.Sprintf("%d", balance.ID),
-					Provider:  models.ConnectorProviderWise,
-				},
-				// Moneycorp does not send the opening date of the account
-				CreatedAt:       balance.CreationTime,
-				Reference:       fmt.Sprintf("%d", balance.ID),
-				Provider:        models.ConnectorProviderWise,
-				DefaultCurrency: balance.Currency,
-				AccountName:     balance.Name,
-				Type:            models.AccountTypeInternal,
-				RawData:         raw,
+		accountsBatch = append(accountsBatch, &models.Account{
+			ID: models.AccountID{
+				Reference: fmt.Sprintf("%d", balance.ID),
+				Provider:  models.ConnectorProviderWise,
 			},
+			// Moneycorp does not send the opening date of the account
+			CreatedAt:       balance.CreationTime,
+			Reference:       fmt.Sprintf("%d", balance.ID),
+			Provider:        models.ConnectorProviderWise,
+			DefaultCurrency: balance.Currency,
+			AccountName:     balance.Name,
+			Type:            models.AccountTypeInternal,
+			RawData:         raw,
+		})
+
+		balancesBatch = append(balancesBatch, &models.Balance{
+			AccountID: models.AccountID{
+				Reference: fmt.Sprintf("%d", balance.ID),
+				Provider:  models.ConnectorProviderWise,
+			},
+			Currency:      models.PaymentAsset(fmt.Sprintf("%s/2", balance.Amount.Currency)).String(),
+			Balance:       int64(balance.Amount.Value * 100),
+			CreatedAt:     now,
+			LastUpdatedAt: now,
 		})
 	}
 
-	if err := ingester.IngestAccounts(ctx, batch); err != nil {
+	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
+		return err
+	}
+
+	if err := ingester.IngestBalances(ctx, balancesBatch, false); err != nil {
 		return err
 	}
 

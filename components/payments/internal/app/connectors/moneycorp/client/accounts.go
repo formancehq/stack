@@ -35,7 +35,7 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to login: %w", err)
+		return nil, fmt.Errorf("failed to get accounts: %w", err)
 	}
 
 	defer func() {
@@ -47,7 +47,7 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 
 	var accounts accountsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&accounts); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal login response body: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal accounts response body: %w", err)
 	}
 
 	return accounts.Accounts, nil

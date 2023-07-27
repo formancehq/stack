@@ -12,6 +12,10 @@ type wallet struct {
 	Description  string `json:"Description"`
 	CreationDate int64  `json:"CreationDate"`
 	Currency     string `json:"Currency"`
+	Balance      struct {
+		Currency string `json:"Currency"`
+		Amount   int64  `json:"Amount"`
+	} `json:"Balance"`
 }
 
 func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wallet, error) {
@@ -28,7 +32,7 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wa
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to login: %w", err)
+		return nil, fmt.Errorf("failed to get wallets: %w", err)
 	}
 
 	defer func() {
@@ -40,7 +44,7 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wa
 
 	var wallets []*wallet
 	if err := json.NewDecoder(resp.Body).Decode(&wallets); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal login response body: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)
 	}
 
 	return wallets, nil
