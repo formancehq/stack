@@ -22,5 +22,7 @@ tasks:
   release:
     command: 'goreleaser release --clean -f .goreleaser.yml'
     platform: 'system'
+    deps:
+      - '^:mod'
     options:
       runInCI: false
