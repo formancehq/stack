@@ -413,7 +413,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 				// let's just delete the table, since connectors will be
 				// resetted. Delete it cascade, or we will have an error
 				_, err := tx.Exec(`
-					CREATE TABLE accounts.balances (
+					CREATE TABLE IF NOT EXISTS accounts.balances (
 						created_at timestamp with time zone  NOT NULL,
 						account_id CHARACTER VARYING NOT NULL,
 						currency text  NOT NULL,
