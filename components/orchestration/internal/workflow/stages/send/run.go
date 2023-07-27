@@ -2,7 +2,6 @@ package send
 
 import (
 	"fmt"
-	"math/big"
 	"strings"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -72,7 +71,7 @@ func runPaymentToWallet(ctx workflow.Context, source *PaymentSource, destination
 	}
 	if amount == nil {
 		amount = &shared.Monetary{
-			Amount: big.NewInt(payment.InitialAmount),
+			Amount: payment.InitialAmount,
 			Asset:  payment.Asset,
 		}
 	}
@@ -95,7 +94,7 @@ func savePayment(ctx workflow.Context, paymentID string) (*shared.Payment, error
 	reference := paymentAccountName(paymentID)
 	_, err = activities.CreateTransaction(internal.InfiniteRetryContext(ctx), internalLedger, shared.PostTransaction{
 		Postings: []shared.Posting{{
-			Amount:      big.NewInt(payment.InitialAmount),
+			Amount:      payment.InitialAmount,
 			Asset:       payment.Asset,
 			Destination: paymentAccountName(paymentID),
 			Source:      "world",
@@ -123,7 +122,7 @@ func runPaymentToAccount(ctx workflow.Context, source *PaymentSource, destinatio
 	}
 	if amount == nil {
 		amount = &shared.Monetary{
-			Amount: big.NewInt(payment.InitialAmount),
+			Amount: payment.InitialAmount,
 			Asset:  payment.Asset,
 		}
 	}
@@ -196,9 +195,8 @@ func runWalletToPayment(ctx workflow.Context, source *WalletSource, destination 
 		return err
 	}
 
-	v := amount.Amount.Int64()
 	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.StripeTransferRequest{
-		Amount:      &v,
+		Amount:      amount.Amount,
 		Asset:       &amount.Asset,
 		Destination: &stripeConnectID,
 	}); err != nil {
@@ -362,9 +360,8 @@ func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, dest
 		return err
 	}
 
-	v := amount.Amount.Int64()
 	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.StripeTransferRequest{
-		Amount:      &v,
+		Amount:      amount.Amount,
 		Asset:       &amount.Asset,
 		Destination: &stripeConnectID,
 	}); err != nil {

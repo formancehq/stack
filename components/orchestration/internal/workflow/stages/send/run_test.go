@@ -124,7 +124,7 @@ var (
 				Returns: []any{
 					&shared.PaymentResponse{
 						Data: shared.Payment{
-							InitialAmount: 100,
+							InitialAmount: big.NewInt(100),
 							Asset:         "USD",
 							Provider:      shared.ConnectorStripe,
 							Status:        shared.PaymentStatusSucceeded,
@@ -243,7 +243,7 @@ var (
 				Returns: []any{
 					&shared.PaymentResponse{
 						Data: shared.Payment{
-							InitialAmount: 100,
+							InitialAmount: big.NewInt(100),
 							Asset:         "USD",
 							Provider:      shared.ConnectorStripe,
 							Status:        shared.PaymentStatusSucceeded,
@@ -344,7 +344,7 @@ var (
 				Returns: []any{
 					&shared.PaymentResponse{
 						Data: shared.Payment{
-							InitialAmount: 100,
+							InitialAmount: big.NewInt(100),
 							Asset:         "USD",
 							Provider:      shared.ConnectorStripe,
 							Status:        shared.PaymentStatusSucceeded,
@@ -688,7 +688,7 @@ var (
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
 					mock.Anything, shared.StripeTransferRequest{
-						Amount:      ptrInt64(100),
+						Amount:      big.NewInt(100),
 						Asset:       ptrString("USD"),
 						Destination: ptrString("abcd"),
 					},
@@ -1025,7 +1025,7 @@ var (
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
 					mock.Anything, shared.StripeTransferRequest{
-						Amount:      ptrInt64(100),
+						Amount:      big.NewInt(100),
 						Asset:       ptrString("USD"),
 						Destination: ptrString("abcd"),
 					},
