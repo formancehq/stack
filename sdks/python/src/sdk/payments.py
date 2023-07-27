@@ -84,6 +84,31 @@ class Payments:
         return res
 
     
+    def get_account_balances(self, request: operations.GetAccountBalancesRequest) -> operations.GetAccountBalancesResponse:
+        r"""Get account balances"""
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.GetAccountBalancesRequest, base_url, '/api/payments/accounts/{accountID}/balances', request)
+        headers = {}
+        query_params = utils.get_query_params(operations.GetAccountBalancesRequest, request)
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, params=query_params, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.GetAccountBalancesResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.BalancesCursor])
+                res.balances_cursor = out
+
+        return res
+
+    
     def get_connector_task(self, request: operations.GetConnectorTaskRequest) -> operations.GetConnectorTaskResponse:
         r"""Read a specific task of the connector
         Get a specific task associated to the connector.

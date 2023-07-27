@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type listAccountsRepository interface {
+type accountsRepository interface {
 	ListAccounts(ctx context.Context, pagination storage.Paginator) ([]*models.Account, storage.PaginationDetails, error)
 }
 
@@ -28,7 +28,7 @@ type accountResponse struct {
 	Raw             interface{} `json:"raw"`
 }
 
-func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
+func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 

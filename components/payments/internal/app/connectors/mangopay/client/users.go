@@ -44,7 +44,7 @@ func (c *Client) getUsers(ctx context.Context, page int) ([]*user, error) {
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to login: %w", err)
+		return nil, fmt.Errorf("failed to get users: %w", err)
 	}
 
 	defer func() {
@@ -56,7 +56,7 @@ func (c *Client) getUsers(ctx context.Context, page int) ([]*user, error) {
 
 	var users []*user
 	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal login response body: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal users response body: %w", err)
 	}
 
 	return users, nil

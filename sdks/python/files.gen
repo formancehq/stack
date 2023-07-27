@@ -62,6 +62,7 @@ src/sdk/models/operations/runworkflow.py
 src/sdk/models/operations/sendevent.py
 src/sdk/models/operations/connectorsstripetransfer.py
 src/sdk/models/operations/connectorstransfer.py
+src/sdk/models/operations/getaccountbalances.py
 src/sdk/models/operations/getconnectortask.py
 src/sdk/models/operations/getpayment.py
 src/sdk/models/operations/installconnector.py
@@ -214,6 +215,8 @@ src/sdk/models/shared/runworkflowresponse.py
 src/sdk/models/shared/stripetransferrequest.py
 src/sdk/models/shared/transferresponse.py
 src/sdk/models/shared/transferrequest.py
+src/sdk/models/shared/balancescursor.py
+src/sdk/models/shared/accountbalance.py
 src/sdk/models/shared/taskresponse.py
 src/sdk/models/shared/taskstripe.py
 src/sdk/models/shared/taskwise.py

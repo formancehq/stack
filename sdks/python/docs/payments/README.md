@@ -4,6 +4,7 @@
 
 * [connectors_stripe_transfer](#connectors_stripe_transfer) - Transfer funds between Stripe accounts
 * [connectors_transfer](#connectors_transfer) - Transfer funds between Connector accounts
+* [get_account_balances](#get_account_balances) - Get account balances
 * [get_connector_task](#get_connector_task) - Read a specific task of the connector
 * [get_payment](#get_payment) - Get a payment
 * [install_connector](#install_connector) - Install a connector
@@ -84,6 +85,45 @@ if res.transfer_response is not None:
     # handle response
 ```
 
+## get_account_balances
+
+Get account balances
+
+### Example Usage
+
+```python
+import sdk
+import dateutil.parser
+from sdk.models import operations
+
+s = sdk.SDK(
+    security=shared.Security(
+        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
+    ),
+)
+
+req = operations.GetAccountBalancesRequest(
+    account_id='provident',
+    currency='necessitatibus',
+    cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
+    from_=dateutil.parser.isoparse('2021-09-21T14:06:09.271Z'),
+    limit=223081,
+    page_size=891555,
+    sort=[
+        'dolorum',
+        'in',
+        'in',
+        'illum',
+    ],
+    to=dateutil.parser.isoparse('2020-11-26T01:41:04.216Z'),
+)
+
+res = s.payments.get_account_balances(req)
+
+if res.balances_cursor is not None:
+    # handle response
+```
+
 ## get_connector_task
 
 Get a specific task associated to the connector.
@@ -101,8 +141,8 @@ s = sdk.SDK(
 )
 
 req = operations.GetConnectorTaskRequest(
-    connector=shared.Connector.CURRENCY_CLOUD,
-    task_id='necessitatibus',
+    connector=shared.Connector.STRIPE,
+    task_id='magnam',
 )
 
 res = s.payments.get_connector_task(req)
@@ -128,7 +168,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetPaymentRequest(
-    payment_id='sint',
+    payment_id='cumque',
 )
 
 res = s.payments.get_payment(req)
@@ -154,16 +194,13 @@ s = sdk.SDK(
 )
 
 req = operations.InstallConnectorRequest(
-    request_body=shared.BankingCircleConfig(
-        authorization_endpoint='XXX',
+    request_body=shared.MangoPayConfig(
+        api_key='XXX',
+        client_id='XXX',
         endpoint='XXX',
-        password='XXX',
         polling_period='60s',
-        user_certificate='XXX',
-        user_certificate_key='XXX',
-        username='XXX',
     ),
-    connector=shared.Connector.DUMMY_PAY,
+    connector=shared.Connector.MODULR,
 )
 
 res = s.payments.install_connector(req)
@@ -235,9 +272,9 @@ s = sdk.SDK(
 )
 
 req = operations.ListConnectorTasksRequest(
-    connector=shared.Connector.MONEYCORP,
+    connector=shared.Connector.MODULR,
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=952749,
+    page_size=675439,
 )
 
 res = s.payments.list_connector_tasks(req)
@@ -263,7 +300,7 @@ s = sdk.SDK(
 )
 
 req = operations.ListConnectorsTransfersRequest(
-    connector=shared.Connector.BANKING_CIRCLE,
+    connector=shared.Connector.MONEYCORP,
 )
 
 res = s.payments.list_connectors_transfers(req)
@@ -290,10 +327,11 @@ s = sdk.SDK(
 
 req = operations.ListPaymentsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=447125,
+    page_size=249796,
     sort=[
-        'illum',
-        'maiores',
+        'enim',
+        'accusamus',
+        'delectus',
     ],
 )
 
@@ -344,9 +382,11 @@ s = sdk.SDK(
 
 req = operations.PaymentslistAccountsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=699479,
+    page_size=692532,
     sort=[
-        'magnam',
+        'nam',
+        'id',
+        'blanditiis',
     ],
 )
 
@@ -373,7 +413,7 @@ s = sdk.SDK(
 )
 
 req = operations.ReadConnectorConfigRequest(
-    connector=shared.Connector.MANGOPAY,
+    connector=shared.Connector.CURRENCY_CLOUD,
 )
 
 res = s.payments.read_connector_config(req)
@@ -401,7 +441,7 @@ s = sdk.SDK(
 )
 
 req = operations.ResetConnectorRequest(
-    connector=shared.Connector.MANGOPAY,
+    connector=shared.Connector.MONEYCORP,
 )
 
 res = s.payments.reset_connector(req)
@@ -427,7 +467,7 @@ s = sdk.SDK(
 )
 
 req = operations.UninstallConnectorRequest(
-    connector=shared.Connector.MODULR,
+    connector=shared.Connector.DUMMY_PAY,
 )
 
 res = s.payments.uninstall_connector(req)
@@ -454,9 +494,9 @@ s = sdk.SDK(
 
 req = operations.UpdateMetadataRequest(
     payment_metadata=shared.PaymentMetadata(
-        key='aliquid',
+        key='deserunt',
     ),
-    payment_id='laborum',
+    payment_id='nisi',
 )
 
 res = s.payments.update_metadata(req)

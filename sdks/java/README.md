@@ -119,6 +119,7 @@ public class Application {
 
 * [connectorsStripeTransfer](docs/payments/README.md#connectorsstripetransfer) - Transfer funds between Stripe accounts
 * [connectorsTransfer](docs/payments/README.md#connectorstransfer) - Transfer funds between Connector accounts
+* [getAccountBalances](docs/payments/README.md#getaccountbalances) - Get account balances
 * [getConnectorTask](docs/payments/README.md#getconnectortask) - Read a specific task of the connector
 * [getPayment](docs/payments/README.md#getpayment) - Get a payment
 * [installConnector](docs/payments/README.md#installconnector) - Install a connector

@@ -13,11 +13,7 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 )
 
-type AccountBatchElement struct {
-	Account *models.Account
-}
-
-type AccountBatch []AccountBatchElement
+type AccountBatch []*models.Account
 
 type AccountIngesterFn func(ctx context.Context, batch AccountBatch, commitState any) error
 
@@ -33,17 +29,12 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 		"startingAt": startingAt,
 	}).Debugf("Ingest accounts batch")
 
-	accounts := make([]*models.Account, len(batch))
-	for batchIdx := range batch {
-		accounts[batchIdx] = batch[batchIdx].Account
-	}
-
-	if err := i.repo.UpsertAccounts(ctx, i.provider, accounts); err != nil {
+	if err := i.repo.UpsertAccounts(ctx, i.provider, batch); err != nil {
 		return fmt.Errorf("error upserting accounts: %w", err)
 	}
 
 	err := i.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedAccounts(accounts)))
+		publish.NewMessage(ctx, messages.NewEventSavedAccounts(batch)))
 	if err != nil {
 		logging.FromContext(ctx).Errorf("Publishing message: %w", err)
 	}

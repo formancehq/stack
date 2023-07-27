@@ -32,6 +32,7 @@ export * from "./deletesecret";
 export * from "./deletetransientscope";
 export * from "./deleteworkflow";
 export * from "./getaccount";
+export * from "./getaccountbalances";
 export * from "./getbalance";
 export * from "./getbalances";
 export * from "./getbalancesaggregated";

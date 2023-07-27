@@ -4,6 +4,7 @@
 
 * [connectorsStripeTransfer](#connectorsstripetransfer) - Transfer funds between Stripe accounts
 * [connectorsTransfer](#connectorstransfer) - Transfer funds between Connector accounts
+* [getAccountBalances](#getaccountbalances) - Get account balances
 * [getConnectorTask](#getconnectortask) - Read a specific task of the connector
 * [getPayment](#getpayment) - Get a payment
 * [installConnector](#installconnector) - Install a connector
@@ -83,6 +84,43 @@ sdk.payments.connectorsTransfer({
 });
 ```
 
+## getAccountBalances
+
+Get account balances
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { GetAccountBalancesResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.payments.getAccountBalances({
+  accountID: "provident",
+  currency: "necessitatibus",
+  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
+  from: new Date("2021-09-21T14:06:09.271Z"),
+  limit: 223081,
+  pageSize: 891555,
+  sort: [
+    "dolorum",
+    "in",
+    "in",
+    "illum",
+  ],
+  to: new Date("2020-11-26T01:41:04.216Z"),
+}).then((res: GetAccountBalancesResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
 ## getConnectorTask
 
 Get a specific task associated to the connector.
@@ -101,8 +139,8 @@ const sdk = new SDK({
 });
 
 sdk.payments.getConnectorTask({
-  connector: Connector.CurrencyCloud,
-  taskId: "necessitatibus",
+  connector: Connector.Stripe,
+  taskId: "magnam",
 }).then((res: GetConnectorTaskResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -128,7 +166,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getPayment({
-  paymentId: "sint",
+  paymentId: "cumque",
 }).then((res: GetPaymentResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -155,15 +193,12 @@ const sdk = new SDK({
 
 sdk.payments.installConnector({
   requestBody: {
-    authorizationEndpoint: "XXX",
+    apiKey: "XXX",
+    clientID: "XXX",
     endpoint: "XXX",
-    password: "XXX",
     pollingPeriod: "60s",
-    userCertificate: "XXX",
-    userCertificateKey: "XXX",
-    username: "XXX",
   },
-  connector: Connector.DummyPay,
+  connector: Connector.Modulr,
 }).then((res: InstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -236,9 +271,9 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorTasks({
-  connector: Connector.Moneycorp,
+  connector: Connector.Modulr,
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 952749,
+  pageSize: 675439,
 }).then((res: ListConnectorTasksResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -264,7 +299,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorsTransfers({
-  connector: Connector.BankingCircle,
+  connector: Connector.Moneycorp,
 }).then((res: ListConnectorsTransfersResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -291,10 +326,11 @@ const sdk = new SDK({
 
 sdk.payments.listPayments({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 447125,
+  pageSize: 249796,
   sort: [
-    "illum",
-    "maiores",
+    "enim",
+    "accusamus",
+    "delectus",
   ],
 }).then((res: ListPaymentsResponse) => {
   if (res.statusCode == 200) {
@@ -345,9 +381,11 @@ const sdk = new SDK({
 
 sdk.payments.paymentslistAccounts({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 699479,
+  pageSize: 692532,
   sort: [
-    "magnam",
+    "nam",
+    "id",
+    "blanditiis",
   ],
 }).then((res: PaymentslistAccountsResponse) => {
   if (res.statusCode == 200) {
@@ -374,7 +412,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.readConnectorConfig({
-  connector: Connector.Mangopay,
+  connector: Connector.CurrencyCloud,
 }).then((res: ReadConnectorConfigResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -402,7 +440,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.resetConnector({
-  connector: Connector.Mangopay,
+  connector: Connector.Moneycorp,
 }).then((res: ResetConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -428,7 +466,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.uninstallConnector({
-  connector: Connector.Modulr,
+  connector: Connector.DummyPay,
 }).then((res: UninstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -454,9 +492,9 @@ const sdk = new SDK({
 
 sdk.payments.updateMetadata({
   paymentMetadata: {
-    key: "aliquid",
+    key: "deserunt",
   },
-  paymentId: "laborum",
+  paymentId: "nisi",
 }).then((res: UpdateMetadataResponse) => {
   if (res.statusCode == 200) {
     // handle response

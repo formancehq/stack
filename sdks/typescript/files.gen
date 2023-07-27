@@ -73,6 +73,7 @@ src/sdk/models/operations/runworkflow.ts
 src/sdk/models/operations/sendevent.ts
 src/sdk/models/operations/connectorsstripetransfer.ts
 src/sdk/models/operations/connectorstransfer.ts
+src/sdk/models/operations/getaccountbalances.ts
 src/sdk/models/operations/getconnectortask.ts
 src/sdk/models/operations/getpayment.ts
 src/sdk/models/operations/installconnector.ts
@@ -225,6 +226,8 @@ src/sdk/models/shared/runworkflowresponse.ts
 src/sdk/models/shared/stripetransferrequest.ts
 src/sdk/models/shared/transferresponse.ts
 src/sdk/models/shared/transferrequest.ts
+src/sdk/models/shared/balancescursor.ts
+src/sdk/models/shared/accountbalance.ts
 src/sdk/models/shared/taskresponse.ts
 src/sdk/models/shared/taskstripe.ts
 src/sdk/models/shared/taskwise.ts

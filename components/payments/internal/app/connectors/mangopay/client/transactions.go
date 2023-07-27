@@ -49,7 +49,7 @@ func (c *Client) GetTransactions(ctx context.Context, walletsID string, page int
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to login: %w", err)
+		return nil, fmt.Errorf("failed to get transactions: %w", err)
 	}
 
 	defer func() {
@@ -61,7 +61,7 @@ func (c *Client) GetTransactions(ctx context.Context, walletsID string, page int
 
 	var payments []*Payment
 	if err := json.NewDecoder(resp.Body).Decode(&payments); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal login response body: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal transactions response body: %w", err)
 	}
 
 	return payments, nil
