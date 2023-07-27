@@ -11,11 +11,11 @@
       "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#go-task",
       "version": "3.24.0"
     },
-    "go@1.20.3": {
-      "last_modified": "2023-05-06T16:57:53Z",
-      "resolved": "github:NixOS/nixpkgs/16b3b0c53b1ee8936739f8c588544e7fcec3fc60#go",
+    "go@1.20.6": {
+      "last_modified": "2023-07-25T23:32:12Z",
+      "resolved": "github:NixOS/nixpkgs/a9b47d85504bdd199e90846622c76aa0bfeabfac#go",
       "source": "devbox-search",
-      "version": "1.20.3"
+      "version": "1.20.6"
     },
     "golangci-lint@1.53.3": {
       "last_modified": "2023-06-29T16:20:38Z",
@@ -26,6 +26,12 @@
       "last_modified": "2023-06-29T16:20:38Z",
       "resolved": "github:NixOS/nixpkgs/3c614fbc76fc152f3e1bc4b2263da6d90adf80fb#helm-docs",
       "version": "1.11.0"
+    },
+    "moon@1.10.1": {
+      "last_modified": "2023-07-25T23:32:12Z",
+      "resolved": "github:NixOS/nixpkgs/a9b47d85504bdd199e90846622c76aa0bfeabfac#moon",
+      "source": "devbox-search",
+      "version": "1.10.1"
     },
     "nodejs@18.16.0": {
       "last_modified": "2023-05-25T03:54:59Z",
