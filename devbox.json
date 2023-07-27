@@ -1,19 +1,19 @@
 {
   "packages": [
-    "go@1.20.3",
-    "golangci-lint@1.52.2",
+    "go@1.20.6",
+    "golangci-lint@1.53.3",
     "ginkgo@2.8.3",
     "nodejs@18.16.0",
     "yarn@1.22.19",
     "go-task@3.24.0",
     "github:goreleaser/nur#goreleaser-pro",
     "path:nix/speakeasy#speakeasy",
-    "path:nix/moon#moon",
+    "moon@1.10.1",
     "process-compose@0.43.1",
     "helm-docs@1.11.0"
   ],
   "shell": {},
   "nixpkgs": {
-    "commit": "f80ac848e3d6f0c12c52758c0f25c10c97ca3b62"
+    "commit": "2bfb14fdd13b7d951d2a1553b40061a22d0a89bb"
   }
 }

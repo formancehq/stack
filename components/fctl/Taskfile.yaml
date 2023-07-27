@@ -13,3 +13,7 @@ tasks:
   lint:
     cmds:
       - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
+
+  completions:
+    cmds:
+      - sh ./scripts/completions.sh

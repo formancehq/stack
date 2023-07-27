@@ -1,5 +1,8 @@
 type: 'tool'
 language: 'go'
+dependsOn:
+    - 'go-libs'
+    - 'openapi'
 
 workspace:
     inheritedTasks:

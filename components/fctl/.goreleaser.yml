@@ -29,7 +29,7 @@ builds:
 
 before:
   hooks:
-  - ./scripts/completions.sh
+  - task completions
 
 archives:
   - id: "{{.ProjectName}}"
@@ -44,7 +44,7 @@ archives:
     - completions/*
 
 brews:
-  - tap:
+  - repository:
       owner: formancehq
       name: homebrew-tap
     name: fctl

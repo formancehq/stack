@@ -22,11 +22,9 @@ projects:
 # is required for determining touched (added, modified, etc) files, calculating file hashes,
 # computing affected files, and much more.
 vcs:
-  # The manager/binary to use when managing the repository.
-  # Accepts "git", or "svn". Defaults to "git".
   manager: 'git'
-
-  # The default branch (master/main/trunk) in the repository for comparing the
-  # local branch against. For git, this is is typically "master" or "main",
-  # and must include the remote prefix (before /). For svn, this should always be "trunk".
   defaultBranch: 'main'
+  hooks:
+    pre-commit:
+      - 'pre-commit run'
+      - 'moon run :lint :test :mod :helm :sync :docs --affected'

@@ -16,7 +16,7 @@ runs:
       uses: jetpack-io/devbox-install-action@v0.3.0
       with:
         enable-cache: true
-        devbox-version: 0.5.2
+        devbox-version: 0.5.8
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
