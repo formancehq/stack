@@ -1938,6 +1938,39 @@ spec:
                 type: string
               seed:
                 type: string
+              services:
+                properties:
+                  ledger:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
+                  orchestration:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
+                  payments:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
+                  search:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
+                  wallets:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
+                  webhooks:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
+                type: object
               stargate:
                 properties:
                   stargateServerURL:

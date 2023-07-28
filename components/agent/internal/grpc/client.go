@@ -112,14 +112,15 @@ func (client *client) Connect(ctx context.Context) error {
 	return nil
 }
 
-func (client *client) k8sStackFromProtobuf(stack *generated.Stack) *v1beta3.Stack {
+func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 	return &v1beta3.Stack{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: stack.ClusterName,
 		},
 		Spec: v1beta3.StackSpec{
 			DevProperties: v1beta3.DevProperties{
-				Debug: true,
+				Debug: false,
+				Dev:   false,
 			},
 			Seed: stack.Seed,
 			Auth: v1beta3.StackAuthSpec{
@@ -148,6 +149,27 @@ func (client *client) k8sStackFromProtobuf(stack *generated.Stack) *v1beta3.Stac
 			}(),
 		},
 	}
+}
+
+func (client *client) stackFusion(currentStack *v1beta3.Stack, createStack *v1beta3.Stack) *v1beta3.Stack {
+	// Keep old values updated by client
+	keepServices := currentStack.Spec.Services
+	keepSeed := currentStack.Spec.Seed
+	keepVersion := currentStack.Spec.Versions
+	keepDebug := currentStack.Spec.DevProperties.Debug
+	keepDev := currentStack.Spec.DevProperties.Dev
+
+	// Fusion old and new values
+	currentStack = createStack
+
+	// Apply old values
+	currentStack.Spec.Services = keepServices
+	currentStack.Spec.Seed = keepSeed
+	currentStack.Spec.Versions = keepVersion
+	currentStack.Spec.DevProperties.Debug = keepDebug
+	currentStack.Spec.DevProperties.Dev = keepDev
+
+	return currentStack
 }
 
 func (client *client) Start(ctx context.Context) error {
@@ -230,27 +252,29 @@ func (client *client) Start(ctx context.Context) error {
 			}
 		case msg := <-msgs:
 			switch msg := msg.Message.(type) {
+			// TODO: Implement UpdateOrCreate
 			case *generated.Order_ExistingStack:
-				crd := client.k8sStackFromProtobuf(msg.ExistingStack)
-				existingStack, err := client.k8sClient.Get(ctx, crd.Name, metav1.GetOptions{})
+				createStack := client.createStack(msg.ExistingStack)
+				existingStack, err := client.k8sClient.Get(ctx, createStack.Name, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
-						if _, err := client.k8sClient.Create(ctx, crd); err != nil {
+						if _, err := client.k8sClient.Create(ctx, createStack); err != nil {
 							sharedlogging.FromContext(ctx).Errorf("Creating stack cluster side: %s", err)
 							continue
 						}
-						sharedlogging.FromContext(ctx).Infof("Stack %s created", crd.Name)
+						sharedlogging.FromContext(ctx).Infof("Stack %s created", msg.ExistingStack.ClusterName)
 						continue
 					}
 					sharedlogging.FromContext(ctx).Errorf("Reading stack cluster side: %s", err)
 					continue
 				}
-				existingStack.Spec = crd.Spec
-				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
+
+				newStack := client.stackFusion(existingStack, createStack)
+				if _, err := client.k8sClient.Update(ctx, newStack); err != nil {
 					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}
-				sharedlogging.FromContext(ctx).Infof("Stack %s updated", crd.Name)
+				sharedlogging.FromContext(ctx).Infof("Stack %s updated", newStack.Name)
 
 			case *generated.Order_DeletedStack:
 				if err := client.k8sClient.Delete(ctx, msg.DeletedStack.ClusterName); err != nil {
