@@ -3,22 +3,36 @@ package mangopay
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/mangopay/client"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+var (
+	usersAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "users"))
 )
 
 func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info(taskNameFetchUsers)
 
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), usersAttrs...)
+		}()
+
 		users, err := client.GetAllUsers(ctx)
 		if err != nil {
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, usersAttrs...)
 			return err
 		}
 
@@ -42,6 +56,7 @@ func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 				return err
 			}
 		}
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(users)), usersAttrs...)
 
 		return nil
 	}

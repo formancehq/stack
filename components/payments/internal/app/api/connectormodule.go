@@ -9,6 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 
 	"github.com/formancehq/payments/internal/app/ingestion"
@@ -29,6 +30,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 	return fx.Options(
 		fx.Provide(func(store *storage.Storage,
 			publisher message.Publisher,
+			metricsRegistry metrics.MetricsRegistry,
 		) *integration.ConnectorManager[ConnectorConfig] {
 			schedulerFactory := integration.TaskSchedulerFactoryFn(func(
 				resolver task.Resolver, maxTasks int,
@@ -46,7 +48,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 					}
 
 					return container, nil
-				}, resolver, maxTasks)
+				}, resolver, metricsRegistry, maxTasks)
 			})
 
 			return integration.NewConnectorManager[ConnectorConfig](

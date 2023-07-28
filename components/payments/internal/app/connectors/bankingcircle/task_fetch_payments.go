@@ -5,22 +5,39 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
 )
 
-func taskFetchPayments(logger logging.Logger, client *client.Client) task.Task {
+var (
+	paymentsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))
+)
+
+func taskFetchPayments(
+	logger logging.Logger,
+	client *client.Client,
+) task.Task {
 	return func(
 		ctx context.Context,
 		ingester ingestion.Ingester,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs...)
+		}()
+
 		for page := 1; ; page++ {
 			pagedPayments, err := client.GetPayments(ctx, page)
 			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
 				return err
 			}
 
@@ -29,8 +46,10 @@ func taskFetchPayments(logger logging.Logger, client *client.Client) task.Task {
 			}
 
 			if err := ingestBatch(ctx, ingester, pagedPayments); err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
 				return err
 			}
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedPayments)), paymentsAttrs...)
 		}
 
 		return nil

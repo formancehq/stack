@@ -8,17 +8,32 @@ import (
 
 	"github.com/formancehq/payments/internal/app/connectors/currencycloud/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
 )
 
-func taskFetchBalances(logger logging.Logger, client *client.Client) task.Task {
+var (
+	balancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+)
+
+func taskFetchBalances(
+	logger logging.Logger,
+	client *client.Client,
+) task.Task {
 	return func(
 		ctx context.Context,
 		ingester ingestion.Ingester,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info(taskNameFetchAccounts)
+
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs...)
+		}()
 
 		page := 1
 		for {
@@ -28,14 +43,17 @@ func taskFetchBalances(logger logging.Logger, client *client.Client) task.Task {
 
 			pagedBalances, nextPage, err := client.GetBalances(ctx, page)
 			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
 				return err
 			}
 
 			page = nextPage
 
 			if err := ingestBalancesBatch(ctx, ingester, pagedBalances); err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
 				return err
 			}
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedBalances)), balancesAttrs...)
 		}
 
 		return nil

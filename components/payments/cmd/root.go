@@ -6,6 +6,7 @@ import (
 	"os"
 
 	_ "github.com/bombsimon/logrusr/v3"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -53,6 +54,7 @@ func NewRootCommand() *cobra.Command {
 	server.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
 
 	otlptraces.InitOTLPTracesFlags(server.Flags())
+	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
 	publish.InitCLIFlags(server)
 
 	return root
