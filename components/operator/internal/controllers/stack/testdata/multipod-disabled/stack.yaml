@@ -1,0 +1,14 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Stack
+metadata:
+  name: stack1
+spec:
+  debug: true
+  dev: true
+  scheme: http
+  host: example.net
+  seed: stacks
+  versions: default
+  services:
+    orchestration:
+      disabled: true

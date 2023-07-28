@@ -1,0 +1,107 @@
+apiVersion: v1
+data:
+    Caddyfile: |-
+        (cors) {
+        	header {
+        		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
+        		Access-Control-Allow-Headers content-type
+        		Access-Control-Max-Age 100
+        		Access-Control-Allow-Origin *
+        	}
+        }
+
+        (handle_route_without_auth) {
+        	# handle does not strips the prefix from the request path
+        	handle {args.0}/* {
+        		reverse_proxy {args.1}
+
+        		import cors
+        	}
+        }
+
+        (handle_path_route_with_auth) {
+        	# handle_path automatically strips the prefix from the request path
+        	handle_path {args.0}* {
+        		reverse_proxy {args.1}
+
+        		import cors
+
+        		import auth
+        	}
+        }
+
+        (handle_path_route_without_auth) {
+        	# handle_path automatically strips the prefix from the request path
+        	handle_path {args.0}* {
+        		reverse_proxy {args.1}
+
+        		import cors
+        	}
+        }
+
+        (auth) {
+        	auth {
+        		issuer http://example.net/api/auth
+
+        		read_key_set_max_retries 10
+        	}
+        }
+
+        {
+        	debug
+
+        	# Many directives manipulate the HTTP handler chain and the order in which
+        	# those directives are evaluated matters. So the jwtauth directive must be
+        	# ordered.
+        	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
+        	order auth before basicauth
+        	order versions after metrics
+        }
+
+        :8000 {
+        	tracing {
+        		span gateway
+        	}
+        	log {
+        		output stdout
+        		level  DEBUG
+        	}
+        	import handle_path_route_without_auth /api/auth auth:8080
+        	import handle_path_route_with_auth /api/ledger ledger:8080
+        	import handle_path_route_with_auth /api/orchestration orchestration:8080
+        	import handle_path_route_with_auth /api/payments payments:8080
+        	import handle_path_route_with_auth /api/search search:8080
+        	import handle_path_route_with_auth /api/search-benthos search-benthos:4195
+        	import handle_path_route_with_auth /api/stargate stargate:8080
+        	import handle_path_route_with_auth /api/wallets wallets:8080
+        	import handle_path_route_with_auth /api/webhooks webhooks:8080
+
+        	handle /versions {
+        		versions {
+        			region "us-west-1"
+        			env "staging"
+        			endpoints {
+        				auth http://auth:8080/_info http://auth:8080/_healthcheck
+        				ledger http://ledger:8080/_info http://ledger:8080/_healthcheck
+        				orchestration http://orchestration:8080/_info http://orchestration:8080/_healthcheck
+        				payments http://payments:8080/_info http://payments:8080/_health
+        				search http://search:8080/_info http://search:8080/_healthcheck
+        				stargate http://stargate:8080/_info http://stargate:8080/_healthcheck
+        				wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
+        				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
+        			}
+        		}
+        	}
+
+        	# handle all other requests
+        	handle {
+        		reverse_proxy control:3000
+        		import cors
+        	}
+        }
+kind: ConfigMap
+metadata:
+    labels:
+        stack: "true"
+    name: gateway-config
+    namespace: multipod-debug

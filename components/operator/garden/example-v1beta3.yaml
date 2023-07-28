@@ -146,12 +146,18 @@ spec:
   scheme: http
   host: host.k3d.internal
   seed: stacks
+  versions: default
+  services:
+    ledger:
+      disabled: true
+    orchestration:
+      disabled: true
   auth:
-    delegatedOIDCServer:
-      issuer: http://host.k3d.internal/api/dex
-      clientID: dexclient
-      clientSecret: dexclient
-    staticClients:
-    - id: foo2
-      secrets:
-      - bar2
+      delegatedOIDCServer:
+        issuer: http://host.k3d.internal/api/dex
+        clientID: dexclient
+        clientSecret: dexclient
+      staticClients:
+      - id: foo2
+        secrets:
+        - bar2
