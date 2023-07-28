@@ -65,8 +65,13 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	allServices := make(map[string]servicesWithContext)
 	moduleNames := make([]string, 0)
 	for moduleName := range modules {
+		if ctx.Stack.Spec.Services.IsDisabled(moduleName) {
+			continue
+		}
 		moduleNames = append(moduleNames, moduleName)
 	}
+	logger.Info(fmt.Sprintf("List of Modules activated: %s", strings.Join(moduleNames, ",")))
+
 	// Always process service in order to keep things idempotent
 	sort.Strings(moduleNames)
 
@@ -236,7 +241,7 @@ func (services Services) install(ctx ServiceInstallContext, deployer *ResourceDe
 	return nil
 }
 
-// Ugly hack to allow mocking
+// CreatePostgresDatabase Ugly hack to allow mocking
 var CreatePostgresDatabase = func(ctx context.Context, dsn, dbName string) error {
 	conn, err := pgx.Connect(ctx, dsn)
 	if err != nil {

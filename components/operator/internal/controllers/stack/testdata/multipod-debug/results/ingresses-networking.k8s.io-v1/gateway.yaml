@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: gateway
+    namespace: multipod-debug
+spec:
+    rules:
+        - host: example.net
+          http:
+            paths:
+                - backend:
+                    service:
+                        name: gateway
+                        port:
+                            name: http
+                  path: /
+                  pathType: Prefix
+status:
+    loadBalancer: {}

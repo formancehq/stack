@@ -58,65 +58,68 @@ var _ = Describe("Check stack deployment", func() {
 		name := strings.ReplaceAll(dirEntry.Name(), ".", "-")
 		dirName := dirEntry.Name()
 
+		tmp := make(map[string]any)
+
+		// Get Version
 		versionsFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "versions.yaml"))
 		if err != nil {
 			panic(err)
 		}
-
-		configurationFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "configuration.yaml"))
-		if err != nil {
-			panic(err)
-		}
-
-		tmp := make(map[string]any)
-
 		if err := yaml.Unmarshal(versionsFile, &tmp); err != nil {
 			panic(err)
 		}
-
 		data, err := json.Marshal(tmp)
 		if err != nil {
 			panic(err)
 		}
-
 		versions := &stackv1beta3.Versions{}
 		if err := json.Unmarshal(data, versions); err != nil {
 			panic(err)
 		}
 		versions.Name = name
 
+		// Get Configuration
+		configurationFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "configuration.yaml"))
+		if err != nil {
+			panic(err)
+		}
 		if err := yaml.Unmarshal(configurationFile, &tmp); err != nil {
 			panic(err)
 		}
-
 		data, err = json.Marshal(tmp)
 		if err != nil {
 			panic(err)
 		}
-
 		configuration := &stackv1beta3.Configuration{}
 		if err := json.Unmarshal(data, configuration); err != nil {
 			panic(err)
 		}
 		configuration.Name = name
 
+		// Get Stack
+		stackFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "stack.yaml"))
+		if err != nil {
+			panic(err)
+		}
+		if err := yaml.Unmarshal(stackFile, &tmp); err != nil {
+			panic(err)
+		}
+		data, err = json.Marshal(tmp)
+		if err != nil {
+			panic(err)
+		}
+		stack := &stackv1beta3.Stack{}
+		if err := json.Unmarshal(data, stack); err != nil {
+			panic(err)
+		}
+		stack.Name = name
+
+		// Launch test
 		Context(fmt.Sprintf("with config from dir '%s'", dirEntry.Name()), func() {
-			var (
-				stack = &stackv1beta3.Stack{}
-			)
 			BeforeEach(func() {
-				*stack = stackv1beta3.Stack{
-					ObjectMeta: v1.ObjectMeta{
-						Name: name,
-					},
-					Spec: stackv1beta3.StackSpec{
-						Seed:     configuration.Name,
-						Versions: versions.Name,
-						Host:     "example.net",
-						Scheme:   "http",
-						Stargate: &stackv1beta3.StackStargateConfig{},
-					},
-				}
+				stack.Spec.Seed = configuration.Name
+				stack.Spec.Versions = versions.Name
+				stack.Spec.Stargate = &stackv1beta3.StackStargateConfig{}
 			})
 			JustBeforeEach(func() {
 				Expect(Create(configuration)).To(Succeed())

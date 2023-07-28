@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+        reloader.stakater.com/auto: "true"
+    generation: 1
+    labels:
+        formance.com/monopod: "false"
+        stack: "true"
+    name: ledger
+    namespace: multipod-disabled
+spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: ledger
+    strategy:
+        rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+        type: RollingUpdate
+    template:
+        metadata:
+            creationTimestamp: null
+            labels:
+                app.kubernetes.io/name: ledger
+        spec:
+            containers:
+                - env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: multipod-disabled-ledger
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: BIND
+                      value: :8080
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: DEBUG
+                      value: "true"
+                    - name: DEV
+                      value: "true"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: ledger
+                    - name: STACK
+                      value: multipod-disabled
+                    - name: STORAGE_DRIVER
+                      value: postgres
+                    - name: PUBLISHER_TOPIC_MAPPING
+                      value: '*:multipod-disabled-ledger'
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: STORAGE_POSTGRES_CONN_STRING
+                      value: $(POSTGRES_URI)
+                  image: ghcr.io/formancehq/ledger:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 8080
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: ledger
+                  ports:
+                    - containerPort: 8080
+                      name: http
+                      protocol: TCP
+                  resources: {}
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+status:
+    conditions:
+        - lastTransitionTime: "2023-07-28T10:14:02Z"
+          lastUpdateTime: "2023-07-28T10:14:02Z"
+          status: "True"
+          type: Available
+    observedGeneration: 1

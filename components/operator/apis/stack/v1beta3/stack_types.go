@@ -18,11 +18,13 @@ package v1beta3
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/google/uuid"
+	"github.com/iancoleman/strcase"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -96,6 +98,21 @@ type StackStargateConfig struct {
 	StargateServerURL string `json:"stargateServerURL"`
 }
 
+type StackServicesSpec struct {
+	// +optional
+	Ledger        StackServicePropertiesSpec `json:"ledger,omitempty"`
+	Orchestration StackServicePropertiesSpec `json:"orchestration,omitempty"`
+	Payments      StackServicePropertiesSpec `json:"payments,omitempty"`
+	Search        StackServicePropertiesSpec `json:"search,omitempty"`
+	Wallets       StackServicePropertiesSpec `json:"wallets,omitempty"`
+	Webhooks      StackServicePropertiesSpec `json:"webhooks,omitempty"`
+}
+
+type StackServicePropertiesSpec struct {
+	// +optional
+	Disabled bool `json:"disabled"`
+}
+
 // StackSpec defines the desired state of Stack
 type StackSpec struct {
 	DevProperties `json:",inline"`
@@ -116,6 +133,17 @@ type StackSpec struct {
 
 	// +optional
 	Disabled bool `json:"disabled"`
+
+	// +optional
+	Services StackServicesSpec `json:"services,omitempty"`
+}
+
+func (in *StackServicesSpec) IsDisabled(service string) bool {
+	valueOf := reflect.ValueOf(in).Elem().FieldByName(strcase.ToCamel(service))
+	if valueOf.IsValid() {
+		return valueOf.Interface().(StackServicePropertiesSpec).Disabled
+	}
+	return false
 }
 
 type ControlAuthentication struct {

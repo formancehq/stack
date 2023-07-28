@@ -6,9 +6,9 @@ metadata:
     name: ledger
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.170
+    clusterIP: 10.0.0.44
     clusterIPs:
-        - 10.0.0.170
+        - 10.0.0.44
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

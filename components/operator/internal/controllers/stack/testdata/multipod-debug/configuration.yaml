@@ -1,0 +1,71 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Configuration
+metadata:
+  name: default
+spec:
+  broker:
+    kafka:
+      brokers:
+      - kafka:1234
+  monitoring:
+    traces:
+      otlp:
+        endpoint: localhost
+        insecure: true
+        mode: grpc
+        port: 4317
+  services:
+    auth:
+      postgres:
+        disableSSLMode: true
+        host: localhost
+        password: root
+        port: 5432
+        username: root
+    control: {}
+    ledger:
+      postgres:
+        disableSSLMode: true
+        host: localhost
+        password: root
+        port: 5432
+        username: root
+    orchestration:
+      postgres:
+        disableSSLMode: true
+        host: localhost
+        password: root
+        port: 5432
+        username: root
+    payments:
+      encryptionKey:
+      postgres:
+        disableSSLMode: true
+        host: localhost
+        password: root
+        port: 5432
+        username: root
+    search:
+      batching:
+        count:
+        period:
+      elasticSearch:
+        host: elasticsearch
+        pathPrefix: ''
+        port: 9200
+        scheme: http
+    stargate:
+    wallets:
+    webhooks:
+      postgres:
+        disableSSLMode: true
+        host: localhost
+        password: root
+        port: 5432
+        username: root
+  temporal:
+    address:
+    namespace:
+    tls:
+      crt:
+      key:
