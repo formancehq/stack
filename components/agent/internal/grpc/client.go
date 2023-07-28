@@ -152,24 +152,13 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 }
 
 func (client *client) stackFusion(currentStack *v1beta3.Stack, createStack *v1beta3.Stack) *v1beta3.Stack {
-	// Keep old values updated by client
-	keepServices := currentStack.Spec.Services
-	keepSeed := currentStack.Spec.Seed
-	keepVersion := currentStack.Spec.Versions
-	keepDebug := currentStack.Spec.DevProperties.Debug
-	keepDev := currentStack.Spec.DevProperties.Dev
-
-	// Fusion old and new values
-	currentStack = createStack
-
-	// Apply old values
-	currentStack.Spec.Services = keepServices
-	currentStack.Spec.Seed = keepSeed
-	currentStack.Spec.Versions = keepVersion
-	currentStack.Spec.DevProperties.Debug = keepDebug
-	currentStack.Spec.DevProperties.Dev = keepDev
-
-	return currentStack
+	createStack.SetResourceVersion(currentStack.GetResourceVersion())
+	createStack.Spec.Services = currentStack.Spec.Services
+	createStack.Spec.Seed = currentStack.Spec.Seed
+	createStack.Spec.Versions = currentStack.Spec.Versions
+	createStack.Spec.DevProperties.Debug = currentStack.Spec.DevProperties.Debug
+	createStack.Spec.DevProperties.Dev = currentStack.Spec.DevProperties.Dev
+	return createStack
 }
 
 func (client *client) Start(ctx context.Context) error {
