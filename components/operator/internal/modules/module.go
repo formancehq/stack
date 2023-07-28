@@ -34,19 +34,6 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	logger := log.FromContext(ctx)
 	logger = logger.WithValues("stack", ctx.Stack.Name)
 
-	if ctx.Stack.Spec.Disabled {
-		logger.Info("Stack is disabled, remove all deployments")
-		if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
-			client.InNamespace(ctx.Stack.Name),
-			client.MatchingLabels{
-				"stack": "true",
-			},
-		); err != nil {
-			return false, err
-		}
-		return true, nil
-	}
-
 	var (
 		portAllocator PortAllocator = StaticPortAllocator(8080)
 		podDeployer   PodDeployer   = NewDefaultPodDeployer(deployer)
@@ -64,11 +51,25 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 
 	allServices := make(map[string]servicesWithContext)
 	moduleNames := make([]string, 0)
+	// When Service in Stack is Disabled, we want to remove the deployment
 	for moduleName := range modules {
 		if ctx.Stack.Spec.Services.IsDisabled(moduleName) {
 			continue
 		}
 		moduleNames = append(moduleNames, moduleName)
+	}
+	// When Stack is Disabled, we want to remove all deployments
+	if ctx.Stack.Spec.Disabled {
+		logger.Info("Stack is disabled, remove all deployments")
+		if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
+			client.InNamespace(ctx.Stack.Name),
+			client.MatchingLabels{
+				"stack": "true",
+			},
+		); err != nil {
+			return false, err
+		}
+		return true, nil
 	}
 	logger.Info(fmt.Sprintf("List of Modules activated: %s", strings.Join(moduleNames, ",")))
 
