@@ -10,6 +10,7 @@ import (
 
 	"go.uber.org/dig"
 
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 
 	"github.com/sirupsen/logrus"
@@ -83,7 +84,7 @@ func TestTaskScheduler(t *testing.T) {
 						return nil
 					}
 				}
-			}), 1)
+			}), metrics.NewNoOpMetricsRegistry(), 1)
 
 		descriptor := newDescriptor()
 		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
@@ -109,7 +110,7 @@ func TestTaskScheduler(t *testing.T) {
 
 					return ctx.Err()
 				}
-			}), 1)
+			}), metrics.NewNoOpMetricsRegistry(), 1)
 
 		descriptor := newDescriptor()
 		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
@@ -136,7 +137,7 @@ func TestTaskScheduler(t *testing.T) {
 				return func() error {
 					return errors.New("test")
 				}
-			}), 1)
+			}), metrics.NewNoOpMetricsRegistry(), 1)
 
 		descriptor := newDescriptor()
 		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
@@ -183,7 +184,7 @@ func TestTaskScheduler(t *testing.T) {
 				}
 
 				panic("unknown descriptor")
-			}), 1)
+			}), metrics.NewNoOpMetricsRegistry(), 1)
 
 		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor1, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
@@ -224,7 +225,7 @@ func TestTaskScheduler(t *testing.T) {
 				default:
 					panic("should not be called")
 				}
-			}), 1)
+			}), metrics.NewNoOpMetricsRegistry(), 1)
 
 		require.NoError(t, scheduler.Schedule(context.TODO(), mainDescriptor, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,

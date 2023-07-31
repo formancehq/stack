@@ -8,6 +8,7 @@ import (
 
 	"go.uber.org/dig"
 
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 
 	"github.com/formancehq/payments/internal/app/task"
@@ -53,7 +54,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		maxTasks int,
 	) *task.DefaultTaskScheduler {
 		return task.NewDefaultScheduler(provider, taskStore,
-			DefaultContainerFactory, resolver, maxTasks)
+			DefaultContainerFactory, resolver, metrics.NewNoOpMetricsRegistry(), maxTasks)
 	})
 
 	loader := NewLoaderBuilder[ConnectorConfig](provider).

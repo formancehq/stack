@@ -10,9 +10,17 @@ import (
 
 	"github.com/formancehq/payments/internal/app/connectors/wise/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+var (
+	profilesAndBalancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles_and_balances"))
+	profilesAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles"))
+	balancesAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
 )
 
 func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
@@ -20,9 +28,16 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 		ctx context.Context,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), profilesAndBalancesAttrs...)
+		}()
+
 		profiles, err := client.GetProfiles()
 		if err != nil {
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs...)
 			return err
 		}
 
@@ -30,10 +45,11 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 		for _, profile := range profiles {
 			balances, err := client.GetBalances(ctx, profile.ID)
 			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
 				return err
 			}
 
-			if err := ingestAccountsBatch(ctx, ingester, balances); err != nil {
+			if err := ingestAccountsBatch(ctx, metricsRegistry, ingester, balances); err != nil {
 				return err
 			}
 
@@ -67,6 +83,7 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	metricsRegistry metrics.MetricsRegistry,
 	ingester ingestion.Ingester,
 	balances []*client.Balance,
 ) error {
@@ -120,12 +137,16 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs...)
 		return err
 	}
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), profilesAttrs...)
 
 	if err := ingester.IngestBalances(ctx, balancesBatch, false); err != nil {
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
 		return err
 	}
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), balancesAttrs...)
 
 	return nil
 }

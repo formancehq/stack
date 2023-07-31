@@ -10,9 +10,17 @@ import (
 
 	"github.com/formancehq/payments/internal/app/connectors/mangopay/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+var (
+	walletsAndBalancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "wallets_and_balances"))
+	walletsAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "wallets"))
+	balancesAttrs           = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
 )
 
 func taskFetchWallets(logger logging.Logger, client *client.Client, userID string) task.Task {
@@ -20,12 +28,19 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 		ctx context.Context,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info(taskNameFetchWallets)
+
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), walletsAndBalancesAttrs...)
+		}()
 
 		for page := 1; ; page++ {
 			pagedWallets, err := client.GetWallets(ctx, userID, page)
 			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, walletsAndBalancesAttrs...)
 				return err
 			}
 
@@ -89,12 +104,16 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 			}
 
 			if err := ingester.IngestAccounts(ctx, accountBatch); err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, walletsAttrs...)
 				return err
 			}
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountBatch)), walletsAttrs...)
 
 			if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
 				return err
 			}
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balanceBatch)), balancesAttrs...)
 
 			for _, transactionTask := range transactionTasks {
 				err = scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{

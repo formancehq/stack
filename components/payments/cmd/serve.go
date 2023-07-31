@@ -5,8 +5,10 @@ import (
 
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/internal/app/api"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -15,6 +17,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
 	"go.uber.org/fx"
 )
 
@@ -58,7 +61,12 @@ func runServer(cmd *cobra.Command, args []string) error {
 	options := make([]fx.Option, 0)
 
 	options = append(options, databaseOptions)
-	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+	options = append(options,
+		otlptraces.CLITracesModule(viper.GetViper()),
+		otlpmetrics.CLIMetricsModule(viper.GetViper()),
+		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
+		fx.Provide(metrics.RegisterMetricsRegistry),
+	)
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
 	options = append(options, api.HTTPModule(sharedapi.ServiceInfo{
 		Version: Version,

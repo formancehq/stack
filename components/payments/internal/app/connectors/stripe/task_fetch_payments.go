@@ -2,23 +2,40 @@ package stripe
 
 import (
 	"context"
+	"time"
 
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+var (
+	paymentsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))
 )
 
 func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
-	scheduler task.Scheduler, ingester ingestion.Ingester) error {
+	scheduler task.Scheduler, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry) error {
 	return func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
-		scheduler task.Scheduler, ingester ingestion.Ingester,
+		scheduler task.Scheduler, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry,
 	) error {
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs...)
+		}()
+
 		tt := NewTimelineTrigger(
 			logger,
 			NewIngester(
 				func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
-					return ingestBatch(ctx, "", logger, ingester, batch, commitState, tail)
+					if err := ingestBatch(ctx, "", logger, ingester, batch, commitState, tail); err != nil {
+						return err
+					}
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs...)
+
+					return nil
 				},
 				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
 					return nil
@@ -29,6 +46,11 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 			TimelineTriggerTypeTransactions,
 		)
 
-		return tt.Fetch(ctx)
+		if err := tt.Fetch(ctx); err != nil {
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			return err
+		}
+
+		return nil
 	}
 }

@@ -2,11 +2,18 @@ package stripe
 
 import (
 	"context"
+	"time"
 
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+var (
+	paymentsConnectedAccountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))
 )
 
 func ingestBatch(ctx context.Context, account string, logger logging.Logger, ingester ingestion.Ingester,
@@ -43,17 +50,27 @@ func ingestBatch(ctx context.Context, account string, logger logging.Logger, ing
 }
 
 func ConnectedAccountTask(config Config, account string, client *DefaultClient) func(ctx context.Context, logger logging.Logger,
-	ingester ingestion.Ingester, resolver task.StateResolver) error {
+	ingester ingestion.Ingester, resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry) error {
 	return func(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
-		resolver task.StateResolver,
+		resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Infof("Create new trigger")
+
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsConnectedAccountsAttrs...)
+		}()
 
 		trigger := NewTimelineTrigger(
 			logger,
 			NewIngester(
 				func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
-					return ingestBatch(ctx, account, logger, ingester, batch, commitState, tail)
+					if err := ingestBatch(ctx, account, logger, ingester, batch, commitState, tail); err != nil {
+						return err
+					}
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsConnectedAccountsAttrs...)
+
+					return nil
 				},
 				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
 					return nil
@@ -64,6 +81,11 @@ func ConnectedAccountTask(config Config, account string, client *DefaultClient) 
 			TimelineTriggerTypeTransactions,
 		)
 
-		return trigger.Fetch(ctx)
+		if err := trigger.Fetch(ctx); err != nil {
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsConnectedAccountsAttrs...)
+			return err
+		}
+
+		return nil
 	}
 }

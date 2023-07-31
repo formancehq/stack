@@ -8,9 +8,15 @@ import (
 
 	"github.com/formancehq/payments/internal/app/connectors/moneycorp/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+var (
+	accountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
 )
 
 func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
@@ -18,12 +24,19 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 		ctx context.Context,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info(taskNameFetchAccounts)
+
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs...)
+		}()
 
 		for page := 1; ; page++ {
 			pagedAccounts, err := client.GetAccounts(ctx, page, pageSize)
 			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs...)
 				return err
 			}
 
@@ -32,8 +45,10 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 			}
 
 			if err := ingestAccountsBatch(ctx, ingester, pagedAccounts); err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs...)
 				return err
 			}
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedAccounts)), accountsAttrs...)
 
 			for _, account := range pagedAccounts {
 				logger.Infof("scheduling fetch-transactions: %s", account.ID)

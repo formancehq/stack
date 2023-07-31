@@ -10,20 +10,38 @@ import (
 
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
 )
 
-func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
+var (
+	accountsBalancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts_and_balances"))
+	accountsAttrs         = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
+	balancesAttrs         = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+)
+
+func taskFetchAccounts(
+	logger logging.Logger,
+	client *client.Client,
+) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsBalancesAttrs...)
+		}()
+
 		for page := 1; ; page++ {
 			pagedAccounts, err := client.GetAccounts(ctx, page)
 			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs...)
 				return err
 			}
 
@@ -31,7 +49,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 				break
 			}
 
-			if err := ingestAccountsBatch(ctx, ingester, pagedAccounts); err != nil {
+			if err := ingestAccountsBatch(ctx, ingester, metricsRegistry, pagedAccounts); err != nil {
 				return err
 			}
 		}
@@ -61,6 +79,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 func ingestAccountsBatch(
 	ctx context.Context,
 	ingester ingestion.Ingester,
+	metricsRegistry metrics.MetricsRegistry,
 	accounts []*client.Account,
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
@@ -119,12 +138,16 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs...)
 		return err
 	}
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs...)
 
 	if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
 		return err
 	}
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), balancesAttrs...)
 
 	return nil
 }

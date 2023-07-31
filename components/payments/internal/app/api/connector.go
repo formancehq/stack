@@ -236,7 +236,8 @@ func install[Config models.ConnectorConfigObject](connectorManager *integration.
 	}
 }
 
-func reset[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+func reset[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if connectorNotInstalled(connectorManager, w, r) {

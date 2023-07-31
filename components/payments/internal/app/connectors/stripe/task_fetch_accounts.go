@@ -6,11 +6,17 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/ingestion"
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+var (
+	accountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
 )
 
 func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
@@ -20,7 +26,13 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
+		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs...)
+		}()
+
 		tt := NewTimelineTrigger(
 			logger,
 			NewIngester(
@@ -32,6 +44,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 					if err := ingestAccountsBatch(ctx, ingester, batch); err != nil {
 						return err
 					}
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), accountsAttrs...)
 
 					for _, account := range batch {
 						transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
@@ -78,6 +91,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs...)
 			return err
 		}
 

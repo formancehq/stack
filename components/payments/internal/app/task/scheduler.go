@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/storage"
 
 	"github.com/formancehq/payments/internal/app/models"
@@ -44,6 +45,7 @@ type ContainerCreateFunc func(ctx context.Context, descriptor models.TaskDescrip
 type DefaultTaskScheduler struct {
 	provider         models.ConnectorProvider
 	store            Repository
+	metricsRegistry  metrics.MetricsRegistry
 	containerFactory ContainerCreateFunc
 	tasks            map[string]*taskHolder
 	mu               sync.Mutex
@@ -280,6 +282,13 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 		panic(err)
 	}
 
+	err = container.Provide(func() metrics.MetricsRegistry {
+		return s.metricsRegistry
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	err = container.Provide(func() StateResolver {
 		return StateResolverFn(func(ctx context.Context, v any) error {
 			if task.State == nil || len(task.State) == 0 {
@@ -410,11 +419,13 @@ func NewDefaultScheduler(
 	store Repository,
 	containerFactory ContainerCreateFunc,
 	resolver Resolver,
+	metricsRegistry metrics.MetricsRegistry,
 	maxTasks int,
 ) *DefaultTaskScheduler {
 	return &DefaultTaskScheduler{
 		provider:         provider,
 		store:            store,
+		metricsRegistry:  metricsRegistry,
 		tasks:            map[string]*taskHolder{},
 		containerFactory: containerFactory,
 		maxTasks:         maxTasks,
