@@ -444,6 +444,7 @@ func (service Service) createDeployment(ctx ContainerResolutionContext, serviceN
 	container := service.Container(ctx)
 	return ctx.PodDeployer.deploy(ctx, pod{
 		name:                 serviceName,
+		moduleName:           ctx.Module,
 		volumes:              ctx.volumes(serviceName),
 		initContainers:       service.initContainers(ctx, serviceName),
 		containers:           service.containers(ctx, container, serviceName),

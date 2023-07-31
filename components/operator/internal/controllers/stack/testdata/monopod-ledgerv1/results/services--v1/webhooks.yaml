@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: monopod-ledgerv1
 spec:
-    clusterIP: 10.0.0.244
+    clusterIP: 10.0.0.15
     clusterIPs:
-        - 10.0.0.244
+        - 10.0.0.15
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
