@@ -4167,6 +4167,26 @@ spec:
                 type: boolean
               monitoring:
                 properties:
+                  metrics:
+                    properties:
+                      otlp:
+                        properties:
+                          endpoint:
+                            type: string
+                          insecure:
+                            type: boolean
+                          mode:
+                            enum:
+                            - grpc
+                            - http
+                            type: string
+                          port:
+                            format: int32
+                            type: integer
+                          resourceAttributes:
+                            type: string
+                        type: object
+                    type: object
                   traces:
                     properties:
                       otlp:

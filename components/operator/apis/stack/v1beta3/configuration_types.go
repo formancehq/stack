@@ -76,9 +76,11 @@ type Broker struct {
 type MonitoringSpec struct {
 	// +optional
 	Traces *TracesSpec `json:"traces,omitempty"`
+	// +optional
+	Metrics *MetricsSpec `json:"metrics,omitempty"`
 }
 
-type TracesOtlpSpec struct {
+type OtlpSpec struct {
 	// +optional
 	Endpoint string `json:"endpoint,omitempty"`
 	// +optional
@@ -95,7 +97,12 @@ type TracesOtlpSpec struct {
 
 type TracesSpec struct {
 	// +optional
-	Otlp *TracesOtlpSpec `json:"otlp,omitempty"`
+	Otlp *OtlpSpec `json:"otlp,omitempty"`
+}
+
+type MetricsSpec struct {
+	// +optional
+	Otlp *OtlpSpec `json:"otlp,omitempty"`
 }
 
 type ConfigurationSpec struct {
