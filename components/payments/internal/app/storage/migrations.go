@@ -443,9 +443,6 @@ func registerMigrations(migrator *migrations.Migrator) {
 		},
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
-				// Since only one connector is inserting accounts,
-				// let's just delete the table, since connectors will be
-				// resetted. Delete it cascade, or we will have an error
 				_, err := tx.Exec(`
 					ALTER TABLE payments.adjustment ALTER COLUMN amount TYPE numeric;
 					ALTER TABLE payments.payment ALTER COLUMN amount TYPE numeric;
