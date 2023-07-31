@@ -36,7 +36,7 @@ processes:
       - "OTEL_SERVICE_NAME=auth"
 
   ledger:
-    command: ledger server start --storage.postgres.conn_string postgresql://formance:formance@postgres/ledger?sslmode=disable --server.http.bind_address 0.0.0.0:3068 --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-topic-mapping *:ledger
+    command: ledger server start --storage.driver=postgres --storage.postgres.conn_string postgresql://formance:formance@postgres/ledger?sslmode=disable --server.http.bind_address 0.0.0.0:3068 --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-topic-mapping *:ledger
     availability:
       restart: always
     environment:
@@ -59,10 +59,10 @@ processes:
   payments-migrate:
     command: payments migrate up --postgres-uri postgresql://formance:formance@postgres/payments?sslmode=disable
     availability:
-      restart: always
+      restart: never
 
   search:
-    command: search serve --open-search-scheme http --open-search-service opensearch:9200 --es-indices formance
+    command: search serve --open-search-scheme http --open-search-service opensearch:9200 --es-indices formance --stack local
     availability:
       restart: always
     environment:
@@ -96,6 +96,7 @@ processes:
       - "OPENSEARCH_TLS_SKIP_CERT_VERIFY=true"
       - "OPENSEARCH_BASIC_AUTH_ENABLED=false"
       - "OTEL_SERVICE_NAME=benthos"
+      - "STACK=local"
 
   control:
     command: yarn run start
