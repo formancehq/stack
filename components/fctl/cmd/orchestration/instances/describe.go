@@ -183,7 +183,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 	switch {
 	case stageSend.Amount != nil && stageSend.Source != nil && stageSend.Destination != nil:
 		printHistoryBaseInfo(cmd.OutOrStdout(), "send", i, history)
-		cyanWriter.Printfln("Send %d %s from %s to %s", stageSend.Amount.Amount,
+		cyanWriter.Printfln("Send %v %s from %s to %s", stageSend.Amount.Amount,
 			stageSend.Amount.Asset, stageSourceName(stageSend.Source),
 			stageDestinationName(stageSend.Destination))
 		fctl.Println()
@@ -207,13 +207,13 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 		for _, historyStage := range stageResponse.GetWorkflowInstanceHistoryStageResponse.Data {
 			switch {
 			case historyStage.Input.StripeTransfer != nil:
-				listItems = append(listItems, historyItemTitle("Send %d %s to Stripe connected account: %s",
+				listItems = append(listItems, historyItemTitle("Send %v %s to Stripe connected account: %s",
 					*historyStage.Input.StripeTransfer.Amount,
 					*historyStage.Input.StripeTransfer.Asset,
 					*historyStage.Input.StripeTransfer.Destination,
 				))
 			case historyStage.Input.CreateTransaction != nil:
-				listItems = append(listItems, historyItemTitle("Send %d %s from account %s to account %s (ledger %s)",
+				listItems = append(listItems, historyItemTitle("Send %v %s from account %s to account %s (ledger %s)",
 					historyStage.Input.CreateTransaction.Data.Postings[0].Amount,
 					historyStage.Input.CreateTransaction.Data.Postings[0].Asset,
 					historyStage.Input.CreateTransaction.Data.Postings[0].Source,
@@ -232,7 +232,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 			case historyStage.Input.ConfirmHold != nil:
 				listItems = append(listItems, historyItemTitle("Confirm debit hold %s", historyStage.Input.ConfirmHold.ID))
 			case historyStage.Input.CreditWallet != nil:
-				listItems = append(listItems, historyItemTitle("Credit wallet %s (balance: %s) of %d %s from %s",
+				listItems = append(listItems, historyItemTitle("Credit wallet %s (balance: %s) of %v %s from %s",
 					*historyStage.Input.CreditWallet.ID,
 					*historyStage.Input.CreditWallet.Data.Balance,
 					historyStage.Input.CreditWallet.Data.Amount.Amount,
@@ -250,7 +250,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 					destination = subjectName(*historyStage.Input.DebitWallet.Data.Destination)
 				}
 
-				listItems = append(listItems, historyItemTitle("Debit wallet %s (balance: %s) of %d %s to %s",
+				listItems = append(listItems, historyItemTitle("Debit wallet %s (balance: %s) of %v %s to %s",
 					*historyStage.Input.DebitWallet.ID,
 					historyStage.Input.DebitWallet.Data.Balances[0],
 					historyStage.Input.DebitWallet.Data.Amount.Amount,
