@@ -10,5 +10,7 @@ tasks:
   release:
     command: 'task release'
     platform: 'system'
+    options:
+      runInCI: false
     inputs:
       - '**'
