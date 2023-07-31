@@ -31,9 +31,9 @@ func monitoringTracesEnvVars(traces *stackv1beta3.TracesSpec, prefix string) Con
 	return ContainerEnv{}
 }
 
-func monitoringMetricsEnvVars(traces *stackv1beta3.MetricsSpec, prefix string) ContainerEnv {
-	if traces.Otlp != nil {
-		return monitoringOTLPEnvVars(traces.Otlp, prefix, monitoringTypeMetrics)
+func monitoringMetricsEnvVars(metrics *stackv1beta3.MetricsSpec, prefix string) ContainerEnv {
+	if metrics.Otlp != nil {
+		return monitoringOTLPEnvVars(metrics.Otlp, prefix, monitoringTypeMetrics)
 	}
 	return ContainerEnv{}
 }
