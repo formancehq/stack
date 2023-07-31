@@ -14,10 +14,12 @@ import (
 const (
 	monopodLabel = "formance.com/monopod"
 	stackLabel   = "stack"
+	productLabel = "app.kubernetes.io/name"
 )
 
 type pod struct {
 	name                 string
+	moduleName           string
 	volumes              []corev1.Volume
 	initContainers       []corev1.Container
 	containers           []corev1.Container
@@ -49,7 +51,8 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 					}
 					return "false"
 				}(),
-				stackLabel: "true",
+				stackLabel:   "true",
+				productLabel: pod.moduleName,
 			}
 			t.Spec = appsv1.DeploymentSpec{
 				Selector: &metav1.LabelSelector{

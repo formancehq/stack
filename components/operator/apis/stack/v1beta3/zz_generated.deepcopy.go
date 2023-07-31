@@ -872,7 +872,6 @@ func (in *StackServicesSpec) DeepCopyInto(out *StackServicesSpec) {
 	out.Ledger = in.Ledger
 	out.Orchestration = in.Orchestration
 	out.Payments = in.Payments
-	out.Search = in.Search
 	out.Wallets = in.Wallets
 	out.Webhooks = in.Webhooks
 }

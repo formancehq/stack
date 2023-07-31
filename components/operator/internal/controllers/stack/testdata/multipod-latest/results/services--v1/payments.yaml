@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: multipod-latest
 spec:
-    clusterIP: 10.0.0.38
+    clusterIP: 10.0.0.220
     clusterIPs:
-        - 10.0.0.38
+        - 10.0.0.220
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

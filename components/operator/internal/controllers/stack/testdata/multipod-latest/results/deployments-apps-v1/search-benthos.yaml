@@ -5,6 +5,7 @@ metadata:
         reloader.stakater.com/auto: "true"
     generation: 1
     labels:
+        app.kubernetes.io/name: search
         formance.com/monopod: "false"
         stack: "true"
     name: search-benthos
@@ -140,8 +141,8 @@ spec:
                   name: templates
 status:
     conditions:
-        - lastTransitionTime: "2023-07-28T10:14:02Z"
-          lastUpdateTime: "2023-07-28T10:14:02Z"
+        - lastTransitionTime: "2023-07-31T13:43:50Z"
+          lastUpdateTime: "2023-07-31T13:43:50Z"
           status: "True"
           type: Available
     observedGeneration: 1

@@ -5,6 +5,7 @@ metadata:
         reloader.stakater.com/auto: "true"
     generation: 1
     labels:
+        app.kubernetes.io/name: auth
         formance.com/monopod: "false"
         stack: "true"
     name: auth
@@ -125,8 +126,8 @@ spec:
                   name: config
 status:
     conditions:
-        - lastTransitionTime: "2023-07-28T10:14:01Z"
-          lastUpdateTime: "2023-07-28T10:14:01Z"
+        - lastTransitionTime: "2023-07-31T13:43:49Z"
+          lastUpdateTime: "2023-07-31T13:43:49Z"
           status: "True"
           type: Available
     observedGeneration: 1

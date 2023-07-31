@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app.kubernetes.io/service-name: control
+    name: control
+    namespace: multipod-disabled-one-service
+spec:
+    clusterIP: 10.0.0.244
+    clusterIPs:
+        - 10.0.0.244
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 3000
+          protocol: TCP
+          targetPort: 3000
+    selector:
+        app.kubernetes.io/name: control
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

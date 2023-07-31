@@ -103,7 +103,6 @@ type StackServicesSpec struct {
 	Ledger        StackServicePropertiesSpec `json:"ledger,omitempty"`
 	Orchestration StackServicePropertiesSpec `json:"orchestration,omitempty"`
 	Payments      StackServicePropertiesSpec `json:"payments,omitempty"`
-	Search        StackServicePropertiesSpec `json:"search,omitempty"`
 	Wallets       StackServicePropertiesSpec `json:"wallets,omitempty"`
 	Webhooks      StackServicePropertiesSpec `json:"webhooks,omitempty"`
 }

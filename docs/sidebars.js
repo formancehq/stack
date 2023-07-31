@@ -432,6 +432,37 @@ const sidebars = {
               ],
             }
           ],
+        },
+        {
+          label: 'Operator',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'operator/index',
+              label: 'Introduction',
+            },
+            {
+              type: 'category',
+              label: 'Configuration',
+              items: [
+                {
+                    type: 'doc',
+                    id: 'operator/configuration/debug',
+                },
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/disable-service',
+                },
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/disable-stack',
+                },
+              ],
+            },
+          ],
         }
       ]
     },

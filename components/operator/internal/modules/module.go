@@ -52,8 +52,18 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	allServices := make(map[string]servicesWithContext)
 	moduleNames := make([]string, 0)
 	// When Service in Stack is Disabled, we want to remove the deployment
+	// TODO: It's possible to remove more than one deployment or another resource
 	for moduleName := range modules {
 		if ctx.Stack.Spec.Services.IsDisabled(moduleName) {
+			if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
+				client.InNamespace(ctx.Stack.Name),
+				client.MatchingLabels{
+					"app.kubernetes.io/name": moduleName,
+					"stack":                  "true",
+				},
+			); err != nil {
+				return false, err
+			}
 			continue
 		}
 		moduleNames = append(moduleNames, moduleName)

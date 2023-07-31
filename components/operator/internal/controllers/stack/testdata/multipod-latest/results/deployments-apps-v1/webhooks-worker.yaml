@@ -5,6 +5,7 @@ metadata:
         reloader.stakater.com/auto: "true"
     generation: 1
     labels:
+        app.kubernetes.io/name: webhooks
         formance.com/monopod: "false"
         stack: "true"
     name: webhooks-worker
@@ -98,8 +99,8 @@ spec:
             terminationGracePeriodSeconds: 30
 status:
     conditions:
-        - lastTransitionTime: "2023-07-28T10:14:02Z"
-          lastUpdateTime: "2023-07-28T10:14:02Z"
+        - lastTransitionTime: "2023-07-31T13:43:51Z"
+          lastUpdateTime: "2023-07-31T13:43:51Z"
           status: "True"
           type: Available
     observedGeneration: 1

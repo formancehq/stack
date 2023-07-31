@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: monopod-ledgerv1
 spec:
-    clusterIP: 10.0.0.57
+    clusterIP: 10.0.0.114
     clusterIPs:
-        - 10.0.0.57
+        - 10.0.0.114
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
