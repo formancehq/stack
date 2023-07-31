@@ -528,9 +528,16 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 	}
 
 	if ctx.Configuration.Spec.Monitoring != nil {
-		env = env.Append(
-			MonitoringEnvVarsWithPrefix(*ctx.Configuration.Spec.Monitoring, service.EnvPrefix)...,
-		)
+		if ctx.Configuration.Spec.Monitoring.Traces != nil {
+			env = env.Append(
+				MonitoringTracesEnvVars(ctx.Configuration.Spec.Monitoring.Traces, service.EnvPrefix)...,
+			)
+		}
+		if ctx.Configuration.Spec.Monitoring.Metrics != nil {
+			env = env.Append(
+				MonitoringMetricsEnvVars(ctx.Configuration.Spec.Monitoring.Metrics, service.EnvPrefix)...,
+			)
+		}
 	}
 
 	if !init {
