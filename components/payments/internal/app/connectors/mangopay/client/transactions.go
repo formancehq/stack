@@ -14,16 +14,16 @@ type Payment struct {
 	AuthorId       string `json:"AuthorId"`
 	CreditedUserId string `json:"CreditedUserId"`
 	DebitedFunds   struct {
-		Currency string `json:"Currency"`
-		Amount   int64  `json:"Amount"`
+		Currency string      `json:"Currency"`
+		Amount   json.Number `json:"Amount"`
 	} `json:"DebitedFunds"`
 	CreditedFunds struct {
-		Currency string `json:"Currency"`
-		Amount   int64  `json:"Amount"`
+		Currency string      `json:"Currency"`
+		Amount   json.Number `json:"Amount"`
 	} `json:"CreditedFunds"`
 	Fees struct {
-		Currency string `json:"Currency"`
-		Amount   int64  `json:"Amount"`
+		Currency string      `json:"Currency"`
+		Amount   json.Number `json:"Amount"`
 	} `json:"Fees"`
 	Status           string `json:"Status"`
 	ResultCode       string `json:"ResultCode"`

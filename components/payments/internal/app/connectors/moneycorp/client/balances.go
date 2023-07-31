@@ -14,12 +14,12 @@ type balancesResponse struct {
 type Balance struct {
 	ID         string `json:"id"`
 	Attributes struct {
-		CurrencyCode     string  `json:"currencyCode"`
-		OverallBalance   float64 `json:"overallBalance"`
-		AvailableBalance float64 `json:"availableBalance"`
-		ClearedBalance   float64 `json:"clearedBalance"`
-		ReservedBalance  float64 `json:"reservedBalance"`
-		UnclearedBalance float64 `json:"unclearedBalance"`
+		CurrencyCode     string      `json:"currencyCode"`
+		OverallBalance   json.Number `json:"overallBalance"`
+		AvailableBalance json.Number `json:"availableBalance"`
+		ClearedBalance   json.Number `json:"clearedBalance"`
+		ReservedBalance  json.Number `json:"reservedBalance"`
+		UnclearedBalance json.Number `json:"unclearedBalance"`
 	} `json:"attributes"`
 }
 

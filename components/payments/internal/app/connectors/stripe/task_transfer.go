@@ -29,7 +29,7 @@ func TransferTask(config Config, transferID uuid.UUID) func(ctx context.Context,
 			Params: stripe.Params{
 				Context: ctx,
 			},
-			Amount:      stripe.Int64(transferToExecute.Amount),
+			Amount:      stripe.Int64(transferToExecute.Amount.Int64()),
 			Currency:    stripe.String(transferToExecute.Currency),
 			Destination: stripe.String(transferToExecute.Destination),
 		}

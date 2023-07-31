@@ -14,20 +14,20 @@ type Balance struct {
 	Type     string `json:"type"`
 	Name     string `json:"name"`
 	Amount   struct {
-		Value    float64 `json:"value"`
-		Currency string  `json:"currency"`
+		Value    json.Number `json:"value"`
+		Currency string      `json:"currency"`
 	} `json:"amount"`
 	ReservedAmount struct {
-		Value    float64 `json:"value"`
-		Currency string  `json:"currency"`
+		Value    json.Number `json:"value"`
+		Currency string      `json:"currency"`
 	} `json:"reservedAmount"`
 	CashAmount struct {
-		Value    float64 `json:"value"`
-		Currency string  `json:"currency"`
+		Value    json.Number `json:"value"`
+		Currency string      `json:"currency"`
 	} `json:"cashAmount"`
 	TotalWorth struct {
-		Value    float64 `json:"value"`
-		Currency string  `json:"currency"`
+		Value    json.Number `json:"value"`
+		Currency string      `json:"currency"`
 	} `json:"totalWorth"`
 	CreationTime     time.Time `json:"creationTime"`
 	ModificationTime time.Time `json:"modificationTime"`

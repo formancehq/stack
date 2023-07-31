@@ -422,8 +422,10 @@ func registerMigrations(migrator *migrations.Migrator) {
 						PRIMARY KEY (account_id, created_at, currency)
 					);
 
+					DROP INDEX IF EXISTS accounts.idx_created_at_account_id_currency;
 					CREATE INDEX idx_created_at_account_id_currency ON accounts.balances(account_id, last_updated_at desc, currency);
 
+					ALTER TABLE accounts.balances DROP CONSTRAINT IF EXISTS balances_account;
 					ALTER TABLE accounts.balances ADD CONSTRAINT balances_account
 						FOREIGN KEY (account_id)
 						REFERENCES accounts.account (id)
@@ -431,6 +433,20 @@ func registerMigrations(migrator *migrations.Migrator) {
 						NOT DEFERRABLE
 						INITIALLY IMMEDIATE
 					;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE payments.adjustment ALTER COLUMN amount TYPE numeric;
+					ALTER TABLE payments.payment ALTER COLUMN amount TYPE numeric;
+					ALTER TABLE payments.transfers ALTER COLUMN amount TYPE numeric;
 				`)
 				if err != nil {
 					return err

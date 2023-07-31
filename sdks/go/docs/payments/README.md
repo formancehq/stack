@@ -34,6 +34,7 @@ import(
 	"log"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"math/big"
 )
 
 func main() {
@@ -45,7 +46,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.ConnectorsStripeTransfer(ctx, shared.StripeTransferRequest{
-        Amount: formance.Int64(100),
+        Amount: big.NewInt(100),
         Asset: formance.String("USD"),
         Destination: formance.String("acct_1Gqj58KZcSIg2N2q"),
         Metadata: map[string]interface{}{
@@ -79,6 +80,7 @@ import(
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"math/big"
 )
 
 func main() {
@@ -91,7 +93,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.ConnectorsTransfer(ctx, operations.ConnectorsTransferRequest{
         TransferRequest: shared.TransferRequest{
-            Amount: 100,
+            Amount: big.NewInt(100),
             Asset: "USD",
             Destination: "acct_1Gqj58KZcSIg2N2q",
             Source: formance.String("acct_1Gqj58KZcSIg2N2q"),

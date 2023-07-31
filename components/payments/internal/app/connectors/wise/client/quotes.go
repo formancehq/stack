@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/big"
 
 	"github.com/google/uuid"
 )
@@ -13,7 +14,7 @@ type Quote struct {
 	ID uuid.UUID `json:"id"`
 }
 
-func (w *Client) CreateQuote(profileID uint64, currency string, amount int64) (Quote, error) {
+func (w *Client) CreateQuote(profileID uint64, currency string, amount *big.Int) (Quote, error) {
 	var response Quote
 
 	req, err := json.Marshal(map[string]interface{}{

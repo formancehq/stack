@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"context"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/currency"
@@ -31,7 +32,7 @@ func BalancesTask(config Config, account string, client *DefaultClient) func(ctx
 					Provider:  models.ConnectorProviderStripe,
 				},
 				Currency:      currency.FormatAsset(string(balance.Currency)).String(),
-				Balance:       balance.Value,
+				Balance:       big.NewInt(balance.Value),
 				CreatedAt:     now,
 				LastUpdatedAt: now,
 			})

@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/mangopay/client"
@@ -68,13 +70,19 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 					RawData: buf,
 				})
 
+				var amount big.Int
+				_, ok := amount.SetString(wallet.Balance.Amount.String(), 10)
+				if !ok {
+					return fmt.Errorf("failed to parse amount: %s", wallet.Balance.Amount.String())
+				}
+
 				balanceBatch = append(balanceBatch, &models.Balance{
 					AccountID: models.AccountID{
 						Reference: wallet.ID,
 						Provider:  models.ConnectorProviderMangopay,
 					},
 					Currency:      wallet.Balance.Currency,
-					Balance:       wallet.Balance.Amount,
+					Balance:       &amount,
 					CreatedAt:     now,
 					LastUpdatedAt: now,
 				})

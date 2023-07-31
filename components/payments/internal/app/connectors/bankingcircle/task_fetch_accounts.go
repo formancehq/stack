@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle/client"
@@ -92,6 +93,15 @@ func ingestAccountsBatch(
 		})
 
 		for _, balance := range account.Balances {
+			var amount big.Float
+			_, ok := amount.SetString(balance.IntraDayAmount.String())
+			if !ok {
+				return fmt.Errorf("failed to parse amount %s", balance.IntraDayAmount)
+			}
+
+			var amountInt big.Int
+			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+
 			balanceBatch = append(balanceBatch, &models.Balance{
 				AccountID: models.AccountID{
 					Reference: account.AccountID,
@@ -101,7 +111,7 @@ func ingestAccountsBatch(
 				// TODO(polo): do a complete pass on all connectors to
 				// normalize the currencies
 				Currency:      balance.Currency + "/2",
-				Balance:       int64(balance.IntraDayAmount * 100),
+				Balance:       &amountInt,
 				CreatedAt:     now,
 				LastUpdatedAt: now,
 			})

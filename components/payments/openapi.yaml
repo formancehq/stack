@@ -609,7 +609,7 @@ components:
                 type: string
               amount:
                 type: integer
-                format: int64
+                format: bigint
                 minimum: 0
               asset:
                 type: string
@@ -860,7 +860,7 @@ components:
           $ref: '#/components/schemas/PaymentStatus'
         initialAmount:
           type: integer
-          format: int64
+          format: bigint
           minimum: 0
           example: 100
         scheme:
@@ -912,7 +912,7 @@ components:
             $ref: '#/components/schemas/PaymentStatus'
           amount:
             type: integer
-            format: int64
+            format: bigint
             minimum: 0
             example: 100
           date:
@@ -976,7 +976,7 @@ components:
           type: string
         balance:
           type: integer
-          format: int64
+          format: bigint
     TaskBase:
       type: object
       required:
@@ -1142,7 +1142,7 @@ components:
       properties:
         amount:
           type: integer
-          format: int64
+          format: bigint
           minimum: 0
           example: 100
         asset:
@@ -1159,7 +1159,7 @@ components:
       properties:
         amount:
           type: integer
-          format: int64
+          format: bigint
           minimum: 0
           example: 100
         asset:

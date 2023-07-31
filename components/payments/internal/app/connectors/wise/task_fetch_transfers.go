@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 
 	"github.com/formancehq/payments/internal/app/connectors/wise/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
@@ -46,6 +47,15 @@ func taskFetchTransfers(logger logging.Logger, c *client.Client, profileID uint6
 				return fmt.Errorf("failed to marshal transfer: %w", err)
 			}
 
+			var amount big.Float
+			_, ok := amount.SetString(transfer.TargetValue.String())
+			if !ok {
+				return fmt.Errorf("failed to parse amount %s", transfer.TargetValue.String())
+			}
+
+			var amountInt big.Int
+			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
 					ID: models.PaymentID{
@@ -60,7 +70,7 @@ func taskFetchTransfers(logger logging.Logger, c *client.Client, profileID uint6
 					Type:      models.PaymentTypeTransfer,
 					Status:    matchTransferStatus(transfer.Status),
 					Scheme:    models.PaymentSchemeOther,
-					Amount:    int64(transfer.TargetValue * 100),
+					Amount:    &amountInt,
 					Asset:     models.PaymentAsset(fmt.Sprintf("%s/2", transfer.TargetCurrency)),
 					RawData:   rawData,
 				},

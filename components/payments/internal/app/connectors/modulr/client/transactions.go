@@ -10,7 +10,7 @@ import (
 type Transaction struct {
 	ID              string      `json:"id"`
 	Type            string      `json:"type"`
-	Amount          float64     `json:"amount"`
+	Amount          json.Number `json:"amount"`
 	Credit          bool        `json:"credit"`
 	SourceID        string      `json:"sourceId"`
 	Description     string      `json:"description"`

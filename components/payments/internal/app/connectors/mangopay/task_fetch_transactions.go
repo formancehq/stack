@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/currency"
@@ -54,6 +55,12 @@ func ingestBatch(
 
 		paymentType := matchPaymentType(payment.Type)
 
+		var amount big.Int
+		_, ok := amount.SetString(payment.DebitedFunds.Amount.String(), 10)
+		if !ok {
+			return fmt.Errorf("failed to parse amount %s", payment.DebitedFunds.Amount.String())
+		}
+
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
 				ID: models.PaymentID{
@@ -65,7 +72,7 @@ func ingestBatch(
 				},
 				CreatedAt: time.Unix(payment.CreationDate, 0),
 				Reference: payment.Id,
-				Amount:    payment.DebitedFunds.Amount,
+				Amount:    &amount,
 				Type:      paymentType,
 				Status:    matchPaymentStatus(payment.Status),
 				Scheme:    models.PaymentSchemeOther,

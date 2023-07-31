@@ -1,6 +1,7 @@
 package models
 
 import (
+	"math/big"
 	"time"
 
 	"github.com/uptrace/bun"
@@ -17,7 +18,7 @@ type Transfer struct {
 	CreatedAt   time.Time `bun:",nullzero"`
 
 	Reference   *string
-	Amount      int64
+	Amount      *big.Int `bun:"type:numeric"`
 	Status      TransferStatus
 	Currency    string
 	Source      string

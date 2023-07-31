@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/formancehq/payments/internal/app/models"
@@ -39,6 +40,15 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 
 			paymentType := matchTransactionType(transaction.Type)
 
+			var amount big.Float
+			_, ok := amount.SetString(transaction.Amount.String())
+			if !ok {
+				return fmt.Errorf("failed to parse amount %s", transaction.Amount.String())
+			}
+
+			var amountInt big.Int
+			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
 					ID: models.PaymentID{
@@ -52,7 +62,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 					Type:      paymentType,
 					Status:    models.PaymentStatusSucceeded,
 					Scheme:    models.PaymentSchemeOther,
-					Amount:    int64(transaction.Amount * 100),
+					Amount:    &amountInt,
 					Asset:     models.PaymentAsset(fmt.Sprintf("%s/2", transaction.Account.Currency)),
 					RawData:   rawData,
 				},

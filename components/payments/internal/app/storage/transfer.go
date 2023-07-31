@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"math/big"
 
 	"github.com/pkg/errors"
 
@@ -15,7 +16,7 @@ import (
 )
 
 func (s *Storage) CreateNewTransfer(ctx context.Context, name models.ConnectorProvider,
-	source, destination, currency string, amount int64,
+	source, destination, currency string, amount *big.Int,
 ) (models.Transfer, error) {
 	connector, err := s.GetConnector(ctx, name)
 	if err != nil {

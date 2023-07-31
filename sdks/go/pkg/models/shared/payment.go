@@ -5,6 +5,7 @@ package shared
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"time"
 )
 
@@ -122,7 +123,7 @@ type Payment struct {
 	CreatedAt            time.Time              `json:"createdAt"`
 	DestinationAccountID string                 `json:"destinationAccountID"`
 	ID                   string                 `json:"id"`
-	InitialAmount        int64                  `json:"initialAmount"`
+	InitialAmount        *big.Int               `json:"initialAmount"`
 	Metadata             PaymentMetadata        `json:"metadata"`
 	Provider             Connector              `json:"provider"`
 	Raw                  map[string]interface{} `json:"raw"`

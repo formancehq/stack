@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"encoding/json"
+	"math/big"
 
 	"github.com/formancehq/payments/internal/app/models"
 )
@@ -88,7 +89,7 @@ func (i *InMemoryConnectorStore) ReadConfig(ctx context.Context, name models.Con
 	return nil
 }
 
-func (i *InMemoryConnectorStore) CreateNewTransfer(ctx context.Context, name models.ConnectorProvider, source, destination, currency string, amount int64) (models.Transfer, error) {
+func (i *InMemoryConnectorStore) CreateNewTransfer(ctx context.Context, name models.ConnectorProvider, source, destination, currency string, amount *big.Int) (models.Transfer, error) {
 	return models.Transfer{}, nil
 }
 

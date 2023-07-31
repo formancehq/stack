@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"math/rand"
 	"os"
 	"time"
@@ -60,7 +61,7 @@ func generateFile(config Config, fs fs) error {
 	paymentObj.Reference = key
 	paymentObj.Type = generateRandomType()
 	paymentObj.Status = generateRandomStatus()
-	paymentObj.Amount = int64(generateRandomNumber())
+	paymentObj.Amount = big.NewInt(int64(generateRandomNumber()))
 	paymentObj.Asset = asset
 	paymentObj.Scheme = generateRandomScheme()
 
