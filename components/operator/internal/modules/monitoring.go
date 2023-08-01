@@ -14,24 +14,14 @@ const (
 	monitoringTypeMetrics monitoringType = "METRICS"
 )
 
-func MonitoringEnvVarsWithPrefix(m stackv1beta3.MonitoringSpec, prefix string) ContainerEnv {
-	if m.Traces != nil {
-		return monitoringTracesEnvVars(m.Traces, prefix)
-	}
-	if m.Metrics != nil {
-		return monitoringMetricsEnvVars(m.Metrics, prefix)
-	}
-	return ContainerEnv{}
-}
-
-func monitoringTracesEnvVars(traces *stackv1beta3.TracesSpec, prefix string) ContainerEnv {
+func MonitoringTracesEnvVars(traces *stackv1beta3.TracesSpec, prefix string) ContainerEnv {
 	if traces.Otlp != nil {
 		return monitoringOTLPEnvVars(traces.Otlp, prefix, monitoringTypeTraces)
 	}
 	return ContainerEnv{}
 }
 
-func monitoringMetricsEnvVars(metrics *stackv1beta3.MetricsSpec, prefix string) ContainerEnv {
+func MonitoringMetricsEnvVars(metrics *stackv1beta3.MetricsSpec, prefix string) ContainerEnv {
 	if metrics.Otlp != nil {
 		return monitoringOTLPEnvVars(metrics.Otlp, prefix, monitoringTypeMetrics)
 	}
