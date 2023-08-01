@@ -8,20 +8,18 @@ import (
 	"runtime/debug"
 	"strconv"
 
+	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
+	"github.com/formancehq/payments/internal/app/connectors/currencycloud"
+	"github.com/formancehq/payments/internal/app/connectors/dummypay"
+	"github.com/formancehq/payments/internal/app/connectors/mangopay"
+	"github.com/formancehq/payments/internal/app/connectors/modulr"
+	"github.com/formancehq/payments/internal/app/connectors/moneycorp"
+	"github.com/formancehq/payments/internal/app/connectors/stripe"
+	"github.com/formancehq/payments/internal/app/connectors/wise"
+	"github.com/formancehq/payments/internal/app/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-
-	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
-	"github.com/formancehq/payments/internal/app/connectors/currencycloud"
-	"github.com/formancehq/payments/internal/app/connectors/mangopay"
-	"github.com/formancehq/payments/internal/app/connectors/moneycorp"
-	"github.com/formancehq/payments/internal/app/storage"
-
-	"github.com/formancehq/payments/internal/app/connectors/dummypay"
-	"github.com/formancehq/payments/internal/app/connectors/modulr"
-	"github.com/formancehq/payments/internal/app/connectors/stripe"
-	"github.com/formancehq/payments/internal/app/connectors/wise"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -99,15 +97,7 @@ func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 }
 
 func handleNotFoundError(w http.ResponseWriter, r *http.Request, err error) {
-	w.WriteHeader(http.StatusNotFound)
-	logging.FromContext(r.Context()).Error(err)
-	err = json.NewEncoder(w).Encode(api.ErrorResponse{
-		ErrorCode:    "NOT_FOUND",
-		ErrorMessage: err.Error(),
-	})
-	if err != nil {
-		panic(err)
-	}
+	api.NotFound(w)
 }
 
 func handleValidationError(w http.ResponseWriter, r *http.Request, err error) {
