@@ -20,6 +20,14 @@ public class AccountBalance {
         return this;
     }
     
+    @JsonProperty("asset")
+    public String asset;
+
+    public AccountBalance withAsset(String asset) {
+        this.asset = asset;
+        return this;
+    }
+    
     @JsonProperty("balance")
     public Long balance;
 
@@ -56,8 +64,9 @@ public class AccountBalance {
         return this;
     }
     
-    public AccountBalance(@JsonProperty("accountId") String accountId, @JsonProperty("balance") Long balance, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("currency") String currency, @JsonProperty("lastUpdatedAt") OffsetDateTime lastUpdatedAt) {
+    public AccountBalance(@JsonProperty("accountId") String accountId, @JsonProperty("asset") String asset, @JsonProperty("balance") Long balance, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("currency") String currency, @JsonProperty("lastUpdatedAt") OffsetDateTime lastUpdatedAt) {
         this.accountId = accountId;
+        this.asset = asset;
         this.balance = balance;
         this.createdAt = createdAt;
         this.currency = currency;

@@ -14,7 +14,7 @@ type GetAccountBalancesRequest struct {
 	// Filter balances by currency.
 	// If not specified, all account's balances will be returned.
 	//
-	Currency *string `queryParam:"style=form,explode=true,name=currency"`
+	Asset *string `queryParam:"style=form,explode=true,name=asset"`
 	// Parameter used in pagination requests. Maximum page size is set to 15.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.

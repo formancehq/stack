@@ -122,7 +122,7 @@ $sdk = SDK::builder()
 try {
     $request = new GetAccountBalancesRequest();
     $request->accountID = 'provident';
-    $request->currency = 'necessitatibus';
+    $request->asset = 'necessitatibus';
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
     $request->from = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-09-21T14:06:09.271Z');
     $request->limit = 223081;

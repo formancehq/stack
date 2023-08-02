@@ -85,7 +85,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: currency
+        - name: asset
           in: query
           description: |
             Filter balances by currency.
@@ -936,6 +936,7 @@ components:
         - provider
         - reference
         - defaultCurrency
+        - defaultAsset
         - accountName
         - raw
       properties:
@@ -950,6 +951,9 @@ components:
           type: string
         defaultCurrency:
           type: string
+          deprecated: true
+        defaultAsset:
+          type: string
         accountName:
           type: string
         raw:
@@ -962,6 +966,7 @@ components:
         - createdAt
         - lastUpdatedAt
         - currency
+        - asset
         - balance
       properties:
         accountId:
@@ -973,6 +978,9 @@ components:
           type: string
           format: date-time
         currency:
+          type: string
+          deprecated: true
+        asset:
           type: string
         balance:
           type: integer

@@ -13,7 +13,7 @@ class GetAccountBalancesRequest:
     
     account_id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'accountID', 'style': 'simple', 'explode': False }})
     r"""The account ID."""
-    currency: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'currency', 'style': 'form', 'explode': True }})
+    asset: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'asset', 'style': 'form', 'explode': True }})
     r"""Filter balances by currency.
     If not specified, all account's balances will be returned.
     """

@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230728"
+    "version": "v1.0.20230802"
   },
   "servers": [
     {
@@ -1937,7 +1937,7 @@
             }
           },
           {
-            "name": "currency",
+            "name": "asset",
             "in": "query",
             "description": "Filter balances by currency.\nIf not specified, all account's balances will be returned.\n",
             "required": false,
@@ -5607,6 +5607,7 @@
           "provider",
           "reference",
           "defaultCurrency",
+          "defaultAsset",
           "accountName",
           "raw"
         ],
@@ -5625,6 +5626,10 @@
             "type": "string"
           },
           "defaultCurrency": {
+            "type": "string",
+            "deprecated": true
+          },
+          "defaultAsset": {
             "type": "string"
           },
           "accountName": {
@@ -5643,6 +5648,7 @@
           "createdAt",
           "lastUpdatedAt",
           "currency",
+          "asset",
           "balance"
         ],
         "properties": {
@@ -5658,6 +5664,10 @@
             "format": "date-time"
           },
           "currency": {
+            "type": "string",
+            "deprecated": true
+          },
+          "asset": {
             "type": "string"
           },
           "balance": {

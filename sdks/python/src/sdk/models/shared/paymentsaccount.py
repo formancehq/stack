@@ -17,6 +17,7 @@ class PaymentsAccount:
     
     account_name: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('accountName') }})
     created_at: datetime = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('createdAt'), 'encoder': utils.datetimeisoformat(False), 'decoder': dateutil.parser.isoparse, 'mm_field': fields.DateTime(format='iso') }})
+    default_asset: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('defaultAsset') }})
     default_currency: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('defaultCurrency') }})
     id: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('id') }})
     provider: shared_connector.Connector = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('provider') }})

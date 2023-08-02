@@ -17,6 +17,10 @@ export class PaymentsAccount extends SpeakeasyBase {
   createdAt: Date;
 
   @SpeakeasyMetadata()
+  @Expose({ name: "defaultAsset" })
+  defaultAsset: string;
+
+  @SpeakeasyMetadata()
   @Expose({ name: "defaultCurrency" })
   defaultCurrency: string;
 
