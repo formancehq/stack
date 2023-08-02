@@ -51,7 +51,6 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 			var accountBatch ingestion.AccountBatch
 			var balanceBatch ingestion.BalanceBatch
 			var transactionTasks []models.TaskDescriptor
-			now := time.Now()
 			for _, wallet := range pagedWallets {
 				transactionTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 					Name:     "Fetch transactions from client by user and wallets",
@@ -91,6 +90,7 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 					return fmt.Errorf("failed to parse amount: %s", wallet.Balance.Amount.String())
 				}
 
+				now := time.Now()
 				balanceBatch = append(balanceBatch, &models.Balance{
 					AccountID: models.AccountID{
 						Reference: wallet.ID,

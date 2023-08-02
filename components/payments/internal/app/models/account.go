@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gibson042/canonicaljson-go"
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -16,6 +17,7 @@ type Account struct {
 	bun.BaseModel `bun:"accounts.account"`
 
 	ID              AccountID `bun:",pk,nullzero"`
+	ConnectorID     uuid.UUID `bun:",nullzero"`
 	CreatedAt       time.Time `bun:",nullzero"`
 	Reference       string
 	Provider        ConnectorProvider

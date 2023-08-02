@@ -93,7 +93,6 @@ func ingestAccountsBatch(
 
 	accountsBatch := ingestion.AccountBatch{}
 	balancesBatch := ingestion.BalanceBatch{}
-	now := time.Now()
 	for _, balance := range balances {
 		raw, err := json.Marshal(balance)
 		if err != nil {
@@ -124,6 +123,7 @@ func ingestAccountsBatch(
 		var amountInt big.Int
 		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
 
+		now := time.Now()
 		balancesBatch = append(balancesBatch, &models.Balance{
 			AccountID: models.AccountID{
 				Reference: fmt.Sprintf("%d", balance.ID),

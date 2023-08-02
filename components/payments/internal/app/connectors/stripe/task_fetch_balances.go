@@ -37,8 +37,8 @@ func BalancesTask(config Config, account string, client *DefaultClient) func(ctx
 		}
 
 		batch := ingestion.BalanceBatch{}
-		timestamp := time.Now()
 		for _, balance := range balances.Available {
+			timestamp := time.Now()
 			batch = append(batch, &models.Balance{
 				AccountID: models.AccountID{
 					Reference: account,
