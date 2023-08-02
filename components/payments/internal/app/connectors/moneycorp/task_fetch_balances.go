@@ -73,7 +73,7 @@ func ingestBalancesBatch(
 				Reference: accountID,
 				Provider:  models.ConnectorProviderMoneycorp,
 			},
-			Currency:      currency.FormatAsset(balance.Attributes.CurrencyCode).String(),
+			Asset:         currency.FormatAsset(balance.Attributes.CurrencyCode),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,

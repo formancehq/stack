@@ -85,7 +85,7 @@ func taskFetchTransfers(logger logging.Logger, c *client.Client, profileID uint6
 					Status:    matchTransferStatus(transfer.Status),
 					Scheme:    models.PaymentSchemeOther,
 					Amount:    &amountInt,
-					Asset:     models.PaymentAsset(fmt.Sprintf("%s/2", transfer.TargetCurrency)),
+					Asset:     models.Asset(fmt.Sprintf("%s/2", transfer.TargetCurrency)),
 					RawData:   rawData,
 				},
 			}

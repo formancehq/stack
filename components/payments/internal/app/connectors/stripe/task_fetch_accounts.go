@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/currency"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
@@ -116,12 +117,12 @@ func ingestAccountsBatch(
 				Reference: account.ID,
 				Provider:  models.ConnectorProviderStripe,
 			},
-			CreatedAt:       time.Unix(account.Created, 0),
-			Reference:       account.ID,
-			Provider:        models.ConnectorProviderStripe,
-			DefaultCurrency: string(account.DefaultCurrency),
-			Type:            models.AccountTypeInternal,
-			RawData:         raw,
+			CreatedAt:    time.Unix(account.Created, 0),
+			Reference:    account.ID,
+			Provider:     models.ConnectorProviderStripe,
+			DefaultAsset: currency.FormatAsset(string(account.DefaultCurrency)),
+			Type:         models.AccountTypeInternal,
+			RawData:      raw,
 		})
 	}
 

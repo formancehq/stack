@@ -101,13 +101,13 @@ func ingestAccountsBatch(
 				Reference: account.AccountID,
 				Provider:  models.ConnectorProviderBankingCircle,
 			},
-			CreatedAt:       openingDate,
-			Reference:       account.AccountID,
-			Provider:        models.ConnectorProviderBankingCircle,
-			DefaultCurrency: account.Currency,
-			AccountName:     account.AccountDescription,
-			Type:            models.AccountTypeInternal,
-			RawData:         raw,
+			CreatedAt:    openingDate,
+			Reference:    account.AccountID,
+			Provider:     models.ConnectorProviderBankingCircle,
+			DefaultAsset: models.Asset(account.Currency + "/2"),
+			AccountName:  account.AccountDescription,
+			Type:         models.AccountTypeInternal,
+			RawData:      raw,
 		})
 
 		for _, balance := range account.Balances {
@@ -129,7 +129,7 @@ func ingestAccountsBatch(
 				// Note(polo): same thing as payments
 				// TODO(polo): do a complete pass on all connectors to
 				// normalize the currencies
-				Currency:      balance.Currency + "/2",
+				Asset:         models.Asset(balance.Currency + "/2"),
 				Balance:       &amountInt,
 				CreatedAt:     now,
 				LastUpdatedAt: now,

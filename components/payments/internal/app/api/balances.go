@@ -24,7 +24,8 @@ type balancesResponse struct {
 	AccountID     string    `json:"accountId"`
 	CreatedAt     time.Time `json:"createdAt"`
 	LastUpdatedAt time.Time `json:"lastUpdatedAt"`
-	Currency      string    `json:"currency"`
+	Currency      string    `json:"currency"` // Deprecated: should be removed soon
+	Asset         string    `json:"asset"`
 	Balance       *big.Int  `json:"balance"`
 }
 
@@ -83,7 +84,7 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 
 		balanceQuery := storage.NewBalanceQuery(pagination).
 			WithAccountID(accountID).
-			WithCurrency(r.URL.Query().Get("currency"))
+			WithCurrency(r.URL.Query().Get("asset"))
 
 		var startTimeParsed, endTimeParsed time.Time
 		from, to := r.URL.Query().Get("from"), r.URL.Query().Get("to")
@@ -145,7 +146,8 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 			data[i] = &balancesResponse{
 				AccountID:     ret[i].AccountID.String(),
 				CreatedAt:     ret[i].CreatedAt,
-				Currency:      ret[i].Currency,
+				Currency:      ret[i].Asset.String(),
+				Asset:         ret[i].Asset.String(),
 				Balance:       ret[i].Balance,
 				LastUpdatedAt: ret[i].LastUpdatedAt,
 			}

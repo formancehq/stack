@@ -75,7 +75,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 					Status:    models.PaymentStatusSucceeded,
 					Scheme:    models.PaymentSchemeOther,
 					Amount:    &amountInt,
-					Asset:     models.PaymentAsset(fmt.Sprintf("%s/2", transaction.Account.Currency)),
+					Asset:     models.Asset(fmt.Sprintf("%s/2", transaction.Account.Currency)),
 					RawData:   rawData,
 				},
 			}

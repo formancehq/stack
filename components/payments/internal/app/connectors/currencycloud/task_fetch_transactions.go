@@ -93,7 +93,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 					Status:    matchTransactionStatus(transaction.Status),
 					Scheme:    models.PaymentSchemeOther,
 					Amount:    &amountInt,
-					Asset:     models.PaymentAsset(fmt.Sprintf("%s/2", transaction.Currency)),
+					Asset:     models.Asset(fmt.Sprintf("%s/2", transaction.Currency)),
 					RawData:   rawData,
 				},
 			}

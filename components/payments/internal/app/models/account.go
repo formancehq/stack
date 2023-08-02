@@ -16,14 +16,14 @@ import (
 type Account struct {
 	bun.BaseModel `bun:"accounts.account"`
 
-	ID              AccountID `bun:",pk,nullzero"`
-	ConnectorID     uuid.UUID `bun:",nullzero"`
-	CreatedAt       time.Time `bun:",nullzero"`
-	Reference       string
-	Provider        ConnectorProvider
-	DefaultCurrency string // Is optional and default to ''
-	AccountName     string // Is optional and default to ''
-	Type            AccountType
+	ID           AccountID `bun:",pk,nullzero"`
+	ConnectorID  uuid.UUID `bun:",nullzero"`
+	CreatedAt    time.Time `bun:",nullzero"`
+	Reference    string
+	Provider     ConnectorProvider
+	DefaultAsset Asset  `bun:"default_currency"` // Is optional and default to ''
+	AccountName  string // Is optional and default to ''
+	Type         AccountType
 
 	RawData json.RawMessage
 }

@@ -94,7 +94,7 @@ func ingestBatch(
 				Status:    matchPaymentStatus(paymentEl.Status),
 				Scheme:    models.PaymentSchemeOther,
 				Amount:    &amountInt,
-				Asset:     models.PaymentAsset(paymentEl.Transfer.Amount.Currency + "/2"),
+				Asset:     models.Asset(paymentEl.Transfer.Amount.Currency + "/2"),
 				RawData:   raw,
 			},
 		}

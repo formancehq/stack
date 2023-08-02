@@ -105,13 +105,12 @@ func ingestAccountsBatch(
 				Provider:  models.ConnectorProviderWise,
 			},
 			// Moneycorp does not send the opening date of the account
-			CreatedAt:       balance.CreationTime,
-			Reference:       fmt.Sprintf("%d", balance.ID),
-			Provider:        models.ConnectorProviderWise,
-			DefaultCurrency: balance.Currency,
-			AccountName:     balance.Name,
-			Type:            models.AccountTypeInternal,
-			RawData:         raw,
+			CreatedAt:    balance.CreationTime,
+			Reference:    fmt.Sprintf("%d", balance.ID),
+			Provider:     models.ConnectorProviderWise,
+			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)), AccountName: balance.Name,
+			Type:    models.AccountTypeInternal,
+			RawData: raw,
 		})
 
 		var amount big.Float
@@ -129,7 +128,7 @@ func ingestAccountsBatch(
 				Reference: fmt.Sprintf("%d", balance.ID),
 				Provider:  models.ConnectorProviderWise,
 			},
-			Currency:      models.PaymentAsset(fmt.Sprintf("%s/2", balance.Amount.Currency)).String(),
+			Asset:         models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,

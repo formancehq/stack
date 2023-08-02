@@ -16,9 +16,9 @@ func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance
 	}
 
 	type insertedBalance struct {
-		CreatedAt time.Time `bun:"created_at"`
-		AccountID string    `bun:"account_id"`
-		Currency  string    `bun:"currency"`
+		CreatedAt time.Time    `bun:"created_at"`
+		AccountID string       `bun:"account_id"`
+		Asset     models.Asset `bun:"currency"`
 	}
 	insertedBalances := make([]insertedBalance, 0)
 
@@ -59,7 +59,7 @@ func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance
 			found := false
 			for _, insertedBalance := range insertedBalances {
 				if balances[i].AccountID.String() == insertedBalance.AccountID &&
-					balances[i].Currency == insertedBalance.Currency {
+					balances[i].Asset == insertedBalance.Asset {
 					found = true
 					break
 				}
