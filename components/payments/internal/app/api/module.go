@@ -3,23 +3,23 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"runtime/debug"
 	"strconv"
 
+	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
+	"github.com/formancehq/payments/internal/app/connectors/currencycloud"
+	"github.com/formancehq/payments/internal/app/connectors/dummypay"
+	"github.com/formancehq/payments/internal/app/connectors/mangopay"
+	"github.com/formancehq/payments/internal/app/connectors/modulr"
+	"github.com/formancehq/payments/internal/app/connectors/moneycorp"
+	"github.com/formancehq/payments/internal/app/connectors/stripe"
+	"github.com/formancehq/payments/internal/app/connectors/wise"
+	"github.com/formancehq/payments/internal/app/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-
-	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
-	"github.com/formancehq/payments/internal/app/connectors/currencycloud"
-	"github.com/formancehq/payments/internal/app/connectors/mangopay"
-	"github.com/formancehq/payments/internal/app/connectors/moneycorp"
-
-	"github.com/formancehq/payments/internal/app/connectors/dummypay"
-	"github.com/formancehq/payments/internal/app/connectors/modulr"
-	"github.com/formancehq/payments/internal/app/connectors/stripe"
-	"github.com/formancehq/payments/internal/app/connectors/wise"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -75,6 +75,14 @@ func httpServeFunc(handler http.Handler) http.Handler {
 	})
 }
 
+func handleStorageErrors(w http.ResponseWriter, r *http.Request, err error) {
+	if errors.Is(err, storage.ErrNotFound) {
+		handleNotFoundError(w, r, err)
+	} else {
+		handleServerError(w, r, err)
+	}
+}
+
 func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 	logging.FromContext(r.Context()).Error(err)
@@ -86,6 +94,10 @@ func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func handleNotFoundError(w http.ResponseWriter, r *http.Request, err error) {
+	api.NotFound(w)
 }
 
 func handleValidationError(w http.ResponseWriter, r *http.Request, err error) {

@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"time"
 
@@ -49,7 +48,7 @@ func (s *Storage) ListAccounts(ctx context.Context, pagination Paginator) ([]*mo
 
 	err := query.Scan(ctx)
 	if err != nil {
-		return nil, PaginationDetails{}, fmt.Errorf("failed to list payments: %w", err)
+		return nil, PaginationDetails{}, e("failed to list payments", err)
 	}
 
 	var (
@@ -78,13 +77,13 @@ func (s *Storage) ListAccounts(ctx context.Context, pagination Paginator) ([]*mo
 
 		hasPrevious, err = pagination.hasPrevious(ctx, query, "account.created_at", firstReference)
 		if err != nil {
-			return nil, PaginationDetails{}, fmt.Errorf("failed to check if there is a previous page: %w", err)
+			return nil, PaginationDetails{}, e("failed to check if there is a previous page", err)
 		}
 	}
 
 	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
 	if err != nil {
-		return nil, PaginationDetails{}, fmt.Errorf("failed to get pagination details: %w", err)
+		return nil, PaginationDetails{}, e("failed to get pagination details", err)
 	}
 
 	return accounts, paginationDetails, nil
