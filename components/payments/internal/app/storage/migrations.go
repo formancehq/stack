@@ -455,5 +455,29 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				// In this migration, we have to delete the accounts table since
+				// we wanna reset the connector, but the connector_id was not
+				// added, hence the table will not be cleaned up when resetting.
+				_, err := tx.Exec(`
+				DELETE FROM accounts.account CASCADE;
+				ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS "connector_id" uuid;
+
+				ALTER TABLE accounts.account ADD CONSTRAINT accounts_connector
+				FOREIGN KEY (connector_id)
+				REFERENCES connectors.connector (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+			;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

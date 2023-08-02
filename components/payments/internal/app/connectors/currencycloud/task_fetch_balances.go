@@ -66,7 +66,6 @@ func ingestBalancesBatch(
 	balances []*client.Balance,
 ) error {
 	batch := ingestion.BalanceBatch{}
-	now := time.Now()
 	for _, balance := range balances {
 		var amount big.Float
 		_, ok := amount.SetString(balance.Amount)
@@ -77,6 +76,7 @@ func ingestBalancesBatch(
 		var amountInt big.Int
 		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
 
+		now := time.Now()
 		batch = append(batch, &models.Balance{
 			AccountID: models.AccountID{
 				Reference: balance.AccountID,
