@@ -165,7 +165,7 @@ func benthosService(ctx modules.ModuleContext) *modules.Service {
 				fs   embed.FS
 			}
 
-			for _, x := range []directory{
+			directories := []directory{
 				{
 					name: "templates",
 					fs:   benthos.Templates,
@@ -178,11 +178,15 @@ func benthosService(ctx modules.ModuleContext) *modules.Service {
 					name: "streams",
 					fs:   benthos.Streams,
 				},
-				{
+			}
+			if ctx.Configuration.Spec.Monitoring != nil {
+				directories = append(directories, directory{
 					name: "global",
 					fs:   benthosOperator.Global,
-				},
-			} {
+				})
+			}
+
+			for _, x := range directories {
 				data := make(map[string]string)
 				copyDir(x.fs, x.name, x.name, &data)
 				ret[x.name] = modules.Config{
@@ -208,17 +212,22 @@ func benthosService(ctx modules.ModuleContext) *modules.Service {
 				env = env.Append(modules.Env("BROKER", "nats"))
 			}
 
+			cmd := []string{
+				"/benthos",
+				"-r", resolveContext.GetConfig("resources").GetMountPath() + "/*.yaml",
+				"-t", resolveContext.GetConfig("templates").GetMountPath() + "/*.yaml",
+			}
+			if ctx.Configuration.Spec.Monitoring != nil {
+				cmd = append(cmd, "-c", resolveContext.GetConfig("global").GetMountPath()+"/config.yaml")
+			}
+			cmd = append(cmd,
+				"--log.level", "trace", "streams",
+				resolveContext.GetConfig("streams").GetMountPath()+"/*.yaml")
+
 			return modules.Container{
-				Env:   env,
-				Image: benthosImage,
-				Command: []string{
-					"/benthos",
-					"-r", resolveContext.GetConfig("resources").GetMountPath() + "/*.yaml",
-					"-t", resolveContext.GetConfig("templates").GetMountPath() + "/*.yaml",
-					"-c", resolveContext.GetConfig("global").GetMountPath() + "/config.yaml",
-					"--log.level", "trace", "streams",
-					resolveContext.GetConfig("streams").GetMountPath() + "/*.yaml",
-				},
+				Env:                  env,
+				Image:                benthosImage,
+				Command:              cmd,
 				DisableRollingUpdate: true,
 				Resources:            modules.ResourceSizeSmall(),
 			}

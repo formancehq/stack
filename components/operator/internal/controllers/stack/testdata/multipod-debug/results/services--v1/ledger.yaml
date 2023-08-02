@@ -6,9 +6,9 @@ metadata:
     name: ledger
     namespace: multipod-debug
 spec:
-    clusterIP: 10.0.0.243
+    clusterIP: 10.0.0.195
     clusterIPs:
-        - 10.0.0.243
+        - 10.0.0.195
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.85
+    clusterIP: 10.0.0.75
     clusterIPs:
-        - 10.0.0.85
+        - 10.0.0.75
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

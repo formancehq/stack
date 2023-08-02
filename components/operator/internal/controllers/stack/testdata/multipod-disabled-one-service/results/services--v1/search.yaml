@@ -6,9 +6,9 @@ metadata:
     name: search
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.116
+    clusterIP: 10.0.0.203
     clusterIPs:
-        - 10.0.0.116
+        - 10.0.0.203
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
