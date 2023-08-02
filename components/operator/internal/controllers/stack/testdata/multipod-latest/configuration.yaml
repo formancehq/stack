@@ -6,7 +6,8 @@ spec:
   broker:
     kafka:
       brokers:
-      - kafka:1234
+      - kafka1:1234
+      - kafka2:1234
   monitoring:
     traces:
       otlp:

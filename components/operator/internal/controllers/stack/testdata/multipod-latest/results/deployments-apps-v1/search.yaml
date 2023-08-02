@@ -67,7 +67,7 @@ spec:
                     - name: OPENSEARCH_INDEX
                       value: stacks
                     - name: KAFKA_ADDRESS
-                      value: kafka:1234
+                      value: kafka1:1234,kafka2:1234
                     - name: OPEN_SEARCH_SERVICE
                       value: elasticsearch:9200
                     - name: OPEN_SEARCH_SCHEME
@@ -106,8 +106,8 @@ spec:
             terminationGracePeriodSeconds: 30
 status:
     conditions:
-        - lastTransitionTime: "2023-07-31T13:43:50Z"
-          lastUpdateTime: "2023-07-31T13:43:50Z"
+        - lastTransitionTime: "2023-08-02T15:44:42Z"
+          lastUpdateTime: "2023-08-02T15:44:42Z"
           status: "True"
           type: Available
     observedGeneration: 1

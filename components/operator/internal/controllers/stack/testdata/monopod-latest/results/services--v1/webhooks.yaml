@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.43
+    clusterIP: 10.0.0.135
     clusterIPs:
-        - 10.0.0.43
+        - 10.0.0.135
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: monopod-search-before-v0-7-0
 spec:
-    clusterIP: 10.0.0.115
+    clusterIP: 10.0.0.151
     clusterIPs:
-        - 10.0.0.115
+        - 10.0.0.151
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
