@@ -6,9 +6,9 @@ metadata:
     name: orchestration
     namespace: monopod-ledgerv1
 spec:
-    clusterIP: 10.0.0.126
+    clusterIP: 10.0.0.121
     clusterIPs:
-        - 10.0.0.126
+        - 10.0.0.121
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

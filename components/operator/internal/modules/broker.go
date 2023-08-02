@@ -17,7 +17,7 @@ func BrokerEnvVarsWithPrefix(broker v1beta3.Broker, serviceName string) Containe
 		ret = ret.Append(
 			Env("BROKER", "kafka"),
 			Env("PUBLISHER_KAFKA_ENABLED", "true"),
-			Env("PUBLISHER_KAFKA_BROKER", strings.Join(broker.Kafka.Brokers, ",")),
+			Env("PUBLISHER_KAFKA_BROKER", strings.Join(broker.Kafka.Brokers, " ")),
 		)
 		if broker.Kafka.SASL != nil {
 			ret = ret.Append(

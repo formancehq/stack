@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: multipod-debug
 spec:
-    clusterIP: 10.0.0.71
+    clusterIP: 10.0.0.164
     clusterIPs:
-        - 10.0.0.71
+        - 10.0.0.164
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

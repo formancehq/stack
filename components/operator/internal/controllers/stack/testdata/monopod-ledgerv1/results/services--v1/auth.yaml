@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: monopod-ledgerv1
 spec:
-    clusterIP: 10.0.0.9
+    clusterIP: 10.0.0.221
     clusterIPs:
-        - 10.0.0.9
+        - 10.0.0.221
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
