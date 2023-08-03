@@ -28,6 +28,8 @@ require (
 	sigs.k8s.io/controller-runtime v0.14.4
 )
 
+require github.com/jmespath/go-jmespath v0.4.0 // indirect
+
 require (
 	github.com/Shopify/sarama v1.38.1 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
@@ -36,6 +38,7 @@ require (
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aquasecurity/esquery v0.2.0 // indirect
+	github.com/aws/aws-sdk-go v1.44.314
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bombsimon/logrusr/v3 v3.1.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect

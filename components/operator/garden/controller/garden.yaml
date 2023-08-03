@@ -1,0 +1,13 @@
+# ---
+# apiVersion: garden.io/v0
+# kind: Module
+# description: cert-manager
+# type: helm
+# name: cert-manager
+# namespace: default
+# repo: https://charts.jetstack.io
+# chart: cert-manager
+# timeout: 3600
+# values:
+#   fullnameOverride: cert-manager
+#   installCRDs: true

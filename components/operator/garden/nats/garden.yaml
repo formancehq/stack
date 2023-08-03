@@ -9,8 +9,8 @@ repo: https://nats-io.github.io/k8s/helm/charts/
 chart: nats
 timeout: 3600
 values:
-  nats:
+  config:
     jetstream:
       enabled: true
-      fileStorage:
+      fileStore:
         enabled: false

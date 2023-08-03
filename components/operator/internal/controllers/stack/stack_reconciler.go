@@ -6,10 +6,13 @@ import (
 	"time"
 
 	"github.com/formancehq/operator/internal/collectionutils"
+	"github.com/formancehq/operator/internal/controllers/stack/delete"
+	"github.com/formancehq/operator/internal/controllers/stack/storage/s3"
 	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/operator/internal/modules"
 	appsv1 "k8s.io/api/apps/v1"
 	networkingv1 "k8s.io/api/networking/v1"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
@@ -66,8 +69,6 @@ type Reconciler struct {
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
 	log := log.FromContext(ctx, "stack", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
 	stack := &stackv1beta3.Stack{}
 	if err := r.client.Get(ctx, req.NamespacedName, stack); err != nil {
 		if errors.IsNotFound(err) {
@@ -76,6 +77,66 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		}
 		return ctrl.Result{}, pkgError.Wrap(err, "Reading target")
 	}
+	log.Info("Starting reconciliation")
+
+	// if err := r.client.Get(ctx, req.NamespacedName, cronJob); err != nil {
+	// 	log.Error(err, "unable to fetch CronJob")
+	// 	// we'll ignore not-found errors, since they can't be fixed by an immediate
+	// 	// requeue (we'll need to wait for a new notification), and we can get them
+	// 	// on deleted requests.
+	// 	return ctrl.Result{}, client.IgnoreNotFound(err)
+	// }
+
+	myFinalizerName := stack.Name + "/finalizer"
+	// examine DeletionTimestamp to determine if object is under deletion
+	if stack.ObjectMeta.DeletionTimestamp.IsZero() {
+		// The object is not being deleted, so if it does not have our finalizer,
+		// then lets add the finalizer and update the object. This is equivalent
+		// registering our finalizer.
+		if !controllerutil.ContainsFinalizer(stack, myFinalizerName) {
+			controllerutil.AddFinalizer(stack, myFinalizerName)
+			if err := r.client.Update(ctx, stack); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+	} else {
+		// The object is being deleted
+		if controllerutil.ContainsFinalizer(stack, myFinalizerName) {
+			// Make sure to disable the stack before deletion
+			//
+			stackCopy := stack.DeepCopy()
+			stack.Spec.Disabled = true
+			if err := r.client.Update(ctx, stack); err != nil {
+				return ctrl.Result{}, err
+			}
+
+			// // We also need to make sure that all deployements are Terminated,
+			// // So that no one is already accessing our database.
+
+			// found := &appsv1.DeploymentList{}
+			// err := r.client.Get(ctx, &types.NamespacedName{
+			// 	Namespace: req.Namespace,
+			// 	Name:      "",
+			// }, found)
+
+			// our finalizer is present, so lets handle any external dependency
+			if err := r.deleteStack(ctx, req.NamespacedName, stackCopy); err != nil {
+				// if fail to delete the external dependency here, return with error
+				// so that it can be retried
+				return ctrl.Result{}, err
+			}
+
+			// remove our finalizer from the list and update it.
+			controllerutil.RemoveFinalizer(stackCopy, myFinalizerName)
+			if err := r.client.Update(ctx, stackCopy); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+
+		// Stop reconciliation as the item is being deleted
+		return ctrl.Result{}, nil
+	}
+
 	stack.SetProgressing()
 
 	var (
@@ -112,6 +173,62 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 	}
 
 	return ctrl.Result{}, nil
+}
+
+// Neet to be able to be called multiple times !!!
+// Need to be idempotent
+func (r *Reconciler) deleteStack(ctx context.Context, key types.NamespacedName, stack *stackv1beta3.Stack) error {
+	log := log.FromContext(ctx, "stack", key)
+
+	if !stack.Spec.Disabled {
+		return fmt.Errorf("Stack not disabled yet")
+	}
+
+	conf := &stackv1beta3.Configuration{}
+	if err := r.client.Get(ctx, types.NamespacedName{
+		Namespace: "",
+		Name:      stack.Spec.Seed,
+	}, conf); err != nil {
+		return err
+	}
+
+	s3Client, err := s3.NewClient(
+		"formance",
+		"formance",
+		"localhost:9000",
+		"toto",
+		true,
+		true,
+	)
+	if err != nil {
+		log.Error(err, "Cannot create s3 client")
+		return err
+	}
+
+	bucket := "backups"
+	storage := s3.NewS3Storage(s3Client, bucket)
+
+	log.Info("start backup for " + stack.Name)
+	if err := delete.BackupServicesData(conf, stack, storage, log); err != nil {
+		log.Error(err, "Error during backups")
+	}
+	// Need to save on the stack it has been done ?
+
+	log.Info("start deleting databases " + stack.Name)
+	if err := delete.DeleteServiceData(conf, stack.Name, log); err != nil {
+		log.Error(err, "Error during deleting databases")
+	}
+	// Same ? Need to save on the stack it has been done ?
+
+	log.Info("start deleting brokers subjects " + stack.Name)
+	if err := delete.DeleteBrokersData(conf, stack.Name, []string{"ledger", "payments"}, log); err != nil {
+		log.Error(err, "Error during deleting brokers subjects")
+	}
+	// Same ? Need to save on the stack it has been done ?
+	// THen backup & broker & database
+
+	return nil
+
 }
 
 // SetupWithManager sets up the controller with the Manager.

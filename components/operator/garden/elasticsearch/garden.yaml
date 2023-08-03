@@ -19,4 +19,4 @@ values:
       memory: 512M
     limits:
       cpu: 100m
-      memory: 512M
+      memory: 1024M

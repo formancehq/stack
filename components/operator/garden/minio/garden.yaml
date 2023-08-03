@@ -1,0 +1,15 @@
+---
+apiVersion: garden.io/v0
+kind: Module
+description: Minio
+type: helm
+name: minio
+namespace: default
+repo: https://charts.bitnami.com/bitnami
+chart: minio
+timeout: 3600
+values:
+  defaultBuckets: backups
+  auth:
+    rootUser: formance
+    rootPassword: formance
