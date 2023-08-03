@@ -7,6 +7,7 @@ COPY components/payments components/payments
 COPY components/search components/search
 COPY components/operator components/operator
 WORKDIR /src/components/operator
+RUN apk add --no-cache postgresql-client
 RUN --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
     --mount=type=cache,id=gomodcache,target=/go/pkg/mod \
     go build -v -a -o manager main.go
