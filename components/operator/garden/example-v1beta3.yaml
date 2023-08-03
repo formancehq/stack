@@ -140,7 +140,7 @@ spec:
 apiVersion: stack.formance.com/v1beta3
 kind: Stack
 metadata:
-  name: stack3
+  name: stack6
 spec:
   debug: true
   dev: true

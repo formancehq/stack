@@ -26,14 +26,14 @@ func DeleteBrokersData(c *v1beta3.Configuration, stackName string, subjectServic
 			client, err := nats.NewClient(natsConfig, natsClientId)
 			defer client.Close()
 			if err != nil {
-				logger.Error(err, "NATS Client")
+				logger.Error(err, "NATS: client")
 				continue
 			}
 
 			for _, service := range subjectService {
 				err = nats.DeleteSubject(client, fmt.Sprintf("%s-%s", stackName, service))
 				if err != nil {
-					logger.Error(err, "NATS Delete subject")
+					logger.Error(err, "NATS: Delete subject")
 					continue
 				}
 			}

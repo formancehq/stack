@@ -25,9 +25,8 @@ func DeleteServiceData(c *v1beta3.Configuration, stackName string, logger logr.L
 			switch servicesValues.Type().Field(j).Name {
 			case "Postgres":
 				postgresConfig, ok := servicesValues.Field(j).Interface().(v1beta3.PostgresConfig)
-
 				if !ok {
-					panic(ok)
+					continue
 				}
 
 				serviceName := strings.ToLower(values.Type().Field(i).Name)
@@ -35,19 +34,20 @@ func DeleteServiceData(c *v1beta3.Configuration, stackName string, logger logr.L
 				client, err := pg.OpenClient(postgresConfig)
 				defer client.Close()
 				if err != nil {
-					logger.Error(err, "Cannot open pg client")
-				}
-
-				if err := pg.DropDB(client, stackName, serviceName); err != nil {
-					logger.Error(err, "Error during fb drop")
+					logger.Error(err, "PG: Cannot open pg client")
 					continue
 				}
 
-				logger.Info(fmt.Sprintf("pq: database \"%s-%s\" droped", stackName, serviceName))
+				if err := pg.DropDB(client, stackName, serviceName); err != nil {
+					logger.Error(err, "PG: Error during drop")
+					continue
+				}
+
+				logger.Info(fmt.Sprintf("PG: database \"%s-%s\" droped", stackName, serviceName))
 			case "ElasticSearchConfig":
 				elasticSearchConfig := servicesValues.Field(j).Interface().(v1beta3.ElasticSearchConfig)
 				if err := es.DropESIndex(&elasticSearchConfig, logger, stackName); err != nil {
-					logger.Error(err, "Error during index drop es")
+					logger.Error(err, "ELK: Error during index drop es")
 					continue
 				}
 			}
@@ -110,7 +110,6 @@ func backupPostgres(databaseName string, conf v1beta3.PostgresConfig, storage s3
 	)
 
 	if err != nil {
-		fmt.Println(err)
 		logger.Error(err, "Backup database")
 		return err
 	}
