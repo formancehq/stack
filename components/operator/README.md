@@ -38,6 +38,20 @@ Add an entry for `host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0
 Go to http://host.k3d.internal.
 Login with admin@formance.com / password
 
+### Push to local registry
+
+In order to be able to pull and push the image a registry named `k3d-registry.host.k3d.internal` 
+on fixed port `12345` defined in `garden/k3d.yaml` 
+
+
+Add an entry for `k3d-registry.host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
+
+Then in order to build and publish your image
+    1. `make docker-build`
+    2. `make docker-push`
+    3. `make helm-local-install`
+    4. `make helm-local-upgrade`
+
 ### Tests
 
 Run command :
