@@ -47,6 +47,7 @@ var (
 const (
 	currentContext    = "k3d-formance"
 	configurationName = "stacks"
+	host              = "host.k3d.internal"
 )
 const charset = "abcdefghijklmnopqrstuvwxyz" +
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -131,7 +132,7 @@ func waitStackUp(cli *kubernetes.Clientset, out io.Writer, ctx context.Context, 
 		if err != nil {
 			panic(err)
 		}
-		fmt.Fprintln(out, "Waiting for stack to be fully up")
+		// fmt.Fprintln(out, "Waiting for stack to be fully up")
 
 		if len(deploymentStacks.Items) > 0 {
 			countServiceDbsAvailable := 0
@@ -161,8 +162,8 @@ func waitStackUp(cli *kubernetes.Clientset, out io.Writer, ctx context.Context, 
 				}
 			}
 
-			fmt.Println("minAvailableCount", countServiceDbsAvailable)
-			fmt.Println("LEN", countServiceDbs)
+			// fmt.Println("minAvailableCount", countServiceDbsAvailable)
+			// fmt.Println("LEN", countServiceDbs)
 			if countServiceDbsAvailable == countServiceDbs {
 				return nil
 			}
@@ -230,7 +231,7 @@ func TestBackupPostgres(t *testing.T) {
 		},
 		Auth: v1beta3.StackAuthSpec{
 			DelegatedOIDCServer: v1beta3.DelegatedOIDCServerConfiguration{
-				Issuer:       "http://host.k3d.internal/api/dex",
+				Issuer:       "http://" + host + "/api/dex",
 				ClientID:     "dexclient",
 				ClientSecret: "dexclient",
 			},

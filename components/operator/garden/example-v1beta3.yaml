@@ -12,6 +12,13 @@ spec:
         mode: grpc
         port: 4317
         resourceAttributes: "foo=bar"
+  # s3:
+  #   endpoint: minio.default.svc.cluster.local
+  #   region: "toto"
+  #   forceStylePath: true
+  #   secret:
+  #     accessKey: formance
+  #     secretKey: formance
   temporal:
     address: "local-operator.sihc8.tmprl.cloud:7233"
     namespace: "local-operator.sihc8"

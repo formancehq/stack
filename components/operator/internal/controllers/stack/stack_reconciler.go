@@ -6,11 +6,8 @@ import (
 	"time"
 
 	"github.com/formancehq/operator/internal/collectionutils"
-	"github.com/formancehq/operator/internal/controllers/stack/delete"
-	"github.com/formancehq/operator/internal/controllers/stack/storage/s3"
 	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/operator/internal/modules"
-	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -106,7 +103,15 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		}, nil
 	}
 
-	res, err := r.HandleFinalizer(ctx, log, stack, req)
+	conf := &stackv1beta3.Configuration{}
+	if err := r.client.Get(ctx, types.NamespacedName{
+		Namespace: "",
+		Name:      stack.Spec.Seed,
+	}, conf); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	res, err := r.HandleFinalizer(ctx, log, stack, conf, req)
 	if res != nil || err != nil {
 		return *res, err
 	}
@@ -120,51 +125,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 	}
 
 	return ctrl.Result{}, nil
-}
-
-// Neet to be able to be called multiple times !!!
-// Need to be idempotent
-func (r *Reconciler) deleteStack(ctx context.Context, key types.NamespacedName, stack *stackv1beta3.Stack, log logr.Logger) error {
-	conf := &stackv1beta3.Configuration{}
-	if err := r.client.Get(ctx, types.NamespacedName{
-		Namespace: "",
-		Name:      stack.Spec.Seed,
-	}, conf); err != nil {
-		return err
-	}
-	s3Client, err := s3.NewClient(
-		"formance",
-		"formance",
-		"localhost:9000",
-		"toto",
-		true,
-		true,
-	)
-	if err != nil {
-		log.Error(err, "Cannot create s3 client")
-		return err
-	}
-
-	bucket := "backups"
-	storage := s3.NewS3Storage(s3Client, bucket)
-
-	log.Info("start backup for " + stack.Name)
-	if err := delete.BackupServicesData(conf, stack, storage, log); err != nil {
-		log.Error(err, "Error during backups")
-	}
-
-	log.Info("start deleting databases " + stack.Name)
-	if err := delete.DeleteServiceData(conf, stack.Name, log); err != nil {
-		log.Error(err, "Error during deleting databases")
-	}
-
-	log.Info("start deleting brokers subjects " + stack.Name)
-	if err := delete.DeleteBrokersData(conf, stack.Name, []string{"ledger", "payments"}, log); err != nil {
-		log.Error(err, "Error during deleting brokers subjects")
-	}
-
-	return nil
-
 }
 
 // SetupWithManager sets up the controller with the Manager.

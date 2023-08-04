@@ -70,7 +70,7 @@ func BackupServicesData(c *v1beta3.Configuration, stack *v1beta3.Stack, storage 
 
 			postgresConfig, ok := servicesValues.Field(j).Interface().(v1beta3.PostgresConfig)
 			if !ok {
-				fmt.Errorf("%s", "cannot cast to postgresconfig")
+				logger.Error(fmt.Errorf("%s", "CAST"), "cannot cast to postgresconfig")
 				continue
 			}
 

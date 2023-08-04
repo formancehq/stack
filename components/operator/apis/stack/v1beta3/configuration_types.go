@@ -111,11 +111,34 @@ type MetricsSpec struct {
 	Otlp *OtlpSpec `json:"otlp,omitempty"`
 }
 
+type S3SecretConfig struct {
+	AccessKey string `json:"accessKey,omitempty"`
+	SecretKey string `json:"secretKey,omitempty"`
+}
+type S3ConfigSpec struct {
+	Endpoint string `json:"endpoint"`
+
+	// +optional
+	Region string `json:"region,omitempty"`
+
+	// +optional
+	S3SecretConfig *S3SecretConfig `json:"secret,omitempty"`
+
+	// +optional
+	ForceStylePath bool `json:"forceStylePath,omitempty"`
+
+	// +optional
+	Insecure bool `json:"insecure,omitempty"`
+}
 type ConfigurationSpec struct {
 	Services ConfigurationServicesSpec `json:"services"`
 	Broker   Broker                    `json:"broker"`
 	// +optional
 	Monitoring *MonitoringSpec `json:"monitoring,omitempty"`
+
+	// +optional
+	S3 *S3ConfigSpec `json:"s3,omitempty"`
+
 	// +optional
 	Ingress  IngressGlobalConfig `json:"ingress,omitempty"`
 	Temporal TemporalConfig      `json:"temporal"`

@@ -4219,6 +4219,26 @@ spec:
                         type: object
                     type: object
                 type: object
+              s3:
+                properties:
+                  endpoint:
+                    type: string
+                  forceStylePath:
+                    type: boolean
+                  insecure:
+                    type: boolean
+                  region:
+                    type: string
+                  secret:
+                    properties:
+                      accessKey:
+                        type: string
+                      secretKey:
+                        type: string
+                    type: object
+                required:
+                - endpoint
+                type: object
               services:
                 description: ConfigurationServicesSpec define all existing services
                   for a stack. Fields order is important. For example, auth must be
