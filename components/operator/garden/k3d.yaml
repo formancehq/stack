@@ -14,3 +14,8 @@ ports:
   nodeFilters:
   - loadbalancer
 - port: 30000:30000
+registries:
+  create:
+    name: "k3d-registry.host.k3d.internal"
+    hostPort: "12345"
+    
