@@ -18,3 +18,13 @@ func NewClient(natsConfig *v1beta3.NatsConfig, clientId string) (*nats.Conn, err
 
 	return conn, nil
 }
+
+func DeleteSubject(conn *nats.Conn, subject string) error {
+
+	js, _ := conn.JetStream()
+
+	return js.DeleteStream(
+		subject,
+	)
+
+}
