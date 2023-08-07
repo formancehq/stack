@@ -217,6 +217,7 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 				q.Add(k, vv)
 			}
 		}
+		req.URL.RawQuery = q.Encode()
 
 		for k, v := range ev.ApiCall.Headers {
 			for _, vv := range v.Values {
