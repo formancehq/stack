@@ -1,4 +1,4 @@
-apiVersion: k3d.io/v1alpha4
+apiVersion: k3d.io/v1alpha5
 kind: Simple
 metadata:
   name: formance
@@ -18,4 +18,5 @@ registries:
   create:
     name: "k3d-registry.host.k3d.internal"
     hostPort: "12345"
+    
     
