@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller
+IMG ?= operator
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.24.1
 
@@ -73,7 +73,7 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: docker-build
 docker-build: ## Build docker image with the manager.
-	cd ../../ && docker build -t ${IMG} . -f components/operator/Dockerfile --no-cache
+	docker build -t ${IMG} -f ./Dockerfile ../../  --no-cache
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.

@@ -1,12 +1,10 @@
 ---
-apiVersion: garden.io/v0
-kind: Module
+kind: Deploy
 description: OTEL collector
 # Use exec as the chart as a values.schema.yaml and garden inject a .garden keyn inside values
 type: exec
 name: otel-collector
-services:
-- name: otel-collector
+spec:
   deployCommand:
     - sh
     - -c
@@ -17,3 +15,27 @@ services:
       --set config.exporters.jaeger.endpoint=jaeger:14250
       --set config.service.pipelines.traces.exporters[0]=jaeger
       --set config.exporters.jaeger.tls.insecure=true
+---
+# kind: Deploy
+# description: otel-collector
+# type: helm
+# name: otel-collector
+# timeout: 3600
+# spec:
+#   namespace: otel-collector
+#   chart:
+#     repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+#     name: opentelemetry-collector
+#   values:
+#     mode: deployment
+#     config:
+#       exporters:
+#         jaeger:
+#           endpoint: jaeger:14250
+#           tls:
+#             insecure: true
+#       service:
+#         pipelines:
+#           traces:
+#             exporters:
+#               - jaeger

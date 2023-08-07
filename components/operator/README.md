@@ -17,10 +17,25 @@ Also, we use [Garden](https://docs.garden.io/) for management.
 garden create-cluster
 ```
 
-2. Deploy:
+2. Build the operator image:
+
+> Add an entry for `k3d-registry.host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
 
 ```sh
-garden  deploy
+    1. BUILD: `make docker-build`
+    2. PUSH: `make docker-push`
+```
+
+3. Deploy:
+
+```sh
+garden deploy
+```
+
+4. Create a stack
+
+```sh
+kubectl apply -f garden/example-v1beta3.yaml
 ```
 
 Add an entry for `host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
@@ -43,18 +58,29 @@ Then in order to build and publish your image
     5. REDEPLOY HELM: `make helm-local-upgrade`
    
 
+
+### Push to local registry
+
+In order to be able to pull and push the image in the internal-registry named `k3d-registry.host.k3d.internal` 
+on fixed port `12345` defined in `garden/k3d.yaml` 
+
+
+Add an entry for `k3d-registry.host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
+
+Then in order to build and publish your image
+    1. BUILD: `make docker-build`
+    2. PUSH: `make docker-push`
+    3. BUILD Helm: `make kustomize`
+    4. DEPLOY HELM:`make helm-local-install`
+    5. REDEPLOY HELM: `make helm-local-upgrade`
+   
+
 ### How it works
 This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
 
 It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)
 which provides a reconcile function responsible for synchronizing resources until the desired state is reached on the cluster
 
-### Test It Out
-
-You can install a full stack using the command:
-```sh
-kubectl apply -f example.yaml
-```
 
 #### Create a stack
 
