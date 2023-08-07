@@ -84,7 +84,7 @@ type Payment struct {
 	Type        PaymentType
 	Status      PaymentStatus
 	Scheme      PaymentScheme
-	Asset       PaymentAsset
+	Asset       Asset
 
 	RawData json.RawMessage
 
@@ -100,7 +100,7 @@ type (
 	PaymentType   string
 	PaymentStatus string
 	PaymentScheme string
-	PaymentAsset  string
+	Asset         string
 )
 
 const (
@@ -155,6 +155,6 @@ func (t PaymentScheme) String() string {
 	return string(t)
 }
 
-func (t PaymentAsset) String() string {
+func (t Asset) String() string {
 	return string(t)
 }

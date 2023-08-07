@@ -25,11 +25,11 @@ public class GetAccountBalancesRequest {
      * If not specified, all account's balances will be returned.
      * 
      */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=currency")
-    public String currency;
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=asset")
+    public String asset;
 
-    public GetAccountBalancesRequest withCurrency(String currency) {
-        this.currency = currency;
+    public GetAccountBalancesRequest withAsset(String asset) {
+        this.asset = asset;
         return this;
     }
     

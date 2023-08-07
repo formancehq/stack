@@ -25,10 +25,10 @@ class GetAccountBalancesRequest
      * If not specified, all account's balances will be returned.
      * 
      * 
-     * @var ?string $currency
+     * @var ?string $asset
      */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=currency')]
-    public ?string $currency = null;
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=asset')]
+    public ?string $asset = null;
     
     /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
@@ -94,7 +94,7 @@ class GetAccountBalancesRequest
 	public function __construct()
 	{
 		$this->accountID = "";
-		$this->currency = null;
+		$this->asset = null;
 		$this->cursor = null;
 		$this->from = null;
 		$this->limit = null;

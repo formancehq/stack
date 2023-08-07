@@ -44,7 +44,7 @@ func BalancesTask(config Config, account string, client *DefaultClient) func(ctx
 					Reference: account,
 					Provider:  models.ConnectorProviderStripe,
 				},
-				Currency:      currency.FormatAsset(string(balance.Currency)).String(),
+				Asset:         currency.FormatAsset(string(balance.Currency)),
 				Balance:       big.NewInt(balance.Value),
 				CreatedAt:     timestamp,
 				LastUpdatedAt: timestamp,

@@ -131,7 +131,7 @@ public class Application {
                 .build();
 
             GetAccountBalancesRequest req = new GetAccountBalancesRequest("deleniti") {{
-                currency = "sapiente";
+                asset = "sapiente";
                 cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
                 from = OffsetDateTime.parse("2022-05-10T22:38:44.806Z");
                 limit = 394869L;

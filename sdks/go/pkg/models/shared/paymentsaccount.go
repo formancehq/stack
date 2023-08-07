@@ -9,6 +9,7 @@ import (
 type PaymentsAccount struct {
 	AccountName     string                 `json:"accountName"`
 	CreatedAt       time.Time              `json:"createdAt"`
+	DefaultAsset    string                 `json:"defaultAsset"`
 	DefaultCurrency string                 `json:"defaultCurrency"`
 	ID              string                 `json:"id"`
 	Provider        Connector              `json:"provider"`

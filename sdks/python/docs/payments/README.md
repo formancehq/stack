@@ -104,7 +104,7 @@ s = sdk.SDK(
 
 req = operations.GetAccountBalancesRequest(
     account_id='provident',
-    currency='necessitatibus',
+    asset='necessitatibus',
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
     from_=dateutil.parser.isoparse('2021-09-21T14:06:09.271Z'),
     limit=223081,

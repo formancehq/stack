@@ -15,6 +15,10 @@ class AccountBalance
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $accountId;
     
+	#[\JMS\Serializer\Annotation\SerializedName('asset')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $asset;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('balance')]
     #[\JMS\Serializer\Annotation\Type('int')]
     public int $balance;
@@ -34,6 +38,7 @@ class AccountBalance
 	public function __construct()
 	{
 		$this->accountId = "";
+		$this->asset = "";
 		$this->balance = 0;
 		$this->createdAt = new \DateTime();
 		$this->currency = "";

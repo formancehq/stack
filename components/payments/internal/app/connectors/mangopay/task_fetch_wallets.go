@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/currency"
 	"github.com/formancehq/payments/internal/app/connectors/mangopay/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/metrics"
@@ -73,11 +74,11 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 						Reference: wallet.ID,
 						Provider:  models.ConnectorProviderMangopay,
 					},
-					CreatedAt:       time.Unix(wallet.CreationDate, 0),
-					Reference:       wallet.ID,
-					Provider:        models.ConnectorProviderMangopay,
-					DefaultCurrency: wallet.Currency,
-					AccountName:     wallet.Description,
+					CreatedAt:    time.Unix(wallet.CreationDate, 0),
+					Reference:    wallet.ID,
+					Provider:     models.ConnectorProviderMangopay,
+					DefaultAsset: currency.FormatAsset(wallet.Currency),
+					AccountName:  wallet.Description,
 					// Wallets are internal accounts on our side, since we
 					// can have their balances.
 					Type:    models.AccountTypeInternal,
@@ -96,7 +97,7 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 						Reference: wallet.ID,
 						Provider:  models.ConnectorProviderMangopay,
 					},
-					Currency:      wallet.Balance.Currency,
+					Asset:         currency.FormatAsset(wallet.Balance.Currency),
 					Balance:       &amount,
 					CreatedAt:     now,
 					LastUpdatedAt: now,

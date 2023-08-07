@@ -11,7 +11,7 @@ import (
 type balanceMessagePayload struct {
 	CreatedAt time.Time `json:"createdAt"`
 	AccountID string    `json:"accountID"`
-	Currency  string    `json:"currency"`
+	Asset     string    `json:"asset"`
 	Balance   *big.Int  `json:"balance"`
 }
 
@@ -22,7 +22,7 @@ func NewEventSavedBalances(balances []*models.Balance) events.EventMessage {
 		payload[balanceIdx] = balanceMessagePayload{
 			CreatedAt: balance.CreatedAt,
 			AccountID: balance.AccountID.String(),
-			Currency:  balance.Currency,
+			Asset:     balance.Asset.String(),
 			Balance:   balance.Balance,
 		}
 	}

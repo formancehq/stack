@@ -120,19 +120,19 @@ func currencies() map[string]currency {
 	}
 }
 
-func FormatAsset(cur string) models.PaymentAsset {
+func FormatAsset(cur string) models.Asset {
 	asset := strings.ToUpper(string(cur))
 
 	def, ok := currencies()[asset]
 	if !ok {
-		return models.PaymentAsset(asset)
+		return models.Asset(asset)
 	}
 
 	if def.decimals == 0 {
-		return models.PaymentAsset(asset)
+		return models.Asset(asset)
 	}
 
-	return models.PaymentAsset(fmt.Sprintf("%s/%d", asset, def.decimals))
+	return models.Asset(fmt.Sprintf("%s/%d", asset, def.decimals))
 }
 
 func GetPrecision(cur string) int {

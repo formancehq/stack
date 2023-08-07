@@ -82,7 +82,7 @@ func ingestBalancesBatch(
 				Reference: balance.AccountID,
 				Provider:  models.ConnectorProviderCurrencyCloud,
 			},
-			Currency:      fmt.Sprintf("%s/2", balance.Currency),
+			Asset:         models.Asset(fmt.Sprintf("%s/2", balance.Currency)),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,

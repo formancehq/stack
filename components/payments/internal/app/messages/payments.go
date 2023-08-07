@@ -16,7 +16,7 @@ type paymentMessagePayload struct {
 	Type      models.PaymentType   `json:"type"`
 	Status    models.PaymentStatus `json:"status"`
 	Scheme    models.PaymentScheme `json:"scheme"`
-	Asset     models.PaymentAsset  `json:"asset"`
+	Asset     models.Asset         `json:"asset"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
 	InitialAmount *big.Int `json:"initialAmount"`

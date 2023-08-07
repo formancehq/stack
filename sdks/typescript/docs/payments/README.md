@@ -102,7 +102,7 @@ const sdk = new SDK({
 
 sdk.payments.getAccountBalances({
   accountID: "provident",
-  currency: "necessitatibus",
+  asset: "necessitatibus",
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   from: new Date("2021-09-21T14:06:09.271Z"),
   limit: 223081,

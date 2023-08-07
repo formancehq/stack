@@ -23,7 +23,8 @@ type accountResponse struct {
 	Reference       string      `json:"reference"`
 	CreatedAt       time.Time   `json:"createdAt"`
 	Provider        string      `json:"provider"`
-	DefaultCurrency string      `json:"defaultCurrency"`
+	DefaultCurrency string      `json:"defaultCurrency"` // Deprecated: should be removed soon
+	DefaultAsset    string      `json:"defaultAsset"`
 	AccountName     string      `json:"accountName"`
 	Raw             interface{} `json:"raw"`
 }
@@ -89,7 +90,8 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 				Reference:       ret[i].Reference,
 				CreatedAt:       ret[i].CreatedAt,
 				Provider:        ret[i].Provider.String(),
-				DefaultCurrency: ret[i].DefaultCurrency,
+				DefaultCurrency: ret[i].DefaultAsset.String(),
+				DefaultAsset:    ret[i].DefaultAsset.String(),
 				AccountName:     ret[i].AccountName,
 				Raw:             ret[i].RawData,
 			}

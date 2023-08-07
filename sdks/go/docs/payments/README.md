@@ -137,7 +137,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.GetAccountBalances(ctx, operations.GetAccountBalancesRequest{
         AccountID: "provident",
-        Currency: formance.String("necessitatibus"),
+        Asset: formance.String("necessitatibus"),
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         From: types.MustTimeFromString("2021-09-21T14:06:09.271Z"),
         Limit: formance.Int64(223081),

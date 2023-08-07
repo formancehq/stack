@@ -11,6 +11,10 @@ export class AccountBalance extends SpeakeasyBase {
   accountId: string;
 
   @SpeakeasyMetadata()
+  @Expose({ name: "asset" })
+  asset: string;
+
+  @SpeakeasyMetadata()
   @Expose({ name: "balance" })
   balance: number;
 

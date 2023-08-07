@@ -9,6 +9,7 @@ import (
 
 type AccountBalance struct {
 	AccountID     string    `json:"accountId"`
+	Asset         string    `json:"asset"`
 	Balance       *big.Int  `json:"balance"`
 	CreatedAt     time.Time `json:"createdAt"`
 	Currency      string    `json:"currency"`

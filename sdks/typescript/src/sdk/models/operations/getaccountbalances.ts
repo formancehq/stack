@@ -22,10 +22,8 @@ export class GetAccountBalancesRequest extends SpeakeasyBase {
    * If not specified, all account's balances will be returned.
    *
    */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=currency",
-  })
-  currency?: string;
+  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=asset" })
+  asset?: string;
 
   /**
    * Parameter used in pagination requests. Maximum page size is set to 15.

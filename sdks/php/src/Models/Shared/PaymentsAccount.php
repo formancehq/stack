@@ -19,6 +19,10 @@ class PaymentsAccount
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $createdAt;
     
+	#[\JMS\Serializer\Annotation\SerializedName('defaultAsset')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $defaultAsset;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('defaultCurrency')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $defaultCurrency;
@@ -48,6 +52,7 @@ class PaymentsAccount
 	{
 		$this->accountName = "";
 		$this->createdAt = new \DateTime();
+		$this->defaultAsset = "";
 		$this->defaultCurrency = "";
 		$this->id = "";
 		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
