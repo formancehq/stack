@@ -1,15 +1,16 @@
-# formance-operator
+# Formance-operator
 
 This operator is in charge of deploying a full or partial Formance OSS Stack.
 It aims to simplify deployment and releases management of different parts of the Formance ecosystem.
 
 ## Getting Started
 
-You’ll need a Kubernetes cluster to run against.
+You'll need a Kubernetes cluster to run against.
 Scripts of this repository are using [K3D](https://k3d.io/v5.4.6/). You have to install it.
 Also, we use [Garden](https://docs.garden.io/) for management.
 
 ### Running on the cluster
+
 1. Create the cluster:
 
 ```sh
@@ -22,42 +23,25 @@ garden create-cluster
 garden  deploy
 ```
 
-This will automatically install all the stack.
-When developing, use following command to update the operator code :
-```sh
-go run main.go --disable-webhooks
-```
-
-3. Create a stack
-
-```sh
-kubectl apply -f garden/example-v1beta3.yaml
-```
-
 Add an entry for `host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
 Go to http://host.k3d.internal.
 Login with admin@formance.com / password
 
 ### Push to local registry
 
-In order to be able to pull and push the image a registry named `k3d-registry.host.k3d.internal` 
+In order to be able to pull and push the image in the internal-registry named `k3d-registry.host.k3d.internal` 
 on fixed port `12345` defined in `garden/k3d.yaml` 
 
 
 Add an entry for `k3d-registry.host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
 
 Then in order to build and publish your image
-    1. `make docker-build`
-    2. `make docker-push`
-    3. `make helm-local-install`
-    4. `make helm-local-upgrade`
-
-### Tests
-
-Run command :
-```sh
-make test
-```
+    1. BUILD: `make docker-build`
+    2. PUSH: `make docker-push`
+    3. BUILD CRD: `make kustomize`
+    4. DEPLOY HELM:`make helm-local-install`
+    5. REDEPLOY HELM: `make helm-local-upgrade`
+   
 
 ### How it works
 This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
@@ -70,6 +54,17 @@ which provides a reconcile function responsible for synchronizing resources unti
 You can install a full stack using the command:
 ```sh
 kubectl apply -f example.yaml
+```
+
+#### Create a stack
+
+```sh
+kubectl apply -f garden/example-v1beta3.yaml
+### Tests
+
+Run command :
+```sh
+make test
 ```
 
 ## License
