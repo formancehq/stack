@@ -1,12 +1,8 @@
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
-
-const vendor = `vendor:${randomIntBetween(1, 1000)}:main`;
-const paymentOut = `payments:out:${randomIntBetween(1, 1000)}`;
 const num = open('./../src/generators/simple.numscript', 'r');
 
-export function generateTransactions() {
-    const paymentIn = `payments:in:${randomIntBetween(1, 1000)}`;
-    const wallet = `wallets:${randomIntBetween(1, 1000)}:main`;
+export function generateTransactions(iterationInTest) {
+    const paymentIn = `payments:in:${iterationInTest}`;
+    const wallet = `wallets:${iterationInTest}:main`;
     return {
         postings: [
             {
@@ -18,23 +14,23 @@ export function generateTransactions() {
             {
                 amount: 100e2,
                 asset: 'EUR/2',
-                source:`world`,
+                source: paymentIn,
                 destination: wallet,
             },
         ],
     }
 }
 
-export function generateTransactionsNumscript() {
-    const paymentIn = `payments:in:${randomIntBetween(1, 1000)}`;
-    const wallet = `wallets:${randomIntBetween(1, 1000)}:main`;
+export function generateTransactionsNumscript(iterationInTest) {
+    const paymentIn = `payments:in:${iterationInTest}`;
+    const wallet = `wallets:${iterationInTest}:main`;
     return {
         script: {
             plain: num,
             vars: {
                 "payment_in": paymentIn,
                 "wallets": wallet,
-                "world": `world:${randomIntBetween(1, 100000)}`,
+                "world": `world:${iterationInTest}`,
             }
         },
     }

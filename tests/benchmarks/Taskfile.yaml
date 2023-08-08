@@ -4,22 +4,43 @@ tasks:
   tools:
     dir: ./tools
     cmds:
+      - docker compose stop postgres
+      - docker compose rm postgres --force --volumes
       - docker compose up -d
+      - sleep 10
 
-  build:
+  build:scripts:
     dir: ./scripts
     cmds:
       - npm run build
 
-  run:
+  build:k6:
+    cmds:
+      - xk6 build --with extension=$(pwd)/extension
+
+  run:v1:
     deps:
       - tools
-      - build
+      - build:scripts
+      - build:k6
     cmds:
-#      - xk6 build --with extension=$(pwd)/extension
-      - TEST_ID=$(date +%s) K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out experimental-prometheus-rw scripts/dist/rate.js
+      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv1;"
+      - TEST_ID=$(date +%s)-v1 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out experimental-prometheus-rw scripts/dist/ledger-v1.js
     env:
-      POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledger?sslmode=disable
+      POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledgerv1?sslmode=disable
+      OTLP_ENDPOINT: otel:4317
+      DOCKER_NETWORK: tools_benchmarks
+
+  run:v2:
+    deps:
+      - tools
+      - build:scripts
+      - build:k6
+    cmds:
+      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv2;"
+      - TEST_ID=$(date +%s)-v2 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out experimental-prometheus-rw scripts/dist/ledger-v2.js
+    env:
+      POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledgerv2?sslmode=disable
       OTLP_ENDPOINT: otel:4317
       DOCKER_NETWORK: tools_benchmarks
 

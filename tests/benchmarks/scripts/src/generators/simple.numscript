@@ -1,5 +1,5 @@
 vars {
-  account $wallets
+  account $wallet
   account $payment_in
   account $world
 }
