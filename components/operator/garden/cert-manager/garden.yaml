@@ -1,5 +1,5 @@
 ---
-apiVersion: garden.io/v1
+apiVersion: garden.io/v0
 kind: Deploy
 description: cert-manager
 type: helm

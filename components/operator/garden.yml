@@ -1,5 +1,5 @@
 ---
-apiVersion: garden.io/v1
+apiVersion: garden.io/v0
 kind: Build
 type: exec
 name: generate-helm-chart
@@ -9,7 +9,7 @@ spec:
     - -c
     - make kustomize
 ---
-apiVersion: garden.io/v1
+apiVersion: garden.io/v0
 kind: Deploy
 type: helm
 description: Operator Helm deploy

@@ -1,5 +1,5 @@
 ---
-apiVersion: garden.io/v1
+apiVersion: garden.io/v0
 kind: Deploy
 description: OTEL collector
 # Use exec as the chart as a values.schema.yaml and garden inject a .garden keyn inside values
