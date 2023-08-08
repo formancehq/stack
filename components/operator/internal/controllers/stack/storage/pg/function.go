@@ -10,7 +10,7 @@ import (
 )
 
 func DropDB(db *sql.DB, stackName string, serviceName string) error {
-	_, err := db.Exec("DROP DATABASE " + fmt.Sprintf("\"%s-%s\" WITH (FORCE) ", stackName, serviceName))
+	_, err := db.Exec("DROP DATABASE IF EXISTS " + fmt.Sprintf("\"%s-%s\"", stackName, serviceName))
 	if err != nil {
 		return err
 	}

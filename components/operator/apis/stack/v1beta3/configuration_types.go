@@ -117,6 +117,7 @@ type S3SecretConfig struct {
 }
 type S3ConfigSpec struct {
 	Endpoint string `json:"endpoint"`
+	Bucket   string `json:"bucket"`
 
 	// +optional
 	Region string `json:"region,omitempty"`

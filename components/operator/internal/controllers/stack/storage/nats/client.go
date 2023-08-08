@@ -19,6 +19,20 @@ func NewClient(natsConfig *v1beta3.NatsConfig, clientId string) (*nats.Conn, err
 	return conn, nil
 }
 
+func ExistSubject(conn *nats.Conn, subject string) (bool, error) {
+
+	js, _ := conn.JetStream()
+
+	_, err := js.StreamInfo(subject)
+	if err != nil {
+		// FIXME: check if error is not found
+		return false, errors.Wrap(err, "cannot get stream info")
+	}
+
+	return true, nil
+
+}
+
 func DeleteSubject(conn *nats.Conn, subject string) error {
 
 	js, _ := conn.JetStream()
