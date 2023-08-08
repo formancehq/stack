@@ -45,6 +45,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "true"
                     - name: DEV
@@ -89,8 +91,8 @@ spec:
             terminationGracePeriodSeconds: 30
 status:
     conditions:
-        - lastTransitionTime: "2023-08-02T15:52:18Z"
-          lastUpdateTime: "2023-08-02T15:52:18Z"
+        - lastTransitionTime: "2023-08-08T14:46:59Z"
+          lastUpdateTime: "2023-08-08T14:46:59Z"
           status: "True"
           type: Available
     observedGeneration: 1

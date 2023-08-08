@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.101
+    clusterIP: 10.0.0.35
     clusterIPs:
-        - 10.0.0.101
+        - 10.0.0.35
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

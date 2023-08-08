@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: monopod-search-before-v0-7-0
 spec:
-    clusterIP: 10.0.0.150
+    clusterIP: 10.0.0.207
     clusterIPs:
-        - 10.0.0.150
+        - 10.0.0.207
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

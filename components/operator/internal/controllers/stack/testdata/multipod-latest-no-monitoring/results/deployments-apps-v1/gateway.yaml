@@ -48,8 +48,6 @@ spec:
                       value: gateway
                     - name: STACK
                       value: multipod-latest-no-monitoring
-                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                   image: ghcr.io/formancehq/gateway:latest
                   imagePullPolicy: Always
                   name: gateway
@@ -79,8 +77,8 @@ spec:
                   name: config
 status:
     conditions:
-        - lastTransitionTime: "2023-08-02T15:52:20Z"
-          lastUpdateTime: "2023-08-02T15:52:20Z"
+        - lastTransitionTime: "2023-08-08T14:47:02Z"
+          lastUpdateTime: "2023-08-08T14:47:02Z"
           status: "True"
           type: Available
     observedGeneration: 1
