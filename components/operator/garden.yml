@@ -14,3 +14,6 @@ spec:
     image:
       repository: k3d-registry.host.k3d.internal:12345/operator
       tag: dev-latest
+      pullPolicy: Always
+
+
