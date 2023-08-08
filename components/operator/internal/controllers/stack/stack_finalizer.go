@@ -96,19 +96,9 @@ func (r *Reconciler) HandleFinalizer(ctx context.Context, log logr.Logger, stack
 	return nil, nil
 }
 
-// Neet to be able to be called multiple times !!!
-// Need to be idempotent
 func (r *Reconciler) deleteStack(ctx context.Context, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, log logr.Logger) (*ctrl.Result, error) {
 	log.Info("start deleting databases " + stack.Name)
 	if err := delete.DeleteByService(conf, stack.Name, log); err != nil {
-		log.Error(err, "Error during deleting databases")
-		// What exactly should we do here ?
-		// Every PG drop should be idempotent so we can just retry with if exist
-
-		// ELK is not idempotent, so we need to be careful here
-		// We can't just retry, we need to check if the stack is still there
-		// If it is, we need to requeue
-
 		return &ctrl.Result{
 			Requeue:      true,
 			RequeueAfter: time.Second,
@@ -117,12 +107,6 @@ func (r *Reconciler) deleteStack(ctx context.Context, stack *stackv1beta3.Stack,
 
 	log.Info("start deleting brokers subjects " + stack.Name)
 	if err := delete.DeleteByBrokers(conf, stack.Name, subjects, log); err != nil {
-		log.Error(err, "Error during deleting brokers subjects")
-		// What exactly should we do here ?
-
-		// NATS is not idempotent, so we need to be careful here
-		// We can't just retry, we need to check if the stacks stream are still present
-
 		return nil, err
 	}
 
@@ -148,7 +132,6 @@ func (r *Reconciler) backupStack(ctx context.Context, conf *stackv1beta3.Configu
 
 	log.Info("start backup for " + stackName)
 	if err := backup.BackupServices(conf, stackName, storage, t, log); err != nil {
-		log.Error(err, "Error during backups")
 		return err
 	}
 

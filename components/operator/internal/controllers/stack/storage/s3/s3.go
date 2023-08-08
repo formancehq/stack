@@ -18,7 +18,6 @@ func getConfig(awsClientId, awsSecretId, endpoint, region string, forceStylePath
 
 }
 
-// According to https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html
 func NewSession(accessKey, secretKey, endpoint, region string, forceStylePath, insecure bool) (*session.Session, error) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,

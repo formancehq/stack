@@ -116,7 +116,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		return *res, err
 	}
 
-	// If
 	if patchErr := r.client.Status().Update(ctx, stack); patchErr != nil {
 		log.Info("unable to update status", "error", patchErr)
 		return ctrl.Result{

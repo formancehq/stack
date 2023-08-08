@@ -43,8 +43,7 @@ func DropESIndex(config *v1beta3.ElasticSearchConfig, logger logr.Logger, stackN
 	response, err := client.DeleteByQuery([]string{stacksIndex}, body)
 
 	if err != nil {
-		logger.Error(err, "ELK: During index drop es")
-
+		logger.Error(err, "ELK: Error during index drop")
 		return err
 	}
 

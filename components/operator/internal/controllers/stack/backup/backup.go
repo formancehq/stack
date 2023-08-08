@@ -74,7 +74,6 @@ func backupService(
 
 	data, err := backupPostgres(databaseName, pgConfig, logger)
 	if err != nil {
-		logger.Error(err, "database not backuped"+err.Error())
 		return err
 	}
 

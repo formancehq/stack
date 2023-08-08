@@ -4,6 +4,15 @@ kind: Configuration
 metadata:
   name: stacks
 spec:
+  s3:
+    bucket: "backups"
+    endpoint: minio.default.svc.cluster.local:9000
+    region: "toto"
+    forceStylePath: true
+    insecure: true
+    secret:
+      accessKey: formance
+      secretKey: formance
   monitoring:
     traces:
       otlp:
@@ -12,14 +21,6 @@ spec:
         mode: grpc
         port: 4317
         resourceAttributes: "foo=bar"
-  s3:
-    bucket: "backups"
-    endpoint: minio.default.svc.cluster.local
-    region: "toto"
-    forceStylePath: true
-    secret:
-      accessKey: formance
-      secretKey: formance
   temporal:
     address: "local-operator.sihc8.tmprl.cloud:7233"
     namespace: "local-operator.sihc8"
@@ -148,7 +149,7 @@ spec:
 apiVersion: stack.formance.com/v1beta3
 kind: Stack
 metadata:
-  name: stack6
+  name: stack8
 spec:
   debug: true
   dev: true

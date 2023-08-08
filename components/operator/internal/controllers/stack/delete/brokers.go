@@ -26,6 +26,7 @@ func DeleteByBrokers(c *v1beta3.Configuration, stackName string, subjectService 
 			if natsConfig == nil {
 				continue
 			}
+
 			if err := deleleNatsSubjects(natsConfig, stackName, subjectService, logger); err != nil {
 				return err
 			}
@@ -44,9 +45,9 @@ func deleleNatsSubjects(config *v1beta3.NatsConfig, stackName string, subjectSer
 	defer client.Close()
 
 	for _, service := range subjectService {
-		stackSubjectName := fmt.Sprintf("%s-%s", stackName, service)
+		stackServiceSubject := fmt.Sprintf("%s-%s", stackName, service)
 
-		exist, err := nats.ExistSubject(client, stackSubjectName)
+		exist, err := nats.ExistSubject(client, stackServiceSubject, logger)
 		if err != nil {
 			logger.Error(err, "NATS: subject existancy check")
 			return err
@@ -58,7 +59,7 @@ func deleleNatsSubjects(config *v1beta3.NatsConfig, stackName string, subjectSer
 		}
 
 		// Delete subject when it exists
-		err = nats.DeleteSubject(client, stackSubjectName)
+		err = nats.DeleteSubject(client, stackServiceSubject)
 		if err != nil {
 			logger.Error(err, "NATS: delete subject")
 			return err

@@ -2,6 +2,7 @@ package nats
 
 import (
 	"github.com/formancehq/operator/apis/stack/v1beta3"
+	"github.com/go-logr/logr"
 	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
 )
@@ -19,13 +20,15 @@ func NewClient(natsConfig *v1beta3.NatsConfig, clientId string) (*nats.Conn, err
 	return conn, nil
 }
 
-func ExistSubject(conn *nats.Conn, subject string) (bool, error) {
+func ExistSubject(conn *nats.Conn, subject string, logger logr.Logger) (bool, error) {
 
 	js, _ := conn.JetStream()
 
-	_, err := js.StreamInfo(subject)
+	_, err := js.StreamNameBySubject(subject)
 	if err != nil {
-		// FIXME: check if error is not found
+		if err.Error() == "nats: no stream matches subject" {
+			return false, nil
+		}
 		return false, errors.Wrap(err, "cannot get stream info")
 	}
 

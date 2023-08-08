@@ -48,11 +48,11 @@ func deletePostgresDb(
 	logger logr.Logger,
 ) error {
 	client, err := pg.OpenClient(postgresConfig)
-	defer client.Close()
 	if err != nil {
 		logger.Error(err, "PG: Cannot open pg client")
 		return err
 	}
+	defer client.Close()
 
 	if err := pg.DropDB(client, stackName, serviceName); err != nil {
 		logger.Error(err, "PG: Error during drop")
