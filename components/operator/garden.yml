@@ -4,6 +4,8 @@ kind: Deploy
 type: helm
 description: Operator Helm deploy
 name: formance-operator
+dependencies:
+  - deploy.cert-manager
 spec:
   namespace: formance-system
   chart:
