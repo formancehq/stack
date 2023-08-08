@@ -1,4 +1,5 @@
 ---
+apiVersion: garden.io/v1
 kind: Deploy
 description: Zinc
 type: helm

@@ -1,38 +1,15 @@
-
-# ---
-# kind: Build
-# type: exec
-# name: build-operator-image
-# # source:
-# #   path: ../../
-# spec:
-#   command:
-#     - sh
-#     - -c
-#     - make docker-build 
-# ---
-# kind: Build
-# type: exec
-# name: push-operator-image
-# dependencies:
-#   - build.build-operator-image
-# spec:
-#   command:
-#     - sh
-#     - -c
-#     - make docker-push
 ---
+apiVersion: garden.io/v1
 kind: Build
 type: exec
 name: generate-helm-chart
-# dependencies:
-#   - build.push-operator-image
 spec:
   command:
     - sh
     - -c
     - make kustomize
 ---
+apiVersion: garden.io/v1
 kind: Deploy
 type: helm
 description: Operator Helm deploy
@@ -47,12 +24,3 @@ spec:
     image:
       repository: k3d-registry.host.k3d.internal:12345/operator
       tag: dev-latest
-# sync:
-# description: First step to build the operator dev image
-# allowPublish: false
-# source:
-#   path: .
-# spec:
-#   localId: operator
-#   dockerfile: ./components/operator/garden.Dockerfile
-#   targetStage: reloader
