@@ -2,7 +2,7 @@ module github.com/formancehq/stack/tests/benchmarks/extension
 
 go 1.20
 
-require go.k6.io/k6 v0.45.0
+require go.k6.io/k6 v0.45.1
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
