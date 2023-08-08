@@ -23,7 +23,8 @@ garden create-cluster
 
 ```sh
     1. BUILD: `make docker-build`
-    2. PUSH: `make docker-push`
+    2. PUSH: `make docker-push
+    3. BUILD Helm: `make helm-update`
 ```
 
 3. Deploy:
@@ -70,10 +71,11 @@ Add an entry for `k3d-registry.host.k3d.internal` inside /etc/hosts file, pointi
 Then in order to build and publish your image
     1. BUILD: `make docker-build`
     2. PUSH: `make docker-push`
-    3. BUILD Helm: `make kustomize`
-    4. DEPLOY HELM:`make helm-local-install`
-    5. REDEPLOY HELM: `make helm-local-upgrade`
-   
+    3. BUILD Helm: `make helm-update`
+At this step you can use garden deploy
+    1. DEPLOY Helm:`make helm-local-install`
+    2. REDEPLOY Helm: `make helm-local-upgrade`
+
 
 ### How it works
 This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)

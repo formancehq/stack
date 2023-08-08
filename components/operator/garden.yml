@@ -1,21 +1,9 @@
 ---
 apiVersion: garden.io/v0
-kind: Build
-type: exec
-name: generate-helm-chart
-spec:
-  command:
-    - sh
-    - -c
-    - make kustomize
----
-apiVersion: garden.io/v0
 kind: Deploy
 type: helm
 description: Operator Helm deploy
 name: formance-operator
-dependencies:
-  - build.generate-helm-chart
 spec:
   namespace: formance-system
   chart:
