@@ -22,8 +22,7 @@ var (
 	ErrCast = errors.New("cannot cast interface to string")
 )
 
-func BackupServices(c *v1beta3.Configuration, stack *v1beta3.Stack, storage s3.Storage, t *v1.Time, logger logr.Logger) error {
-	stackName := stack.Name
+func BackupServices(c *v1beta3.Configuration, stackName string, storage s3.Storage, t *v1.Time, logger logr.Logger) error {
 	values := reflect.ValueOf(c.Spec.Services)
 	for i := 0; i < values.NumField(); i++ {
 		servicesValues := reflect.ValueOf(values.Field(i).Interface())
@@ -65,9 +64,6 @@ func backupService(
 	logger.Info("backuping process " + databaseName)
 	exist, err := storage.Exist(fileName)
 	if err != nil {
-		logger.Error(err, "storage not exists")
-		// What is the error ?
-		// Client error or 404 ???
 		return err
 	}
 
@@ -84,7 +80,7 @@ func backupService(
 
 	err = storage.PutFile(fileName, data)
 	if err != nil {
-		logger.Error(err, "Uploding to s3")
+		logger.Error(err, "uploding to s3")
 		return err
 	}
 

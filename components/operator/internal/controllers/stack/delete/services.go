@@ -23,32 +23,43 @@ func DeleteByService(c *v1beta3.Configuration, stackName string, logger logr.Log
 					logger.Error(ErrCast, "cannot cast to postgresconfig")
 					return ErrCast
 				}
-
 				serviceName := strings.ToLower(values.Type().Field(i).Name)
-
-				client, err := pg.OpenClient(postgresConfig)
-				defer client.Close()
-				if err != nil {
-					logger.Error(err, "PG: Cannot open pg client")
+				if err := deletePostgresDb(postgresConfig, stackName, serviceName, logger); err != nil {
 					return err
 				}
 
-				if err := pg.DropDB(client, stackName, serviceName); err != nil {
-					logger.Error(err, "PG: Error during drop")
-					return err
-				}
-
-				logger.Info(fmt.Sprintf("PG: database \"%s-%s\" droped", stackName, serviceName))
 			case "ElasticSearchConfig":
 				elasticSearchConfig := servicesValues.Field(j).Interface().(v1beta3.ElasticSearchConfig)
 				if err := es.DropESIndex(&elasticSearchConfig, logger, stackName); err != nil {
-					logger.Error(err, "ELK: Error during index drop es")
 					return err
 				}
 			}
 
 		}
 	}
+
+	return nil
+}
+
+func deletePostgresDb(
+	postgresConfig v1beta3.PostgresConfig,
+	stackName string,
+	serviceName string,
+	logger logr.Logger,
+) error {
+	client, err := pg.OpenClient(postgresConfig)
+	defer client.Close()
+	if err != nil {
+		logger.Error(err, "PG: Cannot open pg client")
+		return err
+	}
+
+	if err := pg.DropDB(client, stackName, serviceName); err != nil {
+		logger.Error(err, "PG: Error during drop")
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("PG: database \"%s-%s\" droped", stackName, serviceName))
 
 	return nil
 }

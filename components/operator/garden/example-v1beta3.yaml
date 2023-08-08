@@ -13,6 +13,7 @@ spec:
         port: 4317
         resourceAttributes: "foo=bar"
   s3:
+    bucket: "backups"
     endpoint: minio.default.svc.cluster.local
     region: "toto"
     forceStylePath: true

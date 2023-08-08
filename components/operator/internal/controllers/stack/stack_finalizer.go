@@ -11,7 +11,6 @@ import (
 	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -56,7 +55,7 @@ func (r *Reconciler) HandleFinalizer(ctx context.Context, log logr.Logger, stack
 
 		// S3 is optional
 		if conf.Spec.S3 != nil {
-			if err := r.backupStack(ctx, conf, stack, stack.ObjectMeta.DeletionTimestamp, log); err != nil {
+			if err := r.backupStack(ctx, conf, stack.Name, stack.ObjectMeta.DeletionTimestamp, log); err != nil {
 				return &ctrl.Result{
 					Requeue:      true,
 					RequeueAfter: time.Second,
@@ -66,7 +65,7 @@ func (r *Reconciler) HandleFinalizer(ctx context.Context, log logr.Logger, stack
 		}
 
 		// our finalizer is present, so lets handle any external dependency
-		res, err := r.deleteStack(ctx, req.NamespacedName, stack, conf, log)
+		res, err := r.deleteStack(ctx, stack, conf, log)
 		if err != nil {
 			// if fail to delete the external dependency here, return with error
 			// so that it can be retried
@@ -99,7 +98,7 @@ func (r *Reconciler) HandleFinalizer(ctx context.Context, log logr.Logger, stack
 
 // Neet to be able to be called multiple times !!!
 // Need to be idempotent
-func (r *Reconciler) deleteStack(ctx context.Context, key types.NamespacedName, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, log logr.Logger) (*ctrl.Result, error) {
+func (r *Reconciler) deleteStack(ctx context.Context, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, log logr.Logger) (*ctrl.Result, error) {
 	log.Info("start deleting databases " + stack.Name)
 	if err := delete.DeleteByService(conf, stack.Name, log); err != nil {
 		log.Error(err, "Error during deleting databases")
@@ -130,7 +129,7 @@ func (r *Reconciler) deleteStack(ctx context.Context, key types.NamespacedName, 
 	return nil, nil
 }
 
-func (r *Reconciler) backupStack(ctx context.Context, conf *stackv1beta3.Configuration, stack *stackv1beta3.Stack, t *v1.Time, log logr.Logger) error {
+func (r *Reconciler) backupStack(ctx context.Context, conf *stackv1beta3.Configuration, stackName string, t *v1.Time, log logr.Logger) error {
 	session, err := s3.NewSession(
 		conf.Spec.S3.S3SecretConfig.AccessKey,
 		conf.Spec.S3.S3SecretConfig.SecretKey,
@@ -147,8 +146,8 @@ func (r *Reconciler) backupStack(ctx context.Context, conf *stackv1beta3.Configu
 
 	storage := s3.NewS3Storage(session, conf.Spec.S3.Bucket)
 
-	log.Info("start backup for " + stack.Name)
-	if err := backup.BackupServices(conf, stack, storage, t, log); err != nil {
+	log.Info("start backup for " + stackName)
+	if err := backup.BackupServices(conf, stackName, storage, t, log); err != nil {
 		log.Error(err, "Error during backups")
 		return err
 	}

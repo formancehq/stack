@@ -4210,6 +4210,8 @@ spec:
                 type: object
               s3:
                 properties:
+                  bucket:
+                    type: string
                   endpoint:
                     type: string
                   forceStylePath:
@@ -4226,6 +4228,7 @@ spec:
                         type: string
                     type: object
                 required:
+                - bucket
                 - endpoint
                 type: object
               services:
