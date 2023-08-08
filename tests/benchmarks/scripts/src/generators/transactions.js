@@ -23,14 +23,11 @@ export function generateTransactions(iterationInTest) {
 
 export function generateTransactionsNumscript(iterationInTest) {
     const paymentIn = `payments:in:${iterationInTest}`;
-    const wallet = `wallets:${iterationInTest}:main`;
     return {
         script: {
             plain: num,
             vars: {
                 "payment_in": paymentIn,
-                "wallets": wallet,
-                "world": `world:${iterationInTest}`,
             }
         },
     }
