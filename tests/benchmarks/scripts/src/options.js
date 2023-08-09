@@ -20,8 +20,8 @@ export function K6Options() {
                 startVUs: 0,
                 stages: [
                     { duration: '6m', target: 0 },
-                    { duration: '10s', target: 20 },
-                    { duration: '5m', target: 20 },
+                    { duration: '10s', target: 10 },
+                    { duration: '5m', target: 10 },
                 ],
                 gracefulRampDown: '0s',
                 exec: 'read_transactions',
@@ -44,8 +44,8 @@ export function K6Options() {
                 startVUs: 0,
                 stages: [
                     { duration: '6m', target: 0 },
-                    { duration: '10s', target: 2 },
-                    { duration: '5m', target: 2 },
+                    { duration: '10s', target: 10 },
+                    { duration: '5m', target: 10 },
                 ],
                 gracefulRampDown: '0s',
                 exec: 'read_balances',
@@ -56,8 +56,8 @@ export function K6Options() {
                 startVUs: 0,
                 stages: [
                     { duration: '6m', target: 0 },
-                    { duration: '10s', target: 2 },
-                    { duration: '5m', target: 2 },
+                    { duration: '10s', target: 10 },
+                    { duration: '5m', target: 10 },
                 ],
                 gracefulRampDown: '0s',
                 exec: 'read_aggregatebalances',

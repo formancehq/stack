@@ -26,7 +26,7 @@ export function ReadAccounts(BASE_URL) {
         });
     });
     group('Accounts - filter by address pattern (READ)', function () {
-        url.searchParams.append('address', 'wallet:*:main');
+        url.searchParams.append('address', 'wallet::main');
 
         const res = http.get(url.toString());
         readAccountsWaitingTime.add(res.timings.waiting);

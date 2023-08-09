@@ -160,6 +160,9 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 }
 
 func (c *Extension) StopLedger() {
+	if os.Getenv("NO_CLEANUP") == "true" {
+		return
+	}
 	c.logger.Infof("Shutting down ledger container...")
 	if err := c.pool.Client.KillContainer(docker.KillContainerOptions{
 		ID:     c.resource.Container.ID,
@@ -298,18 +301,19 @@ func v2EnvVars(testID string, configuration LedgerConfiguration) []string {
 		"BIND=:3068",
 		"STORAGE_DRIVER=postgres",
 		"STORAGE_POSTGRES_CONN_STRING=" + configuration.PostgresDSN,
-		"STORAGE_POSTGRES_MAX_OPEN_CONNS=500",
-		"OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
-		"OTEL_TRACES=true",
-		"OTEL_TRACES_EXPORTER=otlp",
-		"OTEL_TRACES_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
-		"OTEL_TRACES_EXPORTER_OTLP_INSECURE=true",
-		"OTEL_METRICS=true",
-		"OTEL_METRICS_EXPORTER=otlp",
-		"OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
-		"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
-		"OTEL_METRICS_RUNTIME=true",
-		"OTEL_METRICS_EXPORTER_PUSH_INTERVAL=1s",
+		"STORAGE_POSTGRES_MAX_OPEN_CONNS=50",
+		"STORAGE_POSTGRES_MAX_IDLE_CONNS=50",
+		//"OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
+		//"OTEL_TRACES=true",
+		//"OTEL_TRACES_EXPORTER=otlp",
+		//"OTEL_TRACES_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
+		//"OTEL_TRACES_EXPORTER_OTLP_INSECURE=true",
+		//"OTEL_METRICS=true",
+		//"OTEL_METRICS_EXPORTER=otlp",
+		//"OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
+		//"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
+		//"OTEL_METRICS_RUNTIME=true",
+		//"OTEL_METRICS_EXPORTER_PUSH_INTERVAL=1s",
 		"DEBUG=false",
 	}
 }

@@ -26,7 +26,7 @@ export function ReadBalances(BASE_URL) {
         });
     });
     group('Balances - filter by address pattern (READ)', function () {
-        url.searchParams.append('address', 'wallet:*:main');
+        url.searchParams.append('address', 'wallet::main');
 
         const res = http.get(url.toString());
         readBalancesWaitingTime.add(res.timings.waiting);
