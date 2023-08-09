@@ -6,9 +6,9 @@ metadata:
     name: search-benthos
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.29
+    clusterIP: 10.0.0.99
     clusterIPs:
-        - 10.0.0.29
+        - 10.0.0.99
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

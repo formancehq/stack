@@ -4234,6 +4234,13 @@ spec:
                         - port
                         - username
                         type: object
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                       staticClients:
                         items:
                           properties:
@@ -4267,6 +4274,24 @@ spec:
                     - postgres
                     type: object
                   control:
+                    properties:
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
+                    type: object
+                  gateway:
+                    properties:
+                      annotations:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                     type: object
                   ledger:
                     properties:
@@ -4290,15 +4315,18 @@ spec:
                         - port
                         - username
                         type: object
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                     required:
                     - postgres
                     type: object
                   orchestration:
                     properties:
-                      debug:
-                        type: boolean
-                      dev:
-                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4316,6 +4344,13 @@ spec:
                         - password
                         - port
                         - username
+                        type: object
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
                         type: object
                     required:
                     - postgres
@@ -4341,6 +4376,13 @@ spec:
                         - password
                         - port
                         - username
+                        type: object
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
                         type: object
                     required:
                     - encryptionKey
@@ -4391,29 +4433,38 @@ spec:
                           useZinc:
                             type: boolean
                         type: object
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                     required:
                     - elasticSearch
                     type: object
                   stargate:
                     properties:
-                      debug:
-                        type: boolean
-                      dev:
-                        type: boolean
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                     type: object
                   wallets:
                     properties:
-                      debug:
-                        type: boolean
-                      dev:
-                        type: boolean
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                     type: object
                   webhooks:
                     properties:
-                      debug:
-                        type: boolean
-                      dev:
-                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4431,6 +4482,13 @@ spec:
                         - password
                         - port
                         - username
+                        type: object
+                      service:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
                         type: object
                     required:
                     - postgres

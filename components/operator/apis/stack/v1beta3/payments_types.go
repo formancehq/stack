@@ -4,4 +4,7 @@ package v1beta3
 type PaymentsSpec struct {
 	EncryptionKey string         `json:"encryptionKey"`
 	Postgres      PostgresConfig `json:"postgres"`
+
+	// +optional
+	Annotations AnnotationsServicesSpec `json:"service"`
 }

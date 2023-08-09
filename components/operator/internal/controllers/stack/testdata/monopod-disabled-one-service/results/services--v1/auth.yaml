@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: monopod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.192
+    clusterIP: 10.0.0.67
     clusterIPs:
-        - 10.0.0.192
+        - 10.0.0.67
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

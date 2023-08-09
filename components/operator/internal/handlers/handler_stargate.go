@@ -39,6 +39,7 @@ func init() {
 							HasVersionEndpoint: true,
 							ExposeHTTP:         true,
 							Liveness:           modules.LivenessDefault,
+							Annotations:        ctx.Configuration.Spec.Services.Stargate.Annotations.Service,
 							AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
 								return stackv1beta3.NewClientConfiguration()
 							},

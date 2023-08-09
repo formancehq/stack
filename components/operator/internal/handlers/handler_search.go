@@ -121,6 +121,7 @@ func searchService(ctx modules.ModuleContext) *modules.Service {
 		ListenEnvVar:       "BIND",
 		ExposeHTTP:         true,
 		HasVersionEndpoint: true,
+		Annotations:        ctx.Configuration.Spec.Services.Search.Annotations.Service,
 		Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 			env := elasticSearchEnvVars(resolveContext.Stack, resolveContext.Configuration, resolveContext.Versions).
 				Append(
@@ -153,10 +154,11 @@ func searchService(ctx modules.ModuleContext) *modules.Service {
 
 func benthosService(ctx modules.ModuleContext) *modules.Service {
 	ret := &modules.Service{
-		Name:       "benthos",
-		Port:       4195,
-		ExposeHTTP: true,
-		Liveness:   modules.LivenessDisable,
+		Name:        "benthos",
+		Port:        4195,
+		ExposeHTTP:  true,
+		Liveness:    modules.LivenessDisable,
+		Annotations: ctx.Configuration.Spec.Services.Search.Annotations.Service,
 		Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
 			ret := modules.Configs{}
 

@@ -21,4 +21,11 @@ type LedgerSpec struct {
 	Postgres PostgresConfig `json:"postgres"`
 	// +optional
 	AllowPastTimestamps bool `json:"allowPastTimestamps"`
+	// +optional
+	Annotations AnnotationsServicesSpec `json:"service"`
+}
+
+type ServiceSpec struct {
+	// +optional
+	Annotations map[string]string `json:"annotations,omitempty"`
 }

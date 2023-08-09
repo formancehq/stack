@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.83
+    clusterIP: 10.0.0.240
     clusterIPs:
-        - 10.0.0.83
+        - 10.0.0.240
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: orchestration
     namespace: multipod-latest-no-monitoring
 spec:
-    clusterIP: 10.0.0.189
+    clusterIP: 10.0.0.96
     clusterIPs:
-        - 10.0.0.189
+        - 10.0.0.96
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

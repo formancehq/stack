@@ -13,10 +13,11 @@ func init() {
 			"v0.0.0": {
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return modules.Services{{
-						Secured:    true,
-						Port:       3000,
-						ExposeHTTP: true,
-						Liveness:   modules.LivenessDisable,
+						Secured:     true,
+						Port:        3000,
+						ExposeHTTP:  true,
+						Liveness:    modules.LivenessDisable,
+						Annotations: ctx.Configuration.Spec.Services.Control.Annotations.Service,
 						AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
 							return stackv1beta3.NewClientConfiguration().
 								WithAdditionalScopes("profile", "email", "offline").

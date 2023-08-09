@@ -31,6 +31,7 @@ func init() {
 						Container:               resolveAuthContainer,
 						InjectPostgresVariables: true,
 						HasVersionEndpoint:      true,
+						Annotations:             ctx.Configuration.Spec.Services.Auth.Annotations.Service,
 					}}
 				},
 			},

@@ -19,10 +19,11 @@ func init() {
 			"v0.0.0": {
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return modules.Services{{
-						Port:       gatewayPort,
-						Path:       "/",
-						ExposeHTTP: true,
-						Liveness:   modules.LivenessDisable,
+						Port:        gatewayPort,
+						Path:        "/",
+						ExposeHTTP:  true,
+						Liveness:    modules.LivenessDisable,
+						Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
 						Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
 							return modules.Configs{
 								"config": modules.Config{
