@@ -39,6 +39,18 @@ garden deploy
 kubectl apply -f garden/example-v1beta3.yaml
 ```
 
+5. Stop the cluster
+
+```sh
+garden stop
+```
+
+6. Start the cluster
+
+```sh
+garden start
+```
+
 Add an entry for `host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
 Go to http://host.k3d.internal.
 Login with admin@formance.com / password
@@ -72,7 +84,7 @@ Then in order to build and publish your image
     1. BUILD: `make docker-build`
     2. PUSH: `make docker-push`
     3. BUILD Helm: `make helm-update`
-At this step you can use garden deploy
+At this step you can use `garden deploy`
     1. DEPLOY Helm:`make helm-local-install`
     2. REDEPLOY Helm: `make helm-local-upgrade`
 

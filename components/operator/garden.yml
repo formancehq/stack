@@ -1,10 +1,46 @@
 ---
 apiVersion: garden.io/v0
 kind: Deploy
+description: operator pre-deploy build
+type: exec
+name: operator-build
+spec:
+  deployCommand:
+    - sh
+    - -c
+    - make docker-build-local-prod 
+---
+apiVersion: garden.io/v0
+kind: Deploy
+description: operator pre-deploy push
+type: exec
+name: operator-push
+spec:
+  deployCommand:
+    - sh
+    - -c
+    - make docker-push-local-prod
+---
+apiVersion: garden.io/v0
+kind: Deploy
+description: operator pre-deploy helm update
+type: exec
+name: operator-helm-build
+spec:
+  deployCommand:
+    - sh
+    - -c
+    - make helm-update
+---
+apiVersion: garden.io/v0
+kind: Deploy
 type: helm
 description: Operator Helm deploy
 name: formance-operator
 dependencies:
+  - deploy.operator-build
+  - deploy.operator-push
+  - deploy.operator-helm-build
   - deploy.cert-manager
 spec:
   namespace: formance-system
