@@ -64,20 +64,25 @@ paths:
         responses:
           '200':
             $ref: '#/components/responses/Accounts'
-  /accounts/{accountID}/balances:
+  /accounts/{accountId}:
+    get:
+      summary: Get an account
+      tags:
+        - Payments
+      operationId: getAccount
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Account'
+  /accounts/{accountId}/balances:
     get:
       summary: Get account balances
       operationId: getAccountBalances
       tags:
         - Payments
       parameters:
-        - name: accountID
-          in: path
-          schema:
-            type: string
-          description: The account ID.
-          example: XXX
-          required: true
+        - $ref: '#/components/parameters/AccountId'
         - name: limit
           in: query
           description: The maximum number of results to return per page.
@@ -299,6 +304,14 @@ components:
       description: The payment ID.
       example: XXX
       required: true
+    AccountId:
+      name: accountId
+      in: path
+      schema:
+        type: string
+      description: The account ID.
+      example: XXX
+      required: true
     Connector:
       name: connector
       description: The name of the connector.
@@ -343,6 +356,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AccountsCursor'
+    Account:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountResponse'
     AccountBalances:
       description: OK
       content:
@@ -537,6 +556,13 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Payment'
+    AccountResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Account'
     ConnectorsResponse:
       type: object
       required:
@@ -938,6 +964,7 @@ components:
         - defaultCurrency
         - defaultAsset
         - accountName
+        - type
         - raw
       properties:
         id:
@@ -955,6 +982,8 @@ components:
         defaultAsset:
           type: string
         accountName:
+          type: string
+        type:
           type: string
         raw:
           type: object

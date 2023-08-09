@@ -199,7 +199,7 @@ export class Payments {
     const baseURL: string = this._serverURL;
     const url: string = utils.generateURL(
       baseURL,
-      "/api/payments/accounts/{accountID}/balances",
+      "/api/payments/accounts/{accountId}/balances",
       req
     );
 
@@ -728,6 +728,66 @@ export class Payments {
           res.paymentsCursor = utils.objectToClass(
             httpRes?.data,
             shared.PaymentsCursor
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Get an account
+   */
+  async paymentsgetAccount(
+    req: operations.PaymentsgetAccountRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.PaymentsgetAccountResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.PaymentsgetAccountRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/accounts/{accountId}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.PaymentsgetAccountResponse =
+      new operations.PaymentsgetAccountResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.paymentsAccountResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.PaymentsAccountResponse
           );
         }
         break;

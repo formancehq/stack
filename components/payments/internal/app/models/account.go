@@ -39,6 +39,10 @@ const (
 	AccountTypeExternal AccountType = "EXTERNAL"
 )
 
+func (at AccountType) String() string {
+	return string(at)
+}
+
 type AccountID struct {
 	Reference string
 	Provider  ConnectorProvider

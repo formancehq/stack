@@ -13,6 +13,7 @@
 * [list_connector_tasks](#list_connector_tasks) - List tasks from a connector
 * [list_connectors_transfers](#list_connectors_transfers) - List transfers and their statuses
 * [list_payments](#list_payments) - List payments
+* [paymentsget_account](#paymentsget_account) - Get an account
 * [paymentsget_server_info](#paymentsget_server_info) - Get server info
 * [paymentslist_accounts](#paymentslist_accounts) - List accounts
 * [read_connector_config](#read_connector_config) - Read the config of a connector
@@ -341,6 +342,32 @@ if res.payments_cursor is not None:
     # handle response
 ```
 
+## paymentsget_account
+
+Get an account
+
+### Example Usage
+
+```python
+import sdk
+from sdk.models import operations
+
+s = sdk.SDK(
+    security=shared.Security(
+        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
+    ),
+)
+
+req = operations.PaymentsgetAccountRequest(
+    account_id='quidem',
+)
+
+res = s.payments.paymentsget_account(req)
+
+if res.payments_account_response is not None:
+    # handle response
+```
+
 ## paymentsget_server_info
 
 Get server info
@@ -382,11 +409,11 @@ s = sdk.SDK(
 
 req = operations.PaymentslistAccountsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=692532,
+    page_size=588465,
     sort=[
-        'nam',
         'id',
         'blanditiis',
+        'deleniti',
     ],
 )
 
@@ -413,7 +440,7 @@ s = sdk.SDK(
 )
 
 req = operations.ReadConnectorConfigRequest(
-    connector=shared.Connector.CURRENCY_CLOUD,
+    connector=shared.Connector.MONEYCORP,
 )
 
 res = s.payments.read_connector_config(req)
@@ -441,7 +468,7 @@ s = sdk.SDK(
 )
 
 req = operations.ResetConnectorRequest(
-    connector=shared.Connector.MONEYCORP,
+    connector=shared.Connector.DUMMY_PAY,
 )
 
 res = s.payments.reset_connector(req)
@@ -467,7 +494,7 @@ s = sdk.SDK(
 )
 
 req = operations.UninstallConnectorRequest(
-    connector=shared.Connector.DUMMY_PAY,
+    connector=shared.Connector.BANKING_CIRCLE,
 )
 
 res = s.payments.uninstall_connector(req)
@@ -494,9 +521,9 @@ s = sdk.SDK(
 
 req = operations.UpdateMetadataRequest(
     payment_metadata=shared.PaymentMetadata(
-        key='deserunt',
+        key='nisi',
     ),
-    payment_id='nisi',
+    payment_id='vel',
 )
 
 res = s.payments.update_metadata(req)

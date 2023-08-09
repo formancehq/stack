@@ -46,6 +46,7 @@ func httpRouter(logger logging.Logger, store *storage.Storage, serviceInfo api.S
 	authGroup.Path("/payments/{paymentID}/metadata").Methods(http.MethodPatch).Handler(updateMetadataHandler(store))
 
 	authGroup.Path("/accounts").Methods(http.MethodGet).Handler(listAccountsHandler(store))
+	authGroup.Path("/accounts/{accountID}").Methods(http.MethodGet).Handler(readAccountHandler(store))
 	authGroup.Path("/accounts/{accountID}/balances").Methods(http.MethodGet).Handler(listBalancesForAccount(store))
 
 	authGroup.HandleFunc("/connectors", readConnectorsHandler(store))

@@ -134,7 +134,7 @@ class Payments
     ): \formance\stack\Models\Operations\GetAccountBalancesResponse
     {
         $baseUrl = $this->_serverUrl;
-        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/accounts/{accountID}/balances', \formance\stack\Models\Operations\GetAccountBalancesRequest::class, $request);
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/accounts/{accountId}/balances', \formance\stack\Models\Operations\GetAccountBalancesRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\GetAccountBalancesRequest::class, $request, null));
@@ -453,6 +453,42 @@ class Payments
             if (Utils\Utils::matchContentType($contentType, 'application/json')) {
                 $serializer = Utils\JSON::createSerializer();
                 $response->paymentsCursor = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\PaymentsCursor', 'json');
+            }
+        }
+
+        return $response;
+    }
+	
+    /**
+     * Get an account
+     * 
+     * @param \formance\stack\Models\Operations\PaymentsgetAccountRequest $request
+     * @return \formance\stack\Models\Operations\PaymentsgetAccountResponse
+     */
+	public function paymentsgetAccount(
+        \formance\stack\Models\Operations\PaymentsgetAccountRequest $request,
+    ): \formance\stack\Models\Operations\PaymentsgetAccountResponse
+    {
+        $baseUrl = $this->_serverUrl;
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/accounts/{accountId}', \formance\stack\Models\Operations\PaymentsgetAccountRequest::class, $request);
+        
+        $options = ['http_errors' => false];
+        $options['headers']['Accept'] = 'application/json';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
+        
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
+        
+        $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
+
+        $response = new \formance\stack\Models\Operations\PaymentsgetAccountResponse();
+        $response->statusCode = $httpResponse->getStatusCode();
+        $response->contentType = $contentType;
+        $response->rawResponse = $httpResponse;
+        
+        if ($httpResponse->getStatusCode() === 200) {
+            if (Utils\Utils::matchContentType($contentType, 'application/json')) {
+                $serializer = Utils\JSON::createSerializer();
+                $response->paymentsAccountResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\PaymentsAccountResponse', 'json');
             }
         }
 

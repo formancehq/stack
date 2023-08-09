@@ -140,6 +140,8 @@ lib/src/main/java/com/formance/formance_sdk/models/operations/ListConnectorsTran
 lib/src/main/java/com/formance/formance_sdk/models/operations/ListConnectorsTransfersResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/ListPaymentsRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/ListPaymentsResponse.java
+lib/src/main/java/com/formance/formance_sdk/models/operations/PaymentsgetAccountRequest.java
+lib/src/main/java/com/formance/formance_sdk/models/operations/PaymentsgetAccountResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/PaymentsgetServerInfoResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/PaymentslistAccountsRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/PaymentslistAccountsResponse.java
@@ -362,9 +364,10 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/TransfersResponseData.
 lib/src/main/java/com/formance/formance_sdk/models/shared/TransfersResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsCursorCursor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsCursor.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsAccountResponse.java
+lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsAccount.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AccountsCursorCursor.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AccountsCursor.java
-lib/src/main/java/com/formance/formance_sdk/models/shared/PaymentsAccount.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConnectorConfigResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ResponseCursorTotal.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ResponseCursor.java

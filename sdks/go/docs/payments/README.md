@@ -13,6 +13,7 @@
 * [ListConnectorTasks](#listconnectortasks) - List tasks from a connector
 * [ListConnectorsTransfers](#listconnectorstransfers) - List transfers and their statuses
 * [ListPayments](#listpayments) - List payments
+* [PaymentsgetAccount](#paymentsgetaccount) - Get an account
 * [PaymentsgetServerInfo](#paymentsgetserverinfo) - Get server info
 * [PaymentslistAccounts](#paymentslistaccounts) - List accounts
 * [ReadConnectorConfig](#readconnectorconfig) - Read the config of a connector
@@ -469,6 +470,43 @@ func main() {
 }
 ```
 
+## PaymentsgetAccount
+
+Get an account
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.PaymentsgetAccount(ctx, operations.PaymentsgetAccountRequest{
+        AccountID: "quidem",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.PaymentsAccountResponse != nil {
+        // handle response
+    }
+}
+```
+
 ## PaymentsgetServerInfo
 
 Get server info
@@ -529,11 +567,11 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.PaymentslistAccounts(ctx, operations.PaymentslistAccountsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(692532),
+        PageSize: formance.Int64(588465),
         Sort: []string{
-            "nam",
             "id",
             "blanditiis",
+            "deleniti",
         },
     })
     if err != nil {
@@ -572,7 +610,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.ReadConnectorConfig(ctx, operations.ReadConnectorConfigRequest{
-        Connector: shared.ConnectorCurrencyCloud,
+        Connector: shared.ConnectorMoneycorp,
     })
     if err != nil {
         log.Fatal(err)
@@ -612,7 +650,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.ResetConnector(ctx, operations.ResetConnectorRequest{
-        Connector: shared.ConnectorMoneycorp,
+        Connector: shared.ConnectorDummyPay,
     })
     if err != nil {
         log.Fatal(err)
@@ -650,7 +688,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.UninstallConnector(ctx, operations.UninstallConnectorRequest{
-        Connector: shared.ConnectorDummyPay,
+        Connector: shared.ConnectorBankingCircle,
     })
     if err != nil {
         log.Fatal(err)
@@ -689,9 +727,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.UpdateMetadata(ctx, operations.UpdateMetadataRequest{
         PaymentMetadata: shared.PaymentMetadata{
-            Key: formance.String("deserunt"),
+            Key: formance.String("nisi"),
         },
-        PaymentID: "nisi",
+        PaymentID: "vel",
     })
     if err != nil {
         log.Fatal(err)

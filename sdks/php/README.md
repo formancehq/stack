@@ -140,6 +140,7 @@ try {
 * [listConnectorTasks](docs/payments/README.md#listconnectortasks) - List tasks from a connector
 * [listConnectorsTransfers](docs/payments/README.md#listconnectorstransfers) - List transfers and their statuses
 * [listPayments](docs/payments/README.md#listpayments) - List payments
+* [paymentsgetAccount](docs/payments/README.md#paymentsgetaccount) - Get an account
 * [paymentsgetServerInfo](docs/payments/README.md#paymentsgetserverinfo) - Get server info
 * [paymentslistAccounts](docs/payments/README.md#paymentslistaccounts) - List accounts
 * [readConnectorConfig](docs/payments/README.md#readconnectorconfig) - Read the config of a connector

@@ -25,6 +25,7 @@ sdk.search.search({
   after: [
     "users:002",
     "users:002",
+    "users:002",
   ],
   cursor: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=",
   ledgers: [
@@ -32,15 +33,15 @@ sdk.search.search({
     "quickstart",
     "quickstart",
   ],
-  pageSize: 606393,
+  pageSize: 474867,
   policy: "OR",
   raw: {
-    "perferendis": "nihil",
-    "magnam": "distinctio",
+    "nihil": "magnam",
   },
   sort: "txid:asc",
-  target: "id",
+  target: "distinctio",
   terms: [
+    "destination=central_bank1",
     "destination=central_bank1",
     "destination=central_bank1",
   ],

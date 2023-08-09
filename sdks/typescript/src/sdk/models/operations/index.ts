@@ -71,6 +71,7 @@ export * from "./listusers";
 export * from "./listwallets";
 export * from "./listworkflows";
 export * from "./orchestrationgetserverinfo";
+export * from "./paymentsgetaccount";
 export * from "./paymentsgetserverinfo";
 export * from "./paymentslistaccounts";
 export * from "./readclient";

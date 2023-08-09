@@ -71,6 +71,7 @@ src/sdk/models/operations/listconfigsavailableconnectors.py
 src/sdk/models/operations/listconnectortasks.py
 src/sdk/models/operations/listconnectorstransfers.py
 src/sdk/models/operations/listpayments.py
+src/sdk/models/operations/paymentsgetaccount.py
 src/sdk/models/operations/paymentsgetserverinfo.py
 src/sdk/models/operations/paymentslistaccounts.py
 src/sdk/models/operations/readconnectorconfig.py
@@ -240,8 +241,9 @@ src/sdk/models/shared/connectorsconfigsresponse.py
 src/sdk/models/shared/taskscursor.py
 src/sdk/models/shared/transfersresponse.py
 src/sdk/models/shared/paymentscursor.py
-src/sdk/models/shared/accountscursor.py
+src/sdk/models/shared/paymentsaccountresponse.py
 src/sdk/models/shared/paymentsaccount.py
+src/sdk/models/shared/accountscursor.py
 src/sdk/models/shared/connectorconfigresponse.py
 src/sdk/models/shared/response.py
 src/sdk/models/shared/query.py

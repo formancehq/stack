@@ -88,7 +88,7 @@ class Payments:
         r"""Get account balances"""
         base_url = self._server_url
         
-        url = utils.generate_url(operations.GetAccountBalancesRequest, base_url, '/api/payments/accounts/{accountID}/balances', request)
+        url = utils.generate_url(operations.GetAccountBalancesRequest, base_url, '/api/payments/accounts/{accountId}/balances', request)
         headers = {}
         query_params = utils.get_query_params(operations.GetAccountBalancesRequest, request)
         headers['Accept'] = 'application/json'
@@ -312,6 +312,30 @@ class Payments:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.PaymentsCursor])
                 res.payments_cursor = out
+
+        return res
+
+    
+    def paymentsget_account(self, request: operations.PaymentsgetAccountRequest) -> operations.PaymentsgetAccountResponse:
+        r"""Get an account"""
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.PaymentsgetAccountRequest, base_url, '/api/payments/accounts/{accountId}', request)
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.PaymentsgetAccountResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.PaymentsAccountResponse])
+                res.payments_account_response = out
 
         return res
 

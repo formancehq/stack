@@ -10,7 +10,7 @@ import (
 
 type GetAccountBalancesRequest struct {
 	// The account ID.
-	AccountID string `pathParam:"style=simple,explode=false,name=accountID"`
+	AccountID string `pathParam:"style=simple,explode=false,name=accountId"`
 	// Filter balances by currency.
 	// If not specified, all account's balances will be returned.
 	//

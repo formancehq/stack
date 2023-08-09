@@ -25,6 +25,7 @@ req = shared.Query(
     after=[
         'users:002',
         'users:002',
+        'users:002',
     ],
     cursor='YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=',
     ledgers=[
@@ -32,15 +33,15 @@ req = shared.Query(
         'quickstart',
         'quickstart',
     ],
-    page_size=606393,
+    page_size=474867,
     policy='OR',
     raw={
-        "perferendis": 'nihil',
-        "magnam": 'distinctio',
+        "nihil": 'magnam',
     },
     sort='txid:asc',
-    target='id',
+    target='distinctio',
     terms=[
+        'destination=central_bank1',
         'destination=central_bank1',
         'destination=central_bank1',
     ],

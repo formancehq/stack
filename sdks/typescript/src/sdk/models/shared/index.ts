@@ -106,6 +106,7 @@ export * from "./paymentadjustment";
 export * from "./paymentmetadata";
 export * from "./paymentresponse";
 export * from "./paymentsaccount";
+export * from "./paymentsaccountresponse";
 export * from "./paymentscursor";
 export * from "./paymentstatus";
 export * from "./posting";

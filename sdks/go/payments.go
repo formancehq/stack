@@ -152,7 +152,7 @@ func (s *payments) ConnectorsTransfer(ctx context.Context, request operations.Co
 // GetAccountBalances - Get account balances
 func (s *payments) GetAccountBalances(ctx context.Context, request operations.GetAccountBalancesRequest) (*operations.GetAccountBalancesResponse, error) {
 	baseURL := s.serverURL
-	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/accounts/{accountID}/balances", request, nil)
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/accounts/{accountId}/balances", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -594,6 +594,55 @@ func (s *payments) ListPayments(ctx context.Context, request operations.ListPaym
 			}
 
 			res.PaymentsCursor = out
+		}
+	}
+
+	return res, nil
+}
+
+// PaymentsgetAccount - Get an account
+func (s *payments) PaymentsgetAccount(ctx context.Context, request operations.PaymentsgetAccountRequest) (*operations.PaymentsgetAccountResponse, error) {
+	baseURL := s.serverURL
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/accounts/{accountId}", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
+
+	client := s.securityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+	defer httpRes.Body.Close()
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.PaymentsgetAccountResponse{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out *shared.PaymentsAccountResponse
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+				return nil, err
+			}
+
+			res.PaymentsAccountResponse = out
 		}
 	}
 
