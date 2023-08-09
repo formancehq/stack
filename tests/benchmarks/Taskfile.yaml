@@ -4,8 +4,6 @@ tasks:
   tools:
     dir: ./tools
     cmds:
-      - docker compose stop postgres
-      - docker compose rm postgres --force --volumes
       - docker compose up -d
       - sleep 20
 
@@ -24,6 +22,7 @@ tasks:
       - build:scripts
       - build:k6
     cmds:
+      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "DROP DATABASE IF EXISTS ledgerv1;"
       - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv1;"
       - TEST_ID=$(date +%s)-v1 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out xk6-prometheus-rw scripts/dist/ledger-v1.js
     env:
@@ -37,8 +36,10 @@ tasks:
       - build:scripts
       - build:k6
     cmds:
-#      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv2;"
+#      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "DROP DATABASE IF EXISTS ledgerv2;"
+      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv2;"
       - TEST_ID=$(date +%s)-v2 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out xk6-prometheus-rw scripts/dist/ledger-v2.js
+      #- TEST_ID=$(date +%s)-v2 ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" scripts/dist/ledger-v2.js
     env:
       POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledgerv2?sslmode=disable
       OTLP_ENDPOINT: otel:4317
