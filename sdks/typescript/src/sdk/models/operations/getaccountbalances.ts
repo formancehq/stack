@@ -11,9 +11,9 @@ export class GetAccountBalancesRequest extends SpeakeasyBase {
    * The account ID.
    */
   @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=accountID",
+    data: "pathParam, style=simple;explode=false;name=accountId",
   })
-  accountID: string;
+  accountId: string;
 
   /**
    * Filter balances by currency.

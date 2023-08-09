@@ -14,10 +14,10 @@ class GetAccountBalancesRequest
     /**
      * The account ID.
      * 
-     * @var string $accountID
+     * @var string $accountId
      */
-	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=accountID')]
-    public string $accountID;
+	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=accountId')]
+    public string $accountId;
     
     /**
      * Filter balances by currency.
@@ -93,7 +93,7 @@ class GetAccountBalancesRequest
     
 	public function __construct()
 	{
-		$this->accountID = "";
+		$this->accountId = "";
 		$this->asset = null;
 		$this->cursor = null;
 		$this->from = null;

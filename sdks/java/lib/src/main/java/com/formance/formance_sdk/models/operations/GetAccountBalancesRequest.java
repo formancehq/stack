@@ -12,11 +12,11 @@ public class GetAccountBalancesRequest {
     /**
      * The account ID.
      */
-    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=accountID")
-    public String accountID;
+    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=accountId")
+    public String accountId;
 
-    public GetAccountBalancesRequest withAccountID(String accountID) {
-        this.accountID = accountID;
+    public GetAccountBalancesRequest withAccountId(String accountId) {
+        this.accountId = accountId;
         return this;
     }
     
@@ -108,7 +108,7 @@ public class GetAccountBalancesRequest {
         return this;
     }
     
-    public GetAccountBalancesRequest(@JsonProperty("accountID") String accountID) {
-        this.accountID = accountID;
+    public GetAccountBalancesRequest(@JsonProperty("accountId") String accountId) {
+        this.accountId = accountId;
   }
 }

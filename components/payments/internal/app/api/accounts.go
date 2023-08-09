@@ -9,6 +9,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/storage"
+	"github.com/gorilla/mux"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
@@ -26,6 +27,7 @@ type accountResponse struct {
 	DefaultCurrency string      `json:"defaultCurrency"` // Deprecated: should be removed soon
 	DefaultAsset    string      `json:"defaultAsset"`
 	AccountName     string      `json:"accountName"`
+	Type            string      `json:"type"`
 	Raw             interface{} `json:"raw"`
 }
 
@@ -93,6 +95,7 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 				DefaultCurrency: ret[i].DefaultAsset.String(),
 				DefaultAsset:    ret[i].DefaultAsset.String(),
 				AccountName:     ret[i].AccountName,
+				Type:            ret[i].Type.String(),
 				Raw:             ret[i].RawData,
 			}
 		}
@@ -111,5 +114,46 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 
 			return
 		}
+	}
+}
+
+type readAccountRepository interface {
+	GetAccount(ctx context.Context, id string) (*models.Account, error)
+}
+
+func readAccountHandler(repo readAccountRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		accountID := mux.Vars(r)["accountID"]
+
+		account, err := repo.GetAccount(r.Context(), accountID)
+		if err != nil {
+			handleStorageErrors(w, r, err)
+
+			return
+		}
+
+		data := &accountResponse{
+			ID:              account.ID.String(),
+			Reference:       account.Reference,
+			CreatedAt:       account.CreatedAt,
+			Provider:        account.Provider.String(),
+			DefaultCurrency: account.DefaultAsset.String(),
+			DefaultAsset:    account.DefaultAsset.String(),
+			AccountName:     account.AccountName,
+			Type:            account.Type.String(),
+			Raw:             account.RawData,
+		}
+
+		err = json.NewEncoder(w).Encode(api.BaseResponse[accountResponse]{
+			Data: data,
+		})
+		if err != nil {
+			handleServerError(w, r, err)
+
+			return
+		}
+
 	}
 }

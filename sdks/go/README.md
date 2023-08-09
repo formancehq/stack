@@ -115,6 +115,7 @@ func main() {
 * [ListConnectorTasks](docs/payments/README.md#listconnectortasks) - List tasks from a connector
 * [ListConnectorsTransfers](docs/payments/README.md#listconnectorstransfers) - List transfers and their statuses
 * [ListPayments](docs/payments/README.md#listpayments) - List payments
+* [PaymentsgetAccount](docs/payments/README.md#paymentsgetaccount) - Get an account
 * [PaymentsgetServerInfo](docs/payments/README.md#paymentsgetserverinfo) - Get server info
 * [PaymentslistAccounts](docs/payments/README.md#paymentslistaccounts) - List accounts
 * [ReadConnectorConfig](docs/payments/README.md#readconnectorconfig) - Read the config of a connector

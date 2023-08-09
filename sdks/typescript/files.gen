@@ -82,6 +82,7 @@ src/sdk/models/operations/listconfigsavailableconnectors.ts
 src/sdk/models/operations/listconnectortasks.ts
 src/sdk/models/operations/listconnectorstransfers.ts
 src/sdk/models/operations/listpayments.ts
+src/sdk/models/operations/paymentsgetaccount.ts
 src/sdk/models/operations/paymentsgetserverinfo.ts
 src/sdk/models/operations/paymentslistaccounts.ts
 src/sdk/models/operations/readconnectorconfig.ts
@@ -251,8 +252,9 @@ src/sdk/models/shared/connectorsconfigsresponse.ts
 src/sdk/models/shared/taskscursor.ts
 src/sdk/models/shared/transfersresponse.ts
 src/sdk/models/shared/paymentscursor.ts
-src/sdk/models/shared/accountscursor.ts
+src/sdk/models/shared/paymentsaccountresponse.ts
 src/sdk/models/shared/paymentsaccount.ts
+src/sdk/models/shared/accountscursor.ts
 src/sdk/models/shared/connectorconfigresponse.ts
 src/sdk/models/shared/response.ts
 src/sdk/models/shared/query.ts

@@ -13,6 +13,7 @@
 * [listConnectorTasks](#listconnectortasks) - List tasks from a connector
 * [listConnectorsTransfers](#listconnectorstransfers) - List transfers and their statuses
 * [listPayments](#listpayments) - List payments
+* [paymentsgetAccount](#paymentsgetaccount) - Get an account
 * [paymentsgetServerInfo](#paymentsgetserverinfo) - Get server info
 * [paymentslistAccounts](#paymentslistaccounts) - List accounts
 * [readConnectorConfig](#readconnectorconfig) - Read the config of a connector
@@ -101,7 +102,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getAccountBalances({
-  accountID: "provident",
+  accountId: "provident",
   asset: "necessitatibus",
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   from: new Date("2021-09-21T14:06:09.271Z"),
@@ -339,6 +340,32 @@ sdk.payments.listPayments({
 });
 ```
 
+## paymentsgetAccount
+
+Get an account
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { PaymentsgetAccountResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.payments.paymentsgetAccount({
+  accountId: "quidem",
+}).then((res: PaymentsgetAccountResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
 ## paymentsgetServerInfo
 
 Get server info
@@ -381,11 +408,11 @@ const sdk = new SDK({
 
 sdk.payments.paymentslistAccounts({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 692532,
+  pageSize: 588465,
   sort: [
-    "nam",
     "id",
     "blanditiis",
+    "deleniti",
   ],
 }).then((res: PaymentslistAccountsResponse) => {
   if (res.statusCode == 200) {
@@ -412,7 +439,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.readConnectorConfig({
-  connector: Connector.CurrencyCloud,
+  connector: Connector.Moneycorp,
 }).then((res: ReadConnectorConfigResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -440,7 +467,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.resetConnector({
-  connector: Connector.Moneycorp,
+  connector: Connector.DummyPay,
 }).then((res: ResetConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -466,7 +493,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.uninstallConnector({
-  connector: Connector.DummyPay,
+  connector: Connector.BankingCircle,
 }).then((res: UninstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -492,9 +519,9 @@ const sdk = new SDK({
 
 sdk.payments.updateMetadata({
   paymentMetadata: {
-    key: "deserunt",
+    key: "nisi",
   },
-  paymentId: "nisi",
+  paymentId: "vel",
 }).then((res: UpdateMetadataResponse) => {
   if (res.statusCode == 200) {
     // handle response

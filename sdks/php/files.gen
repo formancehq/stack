@@ -129,6 +129,8 @@ src/Models/Operations/ListConnectorsTransfersRequest.php
 src/Models/Operations/ListConnectorsTransfersResponse.php
 src/Models/Operations/ListPaymentsRequest.php
 src/Models/Operations/ListPaymentsResponse.php
+src/Models/Operations/PaymentsgetAccountRequest.php
+src/Models/Operations/PaymentsgetAccountResponse.php
 src/Models/Operations/PaymentsgetServerInfoResponse.php
 src/Models/Operations/PaymentslistAccountsRequest.php
 src/Models/Operations/PaymentslistAccountsResponse.php
@@ -351,9 +353,10 @@ src/Models/Shared/TransfersResponseData.php
 src/Models/Shared/TransfersResponse.php
 src/Models/Shared/PaymentsCursorCursor.php
 src/Models/Shared/PaymentsCursor.php
+src/Models/Shared/PaymentsAccountResponse.php
+src/Models/Shared/PaymentsAccount.php
 src/Models/Shared/AccountsCursorCursor.php
 src/Models/Shared/AccountsCursor.php
-src/Models/Shared/PaymentsAccount.php
 src/Models/Shared/ConnectorConfigResponse.php
 src/Models/Shared/ResponseCursorTotal.php
 src/Models/Shared/ResponseCursor.php

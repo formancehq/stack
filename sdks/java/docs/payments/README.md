@@ -13,6 +13,7 @@
 * [listConnectorTasks](#listconnectortasks) - List tasks from a connector
 * [listConnectorsTransfers](#listconnectorstransfers) - List transfers and their statuses
 * [listPayments](#listpayments) - List payments
+* [paymentsgetAccount](#paymentsgetaccount) - Get an account
 * [paymentsgetServerInfo](#paymentsgetserverinfo) - Get server info
 * [paymentslistAccounts](#paymentslistaccounts) - List accounts
 * [readConnectorConfig](#readconnectorconfig) - Read the config of a connector
@@ -477,6 +478,43 @@ public class Application {
 }
 ```
 
+## paymentsgetAccount
+
+Get an account
+
+### Example Usage
+
+```java
+package hello.world;
+
+import com.formance.formance_sdk.SDK;
+import com.formance.formance_sdk.models.operations.PaymentsgetAccountRequest;
+import com.formance.formance_sdk.models.operations.PaymentsgetAccountResponse;
+import com.formance.formance_sdk.models.shared.Security;
+
+public class Application {
+    public static void main(String[] args) {
+        try {
+            SDK sdk = SDK.builder()
+                .setSecurity(new Security("mollitia") {{
+                    authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
+                }})
+                .build();
+
+            PaymentsgetAccountRequest req = new PaymentsgetAccountRequest("ad");            
+
+            PaymentsgetAccountResponse res = sdk.payments.paymentsgetAccount(req);
+
+            if (res.paymentsAccountResponse != null) {
+                // handle response
+            }
+        } catch (Exception e) {
+            // handle exception
+        }
+    }
+}
+```
+
 ## paymentsgetServerInfo
 
 Get server info
@@ -494,7 +532,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("mollitia") {{
+                .setSecurity(new Security("eum") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -529,16 +567,16 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("ad") {{
+                .setSecurity(new Security("dolor") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             PaymentslistAccountsRequest req = new PaymentslistAccountsRequest() {{
                 cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
-                pageSize = 431418L;
+                pageSize = 896547L;
                 sort = new String[]{{
-                    add("necessitatibus"),
+                    add("nemo"),
                 }};
             }};            
 
@@ -573,12 +611,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("odit") {{
+                .setSecurity(new Security("quasi") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            ReadConnectorConfigRequest req = new ReadConnectorConfigRequest(Connector.WISE);            
+            ReadConnectorConfigRequest req = new ReadConnectorConfigRequest(Connector.MODULR);            
 
             ReadConnectorConfigResponse res = sdk.payments.readConnectorConfig(req);
 
@@ -613,12 +651,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("quasi") {{
+                .setSecurity(new Security("doloribus") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            ResetConnectorRequest req = new ResetConnectorRequest(Connector.MODULR);            
+            ResetConnectorRequest req = new ResetConnectorRequest(Connector.MONEYCORP);            
 
             ResetConnectorResponse res = sdk.payments.resetConnector(req);
 
@@ -651,12 +689,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("doloribus") {{
+                .setSecurity(new Security("eius") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            UninstallConnectorRequest req = new UninstallConnectorRequest(Connector.MONEYCORP);            
+            UninstallConnectorRequest req = new UninstallConnectorRequest(Connector.MANGOPAY);            
 
             UninstallConnectorResponse res = sdk.payments.uninstallConnector(req);
 
@@ -689,14 +727,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("eius") {{
+                .setSecurity(new Security("deleniti") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             UpdateMetadataRequest req = new UpdateMetadataRequest(                new PaymentMetadata() {{
-                                key = "maxime";
-                            }};, "deleniti");            
+                                key = "facilis";
+                            }};, "in");            
 
             UpdateMetadataResponse res = sdk.payments.updateMetadata(req);
 

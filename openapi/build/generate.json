@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230802"
+    "version": "v1.0.20230809"
   },
   "servers": [
     {
@@ -1908,7 +1908,26 @@
         }
       }
     },
-    "/api/payments/accounts/{accountID}/balances": {
+    "/api/payments/accounts/{accountId}": {
+      "get": {
+        "summary": "Get an account",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "paymentsgetAccount",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Account"
+          }
+        }
+      }
+    },
+    "/api/payments/accounts/{accountId}/balances": {
       "get": {
         "summary": "Get account balances",
         "operationId": "getAccountBalances",
@@ -1917,14 +1936,7 @@
         ],
         "parameters": [
           {
-            "name": "accountID",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The account ID.",
-            "example": "XXX",
-            "required": true
+            "$ref": "#/components/parameters/AccountId"
           },
           {
             "name": "limit",
@@ -5051,6 +5063,17 @@
           }
         }
       },
+      "paymentsAccountResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/paymentsAccount"
+          }
+        }
+      },
       "ConnectorsResponse": {
         "type": "object",
         "required": [
@@ -7800,6 +7823,16 @@
           }
         }
       },
+      "Account": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/paymentsAccountResponse"
+            }
+          }
+        }
+      },
       "AccountBalances": {
         "description": "OK",
         "content": {
@@ -7946,6 +7979,16 @@
           "type": "string"
         },
         "description": "The payment ID.",
+        "example": "XXX",
+        "required": true
+      },
+      "AccountId": {
+        "name": "accountId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The account ID.",
         "example": "XXX",
         "required": true
       },

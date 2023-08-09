@@ -115,6 +115,7 @@ if res.get_versions_response is not None:
 * [list_connector_tasks](docs/payments/README.md#list_connector_tasks) - List tasks from a connector
 * [list_connectors_transfers](docs/payments/README.md#list_connectors_transfers) - List transfers and their statuses
 * [list_payments](docs/payments/README.md#list_payments) - List payments
+* [paymentsget_account](docs/payments/README.md#paymentsget_account) - Get an account
 * [paymentsget_server_info](docs/payments/README.md#paymentsget_server_info) - Get server info
 * [paymentslist_accounts](docs/payments/README.md#paymentslist_accounts) - List accounts
 * [read_connector_config](docs/payments/README.md#read_connector_config) - Read the config of a connector

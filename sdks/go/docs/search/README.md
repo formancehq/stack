@@ -33,6 +33,7 @@ func main() {
         After: []string{
             "users:002",
             "users:002",
+            "users:002",
         },
         Cursor: formance.String("YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="),
         Ledgers: []string{
@@ -40,15 +41,15 @@ func main() {
             "quickstart",
             "quickstart",
         },
-        PageSize: formance.Int64(606393),
+        PageSize: formance.Int64(474867),
         Policy: formance.String("OR"),
         Raw: map[string]interface{}{
-            "perferendis": "nihil",
-            "magnam": "distinctio",
+            "nihil": "magnam",
         },
         Sort: formance.String("txid:asc"),
-        Target: formance.String("id"),
+        Target: formance.String("distinctio"),
         Terms: []string{
+            "destination=central_bank1",
             "destination=central_bank1",
             "destination=central_bank1",
         },

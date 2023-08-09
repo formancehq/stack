@@ -78,6 +78,7 @@ pkg/models/operations/listconfigsavailableconnectors.go
 pkg/models/operations/listconnectortasks.go
 pkg/models/operations/listconnectorstransfers.go
 pkg/models/operations/listpayments.go
+pkg/models/operations/paymentsgetaccount.go
 pkg/models/operations/paymentsgetserverinfo.go
 pkg/models/operations/paymentslistaccounts.go
 pkg/models/operations/readconnectorconfig.go
@@ -247,8 +248,9 @@ pkg/models/shared/connectorsconfigsresponse.go
 pkg/models/shared/taskscursor.go
 pkg/models/shared/transfersresponse.go
 pkg/models/shared/paymentscursor.go
-pkg/models/shared/accountscursor.go
+pkg/models/shared/paymentsaccountresponse.go
 pkg/models/shared/paymentsaccount.go
+pkg/models/shared/accountscursor.go
 pkg/models/shared/connectorconfigresponse.go
 pkg/models/shared/response.go
 pkg/models/shared/query.go

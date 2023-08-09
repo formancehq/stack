@@ -13,6 +13,7 @@
 * [listConnectorTasks](#listconnectortasks) - List tasks from a connector
 * [listConnectorsTransfers](#listconnectorstransfers) - List transfers and their statuses
 * [listPayments](#listpayments) - List payments
+* [paymentsgetAccount](#paymentsgetaccount) - Get an account
 * [paymentsgetServerInfo](#paymentsgetserverinfo) - Get server info
 * [paymentslistAccounts](#paymentslistaccounts) - List accounts
 * [readConnectorConfig](#readconnectorconfig) - Read the config of a connector
@@ -121,7 +122,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetAccountBalancesRequest();
-    $request->accountID = 'provident';
+    $request->accountId = 'provident';
     $request->asset = 'necessitatibus';
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
     $request->from = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-09-21T14:06:09.271Z');
@@ -419,6 +420,39 @@ try {
 }
 ```
 
+## paymentsgetAccount
+
+Get an account
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\PaymentsgetAccountRequest;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new PaymentsgetAccountRequest();
+    $request->accountId = 'quidem';
+
+    $response = $sdk->payments->paymentsgetAccount($request);
+
+    if ($response->paymentsAccountResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
 ## paymentsgetServerInfo
 
 Get server info
@@ -470,11 +504,11 @@ $sdk = SDK::builder()
 try {
     $request = new PaymentslistAccountsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 692532;
+    $request->pageSize = 588465;
     $request->sort = [
-        'nam',
         'id',
         'blanditiis',
+        'deleniti',
     ];
 
     $response = $sdk->payments->paymentslistAccounts($request);
@@ -509,7 +543,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new ReadConnectorConfigRequest();
-    $request->connector = Connector::CURRENCY_CLOUD;
+    $request->connector = Connector::MONEYCORP;
 
     $response = $sdk->payments->readConnectorConfig($request);
 
@@ -545,7 +579,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new ResetConnectorRequest();
-    $request->connector = Connector::MONEYCORP;
+    $request->connector = Connector::DUMMY_PAY;
 
     $response = $sdk->payments->resetConnector($request);
 
@@ -579,7 +613,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new UninstallConnectorRequest();
-    $request->connector = Connector::DUMMY_PAY;
+    $request->connector = Connector::BANKING_CIRCLE;
 
     $response = $sdk->payments->uninstallConnector($request);
 
@@ -614,8 +648,8 @@ $sdk = SDK::builder()
 try {
     $request = new UpdateMetadataRequest();
     $request->paymentMetadata = new PaymentMetadata();
-    $request->paymentMetadata->key = 'deserunt';
-    $request->paymentId = 'nisi';
+    $request->paymentMetadata->key = 'nisi';
+    $request->paymentId = 'vel';
 
     $response = $sdk->payments->updateMetadata($request);
 

@@ -68,11 +68,11 @@ const sdk = new SDK({
 
 sdk.wallets.createBalance({
   createBalanceRequest: {
-    expiresAt: new Date("2022-05-20T10:11:05.115Z"),
-    name: "Duane Thiel II",
-    priority: 92373,
+    expiresAt: new Date("2022-08-14T00:52:14.624Z"),
+    name: "Robin Keebler",
+    priority: 102863,
   },
-  id: "959890af-a563-4e25-96fe-4c8b711e5b7f",
+  id: "41959890-afa5-463e-a516-fe4c8b711e5b",
 }).then((res: CreateBalanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -99,12 +99,10 @@ const sdk = new SDK({
 
 sdk.wallets.createWallet({
   metadata: {
+    "repellat": "quibusdam",
     "sed": "saepe",
-    "pariatur": "accusantium",
-    "consequuntur": "praesentium",
-    "natus": "magni",
   },
-  name: "Angelica Stanton",
+  name: "Edward Crooks",
 }).then((res: CreateWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -132,28 +130,35 @@ const sdk = new SDK({
 sdk.wallets.creditWallet({
   creditWalletRequest: {
     amount: {
-      amount: 411397,
-      asset: "excepturi",
+      amount: 166847,
+      asset: "sunt",
     },
-    balance: "odit",
+    balance: "quo",
     metadata: {
+      "pariatur": "maxime",
+      "ea": "excepturi",
+      "odit": "ea",
       "accusantium": "ab",
-      "maiores": "quidem",
     },
-    reference: "ipsam",
+    reference: "maiores",
     sources: [
       {
-        identifier: "nam",
-        type: "eaque",
+        identifier: "voluptate",
+        type: "autem",
       },
       {
-        balance: "nemo",
-        identifier: "voluptatibus",
-        type: "perferendis",
+        balance: "eaque",
+        identifier: "pariatur",
+        type: "nemo",
+      },
+      {
+        balance: "perferendis",
+        identifier: "fugiat",
+        type: "amet",
       },
     ],
   },
-  id: "d30c5fbb-2587-4053-a02c-73d5fe9b90c2",
+  id: "0c5fbb25-8705-4320-ac73-d5fe9b90c289",
 }).then((res: CreditWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -181,24 +186,28 @@ const sdk = new SDK({
 sdk.wallets.debitWallet({
   debitWalletRequest: {
     amount: {
-      amount: 500026,
-      asset: "error",
+      amount: 50370,
+      asset: "occaecati",
     },
     balances: [
-      "occaecati",
+      "adipisci",
+      "asperiores",
+      "earum",
     ],
-    description: "rerum",
+    description: "modi",
     destination: {
-      identifier: "asperiores",
-      type: "earum",
+      balance: "dolorum",
+      identifier: "deleniti",
+      type: "pariatur",
     },
     metadata: {
-      "iste": "dolorum",
-      "deleniti": "pariatur",
+      "nobis": "libero",
+      "delectus": "quaerat",
+      "quos": "aliquid",
     },
     pending: false,
   },
-  id: "9cbf4863-3323-4f9b-b7f3-a4100674ebf6",
+  id: "33323f9b-77f3-4a41-8067-4ebf69280d1b",
 }).then((res: DebitWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -224,8 +233,8 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getBalance({
-  balanceName: "natus",
-  id: "280d1ba7-7a89-4ebf-b37a-e4203ce5e6a9",
+  balanceName: "dolorum",
+  id: "77a89ebf-737a-4e42-83ce-5e6a95d8a0d4",
 }).then((res: GetBalanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -251,7 +260,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getHold({
-  holdID: "minima",
+  holdID: "tempora",
 }).then((res: GetHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -279,13 +288,11 @@ const sdk = new SDK({
 sdk.wallets.getHolds({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   metadata: {
-    "totam": "similique",
-    "alias": "at",
-    "quaerat": "tempora",
-    "vel": "quod",
+    "quod": "officiis",
+    "qui": "dolorum",
   },
-  pageSize: 885338,
-  walletID: "qui",
+  pageSize: 952792,
+  walletID: "esse",
 }).then((res: GetHoldsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -310,8 +317,8 @@ const sdk = new SDK({
 
 sdk.wallets.getTransactions({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 679880,
-  walletID: "a",
+  pageSize: 687488,
+  walletID: "iusto",
 }).then((res: GetTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -337,7 +344,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getWallet({
-  id: "7a73cf3b-e453-4f87-8b32-6b5a73429cdb",
+  id: "3cf3be45-3f87-40b3-a6b5-a73429cdb1a8",
 }).then((res: GetWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -363,7 +370,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getWalletSummary({
-  id: "1a8422bb-679d-4232-a715-bf0cbb1e31b8",
+  id: "422bb679-d232-4271-9bf0-cbb1e31b8b90",
 }).then((res: GetWalletSummaryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -388,7 +395,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.listBalances({
-  id: "b90f3443-a110-48e0-adcf-4b921879fce9",
+  id: "f3443a11-08e0-4adc-b4b9-21879fce953f",
 }).then((res: ListBalancesResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -415,11 +422,11 @@ const sdk = new SDK({
 sdk.wallets.listWallets({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   metadata: {
-    "ipsum": "delectus",
-    "voluptate": "consectetur",
+    "consectetur": "vero",
+    "tenetur": "dignissimos",
   },
-  name: "Roman Kulas",
-  pageSize: 799203,
+  name: "Kelvin Schmidt",
+  pageSize: 708548,
 }).then((res: ListWalletsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -447,11 +454,13 @@ const sdk = new SDK({
 sdk.wallets.updateWallet({
   requestBody: {
     metadata: {
-      "similique": "facilis",
-      "vero": "ducimus",
+      "ducimus": "dolore",
+      "quibusdam": "illum",
+      "sequi": "natus",
+      "impedit": "aut",
     },
   },
-  id: "4dd39c0f-5d2c-4ff7-870a-45626d436813",
+  id: "f5d2cff7-c70a-4456-a6d4-36813f16d9f5",
 }).then((res: UpdateWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -477,7 +486,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.voidHold({
-  holdId: "maiores",
+  holdId: "sapiente",
 }).then((res: VoidHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response

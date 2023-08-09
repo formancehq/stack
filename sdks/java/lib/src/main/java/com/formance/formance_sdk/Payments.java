@@ -130,7 +130,7 @@ public class Payments {
      */
     public com.formance.formance_sdk.models.operations.GetAccountBalancesResponse getAccountBalances(com.formance.formance_sdk.models.operations.GetAccountBalancesRequest request) throws Exception {
         String baseUrl = this._serverUrl;
-        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetAccountBalancesRequest.class, baseUrl, "/api/payments/accounts/{accountID}/balances", request, null);
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetAccountBalancesRequest.class, baseUrl, "/api/payments/accounts/{accountId}/balances", request, null);
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
@@ -488,6 +488,45 @@ public class Payments {
                 ObjectMapper mapper = JSON.getMapper();
                 com.formance.formance_sdk.models.shared.PaymentsCursor out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.PaymentsCursor.class);
                 res.paymentsCursor = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * Get an account
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.PaymentsgetAccountResponse paymentsgetAccount(com.formance.formance_sdk.models.operations.PaymentsgetAccountRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.PaymentsgetAccountRequest.class, baseUrl, "/api/payments/accounts/{accountId}", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("GET");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.PaymentsgetAccountResponse res = new com.formance.formance_sdk.models.operations.PaymentsgetAccountResponse(contentType, httpRes.statusCode()) {{
+            paymentsAccountResponse = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.PaymentsAccountResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.PaymentsAccountResponse.class);
+                res.paymentsAccountResponse = out;
             }
         }
 
