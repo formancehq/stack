@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: monopod-search-before-v0-7-0
 spec:
-    clusterIP: 10.0.0.187
+    clusterIP: 10.0.0.181
     clusterIPs:
-        - 10.0.0.187
+        - 10.0.0.181
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

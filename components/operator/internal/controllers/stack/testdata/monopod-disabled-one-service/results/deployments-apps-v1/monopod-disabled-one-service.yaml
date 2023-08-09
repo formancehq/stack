@@ -63,6 +63,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -128,6 +130,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -189,6 +193,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -199,8 +205,6 @@ spec:
                       value: gateway
                     - name: STACK
                       value: monopod-disabled-one-service
-                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                   image: ghcr.io/formancehq/gateway:latest
                   imagePullPolicy: Always
                   name: gateway
@@ -250,6 +254,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -312,6 +318,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -392,6 +400,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -473,6 +483,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -534,6 +546,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -605,6 +619,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -680,6 +696,8 @@ spec:
                     - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
                       value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
                     - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -741,8 +759,8 @@ spec:
                   name: search-benthos-templates
 status:
     conditions:
-        - lastTransitionTime: "2023-08-02T15:52:17Z"
-          lastUpdateTime: "2023-08-02T15:52:17Z"
+        - lastTransitionTime: "2023-08-08T14:46:56Z"
+          lastUpdateTime: "2023-08-08T14:46:56Z"
           status: "True"
           type: Available
     observedGeneration: 1

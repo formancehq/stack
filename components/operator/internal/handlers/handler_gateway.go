@@ -41,13 +41,8 @@ func init() {
 									"--config", resolveContext.GetConfig("config").GetMountPath() + "/Caddyfile",
 									"--adapter", "caddyfile",
 								},
-								Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
-								Env: modules.NewEnv().Append(
-									modules.Env(
-										"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
-										"http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)",
-									),
-								),
+								Image:     modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
+								Env:       modules.NewEnv(),
 								Resources: modules.ResourceSizeSmall(),
 							}
 						},

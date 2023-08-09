@@ -38,5 +38,6 @@ func monitoringOTLPEnvVars(otlp *stackv1beta3.OtlpSpec, prefix string, monitorin
 		Env(fmt.Sprintf("%sOTEL_%s_ENDPOINT", prefix, string(monitoringType)), otlp.Endpoint),
 		Env(fmt.Sprintf("%sOTEL_%s_EXPORTER_OTLP_ENDPOINT", prefix, string(monitoringType)), controllerutils.ComputeEnvVar(prefix, "%s:%s", fmt.Sprintf("OTEL_%s_ENDPOINT", string(monitoringType)), fmt.Sprintf("OTEL_%s_PORT", string(monitoringType)))),
 		Env(fmt.Sprintf("%sOTEL_RESOURCE_ATTRIBUTES", prefix), otlp.ResourceAttributes),
+		Env(fmt.Sprintf("%sOTEL_EXPORTER_OTLP_TRACES_ENDPOINT", prefix), controllerutils.ComputeEnvVar(prefix, "http://%s", fmt.Sprintf("OTEL_TRACES_EXPORTER_OTLP_ENDPOINT"))),
 	}
 }
