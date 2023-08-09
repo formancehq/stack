@@ -8,7 +8,7 @@ import exec from 'k6/execution';
 
 export function setup() {
     return startLedger({
-        version: '88b73587a40e320defa0a12f5a555537458c47a7',
+        version: '15a430c40e95d38d864599dece235bc3964a3588',
     });
 }
 
@@ -16,12 +16,20 @@ export let options = K6Options();
 
 const ledgerName = `/tests`;
 
-export function read(ledger) {
+export function read_transactions(ledger) {
     const url = ledger.url + ledgerName
-
     ReadTransactions(url);
+}
+export function read_accounts(ledger) {
+    const url = ledger.url + ledgerName
     ReadAccounts(url);
+}
+export function read_balances(ledger) {
+    const url = ledger.url + ledgerName
     ReadBalances(url);
+}
+export function read_aggregatebalances(ledger) {
+    const url = ledger.url + ledgerName
     ReadAggregateBalances(url);
 }
 

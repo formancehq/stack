@@ -70,7 +70,7 @@ services:
             memory: 512M
 
   grafana:
-    image: grafana/grafana-enterprise
+    image: grafana/grafana
     restart: unless-stopped
     networks:
     - benchmarks
@@ -82,8 +82,16 @@ services:
             memory: 512M
     ports:
      - '3000:3000'
+    environment:
+        - GF_SECURITY_ADMIN_USER=admin
+        - GF_SECURITY_ADMIN_PASSWORD=admin
+        - GF_SECURITY_ALLOW_EMBEDDING=true
+        - GF_SECURITY_DISABLE_GRAVATAR=true
+        - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
      - 'grafana_storage:/var/lib/grafana'
+     - './provisioning/datasources:/etc/grafana/provisioning/datasources'
+     - './provisioning/dashboards:/etc/grafana/provisioning/dashboards'
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest

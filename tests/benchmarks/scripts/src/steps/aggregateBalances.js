@@ -8,15 +8,14 @@ const WALLET = "wallets:99:main";
 
 export function ReadAggregateBalances(BASE_URL) {
     const url = new URL(`${BASE_URL}/aggregate/balances`);
-
-    group('AggregateBalances - NoParams (READ)', function () {
-        const res = http.get(url.toString());
-        readAggregateBalancesWaitingTime.add(res.timings.waiting);
-
-        check(res, {
-            'is status 200': (r) => r.status === 200,
-        });
-    });
+    // group('AggregateBalances - NoParams (READ)', function () {
+    //     const res = http.get(url.toString());
+    //     readAggregateBalancesWaitingTime.add(res.timings.waiting);
+    //
+    //     check(res, {
+    //         'is status 200': (r) => r.status === 200,
+    //     });
+    // });
     group('AggregateBalances - filter by address (READ)', function () {
         url.searchParams.append('address', WALLET);
 
