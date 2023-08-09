@@ -282,6 +282,14 @@ func v1EnvVars(testID string, configuration LedgerConfiguration) []string {
 		"NUMARY_STORAGE_DRIVER=postgres",
 		"NUMARY_STORAGE_POSTGRES_CONN_STRING=" + configuration.PostgresDSN,
 		"NUMARY_OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
+		"NUMARY_OTEL_TRACES=true",
+		"NUMARY_OTEL_TRACES_EXPORTER=otlp",
+		"NUMARY_OTEL_TRACES_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
+		"NUMARY_OTEL_TRACES_EXPORTER_OTLP_INSECURE=true",
+		"NUMARY_OTEL_METRICS=true",
+		"NUMARY_OTEL_METRICS_EXPORTER=otlp",
+		"NUMARY_OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
+		"NUMARY_OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
 	}
 }
 
@@ -291,6 +299,17 @@ func v2EnvVars(testID string, configuration LedgerConfiguration) []string {
 		"STORAGE_DRIVER=postgres",
 		"STORAGE_POSTGRES_CONN_STRING=" + configuration.PostgresDSN,
 		"STORAGE_POSTGRES_MAX_OPEN_CONNS=500",
+		"OTEL_RESOURCE_ATTRIBUTES=testid=" + testID,
+		"OTEL_TRACES=true",
+		"OTEL_TRACES_EXPORTER=otlp",
+		"OTEL_TRACES_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
+		"OTEL_TRACES_EXPORTER_OTLP_INSECURE=true",
+		"OTEL_METRICS=true",
+		"OTEL_METRICS_EXPORTER=otlp",
+		"OTEL_METRICS_EXPORTER_OTLP_ENDPOINT=" + configuration.OTLP.Endpoint,
+		"OTEL_METRICS_EXPORTER_OTLP_INSECURE=true",
+		"OTEL_METRICS_RUNTIME=true",
+		"OTEL_METRICS_EXPORTER_PUSH_INTERVAL=1s",
 		"DEBUG=false",
 	}
 }

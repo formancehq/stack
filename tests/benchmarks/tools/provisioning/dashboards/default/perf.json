@@ -1,14 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -28,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -1075,11 +1064,27 @@
                 "value": 92
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "RPS"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 89
+              },
+              {
+                "id": "unit",
+                "value": "reqps"
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 17,
         "w": 24,
         "x": 0,
         "y": 6
@@ -1101,7 +1106,7 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "count"
+            "displayName": "RPS"
           }
         ]
       },
@@ -1187,6 +1192,19 @@
           "legendFormat": "",
           "range": true,
           "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum by(group) (rate(k6_http_reqs_total{testid=~\"$testid\"}[1m]))",
+          "format": "table",
+          "hide": false,
+          "legendFormat": "",
+          "range": true,
+          "refId": "G"
         }
       ],
       "title": "Requests by URL",
@@ -1239,6 +1257,12 @@
               "Value #F": {
                 "aggregations": [
                   "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #G": {
+                "aggregations": [
+                  "max"
                 ],
                 "operation": "aggregate"
               },
@@ -1306,6 +1330,8 @@
               "Value #E (lastNotNull)": "p99",
               "Value #E (max)": "max",
               "Value #F (lastNotNull)": "p95",
+              "Value #G (lastNotNull)": "RPS",
+              "Value #G (max)": "RPS",
               "group": "Group"
             }
           }
@@ -1335,7 +1361,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 23
       },
       "id": 10,
       "panels": [],
@@ -1404,7 +1430,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 24
       },
       "id": 8,
       "options": {
@@ -1525,7 +1551,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 24
       },
       "id": 11,
       "options": {
@@ -1632,7 +1658,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 32
       },
       "id": 12,
       "options": {
@@ -1724,7 +1750,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 32
       },
       "id": 13,
       "options": {
@@ -1761,7 +1787,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 40
       },
       "id": 9,
       "panels": [],
@@ -1829,7 +1855,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 41
       },
       "id": 1,
       "options": {
@@ -1906,7 +1932,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1921,7 +1948,7 @@
         "h": 8,
         "w": 20,
         "x": 0,
-        "y": 41
+        "y": 49
       },
       "id": 2,
       "options": {
@@ -1978,7 +2005,7 @@
         "h": 8,
         "w": 4,
         "x": 20,
-        "y": 41
+        "y": 49
       },
       "id": 4,
       "options": {
@@ -2062,7 +2089,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2077,7 +2105,7 @@
         "h": 8,
         "w": 20,
         "x": 0,
-        "y": 49
+        "y": 57
       },
       "id": 3,
       "options": {
@@ -2134,7 +2162,7 @@
         "h": 8,
         "w": 4,
         "x": 20,
-        "y": 49
+        "y": 57
       },
       "id": 5,
       "options": {
@@ -2200,7 +2228,15 @@
       },
       {
         "allValue": ".*",
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "1691574382-v2"
+          ],
+          "value": [
+            "1691574382-v2"
+          ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -2224,13 +2260,13 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Formance Performance",
   "uid": "ad05065e-4fae-47d0-a63b-2f36632c450e",
-  "version": 44,
+  "version": 6,
   "weekStart": ""
 }

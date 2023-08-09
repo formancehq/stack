@@ -27,8 +27,19 @@ services:
       replicas: 1
       resources:
           limits:
-            cpus: "${POSTGRES_CPU_COUNT:-6}"
+            cpus: "${POSTGRES_CPU_COUNT:-2}"
             memory: 32G
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+    networks:
+      - benchmarks
 
   prometheus:
     image: prom/prometheus:latest
@@ -89,7 +100,6 @@ services:
         - GF_SECURITY_DISABLE_GRAVATAR=true
         - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
-     - 'grafana_storage:/var/lib/grafana'
      - './provisioning/datasources:/etc/grafana/provisioning/datasources'
      - './provisioning/dashboards:/etc/grafana/provisioning/dashboards'
 

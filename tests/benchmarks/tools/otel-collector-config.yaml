@@ -9,9 +9,15 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
   logging:
+  jaeger:
+    endpoint: "jaeger:14250" # using the docker-compose name of the jaeger container
+    tls:
+      insecure: true
 
 processors:
   batch:
+    send_batch_size: 10000
+    timeout: 10s
 
 extensions:
   health_check:
@@ -39,7 +45,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [spanmetrics]
+      exporters: [spanmetrics, jaeger]
     metrics:
       receivers: [otlp, spanmetrics]
       #      processors: [batch]

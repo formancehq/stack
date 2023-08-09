@@ -7,7 +7,7 @@ tasks:
       - docker compose stop postgres
       - docker compose rm postgres --force --volumes
       - docker compose up -d
-      - sleep 10
+      - sleep 20
 
   build:scripts:
     dir: ./scripts
@@ -16,16 +16,16 @@ tasks:
 
   build:k6:
     cmds:
-      - xk6 build --with extension=$(pwd)/extension
+      - xk6 build --with extension=$(pwd)/extension --with github.com/grafana/xk6-output-prometheus-remote@v0.2.3
 
   run:v1:
     deps:
-      - tools
+#      - tools
       - build:scripts
       - build:k6
     cmds:
       - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv1;"
-      - TEST_ID=$(date +%s)-v1 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out experimental-prometheus-rw scripts/dist/ledger-v1.js
+      - TEST_ID=$(date +%s)-v1 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out xk6-prometheus-rw scripts/dist/ledger-v1.js
     env:
       POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledgerv1?sslmode=disable
       OTLP_ENDPOINT: otel:4317
@@ -33,12 +33,12 @@ tasks:
 
   run:v2:
     deps:
-      - tools
+#      - tools
       - build:scripts
       - build:k6
     cmds:
-      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv2;"
-      - TEST_ID=$(date +%s)-v2 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out experimental-prometheus-rw scripts/dist/ledger-v2.js
+#      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv2;"
+      - TEST_ID=$(date +%s)-v2 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out xk6-prometheus-rw scripts/dist/ledger-v2.js
     env:
       POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledgerv2?sslmode=disable
       OTLP_ENDPOINT: otel:4317
