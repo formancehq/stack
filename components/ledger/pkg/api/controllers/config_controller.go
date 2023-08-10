@@ -1,16 +1,21 @@
 package controllers
 
 import (
+	"bytes"
 	_ "embed"
+	"encoding/json"
 	"net/http"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/gin-gonic/gin"
+	"gopkg.in/yaml.v3"
 )
 
 type ConfigInfo struct {
-	Server  string  `json:"server"`
-	Version string  `json:"version"`
-	Config  *Config `json:"config"`
+	Server  string      `json:"server"`
+	Version interface{} `json:"version"`
+	Config  *Config     `json:"config"`
 }
 
 type Config struct {
@@ -22,22 +27,60 @@ type LedgerStorage struct {
 	Ledgers []string `json:"ledgers"`
 }
 
-func GetInfo(backend Backend) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ledgers, err := backend.ListLedgers(r.Context())
-		if err != nil {
-			panic(err)
-		}
+type ConfigController struct {
+	Version       string
+	StorageDriver storage.Driver[ledger.Store]
+}
 
-		sharedapi.RawOk(w, ConfigInfo{
-			Server:  "ledger",
-			Version: backend.GetVersion(),
-			Config: &Config{
-				LedgerStorage: &LedgerStorage{
-					Driver:  "postgres",
-					Ledgers: ledgers,
-				},
+func NewConfigController(version string, storageDriver storage.Driver[ledger.Store]) ConfigController {
+	return ConfigController{
+		Version:       version,
+		StorageDriver: storageDriver,
+	}
+}
+
+func (ctl *ConfigController) GetInfo(c *gin.Context) {
+	ledgers, err := ctl.StorageDriver.GetSystemStore().ListLedgers(c.Request.Context())
+	if err != nil {
+		panic(err)
+	}
+	respondWithData[ConfigInfo](c, http.StatusOK, ConfigInfo{
+		Server:  "numary-ledger",
+		Version: ctl.Version,
+		Config: &Config{
+			LedgerStorage: &LedgerStorage{
+				Driver:  ctl.StorageDriver.Name(),
+				Ledgers: ledgers,
 			},
-		})
+		},
+	})
+}
+
+//go:embed swagger.yaml
+var swagger string
+
+func parseSwagger(version string) map[string]interface{} {
+	ret := make(map[string]interface{})
+	err := yaml.NewDecoder(bytes.NewBufferString(swagger)).Decode(&ret)
+	if err != nil {
+		panic(err)
+	}
+	ret["info"].(map[string]interface{})["version"] = version
+	return ret
+}
+
+func (ctl *ConfigController) GetDocsAsYaml(c *gin.Context) {
+	err := yaml.NewEncoder(c.Writer).Encode(parseSwagger(ctl.Version))
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (ctl *ConfigController) GetDocsAsJSON(c *gin.Context) {
+	enc := json.NewEncoder(c.Writer)
+	enc.SetIndent("", "  ")
+	err := enc.Encode(parseSwagger(ctl.Version))
+	if err != nil {
+		panic(err)
 	}
 }

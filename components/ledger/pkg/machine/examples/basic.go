@@ -1,14 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"math/big"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/machine/script/compiler"
 	"github.com/formancehq/ledger/pkg/machine/vm"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 func main() {
@@ -35,47 +32,49 @@ func main() {
 	m := vm.NewMachine(*program)
 	m.Debug = true
 
-	if err = m.SetVarsFromJSON(map[string]string{
-		"dest": "charlie",
+	if err = m.SetVars(map[string]core.Value{
+		"dest": core.AccountAddress("charlie"),
 	}); err != nil {
 		panic(err)
 	}
 
-	initialVolumes := map[string]map[string]*big.Int{
-		"alice": {
-			"COIN": big.NewInt(10),
-		},
-		"bob": {
-			"COIN": big.NewInt(100),
-		},
+	initialBalances := map[string]map[string]*core.MonetaryInt{
+		"alice": {"COIN": core.NewMonetaryInt(10)},
+		"bob":   {"COIN": core.NewMonetaryInt(100)},
 	}
 
-	store := vm.StaticStore{}
-	for account, balances := range initialVolumes {
-		store[account] = &vm.AccountWithBalances{
-			Account: core.Account{
-				Address:  account,
-				Metadata: metadata.Metadata{},
-			},
-			Balances: balances,
+	{
+		ch, err := m.ResolveResources()
+		if err != nil {
+			panic(err)
+		}
+		for req := range ch {
+			if req.Error != nil {
+				panic(req.Error)
+			}
 		}
 	}
 
-	_, _, err = m.ResolveResources(context.Background(), vm.EmptyStore)
+	{
+		ch, err := m.ResolveBalances()
+		if err != nil {
+			panic(err)
+		}
+		for req := range ch {
+			val := initialBalances[req.Account][req.Asset]
+			if req.Error != nil {
+				panic(req.Error)
+			}
+			req.Response <- val
+		}
+	}
+
+	exitCode, err := m.Execute()
 	if err != nil {
 		panic(err)
 	}
 
-	err = m.ResolveBalances(context.Background(), store)
-	if err != nil {
-		panic(err)
-	}
-
-	err = m.Execute()
-	if err != nil {
-		panic(err)
-	}
-
+	fmt.Println("Exit code:", exitCode)
 	fmt.Println(m.Postings)
 	fmt.Println(m.TxMeta)
 }

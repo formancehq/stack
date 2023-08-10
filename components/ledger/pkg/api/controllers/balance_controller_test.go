@@ -1,162 +1,208 @@
 package controllers_test
 
 import (
-	"math/big"
+	"context"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"testing"
 
-	"github.com/formancehq/ledger/pkg/api/apierrors"
-	"github.com/formancehq/ledger/pkg/api/routes"
+	"github.com/formancehq/ledger/pkg/api"
+	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/api/internal"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
-	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/golang/mock/gomock"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/fx"
 )
 
 func TestGetBalancesAggregated(t *testing.T) {
-	t.Parallel()
+	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, api *api.API) {
+		lc.Append(fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				rsp := internal.PostTransaction(t, api, controllers.PostTransaction{
+					Postings: core.Postings{
+						{
+							Source:      "world",
+							Destination: "alice",
+							Amount:      core.NewMonetaryInt(150),
+							Asset:       "USD",
+						},
+					},
+				}, false)
+				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-	type testCase struct {
-		name        string
-		queryParams url.Values
-		expectQuery ledgerstore.BalancesQuery
-	}
+				rsp = internal.PostTransaction(t, api, controllers.PostTransaction{
+					Postings: core.Postings{
+						{
+							Source:      "world",
+							Destination: "bob",
+							Amount:      core.NewMonetaryInt(100),
+							Asset:       "USD",
+						},
+					},
+				}, false)
+				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-	testCases := []testCase{
-		{
-			name:        "nominal",
-			expectQuery: ledgerstore.NewBalancesQuery(),
-		},
-		{
-			name: "using address",
-			queryParams: url.Values{
-				"address": []string{"foo"},
+				t.Run("all", func(t *testing.T) {
+					rsp = internal.GetBalancesAggregated(api, url.Values{})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+
+					resp, ok := internal.DecodeSingleResponse[core.AssetsBalances](t, rsp.Body)
+					assert.Equal(t, ok, true)
+					assert.Equal(t, core.AssetsBalances{"USD": core.NewMonetaryInt(0)}, resp)
+				})
+
+				t.Run("filter by address", func(t *testing.T) {
+					rsp = internal.GetBalancesAggregated(api, url.Values{"address": []string{"world"}})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+
+					resp, ok := internal.DecodeSingleResponse[core.AssetsBalances](t, rsp.Body)
+					assert.Equal(t, true, ok)
+					assert.Equal(t, core.AssetsBalances{"USD": core.NewMonetaryInt(-250)}, resp)
+				})
+
+				t.Run("filter by address no result", func(t *testing.T) {
+					rsp = internal.GetBalancesAggregated(api, url.Values{"address": []string{"XXX"}})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+
+					resp, ok := internal.DecodeSingleResponse[core.AssetsBalances](t, rsp.Body)
+					assert.Equal(t, ok, true)
+					assert.Equal(t, core.AssetsBalances{}, resp)
+				})
+
+				return nil
 			},
-			expectQuery: ledgerstore.NewBalancesQuery().WithAddressFilter("foo"),
-		},
-	}
-	for _, testCase := range testCases {
-		testCase := testCase
-		t.Run(testCase.name, func(t *testing.T) {
-
-			expectedBalances := core.BalancesByAssets{
-				"world": big.NewInt(-100),
-			}
-			backend, mock := newTestingBackend(t)
-			mock.EXPECT().
-				GetBalancesAggregated(gomock.Any(), testCase.expectQuery).
-				Return(expectedBalances, nil)
-
-			router := routes.NewRouter(backend, nil, metrics.NewNoOpRegistry())
-
-			req := httptest.NewRequest(http.MethodGet, "/xxx/aggregate/balances", nil)
-			rec := httptest.NewRecorder()
-			req.URL.RawQuery = testCase.queryParams.Encode()
-
-			router.ServeHTTP(rec, req)
-
-			require.Equal(t, http.StatusOK, rec.Code)
-			balances, ok := sharedapi.DecodeSingleResponse[core.BalancesByAssets](t, rec.Body)
-			require.True(t, ok)
-			require.Equal(t, expectedBalances, balances)
 		})
-	}
+	}))
 }
 
 func TestGetBalances(t *testing.T) {
-	t.Parallel()
-
-	type testCase struct {
-		name              string
-		queryParams       url.Values
-		expectQuery       ledgerstore.BalancesQuery
-		expectStatusCode  int
-		expectedErrorCode string
-	}
-
-	testCases := []testCase{
-		{
-			name:        "nominal",
-			expectQuery: ledgerstore.NewBalancesQuery(),
-		},
-		{
-			name: "empty cursor with other param",
-			queryParams: url.Values{
-				"cursor": []string{ledgerstore.EncodeCursor(ledgerstore.NewBalancesQuery())},
-				"after":  []string{"bob"},
-			},
-			expectStatusCode:  http.StatusBadRequest,
-			expectedErrorCode: apierrors.ErrValidation,
-		},
-		{
-			name: "invalid cursor",
-			queryParams: url.Values{
-				"cursor": []string{"xxx"},
-			},
-			expectStatusCode:  http.StatusBadRequest,
-			expectedErrorCode: apierrors.ErrValidation,
-		},
-		{
-			name: "using after",
-			queryParams: url.Values{
-				"after": []string{"foo"},
-			},
-			expectQuery: ledgerstore.NewBalancesQuery().WithAfterAddress("foo"),
-		},
-		{
-			name: "using address",
-			queryParams: url.Values{
-				"address": []string{"foo"},
-			},
-			expectQuery: ledgerstore.NewBalancesQuery().WithAddressFilter("foo"),
-		},
-	}
-	for _, testCase := range testCases {
-		testCase := testCase
-		t.Run(testCase.name, func(t *testing.T) {
-
-			if testCase.expectStatusCode == 0 {
-				testCase.expectStatusCode = http.StatusOK
-			}
-
-			expectedCursor := sharedapi.Cursor[core.BalancesByAssetsByAccounts]{
-				Data: []core.BalancesByAssetsByAccounts{
-					{
-						"world": core.BalancesByAssets{
-							"USD": big.NewInt(100),
+	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, api *api.API) {
+		lc.Append(fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				rsp := internal.PostTransaction(t, api, controllers.PostTransaction{
+					Postings: core.Postings{
+						{
+							Source:      "world",
+							Destination: "alice",
+							Amount:      core.NewMonetaryInt(150),
+							Asset:       "USD",
 						},
 					},
-				},
-			}
+				}, false)
+				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-			backend, mock := newTestingBackend(t)
-			if testCase.expectStatusCode < 300 && testCase.expectStatusCode >= 200 {
-				mock.EXPECT().
-					GetBalances(gomock.Any(), testCase.expectQuery).
-					Return(&expectedCursor, nil)
-			}
+				rsp = internal.PostTransaction(t, api, controllers.PostTransaction{
+					Postings: core.Postings{
+						{
+							Source:      "world",
+							Destination: "bob",
+							Amount:      core.NewMonetaryInt(100),
+							Asset:       "USD",
+						},
+					},
+				}, false)
+				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-			router := routes.NewRouter(backend, nil, metrics.NewNoOpRegistry())
+				rsp = internal.PostTransaction(t, api, controllers.PostTransaction{
+					Postings: core.Postings{
+						{
+							Source:      "world",
+							Destination: "alice",
+							Amount:      core.NewMonetaryInt(200),
+							Asset:       "CAD",
+						},
+					},
+				}, false)
+				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-			req := httptest.NewRequest(http.MethodGet, "/xxx/balances", nil)
-			rec := httptest.NewRecorder()
-			req.URL.RawQuery = testCase.queryParams.Encode()
+				rsp = internal.PostTransaction(t, api, controllers.PostTransaction{
+					Postings: core.Postings{
+						{
+							Source:      "world",
+							Destination: "alice",
+							Amount:      core.NewMonetaryInt(400),
+							Asset:       "EUR",
+						},
+					},
+				}, false)
+				require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-			router.ServeHTTP(rec, req)
+				to := sqlstorage.BalancesPaginationToken{}
+				raw, err := json.Marshal(to)
+				require.NoError(t, err)
 
-			require.Equal(t, testCase.expectStatusCode, rec.Code)
-			if testCase.expectStatusCode < 300 && testCase.expectStatusCode >= 200 {
-				cursor := sharedapi.DecodeCursorResponse[core.BalancesByAssetsByAccounts](t, rec.Body)
-				require.Equal(t, expectedCursor, *cursor)
-			} else {
-				err := sharedapi.ErrorResponse{}
-				sharedapi.Decode(t, rec.Body, &err)
-				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
-			}
+				t.Run("valid empty "+controllers.QueryKeyCursor, func(t *testing.T) {
+					rsp = internal.GetBalances(api, url.Values{
+						controllers.QueryKeyCursor: []string{base64.RawURLEncoding.EncodeToString(raw)},
+					})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode, rsp.Body.String())
+				})
+
+				t.Run(fmt.Sprintf("valid empty %s with any other param is forbidden", controllers.QueryKeyCursor), func(t *testing.T) {
+					rsp = internal.GetBalances(api, url.Values{
+						controllers.QueryKeyCursor: []string{base64.RawURLEncoding.EncodeToString(raw)},
+						"after":                    []string{"bob"},
+					})
+					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
+				})
+
+				t.Run(fmt.Sprintf("invalid %s", controllers.QueryKeyCursor), func(t *testing.T) {
+					rsp = internal.GetBalances(api, url.Values{
+						controllers.QueryKeyCursor: []string{"invalid"},
+					})
+
+					assert.Equal(t, http.StatusBadRequest, rsp.Result().StatusCode, rsp.Body.String())
+					assert.Contains(t, rsp.Body.String(),
+						fmt.Sprintf(`"invalid '%s' query param"`, controllers.QueryKeyCursor))
+				})
+
+				t.Run("all", func(t *testing.T) {
+					rsp = internal.GetBalances(api, url.Values{})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+
+					resp := internal.DecodeCursorResponse[core.AccountsBalances](t, rsp.Body)
+					assert.Equal(t, []core.AccountsBalances{
+						{"world": core.AssetsBalances{"USD": core.NewMonetaryInt(-250), "EUR": core.NewMonetaryInt(-400), "CAD": core.NewMonetaryInt(-200)}},
+						{"bob": core.AssetsBalances{"USD": core.NewMonetaryInt(100)}},
+						{"alice": core.AssetsBalances{"USD": core.NewMonetaryInt(150), "EUR": core.NewMonetaryInt(400), "CAD": core.NewMonetaryInt(200)}},
+					}, resp.Data)
+				})
+
+				t.Run("after address", func(t *testing.T) {
+					rsp = internal.GetBalances(api, url.Values{"after": []string{"bob"}})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+
+					resp := internal.DecodeCursorResponse[core.AccountsBalances](t, rsp.Body)
+					assert.Equal(t, []core.AccountsBalances{
+						{"alice": core.AssetsBalances{"USD": core.NewMonetaryInt(150), "EUR": core.NewMonetaryInt(400), "CAD": core.NewMonetaryInt(200)}},
+					}, resp.Data)
+				})
+
+				t.Run("filter by address", func(t *testing.T) {
+					rsp = internal.GetBalances(api, url.Values{"address": []string{"world"}})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+
+					resp := internal.DecodeCursorResponse[core.AccountsBalances](t, rsp.Body)
+					assert.Equal(t, []core.AccountsBalances{
+						{"world": core.AssetsBalances{"USD": core.NewMonetaryInt(-250), "EUR": core.NewMonetaryInt(-400), "CAD": core.NewMonetaryInt(-200)}},
+					}, resp.Data)
+				})
+
+				t.Run("filter by address no results", func(t *testing.T) {
+					rsp = internal.GetBalances(api, url.Values{"address": []string{"TEST"}})
+					assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+
+					resp := internal.DecodeCursorResponse[core.AccountsBalances](t, rsp.Body)
+					assert.Equal(t, []core.AccountsBalances{}, resp.Data)
+				})
+
+				return nil
+			},
 		})
-	}
+	}))
 }

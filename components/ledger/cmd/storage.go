@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"fmt"
+	"os"
+	"strings"
 
 	"github.com/formancehq/ledger/pkg/storage"
-	"github.com/formancehq/ledger/pkg/storage/driver"
-	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -26,35 +28,33 @@ func NewStorageInit() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			app := service.New(
 				cmd.OutOrStdout(),
-				resolveOptions(
-					cmd.OutOrStdout(),
-					fx.Invoke(func(storageDriver *driver.Driver, lc fx.Lifecycle) {
-						lc.Append(fx.Hook{
-							OnStart: func(ctx context.Context) error {
-								name := viper.GetString("name")
-								if name == "" {
-									return errors.New("name is empty")
-								}
-
-								exists, err := storageDriver.GetSystemStore().Exists(ctx, name)
-								if err != nil {
-									return err
-								}
-
-								if exists {
-									return errors.New("ledger already exists")
-								}
-
-								store, err := storageDriver.CreateLedgerStore(ctx, name)
-								if err != nil {
-									return err
-								}
-
-								_, err = store.Migrate(ctx)
+				resolveOptions(viper.GetViper(), fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
+					lc.Append(fx.Hook{
+						OnStart: func(ctx context.Context) error {
+							name := viper.GetString("name")
+							if name == "" {
+								return errors.New("name is empty")
+							}
+							fmt.Printf("Creating ledger '%s'...", name)
+							s, created, err := storageDriver.GetLedgerStore(ctx, name, true)
+							if err != nil {
 								return err
-							},
-						})
-					}))...,
+							}
+
+							if !created {
+								fmt.Printf("Already initialized!\r\n")
+								return nil
+							}
+
+							_, err = s.Initialize(ctx)
+							if err != nil {
+								return err
+							}
+							fmt.Printf(" OK\r\n")
+							return nil
+						},
+					})
+				}))...,
 			)
 			return app.Start(cmd.Context())
 		},
@@ -71,9 +71,8 @@ func NewStorageList() *cobra.Command {
 		Use: "list",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			app := service.New(cmd.OutOrStdout(),
-				resolveOptions(
-					cmd.OutOrStdout(),
-					fx.Invoke(func(storageDriver *driver.Driver, lc fx.Lifecycle) {
+				resolveOptions(viper.GetViper(),
+					fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
 						lc.Append(fx.Hook{
 							OnStart: func(ctx context.Context) error {
 								ledgers, err := storageDriver.GetSystemStore().ListLedgers(ctx)
@@ -81,10 +80,13 @@ func NewStorageList() *cobra.Command {
 									return err
 								}
 								if len(ledgers) == 0 {
-									logging.FromContext(ctx).Info("No ledger found.")
+									fmt.Println("No ledger found.")
 									return nil
 								}
-								logging.FromContext(ctx).Infof("Ledgers: %v", ledgers)
+								fmt.Println("Ledgers:")
+								for _, l := range ledgers {
+									fmt.Println("- " + l)
+								}
 								return nil
 							},
 						})
@@ -97,89 +99,145 @@ func NewStorageList() *cobra.Command {
 	return cmd
 }
 
-func upgradeStore(ctx context.Context, store *ledgerstore.Store, name string) error {
-	modified, err := store.Migrate(ctx)
-	if err != nil {
-		return err
-	}
-
-	if modified {
-		logging.FromContext(ctx).Infof("Storage '%s' upgraded", name)
-	} else {
-		logging.FromContext(ctx).Infof("Storage '%s' is up to date", name)
-	}
-	return nil
-}
-
 func NewStorageUpgrade() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:          "upgrade",
-		Args:         cobra.ExactArgs(1),
-		SilenceUsage: true,
+		Use:  "upgrade",
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
-			sqlDB, err := storage.OpenSQLDB(storage.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
-			if err != nil {
-				return err
-			}
-			defer sqlDB.Close()
-
-			driver := driver.New(storage.NewDatabase(sqlDB))
-			if err := driver.Initialize(cmd.Context()); err != nil {
-				return err
-			}
-
-			name := args[0]
-			store, err := driver.GetLedgerStore(cmd.Context(), name)
-			if err != nil {
-				return err
-			}
-			logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag), false)
-
-			return upgradeStore(logging.ContextWithLogger(cmd.Context(), logger), store, name)
+			app := service.New(cmd.OutOrStdout(),
+				resolveOptions(viper.GetViper(), fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
+					lc.Append(fx.Hook{
+						OnStart: func(ctx context.Context) error {
+							name := args[0]
+							store, _, err := storageDriver.GetLedgerStore(ctx, name, false)
+							if err != nil {
+								return err
+							}
+							modified, err := store.Initialize(ctx)
+							if err != nil {
+								return err
+							}
+							if modified {
+								fmt.Printf("Storage '%s' migrated\r\n", name)
+							} else {
+								fmt.Printf("Storage '%s' left in place\r\n", name)
+							}
+							return nil
+						},
+					})
+				}))...,
+			)
+			return app.Start(cmd.Context())
 		},
 	}
 	return cmd
 }
 
-func NewStorageUpgradeAll() *cobra.Command {
+func NewStorageScan() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:          "upgrade-all",
-		Args:         cobra.ExactArgs(0),
-		SilenceUsage: true,
+		Use: "scan",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			sqlDB, err := storage.OpenSQLDB(storage.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
-			if err != nil {
-				return err
-			}
-			defer sqlDB.Close()
+			var opt fx.Option
 
-			driver := driver.New(storage.NewDatabase(sqlDB))
-			if err := driver.Initialize(cmd.Context()); err != nil {
-				return err
-			}
-			logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag), false)
-			ctx := logging.ContextWithLogger(cmd.Context(), logger)
+			switch viper.GetString(storageDriverFlag) {
+			default:
+				return errors.New("Invalid storage driver: " + viper.GetString(storageDriverFlag))
+			case "postgres":
+				opt = fx.Invoke(func(driver *sqlstorage.Driver, sqlDb *sql.DB, db sqlstorage.DB, lc fx.Lifecycle) {
+					lc.Append(fx.Hook{
+						OnStart: func(ctx context.Context) error {
+							rows, err := sqlDb.QueryContext(ctx, `
+								SELECT s.schema_name
+								FROM information_schema.schemata s
+								JOIN pg_catalog.pg_tables t ON t.schemaname = s.schema_name AND t.tablename = 'transactions'
+							`)
+							if err != nil {
+								return err
+							}
+							defer func(rows *sql.Rows) {
+								if err := rows.Close(); err != nil {
+									panic(err)
+								}
+							}(rows)
+							for rows.Next() {
+								var ledgerName string
+								err := rows.Scan(&ledgerName)
+								if err != nil {
+									return err
+								}
 
-			systemStore := driver.GetSystemStore()
-			ledgers, err := systemStore.ListLedgers(ctx)
-			if err != nil {
-				return err
+								if ledgerName == sqlstorage.SystemSchema {
+									continue
+								}
+								fmt.Printf("Registering ledger '%s'\r\n", ledgerName)
+								// This command is dedicated to upgrade ledger version before 1.4
+								// It will be removed in a near future, so we can assert the system store type without risk
+								created, err := driver.GetSystemStore().(*sqlstorage.SystemStore).
+									Register(cmd.Context(), ledgerName)
+								if err != nil {
+									fmt.Printf("Error registering ledger '%s': %s\r\n", ledgerName, err)
+									continue
+								}
+								if created {
+									fmt.Printf("Ledger '%s' registered\r\n", ledgerName)
+								} else {
+									fmt.Printf("Ledger '%s' already registered\r\n", ledgerName)
+								}
+							}
+
+							return nil
+						},
+					})
+				})
+			case "sqlite":
+				opt = fx.Invoke(func(driver *sqlstorage.Driver, db sqlstorage.DB, lc fx.Lifecycle) {
+					lc.Append(fx.Hook{
+						OnStart: func(ctx context.Context) error {
+							files, err := os.ReadDir(viper.GetString(storageDirFlag))
+							if err != nil {
+								return err
+							}
+							for _, f := range files {
+								if !strings.HasSuffix(f.Name(), ".db") {
+									fmt.Println("Skip file " + f.Name())
+									continue
+								}
+								f := strings.TrimSuffix(f.Name(), ".db")
+								parts := strings.SplitN(f, "_", 2)
+								if len(parts) != 2 {
+									fmt.Println("Skip file " + f + ".db : Bad name")
+									continue
+								}
+								if parts[0] != viper.GetString(storageSQLiteDBNameFlag) {
+									fmt.Println("Skip file " + f + ".db : DB name not mathing")
+									continue
+								}
+								ledgerName := parts[1]
+								if ledgerName == sqlstorage.SystemSchema {
+									continue
+								}
+								fmt.Printf("Registering ledger '%s'\r\n", ledgerName)
+								created, err := driver.GetSystemStore().(*sqlstorage.SystemStore).
+									Register(cmd.Context(), ledgerName)
+								if err != nil {
+									fmt.Printf("Error registering ledger '%s': %s\r\n", ledgerName, err)
+									continue
+								}
+								if created {
+									fmt.Printf("Ledger '%s' registered\r\n", ledgerName)
+								} else {
+									fmt.Printf("Ledger '%s' already registered\r\n", ledgerName)
+								}
+							}
+							return nil
+						},
+					})
+				})
 			}
 
-			for _, ledger := range ledgers {
-				store, err := driver.GetLedgerStore(cmd.Context(), ledger)
-				if err != nil {
-					return err
-				}
-				logger.Infof("Upgrading storage '%s'", ledger)
-				if err := upgradeStore(ctx, store, ledger); err != nil {
-					return err
-				}
-			}
-
-			return nil
+			app := service.New(cmd.OutOrStdout(), resolveOptions(viper.GetViper(), opt)...)
+			return app.Start(cmd.Context())
 		},
 	}
 	return cmd
@@ -192,23 +250,22 @@ func NewStorageDelete() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			app := service.New(
 				cmd.OutOrStdout(),
-				resolveOptions(
-					cmd.OutOrStdout(),
-					fx.Invoke(func(storageDriver *driver.Driver, lc fx.Lifecycle) {
-						lc.Append(fx.Hook{
-							OnStart: func(ctx context.Context) error {
-								name := args[0]
-								store, err := storageDriver.GetLedgerStore(ctx, name)
-								if err != nil {
-									return err
-								}
-								if err := store.Delete(ctx); err != nil {
-									return err
-								}
-								return nil
-							},
-						})
-					}))...,
+				resolveOptions(viper.GetViper(), fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
+					lc.Append(fx.Hook{
+						OnStart: func(ctx context.Context) error {
+							name := args[0]
+							store, _, err := storageDriver.GetLedgerStore(ctx, name, false)
+							if err != nil {
+								return err
+							}
+							if err := store.Delete(ctx); err != nil {
+								return err
+							}
+							fmt.Println("Storage deleted!")
+							return nil
+						},
+					})
+				}))...,
 			)
 			return app.Start(cmd.Context())
 		},

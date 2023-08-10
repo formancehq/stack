@@ -5,49 +5,73 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/ledger/query"
+	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"go.uber.org/fx"
 )
 
 type ledgerMonitor struct {
-	publisher  message.Publisher
-	ledgerName string
+	publisher message.Publisher
 }
 
-var _ query.Monitor = &ledgerMonitor{}
+var _ ledger.Monitor = &ledgerMonitor{}
 
-func NewLedgerMonitor(publisher message.Publisher, ledgerName string) *ledgerMonitor {
+func newLedgerMonitor(publisher message.Publisher) *ledgerMonitor {
 	m := &ledgerMonitor{
-		publisher:  publisher,
-		ledgerName: ledgerName,
+		publisher: publisher,
 	}
 	return m
 }
 
-func (l *ledgerMonitor) CommittedTransactions(ctx context.Context, txs ...core.Transaction) {
+func LedgerMonitorModule() fx.Option {
+	return fx.Options(
+		fx.Provide(
+			fx.Annotate(
+				newLedgerMonitor,
+				fx.ParamTags(``, `group:"monitorOptions"`),
+			),
+		),
+		ledger.ProvideResolverOption(func(monitor *ledgerMonitor) ledger.ResolveOptionFn {
+			return ledger.WithMonitor(monitor)
+		}),
+	)
+}
+
+func (l *ledgerMonitor) CommittedTransactions(ctx context.Context, ledger string, txs ...core.ExpandedTransaction) {
+	postCommitVolumes := core.AggregatePostCommitVolumes(txs...)
 	l.publish(ctx, EventTypeCommittedTransactions,
 		newEventCommittedTransactions(CommittedTransactions{
-			Ledger:       l.ledgerName,
-			Transactions: txs,
+			Ledger:            ledger,
+			Transactions:      txs,
+			Volumes:           postCommitVolumes,
+			PostCommitVolumes: postCommitVolumes,
+			PreCommitVolumes:  core.AggregatePreCommitVolumes(txs...),
 		}))
 }
 
-func (l *ledgerMonitor) SavedMetadata(ctx context.Context, targetType, targetID string, metadata metadata.Metadata) {
+func (l *ledgerMonitor) SavedMetadata(ctx context.Context, ledger, targetType, targetID string, metadata core.Metadata) {
 	l.publish(ctx, EventTypeSavedMetadata,
 		newEventSavedMetadata(SavedMetadata{
-			Ledger:     l.ledgerName,
+			Ledger:     ledger,
 			TargetType: targetType,
 			TargetID:   targetID,
 			Metadata:   metadata,
 		}))
 }
 
-func (l *ledgerMonitor) RevertedTransaction(ctx context.Context, reverted, revert *core.Transaction) {
+func (l *ledgerMonitor) UpdatedMapping(ctx context.Context, ledger string, mapping core.Mapping) {
+	l.publish(ctx, EventTypeUpdatedMapping,
+		newEventUpdatedMapping(UpdatedMapping{
+			Ledger:  ledger,
+			Mapping: mapping,
+		}))
+}
+
+func (l *ledgerMonitor) RevertedTransaction(ctx context.Context, ledger string, reverted, revert *core.ExpandedTransaction) {
 	l.publish(ctx, EventTypeRevertedTransaction,
 		newEventRevertedTransaction(RevertedTransaction{
-			Ledger:              l.ledgerName,
+			Ledger:              ledger,
 			RevertedTransaction: *reverted,
 			RevertTransaction:   *revert,
 		}))

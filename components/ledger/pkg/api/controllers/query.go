@@ -1,38 +1,61 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
-	"strings"
 
-	"github.com/formancehq/ledger/pkg/ledger/command"
-	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
-	"github.com/formancehq/stack/libs/go-libs/errorsutil"
-	"github.com/pkg/errors"
+	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/gin-gonic/gin"
 )
 
 const (
-	MaxPageSize     = 100
-	DefaultPageSize = ledgerstore.QueryDefaultPageSize
+	MaxPageSize     = 1000
+	DefaultPageSize = ledger.QueryDefaultPageSize
 
-	QueryKeyCursor          = "cursor"
-	QueryKeyPageSize        = "pageSize"
+	QueryKeyCursor = "cursor"
+	// Deprecated
+	QueryKeyCursorDeprecated = "pagination_token"
+
+	QueryKeyPageSize = "pageSize"
+	// Deprecated
+	QueryKeyPageSizeDeprecated = "page_size"
+
 	QueryKeyBalanceOperator = "balanceOperator"
-	QueryKeyStartTime       = "startTime"
-	QueryKeyEndTime         = "endTime"
+	// Deprecated
+	QueryKeyBalanceOperatorDeprecated = "balance_operator"
+
+	QueryKeyStartTime = "startTime"
+	// Deprecated
+	QueryKeyStartTimeDeprecated = "start_time"
+
+	QueryKeyEndTime = "endTime"
+	// Deprecated
+	QueryKeyEndTimeDeprecated = "end_time"
 )
 
 var (
-	ErrInvalidPageSize        = errors.New("invalid 'pageSize' query param")
-	ErrInvalidBalanceOperator = errors.New(
+	ErrInvalidPageSize = ledger.NewValidationError("invalid 'pageSize' query param")
+	// Deprecated
+	ErrInvalidPageSizeDeprecated = ledger.NewValidationError("invalid 'page_size' query param")
+
+	ErrInvalidBalanceOperator = ledger.NewValidationError(
 		"invalid parameter 'balanceOperator', should be one of 'e, ne, gt, gte, lt, lte'")
-	ErrInvalidStartTime = errors.New("invalid 'startTime' query param")
-	ErrInvalidEndTime   = errors.New("invalid 'endTime' query param")
+	// Deprecated
+	ErrInvalidBalanceOperatorDeprecated = ledger.NewValidationError(
+		"invalid parameter 'balance_operator', should be one of 'e, ne, gt, gte, lt, lte'")
+
+	ErrInvalidStartTime = ledger.NewValidationError("invalid 'startTime' query param")
+	// Deprecated
+	ErrInvalidStartTimeDeprecated = ledger.NewValidationError("invalid 'start_time' query param")
+
+	ErrInvalidEndTime = ledger.NewValidationError("invalid 'endTime' query param")
+	// Deprecated
+	ErrInvalidEndTimeDeprecated = ledger.NewValidationError("invalid 'end_time' query param")
 )
 
-func getPageSize(r *http.Request) (uint64, error) {
-	pageSizeParam := r.URL.Query().Get(QueryKeyPageSize)
-	if pageSizeParam == "" {
+func getPageSize(c *gin.Context) (uint, error) {
+	pageSizeParam := c.Query(QueryKeyPageSize)
+	pageSizeParamDeprecated := c.Query(QueryKeyPageSizeDeprecated)
+	if pageSizeParam == "" && pageSizeParamDeprecated == "" {
 		return DefaultPageSize, nil
 	}
 
@@ -41,7 +64,12 @@ func getPageSize(r *http.Request) (uint64, error) {
 	if pageSizeParam != "" {
 		pageSize, err = strconv.ParseUint(pageSizeParam, 10, 32)
 		if err != nil {
-			return 0, errorsutil.NewError(command.ErrValidation, ErrInvalidPageSize)
+			return 0, ErrInvalidPageSize
+		}
+	} else if pageSizeParamDeprecated != "" {
+		pageSize, err = strconv.ParseUint(pageSizeParamDeprecated, 10, 32)
+		if err != nil {
+			return 0, ErrInvalidPageSizeDeprecated
 		}
 	}
 
@@ -49,21 +77,24 @@ func getPageSize(r *http.Request) (uint64, error) {
 		return MaxPageSize, nil
 	}
 
-	return pageSize, nil
+	return uint(pageSize), nil
 }
 
-func getCommandParameters(r *http.Request) command.Parameters {
-	dryRunAsString := r.URL.Query().Get("dryRun")
-	dryRun := strings.ToUpper(dryRunAsString) == "YES" || strings.ToUpper(dryRunAsString) == "TRUE" || dryRunAsString == "1"
-
-	asyncAsString := r.URL.Query().Get("async")
-	async := strings.ToUpper(asyncAsString) == "YES" || strings.ToUpper(asyncAsString) == "TRUE" || asyncAsString == "1"
-
-	idempotencyKey := r.Header.Get("Idempotency-Key")
-
-	return command.Parameters{
-		DryRun:         dryRun,
-		Async:          async,
-		IdempotencyKey: idempotencyKey,
+func getBalanceOperator(c *gin.Context) (ledger.BalanceOperator, error) {
+	balanceOperator := ledger.DefaultBalanceOperator
+	balanceOperatorStr := c.Query(QueryKeyBalanceOperator)
+	balanceOperatorStrDeprecated := c.Query(QueryKeyBalanceOperatorDeprecated)
+	if balanceOperatorStr != "" {
+		var ok bool
+		if balanceOperator, ok = ledger.NewBalanceOperator(balanceOperatorStr); !ok {
+			return "", ErrInvalidBalanceOperator
+		}
+	} else if balanceOperatorStrDeprecated != "" {
+		var ok bool
+		if balanceOperator, ok = ledger.NewBalanceOperator(balanceOperatorStrDeprecated); !ok {
+			return "", ErrInvalidBalanceOperatorDeprecated
+		}
 	}
+
+	return balanceOperator, nil
 }

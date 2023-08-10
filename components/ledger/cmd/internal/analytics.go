@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"time"
 
 	"github.com/Masterminds/semver/v3"
@@ -12,6 +13,15 @@ import (
 )
 
 const (
+	// deprecated
+	segmentEnabledFlag = "segment-enabled"
+	// deprecated
+	segmentWriteKeyFlag = "segment-write-key"
+	// deprecated
+	segmentApplicationIdFlag = "segment-application-id"
+	// deprecated
+	segmentHeartbeatIntervalFlag = "segment-heartbeat-interval"
+
 	telemetryEnabledFlag           = "telemetry-enabled"
 	telemetryWriteKeyFlag          = "telemetry-write-key"
 	telemetryApplicationIdFlag     = "telemetry-application-id"
@@ -19,6 +29,10 @@ const (
 )
 
 func InitAnalyticsFlags(cmd *cobra.Command, defaultWriteKey string) {
+	cmd.PersistentFlags().Bool(segmentEnabledFlag, false, "Is segment enabled")
+	cmd.PersistentFlags().String(segmentApplicationIdFlag, "", "Segment application id")
+	cmd.PersistentFlags().String(segmentWriteKeyFlag, defaultWriteKey, "Segment write key")
+	cmd.PersistentFlags().Duration(segmentHeartbeatIntervalFlag, 4*time.Hour, "Segment heartbeat interval")
 	cmd.PersistentFlags().Bool(telemetryEnabledFlag, true, "Is telemetry enabled")
 	cmd.PersistentFlags().String(telemetryApplicationIdFlag, "", "telemetry application id")
 	cmd.PersistentFlags().String(telemetryWriteKeyFlag, defaultWriteKey, "telemetry write key")
@@ -26,10 +40,29 @@ func InitAnalyticsFlags(cmd *cobra.Command, defaultWriteKey string) {
 }
 
 func NewAnalyticsModule(v *viper.Viper, version string) fx.Option {
-	if v.GetBool(telemetryEnabledFlag) {
-		applicationID := viper.GetString(telemetryApplicationIdFlag)
+	if v.GetBool(telemetryEnabledFlag) || v.GetBool(segmentEnabledFlag) {
+		applicationId := viper.GetString(telemetryApplicationIdFlag)
+		if applicationId == "" {
+			applicationId = viper.GetString(segmentApplicationIdFlag)
+		}
+		var appIdProviderModule fx.Option
+		if applicationId == "" {
+			appIdProviderModule = fx.Provide(analytics.FromStorageAppIdProvider)
+		} else {
+			appIdProviderModule = fx.Provide(func() analytics.AppIdProvider {
+				return analytics.AppIdProviderFn(func(ctx context.Context) (string, error) {
+					return applicationId, nil
+				})
+			})
+		}
 		writeKey := viper.GetString(telemetryWriteKeyFlag)
+		if writeKey == "" {
+			writeKey = viper.GetString(segmentWriteKeyFlag)
+		}
 		interval := viper.GetDuration(telemetryHeartbeatIntervalFlag)
+		if interval == 0 {
+			interval = viper.GetDuration(segmentHeartbeatIntervalFlag)
+		}
 		if writeKey == "" {
 			return fx.Invoke(func(l logging.Logger) {
 				l.Infof("telemetry enabled but no write key provided")
@@ -45,7 +78,10 @@ func NewAnalyticsModule(v *viper.Viper, version string) fx.Option {
 					l.Infof("telemetry enabled but version '%s' is not semver, skip", version)
 				})
 			} else {
-				return analytics.NewHeartbeatModule(version, writeKey, applicationID, interval)
+				return fx.Options(
+					appIdProviderModule,
+					analytics.NewHeartbeatModule(version, writeKey, interval),
+				)
 			}
 		}
 	}

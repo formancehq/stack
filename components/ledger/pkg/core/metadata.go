@@ -1,15 +1,14 @@
 package core
 
 import (
+	"database/sql/driver"
+	"encoding/json"
 	"fmt"
-	"sort"
-
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"reflect"
 )
 
 const (
-	formanceNamespace         = "com.formance.spec/"
+	numaryNamespace           = "com.numary.spec/"
 	revertKey                 = "state/reverts"
 	revertedKey               = "state/reverted"
 	MetaTargetTypeAccount     = "ACCOUNT"
@@ -17,11 +16,58 @@ const (
 )
 
 func SpecMetadata(name string) string {
-	return formanceNamespace + name
+	return numaryNamespace + name
 }
 
-func MarkReverts(m metadata.Metadata, txID uint64) metadata.Metadata {
-	return m.Merge(RevertMetadata(txID))
+type Metadata map[string]any
+
+// IsEquivalentTo allow to compare to metadata object.
+func (m1 Metadata) IsEquivalentTo(m2 Metadata) bool {
+	return reflect.DeepEqual(m1, m2)
+}
+
+func (m1 Metadata) Merge(m2 Metadata) Metadata {
+	for k, v := range m2 {
+		m1[k] = v
+	}
+	return m1
+}
+
+func (m Metadata) MarkReverts(txID uint64) {
+	m.Merge(RevertMetadata(txID))
+}
+
+func (m Metadata) IsReverted() bool {
+	return m[SpecMetadata(revertedKey)].(string) == "\"reverted\""
+}
+
+// Scan - Implement the database/sql scanner interface
+func (m *Metadata) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	v, err := driver.String.ConvertValue(value)
+	if err != nil {
+		return err
+	}
+
+	*m = Metadata{}
+	switch vv := v.(type) {
+	case []uint8:
+		return json.Unmarshal(vv, m)
+	case string:
+		return json.Unmarshal([]byte(vv), m)
+	default:
+		panic("not handled type")
+	}
+}
+
+func (m Metadata) ConvertValue(v interface{}) (driver.Value, error) {
+	return json.Marshal(v)
+}
+
+type RevertedMetadataSpecValue struct {
+	By string `json:"by"`
 }
 
 func RevertedMetadataSpecKey() string {
@@ -32,37 +78,18 @@ func RevertMetadataSpecKey() string {
 	return SpecMetadata(revertKey)
 }
 
-func ComputeMetadata(key, value string) metadata.Metadata {
-	return metadata.Metadata{
+func ComputeMetadata(key string, value interface{}) Metadata {
+	return Metadata{
 		key: value,
 	}
 }
 
-func RevertedMetadata(by uint64) metadata.Metadata {
-	return ComputeMetadata(RevertedMetadataSpecKey(), fmt.Sprint(by))
+func RevertedMetadata(by uint64) Metadata {
+	return ComputeMetadata(RevertedMetadataSpecKey(), RevertedMetadataSpecValue{
+		By: fmt.Sprint(by),
+	})
 }
 
-func RevertMetadata(tx uint64) metadata.Metadata {
+func RevertMetadata(tx uint64) Metadata {
 	return ComputeMetadata(RevertMetadataSpecKey(), fmt.Sprint(tx))
-}
-
-func IsReverted(m metadata.Metadata) bool {
-	if _, ok := m[RevertedMetadataSpecKey()]; ok {
-		return true
-	}
-	return false
-}
-
-func hashStringMetadata(buf *buffer, m metadata.Metadata) {
-	if len(m) == 0 {
-		return
-	}
-	keysOfAccount := collectionutils.Keys(m)
-	if len(m) > 1 {
-		sort.Strings(keysOfAccount)
-	}
-	for _, key := range keysOfAccount {
-		buf.writeString(key)
-		buf.writeString(m[key])
-	}
 }

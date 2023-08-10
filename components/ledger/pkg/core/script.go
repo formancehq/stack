@@ -1,17 +1,18 @@
 package core
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"encoding/json"
+	"time"
 )
 
-type RunScript struct {
+type ScriptData struct {
 	Script
-	Timestamp Time              `json:"timestamp"`
-	Metadata  metadata.Metadata `json:"metadata"`
-	Reference string            `json:"reference"`
+	Timestamp time.Time `json:"timestamp"`
+	Reference string    `json:"reference"`
+	Metadata  Metadata  `json:"metadata"`
 }
 
 type Script struct {
-	Plain string            `json:"plain"`
-	Vars  map[string]string `json:"vars" swaggertype:"object"`
+	Plain string                     `json:"plain"`
+	Vars  map[string]json.RawMessage `json:"vars" swaggertype:"object"`
 }

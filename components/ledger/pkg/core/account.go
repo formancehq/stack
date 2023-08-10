@@ -1,10 +1,8 @@
 package core
 
 import (
-	"encoding/json"
+	"fmt"
 	"regexp"
-
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 const (
@@ -12,54 +10,34 @@ const (
 )
 
 type Account struct {
-	Address  string            `json:"address"`
-	Metadata metadata.Metadata `json:"metadata"`
-}
-
-func (a Account) copy() Account {
-	a.Metadata = a.Metadata.Copy()
-	return a
-}
-
-func NewAccount(address string) Account {
-	return Account{
-		Address:  address,
-		Metadata: metadata.Metadata{},
-	}
+	Address  AccountAddress `json:"address" example:"users:001"`
+	Metadata Metadata       `json:"metadata" swaggertype:"object"`
 }
 
 type AccountWithVolumes struct {
 	Account
-	Volumes VolumesByAssets `json:"volumes"`
+	Volumes  AssetsVolumes  `json:"volumes"`
+	Balances AssetsBalances `json:"balances" example:"COIN:100"`
 }
 
-func NewAccountWithVolumes(address string) *AccountWithVolumes {
-	return &AccountWithVolumes{
-		Account: Account{
-			Address:  address,
-			Metadata: metadata.Metadata{},
-		},
-		Volumes: map[string]*Volumes{},
+const accountPattern = "^[a-zA-Z_]+[a-zA-Z0-9_:]*$"
+
+var accountRegexp = regexp.MustCompile(accountPattern)
+
+type AccountAddress string
+
+func (AccountAddress) GetType() Type { return TypeAccount }
+func (a AccountAddress) String() string {
+	return fmt.Sprintf("@%v", string(a))
+}
+
+func ParseAccountAddress(acc AccountAddress) error {
+	// TODO: handle properly in ledger v1.10
+	if acc == "" {
+		return nil
 	}
+	if !accountRegexp.MatchString(string(acc)) {
+		return fmt.Errorf("accounts should respect pattern %s", accountPattern)
+	}
+	return nil
 }
-
-func (v AccountWithVolumes) MarshalJSON() ([]byte, error) {
-	type aux AccountWithVolumes
-	return json.Marshal(struct {
-		aux
-		Balances BalancesByAssets `json:"balances"`
-	}{
-		aux:      aux(v),
-		Balances: v.Volumes.Balances(),
-	})
-}
-
-func (v AccountWithVolumes) Copy() AccountWithVolumes {
-	v.Account = v.Account.copy()
-	v.Volumes = v.Volumes.copy()
-	return v
-}
-
-const AccountPattern = "^[a-zA-Z_]+[a-zA-Z0-9_:]*$"
-
-var AccountRegexp = regexp.MustCompile(AccountPattern)

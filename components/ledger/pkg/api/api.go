@@ -1,41 +1,49 @@
 package api
 
 import (
-	"context"
 	_ "embed"
+	"net/http"
 
 	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/api/middlewares"
 	"github.com/formancehq/ledger/pkg/api/routes"
-	"github.com/formancehq/ledger/pkg/ledger"
-	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
-	"github.com/formancehq/ledger/pkg/storage/driver"
 	"github.com/formancehq/stack/libs/go-libs/health"
-	"go.opentelemetry.io/otel/metric"
+	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 )
 
+type API struct {
+	handler *gin.Engine
+}
+
+func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	a.handler.ServeHTTP(w, r)
+}
+
+func NewAPI(routes *routes.Routes) *API {
+	gin.SetMode(gin.ReleaseMode)
+	h := &API{
+		handler: routes.Engine(),
+	}
+	return h
+}
+
 type Config struct {
-	Version string
+	StorageDriver string
+	Version       string
+	UseScopes     bool
 }
 
 func Module(cfg Config) fx.Option {
 	return fx.Options(
-		fx.Provide(routes.NewRouter),
-		fx.Provide(func(storageDriver *driver.Driver, resolver *ledger.Resolver) controllers.Backend {
-			return controllers.NewDefaultBackend(storageDriver, cfg.Version, resolver)
+		controllers.ProvideVersion(func() string {
+			return cfg.Version
 		}),
-		//TODO(gfyrag): Move in pkg/ledger package
-		fx.Invoke(func(lc fx.Lifecycle, backend controllers.Backend) {
-			lc.Append(fx.Hook{
-				OnStop: func(ctx context.Context) error {
-					return backend.CloseLedgers(ctx)
-				},
-			})
-		}),
-		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
-		fx.Decorate(fx.Annotate(func(meterProvider metric.MeterProvider) (metrics.GlobalRegistry, error) {
-			return metrics.RegisterGlobalRegistry(meterProvider)
-		}, fx.As(new(metrics.GlobalRegistry)))),
+		middlewares.Module,
+		routes.Module,
+		controllers.Module,
+		fx.Provide(NewAPI),
+		fx.Supply(routes.UseScopes(cfg.UseScopes)),
 		health.Module(),
 	)
 }

@@ -2,121 +2,192 @@ package ledger
 
 import (
 	"context"
+	"fmt"
+	"time"
 
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/ledger/pkg/bus"
+	"github.com/dgraph-io/ristretto"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/ledger/command"
-	"github.com/formancehq/ledger/pkg/ledger/query"
-	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
-	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
 
+var DefaultContracts = []core.Contract{
+	{
+		Name:    "default",
+		Account: "*", // world still an exception
+		Expr: &core.ExprGte{
+			Op1: core.VariableExpr{
+				Name: "balance",
+			},
+			Op2: core.ConstantExpr{
+				Value: core.NewMonetaryInt(0),
+			},
+		},
+	},
+}
+
 type Ledger struct {
-	commander *command.Commander
-	store     *ledgerstore.Store
-	projector *query.Projector
+	store               Store
+	monitor             Monitor
+	allowPastTimestamps bool
+	cache               *ristretto.Cache
 }
 
-func (l *Ledger) CreateTransaction(ctx context.Context, parameters command.Parameters, data core.RunScript) (*core.Transaction, error) {
-	return l.commander.CreateTransaction(ctx, parameters, data)
+type LedgerOption = func(*Ledger)
+
+func WithPastTimestamps(l *Ledger) {
+	l.allowPastTimestamps = true
 }
 
-func (l *Ledger) RevertTransaction(ctx context.Context, parameters command.Parameters, id uint64) (*core.Transaction, error) {
-	return l.commander.RevertTransaction(ctx, parameters, id)
-}
-
-func (l *Ledger) SaveMeta(ctx context.Context, parameters command.Parameters, targetType string, targetID any, m metadata.Metadata) error {
-	return l.commander.SaveMeta(ctx, parameters, targetType, targetID, m)
-}
-
-func New(
-	name string,
-	store *ledgerstore.Store,
-	publisher message.Publisher,
-	compiler *command.Compiler,
-) *Ledger {
-	var monitor query.Monitor = query.NewNoOpMonitor()
-	if publisher != nil {
-		monitor = bus.NewLedgerMonitor(publisher, name)
+func NewLedger(store Store, monitor Monitor, cache *ristretto.Cache, options ...LedgerOption) (*Ledger, error) {
+	l := &Ledger{
+		store:   store,
+		monitor: monitor,
+		cache:   cache,
 	}
-	metricsRegistry, err := metrics.RegisterPerLedgerMetricsRegistry(name)
-	if err != nil {
-		panic(err)
+
+	for _, option := range options {
+		option(l)
 	}
-	projector := query.NewProjector(store, monitor, metricsRegistry)
-	return &Ledger{
-		commander: command.New(
-			store,
-			command.NewDefaultLocker(),
-			compiler,
-			command.NewReferencer(),
-			metricsRegistry,
-			projector.QueueLog,
-		),
-		store:     store,
-		projector: projector,
+
+	return l, nil
+}
+
+func (l *Ledger) Close(ctx context.Context) error {
+	if err := l.store.Close(ctx); err != nil {
+		return errors.Wrap(err, "closing store")
 	}
+	return nil
 }
 
-func (l *Ledger) Start(ctx context.Context) {
-	go l.commander.Run(logging.ContextWithField(ctx, "component", "commander"))
-	l.projector.Start(logging.ContextWithField(ctx, "component", "projector"))
+func (l *Ledger) GetLedgerStore() Store {
+	return l.store
 }
 
-func (l *Ledger) Close(ctx context.Context) {
-	logging.FromContext(ctx).Debugf("Close commander")
-	l.commander.Close()
-
-	logging.FromContext(ctx).Debugf("Close projector")
-	l.projector.Stop(logging.ContextWithField(ctx, "component", "projector"))
+func (l *Ledger) GetTransactions(ctx context.Context, q TransactionsQuery) (api.Cursor[core.ExpandedTransaction], error) {
+	return l.store.GetTransactions(ctx, q)
 }
 
-func (l *Ledger) GetTransactions(ctx context.Context, q ledgerstore.TransactionsQuery) (*api.Cursor[core.ExpandedTransaction], error) {
-	txs, err := l.store.GetTransactions(ctx, q)
-	return txs, errors.Wrap(err, "getting transactions")
-}
-
-func (l *Ledger) CountTransactions(ctx context.Context, q ledgerstore.TransactionsQuery) (uint64, error) {
-	count, err := l.store.CountTransactions(ctx, q)
-	return count, errors.Wrap(err, "counting transactions")
+func (l *Ledger) CountTransactions(ctx context.Context, q TransactionsQuery) (uint64, error) {
+	return l.store.CountTransactions(ctx, q)
 }
 
 func (l *Ledger) GetTransaction(ctx context.Context, id uint64) (*core.ExpandedTransaction, error) {
 	tx, err := l.store.GetTransaction(ctx, id)
-	return tx, errors.Wrap(err, "getting transaction")
+	if err != nil {
+		return nil, err
+	}
+	if tx == nil {
+		return nil, NewNotFoundError("transaction not found")
+	}
+
+	return tx, nil
 }
 
-func (l *Ledger) CountAccounts(ctx context.Context, a ledgerstore.AccountsQuery) (uint64, error) {
-	count, err := l.store.CountAccounts(ctx, a)
-	return count, errors.Wrap(err, "counting accounts")
+func (l *Ledger) SaveMapping(ctx context.Context, mapping core.Mapping) error {
+	if err := l.store.SaveMapping(ctx, mapping); err != nil {
+		return err
+	}
+
+	l.monitor.UpdatedMapping(ctx, l.store.Name(), mapping)
+	return nil
 }
 
-func (l *Ledger) GetAccounts(ctx context.Context, a ledgerstore.AccountsQuery) (*api.Cursor[core.Account], error) {
-	accounts, err := l.store.GetAccounts(ctx, a)
-	return accounts, errors.Wrap(err, "getting accounts")
+func (l *Ledger) LoadMapping(ctx context.Context) (*core.Mapping, error) {
+	return l.store.LoadMapping(ctx)
+}
+
+func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.ExpandedTransaction, error) {
+	revertedTx, err := l.store.GetTransaction(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("getting transaction %d", id))
+	}
+	if revertedTx == nil {
+		return nil, NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
+	}
+	if revertedTx.IsReverted() {
+		return nil, NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
+	}
+
+	rt := revertedTx.Reverse()
+	rt.Metadata = core.Metadata{}
+	rt.Metadata.MarkReverts(revertedTx.ID)
+
+	txData := core.TransactionData{
+		Postings:  rt.Postings,
+		Timestamp: rt.Timestamp,
+		Reference: rt.Reference,
+		Metadata:  rt.Metadata,
+	}
+	res, err := l.ExecuteTxsData(ctx, false, txData)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(
+			"executing revert script for transaction %d", id))
+	}
+	revertTx := res[0]
+
+	if err := l.store.UpdateTransactionMetadata(ctx,
+		revertedTx.ID, core.RevertedMetadata(revertTx.ID), revertTx.Timestamp); err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(
+			"updating transaction %d metadata while reverting", id))
+	}
+
+	if revertedTx.Metadata == nil {
+		revertedTx.Metadata = core.Metadata{}
+	}
+	revertedTx.Metadata.Merge(core.RevertedMetadata(revertTx.ID))
+
+	l.monitor.RevertedTransaction(ctx, l.store.Name(), revertedTx, &revertTx)
+	return &revertTx, nil
+}
+
+func (l *Ledger) CountAccounts(ctx context.Context, a AccountsQuery) (uint64, error) {
+	return l.store.CountAccounts(ctx, a)
+}
+
+func (l *Ledger) GetAccounts(ctx context.Context, a AccountsQuery) (api.Cursor[core.Account], error) {
+	return l.store.GetAccounts(ctx, a)
 }
 
 func (l *Ledger) GetAccount(ctx context.Context, address string) (*core.AccountWithVolumes, error) {
-	accounts, err := l.store.GetAccountWithVolumes(ctx, address)
-	return accounts, errors.Wrap(err, "getting account")
+	return l.store.GetAccountWithVolumes(ctx, address)
 }
 
-func (l *Ledger) GetBalances(ctx context.Context, q ledgerstore.BalancesQuery) (*api.Cursor[core.BalancesByAssetsByAccounts], error) {
-	balances, err := l.store.GetBalances(ctx, q)
-	return balances, errors.Wrap(err, "getting balances")
+func (l *Ledger) GetBalances(ctx context.Context, q BalancesQuery) (api.Cursor[core.AccountsBalances], error) {
+	return l.store.GetBalances(ctx, q)
 }
 
-func (l *Ledger) GetBalancesAggregated(ctx context.Context, q ledgerstore.BalancesQuery) (core.BalancesByAssets, error) {
-	balances, err := l.store.GetBalancesAggregated(ctx, q)
-	return balances, errors.Wrap(err, "getting balances aggregated")
+func (l *Ledger) GetBalancesAggregated(ctx context.Context, q AggregatedBalancesQuery) (core.AssetsBalances, error) {
+	return l.store.GetBalancesAggregated(ctx, q)
 }
 
-func (l *Ledger) GetLogs(ctx context.Context, q ledgerstore.LogsQuery) (*api.Cursor[core.ChainedLog], error) {
-	logs, err := l.store.GetLogs(ctx, q)
-	return logs, errors.Wrap(err, "getting logs")
+func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) error {
+
+	if targetType == "" {
+		return NewValidationError("empty target type")
+	}
+
+	if targetID == "" {
+		return NewValidationError("empty target id")
+	}
+
+	var err error
+	switch targetType {
+	case core.MetaTargetTypeTransaction:
+		err = l.store.UpdateTransactionMetadata(ctx, targetID.(uint64), m, time.Now().Round(time.Second).UTC())
+	case core.MetaTargetTypeAccount:
+		err = l.store.UpdateAccountMetadata(ctx, targetID.(string), m, time.Now().Round(time.Second).UTC())
+	default:
+		return NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
+	}
+	if err != nil {
+		return err
+	}
+
+	l.monitor.SavedMetadata(ctx, l.store.Name(), targetType, fmt.Sprint(targetID), m)
+	return nil
+}
+
+func (l *Ledger) GetLogs(ctx context.Context, q *LogsQuery) (api.Cursor[core.Log], error) {
+	return l.store.GetLogs(ctx, q)
 }

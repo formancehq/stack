@@ -18,12 +18,12 @@ services:
       - postgres
       - listener
     image: golang:1.19-alpine
-    entrypoint: go run main.go serve
+    entrypoint: go run main.go server start
     volumes:
       - ../..:/src
     working_dir: /src
     environment:
       CGO_ENABLED: 0
-      DEBUG: "true"
-      PUBLISHER_HTTP_ENABLED: "true"
-      PUBLISHER_TOPIC_MAPPING: "*:http://listener:8080"
+      NUMARY_DEBUG: "true"
+      NUMARY_PUBLISHER_HTTP_ENABLED: "true"
+      NUMARY_PUBLISHER_TOPIC_MAPPING: "*:http://listener:8080"

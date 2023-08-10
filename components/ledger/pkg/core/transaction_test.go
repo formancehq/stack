@@ -1,10 +1,8 @@
 package core
 
 import (
-	"math/big"
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,7 +15,7 @@ func TestReverseTransaction(t *testing.T) {
 						{
 							Source:      "world",
 							Destination: "users:001",
-							Amount:      big.NewInt(100),
+							Amount:      NewMonetaryInt(100),
 							Asset:       "COIN",
 						},
 					},
@@ -31,10 +29,11 @@ func TestReverseTransaction(t *testing.T) {
 				{
 					Source:      "users:001",
 					Destination: "world",
-					Amount:      big.NewInt(100),
+					Amount:      NewMonetaryInt(100),
 					Asset:       "COIN",
 				},
 			},
+			Reference: "revert_foo",
 		}
 		require.Equal(t, expected, tx.Reverse())
 	})
@@ -47,13 +46,13 @@ func TestReverseTransaction(t *testing.T) {
 						{
 							Source:      "world",
 							Destination: "users:001",
-							Amount:      big.NewInt(100),
+							Amount:      NewMonetaryInt(100),
 							Asset:       "COIN",
 						},
 						{
 							Source:      "users:001",
 							Destination: "payments:001",
-							Amount:      big.NewInt(100),
+							Amount:      NewMonetaryInt(100),
 							Asset:       "COIN",
 						},
 					},
@@ -67,16 +66,17 @@ func TestReverseTransaction(t *testing.T) {
 				{
 					Source:      "payments:001",
 					Destination: "users:001",
-					Amount:      big.NewInt(100),
+					Amount:      NewMonetaryInt(100),
 					Asset:       "COIN",
 				},
 				{
 					Source:      "users:001",
 					Destination: "world",
-					Amount:      big.NewInt(100),
+					Amount:      NewMonetaryInt(100),
 					Asset:       "COIN",
 				},
 			},
+			Reference: "revert_foo",
 		}
 		require.Equal(t, expected, tx.Reverse())
 	})
@@ -89,19 +89,19 @@ func TestReverseTransaction(t *testing.T) {
 						{
 							Source:      "world",
 							Destination: "users:001",
-							Amount:      big.NewInt(100),
+							Amount:      NewMonetaryInt(100),
 							Asset:       "COIN",
 						},
 						{
 							Source:      "users:001",
 							Destination: "payments:001",
-							Amount:      big.NewInt(100),
+							Amount:      NewMonetaryInt(100),
 							Asset:       "COIN",
 						},
 						{
 							Source:      "payments:001",
 							Destination: "alice",
-							Amount:      big.NewInt(100),
+							Amount:      NewMonetaryInt(100),
 							Asset:       "COIN",
 						},
 					},
@@ -115,40 +115,24 @@ func TestReverseTransaction(t *testing.T) {
 				{
 					Source:      "alice",
 					Destination: "payments:001",
-					Amount:      big.NewInt(100),
+					Amount:      NewMonetaryInt(100),
 					Asset:       "COIN",
 				},
 				{
 					Source:      "payments:001",
 					Destination: "users:001",
-					Amount:      big.NewInt(100),
+					Amount:      NewMonetaryInt(100),
 					Asset:       "COIN",
 				},
 				{
 					Source:      "users:001",
 					Destination: "world",
-					Amount:      big.NewInt(100),
+					Amount:      NewMonetaryInt(100),
 					Asset:       "COIN",
 				},
 			},
+			Reference: "revert_foo",
 		}
 		require.Equal(t, expected, tx.Reverse())
 	})
-}
-
-func BenchmarkHash(b *testing.B) {
-	logs := make([]ChainedLog, b.N)
-	var previous *ChainedLog
-	for i := 0; i < b.N; i++ {
-		newLog := NewTransactionLog(NewTransaction().WithPostings(
-			NewPosting("world", "bank", "USD", big.NewInt(100)),
-		), map[string]metadata.Metadata{}).ChainLog(previous)
-		previous = newLog
-		logs = append(logs, *newLog)
-	}
-
-	b.ResetTimer()
-	for i := 1; i < b.N; i++ {
-		logs[i].ComputeHash(&logs[i-1])
-	}
 }

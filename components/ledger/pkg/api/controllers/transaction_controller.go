@@ -1,193 +1,271 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/ledger/command"
-	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/errorsutil"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
-	"github.com/go-chi/chi/v5"
+	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 )
 
-func CountTransactions(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+type TransactionController struct{}
 
-	var startTimeParsed, endTimeParsed core.Time
+func NewTransactionController() TransactionController {
+	return TransactionController{}
+}
+
+func (ctl *TransactionController) CountTransactions(c *gin.Context) {
+	l, _ := c.Get("ledger")
+
+	var startTimeParsed, endTimeParsed time.Time
 	var err error
-	if r.URL.Query().Get(QueryKeyStartTime) != "" {
-		startTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyStartTime))
+	if c.Query(QueryKeyStartTime) != "" {
+		startTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyStartTime))
 		if err != nil {
-			apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation, ErrInvalidStartTime))
+			apierrors.ResponseError(c, ErrInvalidStartTime)
+			return
+		}
+	}
+	if c.Query(QueryKeyStartTimeDeprecated) != "" {
+		startTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyStartTimeDeprecated))
+		if err != nil {
+			apierrors.ResponseError(c, ErrInvalidStartTimeDeprecated)
 			return
 		}
 	}
 
-	if r.URL.Query().Get(QueryKeyEndTime) != "" {
-		endTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyEndTime))
+	if c.Query(QueryKeyEndTime) != "" {
+		endTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyEndTime))
 		if err != nil {
-			apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation, ErrInvalidEndTime))
+			apierrors.ResponseError(c, ErrInvalidEndTime)
+			return
+		}
+	}
+	if c.Query(QueryKeyEndTimeDeprecated) != "" {
+		endTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyEndTimeDeprecated))
+		if err != nil {
+			apierrors.ResponseError(c, ErrInvalidEndTimeDeprecated)
 			return
 		}
 	}
 
-	txQuery := ledgerstore.NewTransactionsQuery().
-		WithReferenceFilter(r.URL.Query().Get("reference")).
-		WithAccountFilter(r.URL.Query().Get("account")).
-		WithSourceFilter(r.URL.Query().Get("source")).
-		WithDestinationFilter(r.URL.Query().Get("destination")).
+	txQuery := ledger.NewTransactionsQuery().
+		WithReferenceFilter(c.Query("reference")).
+		WithAccountFilter(c.Query("account")).
+		WithSourceFilter(c.Query("source")).
+		WithDestinationFilter(c.Query("destination")).
 		WithStartTimeFilter(startTimeParsed).
 		WithEndTimeFilter(endTimeParsed).
-		WithMetadataFilter(sharedapi.GetQueryMap(r.URL.Query(), "metadata"))
+		WithMetadataFilter(c.QueryMap("metadata"))
 
-	count, err := l.CountTransactions(r.Context(), txQuery)
+	count, err := l.(*ledger.Ledger).CountTransactions(c.Request.Context(), *txQuery)
 	if err != nil {
-		apierrors.ResponseError(w, r, err)
+		apierrors.ResponseError(c, err)
 		return
 	}
 
-	w.Header().Set("Count", fmt.Sprint(count))
-	sharedapi.NoContent(w)
+	c.Header("Count", fmt.Sprint(count))
 }
 
-func GetTransactions(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+func (ctl *TransactionController) GetTransactions(c *gin.Context) {
+	l, _ := c.Get("ledger")
 
-	txQuery := ledgerstore.NewTransactionsQuery()
+	txQuery := ledger.NewTransactionsQuery()
 
-	if r.URL.Query().Get(QueryKeyCursor) != "" {
-		if r.URL.Query().Get("after") != "" ||
-			r.URL.Query().Get("reference") != "" ||
-			r.URL.Query().Get("account") != "" ||
-			r.URL.Query().Get("source") != "" ||
-			r.URL.Query().Get("destination") != "" ||
-			r.URL.Query().Get(QueryKeyStartTime) != "" ||
-			r.URL.Query().Get(QueryKeyEndTime) != "" ||
-			r.URL.Query().Get(QueryKeyPageSize) != "" {
-			apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-				errors.Errorf("no other query params can be set with '%s'", QueryKeyCursor)))
+	if c.Query(QueryKeyCursor) != "" {
+		if c.Query("after") != "" ||
+			c.Query("reference") != "" ||
+			c.Query("account") != "" ||
+			c.Query("source") != "" ||
+			c.Query("destination") != "" ||
+			c.Query(QueryKeyStartTime) != "" ||
+			c.Query(QueryKeyStartTimeDeprecated) != "" ||
+			c.Query(QueryKeyEndTime) != "" ||
+			c.Query(QueryKeyEndTimeDeprecated) != "" ||
+			c.Query(QueryKeyPageSize) != "" ||
+			c.Query(QueryKeyPageSizeDeprecated) != "" {
+			apierrors.ResponseError(c, ledger.NewValidationError(
+				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursor)))
 			return
 		}
 
-		err := ledgerstore.UnmarshalCursor(r.URL.Query().Get(QueryKeyCursor), &txQuery)
+		res, err := base64.RawURLEncoding.DecodeString(c.Query(QueryKeyCursor))
 		if err != nil {
-			apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-				errors.Errorf("invalid '%s' query param", QueryKeyCursor)))
+			apierrors.ResponseError(c, ledger.NewValidationError(
+				fmt.Sprintf("invalid '%s' query param", QueryKeyCursor)))
 			return
 		}
+
+		token := sqlstorage.TxsPaginationToken{}
+		if err = json.Unmarshal(res, &token); err != nil {
+			apierrors.ResponseError(c, ledger.NewValidationError(
+				fmt.Sprintf("invalid '%s' query param", QueryKeyCursor)))
+			return
+		}
+
+		txQuery = txQuery.
+			WithAfterTxID(token.AfterTxID).
+			WithReferenceFilter(token.ReferenceFilter).
+			WithAccountFilter(token.AccountFilter).
+			WithSourceFilter(token.SourceFilter).
+			WithDestinationFilter(token.DestinationFilter).
+			WithStartTimeFilter(token.StartTime).
+			WithEndTimeFilter(token.EndTime).
+			WithMetadataFilter(token.MetadataFilter).
+			WithPageSize(token.PageSize)
+
+	} else if c.Query(QueryKeyCursorDeprecated) != "" {
+		if c.Query("after") != "" ||
+			c.Query("reference") != "" ||
+			c.Query("account") != "" ||
+			c.Query("source") != "" ||
+			c.Query("destination") != "" ||
+			c.Query(QueryKeyStartTime) != "" ||
+			c.Query(QueryKeyStartTimeDeprecated) != "" ||
+			c.Query(QueryKeyEndTime) != "" ||
+			c.Query(QueryKeyEndTimeDeprecated) != "" ||
+			c.Query(QueryKeyPageSize) != "" ||
+			c.Query(QueryKeyPageSizeDeprecated) != "" {
+			apierrors.ResponseError(c, ledger.NewValidationError(
+				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursorDeprecated)))
+			return
+		}
+
+		res, err := base64.RawURLEncoding.DecodeString(c.Query(QueryKeyCursorDeprecated))
+		if err != nil {
+			apierrors.ResponseError(c, ledger.NewValidationError(
+				fmt.Sprintf("invalid '%s' query param", QueryKeyCursorDeprecated)))
+			return
+		}
+
+		token := sqlstorage.TxsPaginationToken{}
+		if err = json.Unmarshal(res, &token); err != nil {
+			apierrors.ResponseError(c, ledger.NewValidationError(
+				fmt.Sprintf("invalid '%s' query param", QueryKeyCursorDeprecated)))
+			return
+		}
+
+		txQuery = txQuery.
+			WithAfterTxID(token.AfterTxID).
+			WithReferenceFilter(token.ReferenceFilter).
+			WithAccountFilter(token.AccountFilter).
+			WithSourceFilter(token.SourceFilter).
+			WithDestinationFilter(token.DestinationFilter).
+			WithStartTimeFilter(token.StartTime).
+			WithEndTimeFilter(token.EndTime).
+			WithMetadataFilter(token.MetadataFilter).
+			WithPageSize(token.PageSize)
+
 	} else {
-		var (
-			err             error
-			afterTxIDParsed uint64
-		)
-		if r.URL.Query().Get("after") != "" {
-			afterTxIDParsed, err = strconv.ParseUint(r.URL.Query().Get("after"), 10, 64)
+		var err error
+		var afterTxIDParsed uint64
+		if c.Query("after") != "" {
+			afterTxIDParsed, err = strconv.ParseUint(c.Query("after"), 10, 64)
 			if err != nil {
-				apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-					errors.New("invalid 'after' query param")))
+				apierrors.ResponseError(c, ledger.NewValidationError(
+					"invalid 'after' query param"))
 				return
 			}
 		}
 
-		var startTimeParsed, endTimeParsed core.Time
-		if r.URL.Query().Get(QueryKeyStartTime) != "" {
-			startTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyStartTime))
+		var startTimeParsed, endTimeParsed time.Time
+		if c.Query(QueryKeyStartTime) != "" {
+			startTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyStartTime))
 			if err != nil {
-				apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation, ErrInvalidStartTime))
+				apierrors.ResponseError(c, ErrInvalidStartTime)
+				return
+			}
+		}
+		if c.Query(QueryKeyStartTimeDeprecated) != "" {
+			startTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyStartTimeDeprecated))
+			if err != nil {
+				apierrors.ResponseError(c, ErrInvalidStartTimeDeprecated)
 				return
 			}
 		}
 
-		if r.URL.Query().Get(QueryKeyEndTime) != "" {
-			endTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyEndTime))
+		if c.Query(QueryKeyEndTime) != "" {
+			endTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyEndTime))
 			if err != nil {
-				apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation, ErrInvalidEndTime))
+				apierrors.ResponseError(c, ErrInvalidEndTime)
+				return
+			}
+		}
+		if c.Query(QueryKeyEndTimeDeprecated) != "" {
+			endTimeParsed, err = time.Parse(time.RFC3339, c.Query(QueryKeyEndTimeDeprecated))
+			if err != nil {
+				apierrors.ResponseError(c, ErrInvalidEndTimeDeprecated)
 				return
 			}
 		}
 
-		pageSize, err := getPageSize(r)
+		pageSize, err := getPageSize(c)
 		if err != nil {
-			apierrors.ResponseError(w, r, err)
+			apierrors.ResponseError(c, err)
 			return
 		}
 
 		txQuery = txQuery.
 			WithAfterTxID(afterTxIDParsed).
-			WithReferenceFilter(r.URL.Query().Get("reference")).
-			WithAccountFilter(r.URL.Query().Get("account")).
-			WithSourceFilter(r.URL.Query().Get("source")).
-			WithDestinationFilter(r.URL.Query().Get("destination")).
+			WithReferenceFilter(c.Query("reference")).
+			WithAccountFilter(c.Query("account")).
+			WithSourceFilter(c.Query("source")).
+			WithDestinationFilter(c.Query("destination")).
 			WithStartTimeFilter(startTimeParsed).
 			WithEndTimeFilter(endTimeParsed).
-			WithMetadataFilter(sharedapi.GetQueryMap(r.URL.Query(), "metadata")).
+			WithMetadataFilter(c.QueryMap("metadata")).
 			WithPageSize(pageSize)
 	}
 
-	cursor, err := l.GetTransactions(r.Context(), txQuery)
+	cursor, err := l.(*ledger.Ledger).GetTransactions(c.Request.Context(), *txQuery)
 	if err != nil {
-		apierrors.ResponseError(w, r, err)
+		apierrors.ResponseError(c, err)
 		return
 	}
 
-	sharedapi.RenderCursor(w, *cursor)
+	respondWithCursor[core.ExpandedTransaction](c, http.StatusOK, cursor)
 }
 
-type Script struct {
-	core.Script
-	Vars map[string]any `json:"vars"`
+type PostTransaction struct {
+	Postings  core.Postings `json:"postings"`
+	Script    core.Script   `json:"script"`
+	Timestamp time.Time     `json:"timestamp"`
+	Reference string        `json:"reference"`
+	Metadata  core.Metadata `json:"metadata" swaggertype:"object"`
 }
 
-func (s Script) ToCore() core.Script {
-	s.Script.Vars = map[string]string{}
-	for k, v := range s.Vars {
-		switch v := v.(type) {
-		case string:
-			s.Script.Vars[k] = v
-		case map[string]any:
-			s.Script.Vars[k] = fmt.Sprintf("%s %v", v["asset"], v["amount"])
-		default:
-			s.Script.Vars[k] = fmt.Sprint(v)
-		}
-	}
-	return s.Script
-}
+func (ctl *TransactionController) PostTransaction(c *gin.Context) {
+	l, _ := c.Get("ledger")
 
-type PostTransactionRequest struct {
-	Postings  core.Postings     `json:"postings"`
-	Script    Script            `json:"script"`
-	Timestamp core.Time         `json:"timestamp"`
-	Reference string            `json:"reference"`
-	Metadata  metadata.Metadata `json:"metadata" swaggertype:"object"`
-}
+	value, ok := c.GetQuery("preview")
+	preview := ok &&
+		(strings.ToUpper(value) == "YES" || strings.ToUpper(value) == "TRUE" || value == "1")
 
-func PostTransaction(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
-
-	payload := PostTransactionRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		apierrors.ResponseError(w, r,
-			errorsutil.NewError(command.ErrValidation,
-				errors.New("invalid transaction format")))
+	payload := PostTransaction{}
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		apierrors.ResponseError(c,
+			ledger.NewValidationError("invalid transaction format"))
 		return
 	}
 
 	if len(payload.Postings) > 0 && payload.Script.Plain != "" ||
 		len(payload.Postings) == 0 && payload.Script.Plain == "" {
-		apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-			errors.New("invalid payload: should contain either postings or script")))
+		apierrors.ResponseError(c, ledger.NewValidationError(
+			"invalid payload: should contain either postings or script"))
 		return
 	} else if len(payload.Postings) > 0 {
 		if i, err := payload.Postings.Validate(); err != nil {
-			apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation, errors.Wrap(err,
-				fmt.Sprintf("invalid posting %d", i))))
+			apierrors.ResponseError(c, ledger.NewValidationError(errors.Wrap(err,
+				fmt.Sprintf("invalid posting %d", i)).Error()))
 			return
 		}
 		txData := core.TransactionData{
@@ -196,92 +274,129 @@ func PostTransaction(w http.ResponseWriter, r *http.Request) {
 			Reference: payload.Reference,
 			Metadata:  payload.Metadata,
 		}
-
-		res, err := l.CreateTransaction(r.Context(), getCommandParameters(r), core.TxToScriptData(txData))
+		res, err := l.(*ledger.Ledger).ExecuteTxsData(c.Request.Context(), preview, txData)
 		if err != nil {
-			apierrors.ResponseError(w, r, err)
+			apierrors.ResponseError(c, err)
 			return
 		}
 
-		sharedapi.Ok(w, res)
+		respondWithData[[]core.ExpandedTransaction](c, http.StatusOK, res)
 		return
 	}
 
-	script := core.RunScript{
-		Script:    payload.Script.ToCore(),
+	script := core.ScriptData{
+		Script:    payload.Script,
 		Timestamp: payload.Timestamp,
 		Reference: payload.Reference,
 		Metadata:  payload.Metadata,
 	}
-
-	res, err := l.CreateTransaction(r.Context(), getCommandParameters(r), script)
+	res, err := l.(*ledger.Ledger).ExecuteScript(c.Request.Context(), preview, script)
 	if err != nil {
-		apierrors.ResponseError(w, r, err)
+		apierrors.ResponseError(c, err)
 		return
 	}
 
-	sharedapi.Ok(w, res)
+	respondWithData[[]core.ExpandedTransaction](c, http.StatusOK, []core.ExpandedTransaction{res})
 }
 
-func GetTransaction(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+func (ctl *TransactionController) GetTransaction(c *gin.Context) {
+	l, _ := c.Get("ledger")
 
-	txId, err := strconv.ParseUint(chi.URLParam(r, "txid"), 10, 64)
+	txId, err := strconv.ParseUint(c.Param("txid"), 10, 64)
 	if err != nil {
-		apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-			errors.New("invalid transaction ID")))
+		apierrors.ResponseError(c, ledger.NewValidationError("invalid transaction ID"))
 		return
 	}
 
-	tx, err := l.GetTransaction(r.Context(), txId)
+	tx, err := l.(*ledger.Ledger).GetTransaction(c.Request.Context(), txId)
 	if err != nil {
-		apierrors.ResponseError(w, r, err)
+		apierrors.ResponseError(c, err)
 		return
 	}
 
-	sharedapi.Ok(w, tx)
+	respondWithData[*core.ExpandedTransaction](c, http.StatusOK, tx)
 }
 
-func RevertTransaction(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+func (ctl *TransactionController) RevertTransaction(c *gin.Context) {
+	l, _ := c.Get("ledger")
 
-	txId, err := strconv.ParseUint(chi.URLParam(r, "txid"), 10, 64)
+	txId, err := strconv.ParseUint(c.Param("txid"), 10, 64)
 	if err != nil {
-		apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-			errors.New("invalid transaction ID")))
+		apierrors.ResponseError(c, ledger.NewValidationError("invalid transaction ID"))
 		return
 	}
 
-	tx, err := l.RevertTransaction(r.Context(), getCommandParameters(r), txId)
+	tx, err := l.(*ledger.Ledger).RevertTransaction(c.Request.Context(), txId)
 	if err != nil {
-		apierrors.ResponseError(w, r, err)
+		apierrors.ResponseError(c, err)
 		return
 	}
 
-	sharedapi.Created(w, tx)
+	respondWithData[*core.ExpandedTransaction](c, http.StatusOK, tx)
 }
 
-func PostTransactionMetadata(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+func (ctl *TransactionController) PostTransactionMetadata(c *gin.Context) {
+	l, _ := c.Get("ledger")
 
-	var m metadata.Metadata
-	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
-		apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-			errors.New("invalid metadata format")))
+	var m core.Metadata
+	if err := c.ShouldBindJSON(&m); err != nil {
+		apierrors.ResponseError(c, ledger.NewValidationError("invalid metadata format"))
 		return
 	}
 
-	txId, err := strconv.ParseUint(chi.URLParam(r, "txid"), 10, 64)
+	txId, err := strconv.ParseUint(c.Param("txid"), 10, 64)
 	if err != nil {
-		apierrors.ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
-			errors.New("invalid transaction ID")))
+		apierrors.ResponseError(c, ledger.NewValidationError("invalid transaction ID"))
 		return
 	}
 
-	if err := l.SaveMeta(r.Context(), getCommandParameters(r), core.MetaTargetTypeTransaction, txId, m); err != nil {
-		apierrors.ResponseError(w, r, err)
+	_, err = l.(*ledger.Ledger).GetTransaction(c.Request.Context(), txId)
+	if err != nil {
+		apierrors.ResponseError(c, err)
 		return
 	}
 
-	sharedapi.NoContent(w)
+	if err := l.(*ledger.Ledger).SaveMeta(c.Request.Context(),
+		core.MetaTargetTypeTransaction, txId, m); err != nil {
+		apierrors.ResponseError(c, err)
+		return
+	}
+
+	respondWithNoContent(c)
+}
+
+func (ctl *TransactionController) PostTransactionsBatch(c *gin.Context) {
+	l, _ := c.Get("ledger")
+
+	var txs core.Transactions
+	if err := c.ShouldBindJSON(&txs); err != nil {
+		apierrors.ResponseError(c, ledger.NewValidationError("invalid transactions format"))
+		return
+	}
+
+	if len(txs.Transactions) == 0 {
+		apierrors.ResponseError(c, ledger.NewValidationError("no transaction to insert"))
+		return
+	}
+
+	for i, tx := range txs.Transactions {
+		if len(tx.Postings) == 0 {
+			apierrors.ResponseError(c, ledger.NewValidationError(errors.New(fmt.Sprintf(
+				"invalid transaction %d: no postings", i)).Error()))
+			return
+		}
+		if j, err := tx.Postings.Validate(); err != nil {
+			apierrors.ResponseError(c, ledger.NewValidationError(errors.Wrap(err,
+				fmt.Sprintf("invalid transaction %d: posting %d", i, j)).Error()))
+			return
+		}
+	}
+
+	res, err := l.(*ledger.Ledger).ExecuteTxsData(c.Request.Context(), false, txs.Transactions...)
+	if err != nil {
+		apierrors.ResponseError(c, err)
+		return
+	}
+
+	respondWithData[[]core.ExpandedTransaction](c, http.StatusOK, res)
 }

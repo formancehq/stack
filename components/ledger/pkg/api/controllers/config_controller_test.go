@@ -1,52 +1,43 @@
 package controllers_test
 
 import (
-	"encoding/json"
+	"context"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
+	"github.com/formancehq/ledger/pkg/api"
 	"github.com/formancehq/ledger/pkg/api/controllers"
-	"github.com/formancehq/ledger/pkg/api/routes"
-	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
-	"github.com/golang/mock/gomock"
+	"github.com/formancehq/ledger/pkg/api/internal"
+	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/fx"
 )
 
 func TestGetInfo(t *testing.T) {
-	t.Parallel()
+	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, h *api.API, driver storage.Driver[ledger.Store]) {
+		lc.Append(fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				rsp := internal.GetInfo(h)
+				assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-	backend, _ := newTestingBackend(t)
-	router := routes.NewRouter(backend, nil, metrics.NewNoOpRegistry())
+				info, ok := internal.DecodeSingleResponse[controllers.ConfigInfo](t, rsp.Body)
+				require.True(t, ok)
 
-	backend.
-		EXPECT().
-		ListLedgers(gomock.Any()).
-		Return([]string{"a", "b"}, nil)
-
-	backend.
-		EXPECT().
-		GetVersion().
-		Return("latest")
-
-	req := httptest.NewRequest(http.MethodGet, "/_info", nil)
-	rec := httptest.NewRecorder()
-
-	router.ServeHTTP(rec, req)
-
-	require.Equal(t, http.StatusOK, rec.Code)
-
-	info := controllers.ConfigInfo{}
-	require.NoError(t, json.NewDecoder(rec.Body).Decode(&info))
-
-	require.EqualValues(t, controllers.ConfigInfo{
-		Server:  "ledger",
-		Version: "latest",
-		Config: &controllers.Config{
-			LedgerStorage: &controllers.LedgerStorage{
-				Driver:  "postgres",
-				Ledgers: []string{"a", "b"},
+				info.Config.LedgerStorage.Ledgers = []string{}
+				assert.EqualValues(t, controllers.ConfigInfo{
+					Server:  "numary-ledger",
+					Version: "latest",
+					Config: &controllers.Config{
+						LedgerStorage: &controllers.LedgerStorage{
+							Driver:  driver.Name(),
+							Ledgers: []string{},
+						},
+					},
+				}, info)
+				return nil
 			},
-		},
-	}, info)
+		})
+	}))
 }

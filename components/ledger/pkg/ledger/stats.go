@@ -2,9 +2,6 @@ package ledger
 
 import (
 	"context"
-
-	"github.com/formancehq/ledger/pkg/storage/ledgerstore"
-	"github.com/pkg/errors"
 )
 
 type Stats struct {
@@ -15,14 +12,14 @@ type Stats struct {
 func (l *Ledger) Stats(ctx context.Context) (Stats, error) {
 	var stats Stats
 
-	transactions, err := l.store.CountTransactions(ctx, ledgerstore.TransactionsQuery{})
+	transactions, err := l.store.CountTransactions(ctx, TransactionsQuery{})
 	if err != nil {
-		return stats, errors.Wrap(err, "counting transactions")
+		return stats, err
 	}
 
-	accounts, err := l.store.CountAccounts(ctx, ledgerstore.AccountsQuery{})
+	accounts, err := l.store.CountAccounts(ctx, AccountsQuery{})
 	if err != nil {
-		return stats, errors.Wrap(err, "counting accounts")
+		return stats, err
 	}
 
 	return Stats{

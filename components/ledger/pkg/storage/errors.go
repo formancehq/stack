@@ -1,52 +1,54 @@
 package storage
 
 import (
-	"database/sql"
-
-	"github.com/formancehq/stack/libs/go-libs/errorsutil"
-	"github.com/lib/pq"
-	"github.com/pkg/errors"
+	"errors"
+	"fmt"
 )
-
-// postgresError is an helper to wrap postgres errors into storage errors
-func PostgresError(err error) error {
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrNotFound
-		}
-
-		switch pge := err.(type) {
-		case *pq.Error:
-			switch pge.Code {
-			case "23505":
-				return errorsutil.NewError(ErrStorage,
-					errorsutil.NewError(ErrConstraintFailed, err))
-			case "53300":
-				return errorsutil.NewError(ErrStorage,
-					errorsutil.NewError(ErrTooManyClients, err))
-			}
-		}
-
-		return errorsutil.NewError(ErrStorage, err)
-	}
-
-	return nil
-}
 
 var (
-	ErrNotFound           = errors.New("not found")
-	ErrConstraintFailed   = errors.New("23505: constraint failed")
-	ErrTooManyClients     = errors.New("53300: too many clients")
-	ErrStoreAlreadyExists = errors.New("store already exists")
-	ErrStoreNotFound      = errors.New("store not found")
-
-	ErrStorage = errors.New("storage error")
+	ErrConfigurationNotFound = errors.New("configuration not found")
 )
 
-func IsNotFoundError(err error) bool {
-	return errors.Is(err, ErrNotFound)
+type Code string
+
+const (
+	ConstraintFailed Code = "CONSTRAINT_FAILED"
+	TooManyClient    Code = "TOO_MANY_CLIENT"
+)
+
+type Error struct {
+	Code          Code
+	OriginalError error
 }
 
-func IsStorageError(err error) bool {
-	return errors.Is(err, ErrStorage)
+func (e Error) Is(err error) bool {
+	storageErr, ok := err.(*Error)
+	if !ok {
+		return false
+	}
+	if storageErr.Code == "" {
+		return true
+	}
+	return storageErr.Code == e.Code
+}
+
+func (e Error) Error() string {
+	return fmt.Sprintf("%s [%s]", e.OriginalError, e.Code)
+}
+
+func NewError(code Code, originalError error) *Error {
+	return &Error{
+		Code:          code,
+		OriginalError: originalError,
+	}
+}
+
+func IsError(err error) bool {
+	return IsErrorCode(err, "")
+}
+
+func IsErrorCode(err error, code Code) bool {
+	return errors.Is(err, &Error{
+		Code: code,
+	})
 }

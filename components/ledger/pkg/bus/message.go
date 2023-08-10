@@ -1,8 +1,9 @@
 package bus
 
 import (
+	"time"
+
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 const (
@@ -11,11 +12,12 @@ const (
 
 	EventTypeCommittedTransactions = "COMMITTED_TRANSACTIONS"
 	EventTypeSavedMetadata         = "SAVED_METADATA"
+	EventTypeUpdatedMapping        = "UPDATED_MAPPING"
 	EventTypeRevertedTransaction   = "REVERTED_TRANSACTION"
 )
 
 type EventMessage struct {
-	Date    core.Time `json:"date"`
+	Date    time.Time `json:"date"`
 	App     string    `json:"app"`
 	Version string    `json:"version"`
 	Type    string    `json:"type"`
@@ -23,13 +25,17 @@ type EventMessage struct {
 }
 
 type CommittedTransactions struct {
-	Ledger       string             `json:"ledger"`
-	Transactions []core.Transaction `json:"transactions"`
+	Ledger       string                     `json:"ledger"`
+	Transactions []core.ExpandedTransaction `json:"transactions"`
+	// Deprecated (use postCommitVolumes)
+	Volumes           core.AccountsAssetsVolumes `json:"volumes"`
+	PostCommitVolumes core.AccountsAssetsVolumes `json:"postCommitVolumes"`
+	PreCommitVolumes  core.AccountsAssetsVolumes `json:"preCommitVolumes"`
 }
 
 func newEventCommittedTransactions(txs CommittedTransactions) EventMessage {
 	return EventMessage{
-		Date:    core.Now(),
+		Date:    time.Now().UTC(),
 		App:     EventApp,
 		Version: EventVersion,
 		Type:    EventTypeCommittedTransactions,
@@ -38,15 +44,15 @@ func newEventCommittedTransactions(txs CommittedTransactions) EventMessage {
 }
 
 type SavedMetadata struct {
-	Ledger     string            `json:"ledger"`
-	TargetType string            `json:"targetType"`
-	TargetID   string            `json:"targetId"`
-	Metadata   metadata.Metadata `json:"metadata"`
+	Ledger     string        `json:"ledger"`
+	TargetType string        `json:"targetType"`
+	TargetID   string        `json:"targetId"`
+	Metadata   core.Metadata `json:"metadata"`
 }
 
 func newEventSavedMetadata(metadata SavedMetadata) EventMessage {
 	return EventMessage{
-		Date:    core.Now(),
+		Date:    time.Now().UTC(),
 		App:     EventApp,
 		Version: EventVersion,
 		Type:    EventTypeSavedMetadata,
@@ -54,15 +60,30 @@ func newEventSavedMetadata(metadata SavedMetadata) EventMessage {
 	}
 }
 
+type UpdatedMapping struct {
+	Ledger  string       `json:"ledger"`
+	Mapping core.Mapping `json:"mapping"`
+}
+
+func newEventUpdatedMapping(mapping UpdatedMapping) EventMessage {
+	return EventMessage{
+		Date:    time.Now().UTC(),
+		App:     EventApp,
+		Version: EventVersion,
+		Type:    EventTypeUpdatedMapping,
+		Payload: mapping,
+	}
+}
+
 type RevertedTransaction struct {
-	Ledger              string           `json:"ledger"`
-	RevertedTransaction core.Transaction `json:"revertedTransaction"`
-	RevertTransaction   core.Transaction `json:"revertTransaction"`
+	Ledger              string                   `json:"ledger"`
+	RevertedTransaction core.ExpandedTransaction `json:"revertedTransaction"`
+	RevertTransaction   core.ExpandedTransaction `json:"revertTransaction"`
 }
 
 func newEventRevertedTransaction(tx RevertedTransaction) EventMessage {
 	return EventMessage{
-		Date:    core.Now(),
+		Date:    time.Now().UTC(),
 		App:     EventApp,
 		Version: EventVersion,
 		Type:    EventTypeRevertedTransaction,

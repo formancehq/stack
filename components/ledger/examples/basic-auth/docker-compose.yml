@@ -13,7 +13,7 @@ services:
     depends_on:
       - postgres
     image: golang:1.19-alpine
-    entrypoint: go run main.go serve
+    entrypoint: go run main.go server start
     volumes:
       - ../..:/src
     ports:
@@ -21,6 +21,6 @@ services:
     working_dir: /src
     environment:
       CGO_ENABLED: 0
-      DEBUG: "true"
-      AUTH_BASIC_ENABLED: "true"
-      AUTH_BASIC_CREDENTIALS: "user:password"
+      NUMARY_DEBUG: "true"
+      NUMARY_AUTH_BASIC_ENABLED: "true"
+      NUMARY_AUTH_BASIC_CREDENTIALS: "user:password"
