@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
 	"go.uber.org/fx"
 )
 
@@ -64,7 +65,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 	options = append(options,
 		otlptraces.CLITracesModule(viper.GetViper()),
 		otlpmetrics.CLIMetricsModule(viper.GetViper()),
-		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
+		fx.Provide(fx.Annotate(noop.NewMeterProvider, fx.As(new(metric.MeterProvider)))),
 		fx.Provide(metrics.RegisterMetricsRegistry),
 	)
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))

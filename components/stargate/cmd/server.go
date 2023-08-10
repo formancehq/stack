@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
 	"go.uber.org/fx"
 )
 
@@ -57,7 +58,7 @@ func resolveServerOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option 
 				viper.GetDuration(natsRequestTimeout),
 			)
 		}),
-		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
+		fx.Provide(fx.Annotate(noop.NewMeterProvider, fx.As(new(metric.MeterProvider)))),
 		http.Module(viper.GetString(serviceHttpAddrFlag)),
 
 		grpc.Module(

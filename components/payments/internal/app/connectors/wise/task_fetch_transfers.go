@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -29,14 +30,14 @@ func taskFetchTransfers(logger logging.Logger, c *client.Client, profileID uint6
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsAttrs...))
 		}()
 
 		transfers, err := c.GetTransfers(ctx, &client.Profile{
 			ID: profileID,
 		})
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 			return err
 		}
 
@@ -108,10 +109,10 @@ func taskFetchTransfers(logger logging.Logger, c *client.Client, profileID uint6
 		}
 
 		if err := ingester.IngestPayments(ctx, paymentBatch, struct{}{}); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(paymentBatch)), paymentsAttrs...)
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(paymentBatch)), metric.WithAttributes(paymentsAttrs...))
 
 		return nil
 	}

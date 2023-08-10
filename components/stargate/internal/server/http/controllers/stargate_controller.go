@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	"google.golang.org/protobuf/proto"
 )
@@ -36,7 +37,7 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	}
 	defer func() {
 		attrs = append(attrs, attribute.Int("status", status))
-		s.metricsRegistry.ReceivedHTTPCallByPath().Add(ctx, 1, attrs...)
+		s.metricsRegistry.ReceivedHTTPCallByPath().Add(ctx, 1, metric.WithAttributes(attrs...))
 	}()
 
 	msg, err := requestToProto(r)

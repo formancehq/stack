@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -23,7 +24,7 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsAttrs...))
 		}()
 
 		tt := NewTimelineTrigger(
@@ -33,7 +34,7 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 					if err := ingestBatch(ctx, "", logger, ingester, batch, commitState, tail); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs...)
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(paymentsAttrs...))
 
 					return nil
 				},
@@ -47,7 +48,7 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 			return err
 		}
 

@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -27,12 +28,12 @@ func BalancesTask(config Config, account string, client *DefaultClient) func(ctx
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(balancesAttrs...))
 		}()
 
 		balances, err := client.ForAccount(account).Balance(ctx)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 			return err
 		}
 
@@ -52,10 +53,10 @@ func BalancesTask(config Config, account string, client *DefaultClient) func(ctx
 		}
 
 		if err := ingester.IngestBalances(ctx, batch, false); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances.Available)), balancesAttrs...)
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances.Available)), metric.WithAttributes(balancesAttrs...))
 
 		return nil
 	}

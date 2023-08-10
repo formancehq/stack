@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -32,12 +33,12 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), profilesAndBalancesAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(profilesAndBalancesAttrs...))
 		}()
 
 		profiles, err := client.GetProfiles()
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(profilesAttrs...))
 			return err
 		}
 
@@ -45,7 +46,7 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 		for _, profile := range profiles {
 			balances, err := client.GetBalances(ctx, profile.ID)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 				return err
 			}
 
@@ -136,16 +137,16 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs...)
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(profilesAttrs...))
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), profilesAttrs...)
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), metric.WithAttributes(profilesAttrs...))
 
 	if err := ingester.IngestBalances(ctx, balancesBatch, false); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), balancesAttrs...)
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), metric.WithAttributes(balancesAttrs...))
 
 	return nil
 }
