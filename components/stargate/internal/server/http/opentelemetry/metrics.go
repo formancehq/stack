@@ -2,15 +2,15 @@ package opentelemetry
 
 import (
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/metric/instrument"
+	"go.opentelemetry.io/otel/metric/noop"
 )
 
 type MetricsRegistry interface {
-	ReceivedHTTPCallByPath() instrument.Int64Counter
+	ReceivedHTTPCallByPath() metric.Int64Counter
 }
 
 type metricsRegistry struct {
-	receivedHTTPCallByPath instrument.Int64Counter
+	receivedHTTPCallByPath metric.Int64Counter
 }
 
 func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistry, error) {
@@ -18,8 +18,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	receivedHTTPCallByPath, err := meter.Int64Counter(
 		"stargate_server_received_http_call_by_path",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Received HTTP call by path"),
+		metric.WithUnit("1"),
+		metric.WithDescription("Received HTTP call by path"),
 	)
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 	}, nil
 }
 
-func (m *metricsRegistry) ReceivedHTTPCallByPath() instrument.Int64Counter {
+func (m *metricsRegistry) ReceivedHTTPCallByPath() metric.Int64Counter {
 	return m.receivedHTTPCallByPath
 }
 
@@ -40,7 +40,7 @@ func NewNoOpMetricsRegistry() *NoOpMetricsRegistry {
 	return &NoOpMetricsRegistry{}
 }
 
-func (m *NoOpMetricsRegistry) ReceivedHTTPCallByPath() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_received_http_call_by_path")
+func (m *NoOpMetricsRegistry) ReceivedHTTPCallByPath() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("server_http").Int64Counter("stargate_server_received_http_call_by_path")
 	return counter
 }

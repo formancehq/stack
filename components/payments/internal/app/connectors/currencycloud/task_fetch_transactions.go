@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -35,7 +36,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 ) error {
 	now := time.Now()
 	defer func() {
-		metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs...)
+		metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsAttrs...))
 	}()
 
 	page := 1
@@ -48,7 +49,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 
 		transactions, nextPage, err := client.GetTransactions(ctx, page)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 			return err
 		}
 
@@ -62,7 +63,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 			var amount big.Float
 			_, ok := amount.SetString(transaction.Amount)
 			if !ok {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 				return fmt.Errorf("failed to parse amount %s", transaction.Amount)
 			}
 
@@ -73,7 +74,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 
 			rawData, err = json.Marshal(transaction)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 				return fmt.Errorf("failed to marshal transaction: %w", err)
 			}
 
@@ -116,10 +117,10 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 
 		err = ingester.IngestPayments(ctx, batch, struct{}{})
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs...)
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(paymentsAttrs...))
 	}
 
 	return nil

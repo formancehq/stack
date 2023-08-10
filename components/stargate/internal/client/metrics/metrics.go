@@ -1,20 +1,20 @@
 package metrics
 
 import (
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/metric/instrument"
 )
 
 type MetricsRegistry interface {
-	HTTPCallLatencies() instrument.Int64Histogram
-	HTTPCallStatusCodes() instrument.Int64Counter
-	ServerMessageReceivedByType() instrument.Int64Counter
+	HTTPCallLatencies() metric.Int64Histogram
+	HTTPCallStatusCodes() metric.Int64Counter
+	ServerMessageReceivedByType() metric.Int64Counter
 }
 
 type metricsRegistry struct {
-	httpCallLatencies           instrument.Int64Histogram
-	httpCallStatusCodes         instrument.Int64Counter
-	serverMessageReceivedByType instrument.Int64Counter
+	httpCallLatencies           metric.Int64Histogram
+	httpCallStatusCodes         metric.Int64Counter
+	serverMessageReceivedByType metric.Int64Counter
 }
 
 func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistry, error) {
@@ -22,8 +22,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	httpCallLatencies, err := meter.Int64Histogram(
 		"http_call_latencies",
-		instrument.WithUnit("ms"),
-		instrument.WithDescription("Latency of HTTP calls"),
+		metric.WithUnit("ms"),
+		metric.WithDescription("Latency of HTTP calls"),
 	)
 	if err != nil {
 		return nil, err
@@ -31,8 +31,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	httpCallStatusCodes, err := meter.Int64Counter(
 		"http_call_status_codes",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("HTTP status codes of HTTP calls"),
+		metric.WithUnit("1"),
+		metric.WithDescription("HTTP status codes of HTTP calls"),
 	)
 	if err != nil {
 		return nil, err
@@ -40,8 +40,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	serverMessageReceivedByType, err := meter.Int64Counter(
 		"server_message_received_by_type",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Server message received by type"),
+		metric.WithUnit("1"),
+		metric.WithDescription("Server message received by type"),
 	)
 	if err != nil {
 		return nil, err
@@ -54,15 +54,15 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 	}, nil
 }
 
-func (m *metricsRegistry) HTTPCallLatencies() instrument.Int64Histogram {
+func (m *metricsRegistry) HTTPCallLatencies() metric.Int64Histogram {
 	return m.httpCallLatencies
 }
 
-func (m *metricsRegistry) HTTPCallStatusCodes() instrument.Int64Counter {
+func (m *metricsRegistry) HTTPCallStatusCodes() metric.Int64Counter {
 	return m.httpCallStatusCodes
 }
 
-func (m *metricsRegistry) ServerMessageReceivedByType() instrument.Int64Counter {
+func (m *metricsRegistry) ServerMessageReceivedByType() metric.Int64Counter {
 	return m.serverMessageReceivedByType
 }
 
@@ -72,17 +72,17 @@ func NewNoOpMetricsRegistry() *NoOpMetricsRegistry {
 	return &NoOpMetricsRegistry{}
 }
 
-func (m *NoOpMetricsRegistry) HTTPCallLatencies() instrument.Int64Histogram {
-	histogram, _ := metric.NewNoopMeter().Int64Histogram("http_call_latencies")
+func (m *NoOpMetricsRegistry) HTTPCallLatencies() metric.Int64Histogram {
+	histogram, _ := otel.GetMeterProvider().Meter("client").Int64Histogram("http_call_latencies")
 	return histogram
 }
 
-func (m *NoOpMetricsRegistry) HTTPCallStatusCodes() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("http_call_status_codes")
+func (m *NoOpMetricsRegistry) HTTPCallStatusCodes() metric.Int64Counter {
+	counter, _ := otel.GetMeterProvider().Meter("client").Int64Counter("http_call_status_codes")
 	return counter
 }
 
-func (m *NoOpMetricsRegistry) ServerMessageReceivedByType() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("server_message_received_by_type")
+func (m *NoOpMetricsRegistry) ServerMessageReceivedByType() metric.Int64Counter {
+	counter, _ := otel.GetMeterProvider().Meter("client").Int64Counter("server_message_received_by_type")
 	return counter
 }
