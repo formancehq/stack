@@ -11,6 +11,7 @@ import (
 const (
 	taskNameMain              = "main"
 	taskNameFetchAccounts     = "fetch-accounts"
+	taskNameFetchRecipients   = "fetch-recipients"
 	taskNameFetchTransactions = "fetch-transactions"
 	taskNameFetchBalances     = "fetch-balances"
 )
@@ -42,6 +43,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskMain(logger)
 		case taskNameFetchAccounts:
 			return taskFetchAccounts(logger, moneycorpClient)
+		case taskNameFetchRecipients:
+			return taskFetchRecipients(logger, moneycorpClient)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, moneycorpClient, taskDescriptor.AccountID)
 		case taskNameFetchBalances:

@@ -56,7 +56,7 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 
 			logger.Infof(fmt.Sprintf("scheduling fetch-transfers: %d", profile.ID))
 
-			descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			transferDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch transfers from client by profile",
 				Key:       taskNameFetchTransfers,
 				ProfileID: profile.ID,
@@ -64,8 +64,17 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 			if err != nil {
 				return err
 			}
+			descriptors = append(descriptors, transferDescriptor)
 
-			descriptors = append(descriptors, descriptor)
+			recipientAccountsDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+				Name:      "Fetch recipient accounts from client by profile",
+				Key:       taskNameFetchRecipientAccounts,
+				ProfileID: profile.ID,
+			})
+			if err != nil {
+				return err
+			}
+			descriptors = append(descriptors, recipientAccountsDescriptor)
 		}
 
 		for _, descriptor := range descriptors {
@@ -105,13 +114,13 @@ func ingestAccountsBatch(
 				Reference: fmt.Sprintf("%d", balance.ID),
 				Provider:  models.ConnectorProviderWise,
 			},
-			// Moneycorp does not send the opening date of the account
 			CreatedAt:    balance.CreationTime,
 			Reference:    fmt.Sprintf("%d", balance.ID),
 			Provider:     models.ConnectorProviderWise,
-			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)), AccountName: balance.Name,
-			Type:    models.AccountTypeInternal,
-			RawData: raw,
+			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)),
+			AccountName:  balance.Name,
+			Type:         models.AccountTypeInternal,
+			RawData:      raw,
 		})
 
 		var amount big.Float

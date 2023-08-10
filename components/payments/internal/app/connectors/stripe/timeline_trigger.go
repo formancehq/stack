@@ -12,8 +12,9 @@ import (
 type TimelineTriggerType string
 
 const (
-	TimelineTriggerTypeTransactions TimelineTriggerType = "transactions"
-	TimelineTriggerTypeAccounts     TimelineTriggerType = "accounts"
+	TimelineTriggerTypeTransactions     TimelineTriggerType = "transactions"
+	TimelineTriggerTypeAccounts         TimelineTriggerType = "accounts"
+	TimelineTriggerTypeExternalAccounts TimelineTriggerType = "external_accounts"
 )
 
 func NewTimelineTrigger(
@@ -147,6 +148,30 @@ func (t *TimelineTrigger) triggerPage(ctx context.Context, tail bool) (bool, err
 
 		if len(ret) > 0 {
 			err = t.ingester.IngestAccounts(ctx, ret, futureState, tail)
+			if err != nil {
+				return false, errors.Wrap(err, "ingesting batch")
+			}
+		}
+
+		commitFn()
+
+	case TimelineTriggerTypeExternalAccounts:
+		ret := make([]*stripe.ExternalAccount, 0)
+		method := t.timeline.ExternalAccountsHead
+		if tail {
+			method = t.timeline.ExternalAccountsTail
+		}
+
+		more, futureState, commitFn, err := method(ctx, &ret)
+		if err != nil {
+			return false, errors.Wrap(err, "fetching timeline")
+		}
+		hasMore = more
+
+		logger.Debug("Ingest transactions batch")
+
+		if len(ret) > 0 {
+			err = t.ingester.IngestExternalAccounts(ctx, ret, futureState, tail)
 			if err != nil {
 				return false, errors.Wrap(err, "ingesting batch")
 			}

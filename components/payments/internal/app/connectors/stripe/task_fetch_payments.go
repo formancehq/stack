@@ -41,6 +41,9 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
 					return nil
 				},
+				func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
+					return nil
+				},
 			),
 			NewTimeline(client,
 				config.TimelineConfig, task.MustResolveTo(ctx, resolver, TimelineState{})),

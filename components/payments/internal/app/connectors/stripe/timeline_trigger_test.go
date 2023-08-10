@@ -33,6 +33,9 @@ func TestTimelineTrigger(t *testing.T) {
 			func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
 				return nil
 			},
+			func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
+				return nil
+			},
 		),
 		timeline,
 		TimelineTriggerTypeTransactions,
@@ -87,6 +90,9 @@ func TestCancelTimelineTrigger(t *testing.T) {
 				return nil
 			},
 			func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
+				return nil
+			},
+			func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
 				return nil
 			},
 		),

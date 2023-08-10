@@ -82,9 +82,30 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 						if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 							return errors.Wrap(err, "scheduling connected account")
 						}
+
+						externalAccountsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+							Name:    "Fetch external account for a specific connected account",
+							Key:     taskNameFetchExternalAccounts,
+							Account: account.ID,
+						})
+						if err != nil {
+							return errors.Wrap(err, "failed to transform task descriptor")
+						}
+
+						err = scheduler.Schedule(ctx, externalAccountsTask, models.TaskSchedulerOptions{
+							ScheduleOption: models.OPTIONS_RUN_NOW,
+							Restart:        true,
+						})
+						if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+							return errors.Wrap(err, "scheduling connected account")
+						}
 					}
 
 					return nil
+				},
+				func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
+					return nil
+
 				},
 			),
 			NewTimeline(client,

@@ -76,6 +76,9 @@ func ConnectedAccountTask(config Config, account string, client *DefaultClient) 
 				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
 					return nil
 				},
+				func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
+					return nil
+				},
 			),
 			NewTimeline(client.
 				ForAccount(account), config.TimelineConfig, task.MustResolveTo(ctx, resolver, TimelineState{})),

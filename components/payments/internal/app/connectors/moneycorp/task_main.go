@@ -17,7 +17,7 @@ func taskMain(logger logging.Logger) task.Task {
 	) error {
 		logger.Info(taskNameMain)
 
-		taskUsers, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		taskAccounts, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name: "Fetch accounts from client",
 			Key:  taskNameFetchAccounts,
 		})
@@ -25,7 +25,23 @@ func taskMain(logger logging.Logger) task.Task {
 			return err
 		}
 
-		err = scheduler.Schedule(ctx, taskUsers, models.TaskSchedulerOptions{
+		err = scheduler.Schedule(ctx, taskAccounts, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			Restart:        true,
+		})
+		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			return err
+		}
+
+		taskRecipients, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name: "Fetch recipients from client",
+			Key:  taskNameFetchRecipients,
+		})
+		if err != nil {
+			return err
+		}
+
+		err = scheduler.Schedule(ctx, taskRecipients, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
 			Restart:        true,
 		})

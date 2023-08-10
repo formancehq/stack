@@ -12,10 +12,11 @@ import (
 )
 
 const (
-	taskNameMain           = "main"
-	taskNameFetchTransfers = "fetch-transfers"
-	taskNameFetchProfiles  = "fetch-profiles"
-	taskNameTransfer       = "transfer"
+	taskNameMain                   = "main"
+	taskNameFetchTransfers         = "fetch-transfers"
+	taskNameFetchProfiles          = "fetch-profiles"
+	taskNameFetchRecipientAccounts = "fetch-recipient-accounts"
+	taskNameTransfer               = "transfer"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -43,6 +44,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskMain(logger)
 		case taskNameFetchProfiles:
 			return taskFetchProfiles(logger, client)
+		case taskNameFetchRecipientAccounts:
+			return taskFetchRecipientAccounts(logger, client, taskDefinition.ProfileID)
 		case taskNameFetchTransfers:
 			return taskFetchTransfers(logger, client, taskDefinition.ProfileID)
 		case taskNameTransfer:

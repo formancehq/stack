@@ -56,6 +56,23 @@ func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 				return err
 			}
+
+			bankAccountsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+				Name:   "Fetch bank accounts from client by user",
+				Key:    taskNameFetchBankAccounts,
+				UserID: user.ID,
+			})
+			if err != nil {
+				return err
+			}
+
+			err = scheduler.Schedule(ctx, bankAccountsTask, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				Restart:        true,
+			})
+			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				return err
+			}
 		}
 		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(users)), metric.WithAttributes(usersAttrs...))
 
