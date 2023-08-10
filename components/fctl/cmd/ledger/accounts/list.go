@@ -74,17 +74,22 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
+	ledgerMetadata := make(map[string]any)
+	for k, v := range metadata {
+		ledgerMetadata[k] = v
+	}
+
 	request := operations.ListAccountsRequest{
 		Ledger:   fctl.GetString(cmd, internal.LedgerFlag),
-		Metadata: metadata,
+		Metadata: ledgerMetadata,
 	}
-	rsp, err := ledgerClient.Ledger.ListAccounts(cmd.Context(), request)
+	rsp, err := ledgerClient.Accounts.ListAccounts(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
 
 	if rsp.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", rsp.ErrorResponse.ErrorCode, rsp.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *rsp.ErrorResponse.ErrorCode, *rsp.ErrorResponse.ErrorMessage)
 	}
 
 	if rsp.StatusCode >= 300 {
@@ -101,7 +106,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	tableData := fctl.Map(c.store.Accounts, func(account shared.Account) []string {
 		return []string{
 			account.Address,
-			fctl.MetadataAsShortString(account.Metadata),
+			fctl.LedgerMetadataAsShortString(account.Metadata),
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"Address", "Metadata"})

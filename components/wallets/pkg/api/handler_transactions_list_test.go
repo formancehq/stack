@@ -30,7 +30,7 @@ func TestTransactionsList(t *testing.T) {
 				Destination: "bank",
 				Source:      "world",
 			}},
-			Metadata: metadata.Metadata{},
+			Metadata: map[string]any{},
 		})
 	}
 	const pageSize = 2

@@ -32,7 +32,7 @@ s = sdk.SDK(
 )
 
 req = operations.CancelEventRequest(
-    instance_id='quae',
+    instance_id='ipsam',
 )
 
 res = s.orchestration.cancel_event(req)
@@ -58,18 +58,19 @@ s = sdk.SDK(
 )
 
 req = shared.CreateWorkflowRequest(
-    name='Alison Mann',
+    name='Miss Rufus Ankunding',
     stages=[
         {
-            "rem": 'voluptates',
-            "quasi": 'repudiandae',
-            "sint": 'veritatis',
+            "reiciendis": 'voluptatibus',
         },
         {
-            "incidunt": 'enim',
-            "consequatur": 'est',
-            "quibusdam": 'explicabo',
-            "deserunt": 'distinctio',
+            "nihil": 'praesentium',
+            "voluptatibus": 'ipsa',
+            "omnis": 'voluptate',
+            "cum": 'perferendis',
+        },
+        {
+            "reprehenderit": 'ut',
         },
     ],
 )
@@ -97,7 +98,7 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteWorkflowRequest(
-    flow_id='quibusdam',
+    flow_id='maiores',
 )
 
 res = s.orchestration.delete_workflow(req)
@@ -123,7 +124,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetInstanceRequest(
-    instance_id='labore',
+    instance_id='dicta',
 )
 
 res = s.orchestration.get_instance(req)
@@ -149,7 +150,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetInstanceHistoryRequest(
-    instance_id='modi',
+    instance_id='corporis',
 )
 
 res = s.orchestration.get_instance_history(req)
@@ -175,8 +176,8 @@ s = sdk.SDK(
 )
 
 req = operations.GetInstanceStageHistoryRequest(
-    instance_id='qui',
-    number=397821,
+    instance_id='dolore',
+    number=480894,
 )
 
 res = s.orchestration.get_instance_stage_history(req)
@@ -202,7 +203,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetWorkflowRequest(
-    flow_id='cupiditate',
+    flow_id='dicta',
 )
 
 res = s.orchestration.get_workflow(req)
@@ -229,7 +230,7 @@ s = sdk.SDK(
 
 req = operations.ListInstancesRequest(
     running=False,
-    workflow_id='quos',
+    workflow_id='harum',
 )
 
 res = s.orchestration.list_instances(req)
@@ -302,10 +303,11 @@ s = sdk.SDK(
 
 req = operations.RunWorkflowRequest(
     request_body={
-        "magni": 'assumenda',
+        "accusamus": 'commodi',
+        "repudiandae": 'quae',
     },
     wait=False,
-    workflow_id='ipsam',
+    workflow_id='ipsum',
 )
 
 res = s.orchestration.run_workflow(req)
@@ -332,9 +334,9 @@ s = sdk.SDK(
 
 req = operations.SendEventRequest(
     request_body=operations.SendEventRequestBody(
-        name='Denise Pagac',
+        name='Virgil Mante',
     ),
-    instance_id='facilis',
+    instance_id='praesentium',
 )
 
 res = s.orchestration.send_event(req)

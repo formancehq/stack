@@ -53,10 +53,8 @@ func (ctl *ScriptController) PostScript(c *gin.Context) {
 				"internal errors executing script: %s", err)
 		}
 		res.ErrorResponse = api.ErrorResponse{
-			ErrorCode:              code,
-			ErrorMessage:           message,
-			ErrorCodeDeprecated:    code,
-			ErrorMessageDeprecated: message,
+			ErrorCode:    code,
+			ErrorMessage: message,
 		}
 		if message != "" {
 			res.Details = apierrors.EncodeLink(message)

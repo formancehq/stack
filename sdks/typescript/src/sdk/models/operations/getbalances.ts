@@ -16,6 +16,12 @@ export class GetBalancesRequest extends SpeakeasyBase {
   address?: string;
 
   /**
+   * Pagination cursor, will return accounts after given address, in descending order.
+   */
+  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=after" })
+  after?: string;
+
+  /**
    * Parameter used in pagination requests. Maximum page size is set to 15.
    *
    * @remarks

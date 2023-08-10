@@ -22,26 +22,26 @@ class RevertTransactionResponse
 	
     public ?\formance\stack\Models\Shared\ErrorResponse $errorResponse = null;
     
-    /**
-     * OK
-     * 
-     * @var ?\formance\stack\Models\Shared\RevertTransactionResponse $revertTransactionResponse
-     */
-	
-    public ?\formance\stack\Models\Shared\RevertTransactionResponse $revertTransactionResponse = null;
-    
 	
     public int $statusCode;
     
 	
     public ?\Psr\Http\Message\ResponseInterface $rawResponse = null;
     
+    /**
+     * OK
+     * 
+     * @var ?\formance\stack\Models\Shared\TransactionResponse $transactionResponse
+     */
+	
+    public ?\formance\stack\Models\Shared\TransactionResponse $transactionResponse = null;
+    
 	public function __construct()
 	{
 		$this->contentType = "";
 		$this->errorResponse = null;
-		$this->revertTransactionResponse = null;
 		$this->statusCode = 0;
 		$this->rawResponse = null;
+		$this->transactionResponse = null;
 	}
 }

@@ -16,8 +16,8 @@ type TestConfigResponse struct {
 	// OK
 	AttemptResponse *shared.AttemptResponse
 	ContentType     string
+	StatusCode      int
+	RawResponse     *http.Response
 	// Error
-	ErrorResponse *shared.ErrorResponse
-	StatusCode    int
-	RawResponse   *http.Response
+	WebhooksErrorResponse *shared.WebhooksErrorResponse
 }

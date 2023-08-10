@@ -14,11 +14,21 @@ import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
 public class Transaction {
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("metadata")
-    public java.util.Map<String, String> metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public Transaction withMetadata(java.util.Map<String, String> metadata) {
+    public Transaction withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
+        return this;
+    }
+    
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("postCommitVolumes")
+    public java.util.Map<String, java.util.Map<String, Volume>> postCommitVolumes;
+
+    public Transaction withPostCommitVolumes(java.util.Map<String, java.util.Map<String, Volume>> postCommitVolumes) {
+        this.postCommitVolumes = postCommitVolumes;
         return this;
     }
     
@@ -27,6 +37,15 @@ public class Transaction {
 
     public Transaction withPostings(Posting[] postings) {
         this.postings = postings;
+        return this;
+    }
+    
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("preCommitVolumes")
+    public java.util.Map<String, java.util.Map<String, Volume>> preCommitVolumes;
+
+    public Transaction withPreCommitVolumes(java.util.Map<String, java.util.Map<String, Volume>> preCommitVolumes) {
+        this.preCommitVolumes = preCommitVolumes;
         return this;
     }
     
@@ -57,8 +76,7 @@ public class Transaction {
         return this;
     }
     
-    public Transaction(@JsonProperty("metadata") java.util.Map<String, String> metadata, @JsonProperty("postings") Posting[] postings, @JsonProperty("timestamp") OffsetDateTime timestamp, @JsonProperty("txid") Long txid) {
-        this.metadata = metadata;
+    public Transaction(@JsonProperty("postings") Posting[] postings, @JsonProperty("timestamp") OffsetDateTime timestamp, @JsonProperty("txid") Long txid) {
         this.postings = postings;
         this.timestamp = timestamp;
         this.txid = txid;

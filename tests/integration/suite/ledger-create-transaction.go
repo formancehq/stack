@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/stack/libs/events"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
@@ -21,18 +21,18 @@ var _ = Given("some empty environment", func() {
 			msgs               chan *nats.Msg
 			cancelSubscription func()
 			timestamp          = time.Now().Round(time.Second).UTC()
-			rsp                *shared.CreateTransactionResponse
+			rsp                *shared.TransactionsResponse
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),
@@ -49,29 +49,29 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			rsp = response.CreateTransactionResponse
+			rsp = response.TransactionsResponse
 		})
 		AfterEach(func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.GetTransaction(
+			response, err := Client().Transactions.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
-					Txid:   rsp.Data.Txid,
+					Txid:   rsp.Data[0].Txid,
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			transactionResponse := response.GetTransactionResponse
-			Expect(transactionResponse.Data).To(Equal(shared.ExpandedTransaction{
-				Timestamp: rsp.Data.Timestamp,
-				Postings:  rsp.Data.Postings,
-				Reference: rsp.Data.Reference,
-				Metadata:  rsp.Data.Metadata,
-				Txid:      rsp.Data.Txid,
+			transactionResponse := response.TransactionResponse
+			Expect(transactionResponse.Data).To(Equal(shared.Transaction{
+				Timestamp: rsp.Data[0].Timestamp,
+				Postings:  rsp.Data[0].Postings,
+				Reference: rsp.Data[0].Reference,
+				Metadata:  rsp.Data[0].Metadata,
+				Txid:      rsp.Data[0].Txid,
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
@@ -106,7 +106,7 @@ var _ = Given("some empty environment", func() {
 				},
 			}))
 
-			accResponse, err := Client().Ledger.GetAccount(
+			accResponse, err := Client().Accounts.GetAccount(
 				TestContext(),
 				operations.GetAccountRequest{
 					Address: "alice",
@@ -119,7 +119,7 @@ var _ = Given("some empty environment", func() {
 			accountResponse := accResponse.AccountResponse
 			Expect(accountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
 				Address:  "alice",
-				Metadata: metadata.Metadata{},
+				Metadata: map[string]interface{}{},
 				Volumes: map[string]map[string]*big.Int{
 					"USD": {
 						"input":   big.NewInt(100),
@@ -221,11 +221,11 @@ type GenericOpenAPIError interface {
 var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),
@@ -240,13 +240,11 @@ var _ = Given("some empty environment", func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(400))
-			Expect(response.CreateTransactionResponse).To(BeNil())
+			Expect(response.TransactionsResponse).To(BeNil())
 
-			details := "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
 			Expect(response.ErrorResponse).Should(Equal(&shared.ErrorResponse{
-				ErrorCode:    shared.ErrorsEnumInsufficientFund,
-				ErrorMessage: "account had insufficient funds",
-				Details:      &details,
+				ErrorCode:    pointer.For(shared.ErrorsEnumInsufficientFund),
+				ErrorMessage: pointer.For("balance.insufficient.USD"),
 			}))
 		})
 	})
@@ -259,12 +257,12 @@ var _ = Given("some empty environment", func() {
 			response *operations.CreateTransactionResponse
 		)
 		createTransaction := func() {
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),
@@ -281,13 +279,13 @@ var _ = Given("some empty environment", func() {
 		BeforeEach(createTransaction)
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(response.CreateTransactionResponse.Data.Txid).To(Equal(int64(0)))
+			Expect(response.TransactionsResponse.Data[0].Txid).To(Equal(int64(0)))
 		})
 		Then("replaying with the same IK", func() {
 			BeforeEach(createTransaction)
 			It("should respond with the same tx id", func() {
 				Expect(err).To(Succeed())
-				Expect(response.CreateTransactionResponse.Data.Txid).To(Equal(int64(0)))
+				Expect(response.TransactionsResponse.Data[0].Txid).To(Equal(int64(0)))
 			})
 		})
 	})

@@ -12,7 +12,7 @@ import (
 )
 
 type SendStore struct {
-	Transaction *internal.Transaction `json:"transaction"`
+	Transaction *shared.Transaction `json:"transaction"`
 }
 type SendController struct {
 	store         *SendStore
@@ -102,9 +102,14 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	reference := fctl.GetString(cmd, c.referenceFlag)
 
-	tx, err := internal.CreateTransaction(ledgerClient, cmd.Context(), operations.CreateTransactionRequest{
+	ledgerMetadata := make(map[string]any)
+	for k, v := range metadata {
+		ledgerMetadata[k] = v
+	}
+
+	response, err := ledgerClient.Transactions.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
-			Metadata: metadata,
+			Metadata: ledgerMetadata,
 			Postings: []shared.Posting{
 				{
 					Amount:      amount,
@@ -120,7 +125,16 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	if err != nil {
 		return nil, err
 	}
-	c.store.Transaction = tx
+
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
+	}
+
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code %d when creating transaction", response.StatusCode)
+	}
+
+	c.store.Transaction = &response.TransactionsResponse.Data[0]
 	return c, nil
 }
 

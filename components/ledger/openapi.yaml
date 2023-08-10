@@ -8,8 +8,7 @@ paths:
   /_info:
     get:
       tags:
-        - Ledger
-        - Server
+      - Server
       summary: Show server information
       operationId: getInfo
       responses:
@@ -31,15 +30,15 @@ paths:
       summary: Get information about a ledger
       operationId: getLedgerInfo
       tags:
-        - Ledger
+      - Ledger
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
       responses:
         "200":
           description: OK
@@ -59,33 +58,31 @@ paths:
       summary: Count the accounts from a ledger
       operationId: countAccounts
       tags:
-        - Ledger
-        - Accounts
+      - Accounts
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: address
-          in: query
-          description: Filter accounts by address pattern (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:.+
-        - name: metadata
-          in: query
-          description: Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-          style: deepObject
-          explode: true
-          schema:
-            type: object
-            properties: {}
-          example: { admin: "true" }
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: address
+        in: query
+        description: Filter accounts by address pattern (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:.+
+      - name: metadata
+        in: query
+        description: Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties: {}
       responses:
-        "204":
+        "200":
           description: OK
           headers:
             Count:
@@ -105,52 +102,71 @@ paths:
       description: List accounts from a ledger, sorted by address in descending order.
       operationId: listAccounts
       tags:
-        - Ledger
-        - Accounts
+      - Accounts
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: pageSize
-          in: query
-          description: |
-            The maximum number of results to return per page.
-          example: 100
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 1000
-        - name: address
-          in: query
-          description: Filter accounts by address pattern (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:.+
-        - name: metadata
-          in: query
-          description: Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-          style: deepObject
-          schema:
-            type: object
-            properties: {}
-            additionalProperties:
-              type: string
-          example: { admin: "true" }
-        - name: cursor
-          in: query
-          description: |
-            Parameter used in pagination requests. Maximum page size is set to 15.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            No other parameters can be set when this parameter is set.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: pageSize
+        in: query
+        description: |
+          The maximum number of results to return per page.
+        example: 100
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 15
+      - name: after
+        in: query
+        description: Pagination cursor, will return accounts after given address, in descending order.
+        schema:
+          type: string
+          example: users:003
+      - name: address
+        in: query
+        description: Filter accounts by address pattern (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:.+
+      - name: metadata
+        in: query
+        description: Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties: {}
+      - name: balance
+        in: query
+        description: Filter accounts by their balance (default operator is gte)
+        schema:
+          type: integer
+          format: int64
+          example: 2400
+      - name: balanceOperator
+        in: query
+        description: |
+          Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
+        schema:
+          type: string
+          enum: [gte, lte, gt, lt, e, ne]
+          example: gte
+      - name: cursor
+        in: query
+        description: |
+          Parameter used in pagination requests. Maximum page size is set to 15.
+          Set to the value of next for the next page of results.
+          Set to the value of previous for the previous page of results.
+          No other parameters can be set when this parameter is set.
+        schema:
+          type: string
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
       responses:
         "200":
           description: OK
@@ -170,27 +186,26 @@ paths:
       summary: Get account by its address
       operationId: getAccount
       tags:
-        - Ledger
-        - Accounts
+      - Accounts
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: address
-          in: path
-          description: |
-            Exact address of the account. It must match the following regular expressions pattern:
-            ```
-            ^\w+(:\w+)*$
-            ```
-          required: true
-          schema:
-            type: string
-            example: users:001
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: address
+        in: path
+        description: |
+          Exact address of the account. It must match the following regular expressions pattern:
+          ```
+          ^\w+(:\w+)*$
+          ```
+        required: true
+        schema:
+          type: string
+          example: users:001
       responses:
         "200":
           description: OK
@@ -210,44 +225,26 @@ paths:
       summary: Add metadata to an account
       operationId: addMetadataToAccount
       tags:
-        - Ledger
-        - Accounts
+      - Accounts
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: address
-          in: path
-          description: |
-            Exact address of the account. It must match the following regular expressions pattern:
-            ```
-            ^\w+(:\w+)*$
-            ```
-          required: true
-          schema:
-            type: string
-            example: users:001
-        - name: dryRun
-          in: query
-          description: Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
-          schema:
-            type: boolean
-            example: true
-        - name: async
-          in: query
-          description: Set async mode.
-          schema:
-            type: boolean
-            example: true
-        - name: Idempotency-Key
-          in: header
-          description: Use an idempotency key
-          schema:
-            type: string
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: address
+        in: path
+        description: |
+          Exact address of the account. It must match the following regular expressions pattern:
+          ```
+          ^\w+(:\w+)*$
+          ```
+        required: true
+        schema:
+          type: string
+          example: users:001
       requestBody:
         description: metadata
         content:
@@ -266,23 +263,127 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /{ledger}/mapping:
+    get:
+      tags:
+      - Mapping
+      operationId: getMapping
+      summary: Get the mapping of a ledger
+      parameters:
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MappingResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+      - Mapping
+      operationId: updateMapping
+      summary: Update the mapping of a ledger
+      parameters:
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mapping'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MappingResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /{ledger}/script:
+    post:
+      deprecated: true
+      tags:
+      - Script
+      operationId: runScript
+      summary: Execute a Numscript
+      description: >
+        This route is deprecated, and has been merged into `POST /{ledger}/transactions`.
+      parameters:
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: preview
+        in: query
+        description: Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+        schema:
+          type: boolean
+          example: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Script'
+      responses:
+        "200":
+          description: >
+            On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.
+
+
+            On failure, it will also return a 200 status code, and the following fields:
+              - `details`: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.
+              - `errorCode` and `error_code` (deprecated): contains the string code of the error
+              - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScriptResponse'
+
   /{ledger}/stats:
     get:
       tags:
-        - Ledger
-        - Stats
+      - Stats
       operationId: readStats
       summary: Get statistics from a ledger
       description: |
         Get statistics from a ledger. (aggregate metrics on accounts and transactions)
       parameters:
-        - name: ledger
-          in: path
-          description: name of the ledger
-          required: true
-          schema:
-            type: string
-            example: ledger001
+      - name: ledger
+        in: path
+        description: name of the ledger
+        required: true
+        schema:
+          type: string
+          example: ledger001
       responses:
         "200":
           description: OK
@@ -300,71 +401,68 @@ paths:
   /{ledger}/transactions:
     head:
       tags:
-        - Ledger
-        - Transactions
+      - Transactions
       summary: Count the transactions from a ledger
       operationId: countTransactions
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: reference
-          in: query
-          description: Filter transactions by reference field.
-          schema:
-            type: string
-            example: ref:001
-        - name: account
-          in: query
-          description: Filter transactions with postings involving given account, either
-            as source or destination (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:001
-        - name: source
-          in: query
-          description: Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:001
-        - name: destination
-          in: query
-          description: Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:001
-        - name: startTime
-          in: query
-          description: |
-            Filter transactions that occurred after this timestamp.
-            The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-          schema:
-            type: string
-            format: date-time
-        - name: endTime
-          in: query
-          description: |
-            Filter transactions that occurred before this timestamp.
-            The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-          schema:
-            type: string
-            format: date-time
-        - name: metadata
-          in: query
-          description: Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-          style: deepObject
-          schema:
-            type: object
-            properties: { }
-            additionalProperties:
-              type: string
-          example: { admin: "true" }
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: reference
+        in: query
+        description: Filter transactions by reference field.
+        schema:
+          type: string
+          example: ref:001
+      - name: account
+        in: query
+        description: Filter transactions with postings involving given account, either
+          as source or destination (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:001
+      - name: source
+        in: query
+        description: Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:001
+      - name: destination
+        in: query
+        description: Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:001
+      - name: startTime
+        in: query
+        description: |
+          Filter transactions that occurred after this timestamp.
+          The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
+        schema:
+          type: string
+          format: date-time
+      - name: endTime
+        in: query
+        description: |
+          Filter transactions that occurred before this timestamp.
+          The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
+        schema:
+          type: string
+          format: date-time
+      - name: metadata
+        in: query
+        description: Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties: { }
       responses:
-        "204":
+        "200":
           description: OK
           headers:
             Count:
@@ -381,90 +479,94 @@ paths:
 
     get:
       tags:
-        - Ledger
-        - Transactions
+      - Transactions
       summary: List transactions from a ledger
       description: List transactions from a ledger, sorted by txid in descending order.
       operationId: listTransactions
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: pageSize
-          in: query
-          description: |
-            The maximum number of results to return per page.
-          example: 100
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 1000
-        - name: reference
-          in: query
-          description: Find transactions by reference field.
-          schema:
-            type: string
-            example: ref:001
-        - name: account
-          in: query
-          description: Filter transactions with postings involving given account, either
-            as source or destination (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:001
-        - name: source
-          in: query
-          description: Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:001
-        - name: destination
-          in: query
-          description: Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
-          schema:
-            type: string
-            example: users:001
-        - name: startTime
-          in: query
-          description: |
-            Filter transactions that occurred after this timestamp.
-            The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-          schema:
-            type: string
-            format: date-time
-        - name: endTime
-          in: query
-          description: |
-            Filter transactions that occurred before this timestamp.
-            The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-          schema:
-            type: string
-            format: date-time
-        - name: cursor
-          in: query
-          description: |
-            Parameter used in pagination requests. Maximum page size is set to 15.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            No other parameters can be set when this parameter is set.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-        - name: metadata
-          in: query
-          description: Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-          style: deepObject
-          schema:
-            type: object
-            properties: { }
-            additionalProperties:
-              type: string
-          example: { admin: "true" }
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: pageSize
+        in: query
+        description: |
+          The maximum number of results to return per page.
+        example: 100
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 15
+      - name: after
+        in: query
+        description: Pagination cursor, will return transactions after given txid
+          (in descending order).
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: Find transactions by reference field.
+        schema:
+          type: string
+          example: ref:001
+      - name: account
+        in: query
+        description: Filter transactions with postings involving given account, either
+          as source or destination (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:001
+      - name: source
+        in: query
+        description: Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:001
+      - name: destination
+        in: query
+        description: Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
+        schema:
+          type: string
+          example: users:001
+      - name: startTime
+        in: query
+        description: |
+          Filter transactions that occurred after this timestamp.
+          The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
+        schema:
+          type: string
+          format: date-time
+      - name: endTime
+        in: query
+        description: |
+          Filter transactions that occurred before this timestamp.
+          The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
+        schema:
+          type: string
+          format: date-time
+      - name: cursor
+        in: query
+        description: |
+          Parameter used in pagination requests. Maximum page size is set to 15.
+          Set to the value of next for the next page of results.
+          Set to the value of previous for the previous page of results.
+          No other parameters can be set when this parameter is set.
+        schema:
+          type: string
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+      - name: metadata
+        in: query
+        description: Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties: { }
       responses:
         "200":
           description: OK
@@ -481,35 +583,28 @@ paths:
 
     post:
       tags:
-        - Ledger
-        - Transactions
+      - Transactions
       summary: Create a new transaction to a ledger
       operationId: createTransaction
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: dryRun
-          in: query
-          description: Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
-          schema:
-            type: boolean
-            example: true
-        - name: async
-          in: query
-          description: Set async mode.
-          schema:
-            type: boolean
-            example: true
-        - name: Idempotency-Key
-          in: header
-          description: Use an idempotency key
-          schema:
-            type: string
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: preview
+        in: query
+        description: Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+        schema:
+          type: boolean
+          example: true
+      - name: Idempotency-Key
+        in: header
+        description: Use an idempotency key
+        schema:
+          type: string
       requestBody:
         required: true
         description: >
@@ -526,7 +621,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateTransactionResponse'
+                $ref: '#/components/schemas/TransactionsResponse'
         default:
           description: Error
           content:
@@ -537,34 +632,33 @@ paths:
   /{ledger}/transactions/{txid}:
     get:
       tags:
-        - Ledger
-        - Transactions
+      - Transactions
       summary: Get transaction from a ledger by its ID
       operationId: getTransaction
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: txid
-          in: path
-          description: Transaction ID.
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-            example: 1234
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: txid
+        in: path
+        description: Transaction ID.
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 1234
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetTransactionResponse'
+                $ref: '#/components/schemas/TransactionResponse'
         default:
           description: Error
           content:
@@ -575,44 +669,26 @@ paths:
   /{ledger}/transactions/{txid}/metadata:
     post:
       tags:
-        - Ledger
-        - Transactions
+      - Transactions
       summary: Set the metadata of a transaction by its ID
       operationId: addMetadataOnTransaction
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: txid
-          in: path
-          description: Transaction ID.
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-            example: 1234
-        - name: dryRun
-          in: query
-          description: Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
-          schema:
-            type: boolean
-            example: true
-        - name: async
-          in: query
-          description: Set async mode.
-          schema:
-            type: boolean
-            example: true
-        - name: Idempotency-Key
-          in: header
-          description: Use an idempotency key
-          schema:
-            type: string
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: txid
+        in: path
+        description: Transaction ID.
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 1234
       requestBody:
         description: metadata
         content:
@@ -633,34 +709,67 @@ paths:
   /{ledger}/transactions/{txid}/revert:
     post:
       tags:
-        - Ledger
-        - Transactions
+      - Transactions
       operationId: revertTransaction
       summary: Revert a ledger transaction by its ID
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: txid
-          in: path
-          description: Transaction ID.
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-            example: 1234
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: txid
+        in: path
+        description: Transaction ID.
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 1234
       responses:
-        "201":
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RevertTransactionResponse'
+                $ref: '#/components/schemas/TransactionResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /{ledger}/transactions/batch:
+    post:
+      tags:
+      - Transactions
+      summary: Create a new batch of transactions to a ledger
+      operationId: CreateTransactions
+      parameters:
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transactions'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
         default:
           description: Error
           content:
@@ -671,45 +780,51 @@ paths:
   /{ledger}/balances:
     get:
       tags:
-        - Ledger
-        - Balances
+      - Balances
       summary: Get the balances from a ledger's account
       operationId: getBalances
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: address
-          in: query
-          description: Filter balances involving given account, either
-            as source or destination.
-          schema:
-            type: string
-            example: users:001
-        - name: pageSize
-          in: query
-          description: |
-            The maximum number of results to return per page.
-          example: 100
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 1000
-        - name: cursor
-          in: query
-          description: |
-            Parameter used in pagination requests. Maximum page size is set to 15.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            No other parameters can be set when this parameter is set.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: address
+        in: query
+        description: Filter balances involving given account, either
+          as source or destination.
+        schema:
+          type: string
+          example: users:001
+      - name: after
+        in: query
+        description: Pagination cursor, will return accounts after given address, in descending order.
+        schema:
+          type: string
+          example: users:003
+      - name: cursor
+        in: query
+        description: |
+          Parameter used in pagination requests. Maximum page size is set to 15.
+          Set to the value of next for the next page of results.
+          Set to the value of previous for the previous page of results.
+          No other parameters can be set when this parameter is set.
+        schema:
+          type: string
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+      - name: pageSize
+        in: query
+        description: |
+          The maximum number of results to return per page.
+        example: 100
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 15
       responses:
         "200":
           description: OK
@@ -727,25 +842,24 @@ paths:
   /{ledger}/aggregate/balances:
     get:
       tags:
-        - Ledger
-        - Balances
+      - Balances
       summary: Get the aggregated balances from selected accounts
       operationId: getBalancesAggregated
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: address
-          in: query
-          description: Filter balances involving given account, either
-            as source or destination.
-          schema:
-            type: string
-            example: users:001
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: address
+        in: query
+        description: Filter balances involving given account, either
+          as source or destination.
+        schema:
+          type: string
+          example: users:001
       responses:
         "200":
           description: OK
@@ -763,55 +877,61 @@ paths:
   /{ledger}/logs:
     get:
       tags:
-        - Ledger
-        - Logs
+      - Logs
       summary: List the logs from a ledger
       description: List the logs from a ledger, sorted by ID in descending order.
       operationId: listLogs
       parameters:
-        - name: ledger
-          in: path
-          description: Name of the ledger.
-          required: true
-          schema:
-            type: string
-            example: ledger001
-        - name: pageSize
-          in: query
-          description: |
-            The maximum number of results to return per page.
-          example: 100
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 1000
-        - name: startTime
-          in: query
-          description: |
-            Filter transactions that occurred after this timestamp.
-            The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-          schema:
-            type: string
-            format: date-time
-        - name: endTime
-          in: query
-          description: |
-            Filter transactions that occurred before this timestamp.
-            The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-          schema:
-            type: string
-            format: date-time
-        - name: cursor
-          in: query
-          description: |
-            Parameter used in pagination requests. Maximum page size is set to 15.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            No other parameters can be set when this parameter is set.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: pageSize
+        in: query
+        description: |
+          The maximum number of results to return per page.
+        example: 100
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 15
+      - name: after
+        in: query
+        description: Pagination cursor, will return the logs after a given ID.
+          (in descending order).
+        schema:
+          type: string
+      - name: startTime
+        in: query
+        description: |
+          Filter transactions that occurred after this timestamp.
+          The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
+        schema:
+          type: string
+          format: date-time
+      - name: endTime
+        in: query
+        description: |
+          Filter transactions that occurred before this timestamp.
+          The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
+        schema:
+          type: string
+          format: date-time
+      - name: cursor
+        in: query
+        description: |
+          Parameter used in pagination requests. Maximum page size is set to 15.
+          Set to the value of next for the next page of results.
+          Set to the value of previous for the previous page of results.
+          No other parameters can be set when this parameter is set.
+        schema:
+          type: string
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
       responses:
         "200":
           description: OK
@@ -831,14 +951,14 @@ components:
     AccountsCursorResponse:
       type: object
       required:
-        - cursor
+      - cursor
       properties:
         cursor:
           type: object
           required:
-            - pageSize
-            - hasMore
-            - data
+          - pageSize
+          - hasMore
+          - data
           properties:
             pageSize:
               type: integer
@@ -863,14 +983,14 @@ components:
     BalancesCursorResponse:
       type: object
       required:
-        - cursor
+      - cursor
       properties:
         cursor:
           type: object
           required:
-            - pageSize
-            - hasMore
-            - data
+          - pageSize
+          - hasMore
+          - data
           properties:
             pageSize:
               type: integer
@@ -895,14 +1015,14 @@ components:
     TransactionsCursorResponse:
       type: object
       required:
-        - cursor
+      - cursor
       properties:
         cursor:
           type: object
           required:
-            - pageSize
-            - hasMore
-            - data
+          - pageSize
+          - hasMore
+          - data
           properties:
             pageSize:
               type: integer
@@ -922,19 +1042,19 @@ components:
             data:
               type: array
               items:
-                $ref: '#/components/schemas/ExpandedTransaction'
+                $ref: '#/components/schemas/Transaction'
 
     LogsCursorResponse:
       type: object
       required:
-        - cursor
+      - cursor
       properties:
         cursor:
           type: object
           required:
-            - pageSize
-            - hasMore
-            - data
+          - pageSize
+          - hasMore
+          - data
           properties:
             pageSize:
               type: integer
@@ -959,7 +1079,7 @@ components:
     AccountResponse:
       type: object
       required:
-        - data
+      - data
       properties:
         data:
           $ref: '#/components/schemas/AccountWithVolumesAndBalances'
@@ -967,7 +1087,7 @@ components:
     AggregateBalancesResponse:
       type: object
       required:
-        - data
+      - data
       properties:
         data:
           $ref: '#/components/schemas/AssetsBalances'
@@ -978,7 +1098,7 @@ components:
         storage:
           $ref: '#/components/schemas/LedgerStorage'
       required:
-        - storage
+      - storage
 
     LedgerStorage:
       type: object
@@ -990,14 +1110,14 @@ components:
           items:
             type: string
       required:
-        - driver
-        - ledgers
+      - driver
+      - ledgers
 
     Metadata:
       type: object
-      additionalProperties:
-        type: string
-      example: { admin: "true" }
+      nullable: true
+      additionalProperties: {}
+      example: { admin: true, a: { nested: { key: value } } }
 
     ConfigInfo:
       type: object
@@ -1009,33 +1129,28 @@ components:
         version:
           type: string
       required:
-        - config
-        - server
-        - version
+      - config
+      - server
+      - version
+
+    ScriptResponse:
+      type: object
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/ErrorsEnum'
+        errorMessage:
+          type: string
+          example: "account had insufficient funds"
+        details:
+          type: string
+          example: "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+        transaction:
+          $ref: '#/components/schemas/Transaction'
 
     Account:
       type: object
       required:
-        - address
-        - metadata
-      properties:
-        address:
-          type: string
-          example: users:001
-        metadata:
-          type: object
-          properties: {}
-          additionalProperties:
-            type: string
-          example: { admin: "true" }
-
-    AccountWithVolumesAndBalances:
-      type: object
-      required:
-        - address
-        - metadata
-        - volumes
-        - balances
+      - address
       properties:
         address:
           type: string
@@ -1046,9 +1161,23 @@ components:
         metadata:
           type: object
           properties: {}
-          additionalProperties:
-            type: string
-          example: { admin: "true" }
+          example: { admin: true, a: { nested: { key: value}} }
+
+    AccountWithVolumesAndBalances:
+      type: object
+      required:
+      - address
+      properties:
+        address:
+          type: string
+          example: users:001
+        type:
+          type: string
+          example: virtual
+        metadata:
+          type: object
+          properties: {}
+          example: { admin: true, a: { nested: { key: value}} }
         volumes:
           type: object
           additionalProperties:
@@ -1087,6 +1216,29 @@ components:
         USD: 100
         EUR: 12
 
+    Contract:
+      type: object
+      properties:
+        account:
+          type: string
+          example: users:001
+        expr:
+          type: object
+      required:
+      - accounts
+      - expr
+
+    Mapping:
+      type: object
+      nullable: true
+      required:
+      - contracts
+      properties:
+        contracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contract'
+
     Posting:
       type: object
       properties:
@@ -1105,10 +1257,10 @@ components:
           type: string
           example: users:001
       required:
-        - amount
-        - asset
-        - destination
-        - source
+      - amount
+      - asset
+      - destination
+      - source
 
     Script:
       type: object
@@ -1120,8 +1272,8 @@ components:
           type: object
           properties: {}
           example: {
-              "user": "users:042"
-            }
+            "user": "users:042"
+          }
         reference:
           type: string
           example: order_1234
@@ -1129,7 +1281,7 @@ components:
         metadata:
           $ref: '#/components/schemas/Metadata'
       required:
-        - plain
+      - plain
 
     Transaction:
       type: object
@@ -1150,29 +1302,45 @@ components:
           type: integer
           format: int64
           minimum: 0
+        preCommitVolumes:
+          $ref: '#/components/schemas/AggregatedVolumes'
+        postCommitVolumes:
+          $ref: '#/components/schemas/AggregatedVolumes'
       required:
       - postings
       - timestamp
       - txid
-      - metadata
 
-    ExpandedTransaction:
-      allOf:
-      - $ref: '#/components/schemas/Transaction'
-      - type: object
-        properties:
-          preCommitVolumes:
-            $ref: '#/components/schemas/AggregatedVolumes'
-          postCommitVolumes:
-            $ref: '#/components/schemas/AggregatedVolumes'
-        required:
-          - preCommitVolumes
-          - postCommitVolumes
+    TransactionData:
+      type: object
+      required:
+      - postings
+      properties:
+        postings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Posting'
+        reference:
+          type: string
+          example: ref:001
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        timestamp:
+          type: string
+          format: date-time
+
+    Transactions:
+      required:
+      - transactions
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionData'
 
     PostTransaction:
       type: object
-      required:
-      - metadata
       properties:
         timestamp:
           type: string
@@ -1191,10 +1359,10 @@ components:
               type: object
               properties: {}
               example: {
-                  "user": "users:042"
-                }
+                "user": "users:042"
+              }
           required:
-            - plain
+          - plain
         reference:
           type: string
           example: ref:001
@@ -1213,8 +1381,8 @@ components:
           format: int64
           minimum: 0
       required:
-        - accounts
-        - transactions
+      - accounts
+      - transactions
 
     Log:
       type: object
@@ -1227,9 +1395,8 @@ components:
         type:
           type: string
           enum:
-            - NEW_TRANSACTION
-            - SET_METADATA
-            - REVERTED_TRANSACTION
+          - NEW_TRANSACTION
+          - SET_METADATA
         data:
           type: object
           properties: {}
@@ -1240,27 +1407,26 @@ components:
           type: string
           format: date-time
       required:
-        - id
-        - type
-        - data
-        - hash
-        - date
+      - id
+      - type
+      - data
+      - hash
+      - date
 
-    CreateTransactionResponse:
+    TransactionsResponse:
+      type: object
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Transaction'
+          type: array
+      required:
+      - data
+
+    TransactionResponse:
       properties:
         data:
           $ref: '#/components/schemas/Transaction'
-      type: object
-      required:
-        - data
-
-    RevertTransactionResponse:
-      $ref: '#/components/schemas/CreateTransactionResponse'
-
-    GetTransactionResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/ExpandedTransaction'
       type: object
       required:
       - data
@@ -1271,12 +1437,21 @@ components:
           $ref: '#/components/schemas/Stats'
       type: object
       required:
-        - data
+      - data
+
+    MappingResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/Mapping'
+      type: object
 
     ConfigInfoResponse:
       properties:
         data:
           $ref: '#/components/schemas/ConfigInfo'
+      type: object
+      required:
+      - data
 
     Volume:
       type: object
@@ -1291,8 +1466,8 @@ components:
           type: integer
           format: bigint
       required:
-        - input
-        - output
+      - input
+      - output
       example:
         input: 100
         output: 20
@@ -1330,15 +1505,12 @@ components:
 
     ErrorResponse:
       type: object
-      required:
-        - errorCode
-        - errorMessage
       properties:
         errorCode:
           $ref: '#/components/schemas/ErrorsEnum'
         errorMessage:
           type: string
-          example: "[VALIDATION] invalid 'cursor' query param"
+          example: "[INSUFFICIENT_FUND] account had insufficient funds"
         details:
           type: string
           example: "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
@@ -1346,17 +1518,15 @@ components:
     ErrorsEnum:
       type: string
       enum:
-        - INTERNAL
-        - INSUFFICIENT_FUND
-        - VALIDATION
-        - CONFLICT
-        - NO_SCRIPT
-        - COMPILATION_FAILED
-        - METADATA_OVERRIDE
-        - NOT_FOUND
-        - CONTEXT_CANCELLED
-        - STORE
-      example: VALIDATION
+      - INTERNAL
+      - INSUFFICIENT_FUND
+      - VALIDATION
+      - CONFLICT
+      - NO_SCRIPT
+      - COMPILATION_FAILED
+      - METADATA_OVERRIDE
+      - NOT_FOUND
+      example: INSUFFICIENT_FUND
 
     LedgerInfoResponse:
       properties:
@@ -1394,5 +1564,5 @@ components:
         state:
           type: string
           enum:
-            - "to do"
-            - "done"
+          - "to do"
+          - "done"

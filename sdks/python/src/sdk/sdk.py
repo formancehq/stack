@@ -2,11 +2,19 @@
 
 import requests as requests_http
 from . import utils
+from .accounts import Accounts
 from .auth import Auth
+from .balances import Balances
 from .ledger import Ledger
+from .logs import Logs
+from .mapping import Mapping
 from .orchestration import Orchestration
 from .payments import Payments
+from .script import Script
 from .search import Search
+from .server import Server
+from .stats import Stats
+from .transactions import Transactions
 from .wallets import Wallets
 from .webhooks import Webhooks
 from sdk.models import operations, shared
@@ -33,11 +41,19 @@ class SDK:
     and standard method from web, mobile and desktop applications.
     <SecurityDefinitions />
     """
+    accounts: Accounts
     auth: Auth
+    balances: Balances
     ledger: Ledger
+    logs: Logs
+    mapping: Mapping
     orchestration: Orchestration
     payments: Payments
+    script: Script
     search: Search
+    server: Server
+    stats: Stats
+    transactions: Transactions
     wallets: Wallets
     webhooks: Webhooks
 
@@ -83,6 +99,15 @@ class SDK:
         self._init_sdks()
     
     def _init_sdks(self):
+        self.accounts = Accounts(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
         self.auth = Auth(
             self._client,
             self._security_client,
@@ -92,7 +117,34 @@ class SDK:
             self._gen_version
         )
         
+        self.balances = Balances(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
         self.ledger = Ledger(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
+        self.logs = Logs(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
+        self.mapping = Mapping(
             self._client,
             self._security_client,
             self._server_url,
@@ -119,7 +171,43 @@ class SDK:
             self._gen_version
         )
         
+        self.script = Script(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
         self.search = Search(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
+        self.server = Server(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
+        self.stats = Stats(
+            self._client,
+            self._security_client,
+            self._server_url,
+            self._language,
+            self._sdk_version,
+            self._gen_version
+        )
+        
+        self.transactions = Transactions(
             self._client,
             self._security_client,
             self._server_url,

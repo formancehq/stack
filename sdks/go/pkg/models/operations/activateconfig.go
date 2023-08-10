@@ -16,8 +16,8 @@ type ActivateConfigResponse struct {
 	// Config successfully activated.
 	ConfigResponse *shared.ConfigResponse
 	ContentType    string
+	StatusCode     int
+	RawResponse    *http.Response
 	// Error
-	ErrorResponse *shared.ErrorResponse
-	StatusCode    int
-	RawResponse   *http.Response
+	WebhooksErrorResponse *shared.WebhooksErrorResponse
 }

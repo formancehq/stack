@@ -22,26 +22,26 @@ class GetTransactionResponse
 	
     public ?\formance\stack\Models\Shared\ErrorResponse $errorResponse = null;
     
-    /**
-     * OK
-     * 
-     * @var ?\formance\stack\Models\Shared\GetTransactionResponse $getTransactionResponse
-     */
-	
-    public ?\formance\stack\Models\Shared\GetTransactionResponse $getTransactionResponse = null;
-    
 	
     public int $statusCode;
     
 	
     public ?\Psr\Http\Message\ResponseInterface $rawResponse = null;
     
+    /**
+     * OK
+     * 
+     * @var ?\formance\stack\Models\Shared\TransactionResponse $transactionResponse
+     */
+	
+    public ?\formance\stack\Models\Shared\TransactionResponse $transactionResponse = null;
+    
 	public function __construct()
 	{
 		$this->contentType = "";
 		$this->errorResponse = null;
-		$this->getTransactionResponse = null;
 		$this->statusCode = 0;
 		$this->rawResponse = null;
+		$this->transactionResponse = null;
 	}
 }

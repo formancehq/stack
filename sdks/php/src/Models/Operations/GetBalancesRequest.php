@@ -20,6 +20,14 @@ class GetBalancesRequest
     public ?string $address = null;
     
     /**
+     * Pagination cursor, will return accounts after given address, in descending order.
+     * 
+     * @var ?string $after
+     */
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=after')]
+    public ?string $after = null;
+    
+    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * 
      * Set to the value of next for the next page of results.
@@ -53,6 +61,7 @@ class GetBalancesRequest
 	public function __construct()
 	{
 		$this->address = null;
+		$this->after = null;
 		$this->cursor = null;
 		$this->ledger = "";
 		$this->pageSize = null;

@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
@@ -50,6 +51,7 @@ func TestOTLPTracesModule(t *testing.T) {
 				RunE: func(cmd *cobra.Command, args []string) error {
 					app := fx.New(
 						fx.NopLogger,
+						otlp.LoadResource("test", []string{}),
 						CLITracesModule(viper.GetViper()),
 						fx.Invoke(func(lc fx.Lifecycle, spanExporter tracesdk.SpanExporter) {
 							lc.Append(fx.Hook{

@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
-	"github.com/formancehq/webhooks/pkg/otlp"
+	innerOTLP "github.com/formancehq/webhooks/pkg/otlp"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/formancehq/webhooks/pkg/worker"
 	"github.com/pkg/errors"
@@ -45,7 +46,8 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 
 	return service.New(
 		cmd.OutOrStdout(),
-		otlp.HttpClientModule(),
+		otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
+		innerOTLP.HttpClientModule(),
 		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
 		fx.Provide(worker.NewWorkerHandler),
 		fx.Invoke(func(lc fx.Lifecycle, h http.Handler) {

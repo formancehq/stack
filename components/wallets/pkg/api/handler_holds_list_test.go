@@ -41,7 +41,7 @@ func TestHoldsList(t *testing.T) {
 			for _, hold := range holds[:pageSize] {
 				accounts = append(accounts, wallet.Account{
 					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				})
 			}
 			return &wallet.AccountsCursorResponseCursor{
@@ -92,7 +92,7 @@ func TestHoldsListWithPagination(t *testing.T) {
 				for _, hold := range holds[page*pageSize : (page+1)*pageSize] {
 					accounts = append(accounts, wallet.Account{
 						Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-						Metadata: hold.LedgerMetadata(testEnv.Chart()),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 					})
 				}
 				return &wallet.AccountsCursorResponseCursor{
@@ -117,7 +117,7 @@ func TestHoldsListWithPagination(t *testing.T) {
 			for _, hold := range holds[:pageSize] {
 				accounts = append(accounts, wallet.Account{
 					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				})
 			}
 			return &wallet.AccountsCursorResponseCursor{

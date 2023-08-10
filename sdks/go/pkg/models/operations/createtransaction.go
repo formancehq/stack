@@ -15,20 +15,18 @@ type CreateTransactionRequest struct {
 	//   - `script`: enabling more complex transactions with Numscript
 	//
 	PostTransaction shared.PostTransaction `request:"mediaType=application/json"`
-	// Set async mode.
-	Async *bool `queryParam:"style=form,explode=true,name=async"`
-	// Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
-	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+	Preview *bool `queryParam:"style=form,explode=true,name=preview"`
 }
 
 type CreateTransactionResponse struct {
 	ContentType string
-	// OK
-	CreateTransactionResponse *shared.CreateTransactionResponse
 	// Error
 	ErrorResponse *shared.ErrorResponse
 	StatusCode    int
 	RawResponse   *http.Response
+	// OK
+	TransactionsResponse *shared.TransactionsResponse
 }

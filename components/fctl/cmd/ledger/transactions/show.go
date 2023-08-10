@@ -6,11 +6,12 @@ import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/spf13/cobra"
 )
 
 type ShowStore struct {
-	Transaction internal.ExpandedTransaction `json:"transaction"`
+	Transaction shared.Transaction `json:"transaction"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -69,31 +70,23 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	baseUrl := profile.ServicesBaseUrl(stack).String()
-
-	response, err := internal.GetTransaction(
-		ledgerClient,
-		cmd.Context(),
-		baseUrl,
-		operations.GetTransactionRequest{
-			Ledger: ledger,
-			Txid:   txId,
-		},
-	)
+	response, err := ledgerClient.Transactions.GetTransaction(cmd.Context(), operations.GetTransactionRequest{
+		Ledger: ledger,
+		Txid:   txId,
+	})
 	if err != nil {
 		return nil, err
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Transaction = response.GetTransactionResponse.Data
+	c.store.Transaction = response.TransactionResponse.Data
 
 	return c, nil
 }

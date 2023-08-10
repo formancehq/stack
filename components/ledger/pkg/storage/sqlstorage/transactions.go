@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
 )
 
@@ -221,8 +222,6 @@ func (s *Store) GetTransactions(ctx context.Context, q ledger.TransactionsQuery)
 		Previous:           previous,
 		Next:               next,
 		Data:               txs,
-		PageSizeDeprecated: int(q.PageSize),
-		HasMoreDeprecated:  &hasMore,
 	}, nil
 }
 

@@ -1,14 +1,11 @@
 package wallet
 
 import (
-	"fmt"
 	"math/big"
 	"net/http"
 	"regexp"
-	"strconv"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -42,13 +39,13 @@ type Balance struct {
 	Priority  int        `json:"priority"`
 }
 
-func (b Balance) LedgerMetadata(walletID string) metadata.Metadata {
-	m := metadata.Metadata{
+func (b Balance) LedgerMetadata(walletID string) map[string]any {
+	m := map[string]any{
 		MetadataKeyWalletID:         walletID,
 		MetadataKeyWalletBalance:    TrueValue,
 		MetadataKeyBalanceName:      b.Name,
 		MetadataKeyBalanceExpiresAt: "",
-		MetadataKeyBalancePriority:  fmt.Sprint(b.Priority),
+		MetadataKeyBalancePriority:  b.Priority,
 	}
 	if b.ExpiresAt != nil {
 		m[MetadataKeyBalanceExpiresAt] = b.ExpiresAt.Format(time.RFC3339Nano)
@@ -94,28 +91,22 @@ func (b Balances) Swap(i, j int) {
 func BalanceFromAccount(account Account) Balance {
 	expiresAtRaw := GetMetadata(account, MetadataKeyBalanceExpiresAt)
 	var expiresAt *time.Time
-	if expiresAtRaw != "" {
-		parsedExpiresAt, err := time.Parse(time.RFC3339Nano, expiresAtRaw)
+	if expiresAtRaw != nil && expiresAtRaw != "" {
+		parsedExpiresAt, err := time.Parse(time.RFC3339Nano, expiresAtRaw.(string))
 		if err != nil {
 			panic(err)
 		}
 		expiresAt = &parsedExpiresAt
 	}
+	var priority int
 	priorityRaw := GetMetadata(account, MetadataKeyBalancePriority)
-	var (
-		priority int64
-		err      error
-	)
-	if priorityRaw != "" {
-		priority, err = strconv.ParseInt(priorityRaw, 10, 64)
-		if err != nil {
-			panic(err)
-		}
+	if priorityRaw != nil {
+		priority = int(priorityRaw.(float64))
 	}
 	return Balance{
-		Name:      GetMetadata(account, MetadataKeyBalanceName),
+		Name:      GetMetadata(account, MetadataKeyBalanceName).(string),
 		ExpiresAt: expiresAt,
-		Priority:  int(priority),
+		Priority:  priority,
 	}
 }
 

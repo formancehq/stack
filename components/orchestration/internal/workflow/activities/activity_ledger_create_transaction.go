@@ -5,17 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-	"strings"
 	"unsafe"
 
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"golang.org/x/mod/semver"
 )
 
 // CreateTransactionResponse - OK
@@ -113,68 +110,43 @@ type CreateTransactionRequest struct {
 	Data   shared.PostTransaction `json:"data"`
 }
 
-func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.CreateTransactionResponse, error) {
-	versionsResponse, err := a.client.GetVersions(ctx)
+func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.TransactionsResponse, error) {
+	response, err := a.client.Transactions.
+		CreateTransaction(
+			ctx,
+			operations.CreateTransactionRequest{
+				PostTransaction: request.Data,
+				Ledger:          request.Ledger,
+			},
+		)
 	if err != nil {
 		return nil, err
 	}
-	if versionsResponse.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code %d when getting versions", versionsResponse.StatusCode)
-	}
 
-	version := collectionutils.Filter(versionsResponse.GetVersionsResponse.Versions, func(version shared.Version) bool {
-		return version.Name == "ledger"
-	})[0].Version
-
-	if semver.IsValid(version) && semver.Compare(version, "v2.0.0") < 0 {
-		baseURL := strings.TrimSuffix(versionsResponse.RawResponse.Request.URL.String(), "/versions")
-
-		v, err := createTransactionV1(ctx, a.client, baseURL, request)
-		if err != nil {
-			return nil, err
+	switch response.StatusCode {
+	case http.StatusOK:
+		return response.TransactionsResponse, nil
+	default:
+		if response.ErrorResponse != nil {
+			return nil, temporal.NewApplicationError(
+				*response.ErrorResponse.ErrorMessage,
+				string(*response.ErrorResponse.ErrorCode),
+				response.ErrorResponse.Details)
 		}
 
-		return &shared.CreateTransactionResponse{
-			Data: v.CreateTransactionResponse.Data[0],
-		}, nil
-	} else {
-		response, err := a.client.Ledger.
-			CreateTransaction(
-				ctx,
-				operations.CreateTransactionRequest{
-					PostTransaction: request.Data,
-					Ledger:          request.Ledger,
-				},
-			)
-		if err != nil {
-			return nil, err
-		}
-
-		switch response.StatusCode {
-		case http.StatusOK:
-			return response.CreateTransactionResponse, nil
-		default:
-			if response.ErrorResponse != nil {
-				return nil, temporal.NewApplicationError(
-					response.ErrorResponse.ErrorMessage,
-					string(response.ErrorResponse.ErrorCode),
-					response.ErrorResponse.Details)
-			}
-
-			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-		}
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 }
 
 var CreateTransactionActivity = Activities{}.CreateTransaction
 
 func CreateTransaction(ctx workflow.Context, ledger string, request shared.PostTransaction) (*shared.Transaction, error) {
-	tx := &shared.CreateTransactionResponse{}
+	tx := &shared.TransactionsResponse{}
 	if err := executeActivity(ctx, CreateTransactionActivity, tx, CreateTransactionRequest{
 		Ledger: ledger,
 		Data:   request,
 	}); err != nil {
 		return nil, err
 	}
-	return &tx.Data, nil
+	return &tx.Data[0], nil
 }

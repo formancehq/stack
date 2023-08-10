@@ -12,5 +12,9 @@ export class Account extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "metadata" })
-  metadata: Record<string, string>;
+  metadata?: Record<string, any>;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "type" })
+  type?: string;
 }

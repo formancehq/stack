@@ -8,8 +8,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum LogType {
     NEW_TRANSACTION("NEW_TRANSACTION"),
-    SET_METADATA("SET_METADATA"),
-    REVERTED_TRANSACTION("REVERTED_TRANSACTION");
+    SET_METADATA("SET_METADATA");
 
     @JsonValue
     public final String value;

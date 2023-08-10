@@ -8,32 +8,10 @@ import { AxiosResponse } from "axios";
 
 export class AddMetadataOnTransactionRequest extends SpeakeasyBase {
   /**
-   * Use an idempotency key
-   */
-  @SpeakeasyMetadata({
-    data: "header, style=simple;explode=false;name=Idempotency-Key",
-  })
-  idempotencyKey?: string;
-
-  /**
    * metadata
    */
   @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-  requestBody?: Record<string, string>;
-
-  /**
-   * Set async mode.
-   */
-  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=async" })
-  async?: boolean;
-
-  /**
-   * Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=dryRun",
-  })
-  dryRun?: boolean;
+  requestBody?: Record<string, any>;
 
   /**
    * Name of the ledger.

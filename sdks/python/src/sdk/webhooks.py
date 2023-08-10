@@ -46,8 +46,8 @@ class Webhooks:
                 res.config_response = out
         else:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.WebhooksErrorResponse])
+                res.webhooks_error_response = out
 
         return res
 
@@ -82,8 +82,8 @@ class Webhooks:
                 res.config_response = out
         else:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.WebhooksErrorResponse])
+                res.webhooks_error_response = out
 
         return res
 
@@ -112,8 +112,8 @@ class Webhooks:
                 res.config_response = out
         else:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.WebhooksErrorResponse])
+                res.webhooks_error_response = out
 
         return res
 
@@ -140,8 +140,8 @@ class Webhooks:
             pass
         else:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.WebhooksErrorResponse])
+                res.webhooks_error_response = out
 
         return res
 
@@ -171,8 +171,8 @@ class Webhooks:
                 res.configs_response = out
         else:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.WebhooksErrorResponse])
+                res.webhooks_error_response = out
 
         return res
 
@@ -214,8 +214,8 @@ class Webhooks:
                 res.config_response = out
         else:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.WebhooksErrorResponse])
+                res.webhooks_error_response = out
 
         return res
 
@@ -244,8 +244,8 @@ class Webhooks:
                 res.attempt_response = out
         else:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.WebhooksErrorResponse])
+                res.webhooks_error_response = out
 
         return res
 

@@ -27,37 +27,25 @@ export class CreateTransactionRequest extends SpeakeasyBase {
   postTransaction: shared.PostTransaction;
 
   /**
-   * Set async mode.
-   */
-  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=async" })
-  async?: boolean;
-
-  /**
-   * Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=dryRun",
-  })
-  dryRun?: boolean;
-
-  /**
    * Name of the ledger.
    */
   @SpeakeasyMetadata({
     data: "pathParam, style=simple;explode=false;name=ledger",
   })
   ledger: string;
+
+  /**
+   * Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+   */
+  @SpeakeasyMetadata({
+    data: "queryParam, style=form;explode=true;name=preview",
+  })
+  preview?: boolean;
 }
 
 export class CreateTransactionResponse extends SpeakeasyBase {
   @SpeakeasyMetadata()
   contentType: string;
-
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  createTransactionResponse?: shared.CreateTransactionResponse;
 
   /**
    * Error
@@ -70,4 +58,10 @@ export class CreateTransactionResponse extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   rawResponse?: AxiosResponse;
+
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  transactionsResponse?: shared.TransactionsResponse;
 }

@@ -15,7 +15,7 @@ type PostTransactionScript struct {
 //   - `postings`: suitable for simple transactions
 //   - `script`: enabling more complex transactions with Numscript
 type PostTransaction struct {
-	Metadata  map[string]string      `json:"metadata"`
+	Metadata  map[string]interface{} `json:"metadata,omitempty"`
 	Postings  []Posting              `json:"postings,omitempty"`
 	Reference *string                `json:"reference,omitempty"`
 	Script    *PostTransactionScript `json:"script,omitempty"`

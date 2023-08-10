@@ -20,7 +20,7 @@ var _ = Given("some empty environment", func() {
 		var (
 			msgs               chan *nats.Msg
 			cancelSubscription func()
-			metadata           = map[string]string{
+			metadata           = map[string]any{
 				"clientType": "gold",
 			}
 		)
@@ -28,7 +28,7 @@ var _ = Given("some empty environment", func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
-			response, err := Client().Ledger.AddMetadataToAccount(
+			response, err := Client().Accounts.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata,
@@ -43,7 +43,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.GetAccount(
+			response, err := Client().Accounts.GetAccount(
 				TestContext(),
 				operations.GetAccountRequest{
 					Address: "foo",

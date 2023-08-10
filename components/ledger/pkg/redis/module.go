@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/formancehq/ledger/pkg/api/middlewares"
+	"github.com/go-redis/redis/v8"
 	"go.uber.org/fx"
 )
 

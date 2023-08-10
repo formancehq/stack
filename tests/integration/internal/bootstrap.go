@@ -164,14 +164,14 @@ func startLedger() {
 
 	command := cmd.NewRootCommand()
 	args := []string{
-		"serve",
+		"server", "start",
 		"--publisher-nats-enabled",
 		"--publisher-nats-client-id=ledger",
 		"--publisher-nats-url=" + natsAddress(),
 		fmt.Sprintf("--publisher-topic-mapping=*:%s-ledger", actualTestID),
-		"--storage-postgres-conn-string=" + dsn.String(),
-		"--json-formatting-logger=false",
-		"--bind=0.0.0.0:0", // Random port
+		"--storage.driver=postgres",
+		"--storage.postgres.conn_string=" + dsn.String(),
+		"--server.http.bind_address=0.0.0.0:0", // Random port
 		"--debug",
 	}
 	//if testing.Verbose() {

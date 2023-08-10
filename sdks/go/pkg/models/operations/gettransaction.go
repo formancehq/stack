@@ -18,8 +18,8 @@ type GetTransactionResponse struct {
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
+	StatusCode    int
+	RawResponse   *http.Response
 	// OK
-	GetTransactionResponse *shared.GetTransactionResponse
-	StatusCode             int
-	RawResponse            *http.Response
+	TransactionResponse *shared.TransactionResponse
 }

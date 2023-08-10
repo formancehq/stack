@@ -11,5 +11,5 @@ from sdk import utils
 @dataclasses.dataclass
 class ActivityCreateTransactionOutput:
     
-    data: shared_transaction.Transaction = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
+    data: list[shared_transaction.Transaction] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     

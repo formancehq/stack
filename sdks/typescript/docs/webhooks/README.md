@@ -19,7 +19,7 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { ActivateConfigResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { WebhooksErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -49,7 +49,7 @@ The format is a random string of bytes of size 24, base64 encoded. (larger size 
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { ChangeConfigSecretResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { WebhooksErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -78,7 +78,7 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { DeactivateConfigResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { WebhooksErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -104,7 +104,7 @@ Delete a webhooks config by ID.
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { DeleteConfigResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { WebhooksErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -130,7 +130,7 @@ Sorted by updated date descending
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { GetManyConfigsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { WebhooksErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -166,7 +166,7 @@ All eventTypes are converted to lower-case when inserted.
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { InsertConfigResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { WebhooksErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -177,8 +177,6 @@ const sdk = new SDK({
 sdk.webhooks.insertConfig({
   endpoint: "https://example.com",
   eventTypes: [
-    "TYPE1",
-    "TYPE1",
     "TYPE1",
     "TYPE1",
   ],
@@ -199,7 +197,7 @@ Test a config by sending a webhook to its endpoint.
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { TestConfigResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { ErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { WebhooksErrorsEnum } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {

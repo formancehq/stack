@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
@@ -163,7 +164,9 @@ func newServeCommand() *cobra.Command {
 				}),
 			}
 
-			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+			options = append(options,
+				otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
+				otlptraces.CLITracesModule(viper.GetViper()))
 
 			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
@@ -179,6 +182,7 @@ func newServeCommand() *cobra.Command {
 
 	cmd.Flags().String(configFlag, "", "Config file name without extension")
 
+	otlp.InitOTLPFlags(cmd.Flags())
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 
 	return cmd

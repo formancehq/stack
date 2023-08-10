@@ -4,9 +4,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
-	"github.com/formancehq/webhooks/pkg/otlp"
+	innerOTLP "github.com/formancehq/webhooks/pkg/otlp"
 	"github.com/formancehq/webhooks/pkg/server"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/formancehq/webhooks/pkg/worker"
@@ -50,7 +51,8 @@ func serve(cmd *cobra.Command, _ []string) error {
 			}
 		}),
 		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
-		otlp.HttpClientModule(),
+		innerOTLP.HttpClientModule(),
+		otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
 		server.StartModule(viper.GetString(flag.Listen)),
 	}
 

@@ -8,7 +8,6 @@ import { Expose, Transform } from "class-transformer";
 export enum LogType {
   NewTransaction = "NEW_TRANSACTION",
   SetMetadata = "SET_METADATA",
-  RevertedTransaction = "REVERTED_TRANSACTION",
 }
 
 export class Log extends SpeakeasyBase {

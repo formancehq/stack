@@ -53,7 +53,6 @@ func TracesModule(cfg ModuleConfig) fx.Option {
 	options := make([]fx.Option, 0)
 	options = append(options,
 		fx.Supply(cfg),
-		otlp.LoadResource(cfg.ServiceName, cfg.ResourceAttributes),
 		fx.Provide(func(tp *tracesdk.TracerProvider) trace.TracerProvider { return tp }),
 		fx.Provide(fx.Annotate(func(options ...tracesdk.TracerProviderOption) *tracesdk.TracerProvider {
 			return tracesdk.NewTracerProvider(options...)

@@ -24,11 +24,12 @@ class PostTransaction
     /**
      * $metadata
      * 
-     * @var array<string, string> $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[\JMS\Serializer\Annotation\SerializedName('metadata')]
-    #[\JMS\Serializer\Annotation\Type('array<string, string>')]
-    public array $metadata;
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $metadata = null;
     
     /**
      * $postings
@@ -57,7 +58,7 @@ class PostTransaction
     
 	public function __construct()
 	{
-		$this->metadata = [];
+		$this->metadata = null;
 		$this->postings = null;
 		$this->reference = null;
 		$this->script = null;

@@ -69,13 +69,13 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, err
 	}
 
-	response, err := ledgerClient.Ledger.GetInfo(cmd.Context())
+	response, err := ledgerClient.Server.GetInfo(cmd.Context())
 	if err != nil {
 		return nil, err
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

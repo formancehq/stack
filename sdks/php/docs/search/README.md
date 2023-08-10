@@ -37,15 +37,16 @@ try {
         'quickstart',
         'quickstart',
     ];
-    $request->pageSize = 474867;
+    $request->pageSize = 270008;
     $request->policy = 'OR';
     $request->raw = [
-        'nihil' => 'magnam',
+        'tempore' => 'labore',
+        'delectus' => 'eum',
+        'non' => 'eligendi',
     ];
     $request->sort = 'txid:asc';
-    $request->target = 'distinctio';
+    $request->target = 'sint';
     $request->terms = [
-        'destination=central_bank1',
         'destination=central_bank1',
         'destination=central_bank1',
     ];

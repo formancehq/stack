@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
 )
 
@@ -176,8 +177,6 @@ func (s *Store) GetLogs(ctx context.Context, q *ledger.LogsQuery) (api.Cursor[co
 		Previous:           previous,
 		Next:               next,
 		Data:               res,
-		PageSizeDeprecated: int(q.PageSize),
-		HasMoreDeprecated:  &hasMore,
 	}, nil
 }
 

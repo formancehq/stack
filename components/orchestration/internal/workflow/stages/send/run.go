@@ -30,6 +30,17 @@ func extractStripeConnectID(metadataKey string, metadata map[string]string) (str
 	return stripeConnectID, nil
 }
 
+func extractStripeConnectIDFromLedgerMetadata(metadataKey string, metadata map[string]any) (string, error) {
+	stripeConnectID, ok := metadata[metadataKey]
+	if !ok {
+		return "", fmt.Errorf("expected '%s' metadata containing connected account ID", metadataKey)
+	}
+	if stripeConnectID == "" {
+		return "", errors.New("stripe connect ID empty")
+	}
+	return stripeConnectID.(string), nil
+}
+
 func justError[T any](v T, err error) error {
 	return err
 }
@@ -99,7 +110,7 @@ func savePayment(ctx workflow.Context, paymentID string) (*shared.Payment, error
 			Destination: paymentAccountName(paymentID),
 			Source:      "world",
 		}},
-		Metadata:  metadata.Metadata{},
+		Metadata:  map[string]interface{}{},
 		Reference: &reference,
 	})
 	if err != nil {
@@ -247,7 +258,7 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveFromLedgerMetadata: wallet.Ledger,
 		},
 	}))
@@ -281,7 +292,7 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveToLedgerMetadata: wallet.Ledger,
 		},
 	})); err != nil {
@@ -315,7 +326,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 				Destination: destination.ID,
 				Source:      source.ID,
 			}},
-			Metadata: metadata.Metadata{},
+			Metadata: map[string]any{},
 		}))
 	}
 	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.PostTransaction{
@@ -325,7 +336,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveToLedgerMetadata: destination.Ledger,
 		},
 	})); err != nil {
@@ -338,7 +349,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveFromLedgerMetadata: source.Ledger,
 		},
 	}))
@@ -355,7 +366,7 @@ func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, dest
 	if err != nil {
 		return errors.Wrapf(err, "reading account: %s", source.ID)
 	}
-	stripeConnectID, err := extractStripeConnectID(destination.Metadata, account.Metadata)
+	stripeConnectID, err := extractStripeConnectIDFromLedgerMetadata(destination.Metadata, account.Metadata)
 	if err != nil {
 		return err
 	}
@@ -374,6 +385,6 @@ func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: metadata.Metadata{},
+		Metadata: map[string]interface{}{},
 	}))
 }

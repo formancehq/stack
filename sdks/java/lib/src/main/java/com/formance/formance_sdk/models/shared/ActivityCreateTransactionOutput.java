@@ -8,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ActivityCreateTransactionOutput {
     @JsonProperty("data")
-    public Transaction data;
+    public Transaction[] data;
 
-    public ActivityCreateTransactionOutput withData(Transaction data) {
+    public ActivityCreateTransactionOutput withData(Transaction[] data) {
         this.data = data;
         return this;
     }
     
-    public ActivityCreateTransactionOutput(@JsonProperty("data") Transaction data) {
+    public ActivityCreateTransactionOutput(@JsonProperty("data") Transaction[] data) {
         this.data = data;
   }
 }

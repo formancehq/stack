@@ -4,7 +4,7 @@ from __future__ import annotations
 import dataclasses
 import requests as requests_http
 from ..shared import attemptresponse as shared_attemptresponse
-from ..shared import errorresponse as shared_errorresponse
+from ..shared import webhookserrorresponse as shared_webhookserrorresponse
 from typing import Optional
 
 
@@ -22,7 +22,7 @@ class TestConfigResponse:
     status_code: int = dataclasses.field()
     attempt_response: Optional[shared_attemptresponse.AttemptResponse] = dataclasses.field(default=None)
     r"""OK"""
-    error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
-    r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
+    webhooks_error_response: Optional[shared_webhookserrorresponse.WebhooksErrorResponse] = dataclasses.field(default=None)
+    r"""Error"""
     

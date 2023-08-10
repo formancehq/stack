@@ -81,18 +81,23 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fctl.ErrMissingApproval
 	}
 
+	ledgerMetadata := make(map[string]any)
+	for k, v := range metadata {
+		ledgerMetadata[k] = v
+	}
+
 	request := operations.AddMetadataOnTransactionRequest{
 		Ledger:      fctl.GetString(cmd, internal.LedgerFlag),
 		Txid:        transactionID,
-		RequestBody: metadata,
+		RequestBody: ledgerMetadata,
 	}
-	response, err := ledgerClient.Ledger.AddMetadataOnTransaction(cmd.Context(), request)
+	response, err := ledgerClient.Transactions.AddMetadataOnTransaction(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

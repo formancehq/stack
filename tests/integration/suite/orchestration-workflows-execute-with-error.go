@@ -5,7 +5,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -107,11 +106,10 @@ var _ = Given("An empty environment", func() {
 										Destination: "bank",
 										Source:      "empty:account",
 									}},
-									Metadata: metadata.Metadata{},
 								},
 							},
 						},
-						LastFailure:   ptr("account had insufficient funds"),
+						LastFailure:   ptr("balance.insufficient.EUR/2"),
 						Attempt:       getWorkflowInstanceHistoryStageResponse.Data[0].Attempt,
 						NextExecution: getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution,
 						StartedAt:     getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt,

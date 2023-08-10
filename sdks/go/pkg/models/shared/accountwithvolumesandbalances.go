@@ -8,8 +8,8 @@ import (
 
 type AccountWithVolumesAndBalances struct {
 	Address  string                         `json:"address"`
-	Balances map[string]*big.Int            `json:"balances"`
-	Metadata map[string]string              `json:"metadata"`
+	Balances map[string]*big.Int            `json:"balances,omitempty"`
+	Metadata map[string]interface{}         `json:"metadata,omitempty"`
 	Type     *string                        `json:"type,omitempty"`
-	Volumes  map[string]map[string]*big.Int `json:"volumes"`
+	Volumes  map[string]map[string]*big.Int `json:"volumes,omitempty"`
 }

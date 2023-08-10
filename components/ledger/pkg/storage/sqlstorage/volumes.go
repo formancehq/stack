@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/formancehq/ledger/pkg/core"
+	"github.com/huandu/go-sqlbuilder"
 )
 
 func (s *Store) updateVolumes(ctx context.Context, volumes core.AccountsAssetsVolumes) error {

@@ -44,7 +44,7 @@ func TestWalletsList(t *testing.T) {
 				for _, w := range wallets[page*pageSize : (page+1)*pageSize] {
 					accounts = append(accounts, wallet.Account{
 						Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
-						Metadata: w.LedgerMetadata(),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 					})
 				}
 				return &wallet.AccountsCursorResponseCursor{
@@ -68,7 +68,7 @@ func TestWalletsList(t *testing.T) {
 			for _, w := range wallets[:pageSize] {
 				accounts = append(accounts, wallet.Account{
 					Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
-					Metadata: w.LedgerMetadata(),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 				})
 			}
 			return &wallet.AccountsCursorResponseCursor{
@@ -125,7 +125,7 @@ func TestWalletsListByName(t *testing.T) {
 				Next:     next,
 				Data: []wallet.Account{{
 					Address:  testEnv.Chart().GetMainBalanceAccount(wallets[1].ID),
-					Metadata: wallets[1].LedgerMetadata(),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallets[1].LedgerMetadata()),
 				}},
 			}, nil
 		}),
@@ -158,8 +158,8 @@ func TestWalletsListFilterMetadata(t *testing.T) {
 			require.Equal(t, defaultLimit, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, metadata.Metadata{
-				wallet.MetadataKeyWalletSpecType:                    wallet.PrimaryWallet,
-				wallet.MetadataKeyWalletCustomDataPrefix + "wallet": "2",
+				wallet.MetadataKeyWalletSpecType:               wallet.PrimaryWallet,
+				wallet.MetadataKeyWalletCustomData + ".wallet": "2",
 			}, query.Metadata)
 
 			hasMore := false
@@ -171,7 +171,7 @@ func TestWalletsListFilterMetadata(t *testing.T) {
 				Next:     next,
 				Data: []wallet.Account{{
 					Address:  testEnv.Chart().GetMainBalanceAccount(wallets[2].ID),
-					Metadata: wallets[2].LedgerMetadata(),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallets[2].LedgerMetadata()),
 				}},
 			}, nil
 		}),

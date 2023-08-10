@@ -18,20 +18,22 @@ class AccountWithVolumesAndBalances
     /**
      * $balances
      * 
-     * @var array<string, int> $balances
+     * @var ?array<string, int> $balances
      */
 	#[\JMS\Serializer\Annotation\SerializedName('balances')]
     #[\JMS\Serializer\Annotation\Type('array<string, int>')]
-    public array $balances;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $balances = null;
     
     /**
      * $metadata
      * 
-     * @var array<string, string> $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[\JMS\Serializer\Annotation\SerializedName('metadata')]
-    #[\JMS\Serializer\Annotation\Type('array<string, string>')]
-    public array $metadata;
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $metadata = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('type')]
     #[\JMS\Serializer\Annotation\Type('string')]
@@ -41,18 +43,19 @@ class AccountWithVolumesAndBalances
     /**
      * $volumes
      * 
-     * @var array<string, array<string, int>> $volumes
+     * @var ?array<string, array<string, int>> $volumes
      */
 	#[\JMS\Serializer\Annotation\SerializedName('volumes')]
     #[\JMS\Serializer\Annotation\Type('array<string, array<string, int>>')]
-    public array $volumes;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $volumes = null;
     
 	public function __construct()
 	{
 		$this->address = "";
-		$this->balances = [];
-		$this->metadata = [];
+		$this->balances = null;
+		$this->metadata = null;
 		$this->type = null;
-		$this->volumes = [];
+		$this->volumes = null;
 	}
 }

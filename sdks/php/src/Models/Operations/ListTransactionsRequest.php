@@ -20,6 +20,14 @@ class ListTransactionsRequest
     public ?string $account = null;
     
     /**
+     * Pagination cursor, will return transactions after given txid (in descending order).
+     * 
+     * @var ?string $after
+     */
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=after')]
+    public ?string $after = null;
+    
+    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * 
      * Set to the value of next for the next page of results.
@@ -62,7 +70,7 @@ class ListTransactionsRequest
     /**
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      * 
-     * @var ?array<string, string> $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
     public ?array $metadata = null;
@@ -107,6 +115,7 @@ class ListTransactionsRequest
 	public function __construct()
 	{
 		$this->account = null;
+		$this->after = null;
 		$this->cursor = null;
 		$this->destination = null;
 		$this->endTime = null;

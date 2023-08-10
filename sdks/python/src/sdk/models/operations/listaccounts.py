@@ -5,7 +5,17 @@ import dataclasses
 import requests as requests_http
 from ..shared import accountscursorresponse as shared_accountscursorresponse
 from ..shared import errorresponse as shared_errorresponse
-from typing import Optional
+from enum import Enum
+from typing import Any, Optional
+
+class ListAccountsBalanceOperator(str, Enum):
+    r"""Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not."""
+    GTE = 'gte'
+    LTE = 'lte'
+    GT = 'gt'
+    LT = 'lt'
+    E = 'e'
+    NE = 'ne'
 
 
 @dataclasses.dataclass
@@ -15,14 +25,20 @@ class ListAccountsRequest:
     r"""Name of the ledger."""
     address: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'address', 'style': 'form', 'explode': True }})
     r"""Filter accounts by address pattern (regular expression placed between ^ and $)."""
+    after: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'after', 'style': 'form', 'explode': True }})
+    r"""Pagination cursor, will return accounts after given address, in descending order."""
+    balance: Optional[int] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'balance', 'style': 'form', 'explode': True }})
+    r"""Filter accounts by their balance (default operator is gte)"""
+    balance_operator: Optional[ListAccountsBalanceOperator] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'balanceOperator', 'style': 'form', 'explode': True }})
+    r"""Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not."""
     cursor: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'cursor', 'style': 'form', 'explode': True }})
     r"""Parameter used in pagination requests. Maximum page size is set to 15.
     Set to the value of next for the next page of results.
     Set to the value of previous for the previous page of results.
     No other parameters can be set when this parameter is set.
     """
-    metadata: Optional[dict[str, str]] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'metadata', 'style': 'deepObject', 'explode': True }})
-    r"""Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2"""
+    metadata: Optional[dict[str, Any]] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'metadata', 'style': 'deepObject', 'explode': True }})
+    r"""Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below."""
     page_size: Optional[int] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'pageSize', 'style': 'form', 'explode': True }})
     r"""The maximum number of results to return per page."""
     

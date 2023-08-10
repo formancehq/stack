@@ -163,7 +163,7 @@ func TestWalletsCredit(t *testing.T) {
 						return &wallet.AccountWithVolumesAndBalances{
 							Account: wallet.Account{
 								Address:  account,
-								Metadata: secondaryBalance.LedgerMetadata(walletID),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(secondaryBalance.LedgerMetadata(walletID)),
 							},
 						}, nil
 					}

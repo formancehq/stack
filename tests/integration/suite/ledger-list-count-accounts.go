@@ -8,7 +8,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -17,11 +16,11 @@ import (
 var _ = Given("some empty environment", func() {
 	When("counting and listing accounts", func() {
 		var (
-			metadata1 = map[string]string{
+			metadata1 = map[string]any{
 				"clientType": "gold",
 			}
 
-			metadata2 = map[string]string{
+			metadata2 = map[string]any{
 				"clientType": "silver",
 			}
 
@@ -29,7 +28,7 @@ var _ = Given("some empty environment", func() {
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
-			response, err := Client().Ledger.AddMetadataToAccount(
+			response, err := Client().Accounts.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata1,
@@ -40,7 +39,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			response, err = Client().Ledger.AddMetadataToAccount(
+			response, err = Client().Accounts.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata2,
@@ -51,11 +50,11 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			createTransactionResponse, err := Client().Ledger.CreateTransaction(
+			createTransactionResponse, err := Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),
@@ -73,19 +72,19 @@ var _ = Given("some empty environment", func() {
 			Expect(createTransactionResponse.StatusCode).To(Equal(200))
 		})
 		It("should be countable on api", func() {
-			response, err := Client().Ledger.CountAccounts(
+			response, err := Client().Accounts.CountAccounts(
 				TestContext(),
 				operations.CountAccountsRequest{
 					Ledger: "default",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 		})
 		It("should be listed on api", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Accounts.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -96,7 +95,7 @@ var _ = Given("some empty environment", func() {
 
 			accountsCursorResponse := response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(3))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(shared.Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
@@ -104,13 +103,13 @@ var _ = Given("some empty environment", func() {
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "world",
-				Metadata: metadata.Metadata{},
+				Metadata: map[string]interface{}{},
 			}))
 		})
 		It("should be listed on api using address filters", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Accounts.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Address: ptr("foo:"),
@@ -122,16 +121,16 @@ var _ = Given("some empty environment", func() {
 
 			accountsCursorResponse := response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
 
-			response, err = Client().Ledger.ListAccounts(
+			response, err = Client().Accounts.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Address: ptr(":foo"),
@@ -149,11 +148,11 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 		It("should be listed on api using metadata filters", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Accounts.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
-					Metadata: map[string]string{
+					Metadata: map[string]any{
 						"clientType": "gold",
 					},
 				},
@@ -174,20 +173,20 @@ var _ = Given("some empty environment", func() {
 var _ = Given("some empty environment", func() {
 	When("counting and listing accounts empty", func() {
 		It("should be countable on api even if empty", func() {
-			response, err := Client().Ledger.CountAccounts(
+			response, err := Client().Accounts.CountAccounts(
 				TestContext(),
 				operations.CountAccountsRequest{
 					Ledger: "default",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api even if empty", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Accounts.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -212,11 +211,11 @@ var _ = Given("some environment with accounts", func() {
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(accountCounts); i++ {
-				m := map[string]string{
+				m := map[string]any{
 					"id": fmt.Sprintf("%d", i),
 				}
 
-				response, err := Client().Ledger.AddMetadataToAccount(
+				response, err := Client().Accounts.AddMetadataToAccount(
 					TestContext(),
 					operations.AddMetadataToAccountRequest{
 						RequestBody: m,
@@ -233,7 +232,7 @@ var _ = Given("some environment with accounts", func() {
 				})
 
 				sort.Slice(accounts, func(i, j int) bool {
-					return accounts[i].Address < accounts[j].Address
+					return accounts[i].Address > accounts[j].Address
 				})
 			}
 		})
@@ -245,7 +244,7 @@ var _ = Given("some environment with accounts", func() {
 				rsp *shared.AccountsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.ListAccounts(
+				response, err := Client().Accounts.ListAccounts(
 					TestContext(),
 					operations.ListAccountsRequest{
 						Ledger:   "default",
@@ -266,7 +265,7 @@ var _ = Given("some environment with accounts", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.ListAccounts(
+					response, err := Client().Accounts.ListAccounts(
 						TestContext(),
 						operations.ListAccountsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -285,7 +284,7 @@ var _ = Given("some environment with accounts", func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.ListAccounts(
+						response, err := Client().Accounts.ListAccounts(
 							TestContext(),
 							operations.ListAccountsRequest{
 								Ledger: "default",

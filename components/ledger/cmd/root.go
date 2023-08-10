@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/ledger/cmd/internal"
 	"github.com/formancehq/ledger/pkg/redis"
 	_ "github.com/formancehq/ledger/pkg/storage/sqlstorage/migrates/9-add-pre-post-volumes"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -148,6 +149,7 @@ func NewRootCommand() *cobra.Command {
 	root.PersistentFlags().Int(cacheCapacityBytes, 100000000, "Capacity in bytes of the cache storing Numscript in RAM")
 	root.PersistentFlags().Int(cacheMaxNumKeys, 100, "Maximum number of Numscript to be stored in the cache in RAM")
 
+	otlp.InitOTLPFlags(root.PersistentFlags())
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
 	internal.InitHTTPBasicFlags(root)
 	internal.InitAnalyticsFlags(root, DefaultSegmentWriteKey)

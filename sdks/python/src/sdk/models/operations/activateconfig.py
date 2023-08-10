@@ -4,7 +4,7 @@ from __future__ import annotations
 import dataclasses
 import requests as requests_http
 from ..shared import configresponse as shared_configresponse
-from ..shared import errorresponse as shared_errorresponse
+from ..shared import webhookserrorresponse as shared_webhookserrorresponse
 from typing import Optional
 
 
@@ -22,7 +22,7 @@ class ActivateConfigResponse:
     status_code: int = dataclasses.field()
     config_response: Optional[shared_configresponse.ConfigResponse] = dataclasses.field(default=None)
     r"""Config successfully activated."""
-    error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
-    r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
+    webhooks_error_response: Optional[shared_webhookserrorresponse.WebhooksErrorResponse] = dataclasses.field(default=None)
+    r"""Error"""
     

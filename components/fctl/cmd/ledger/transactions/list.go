@@ -113,15 +113,20 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		}
 	}
 
+	ledgerMetadata := make(map[string]any)
+	for k, v := range metadata {
+		ledgerMetadata[k] = v
+	}
+
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.ListTransactions(
+	response, err := ledgerClient.Transactions.ListTransactions(
 		cmd.Context(),
 		operations.ListTransactionsRequest{
 			Account:     fctl.Ptr(fctl.GetString(cmd, c.accountFlag)),
 			Destination: fctl.Ptr(fctl.GetString(cmd, c.destinationFlag)),
 			EndTime:     &endTime,
 			Ledger:      ledger,
-			Metadata:    metadata,
+			Metadata:    ledgerMetadata,
 			PageSize:    fctl.Ptr(int64(fctl.GetInt(cmd, c.pageSizeFlag))),
 			Reference:   fctl.Ptr(fctl.GetString(cmd, c.referenceFlag)),
 			Source:      fctl.Ptr(fctl.GetString(cmd, c.sourceFlag)),
@@ -133,7 +138,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
@@ -151,7 +156,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	tableData := fctl.Map(c.store.Transaction.Data, func(tx shared.ExpandedTransaction) []string {
+	tableData := fctl.Map(c.store.Transaction.Data, func(tx shared.Transaction) []string {
 		return []string{
 			fmt.Sprintf("%d", tx.Txid),
 			func() string {
@@ -161,7 +166,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 				return *tx.Reference
 			}(),
 			tx.Timestamp.Format(time.RFC3339),
-			fctl.MetadataAsShortString(tx.Metadata),
+			fctl.LedgerMetadataAsShortString(tx.Metadata),
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"ID", "Reference", "Date", "Metadata"})

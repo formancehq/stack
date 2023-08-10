@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	app "github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/gorilla/handlers"
@@ -79,7 +80,9 @@ func NewServer() *cobra.Command {
 				}),
 			)
 
-			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+			options = append(options,
+				otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
+				otlptraces.CLITracesModule(viper.GetViper()))
 			options = append(options, apiModule("search", bind, viper.GetString(stackFlag), api.ServiceInfo{
 				Version: Version,
 			}, esIndex))
@@ -96,6 +99,8 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(openSearchPasswordFlag, "", "OpenSearch password")
 	cmd.Flags().Bool(esDisableMappingInitFlag, false, "Disable mapping initialization")
 	cmd.Flags().String(stackFlag, "", "Stack id")
+
+	otlp.InitOTLPFlags(cmd.Flags())
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 
 	return cmd

@@ -27,17 +27,6 @@ public class GetTransactionResponse {
         return this;
     }
     
-    /**
-     * OK
-     */
-    
-    public com.formance.formance_sdk.models.shared.GetTransactionResponse getTransactionResponse;
-
-    public GetTransactionResponse withGetTransactionResponse(com.formance.formance_sdk.models.shared.GetTransactionResponse getTransactionResponse) {
-        this.getTransactionResponse = getTransactionResponse;
-        return this;
-    }
-    
     
     public Integer statusCode;
 
@@ -51,6 +40,17 @@ public class GetTransactionResponse {
 
     public GetTransactionResponse withRawResponse(HttpResponse<byte[]> rawResponse) {
         this.rawResponse = rawResponse;
+        return this;
+    }
+    
+    /**
+     * OK
+     */
+    
+    public com.formance.formance_sdk.models.shared.TransactionResponse transactionResponse;
+
+    public GetTransactionResponse withTransactionResponse(com.formance.formance_sdk.models.shared.TransactionResponse transactionResponse) {
+        this.transactionResponse = transactionResponse;
         return this;
     }
     

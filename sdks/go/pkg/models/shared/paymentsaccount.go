@@ -15,4 +15,5 @@ type PaymentsAccount struct {
 	Provider        Connector              `json:"provider"`
 	Raw             map[string]interface{} `json:"raw"`
 	Reference       string                 `json:"reference"`
+	Type            string                 `json:"type"`
 }

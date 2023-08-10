@@ -48,6 +48,10 @@ class PaymentsAccount
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $reference;
     
+	#[\JMS\Serializer\Annotation\SerializedName('type')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $type;
+    
 	public function __construct()
 	{
 		$this->accountName = "";
@@ -58,5 +62,6 @@ class PaymentsAccount
 		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
 		$this->raw = [];
 		$this->reference = "";
+		$this->type = "";
 	}
 }

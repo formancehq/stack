@@ -44,12 +44,12 @@ export class CountTransactionsRequest extends SpeakeasyBase {
   ledger: string;
 
   /**
-   * Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
+   * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
    */
   @SpeakeasyMetadata({
     data: "queryParam, style=deepObject;explode=true;name=metadata",
   })
-  metadata?: Record<string, string>;
+  metadata?: Record<string, any>;
 
   /**
    * Filter transactions by reference field.

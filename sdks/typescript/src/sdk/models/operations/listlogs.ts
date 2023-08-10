@@ -8,6 +8,12 @@ import { AxiosResponse } from "axios";
 
 export class ListLogsRequest extends SpeakeasyBase {
   /**
+   * Pagination cursor, will return the logs after a given ID. (in descending order).
+   */
+  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=after" })
+  after?: string;
+
+  /**
    * Parameter used in pagination requests. Maximum page size is set to 15.
    *
    * @remarks

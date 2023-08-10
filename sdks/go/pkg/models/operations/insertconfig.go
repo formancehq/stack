@@ -11,8 +11,8 @@ type InsertConfigResponse struct {
 	// Config created successfully.
 	ConfigResponse *shared.ConfigResponse
 	ContentType    string
+	StatusCode     int
+	RawResponse    *http.Response
 	// Error
-	ErrorResponse *shared.ErrorResponse
-	StatusCode    int
-	RawResponse   *http.Response
+	WebhooksErrorResponse *shared.WebhooksErrorResponse
 }

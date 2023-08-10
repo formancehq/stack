@@ -33,13 +33,13 @@ func TestHoldsConfirm(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: balances,
 			}, nil
 		}),
 		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.EqualValues(t, wallet.PostTransaction{
+			compareJSON(t, wallet.PostTransaction{
 				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 					Vars: map[string]interface{}{
@@ -50,7 +50,7 @@ func TestHoldsConfirm(t *testing.T) {
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, postTransaction)
 			return &wallet.CreateTransactionResponse{}, nil
 		}),
@@ -80,7 +80,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -93,7 +93,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 			}, nil
 		}),
 		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.EqualValues(t, wallet.PostTransaction{
+			compareJSON(t, wallet.PostTransaction{
 				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 					Vars: map[string]interface{}{
@@ -104,7 +104,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, postTransaction)
 			return &wallet.CreateTransactionResponse{}, nil
 		}),
@@ -134,7 +134,7 @@ func TestHoldsConfirmWithTooHighAmount(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -172,7 +172,7 @@ func TestHoldsConfirmWithClosedHold(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(0),
@@ -214,7 +214,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -227,7 +227,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 			}, nil
 		}),
 		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.EqualValues(t, wallet.PostTransaction{
+			compareJSON(t, wallet.PostTransaction{
 				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(true, "USD"),
 					Vars: map[string]interface{}{
@@ -238,7 +238,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, script)
 			return &wallet.CreateTransactionResponse{}, nil
 		}),

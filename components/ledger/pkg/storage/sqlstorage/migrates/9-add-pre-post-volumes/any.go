@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
 )
 

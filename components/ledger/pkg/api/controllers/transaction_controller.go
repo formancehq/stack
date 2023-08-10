@@ -91,7 +91,7 @@ func (ctl *TransactionController) GetTransactions(c *gin.Context) {
 			c.Query(QueryKeyStartTimeDeprecated) != "" ||
 			c.Query(QueryKeyEndTime) != "" ||
 			c.Query(QueryKeyEndTimeDeprecated) != "" ||
-			c.Query(QueryKeyPageSize) != "" ||
+			//c.Query(QueryKeyPageSize) != "" ||
 			c.Query(QueryKeyPageSizeDeprecated) != "" {
 			apierrors.ResponseError(c, ledger.NewValidationError(
 				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursor)))
@@ -133,7 +133,7 @@ func (ctl *TransactionController) GetTransactions(c *gin.Context) {
 			c.Query(QueryKeyStartTimeDeprecated) != "" ||
 			c.Query(QueryKeyEndTime) != "" ||
 			c.Query(QueryKeyEndTimeDeprecated) != "" ||
-			c.Query(QueryKeyPageSize) != "" ||
+			//c.Query(QueryKeyPageSize) != "" ||
 			c.Query(QueryKeyPageSizeDeprecated) != "" {
 			apierrors.ResponseError(c, ledger.NewValidationError(
 				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursorDeprecated)))

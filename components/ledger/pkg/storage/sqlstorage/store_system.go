@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
 )
 

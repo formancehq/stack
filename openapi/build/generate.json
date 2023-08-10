@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230809"
+    "version": "v1.0.20230810"
   },
   "servers": [
     {
@@ -651,7 +651,6 @@
     "/api/ledger/_info": {
       "get": {
         "tags": [
-          "Ledger",
           "Server"
         ],
         "summary": "Show server information",
@@ -728,7 +727,6 @@
         "summary": "Count the accounts from a ledger",
         "operationId": "countAccounts",
         "tags": [
-          "Ledger",
           "Accounts"
         ],
         "parameters": [
@@ -754,20 +752,17 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
+            "description": "Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "explode": true,
             "schema": {
               "type": "object",
               "properties": {}
-            },
-            "example": {
-              "admin": "true"
             }
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "OK",
             "headers": {
               "Count": {
@@ -796,7 +791,6 @@
         "description": "List accounts from a ledger, sorted by address in descending order.",
         "operationId": "listAccounts",
         "tags": [
-          "Ledger",
           "Accounts"
         ],
         "parameters": [
@@ -819,7 +813,17 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000
+              "maximum": 1000,
+              "default": 15
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Pagination cursor, will return accounts after given address, in descending order.",
+            "schema": {
+              "type": "string",
+              "example": "users:003"
             }
           },
           {
@@ -834,17 +838,39 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
+            "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
+            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {},
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "example": {
-              "admin": "true"
+              "properties": {}
+            }
+          },
+          {
+            "name": "balance",
+            "in": "query",
+            "description": "Filter accounts by their balance (default operator is gte)",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "example": 2400
+            }
+          },
+          {
+            "name": "balanceOperator",
+            "in": "query",
+            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.\n",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gte",
+                "lte",
+                "gt",
+                "lt",
+                "e",
+                "ne"
+              ],
+              "example": "gte"
             }
           },
           {
@@ -886,7 +912,6 @@
         "summary": "Get account by its address",
         "operationId": "getAccount",
         "tags": [
-          "Ledger",
           "Accounts"
         ],
         "parameters": [
@@ -940,7 +965,6 @@
         "summary": "Add metadata to an account",
         "operationId": "addMetadataToAccount",
         "tags": [
-          "Ledger",
           "Accounts"
         ],
         "parameters": [
@@ -962,32 +986,6 @@
             "schema": {
               "type": "string",
               "example": "users:001"
-            }
-          },
-          {
-            "name": "dryRun",
-            "in": "query",
-            "description": "Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
-            "name": "async",
-            "in": "query",
-            "description": "Set async mode.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
-            "name": "Idempotency-Key",
-            "in": "header",
-            "description": "Use an idempotency key",
-            "schema": {
-              "type": "string"
             }
           }
         ],
@@ -1020,10 +1018,157 @@
         }
       }
     },
+    "/api/ledger/{ledger}/mapping": {
+      "get": {
+        "tags": [
+          "Mapping"
+        ],
+        "operationId": "getMapping",
+        "summary": "Get the mapping of a ledger",
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MappingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Mapping"
+        ],
+        "operationId": "updateMapping",
+        "summary": "Update the mapping of a ledger",
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Mapping"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MappingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ledger/{ledger}/script": {
+      "post": {
+        "deprecated": true,
+        "tags": [
+          "Script"
+        ],
+        "operationId": "runScript",
+        "summary": "Execute a Numscript",
+        "description": "This route is deprecated, and has been merged into `POST /{ledger}/transactions`.\n",
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          },
+          {
+            "name": "preview",
+            "in": "query",
+            "description": "Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Script"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.\n\nOn failure, it will also return a 200 status code, and the following fields:\n  - `details`: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.\n  - `errorCode` and `error_code` (deprecated): contains the string code of the error\n  - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ledger/{ledger}/stats": {
       "get": {
         "tags": [
-          "Ledger",
           "Stats"
         ],
         "operationId": "readStats",
@@ -1068,7 +1213,6 @@
     "/api/ledger/{ledger}/transactions": {
       "head": {
         "tags": [
-          "Ledger",
           "Transactions"
         ],
         "summary": "Count the transactions from a ledger",
@@ -1141,22 +1285,17 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
+            "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
+            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {},
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "example": {
-              "admin": "true"
+              "properties": {}
             }
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "OK",
             "headers": {
               "Count": {
@@ -1182,7 +1321,6 @@
       },
       "get": {
         "tags": [
-          "Ledger",
           "Transactions"
         ],
         "summary": "List transactions from a ledger",
@@ -1208,7 +1346,16 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000
+              "maximum": 1000,
+              "default": 15
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Pagination cursor, will return transactions after given txid (in descending order).",
+            "schema": {
+              "type": "string"
             }
           },
           {
@@ -1279,15 +1426,10 @@
             "in": "query",
             "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
+            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {},
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "example": {
-              "admin": "true"
+              "properties": {}
             }
           }
         ],
@@ -1316,7 +1458,6 @@
       },
       "post": {
         "tags": [
-          "Ledger",
           "Transactions"
         ],
         "summary": "Create a new transaction to a ledger",
@@ -1333,18 +1474,9 @@
             }
           },
           {
-            "name": "dryRun",
+            "name": "preview",
             "in": "query",
-            "description": "Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
-            "name": "async",
-            "in": "query",
-            "description": "Set async mode.",
+            "description": "Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.",
             "schema": {
               "type": "boolean",
               "example": true
@@ -1376,7 +1508,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreateTransactionResponse"
+                  "$ref": "#/components/schemas/TransactionsResponse"
                 }
               }
             }
@@ -1397,7 +1529,6 @@
     "/api/ledger/{ledger}/transactions/{txid}": {
       "get": {
         "tags": [
-          "Ledger",
           "Transactions"
         ],
         "summary": "Get transaction from a ledger by its ID",
@@ -1432,7 +1563,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetTransactionResponse"
+                  "$ref": "#/components/schemas/TransactionResponse"
                 }
               }
             }
@@ -1453,7 +1584,6 @@
     "/api/ledger/{ledger}/transactions/{txid}/metadata": {
       "post": {
         "tags": [
-          "Ledger",
           "Transactions"
         ],
         "summary": "Set the metadata of a transaction by its ID",
@@ -1479,32 +1609,6 @@
               "format": "int64",
               "minimum": 0,
               "example": 1234
-            }
-          },
-          {
-            "name": "dryRun",
-            "in": "query",
-            "description": "Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
-            "name": "async",
-            "in": "query",
-            "description": "Set async mode.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
-            "name": "Idempotency-Key",
-            "in": "header",
-            "description": "Use an idempotency key",
-            "schema": {
-              "type": "string"
             }
           }
         ],
@@ -1539,7 +1643,6 @@
     "/api/ledger/{ledger}/transactions/{txid}/revert": {
       "post": {
         "tags": [
-          "Ledger",
           "Transactions"
         ],
         "operationId": "revertTransaction",
@@ -1569,12 +1672,65 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RevertTransactionResponse"
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ledger/{ledger}/transactions/batch": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Create a new batch of transactions to a ledger",
+        "operationId": "CreateTransactions",
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transactions"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionsResponse"
                 }
               }
             }
@@ -1595,7 +1751,6 @@
     "/api/ledger/{ledger}/balances": {
       "get": {
         "tags": [
-          "Ledger",
           "Balances"
         ],
         "summary": "Get the balances from a ledger's account",
@@ -1621,15 +1776,12 @@
             }
           },
           {
-            "name": "pageSize",
+            "name": "after",
             "in": "query",
-            "description": "The maximum number of results to return per page.\n",
-            "example": 100,
+            "description": "Pagination cursor, will return accounts after given address, in descending order.",
             "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000
+              "type": "string",
+              "example": "users:003"
             }
           },
           {
@@ -1639,6 +1791,19 @@
             "schema": {
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 15
             }
           }
         ],
@@ -1669,7 +1834,6 @@
     "/api/ledger/{ledger}/aggregate/balances": {
       "get": {
         "tags": [
-          "Ledger",
           "Balances"
         ],
         "summary": "Get the aggregated balances from selected accounts",
@@ -1722,7 +1886,6 @@
     "/api/ledger/{ledger}/logs": {
       "get": {
         "tags": [
-          "Ledger",
           "Logs"
         ],
         "summary": "List the logs from a ledger",
@@ -1748,7 +1911,16 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000
+              "maximum": 1000,
+              "default": 15
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
+            "schema": {
+              "type": "string"
             }
           },
           {
@@ -2316,7 +2488,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2356,7 +2528,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2393,7 +2565,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2437,7 +2609,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2481,7 +2653,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2525,7 +2697,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2578,7 +2750,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -4226,7 +4398,7 @@
               "data": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/ExpandedTransaction"
+                  "$ref": "#/components/schemas/Transaction"
                 }
               }
             }
@@ -4329,11 +4501,15 @@
       },
       "ledgerMetadata": {
         "type": "object",
-        "additionalProperties": {
-          "type": "string"
-        },
+        "nullable": true,
+        "additionalProperties": {},
         "example": {
-          "admin": "true"
+          "admin": true,
+          "a": {
+            "nested": {
+              "key": "value"
+            }
+          }
         }
       },
       "ConfigInfo": {
@@ -4355,36 +4531,29 @@
           "version"
         ]
       },
-      "Account": {
+      "ScriptResponse": {
         "type": "object",
-        "required": [
-          "address",
-          "metadata"
-        ],
         "properties": {
-          "address": {
-            "type": "string",
-            "example": "users:001"
+          "errorCode": {
+            "$ref": "#/components/schemas/ErrorsEnum"
           },
-          "metadata": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": {
-              "type": "string"
-            },
-            "example": {
-              "admin": "true"
-            }
+          "errorMessage": {
+            "type": "string",
+            "example": "account had insufficient funds"
+          },
+          "details": {
+            "type": "string",
+            "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+          },
+          "transaction": {
+            "$ref": "#/components/schemas/Transaction"
           }
         }
       },
-      "AccountWithVolumesAndBalances": {
+      "Account": {
         "type": "object",
         "required": [
-          "address",
-          "metadata",
-          "volumes",
-          "balances"
+          "address"
         ],
         "properties": {
           "address": {
@@ -4398,11 +4567,41 @@
           "metadata": {
             "type": "object",
             "properties": {},
-            "additionalProperties": {
-              "type": "string"
-            },
             "example": {
-              "admin": "true"
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AccountWithVolumesAndBalances": {
+        "type": "object",
+        "required": [
+          "address"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "users:001"
+          },
+          "type": {
+            "type": "string",
+            "example": "virtual"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {},
+            "example": {
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
             }
           },
           "volumes": {
@@ -4459,6 +4658,37 @@
         "example": {
           "USD": 100,
           "EUR": 12
+        }
+      },
+      "Contract": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "example": "users:001"
+          },
+          "expr": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "accounts",
+          "expr"
+        ]
+      },
+      "Mapping": {
+        "type": "object",
+        "nullable": true,
+        "required": [
+          "contracts"
+        ],
+        "properties": {
+          "contracts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contract"
+            }
+          }
         }
       },
       "Posting": {
@@ -4541,42 +4771,61 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
+          },
+          "preCommitVolumes": {
+            "$ref": "#/components/schemas/AggregatedVolumes"
+          },
+          "postCommitVolumes": {
+            "$ref": "#/components/schemas/AggregatedVolumes"
           }
         },
         "required": [
           "postings",
           "timestamp",
-          "txid",
-          "metadata"
+          "txid"
         ]
       },
-      "ExpandedTransaction": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Transaction"
+      "TransactionData": {
+        "type": "object",
+        "required": [
+          "postings"
+        ],
+        "properties": {
+          "postings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Posting"
+            }
           },
-          {
-            "type": "object",
-            "properties": {
-              "preCommitVolumes": {
-                "$ref": "#/components/schemas/AggregatedVolumes"
-              },
-              "postCommitVolumes": {
-                "$ref": "#/components/schemas/AggregatedVolumes"
-              }
-            },
-            "required": [
-              "preCommitVolumes",
-              "postCommitVolumes"
-            ]
+          "reference": {
+            "type": "string",
+            "example": "ref:001"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ledgerMetadata"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
           }
-        ]
+        }
+      },
+      "Transactions": {
+        "required": [
+          "transactions"
+        ],
+        "type": "object",
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionData"
+            }
+          }
+        }
       },
       "PostTransaction": {
         "type": "object",
-        "required": [
-          "metadata"
-        ],
         "properties": {
           "timestamp": {
             "type": "string",
@@ -4648,8 +4897,7 @@
             "type": "string",
             "enum": [
               "NEW_TRANSACTION",
-              "SET_METADATA",
-              "REVERTED_TRANSACTION"
+              "SET_METADATA"
             ]
           },
           "data": {
@@ -4673,24 +4921,24 @@
           "date"
         ]
       },
-      "CreateTransactionResponse": {
+      "TransactionsResponse": {
+        "type": "object",
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Transaction"
+            "items": {
+              "$ref": "#/components/schemas/Transaction"
+            },
+            "type": "array"
           }
         },
-        "type": "object",
         "required": [
           "data"
         ]
       },
-      "RevertTransactionResponse": {
-        "$ref": "#/components/schemas/CreateTransactionResponse"
-      },
-      "GetTransactionResponse": {
+      "TransactionResponse": {
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/ExpandedTransaction"
+            "$ref": "#/components/schemas/Transaction"
           }
         },
         "type": "object",
@@ -4709,12 +4957,24 @@
           "data"
         ]
       },
+      "MappingResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Mapping"
+          }
+        },
+        "type": "object"
+      },
       "ConfigInfoResponse": {
         "properties": {
           "data": {
             "$ref": "#/components/schemas/ConfigInfo"
           }
-        }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ]
       },
       "Volume": {
         "type": "object",
@@ -4784,17 +5044,13 @@
       },
       "ErrorResponse": {
         "type": "object",
-        "required": [
-          "errorCode",
-          "errorMessage"
-        ],
         "properties": {
           "errorCode": {
             "$ref": "#/components/schemas/ErrorsEnum"
           },
           "errorMessage": {
             "type": "string",
-            "example": "[VALIDATION] invalid 'cursor' query param"
+            "example": "[INSUFFICIENT_FUND] account had insufficient funds"
           },
           "details": {
             "type": "string",
@@ -4812,11 +5068,9 @@
           "NO_SCRIPT",
           "COMPILATION_FAILED",
           "METADATA_OVERRIDE",
-          "NOT_FOUND",
-          "CONTEXT_CANCELLED",
-          "STORE"
+          "NOT_FOUND"
         ],
-        "example": "VALIDATION"
+        "example": "INSUFFICIENT_FUND"
       },
       "LedgerInfoResponse": {
         "properties": {
@@ -5632,6 +5886,7 @@
           "defaultCurrency",
           "defaultAsset",
           "accountName",
+          "type",
           "raw"
         ],
         "properties": {
@@ -5656,6 +5911,9 @@
             "type": "string"
           },
           "accountName": {
+            "type": "string"
+          },
+          "type": {
             "type": "string"
           },
           "raw": {
@@ -6357,6 +6615,42 @@
           "retryAttempt",
           "status"
         ]
+      },
+      "webhooksErrorResponse": {
+        "type": "object",
+        "required": [
+          "errorCode",
+          "errorMessage"
+        ],
+        "properties": {
+          "errorCode": {
+            "$ref": "#/components/schemas/webhooksErrorsEnum"
+          },
+          "errorMessage": {
+            "type": "string",
+            "example": "[VALIDATION] invalid 'cursor' query param"
+          },
+          "details": {
+            "type": "string",
+            "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+          }
+        }
+      },
+      "webhooksErrorsEnum": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "INSUFFICIENT_FUND",
+          "VALIDATION",
+          "CONFLICT",
+          "NO_SCRIPT",
+          "COMPILATION_FAILED",
+          "METADATA_OVERRIDE",
+          "NOT_FOUND",
+          "CONTEXT_CANCELLED",
+          "STORE"
+        ],
+        "example": "VALIDATION"
       },
       "Monetary": {
         "type": "object",
@@ -7694,10 +7988,10 @@
         "$ref": "#/components/schemas/AccountResponse"
       },
       "ActivityCreateTransactionOutput": {
-        "$ref": "#/components/schemas/CreateTransactionResponse"
+        "$ref": "#/components/schemas/TransactionsResponse"
       },
       "ActivityRevertTransactionOutput": {
-        "$ref": "#/components/schemas/RevertTransactionResponse"
+        "$ref": "#/components/schemas/TransactionResponse"
       },
       "ActivityGetPaymentOutput": {
         "$ref": "#/components/schemas/PaymentResponse"

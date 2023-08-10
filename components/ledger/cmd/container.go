@@ -17,9 +17,9 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -32,16 +32,11 @@ const ServiceName = "ledger"
 func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 
 	options := make([]fx.Option, 0)
-
-	debug := v.GetBool(service.DebugFlag)
-	if debug {
-		sqlstorage.InstrumentalizeSQLDrivers()
-	}
+	serviceName := v.GetString(otlp.OtelServiceName)
+	resourceAttributes := v.GetStringSlice(otlp.OtelResourceAttributes)
 
 	options = append(options, publish.CLIPublisherModule(v, ServiceName), bus.LedgerMonitorModule())
-
-	// Handle OpenTelemetry
-	options = append(options, otlptraces.CLITracesModule(v))
+	options = append(options, otlp.LoadResource(serviceName, resourceAttributes), otlptraces.CLITracesModule(v))
 
 	switch v.GetString(lockStrategyFlag) {
 	case "redis":

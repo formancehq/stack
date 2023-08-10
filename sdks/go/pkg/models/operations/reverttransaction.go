@@ -18,8 +18,8 @@ type RevertTransactionResponse struct {
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
+	StatusCode    int
+	RawResponse   *http.Response
 	// OK
-	RevertTransactionResponse *shared.RevertTransactionResponse
-	StatusCode                int
-	RawResponse               *http.Response
+	TransactionResponse *shared.TransactionResponse
 }

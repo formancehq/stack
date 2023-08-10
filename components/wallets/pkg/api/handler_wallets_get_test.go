@@ -32,7 +32,7 @@ func TestWalletsGet(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  account,
-					Metadata: w.LedgerMetadata(),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 				},
 				Balances: balances,
 			}, nil

@@ -36,7 +36,7 @@ func TestWalletSummary(t *testing.T) {
 				return &wallet.AccountWithVolumesAndBalances{
 					Account: wallet.Account{
 						Address:  account,
-						Metadata: w.LedgerMetadata(),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 					},
 					Balances: map[string]*big.Int{
 						"USD": big.NewInt(100),
@@ -46,7 +46,7 @@ func TestWalletSummary(t *testing.T) {
 				return &wallet.AccountWithVolumesAndBalances{
 					Account: wallet.Account{
 						Address:  account,
-						Metadata: coupon1Balance.LedgerMetadata(w.ID),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon1Balance.LedgerMetadata(w.ID)),
 					},
 					Balances: map[string]*big.Int{
 						"USD": big.NewInt(10),
@@ -56,7 +56,7 @@ func TestWalletSummary(t *testing.T) {
 				return &wallet.AccountWithVolumesAndBalances{
 					Account: wallet.Account{
 						Address:  account,
-						Metadata: coupon2Balance.LedgerMetadata(w.ID),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon2Balance.LedgerMetadata(w.ID)),
 					},
 					Balances: map[string]*big.Int{
 						"USD": big.NewInt(20),
@@ -66,7 +66,7 @@ func TestWalletSummary(t *testing.T) {
 				return &wallet.AccountWithVolumesAndBalances{
 					Account: wallet.Account{
 						Address:  account,
-						Metadata: hold1.LedgerMetadata(testEnv.Chart()),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold1.LedgerMetadata(testEnv.Chart())),
 					},
 					Balances: map[string]*big.Int{
 						"USD": big.NewInt(10),
@@ -76,7 +76,7 @@ func TestWalletSummary(t *testing.T) {
 				return &wallet.AccountWithVolumesAndBalances{
 					Account: wallet.Account{
 						Address:  account,
-						Metadata: hold2.LedgerMetadata(testEnv.Chart()),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold2.LedgerMetadata(testEnv.Chart())),
 					},
 					Balances: map[string]*big.Int{
 						"USD": big.NewInt(20),
@@ -94,15 +94,15 @@ func TestWalletSummary(t *testing.T) {
 					Data: []wallet.Account{
 						{
 							Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
-							Metadata: w.LedgerMetadata(),
+							Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 						},
 						{
 							Address:  testEnv.Chart().GetBalanceAccount(w.ID, "coupon1"),
-							Metadata: coupon1Balance.LedgerMetadata(w.ID),
+							Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon1Balance.LedgerMetadata(w.ID)),
 						},
 						{
 							Address:  testEnv.Chart().GetBalanceAccount(w.ID, "coupon2"),
-							Metadata: coupon2Balance.LedgerMetadata(w.ID),
+							Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon2Balance.LedgerMetadata(w.ID)),
 						},
 					},
 				}, nil
@@ -111,11 +111,11 @@ func TestWalletSummary(t *testing.T) {
 					Data: []wallet.Account{
 						{
 							Address:  testEnv.Chart().GetHoldAccount(hold1.ID),
-							Metadata: hold1.LedgerMetadata(testEnv.Chart()),
+							Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold1.LedgerMetadata(testEnv.Chart())),
 						},
 						{
 							Address:  testEnv.Chart().GetHoldAccount(hold2.ID),
-							Metadata: hold2.LedgerMetadata(testEnv.Chart()),
+							Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold2.LedgerMetadata(testEnv.Chart())),
 						},
 					},
 				}, nil

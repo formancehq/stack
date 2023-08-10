@@ -17,17 +17,6 @@ public class CreateTransactionResponse {
     }
     
     /**
-     * OK
-     */
-    
-    public com.formance.formance_sdk.models.shared.CreateTransactionResponse createTransactionResponse;
-
-    public CreateTransactionResponse withCreateTransactionResponse(com.formance.formance_sdk.models.shared.CreateTransactionResponse createTransactionResponse) {
-        this.createTransactionResponse = createTransactionResponse;
-        return this;
-    }
-    
-    /**
      * Error
      */
     
@@ -51,6 +40,17 @@ public class CreateTransactionResponse {
 
     public CreateTransactionResponse withRawResponse(HttpResponse<byte[]> rawResponse) {
         this.rawResponse = rawResponse;
+        return this;
+    }
+    
+    /**
+     * OK
+     */
+    
+    public com.formance.formance_sdk.models.shared.TransactionsResponse transactionsResponse;
+
+    public CreateTransactionResponse withTransactionsResponse(com.formance.formance_sdk.models.shared.TransactionsResponse transactionsResponse) {
+        this.transactionsResponse = transactionsResponse;
         return this;
     }
     

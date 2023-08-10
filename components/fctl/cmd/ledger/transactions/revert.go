@@ -6,11 +6,12 @@ import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/spf13/cobra"
 )
 
 type RevertStore struct {
-	Transaction *internal.Transaction `json:"transaction"`
+	Transaction *shared.Transaction `json:"transaction"`
 }
 type RevertController struct {
 	store *RevertStore
@@ -92,7 +93,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

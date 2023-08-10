@@ -19,19 +19,19 @@ var _ = Given("some empty environment", func() {
 			timestamp1 = time.Date(2023, 4, 11, 10, 0, 0, 0, time.UTC)
 			timestamp2 = time.Date(2023, 4, 12, 10, 0, 0, 0, time.UTC)
 
-			m1 = map[string]string{
+			m1 = map[string]any{
 				"clientType": "silver",
 			}
-			m2 = map[string]string{
+			m2 = map[string]any{
 				"clientType": "gold",
 			}
 		)
 		BeforeEach(func() {
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),
@@ -48,7 +48,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -69,7 +69,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			addMetadataResponse, err := Client().Ledger.AddMetadataToAccount(
+			addMetadataResponse, err := Client().Accounts.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: m2,
@@ -81,7 +81,7 @@ var _ = Given("some empty environment", func() {
 			Expect(addMetadataResponse.StatusCode).To(Equal(204))
 		})
 		It("should be listed on api with ListLogs", func() {
-			response, err := Client().Ledger.ListLogs(
+			response, err := Client().Logs.ListLogs(
 				TestContext(),
 				operations.ListLogsRequest{
 					Ledger: "default",
@@ -110,9 +110,7 @@ var _ = Given("some empty environment", func() {
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[1].Date).To(Equal(timestamp2))
-			Expect(logsCursorResponse.Cursor.Data[1].Data["accountMetadata"]).To(Equal(map[string]any{}))
-			Expect(logsCursorResponse.Cursor.Data[1].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
-			transaction := logsCursorResponse.Cursor.Data[1].Data["transaction"].(map[string]any)
+			transaction := logsCursorResponse.Cursor.Data[1].Data
 			Expect(transaction["metadata"]).To(Equal(map[string]any{
 				"clientType": "silver",
 			}))
@@ -132,9 +130,7 @@ var _ = Given("some empty environment", func() {
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[2].Date).To(Equal(timestamp1))
-			Expect(logsCursorResponse.Cursor.Data[2].Data["accountMetadata"]).To(Equal(map[string]any{}))
-			Expect(logsCursorResponse.Cursor.Data[2].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
-			transaction = logsCursorResponse.Cursor.Data[2].Data["transaction"].(map[string]any)
+			transaction = logsCursorResponse.Cursor.Data[2].Data
 			Expect(transaction["metadata"]).To(Equal(map[string]any{}))
 			Expect(transaction["reference"]).To(Equal(""))
 			Expect(transaction["timestamp"]).To(Equal("2023-04-11T10:00:00Z"))
@@ -149,7 +145,7 @@ var _ = Given("some empty environment", func() {
 		})
 		It("should be listed on api with ListLogs using time filters", func() {
 			st := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			response, err := Client().Ledger.ListLogs(
+			response, err := Client().Logs.ListLogs(
 				TestContext(),
 				operations.ListLogsRequest{
 					Ledger:    "default",
@@ -175,9 +171,8 @@ var _ = Given("some empty environment", func() {
 			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(int64(1)))
 			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.LogTypeNewTransaction))
 			Expect(logsCursorResponse.Cursor.Data[1].Date).To(Equal(timestamp2))
-			Expect(logsCursorResponse.Cursor.Data[1].Data["accountMetadata"]).To(Equal(map[string]any{}))
-			Expect(logsCursorResponse.Cursor.Data[1].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
-			transaction := logsCursorResponse.Cursor.Data[1].Data["transaction"].(map[string]any)
+			Expect(logsCursorResponse.Cursor.Data[1].Data).To(BeAssignableToTypeOf(map[string]any{}))
+			transaction := logsCursorResponse.Cursor.Data[1].Data
 			Expect(transaction["metadata"]).To(Equal(map[string]any{
 				"clientType": "silver",
 			}))
@@ -193,7 +188,7 @@ var _ = Given("some empty environment", func() {
 			}))
 
 			et := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			response, err = Client().Ledger.ListLogs(
+			response, err = Client().Logs.ListLogs(
 				TestContext(),
 				operations.ListLogsRequest{
 					EndTime: &et,
@@ -211,9 +206,7 @@ var _ = Given("some empty environment", func() {
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[0].Date).To(Equal(timestamp1))
-			Expect(logsCursorResponse.Cursor.Data[0].Data["accountMetadata"]).To(Equal(map[string]any{}))
-			Expect(logsCursorResponse.Cursor.Data[0].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
-			transaction = logsCursorResponse.Cursor.Data[0].Data["transaction"].(map[string]any)
+			transaction = logsCursorResponse.Cursor.Data[0].Data
 			Expect(transaction["metadata"]).To(Equal(map[string]any{}))
 			Expect(transaction["reference"]).To(Equal(""))
 			Expect(transaction["timestamp"]).To(Equal("2023-04-11T10:00:00Z"))
@@ -240,9 +233,8 @@ var _ = Given("some environment with accounts", func() {
 		compareLogs = func(log shared.Log, expected expectedLog) {
 			Expect(log.ID).To(Equal(expected.id))
 			Expect(log.Type).To(Equal(expected.typ))
-			Expect(log.Data["accountMetadata"]).To(Equal(map[string]any{}))
-			Expect(log.Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
-			transaction := log.Data["transaction"].(map[string]any)
+			Expect(log.Data).To(BeAssignableToTypeOf(map[string]any{}))
+			transaction := log.Data
 			Expect(transaction["metadata"]).To(Equal(map[string]any{}))
 			Expect(transaction["reference"]).To(Equal(""))
 			Expect(transaction["postings"]).To(Equal(expected.postings))
@@ -261,11 +253,11 @@ var _ = Given("some environment with accounts", func() {
 			for i := 0; i < int(accountCounts); i++ {
 				now := time.Now().Round(time.Millisecond).UTC()
 
-				response, err := Client().Ledger.CreateTransaction(
+				response, err := Client().Transactions.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						PostTransaction: shared.PostTransaction{
-							Metadata: map[string]string{},
+							Metadata: map[string]any{},
 							Postings: []shared.Posting{
 								{
 									Amount:      big.NewInt(100),
@@ -308,7 +300,7 @@ var _ = Given("some environment with accounts", func() {
 				rsp *shared.LogsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.ListLogs(
+				response, err := Client().Logs.ListLogs(
 					TestContext(),
 					operations.ListLogsRequest{
 						Ledger:   "default",
@@ -332,7 +324,7 @@ var _ = Given("some environment with accounts", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.ListLogs(
+					response, err := Client().Logs.ListLogs(
 						TestContext(),
 						operations.ListLogsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -354,7 +346,7 @@ var _ = Given("some environment with accounts", func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.ListLogs(
+						response, err := Client().Logs.ListLogs(
 							TestContext(),
 							operations.ListLogsRequest{
 								Cursor: rsp.Cursor.Previous,

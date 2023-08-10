@@ -14,25 +14,25 @@ class DeleteConfigResponse
 	
     public string $contentType;
     
-    /**
-     * Error
-     * 
-     * @var ?\formance\stack\Models\Shared\ErrorResponse $errorResponse
-     */
-	
-    public ?\formance\stack\Models\Shared\ErrorResponse $errorResponse = null;
-    
 	
     public int $statusCode;
     
 	
     public ?\Psr\Http\Message\ResponseInterface $rawResponse = null;
     
+    /**
+     * Error
+     * 
+     * @var ?\formance\stack\Models\Shared\WebhooksErrorResponse $webhooksErrorResponse
+     */
+	
+    public ?\formance\stack\Models\Shared\WebhooksErrorResponse $webhooksErrorResponse = null;
+    
 	public function __construct()
 	{
 		$this->contentType = "";
-		$this->errorResponse = null;
 		$this->statusCode = 0;
 		$this->rawResponse = null;
+		$this->webhooksErrorResponse = null;
 	}
 }

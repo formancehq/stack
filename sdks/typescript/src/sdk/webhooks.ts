@@ -91,9 +91,9 @@ export class Webhooks {
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.webhooksErrorResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.WebhooksErrorResponse
           );
         }
         break;
@@ -181,9 +181,9 @@ export class Webhooks {
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.webhooksErrorResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.WebhooksErrorResponse
           );
         }
         break;
@@ -252,9 +252,9 @@ export class Webhooks {
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.webhooksErrorResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.WebhooksErrorResponse
           );
         }
         break;
@@ -317,9 +317,9 @@ export class Webhooks {
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.webhooksErrorResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.WebhooksErrorResponse
           );
         }
         break;
@@ -385,9 +385,9 @@ export class Webhooks {
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.webhooksErrorResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.WebhooksErrorResponse
           );
         }
         break;
@@ -478,9 +478,9 @@ export class Webhooks {
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.webhooksErrorResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.WebhooksErrorResponse
           );
         }
         break;
@@ -549,9 +549,9 @@ export class Webhooks {
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.webhooksErrorResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.WebhooksErrorResponse
           );
         }
         break;

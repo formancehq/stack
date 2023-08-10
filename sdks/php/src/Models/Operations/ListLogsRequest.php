@@ -12,6 +12,14 @@ use \formance\stack\Utils\SpeakeasyMetadata;
 class ListLogsRequest
 {
     /**
+     * Pagination cursor, will return the logs after a given ID. (in descending order).
+     * 
+     * @var ?string $after
+     */
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=after')]
+    public ?string $after = null;
+    
+    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * 
      * Set to the value of next for the next page of results.
@@ -66,6 +74,7 @@ class ListLogsRequest
     
 	public function __construct()
 	{
+		$this->after = null;
 		$this->cursor = null;
 		$this->endTime = null;
 		$this->ledger = "";

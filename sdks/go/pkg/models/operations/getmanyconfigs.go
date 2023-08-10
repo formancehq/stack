@@ -18,8 +18,8 @@ type GetManyConfigsResponse struct {
 	// OK
 	ConfigsResponse *shared.ConfigsResponse
 	ContentType     string
+	StatusCode      int
+	RawResponse     *http.Response
 	// Error
-	ErrorResponse *shared.ErrorResponse
-	StatusCode    int
-	RawResponse   *http.Response
+	WebhooksErrorResponse *shared.WebhooksErrorResponse
 }

@@ -6,6 +6,21 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
+/**
+ * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
+ *
+ * @remarks
+ *
+ */
+export enum ListAccountsBalanceOperator {
+  Gte = "gte",
+  Lte = "lte",
+  Gt = "gt",
+  Lt = "lt",
+  E = "e",
+  Ne = "ne",
+}
+
 export class ListAccountsRequest extends SpeakeasyBase {
   /**
    * Filter accounts by address pattern (regular expression placed between ^ and $).
@@ -14,6 +29,31 @@ export class ListAccountsRequest extends SpeakeasyBase {
     data: "queryParam, style=form;explode=true;name=address",
   })
   address?: string;
+
+  /**
+   * Pagination cursor, will return accounts after given address, in descending order.
+   */
+  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=after" })
+  after?: string;
+
+  /**
+   * Filter accounts by their balance (default operator is gte)
+   */
+  @SpeakeasyMetadata({
+    data: "queryParam, style=form;explode=true;name=balance",
+  })
+  balance?: number;
+
+  /**
+   * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
+   *
+   * @remarks
+   *
+   */
+  @SpeakeasyMetadata({
+    data: "queryParam, style=form;explode=true;name=balanceOperator",
+  })
+  balanceOperator?: ListAccountsBalanceOperator;
 
   /**
    * Parameter used in pagination requests. Maximum page size is set to 15.
@@ -38,12 +78,12 @@ export class ListAccountsRequest extends SpeakeasyBase {
   ledger: string;
 
   /**
-   * Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
+   * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
    */
   @SpeakeasyMetadata({
     data: "queryParam, style=deepObject;explode=true;name=metadata",
   })
-  metadata?: Record<string, string>;
+  metadata?: Record<string, any>;
 
   /**
    * The maximum number of results to return per page.

@@ -4,15 +4,12 @@
 
 package com.formance.formance_sdk.models.shared;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * ConfigInfoResponse - OK
  */
 public class ConfigInfoResponse {
-    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")
     public ConfigInfo data;
 
@@ -21,5 +18,7 @@ public class ConfigInfoResponse {
         return this;
     }
     
-    public ConfigInfoResponse(){}
+    public ConfigInfoResponse(@JsonProperty("data") ConfigInfo data) {
+        this.data = data;
+  }
 }

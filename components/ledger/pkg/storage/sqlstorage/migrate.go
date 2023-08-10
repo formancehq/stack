@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/opentelemetry"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
 )
 

@@ -54,7 +54,7 @@ type TransactionsCursorResponse struct {
 }
 
 type CreateTransactionResponse struct {
-	Data Transaction `json:"data"`
+	Data []Transaction `json:"data"`
 }
 
 type PostTransactionScript struct {
@@ -67,7 +67,7 @@ type PostTransaction struct {
 	Postings  []Posting              `json:"postings,omitempty"`
 	Script    *PostTransactionScript `json:"script,omitempty"`
 	Reference *string                `json:"reference,omitempty"`
-	Metadata  map[string]string      `json:"metadata"`
+	Metadata  map[string]any         `json:"metadata"`
 }
 
 type AccountsCursorResponseCursor struct {
@@ -99,7 +99,7 @@ type AccountsCursorResponse struct {
 }
 
 type Ledger interface {
-	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error
+	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]any) error
 	GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error)
 	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error)
 	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*TransactionsCursorResponseCursor, error)
@@ -146,7 +146,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, quer
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s", *errorResponse.ErrorMessage)
 	}
 
 	ret := &TransactionsCursorResponse{}
@@ -181,7 +181,7 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s", *errorResponse.ErrorMessage)
 	}
 
 	// TODO(gfyrag): Remove when ledger v2 will be released
@@ -194,21 +194,14 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 		return nil, err
 	}
 
-	v1 := &v1Response{}
-	if err := json.Unmarshal(data, v1); err != nil {
-		v2 := &CreateTransactionResponse{}
-		if err := json.Unmarshal(data, v2); err != nil {
-			return nil, err
-		}
-		return v2, nil
+	rsp := &CreateTransactionResponse{}
+	if err := json.Unmarshal(data, rsp); err != nil {
+		return nil, err
 	}
-
-	return &CreateTransactionResponse{
-		Data: v1.Data[0],
-	}, nil
+	return rsp, nil
 }
 
-func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
+func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]any) error {
 
 	data, err := json.Marshal(metadata)
 	if err != nil {
@@ -232,7 +225,7 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
-		return fmt.Errorf("%s", errorResponse.ErrorMessage)
+		return fmt.Errorf("%s", *errorResponse.ErrorMessage)
 	}
 
 	return err
@@ -256,7 +249,7 @@ func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s", *errorResponse.ErrorMessage)
 	}
 
 	type accountResponse struct {
@@ -303,7 +296,7 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query Li
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s", *errorResponse.ErrorMessage)
 	}
 
 	ret := &AccountsCursorResponse{}

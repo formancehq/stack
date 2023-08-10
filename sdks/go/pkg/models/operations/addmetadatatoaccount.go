@@ -8,20 +8,14 @@ import (
 )
 
 type AddMetadataToAccountRequest struct {
-	// Use an idempotency key
-	IdempotencyKey *string `header:"style=simple,explode=false,name=Idempotency-Key"`
 	// metadata
-	RequestBody map[string]string `request:"mediaType=application/json"`
+	RequestBody map[string]interface{} `request:"mediaType=application/json"`
 	// Exact address of the account. It must match the following regular expressions pattern:
 	// ```
 	// ^\w+(:\w+)*$
 	// ```
 	//
 	Address string `pathParam:"style=simple,explode=false,name=address"`
-	// Set async mode.
-	Async *bool `queryParam:"style=form,explode=true,name=async"`
-	// Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
-	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }

@@ -11,12 +11,17 @@ namespace formance\stack\Models\Shared;
 
 class ActivityCreateTransactionOutput
 {
+    /**
+     * $data
+     * 
+     * @var array<\formance\stack\Models\Shared\Transaction> $data
+     */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\Transaction')]
-    public Transaction $data;
+    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\Transaction>')]
+    public array $data;
     
 	public function __construct()
 	{
-		$this->data = new \formance\stack\Models\Shared\Transaction();
+		$this->data = [];
 	}
 }

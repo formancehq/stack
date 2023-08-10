@@ -16,6 +16,12 @@ export class ListTransactionsRequest extends SpeakeasyBase {
   account?: string;
 
   /**
+   * Pagination cursor, will return transactions after given txid (in descending order).
+   */
+  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=after" })
+  after?: string;
+
+  /**
    * Parameter used in pagination requests. Maximum page size is set to 15.
    *
    * @remarks
@@ -63,7 +69,7 @@ export class ListTransactionsRequest extends SpeakeasyBase {
   @SpeakeasyMetadata({
     data: "queryParam, style=deepObject;explode=true;name=metadata",
   })
-  metadata?: Record<string, string>;
+  metadata?: Record<string, any>;
 
   /**
    * The maximum number of results to return per page.

@@ -15,14 +15,6 @@ class CreateTransactionResponse
     public string $contentType;
     
     /**
-     * OK
-     * 
-     * @var ?\formance\stack\Models\Shared\CreateTransactionResponse $createTransactionResponse
-     */
-	
-    public ?\formance\stack\Models\Shared\CreateTransactionResponse $createTransactionResponse = null;
-    
-    /**
      * Error
      * 
      * @var ?\formance\stack\Models\Shared\ErrorResponse $errorResponse
@@ -36,12 +28,20 @@ class CreateTransactionResponse
 	
     public ?\Psr\Http\Message\ResponseInterface $rawResponse = null;
     
+    /**
+     * OK
+     * 
+     * @var ?\formance\stack\Models\Shared\TransactionsResponse $transactionsResponse
+     */
+	
+    public ?\formance\stack\Models\Shared\TransactionsResponse $transactionsResponse = null;
+    
 	public function __construct()
 	{
 		$this->contentType = "";
-		$this->createTransactionResponse = null;
 		$this->errorResponse = null;
 		$this->statusCode = 0;
 		$this->rawResponse = null;
+		$this->transactionsResponse = null;
 	}
 }

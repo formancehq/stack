@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TransactionsCursorResponseCursor {
     @JsonProperty("data")
-    public ExpandedTransaction[] data;
+    public Transaction[] data;
 
-    public TransactionsCursorResponseCursor withData(ExpandedTransaction[] data) {
+    public TransactionsCursorResponseCursor withData(Transaction[] data) {
         this.data = data;
         return this;
     }
@@ -51,7 +51,7 @@ public class TransactionsCursorResponseCursor {
         return this;
     }
     
-    public TransactionsCursorResponseCursor(@JsonProperty("data") ExpandedTransaction[] data, @JsonProperty("hasMore") Boolean hasMore, @JsonProperty("pageSize") Long pageSize) {
+    public TransactionsCursorResponseCursor(@JsonProperty("data") Transaction[] data, @JsonProperty("hasMore") Boolean hasMore, @JsonProperty("pageSize") Long pageSize) {
         this.data = data;
         this.hasMore = hasMore;
         this.pageSize = pageSize;

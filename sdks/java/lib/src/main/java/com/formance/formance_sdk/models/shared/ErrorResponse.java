@@ -21,6 +21,7 @@ public class ErrorResponse {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("errorCode")
     public ErrorsEnum errorCode;
 
@@ -29,6 +30,7 @@ public class ErrorResponse {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("errorMessage")
     public String errorMessage;
 
@@ -37,8 +39,5 @@ public class ErrorResponse {
         return this;
     }
     
-    public ErrorResponse(@JsonProperty("errorCode") ErrorsEnum errorCode, @JsonProperty("errorMessage") String errorMessage) {
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-  }
+    public ErrorResponse(){}
 }

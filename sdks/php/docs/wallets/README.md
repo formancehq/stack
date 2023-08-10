@@ -44,7 +44,7 @@ try {
     $request->confirmHoldRequest = new ConfirmHoldRequest();
     $request->confirmHoldRequest->amount = 100;
     $request->confirmHoldRequest->final = true;
-    $request->holdId = 'labore';
+    $request->holdId = 'eum';
 
     $response = $sdk->wallets->confirmHold($request);
 
@@ -79,10 +79,10 @@ $sdk = SDK::builder()
 try {
     $request = new CreateBalanceRequest();
     $request->createBalanceRequest = new CreateBalanceRequest();
-    $request->createBalanceRequest->expiresAt = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-08-14T00:52:14.624Z');
-    $request->createBalanceRequest->name = 'Robin Keebler';
-    $request->createBalanceRequest->priority = 102863;
-    $request->id = '41959890-afa5-463e-a516-fe4c8b711e5b';
+    $request->createBalanceRequest->expiresAt = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-08-05T15:44:28.456Z');
+    $request->createBalanceRequest->name = 'Danielle Bosco';
+    $request->createBalanceRequest->priority = 590873;
+    $request->id = '890afa56-3e25-416f-a4c8-b711e5b7fd2e';
 
     $response = $sdk->wallets->createBalance($request);
 
@@ -116,10 +116,12 @@ $sdk = SDK::builder()
 try {
     $request = new CreateWalletRequest();
     $request->metadata = [
-        'repellat' => 'quibusdam',
-        'sed' => 'saepe',
+        'accusantium' => 'consequuntur',
+        'praesentium' => 'natus',
+        'magni' => 'sunt',
+        'quo' => 'illum',
     ];
-    $request->name = 'Edward Crooks';
+    $request->name = 'Simon Jenkins';
 
     $response = $sdk->wallets->createWallet($request);
 
@@ -156,22 +158,20 @@ try {
     $request = new CreditWalletRequest();
     $request->creditWalletRequest = new CreditWalletRequest();
     $request->creditWalletRequest->amount = new Monetary();
-    $request->creditWalletRequest->amount->amount = 166847;
-    $request->creditWalletRequest->amount->asset = 'sunt';
-    $request->creditWalletRequest->balance = 'quo';
+    $request->creditWalletRequest->amount->amount = 407183;
+    $request->creditWalletRequest->amount->asset = 'accusantium';
+    $request->creditWalletRequest->balance = 'ab';
     $request->creditWalletRequest->metadata = [
-        'pariatur' => 'maxime',
-        'ea' => 'excepturi',
-        'odit' => 'ea',
-        'accusantium' => 'ab',
+        'quidem' => 'ipsam',
+        'voluptate' => 'autem',
+        'nam' => 'eaque',
+        'pariatur' => 'nemo',
     ];
-    $request->creditWalletRequest->reference = 'maiores';
+    $request->creditWalletRequest->reference = 'voluptatibus';
     $request->creditWalletRequest->sources = [
-        new LedgerAccountSubject(),
-        new LedgerAccountSubject(),
-        new LedgerAccountSubject(),
+        new WalletSubject(),
     ];
-    $request->id = 'b0d5f0d3-0c5f-4bb2-9870-53202c73d5fe';
+    $request->id = '30c5fbb2-5870-4532-82c7-3d5fe9b90c28';
 
     $response = $sdk->wallets->creditWallet($request);
 
@@ -208,23 +208,24 @@ try {
     $request = new DebitWalletRequest();
     $request->debitWalletRequest = new DebitWalletRequest();
     $request->debitWalletRequest->amount = new Monetary();
-    $request->debitWalletRequest->amount->amount = 608253;
-    $request->debitWalletRequest->amount->asset = 'facilis';
+    $request->debitWalletRequest->amount->amount = 621479;
+    $request->debitWalletRequest->amount->asset = 'eaque';
     $request->debitWalletRequest->balances = [
-        'voluptatem',
-        'porro',
-        'consequuntur',
+        'rerum',
+        'adipisci',
+        'asperiores',
     ];
-    $request->debitWalletRequest->description = 'blanditiis';
-    $request->debitWalletRequest->destination = new WalletSubject();
-    $request->debitWalletRequest->destination->balance = 'eaque';
-    $request->debitWalletRequest->destination->identifier = 'occaecati';
-    $request->debitWalletRequest->destination->type = 'rerum';
+    $request->debitWalletRequest->description = 'earum';
+    $request->debitWalletRequest->destination = new LedgerAccountSubject();
+    $request->debitWalletRequest->destination->identifier = 'iste';
+    $request->debitWalletRequest->destination->type = 'dolorum';
     $request->debitWalletRequest->metadata = [
-        'asperiores' => 'earum',
+        'pariatur' => 'provident',
+        'nobis' => 'libero',
+        'delectus' => 'quaerat',
     ];
     $request->debitWalletRequest->pending = false;
-    $request->id = '49a8d9cb-f486-4333-a3f9-b77f3a410067';
+    $request->id = '8633323f-9b77-4f3a-8100-674ebf69280d';
 
     $response = $sdk->wallets->debitWallet($request);
 
@@ -257,8 +258,8 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetBalanceRequest();
-    $request->balanceName = 'quaerat';
-    $request->id = 'ebf69280-d1ba-477a-89eb-f737ae4203ce';
+    $request->balanceName = 'ab';
+    $request->id = 'ba77a89e-bf73-47ae-8203-ce5e6a95d8a0';
 
     $response = $sdk->wallets->getBalance($request);
 
@@ -291,7 +292,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetHoldRequest();
-    $request->holdID = 'ad';
+    $request->holdID = 'at';
 
     $response = $sdk->wallets->getHold($request);
 
@@ -326,13 +327,11 @@ try {
     $request = new GetHoldsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
     $request->metadata = [
-        'suscipit' => 'deserunt',
-        'provident' => 'minima',
-        'repellendus' => 'totam',
-        'similique' => 'alias',
+        'tempora' => 'vel',
+        'quod' => 'officiis',
     ];
-    $request->pageSize = 872651;
-    $request->walletID = 'quaerat';
+    $request->pageSize = 185636;
+    $request->walletID = 'dolorum';
 
     $response = $sdk->wallets->getHolds($request);
 
@@ -364,8 +363,8 @@ $sdk = SDK::builder()
 try {
     $request = new GetTransactionsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 273542;
-    $request->walletID = 'vel';
+    $request->pageSize = 952792;
+    $request->walletID = 'esse';
 
     $response = $sdk->wallets->getTransactions($request);
 
@@ -398,7 +397,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetWalletRequest();
-    $request->id = 'ce2af7a7-3cf3-4be4-93f8-70b326b5a734';
+    $request->id = 'a73cf3be-453f-4870-b326-b5a73429cdb1';
 
     $response = $sdk->wallets->getWallet($request);
 
@@ -431,7 +430,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetWalletSummaryRequest();
-    $request->id = '29cdb1a8-422b-4b67-9d23-22715bf0cbb1';
+    $request->id = 'a8422bb6-79d2-4322-b15b-f0cbb1e31b8b';
 
     $response = $sdk->wallets->getWalletSummary($request);
 
@@ -464,7 +463,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new ListBalancesRequest();
-    $request->id = 'e31b8b90-f344-43a1-908e-0adcf4b92187';
+    $request->id = '90f3443a-1108-4e0a-9cf4-b921879fce95';
 
     $response = $sdk->wallets->listBalances($request);
 
@@ -499,12 +498,10 @@ try {
     $request = new ListWalletsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
     $request->metadata = [
-        'voluptatibus' => 'quisquam',
-        'vero' => 'omnis',
-        'quis' => 'ipsum',
+        'delectus' => 'voluptate',
     ];
-    $request->name = 'Karl Feeney';
-    $request->pageSize = 492268;
+    $request->name = 'Meghan Wiegand';
+    $request->pageSize = 715561;
 
     $response = $sdk->wallets->listWallets($request);
 
@@ -540,12 +537,12 @@ try {
     $request = new UpdateWalletRequest();
     $request->requestBody = new UpdateWalletRequestBody();
     $request->requestBody->metadata = [
-        'distinctio' => 'quod',
         'odio' => 'similique',
         'facilis' => 'vero',
         'ducimus' => 'dolore',
+        'quibusdam' => 'illum',
     ];
-    $request->id = 'dd39c0f5-d2cf-4f7c-b0a4-5626d436813f';
+    $request->id = '39c0f5d2-cff7-4c70-a456-26d436813f16';
 
     $response = $sdk->wallets->updateWallet($request);
 
@@ -578,7 +575,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new VoidHoldRequest();
-    $request->holdId = 'quasi';
+    $request->holdId = 'nulla';
 
     $response = $sdk->wallets->voidHold($request);
 

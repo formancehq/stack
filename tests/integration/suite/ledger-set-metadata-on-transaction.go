@@ -15,15 +15,15 @@ var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger", func() {
 		var (
 			timestamp = time.Now().Round(time.Second).UTC()
-			rsp       *shared.CreateTransactionResponse
+			rsp       *shared.TransactionsResponse
 		)
 		BeforeEach(func() {
 			// Create a transaction
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),
@@ -40,25 +40,25 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			rsp = response.CreateTransactionResponse
+			rsp = response.TransactionsResponse
 
 			// Check existence on api
-			getResponse, err := Client().Ledger.GetTransaction(
+			getResponse, err := Client().Transactions.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
-					Txid:   rsp.Data.Txid,
+					Txid:   rsp.Data[0].Txid,
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(getResponse.StatusCode).To(Equal(200))
 		})
 		It("should fail if the transaction does not exist", func() {
-			metadata := map[string]string{
+			metadata := map[string]any{
 				"foo": "bar",
 			}
 
-			response, err := Client().Ledger.AddMetadataOnTransaction(
+			response, err := Client().Transactions.AddMetadataOnTransaction(
 				TestContext(),
 				operations.AddMetadataOnTransactionRequest{
 					RequestBody: metadata,
@@ -70,16 +70,16 @@ var _ = Given("some empty environment", func() {
 			Expect(response.StatusCode).To(Equal(404))
 		})
 		Then("adding a metadata", func() {
-			metadata := map[string]string{
+			metadata := map[string]any{
 				"foo": "bar",
 			}
 			BeforeEach(func() {
-				response, err := Client().Ledger.AddMetadataOnTransaction(
+				response, err := Client().Transactions.AddMetadataOnTransaction(
 					TestContext(),
 					operations.AddMetadataOnTransactionRequest{
 						RequestBody: metadata,
 						Ledger:      "default",
-						Txid:        rsp.Data.Txid,
+						Txid:        rsp.Data[0].Txid,
 					},
 				)
 				Expect(err).To(Succeed())
@@ -87,17 +87,17 @@ var _ = Given("some empty environment", func() {
 			})
 			It("should eventually be available on api", func() {
 				// Check existence on api
-				response, err := Client().Ledger.GetTransaction(
+				response, err := Client().Transactions.GetTransaction(
 					TestContext(),
 					operations.GetTransactionRequest{
 						Ledger: "default",
-						Txid:   rsp.Data.Txid,
+						Txid:   rsp.Data[0].Txid,
 					},
 				)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				Expect(response.GetTransactionResponse.Data.Metadata).Should(Equal(metadata))
+				Expect(response.TransactionResponse.Data.Metadata).Should(Equal(metadata))
 			})
 		})
 	})

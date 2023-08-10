@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/lib/pq"
 )
 
@@ -234,7 +235,5 @@ func (s *Store) GetBalances(ctx context.Context, q ledger.BalancesQuery) (api.Cu
 		Previous:           previous,
 		Next:               next,
 		Data:               accounts,
-		PageSizeDeprecated: int(q.PageSize),
-		HasMoreDeprecated:  &hasMore,
 	}, nil
 }

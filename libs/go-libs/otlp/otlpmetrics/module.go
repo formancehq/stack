@@ -60,7 +60,6 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 	options := make([]fx.Option, 0)
 	options = append(options,
 		fx.Supply(cfg),
-		otlp.LoadResource(cfg.ServiceName, cfg.ResourceAttributes),
 		fx.Decorate(fx.Annotate(func(mp *sdkmetric.MeterProvider) metric.MeterProvider { return mp }, fx.As(new(metric.MeterProvider)))),
 		fx.Provide(fx.Annotate(func(options ...sdkmetric.Option) *sdkmetric.MeterProvider {
 			return sdkmetric.NewMeterProvider(options...)

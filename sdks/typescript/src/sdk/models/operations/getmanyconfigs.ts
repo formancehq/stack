@@ -32,15 +32,15 @@ export class GetManyConfigsResponse extends SpeakeasyBase {
   @SpeakeasyMetadata()
   contentType: string;
 
-  /**
-   * Error
-   */
-  @SpeakeasyMetadata()
-  errorResponse?: shared.ErrorResponse;
-
   @SpeakeasyMetadata()
   statusCode: number;
 
   @SpeakeasyMetadata()
   rawResponse?: AxiosResponse;
+
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  webhooksErrorResponse?: shared.WebhooksErrorResponse;
 }

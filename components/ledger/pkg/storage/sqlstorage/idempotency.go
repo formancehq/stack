@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/formancehq/ledger/pkg/api/idempotency"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
 )
 

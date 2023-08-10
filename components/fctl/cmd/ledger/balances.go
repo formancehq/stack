@@ -68,7 +68,7 @@ func (c *BalancesController) Run(cmd *cobra.Command, args []string) (fctl.Render
 		return nil, err
 	}
 
-	response, err := client.Ledger.GetBalances(
+	response, err := client.Balances.GetBalances(
 		cmd.Context(),
 		operations.GetBalancesRequest{
 			Address: fctl.Ptr(fctl.GetString(cmd, c.addressFlag)),
@@ -80,7 +80,7 @@ func (c *BalancesController) Run(cmd *cobra.Command, args []string) (fctl.Render
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

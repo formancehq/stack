@@ -14,10 +14,10 @@ class TransactionsCursorResponseCursor
     /**
      * $data
      * 
-     * @var array<\formance\stack\Models\Shared\ExpandedTransaction> $data
+     * @var array<\formance\stack\Models\Shared\Transaction> $data
      */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\ExpandedTransaction>')]
+    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\Transaction>')]
     public array $data;
     
 	#[\JMS\Serializer\Annotation\SerializedName('hasMore')]

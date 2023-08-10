@@ -7,7 +7,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -21,16 +20,16 @@ var _ = Given("some empty environment", func() {
 	When(fmt.Sprintf("creating %d transactions", txCount), func() {
 		var (
 			timestamp    = time.Now().Round(time.Second).UTC()
-			transactions []shared.ExpandedTransaction
+			transactions []shared.Transaction
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(txCount); i++ {
-				response, err := Client().Ledger.CreateTransaction(
+				response, err := Client().Transactions.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						IdempotencyKey: new(string),
 						PostTransaction: shared.PostTransaction{
-							Metadata: map[string]string{},
+							Metadata: map[string]any{},
 							Postings: []shared.Posting{
 								{
 									Amount:      big.NewInt(100),
@@ -47,14 +46,14 @@ var _ = Given("some empty environment", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				ret := response.CreateTransactionResponse
-				transactions = append([]shared.ExpandedTransaction{
+				ret := response.TransactionsResponse
+				transactions = append([]shared.Transaction{
 					{
-						Timestamp: ret.Data.Timestamp,
-						Postings:  ret.Data.Postings,
-						Reference: ret.Data.Reference,
-						Metadata:  ret.Data.Metadata,
-						Txid:      ret.Data.Txid,
+						Timestamp: ret.Data[0].Timestamp,
+						Postings:  ret.Data[0].Postings,
+						Reference: ret.Data[0].Reference,
+						Metadata:  ret.Data[0].Metadata,
+						Txid:      ret.Data[0].Txid,
 						PreCommitVolumes: map[string]map[string]shared.Volume{
 							"world": {
 								"USD": {
@@ -99,7 +98,7 @@ var _ = Given("some empty environment", func() {
 				rsp *shared.TransactionsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.ListTransactions(
+				response, err := Client().Transactions.ListTransactions(
 					TestContext(),
 					operations.ListTransactionsRequest{
 						Ledger:   "default",
@@ -120,7 +119,7 @@ var _ = Given("some empty environment", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.ListTransactions(
+					response, err := Client().Transactions.ListTransactions(
 						TestContext(),
 						operations.ListTransactionsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -139,7 +138,7 @@ var _ = Given("some empty environment", func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.ListTransactions(
+						response, err := Client().Transactions.ListTransactions(
 							TestContext(),
 							operations.ListTransactionsRequest{
 								Cursor: rsp.Cursor.Previous,
@@ -168,19 +167,19 @@ var _ = Given("some empty environment", func() {
 		timestamp2 = time.Date(2023, 4, 11, 10, 0, 0, 0, time.UTC)
 		timestamp3 = time.Date(2023, 4, 12, 10, 0, 0, 0, time.UTC)
 
-		m1 = metadata.Metadata{
+		m1 = map[string]any{
 			"foo": "bar",
 		}
 	)
 
 	var (
-		t1 shared.ExpandedTransaction
-		t2 shared.ExpandedTransaction
-		t3 shared.ExpandedTransaction
+		t1 shared.Transaction
+		t2 shared.Transaction
+		t3 shared.Transaction
 	)
 	When("creating transactions", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -201,13 +200,13 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			ret := response.CreateTransactionResponse
-			t1 = shared.ExpandedTransaction{
-				Timestamp: ret.Data.Timestamp,
-				Postings:  ret.Data.Postings,
-				Reference: ret.Data.Reference,
-				Metadata:  ret.Data.Metadata,
-				Txid:      ret.Data.Txid,
+			ret := response.TransactionsResponse
+			t1 = shared.Transaction{
+				Timestamp: ret.Data[0].Timestamp,
+				Postings:  ret.Data[0].Postings,
+				Reference: ret.Data[0].Reference,
+				Metadata:  ret.Data[0].Metadata,
+				Txid:      ret.Data[0].Txid,
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
@@ -242,7 +241,7 @@ var _ = Given("some empty environment", func() {
 				},
 			}
 
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -263,13 +262,13 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			ret = response.CreateTransactionResponse
-			t2 = shared.ExpandedTransaction{
-				Timestamp: ret.Data.Timestamp,
-				Postings:  ret.Data.Postings,
-				Reference: ret.Data.Reference,
-				Metadata:  ret.Data.Metadata,
-				Txid:      ret.Data.Txid,
+			ret = response.TransactionsResponse
+			t2 = shared.Transaction{
+				Timestamp: ret.Data[0].Timestamp,
+				Postings:  ret.Data[0].Postings,
+				Reference: ret.Data[0].Reference,
+				Metadata:  ret.Data[0].Metadata,
+				Txid:      ret.Data[0].Txid,
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
@@ -304,11 +303,11 @@ var _ = Given("some empty environment", func() {
 				},
 			}
 
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),
@@ -325,13 +324,13 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			ret = response.CreateTransactionResponse
-			t3 = shared.ExpandedTransaction{
-				Timestamp: ret.Data.Timestamp,
-				Postings:  ret.Data.Postings,
-				Reference: ret.Data.Reference,
-				Metadata:  ret.Data.Metadata,
-				Txid:      ret.Data.Txid,
+			ret = response.TransactionsResponse
+			t3 = shared.Transaction{
+				Timestamp: ret.Data[0].Timestamp,
+				Postings:  ret.Data[0].Postings,
+				Reference: ret.Data[0].Reference,
+				Metadata:  ret.Data[0].Metadata,
+				Txid:      ret.Data[0].Txid,
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
@@ -367,30 +366,30 @@ var _ = Given("some empty environment", func() {
 			}
 		})
 		It("should be countable on api", func() {
-			response, err := Client().Ledger.CountTransactions(
+			response, err := Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:  "default",
-					Account: ptr("foo:"),
+					Account: ptr("foo:*"),
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:  "default",
@@ -398,23 +397,23 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:      "default",
-					Destination: ptr(":baz"),
+					Destination: ptr("*:baz"),
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("1"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:      "default",
@@ -422,23 +421,23 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
-					Source: ptr("foo:"),
+					Source: ptr("foo:*"),
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -446,39 +445,39 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
-					Metadata: map[string]string{
+					Metadata: map[string]any{
 						"foo": "bar",
 					},
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("2"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
-					Metadata: map[string]string{
+					Metadata: map[string]any{
 						"foo": "not_existing",
 					},
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:    "default",
@@ -486,11 +485,11 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("2"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:    "default",
@@ -498,11 +497,11 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("1"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:    "default",
@@ -510,11 +509,11 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:  "default",
@@ -522,11 +521,11 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("2"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:  "default",
@@ -534,11 +533,11 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("1"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger:  "default",
@@ -546,12 +545,12 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api", func() {
-			response, err := Client().Ledger.ListTransactions(
+			response, err := Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -565,10 +564,10 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
-					Account: ptr("foo:"),
+					Account: ptr("foo:*"),
 					Ledger:  "default",
 				},
 			)
@@ -580,7 +579,7 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Account: ptr("not_existing"),
@@ -592,10 +591,10 @@ var _ = Given("some empty environment", func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
-					Destination: ptr("foo:"),
+					Destination: ptr("foo:*"),
 					Ledger:      "default",
 				},
 			)
@@ -607,7 +606,7 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Destination: ptr("not_existing"),
@@ -619,7 +618,7 @@ var _ = Given("some empty environment", func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Source: ptr("foo:"),
@@ -631,7 +630,7 @@ var _ = Given("some empty environment", func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Source: ptr("world"),
@@ -646,11 +645,11 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
-					Metadata: map[string]string{
+					Metadata: map[string]any{
 						"foo": "bar",
 					},
 				},
@@ -662,11 +661,11 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
-					Metadata: map[string]string{
+					Metadata: map[string]any{
 						"foo": "not_existing",
 					},
 				},
@@ -676,7 +675,7 @@ var _ = Given("some empty environment", func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger:    "default",
@@ -690,7 +689,7 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t3))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger:    "default",
@@ -703,7 +702,7 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(1))
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t3))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger:    "default",
@@ -715,7 +714,7 @@ var _ = Given("some empty environment", func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger:  "default",
@@ -729,7 +728,7 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger:  "default",
@@ -742,7 +741,7 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(1))
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger:  "default",
@@ -755,7 +754,7 @@ var _ = Given("some empty environment", func() {
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(0))
 		})
 		It("should be getable on api", func() {
-			response, err := Client().Ledger.GetTransaction(
+			response, err := Client().Transactions.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -764,9 +763,9 @@ var _ = Given("some empty environment", func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
-			Expect(response.GetTransactionResponse.Data).Should(Equal(t1))
+			Expect(response.TransactionResponse.Data).Should(Equal(t1))
 
-			response, err = Client().Ledger.GetTransaction(
+			response, err = Client().Transactions.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -775,9 +774,9 @@ var _ = Given("some empty environment", func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
-			Expect(response.GetTransactionResponse.Data).Should(Equal(t2))
+			Expect(response.TransactionResponse.Data).Should(Equal(t2))
 
-			response, err = Client().Ledger.GetTransaction(
+			response, err = Client().Transactions.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -786,9 +785,9 @@ var _ = Given("some empty environment", func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
-			Expect(response.GetTransactionResponse.Data).Should(Equal(t3))
+			Expect(response.TransactionResponse.Data).Should(Equal(t3))
 
-			response, err = Client().Ledger.GetTransaction(
+			response, err = Client().Transactions.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -804,19 +803,19 @@ var _ = Given("some empty environment", func() {
 var _ = Given("some empty environment", func() {
 	When("counting and listing transactions empty", func() {
 		It("should be countable on api even if empty", func() {
-			response, err := Client().Ledger.CountTransactions(
+			response, err := Client().Transactions.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api even if empty", func() {
-			response, err := Client().Ledger.ListTransactions(
+			response, err := Client().Transactions.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",

@@ -14,8 +14,8 @@ type DeleteConfigRequest struct {
 
 type DeleteConfigResponse struct {
 	ContentType string
+	StatusCode  int
+	RawResponse *http.Response
 	// Error
-	ErrorResponse *shared.ErrorResponse
-	StatusCode    int
-	RawResponse   *http.Response
+	WebhooksErrorResponse *shared.WebhooksErrorResponse
 }

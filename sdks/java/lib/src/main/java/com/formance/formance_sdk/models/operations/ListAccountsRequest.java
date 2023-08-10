@@ -20,6 +20,40 @@ public class ListAccountsRequest {
     }
     
     /**
+     * Pagination cursor, will return accounts after given address, in descending order.
+     */
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=after")
+    public String after;
+
+    public ListAccountsRequest withAfter(String after) {
+        this.after = after;
+        return this;
+    }
+    
+    /**
+     * Filter accounts by their balance (default operator is gte)
+     */
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=balance")
+    public Long balance;
+
+    public ListAccountsRequest withBalance(Long balance) {
+        this.balance = balance;
+        return this;
+    }
+    
+    /**
+     * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
+     * 
+     */
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=balanceOperator")
+    public ListAccountsBalanceOperator balanceOperator;
+
+    public ListAccountsRequest withBalanceOperator(ListAccountsBalanceOperator balanceOperator) {
+        this.balanceOperator = balanceOperator;
+        return this;
+    }
+    
+    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * Set to the value of next for the next page of results.
      * Set to the value of previous for the previous page of results.
@@ -46,12 +80,12 @@ public class ListAccountsRequest {
     }
     
     /**
-     * Filter accounts by metadata key value pairs. Nested objects can be used like this -&gt; metadata[key]=value1&amp;metadata[a.nested.key]=value2
+     * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
     @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
-    public java.util.Map<String, String> metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public ListAccountsRequest withMetadata(java.util.Map<String, String> metadata) {
+    public ListAccountsRequest withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }

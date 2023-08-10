@@ -147,12 +147,11 @@ var (
 								Source:      "world",
 							}},
 							Reference: ptrString(paymentAccountName("payment1")),
-							Metadata:  metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -167,14 +166,14 @@ var (
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -266,12 +265,11 @@ var (
 								Source:      "world",
 							}},
 							Reference: ptrString(paymentAccountName("payment1")),
-							Metadata:  metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -286,14 +284,14 @@ var (
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -308,14 +306,14 @@ var (
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -367,7 +365,6 @@ var (
 								Source:      "world",
 							}},
 							Reference: ptrString(paymentAccountName("payment1")),
-							Metadata:  metadata.Metadata{},
 						},
 					},
 				},
@@ -385,14 +382,14 @@ var (
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -407,14 +404,14 @@ var (
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -448,12 +445,11 @@ var (
 								Destination: "bar",
 								Source:      "foo",
 							}},
-							Metadata: metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -487,14 +483,14 @@ var (
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -509,14 +505,14 @@ var (
 								Destination: "account2",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -614,14 +610,14 @@ var (
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -678,7 +674,7 @@ var (
 				Returns: []any{&shared.AccountResponse{
 					Data: shared.AccountWithVolumesAndBalances{
 						Address: "foo",
-						Metadata: metadata.Metadata{
+						Metadata: map[string]any{
 							"stripeConnectID": "abcd",
 						},
 					},
@@ -707,12 +703,11 @@ var (
 								Destination: "world",
 								Source:      "foo",
 							}},
-							Metadata: metadata.Metadata{},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -834,14 +829,14 @@ var (
 								Destination: "account",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -1074,8 +1069,4 @@ func TestSend(t *testing.T) {
 
 func ptrString(s string) *string {
 	return &s
-}
-
-func ptrInt64(i int64) *int64 {
-	return &i
 }

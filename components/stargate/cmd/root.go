@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -77,6 +78,8 @@ func NewRootCommand() *cobra.Command {
 	}
 
 	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
+
+	otlp.InitOTLPFlags(root.PersistentFlags())
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
 	otlpmetrics.InitOTLPMetricsFlags(root.PersistentFlags())
 

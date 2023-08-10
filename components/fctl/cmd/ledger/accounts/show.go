@@ -66,7 +66,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.GetAccount(cmd.Context(), operations.GetAccountRequest{
+	response, err := ledgerClient.Accounts.GetAccount(cmd.Context(), operations.GetAccountRequest{
 		Address: args[0],
 		Ledger:  ledger,
 	})
@@ -75,7 +75,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
@@ -110,5 +110,5 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 
 	fmt.Fprintln(cmd.OutOrStdout())
 
-	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.Account.Metadata)
+	return fctl.PrintLedgerMetadata(cmd.OutOrStdout(), c.store.Account.Metadata)
 }

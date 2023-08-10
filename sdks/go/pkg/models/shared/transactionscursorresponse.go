@@ -3,11 +3,11 @@
 package shared
 
 type TransactionsCursorResponseCursor struct {
-	Data     []ExpandedTransaction `json:"data"`
-	HasMore  bool                  `json:"hasMore"`
-	Next     *string               `json:"next,omitempty"`
-	PageSize int64                 `json:"pageSize"`
-	Previous *string               `json:"previous,omitempty"`
+	Data     []Transaction `json:"data"`
+	HasMore  bool          `json:"hasMore"`
+	Next     *string       `json:"next,omitempty"`
+	PageSize int64         `json:"pageSize"`
+	Previous *string       `json:"previous,omitempty"`
 }
 
 // TransactionsCursorResponse - OK

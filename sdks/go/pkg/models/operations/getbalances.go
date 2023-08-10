@@ -10,6 +10,8 @@ import (
 type GetBalancesRequest struct {
 	// Filter balances involving given account, either as source or destination.
 	Address *string `queryParam:"style=form,explode=true,name=address"`
+	// Pagination cursor, will return accounts after given address, in descending order.
+	After *string `queryParam:"style=form,explode=true,name=after"`
 	// Parameter used in pagination requests. Maximum page size is set to 15.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.

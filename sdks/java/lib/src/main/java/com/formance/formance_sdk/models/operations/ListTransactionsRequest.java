@@ -21,6 +21,17 @@ public class ListTransactionsRequest {
     }
     
     /**
+     * Pagination cursor, will return transactions after given txid (in descending order).
+     */
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=after")
+    public String after;
+
+    public ListTransactionsRequest withAfter(String after) {
+        this.after = after;
+        return this;
+    }
+    
+    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * Set to the value of next for the next page of results.
      * Set to the value of previous for the previous page of results.
@@ -74,9 +85,9 @@ public class ListTransactionsRequest {
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
     @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
-    public java.util.Map<String, String> metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public ListTransactionsRequest withMetadata(java.util.Map<String, String> metadata) {
+    public ListTransactionsRequest withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }

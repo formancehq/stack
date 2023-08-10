@@ -4,6 +4,8 @@
 
 package com.formance.formance_sdk.models.shared;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Account {
@@ -15,16 +17,25 @@ public class Account {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("metadata")
-    public java.util.Map<String, String> metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public Account withMetadata(java.util.Map<String, String> metadata) {
+    public Account withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }
     
-    public Account(@JsonProperty("address") String address, @JsonProperty("metadata") java.util.Map<String, String> metadata) {
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("type")
+    public String type;
+
+    public Account withType(String type) {
+        this.type = type;
+        return this;
+    }
+    
+    public Account(@JsonProperty("address") String address) {
         this.address = address;
-        this.metadata = metadata;
   }
 }

@@ -4,7 +4,7 @@ from __future__ import annotations
 import dataclasses
 import requests as requests_http
 from ..shared import errorresponse as shared_errorresponse
-from ..shared import reverttransactionresponse as shared_reverttransactionresponse
+from ..shared import transactionresponse as shared_transactionresponse
 from typing import Optional
 
 
@@ -25,6 +25,6 @@ class RevertTransactionResponse:
     error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
-    revert_transaction_response: Optional[shared_reverttransactionresponse.RevertTransactionResponse] = dataclasses.field(default=None)
+    transaction_response: Optional[shared_transactionresponse.TransactionResponse] = dataclasses.field(default=None)
     r"""OK"""
     

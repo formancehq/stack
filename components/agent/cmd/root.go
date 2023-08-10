@@ -11,6 +11,7 @@ import (
 	innerGrpc "github.com/formancehq/stack/components/agent/internal/grpc"
 	"github.com/formancehq/stack/components/agent/internal/k8s"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	sharedotlptraces "github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
@@ -139,6 +140,7 @@ var rootCmd = &cobra.Command{
 			k8s.NewModule(),
 			innerGrpc.NewModule(id, serverAddress, baseUrl, viper.GetBool(productionFlag),
 				authenticator, dialOptions...),
+			otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
 			sharedotlptraces.CLITracesModule(viper.GetViper()),
 		}
 
@@ -162,6 +164,7 @@ func init() {
 	if home := homedir.HomeDir(); home != "" {
 		kubeConfigFilePath = filepath.Join(home, ".kube", "config")
 	}
+
 	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
 	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
 	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")

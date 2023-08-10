@@ -217,6 +217,7 @@ try {
     $request->eventTypes = [
         'TYPE1',
         'TYPE1',
+        'TYPE1',
     ];
     $request->secret = 'V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3';
 

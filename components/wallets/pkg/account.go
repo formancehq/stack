@@ -3,16 +3,14 @@ package wallet
 import (
 	"encoding/json"
 	"math/big"
-
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 type Account struct {
-	Address  string            `json:"address"`
-	Metadata metadata.Metadata `json:"metadata"`
+	Address  string         `json:"address"`
+	Metadata map[string]any `json:"metadata"`
 }
 
-func (a Account) GetMetadata() metadata.Metadata {
+func (a Account) GetMetadata() map[string]any {
 	return a.Metadata
 }
 

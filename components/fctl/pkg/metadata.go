@@ -39,7 +39,39 @@ func PrintMetadata(out io.Writer, metadata metadata.Metadata) error {
 		Render()
 }
 
+func PrintLedgerMetadata(out io.Writer, metadata map[string]any) error {
+	Section.WithWriter(out).Println("Metadata")
+	if len(metadata) == 0 {
+		Println("No metadata.")
+		return nil
+	}
+	tableData := pterm.TableData{}
+	for k, v := range metadata {
+		tableData = append(tableData, []string{pterm.LightCyan(k), fmt.Sprint(v)})
+	}
+
+	return pterm.DefaultTable.
+		WithWriter(out).
+		WithData(tableData).
+		Render()
+}
+
 func MetadataAsShortString(metadata metadata.Metadata) string {
+	metadataAsString := ""
+	for k, v := range metadata {
+		asJson, err := json.Marshal(v)
+		if err != nil {
+			panic(err)
+		}
+		metadataAsString += fmt.Sprintf("%s=%s ", k, string(asJson))
+	}
+	if len(metadataAsString) > 100 {
+		metadataAsString = metadataAsString[:100] + "..."
+	}
+	return metadataAsString
+}
+
+func LedgerMetadataAsShortString(metadata map[string]any) string {
 	metadataAsString := ""
 	for k, v := range metadata {
 		asJson, err := json.Marshal(v)

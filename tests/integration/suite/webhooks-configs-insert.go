@@ -48,7 +48,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
 		Expect(response.ConfigResponse).To(BeNil())
-		Expect(response.ErrorResponse).NotTo(BeNil())
+		Expect(response.WebhooksErrorResponse).NotTo(BeNil())
 	})
 
 	It("inserting an invalid config without endpoint", func() {
@@ -65,7 +65,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
 		Expect(response.ConfigResponse).To(BeNil())
-		Expect(response.ErrorResponse).NotTo(BeNil())
+		Expect(response.WebhooksErrorResponse).NotTo(BeNil())
 	})
 
 	It("inserting an invalid config with invalid secret", func() {
@@ -84,6 +84,6 @@ var _ = Given("empty environment for webhooks configs", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
 		Expect(response.ConfigResponse).To(BeNil())
-		Expect(response.ErrorResponse).NotTo(BeNil())
+		Expect(response.WebhooksErrorResponse).NotTo(BeNil())
 	})
 })

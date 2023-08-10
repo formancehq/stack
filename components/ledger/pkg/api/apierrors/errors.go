@@ -39,9 +39,6 @@ func ResponseError(c *gin.Context, err error) {
 				ErrorCode:    code,
 				ErrorMessage: err.Error(),
 				Details:      details,
-
-				ErrorCodeDeprecated:    code,
-				ErrorMessageDeprecated: err.Error(),
 			})
 	} else {
 		c.AbortWithStatus(status)

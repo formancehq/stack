@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporal"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
@@ -71,6 +72,7 @@ func Execute() {
 
 func commonOptions(output io.Writer) fx.Option {
 	return fx.Options(
+		otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
 		otlptraces.CLITracesModule(viper.GetViper()),
 		temporal.NewClientModule(
 			viper.GetString(temporalAddressFlag),

@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -63,6 +64,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 
 	options = append(options, databaseOptions)
 	options = append(options,
+		otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
 		otlptraces.CLITracesModule(viper.GetViper()),
 		otlpmetrics.CLIMetricsModule(viper.GetViper()),
 		fx.Provide(fx.Annotate(noop.NewMeterProvider, fx.As(new(metric.MeterProvider)))),

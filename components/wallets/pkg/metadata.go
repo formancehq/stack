@@ -1,8 +1,6 @@
 package wallet
 
 import (
-	"strings"
-
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
@@ -29,16 +27,17 @@ const (
 
 	TrueValue = "true"
 
-	MetadataKeyWalletCustomDataPrefix = "wallets/custom_data_"
+	MetadataKeyWalletCustomData = "wallets/custom_data"
 )
 
-func TransactionMetadata(customMetadata metadata.Metadata) metadata.Metadata {
+func TransactionMetadata(customMetadata metadata.Metadata) map[string]any {
 	if customMetadata == nil {
 		customMetadata = metadata.Metadata{}
 	}
-	return metadata.Metadata{
+	return map[string]any{
 		MetadataKeyWalletTransaction: "true",
-	}.Merge(EncodeCustomMetadata(customMetadata))
+		MetadataKeyWalletCustomData:  customMetadata,
+	}
 }
 
 func TransactionBaseMetadataFilter() metadata.Metadata {
@@ -47,36 +46,34 @@ func TransactionBaseMetadataFilter() metadata.Metadata {
 	}
 }
 
-func IsPrimary(v metadata.Owner) bool {
+type MetadataOwner interface {
+	GetMetadata() map[string]any
+}
+
+func IsPrimary(v MetadataOwner) bool {
 	return HasMetadata(v, MetadataKeyWalletSpecType, PrimaryWallet)
 }
 
-func IsHold(v metadata.Owner) bool {
+func IsHold(v MetadataOwner) bool {
 	return HasMetadata(v, MetadataKeyWalletSpecType, HoldWallet)
 }
 
-func GetMetadata(v metadata.Owner, key string) string {
+func GetMetadata(v MetadataOwner, key string) any {
 	return v.GetMetadata()[key]
 }
 
-func HasMetadata(v metadata.Owner, key, value string) bool {
+func HasMetadata(v MetadataOwner, key, value string) bool {
 	return GetMetadata(v, key) == value
 }
 
-func ExtractCustomMetadata(account metadata.Owner) metadata.Metadata {
+func LedgerMetadataToWalletMetadata(m map[string]any) metadata.Metadata {
 	ret := metadata.Metadata{}
-	for key, value := range account.GetMetadata() {
-		if strings.HasPrefix(key, MetadataKeyWalletCustomDataPrefix) {
-			ret[strings.TrimPrefix(key, MetadataKeyWalletCustomDataPrefix)] = value
-		}
+	for k, v := range m {
+		ret[k] = v.(string)
 	}
 	return ret
 }
 
-func EncodeCustomMetadata(m metadata.Metadata) metadata.Metadata {
-	ret := metadata.Metadata{}
-	for key, value := range m {
-		ret[MetadataKeyWalletCustomDataPrefix+key] = value
-	}
-	return ret
+func GetCustomMetadata(owner MetadataOwner) metadata.Metadata {
+	return LedgerMetadataToWalletMetadata(owner.GetMetadata()[MetadataKeyWalletCustomData].(map[string]any))
 }

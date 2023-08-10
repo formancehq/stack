@@ -27,17 +27,6 @@ public class TestConfigResponse {
         return this;
     }
     
-    /**
-     * Error
-     */
-    
-    public com.formance.formance_sdk.models.shared.ErrorResponse errorResponse;
-
-    public TestConfigResponse withErrorResponse(com.formance.formance_sdk.models.shared.ErrorResponse errorResponse) {
-        this.errorResponse = errorResponse;
-        return this;
-    }
-    
     
     public Integer statusCode;
 
@@ -51,6 +40,17 @@ public class TestConfigResponse {
 
     public TestConfigResponse withRawResponse(HttpResponse<byte[]> rawResponse) {
         this.rawResponse = rawResponse;
+        return this;
+    }
+    
+    /**
+     * Error
+     */
+    
+    public com.formance.formance_sdk.models.shared.WebhooksErrorResponse webhooksErrorResponse;
+
+    public TestConfigResponse withWebhooksErrorResponse(com.formance.formance_sdk.models.shared.WebhooksErrorResponse webhooksErrorResponse) {
+        this.webhooksErrorResponse = webhooksErrorResponse;
         return this;
     }
     

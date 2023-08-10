@@ -31,7 +31,7 @@ func TestHoldsVoid(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -44,14 +44,14 @@ func TestHoldsVoid(t *testing.T) {
 			}, nil
 		}),
 		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.Equal(t, wallet.PostTransaction{
+			compareJSON(t, wallet.PostTransaction{
 				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildCancelHoldScript("USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, script)
 			return &wallet.CreateTransactionResponse{}, nil
 		}),

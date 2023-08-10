@@ -148,6 +148,18 @@ func printMetadata(metadata map[string]string) []pterm.BulletListItem {
 	return ret
 }
 
+func printLedgerMetadata(metadata map[string]any) []pterm.BulletListItem {
+	ret := make([]pterm.BulletListItem, 0)
+	ret = append(ret, historyItemDetails("Added metadata:"))
+	for k, v := range metadata {
+		ret = append(ret, pterm.BulletListItem{
+			Level: 2,
+			Text:  fmt.Sprintf("%s: %s", k, v),
+		})
+	}
+	return ret
+}
+
 func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string, history shared.WorkflowInstanceHistory) error {
 	cyanWriter := fctl.BasicTextCyan
 	defaultWriter := fctl.BasicText
@@ -221,12 +233,12 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 					*historyStage.Input.CreateTransaction.Ledger,
 				))
 				if historyStage.Error == nil && historyStage.LastFailure == nil && historyStage.Terminated {
-					listItems = append(listItems, historyItemDetails("Created transaction: %d", historyStage.Output.CreateTransaction.Data.Txid))
+					listItems = append(listItems, historyItemDetails("Created transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid))
 					if historyStage.Input.CreateTransaction.Data.Reference != nil {
-						listItems = append(listItems, historyItemDetails("Reference: %s", *historyStage.Output.CreateTransaction.Data.Reference))
+						listItems = append(listItems, historyItemDetails("Reference: %s", *historyStage.Output.CreateTransaction.Data[0].Reference))
 					}
 					if len(historyStage.Input.CreateTransaction.Data.Metadata) > 0 {
-						listItems = append(listItems, printMetadata(historyStage.Input.CreateTransaction.Data.Metadata)...)
+						listItems = append(listItems, printLedgerMetadata(historyStage.Input.CreateTransaction.Data.Metadata)...)
 					}
 				}
 			case historyStage.Input.ConfirmHold != nil:

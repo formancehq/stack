@@ -48,11 +48,11 @@ var _ = Given("an environment configured with a webhook sent on created transact
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusOK))
 
-			createTransactionResponse, err := Client().Ledger.CreateTransaction(
+			createTransactionResponse, err := Client().Transactions.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
-						Metadata: map[string]string{},
+						Metadata: map[string]any{},
 						Postings: []shared.Posting{
 							{
 								Amount:      big.NewInt(100),

@@ -24,16 +24,18 @@ class ErrorResponse
     
 	#[\JMS\Serializer\Annotation\SerializedName('errorCode')]
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\ErrorsEnum>')]
-    public ErrorsEnum $errorCode;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?ErrorsEnum $errorCode = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('errorMessage')]
     #[\JMS\Serializer\Annotation\Type('string')]
-    public string $errorMessage;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?string $errorMessage = null;
     
 	public function __construct()
 	{
 		$this->details = null;
-		$this->errorCode = \formance\stack\Models\Shared\ErrorsEnum::INTERNAL;
-		$this->errorMessage = "";
+		$this->errorCode = null;
+		$this->errorMessage = null;
 	}
 }

@@ -273,7 +273,7 @@ func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTra
 		if ok {
 			respErr, ok := apiErr.Model().(shared.ErrorResponse)
 			if ok {
-				switch respErr.ErrorCode {
+				switch *respErr.ErrorCode {
 				case shared.ErrorsEnumInsufficientFund:
 					return ErrInsufficientFundError
 				}
@@ -295,7 +295,7 @@ func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets])
 			}
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
 				for k, v := range query.Payload.Metadata {
-					metadata[MetadataKeyWalletCustomDataPrefix+k] = v
+					metadata[MetadataKeyWalletCustomData+"."+k] = v
 				}
 			}
 			if query.Payload.Name != "" {
@@ -320,7 +320,7 @@ func (m *Manager) ListHolds(ctx context.Context, query ListQuery[ListHolds]) (*L
 			}
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
 				for k, v := range query.Payload.Metadata {
-					metadata[MetadataKeyWalletCustomDataPrefix+k] = v
+					metadata[MetadataKeyWalletCustomData+k] = v
 				}
 			}
 			return metadata
@@ -334,7 +334,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 			metadata := BalancesMetadataFilter(query.Payload.WalletID)
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
 				for k, v := range query.Payload.Metadata {
-					metadata[MetadataKeyWalletCustomDataPrefix+k] = v
+					metadata[MetadataKeyWalletCustomData+k] = v
 				}
 			}
 			return metadata
@@ -402,13 +402,13 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 	}
 
 	newCustomMetadata := metadata.Metadata{}
-	newCustomMetadata = newCustomMetadata.Merge(ExtractCustomMetadata(account))
+	newCustomMetadata = newCustomMetadata.Merge(LedgerMetadataToWalletMetadata(account.GetMetadata()[MetadataKeyWalletCustomData].(map[string]any)))
 	newCustomMetadata = newCustomMetadata.Merge(data.Metadata)
 
-	meta := account.GetMetadata()
-	meta = meta.Merge(EncodeCustomMetadata(newCustomMetadata))
+	accountMetadata := account.Metadata
+	accountMetadata[MetadataKeyWalletCustomData] = newCustomMetadata
 
-	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), metadata.Metadata(meta)); err != nil {
+	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), accountMetadata); err != nil {
 		return errors.Wrap(err, "adding metadata to account")
 	}
 

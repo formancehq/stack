@@ -27,17 +27,6 @@ public class ChangeConfigSecretResponse {
         return this;
     }
     
-    /**
-     * Error
-     */
-    
-    public com.formance.formance_sdk.models.shared.ErrorResponse errorResponse;
-
-    public ChangeConfigSecretResponse withErrorResponse(com.formance.formance_sdk.models.shared.ErrorResponse errorResponse) {
-        this.errorResponse = errorResponse;
-        return this;
-    }
-    
     
     public Integer statusCode;
 
@@ -51,6 +40,17 @@ public class ChangeConfigSecretResponse {
 
     public ChangeConfigSecretResponse withRawResponse(HttpResponse<byte[]> rawResponse) {
         this.rawResponse = rawResponse;
+        return this;
+    }
+    
+    /**
+     * Error
+     */
+    
+    public com.formance.formance_sdk.models.shared.WebhooksErrorResponse webhooksErrorResponse;
+
+    public ChangeConfigSecretResponse withWebhooksErrorResponse(com.formance.formance_sdk.models.shared.WebhooksErrorResponse webhooksErrorResponse) {
+        this.webhooksErrorResponse = webhooksErrorResponse;
         return this;
     }
     

@@ -67,7 +67,10 @@ func TestTracesModule(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			options := []fx.Option{TracesModule(test.config)}
+			options := []fx.Option{
+				otlp.LoadResource("test", []string{}),
+				TracesModule(test.config),
+			}
 			if !testing.Verbose() {
 				options = append(options, fx.NopLogger)
 			}

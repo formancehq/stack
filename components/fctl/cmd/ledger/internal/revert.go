@@ -14,7 +14,7 @@ import (
 )
 
 type RevertTransactionResponseData struct {
-	Data Transaction `json:"data"`
+	Data shared.Transaction `json:"data"`
 }
 type RevertTransactionResponse struct {
 	ContentType string

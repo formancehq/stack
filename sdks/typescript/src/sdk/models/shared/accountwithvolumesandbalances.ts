@@ -12,11 +12,11 @@ export class AccountWithVolumesAndBalances extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "balances" })
-  balances: Record<string, number>;
+  balances?: Record<string, number>;
 
   @SpeakeasyMetadata()
   @Expose({ name: "metadata" })
-  metadata: Record<string, string>;
+  metadata?: Record<string, any>;
 
   @SpeakeasyMetadata()
   @Expose({ name: "type" })
@@ -24,5 +24,5 @@ export class AccountWithVolumesAndBalances extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "volumes" })
-  volumes: Record<string, Record<string, number>>;
+  volumes?: Record<string, Record<string, number>>;
 }

@@ -11,9 +11,8 @@ import (
 type LogType string
 
 const (
-	LogTypeNewTransaction      LogType = "NEW_TRANSACTION"
-	LogTypeSetMetadata         LogType = "SET_METADATA"
-	LogTypeRevertedTransaction LogType = "REVERTED_TRANSACTION"
+	LogTypeNewTransaction LogType = "NEW_TRANSACTION"
+	LogTypeSetMetadata    LogType = "SET_METADATA"
 )
 
 func (e LogType) ToPointer() *LogType {
@@ -29,8 +28,6 @@ func (e *LogType) UnmarshalJSON(data []byte) error {
 	case "NEW_TRANSACTION":
 		fallthrough
 	case "SET_METADATA":
-		fallthrough
-	case "REVERTED_TRANSACTION":
 		*e = LogType(v)
 		return nil
 	default:

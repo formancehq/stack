@@ -18,7 +18,7 @@ type GetAccountRequest struct {
 }
 
 func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (*shared.AccountResponse, error) {
-	response, err := a.client.Ledger.GetAccount(
+	response, err := a.client.Accounts.GetAccount(
 		ctx,
 		operations.GetAccountRequest{
 			Address: request.ID,
@@ -37,8 +37,8 @@ func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (
 	default:
 		if response.ErrorResponse != nil {
 			return nil, temporal.NewApplicationError(
-				response.ErrorResponse.ErrorMessage,
-				string(response.ErrorResponse.ErrorCode),
+				*response.ErrorResponse.ErrorMessage,
+				string(*response.ErrorResponse.ErrorCode),
 				response.ErrorResponse.Details)
 		}
 

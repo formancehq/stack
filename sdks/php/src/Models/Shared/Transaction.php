@@ -14,11 +14,22 @@ class Transaction
     /**
      * $metadata
      * 
-     * @var array<string, string> $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[\JMS\Serializer\Annotation\SerializedName('metadata')]
-    #[\JMS\Serializer\Annotation\Type('array<string, string>')]
-    public array $metadata;
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $metadata = null;
+    
+    /**
+     * $postCommitVolumes
+     * 
+     * @var ?array<string, array<string, \formance\stack\Models\Shared\Volume>> $postCommitVolumes
+     */
+	#[\JMS\Serializer\Annotation\SerializedName('postCommitVolumes')]
+    #[\JMS\Serializer\Annotation\Type('array<string, array<string, formance\stack\Models\Shared\Volume>>')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $postCommitVolumes = null;
     
     /**
      * $postings
@@ -28,6 +39,16 @@ class Transaction
 	#[\JMS\Serializer\Annotation\SerializedName('postings')]
     #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\Posting>')]
     public array $postings;
+    
+    /**
+     * $preCommitVolumes
+     * 
+     * @var ?array<string, array<string, \formance\stack\Models\Shared\Volume>> $preCommitVolumes
+     */
+	#[\JMS\Serializer\Annotation\SerializedName('preCommitVolumes')]
+    #[\JMS\Serializer\Annotation\Type('array<string, array<string, formance\stack\Models\Shared\Volume>>')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $preCommitVolumes = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('reference')]
     #[\JMS\Serializer\Annotation\Type('string')]
@@ -44,8 +65,10 @@ class Transaction
     
 	public function __construct()
 	{
-		$this->metadata = [];
+		$this->metadata = null;
+		$this->postCommitVolumes = null;
 		$this->postings = [];
+		$this->preCommitVolumes = null;
 		$this->reference = null;
 		$this->timestamp = new \DateTime();
 		$this->txid = 0;

@@ -20,10 +20,11 @@ import java.time.OffsetDateTime;
  * 
  */
 public class PostTransaction {
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("metadata")
-    public java.util.Map<String, String> metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public PostTransaction withMetadata(java.util.Map<String, String> metadata) {
+    public PostTransaction withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -66,7 +67,5 @@ public class PostTransaction {
         return this;
     }
     
-    public PostTransaction(@JsonProperty("metadata") java.util.Map<String, String> metadata) {
-        this.metadata = metadata;
-  }
+    public PostTransaction(){}
 }

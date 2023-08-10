@@ -13,5 +13,5 @@ export class ConfigInfoResponse extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "data" })
   @Type(() => ConfigInfo)
-  data?: ConfigInfo;
+  data: ConfigInfo;
 }

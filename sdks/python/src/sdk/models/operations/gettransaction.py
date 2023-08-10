@@ -4,7 +4,7 @@ from __future__ import annotations
 import dataclasses
 import requests as requests_http
 from ..shared import errorresponse as shared_errorresponse
-from ..shared import gettransactionresponse as shared_gettransactionresponse
+from ..shared import transactionresponse as shared_transactionresponse
 from typing import Optional
 
 
@@ -24,7 +24,7 @@ class GetTransactionResponse:
     status_code: int = dataclasses.field()
     error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
-    get_transaction_response: Optional[shared_gettransactionresponse.GetTransactionResponse] = dataclasses.field(default=None)
-    r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
+    transaction_response: Optional[shared_transactionresponse.TransactionResponse] = dataclasses.field(default=None)
+    r"""OK"""
     

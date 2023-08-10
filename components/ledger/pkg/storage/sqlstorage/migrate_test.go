@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/pborman/uuid"
 	"github.com/stretchr/testify/require"
 )

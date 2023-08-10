@@ -3,5 +3,5 @@
 package shared
 
 type ActivityCreateTransactionOutput struct {
-	Data Transaction `json:"data"`
+	Data []Transaction `json:"data"`
 }

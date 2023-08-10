@@ -17,6 +17,7 @@ public class AccountWithVolumesAndBalances {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("balances")
     public java.util.Map<String, Long> balances;
 
@@ -25,10 +26,11 @@ public class AccountWithVolumesAndBalances {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("metadata")
-    public java.util.Map<String, String> metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public AccountWithVolumesAndBalances withMetadata(java.util.Map<String, String> metadata) {
+    public AccountWithVolumesAndBalances withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -42,6 +44,7 @@ public class AccountWithVolumesAndBalances {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("volumes")
     public java.util.Map<String, java.util.Map<String, Long>> volumes;
 
@@ -50,10 +53,7 @@ public class AccountWithVolumesAndBalances {
         return this;
     }
     
-    public AccountWithVolumesAndBalances(@JsonProperty("address") String address, @JsonProperty("balances") java.util.Map<String, Long> balances, @JsonProperty("metadata") java.util.Map<String, String> metadata, @JsonProperty("volumes") java.util.Map<String, java.util.Map<String, Long>> volumes) {
+    public AccountWithVolumesAndBalances(@JsonProperty("address") String address) {
         this.address = address;
-        this.balances = balances;
-        this.metadata = metadata;
-        this.volumes = volumes;
   }
 }

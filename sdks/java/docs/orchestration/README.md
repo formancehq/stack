@@ -33,12 +33,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("incidunt") {{
+                .setSecurity(new Security("enim") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            CancelEventRequest req = new CancelEventRequest("enim");            
+            CancelEventRequest req = new CancelEventRequest("consequatur");            
 
             CancelEventResponse res = sdk.orchestration.cancelEvent(req);
 
@@ -70,28 +70,33 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("consequatur") {{
+                .setSecurity(new Security("est") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             com.formance.formance_sdk.models.shared.CreateWorkflowRequest req = new CreateWorkflowRequest(                new java.util.HashMap<String, Object>[]{{
                                 add(new java.util.HashMap<String, Object>() {{
-                                    put("explicabo", "deserunt");
-                                    put("distinctio", "quibusdam");
+                                    put("deserunt", "distinctio");
+                                }}),
+                                add(new java.util.HashMap<String, Object>() {{
                                     put("labore", "modi");
                                     put("qui", "aliquid");
+                                    put("cupiditate", "quos");
+                                    put("perferendis", "magni");
                                 }}),
                                 add(new java.util.HashMap<String, Object>() {{
-                                    put("quos", "perferendis");
-                                    put("magni", "assumenda");
                                     put("ipsam", "alias");
+                                    put("fugit", "dolorum");
+                                    put("excepturi", "tempora");
+                                    put("facilis", "tempore");
                                 }}),
                                 add(new java.util.HashMap<String, Object>() {{
-                                    put("dolorum", "excepturi");
+                                    put("delectus", "eum");
+                                    put("non", "eligendi");
                                 }}),
                             }}) {{
-                name = "Olivia Rice";
+                name = "Gilbert Medhurst";
             }};            
 
             CreateWorkflowResponse res = sdk.orchestration.createWorkflow(req);
@@ -124,12 +129,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("eum") {{
+                .setSecurity(new Security("officia") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            DeleteWorkflowRequest req = new DeleteWorkflowRequest("non");            
+            DeleteWorkflowRequest req = new DeleteWorkflowRequest("dolor");            
 
             DeleteWorkflowResponse res = sdk.orchestration.deleteWorkflow(req);
 
@@ -161,12 +166,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("eligendi") {{
+                .setSecurity(new Security("debitis") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            GetInstanceRequest req = new GetInstanceRequest("sint");            
+            GetInstanceRequest req = new GetInstanceRequest("a");            
 
             GetInstanceResponse res = sdk.orchestration.getInstance(req);
 
@@ -198,12 +203,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("aliquid") {{
+                .setSecurity(new Security("dolorum") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            GetInstanceHistoryRequest req = new GetInstanceHistoryRequest("provident");            
+            GetInstanceHistoryRequest req = new GetInstanceHistoryRequest("in");            
 
             GetInstanceHistoryResponse res = sdk.orchestration.getInstanceHistory(req);
 
@@ -235,12 +240,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("necessitatibus") {{
+                .setSecurity(new Security("in") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            GetInstanceStageHistoryRequest req = new GetInstanceStageHistoryRequest("sint", 638921L);            
+            GetInstanceStageHistoryRequest req = new GetInstanceStageHistoryRequest("illum", 978571L);            
 
             GetInstanceStageHistoryResponse res = sdk.orchestration.getInstanceStageHistory(req);
 
@@ -272,12 +277,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolor") {{
+                .setSecurity(new Security("rerum") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            GetWorkflowRequest req = new GetWorkflowRequest("debitis");            
+            GetWorkflowRequest req = new GetWorkflowRequest("dicta");            
 
             GetWorkflowResponse res = sdk.orchestration.getWorkflow(req);
 
@@ -309,14 +314,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("a") {{
+                .setSecurity(new Security("magnam") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             ListInstancesRequest req = new ListInstancesRequest() {{
                 running = false;
-                workflowID = "dolorum";
+                workflowID = "cumque";
             }};            
 
             ListInstancesResponse res = sdk.orchestration.listInstances(req);
@@ -348,7 +353,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("in") {{
+                .setSecurity(new Security("facere") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -382,7 +387,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("in") {{
+                .setSecurity(new Security("ea") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -417,16 +422,17 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("illum") {{
+                .setSecurity(new Security("aliquid") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            RunWorkflowRequest req = new RunWorkflowRequest("maiores") {{
+            RunWorkflowRequest req = new RunWorkflowRequest("laborum") {{
                 requestBody = new java.util.HashMap<String, String>() {{
-                    put("dicta", "magnam");
-                    put("cumque", "facere");
-                    put("ea", "aliquid");
+                    put("non", "occaecati");
+                    put("enim", "accusamus");
+                    put("delectus", "quidem");
+                    put("provident", "nam");
                 }};
                 wait = false;
             }};            
@@ -462,13 +468,13 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("laborum") {{
+                .setSecurity(new Security("id") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            SendEventRequest req = new SendEventRequest("accusamus") {{
-                requestBody = new SendEventRequestBody("non");;
+            SendEventRequest req = new SendEventRequest("blanditiis") {{
+                requestBody = new SendEventRequestBody("deleniti");;
             }};            
 
             SendEventResponse res = sdk.orchestration.sendEvent(req);

@@ -34,15 +34,15 @@ export class RevertTransactionResponse extends SpeakeasyBase {
   @SpeakeasyMetadata()
   errorResponse?: shared.ErrorResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  revertTransactionResponse?: shared.RevertTransactionResponse;
-
   @SpeakeasyMetadata()
   statusCode: number;
 
   @SpeakeasyMetadata()
   rawResponse?: AxiosResponse;
+
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  transactionResponse?: shared.TransactionResponse;
 }

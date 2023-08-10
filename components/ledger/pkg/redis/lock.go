@@ -8,6 +8,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/api/middlewares"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 )
 

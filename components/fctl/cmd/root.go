@@ -111,7 +111,7 @@ func extractOpenAPIErrorMessage(err error) error {
 	}
 
 	if err := unwrapOpenAPIError(err); err != nil {
-		return errors.New(err.ErrorMessage)
+		return errors.New(*err.ErrorMessage)
 	}
 
 	return err
@@ -133,8 +133,8 @@ func unwrapOpenAPIError(err error) *shared.ErrorResponse {
 		if errResponse.ErrorCode != "" {
 			errorCode := shared.ErrorsEnum(errResponse.ErrorCode)
 			return &shared.ErrorResponse{
-				ErrorCode:    errorCode,
-				ErrorMessage: errResponse.ErrorMessage,
+				ErrorCode:    &errorCode,
+				ErrorMessage: &errResponse.ErrorMessage,
 				Details:      &errResponse.Details,
 			}
 		}

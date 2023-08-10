@@ -48,7 +48,7 @@ func (ctl *AccountController) GetAccounts(c *gin.Context) {
 			c.Query("balance") != "" ||
 			c.Query(QueryKeyBalanceOperator) != "" ||
 			c.Query(QueryKeyBalanceOperatorDeprecated) != "" ||
-			c.Query(QueryKeyPageSize) != "" ||
+			//c.Query(QueryKeyPageSize) != "" ||
 			c.Query(QueryKeyPageSizeDeprecated) != "" {
 			apierrors.ResponseError(c, ledger.NewValidationError(
 				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursor)))
@@ -85,7 +85,7 @@ func (ctl *AccountController) GetAccounts(c *gin.Context) {
 			c.Query("balance") != "" ||
 			c.Query(QueryKeyBalanceOperator) != "" ||
 			c.Query(QueryKeyBalanceOperatorDeprecated) != "" ||
-			c.Query(QueryKeyPageSize) != "" ||
+			//c.Query(QueryKeyPageSize) != "" ||
 			c.Query(QueryKeyPageSizeDeprecated) != "" {
 			apierrors.ResponseError(c, ledger.NewValidationError(
 				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursorDeprecated)))

@@ -27,17 +27,6 @@ public class RevertTransactionResponse {
         return this;
     }
     
-    /**
-     * OK
-     */
-    
-    public com.formance.formance_sdk.models.shared.RevertTransactionResponse revertTransactionResponse;
-
-    public RevertTransactionResponse withRevertTransactionResponse(com.formance.formance_sdk.models.shared.RevertTransactionResponse revertTransactionResponse) {
-        this.revertTransactionResponse = revertTransactionResponse;
-        return this;
-    }
-    
     
     public Integer statusCode;
 
@@ -51,6 +40,17 @@ public class RevertTransactionResponse {
 
     public RevertTransactionResponse withRawResponse(HttpResponse<byte[]> rawResponse) {
         this.rawResponse = rawResponse;
+        return this;
+    }
+    
+    /**
+     * OK
+     */
+    
+    public com.formance.formance_sdk.models.shared.TransactionResponse transactionResponse;
+
+    public RevertTransactionResponse withTransactionResponse(com.formance.formance_sdk.models.shared.TransactionResponse transactionResponse) {
+        this.transactionResponse = transactionResponse;
         return this;
     }
     

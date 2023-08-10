@@ -3,14 +3,14 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { ExpandedTransaction } from "./expandedtransaction";
+import { Transaction } from "./transaction";
 import { Expose, Type } from "class-transformer";
 
 export class TransactionsCursorResponseCursor extends SpeakeasyBase {
-  @SpeakeasyMetadata({ elemType: ExpandedTransaction })
+  @SpeakeasyMetadata({ elemType: Transaction })
   @Expose({ name: "data" })
-  @Type(() => ExpandedTransaction)
-  data: ExpandedTransaction[];
+  @Type(() => Transaction)
+  data: Transaction[];
 
   @SpeakeasyMetadata()
   @Expose({ name: "hasMore" })

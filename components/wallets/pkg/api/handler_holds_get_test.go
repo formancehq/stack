@@ -32,7 +32,7 @@ func TestHoldsGet(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(50),

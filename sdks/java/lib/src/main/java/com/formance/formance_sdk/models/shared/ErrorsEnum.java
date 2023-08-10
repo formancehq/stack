@@ -14,9 +14,7 @@ public enum ErrorsEnum {
     NO_SCRIPT("NO_SCRIPT"),
     COMPILATION_FAILED("COMPILATION_FAILED"),
     METADATA_OVERRIDE("METADATA_OVERRIDE"),
-    NOT_FOUND("NOT_FOUND"),
-    CONTEXT_CANCELLED("CONTEXT_CANCELLED"),
-    STORE("STORE");
+    NOT_FOUND("NOT_FOUND");
 
     @JsonValue
     public final String value;

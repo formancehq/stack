@@ -48,6 +48,7 @@ func newServeCommand() *cobra.Command {
 				api.Module(sharedapi.ServiceInfo{
 					Version: Version,
 				}, viper.GetString(listenFlag)),
+				otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
 				otlptraces.CLITracesModule(viper.GetViper()),
 			}
 

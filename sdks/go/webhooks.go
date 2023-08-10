@@ -80,12 +80,12 @@ func (s *webhooks) ActivateConfig(ctx context.Context, request operations.Activa
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.ErrorResponse
+			var out *shared.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.ErrorResponse = out
+			res.WebhooksErrorResponse = out
 		}
 	}
 
@@ -150,12 +150,12 @@ func (s *webhooks) ChangeConfigSecret(ctx context.Context, request operations.Ch
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.ErrorResponse
+			var out *shared.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.ErrorResponse = out
+			res.WebhooksErrorResponse = out
 		}
 	}
 
@@ -210,12 +210,12 @@ func (s *webhooks) DeactivateConfig(ctx context.Context, request operations.Deac
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.ErrorResponse
+			var out *shared.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.ErrorResponse = out
+			res.WebhooksErrorResponse = out
 		}
 	}
 
@@ -261,12 +261,12 @@ func (s *webhooks) DeleteConfig(ctx context.Context, request operations.DeleteCo
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.ErrorResponse
+			var out *shared.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.ErrorResponse = out
+			res.WebhooksErrorResponse = out
 		}
 	}
 
@@ -322,12 +322,12 @@ func (s *webhooks) GetManyConfigs(ctx context.Context, request operations.GetMan
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.ErrorResponse
+			var out *shared.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.ErrorResponse = out
+			res.WebhooksErrorResponse = out
 		}
 	}
 
@@ -397,12 +397,12 @@ func (s *webhooks) InsertConfig(ctx context.Context, request shared.ConfigUser) 
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.ErrorResponse
+			var out *shared.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.ErrorResponse = out
+			res.WebhooksErrorResponse = out
 		}
 	}
 
@@ -457,12 +457,12 @@ func (s *webhooks) TestConfig(ctx context.Context, request operations.TestConfig
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.ErrorResponse
+			var out *shared.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.ErrorResponse = out
+			res.WebhooksErrorResponse = out
 		}
 	}
 

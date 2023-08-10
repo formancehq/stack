@@ -7,7 +7,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -105,7 +104,7 @@ var _ = Given("An empty environment", func() {
 				Then("checking ledger account balance", func() {
 					var balancesCursorResponse *shared.BalancesCursorResponse
 					BeforeEach(func() {
-						reponse, err := Client().Ledger.GetBalances(
+						reponse, err := Client().Balances.GetBalances(
 							TestContext(),
 							operations.GetBalancesRequest{
 								Address: ptr("bank"),
@@ -201,7 +200,7 @@ var _ = Given("An empty environment", func() {
 									Ledger: ptr("default"),
 									Data: &shared.PostTransaction{
 										Postings: postings,
-										Metadata: metadata.Metadata{},
+										Metadata: nil,
 									},
 								},
 							}))
@@ -212,17 +211,17 @@ var _ = Given("An empty environment", func() {
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Attempt).To(Equal(int64(1)))
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution).To(BeNil())
 
-							//TODO: fail here with zero timestamp
-							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp).
+							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].Timestamp).
 								NotTo(BeZero())
-							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp = time.Time{}
+							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].Timestamp = time.Time{}
+							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].PreCommitVolumes = nil
+							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].PostCommitVolumes = nil
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.ActivityCreateTransactionOutput{
-									Data: shared.Transaction{
+									Data: []shared.Transaction{{
 										Postings:  postings,
 										Reference: ptr(""),
-										Metadata:  map[string]string{},
-									},
+									}},
 								},
 							}))
 						})

@@ -20,6 +20,32 @@ class ListAccountsRequest
     public ?string $address = null;
     
     /**
+     * Pagination cursor, will return accounts after given address, in descending order.
+     * 
+     * @var ?string $after
+     */
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=after')]
+    public ?string $after = null;
+    
+    /**
+     * Filter accounts by their balance (default operator is gte)
+     * 
+     * @var ?int $balance
+     */
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=balance')]
+    public ?int $balance = null;
+    
+    /**
+     * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
+     * 
+     * 
+     * 
+     * @var ?\formance\stack\Models\Operations\ListAccountsBalanceOperator $balanceOperator
+     */
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=balanceOperator')]
+    public ?ListAccountsBalanceOperator $balanceOperator = null;
+    
+    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * 
      * Set to the value of next for the next page of results.
@@ -41,9 +67,9 @@ class ListAccountsRequest
     public string $ledger;
     
     /**
-     * Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
+     * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
      * 
-     * @var ?array<string, string> $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
     public ?array $metadata = null;
@@ -61,6 +87,9 @@ class ListAccountsRequest
 	public function __construct()
 	{
 		$this->address = null;
+		$this->after = null;
+		$this->balance = null;
+		$this->balanceOperator = null;
 		$this->cursor = null;
 		$this->ledger = "";
 		$this->metadata = null;

@@ -46,6 +46,13 @@ if res.get_versions_response is not None:
 
 * [get_versions](docs/sdk/README.md#get_versions) - Show stack version information
 
+### [accounts](docs/accounts/README.md)
+
+* [add_metadata_to_account](docs/accounts/README.md#add_metadata_to_account) - Add metadata to an account
+* [count_accounts](docs/accounts/README.md#count_accounts) - Count the accounts from a ledger
+* [get_account](docs/accounts/README.md#get_account) - Get account by its address
+* [list_accounts](docs/accounts/README.md#list_accounts) - List accounts from a ledger
+
 ### [auth](docs/auth/README.md)
 
 * [add_scope_to_client](docs/auth/README.md#add_scope_to_client) - Add scope to client
@@ -68,24 +75,23 @@ if res.get_versions_response is not None:
 * [update_client](docs/auth/README.md#update_client) - Update client
 * [update_scope](docs/auth/README.md#update_scope) - Update scope
 
+### [balances](docs/balances/README.md)
+
+* [get_balances](docs/balances/README.md#get_balances) - Get the balances from a ledger's account
+* [get_balances_aggregated](docs/balances/README.md#get_balances_aggregated) - Get the aggregated balances from selected accounts
+
 ### [ledger](docs/ledger/README.md)
 
-* [add_metadata_on_transaction](docs/ledger/README.md#add_metadata_on_transaction) - Set the metadata of a transaction by its ID
-* [add_metadata_to_account](docs/ledger/README.md#add_metadata_to_account) - Add metadata to an account
-* [count_accounts](docs/ledger/README.md#count_accounts) - Count the accounts from a ledger
-* [count_transactions](docs/ledger/README.md#count_transactions) - Count the transactions from a ledger
-* [create_transaction](docs/ledger/README.md#create_transaction) - Create a new transaction to a ledger
-* [get_account](docs/ledger/README.md#get_account) - Get account by its address
-* [get_balances](docs/ledger/README.md#get_balances) - Get the balances from a ledger's account
-* [get_balances_aggregated](docs/ledger/README.md#get_balances_aggregated) - Get the aggregated balances from selected accounts
-* [get_info](docs/ledger/README.md#get_info) - Show server information
 * [get_ledger_info](docs/ledger/README.md#get_ledger_info) - Get information about a ledger
-* [get_transaction](docs/ledger/README.md#get_transaction) - Get transaction from a ledger by its ID
-* [list_accounts](docs/ledger/README.md#list_accounts) - List accounts from a ledger
-* [list_logs](docs/ledger/README.md#list_logs) - List the logs from a ledger
-* [list_transactions](docs/ledger/README.md#list_transactions) - List transactions from a ledger
-* [read_stats](docs/ledger/README.md#read_stats) - Get statistics from a ledger
-* [revert_transaction](docs/ledger/README.md#revert_transaction) - Revert a ledger transaction by its ID
+
+### [logs](docs/logs/README.md)
+
+* [list_logs](docs/logs/README.md#list_logs) - List the logs from a ledger
+
+### [mapping](docs/mapping/README.md)
+
+* [get_mapping](docs/mapping/README.md#get_mapping) - Get the mapping of a ledger
+* [update_mapping](docs/mapping/README.md#update_mapping) - Update the mapping of a ledger
 
 ### [orchestration](docs/orchestration/README.md)
 
@@ -123,10 +129,32 @@ if res.get_versions_response is not None:
 * [uninstall_connector](docs/payments/README.md#uninstall_connector) - Uninstall a connector
 * [update_metadata](docs/payments/README.md#update_metadata) - Update metadata
 
+### [script](docs/script/README.md)
+
+* [~~run_script~~](docs/script/README.md#run_script) - Execute a Numscript :warning: **Deprecated**
+
 ### [search](docs/search/README.md)
 
 * [search](docs/search/README.md#search) - Search
 * [searchget_server_info](docs/search/README.md#searchget_server_info) - Get server info
+
+### [server](docs/server/README.md)
+
+* [get_info](docs/server/README.md#get_info) - Show server information
+
+### [stats](docs/stats/README.md)
+
+* [read_stats](docs/stats/README.md#read_stats) - Get statistics from a ledger
+
+### [transactions](docs/transactions/README.md)
+
+* [create_transactions](docs/transactions/README.md#create_transactions) - Create a new batch of transactions to a ledger
+* [add_metadata_on_transaction](docs/transactions/README.md#add_metadata_on_transaction) - Set the metadata of a transaction by its ID
+* [count_transactions](docs/transactions/README.md#count_transactions) - Count the transactions from a ledger
+* [create_transaction](docs/transactions/README.md#create_transaction) - Create a new transaction to a ledger
+* [get_transaction](docs/transactions/README.md#get_transaction) - Get transaction from a ledger by its ID
+* [list_transactions](docs/transactions/README.md#list_transactions) - List transactions from a ledger
+* [revert_transaction](docs/transactions/README.md#revert_transaction) - Revert a ledger transaction by its ID
 
 ### [wallets](docs/wallets/README.md)
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 

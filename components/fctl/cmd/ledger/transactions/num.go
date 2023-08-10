@@ -14,7 +14,7 @@ import (
 )
 
 type NumStore struct {
-	Transaction *internal.Transaction `json:"transaction"`
+	Transaction *shared.Transaction `json:"transaction"`
 }
 type NumController struct {
 	store          *NumStore
@@ -154,9 +154,14 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
 
-	tx, err := internal.CreateTransaction(client, cmd.Context(), operations.CreateTransactionRequest{
+	ledgerMetadata := make(map[string]any)
+	for k, v := range metadata {
+		ledgerMetadata[k] = v
+	}
+
+	ret, err := client.Transactions.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
-			Metadata:  metadata,
+			Metadata:  ledgerMetadata,
 			Reference: &reference,
 			Script: &shared.PostTransactionScript{
 				Plain: script,
@@ -175,7 +180,7 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 		return nil, err
 	}
 
-	c.store.Transaction = tx
+	c.store.Transaction = &ret.TransactionsResponse.Data[0]
 
 	return c, nil
 }

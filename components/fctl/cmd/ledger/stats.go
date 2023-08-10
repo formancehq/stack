@@ -67,13 +67,13 @@ func (c *StatsController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	request := operations.ReadStatsRequest{
 		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
 	}
-	response, err := ledgerClient.Ledger.ReadStats(cmd.Context(), request)
+	response, err := ledgerClient.Stats.ReadStats(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
 
 	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", *response.ErrorResponse.ErrorCode, *response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

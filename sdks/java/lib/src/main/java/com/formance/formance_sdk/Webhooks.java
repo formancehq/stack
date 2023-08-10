@@ -57,7 +57,7 @@ public class Webhooks {
 
         com.formance.formance_sdk.models.operations.ActivateConfigResponse res = new com.formance.formance_sdk.models.operations.ActivateConfigResponse(contentType, httpRes.statusCode()) {{
             configResponse = null;
-            errorResponse = null;
+            webhooksErrorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -71,8 +71,8 @@ public class Webhooks {
         else {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.WebhooksErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.WebhooksErrorResponse.class);
+                res.webhooksErrorResponse = out;
             }
         }
 
@@ -111,7 +111,7 @@ public class Webhooks {
 
         com.formance.formance_sdk.models.operations.ChangeConfigSecretResponse res = new com.formance.formance_sdk.models.operations.ChangeConfigSecretResponse(contentType, httpRes.statusCode()) {{
             configResponse = null;
-            errorResponse = null;
+            webhooksErrorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -125,8 +125,8 @@ public class Webhooks {
         else {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.WebhooksErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.WebhooksErrorResponse.class);
+                res.webhooksErrorResponse = out;
             }
         }
 
@@ -159,7 +159,7 @@ public class Webhooks {
 
         com.formance.formance_sdk.models.operations.DeactivateConfigResponse res = new com.formance.formance_sdk.models.operations.DeactivateConfigResponse(contentType, httpRes.statusCode()) {{
             configResponse = null;
-            errorResponse = null;
+            webhooksErrorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -173,8 +173,8 @@ public class Webhooks {
         else {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.WebhooksErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.WebhooksErrorResponse.class);
+                res.webhooksErrorResponse = out;
             }
         }
 
@@ -206,7 +206,7 @@ public class Webhooks {
         String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
 
         com.formance.formance_sdk.models.operations.DeleteConfigResponse res = new com.formance.formance_sdk.models.operations.DeleteConfigResponse(contentType, httpRes.statusCode()) {{
-            errorResponse = null;
+            webhooksErrorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -215,8 +215,8 @@ public class Webhooks {
         else {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.WebhooksErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.WebhooksErrorResponse.class);
+                res.webhooksErrorResponse = out;
             }
         }
 
@@ -255,7 +255,7 @@ public class Webhooks {
 
         com.formance.formance_sdk.models.operations.GetManyConfigsResponse res = new com.formance.formance_sdk.models.operations.GetManyConfigsResponse(contentType, httpRes.statusCode()) {{
             configsResponse = null;
-            errorResponse = null;
+            webhooksErrorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -269,8 +269,8 @@ public class Webhooks {
         else {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.WebhooksErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.WebhooksErrorResponse.class);
+                res.webhooksErrorResponse = out;
             }
         }
 
@@ -317,7 +317,7 @@ public class Webhooks {
 
         com.formance.formance_sdk.models.operations.InsertConfigResponse res = new com.formance.formance_sdk.models.operations.InsertConfigResponse(contentType, httpRes.statusCode()) {{
             configResponse = null;
-            errorResponse = null;
+            webhooksErrorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -331,8 +331,8 @@ public class Webhooks {
         else {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.WebhooksErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.WebhooksErrorResponse.class);
+                res.webhooksErrorResponse = out;
             }
         }
 
@@ -365,7 +365,7 @@ public class Webhooks {
 
         com.formance.formance_sdk.models.operations.TestConfigResponse res = new com.formance.formance_sdk.models.operations.TestConfigResponse(contentType, httpRes.statusCode()) {{
             attemptResponse = null;
-            errorResponse = null;
+            webhooksErrorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -379,8 +379,8 @@ public class Webhooks {
         else {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.WebhooksErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.WebhooksErrorResponse.class);
+                res.webhooksErrorResponse = out;
             }
         }
 

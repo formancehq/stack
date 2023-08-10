@@ -19,11 +19,10 @@ class ConfigInfoResponse
 {
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
     #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\ConfigInfo')]
-    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?ConfigInfo $data = null;
+    public ConfigInfo $data;
     
 	public function __construct()
 	{
-		$this->data = null;
+		$this->data = new \formance\stack\Models\Shared\ConfigInfo();
 	}
 }

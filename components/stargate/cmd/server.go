@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc"
 	"github.com/formancehq/stack/components/stargate/internal/server/http"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/controllers"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -45,6 +46,7 @@ func resolveServerOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option 
 	options = append(options, fx.NopLogger)
 
 	options = append(options,
+		otlp.LoadResource(viper.GetString(otlp.OtelServiceName), viper.GetStringSlice(otlp.OtelResourceAttributes)),
 		otlptraces.CLITracesModule(viper.GetViper()),
 		otlpmetrics.CLIMetricsModule(viper.GetViper()),
 

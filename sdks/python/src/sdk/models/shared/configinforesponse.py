@@ -5,7 +5,6 @@ import dataclasses
 from ..shared import configinfo as shared_configinfo
 from dataclasses_json import Undefined, dataclass_json
 from sdk import utils
-from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -13,5 +12,5 @@ from typing import Optional
 class ConfigInfoResponse:
     r"""OK"""
     
-    data: Optional[shared_configinfo.ConfigInfo] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data'), 'exclude': lambda f: f is None }})
+    data: shared_configinfo.ConfigInfo = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     

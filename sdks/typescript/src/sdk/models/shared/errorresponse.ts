@@ -16,9 +16,9 @@ export class ErrorResponse extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "errorCode" })
-  errorCode: ErrorsEnum;
+  errorCode?: ErrorsEnum;
 
   @SpeakeasyMetadata()
   @Expose({ name: "errorMessage" })
-  errorMessage: string;
+  errorMessage?: string;
 }
