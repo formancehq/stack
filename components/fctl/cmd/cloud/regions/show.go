@@ -58,7 +58,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, _, err := apiClient.DefaultApi.GetRegion(cmd.Context(), organizationID, args[0]).Execute()
+	response, _, err := apiClient.DefaultAPI.GetRegion(cmd.Context(), organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

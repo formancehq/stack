@@ -65,7 +65,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	listInvitationsResponse, _, err := client.DefaultApi.
+	listInvitationsResponse, _, err := client.DefaultAPI.
 		ListInvitations(cmd.Context()).
 		Status(fctl.GetString(cmd, c.statusFlag)).
 		Organization(fctl.GetString(cmd, c.organizationFlag)).

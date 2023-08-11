@@ -60,7 +60,7 @@ func (c *SetupController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 		return nil, err
 	}
 
-	billing, _, err := apiClient.DefaultApi.BillingSetup(cmd.Context(), organizationID).Execute()
+	billing, _, err := apiClient.DefaultAPI.BillingSetup(cmd.Context(), organizationID).Execute()
 	if err != nil {
 		pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("You already have an active subscription")
 		return c, nil

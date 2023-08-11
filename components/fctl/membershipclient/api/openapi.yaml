@@ -672,15 +672,46 @@ components:
     PrivateRegion:
       allOf:
       - $ref: '#/components/schemas/Region'
-      - $ref: '#/components/schemas/PrivateRegion_allOf'
+      - properties:
+          clientID:
+            type: string
+          organizationID:
+            type: string
+          creatorID:
+            type: string
+          secret:
+            $ref: '#/components/schemas/PrivateRegion_allOf_secret'
+        required:
+        - clientID
+        - creatorID
+        - organizationID
+        type: object
     PublicRegion:
       allOf:
       - $ref: '#/components/schemas/Region'
-      - $ref: '#/components/schemas/PublicRegion_allOf'
+      - properties:
+          production:
+            type: boolean
+        required:
+        - production
+        type: object
     AnyRegion:
       allOf:
       - $ref: '#/components/schemas/Region'
-      - $ref: '#/components/schemas/AnyRegion_allOf'
+      - properties:
+          clientID:
+            type: string
+          organizationID:
+            type: string
+          creator:
+            $ref: '#/components/schemas/User'
+          production:
+            type: boolean
+          public:
+            type: boolean
+        required:
+        - public
+        type: object
     OrganizationData:
       example:
         name: name
@@ -694,7 +725,17 @@ components:
     Organization:
       allOf:
       - $ref: '#/components/schemas/OrganizationData'
-      - $ref: '#/components/schemas/Organization_allOf'
+      - properties:
+          id:
+            description: Organization ID
+            type: string
+          ownerId:
+            description: Owner ID
+            type: string
+        required:
+        - id
+        - ownerId
+        type: object
     StackData:
       properties:
         name:
@@ -731,7 +772,31 @@ components:
     Stack:
       allOf:
       - $ref: '#/components/schemas/StackData'
-      - $ref: '#/components/schemas/Stack_allOf'
+      - properties:
+          id:
+            description: Stack ID
+            type: string
+          organizationId:
+            description: Organization ID
+            type: string
+          uri:
+            description: Base stack uri
+            type: string
+          regionID:
+            description: The region where the stack is installed
+            type: string
+          stargateEnabled:
+            type: boolean
+          deletedAt:
+            format: date-time
+            type: string
+        required:
+        - id
+        - organizationId
+        - regionID
+        - stargateEnabled
+        - uri
+        type: object
     UpdatableUserData:
       example:
         metadata:
@@ -744,12 +809,26 @@ components:
       type: object
     UserData:
       allOf:
-      - $ref: '#/components/schemas/UserData_allOf'
+      - properties:
+          email:
+            type: string
+          metadata:
+            additionalProperties: true
+            type: object
+        required:
+        - email
+        type: object
       - $ref: '#/components/schemas/UpdatableUserData'
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
-      - $ref: '#/components/schemas/User_allOf'
+      - properties:
+          id:
+            description: User ID
+            type: string
+        required:
+        - id
+        type: object
     OrganizationArray:
       items:
         $ref: '#/components/schemas/Organization'
@@ -825,7 +904,12 @@ components:
     CreateStackRequest:
       allOf:
       - $ref: '#/components/schemas/StackData'
-      - $ref: '#/components/schemas/CreateStackRequest_allOf'
+      - properties:
+          regionID:
+            type: string
+        required:
+        - regionID
+        type: object
     CreateStackResponse:
       example:
         data: null
@@ -1007,127 +1091,17 @@ components:
       - lastDigits
       type: object
       example: null
-    PrivateRegion_allOf:
-      properties:
-        clientID:
-          type: string
-        organizationID:
-          type: string
-        creatorID:
-          type: string
-        secret:
-          $ref: '#/components/schemas/PrivateRegion_allOf_secret'
-      required:
-      - clientID
-      - creatorID
-      - organizationID
-      type: object
-      example: null
-    PublicRegion_allOf:
-      properties:
-        production:
-          type: boolean
-      required:
-      - production
-      type: object
-      example: null
-    AnyRegion_allOf:
-      properties:
-        clientID:
-          type: string
-        organizationID:
-          type: string
-        creator:
-          $ref: '#/components/schemas/User'
-        production:
-          type: boolean
-        public:
-          type: boolean
-      required:
-      - public
-      type: object
-      example: null
-    Organization_allOf:
-      properties:
-        id:
-          description: Organization ID
-          type: string
-        ownerId:
-          description: Owner ID
-          type: string
-      required:
-      - id
-      - ownerId
-      type: object
-      example: null
-    Stack_allOf:
-      properties:
-        id:
-          description: Stack ID
-          type: string
-        organizationId:
-          description: Organization ID
-          type: string
-        uri:
-          description: Base stack uri
-          type: string
-        regionID:
-          description: The region where the stack is installed
-          type: string
-        stargateEnabled:
-          type: boolean
-        deletedAt:
-          format: date-time
-          type: string
-      required:
-      - id
-      - organizationId
-      - regionID
-      - stargateEnabled
-      - uri
-      type: object
-      example: null
-    UserData_allOf:
-      properties:
-        email:
-          type: string
-        metadata:
-          additionalProperties: true
-          type: object
-      required:
-      - email
-      type: object
-      example: null
-    User_allOf:
-      properties:
-        id:
-          description: User ID
-          type: string
-      required:
-      - id
-      type: object
-      example: null
-    CreateStackRequest_allOf:
-      properties:
-        regionID:
-          type: string
-      required:
-      - regionID
-      type: object
-      example: null
-    ListOrganizationExpandedResponse_data_inner_allOf:
-      properties:
-        totalStacks:
-          type: integer
-        totalUsers:
-          type: integer
-        owner:
-          $ref: '#/components/schemas/User'
-      type: object
     ListOrganizationExpandedResponse_data_inner:
       allOf:
       - $ref: '#/components/schemas/Organization'
-      - $ref: '#/components/schemas/ListOrganizationExpandedResponse_data_inner_allOf'
+      - properties:
+          totalStacks:
+            type: integer
+          totalUsers:
+            type: integer
+          owner:
+            $ref: '#/components/schemas/User'
+        type: object
   securitySchemes:
     oauth2:
       flows:

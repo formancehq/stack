@@ -60,7 +60,7 @@ func (c *PortalController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	billing, _, err := apiClient.DefaultApi.BillingPortal(cmd.Context(), organizationID).Execute()
+	billing, _, err := apiClient.DefaultAPI.BillingPortal(cmd.Context(), organizationID).Execute()
 	if err != nil {
 		return nil, err
 	}

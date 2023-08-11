@@ -92,7 +92,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	region := fctl.GetString(cmd, regionFlag)
 	if region == "" {
-		regions, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
+		regions, _, err := apiClient.DefaultAPI.ListRegions(cmd.Context(), organization).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing regions")
 		}
@@ -123,7 +123,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		}
 	}
 
-	stackResponse, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).CreateStackRequest(membershipclient.CreateStackRequest{
+	stackResponse, _, err := apiClient.DefaultAPI.CreateStack(cmd.Context(), organization).CreateStackRequest(membershipclient.CreateStackRequest{
 		Name:     name,
 		Metadata: metadata,
 		RegionID: region,

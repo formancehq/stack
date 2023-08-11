@@ -55,7 +55,7 @@ func (c *DeclineController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 		return nil, fctl.ErrMissingApproval
 	}
 
-	_, err = client.DefaultApi.DeclineInvitation(cmd.Context(), args[0]).Execute()
+	_, err = client.DefaultAPI.DeclineInvitation(cmd.Context(), args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

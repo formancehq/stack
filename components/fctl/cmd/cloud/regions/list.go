@@ -58,7 +58,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	regionsResponse, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organizationID).Execute()
+	regionsResponse, _, err := apiClient.DefaultAPI.ListRegions(cmd.Context(), organizationID).Execute()
 	if err != nil {
 		return nil, err
 	}

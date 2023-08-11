@@ -59,7 +59,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	usersResponse, _, err := apiClient.DefaultApi.ListUsers(cmd.Context(), organizationID).Execute()
+	usersResponse, _, err := apiClient.DefaultAPI.ListUsers(cmd.Context(), organizationID).Execute()
 	if err != nil {
 		return nil, err
 	}

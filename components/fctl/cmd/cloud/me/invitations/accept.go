@@ -56,7 +56,7 @@ func (c *AcceptController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
-	_, err = client.DefaultApi.AcceptInvitation(cmd.Context(), args[0]).Execute()
+	_, err = client.DefaultAPI.AcceptInvitation(cmd.Context(), args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

@@ -77,7 +77,7 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		if fctl.GetString(cmd, stackNameFlag) != "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stackResponse, httpResponse, err := apiClient.DefaultApi.ReadStack(cmd.Context(), organization, args[0]).Execute()
+		stackResponse, httpResponse, err := apiClient.DefaultAPI.ReadStack(cmd.Context(), organization, args[0]).Execute()
 		if err != nil {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return nil, errStackNotFound
@@ -89,7 +89,7 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		if fctl.GetString(cmd, stackNameFlag) == "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stacksResponse, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
+		stacksResponse, _, err := apiClient.DefaultAPI.ListStacks(cmd.Context(), organization).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing stacks")
 		}

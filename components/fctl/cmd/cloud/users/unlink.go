@@ -56,7 +56,7 @@ func (c *UnlinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	_, err = apiClient.DefaultApi.UnlinkUserFromOrganization(cmd.Context(), organizationID, args[0]).Execute()
+	_, err = apiClient.DefaultAPI.UnlinkUserFromOrganization(cmd.Context(), organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

@@ -77,7 +77,7 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, err
 	}
 
-	rsp, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).
+	rsp, _, err := apiClient.DefaultAPI.ListStacks(cmd.Context(), organization).
 		Deleted(fctl.GetBool(cmd, deletedFlag)).
 		Execute()
 	if err != nil {

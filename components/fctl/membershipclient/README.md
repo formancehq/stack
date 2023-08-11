@@ -78,43 +78,42 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DefaultApi* | [**AcceptInvitation**](docs/DefaultApi.md#acceptinvitation) | **Post** /me/invitations/{invitationId}/accept | Accept invitation
-*DefaultApi* | [**BillingPortal**](docs/DefaultApi.md#billingportal) | **Get** /organizations/{organizationId}/billing/portal | Access to the billing portal
-*DefaultApi* | [**BillingSetup**](docs/DefaultApi.md#billingsetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
-*DefaultApi* | [**CreateInvitation**](docs/DefaultApi.md#createinvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
-*DefaultApi* | [**CreateOrganization**](docs/DefaultApi.md#createorganization) | **Post** /organizations | Create organization
-*DefaultApi* | [**CreatePrivateRegion**](docs/DefaultApi.md#createprivateregion) | **Post** /organizations/{organizationId}/regions | Create a private region
-*DefaultApi* | [**CreateStack**](docs/DefaultApi.md#createstack) | **Post** /organizations/{organizationId}/stacks | Create stack
-*DefaultApi* | [**DeclineInvitation**](docs/DefaultApi.md#declineinvitation) | **Post** /me/invitations/{invitationId}/reject | Decline invitation
-*DefaultApi* | [**DeleteInvitation**](docs/DefaultApi.md#deleteinvitation) | **Delete** /organizations/{organizationId}/invitations/{invitationId} | Delete invitation
-*DefaultApi* | [**DeleteOrganization**](docs/DefaultApi.md#deleteorganization) | **Delete** /organizations/{organizationId} | Delete organization
-*DefaultApi* | [**DeleteRegion**](docs/DefaultApi.md#deleteregion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
-*DefaultApi* | [**DeleteStack**](docs/DefaultApi.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
-*DefaultApi* | [**DisableStargate**](docs/DefaultApi.md#disablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
-*DefaultApi* | [**EnableStargate**](docs/DefaultApi.md#enablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
-*DefaultApi* | [**GetRegion**](docs/DefaultApi.md#getregion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
-*DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
-*DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
-*DefaultApi* | [**ListOrganizationInvitations**](docs/DefaultApi.md#listorganizationinvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
-*DefaultApi* | [**ListOrganizations**](docs/DefaultApi.md#listorganizations) | **Get** /organizations | List organizations of the connected user
-*DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
-*DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
-*DefaultApi* | [**ListStacks**](docs/DefaultApi.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
-*DefaultApi* | [**ListUsers**](docs/DefaultApi.md#listusers) | **Get** /organizations/{organizationId}/users | List users
-*DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
-*DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
-*DefaultApi* | [**ReadStack**](docs/DefaultApi.md#readstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Read stack
-*DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
-*DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
-*DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
-*DefaultApi* | [**UpdateConnectedUser**](docs/DefaultApi.md#updateconnecteduser) | **Put** /me | Update user
-*DefaultApi* | [**UpdateUser**](docs/DefaultApi.md#updateuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
+*DefaultAPI* | [**AcceptInvitation**](docs/DefaultAPI.md#acceptinvitation) | **Post** /me/invitations/{invitationId}/accept | Accept invitation
+*DefaultAPI* | [**BillingPortal**](docs/DefaultAPI.md#billingportal) | **Get** /organizations/{organizationId}/billing/portal | Access to the billing portal
+*DefaultAPI* | [**BillingSetup**](docs/DefaultAPI.md#billingsetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
+*DefaultAPI* | [**CreateInvitation**](docs/DefaultAPI.md#createinvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
+*DefaultAPI* | [**CreateOrganization**](docs/DefaultAPI.md#createorganization) | **Post** /organizations | Create organization
+*DefaultAPI* | [**CreatePrivateRegion**](docs/DefaultAPI.md#createprivateregion) | **Post** /organizations/{organizationId}/regions | Create a private region
+*DefaultAPI* | [**CreateStack**](docs/DefaultAPI.md#createstack) | **Post** /organizations/{organizationId}/stacks | Create stack
+*DefaultAPI* | [**DeclineInvitation**](docs/DefaultAPI.md#declineinvitation) | **Post** /me/invitations/{invitationId}/reject | Decline invitation
+*DefaultAPI* | [**DeleteInvitation**](docs/DefaultAPI.md#deleteinvitation) | **Delete** /organizations/{organizationId}/invitations/{invitationId} | Delete invitation
+*DefaultAPI* | [**DeleteOrganization**](docs/DefaultAPI.md#deleteorganization) | **Delete** /organizations/{organizationId} | Delete organization
+*DefaultAPI* | [**DeleteRegion**](docs/DefaultAPI.md#deleteregion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
+*DefaultAPI* | [**DeleteStack**](docs/DefaultAPI.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+*DefaultAPI* | [**DisableStargate**](docs/DefaultAPI.md#disablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
+*DefaultAPI* | [**EnableStargate**](docs/DefaultAPI.md#enablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
+*DefaultAPI* | [**GetRegion**](docs/DefaultAPI.md#getregion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
+*DefaultAPI* | [**GetServerInfo**](docs/DefaultAPI.md#getserverinfo) | **Get** /_info | Get server info
+*DefaultAPI* | [**ListInvitations**](docs/DefaultAPI.md#listinvitations) | **Get** /me/invitations | List invitations of the user
+*DefaultAPI* | [**ListOrganizationInvitations**](docs/DefaultAPI.md#listorganizationinvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
+*DefaultAPI* | [**ListOrganizations**](docs/DefaultAPI.md#listorganizations) | **Get** /organizations | List organizations of the connected user
+*DefaultAPI* | [**ListOrganizationsExpanded**](docs/DefaultAPI.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
+*DefaultAPI* | [**ListRegions**](docs/DefaultAPI.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
+*DefaultAPI* | [**ListStacks**](docs/DefaultAPI.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
+*DefaultAPI* | [**ListUsers**](docs/DefaultAPI.md#listusers) | **Get** /organizations/{organizationId}/users | List users
+*DefaultAPI* | [**ReadConnectedUser**](docs/DefaultAPI.md#readconnecteduser) | **Get** /me | Read user
+*DefaultAPI* | [**ReadOrganization**](docs/DefaultAPI.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
+*DefaultAPI* | [**ReadStack**](docs/DefaultAPI.md#readstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Read stack
+*DefaultAPI* | [**ReadUser**](docs/DefaultAPI.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+*DefaultAPI* | [**RestoreStack**](docs/DefaultAPI.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
+*DefaultAPI* | [**UnlinkUserFromOrganization**](docs/DefaultAPI.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
+*DefaultAPI* | [**UpdateConnectedUser**](docs/DefaultAPI.md#updateconnecteduser) | **Put** /me | Update user
+*DefaultAPI* | [**UpdateUser**](docs/DefaultAPI.md#updateuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
 
 
 ## Documentation For Models
 
  - [AnyRegion](docs/AnyRegion.md)
- - [AnyRegionAllOf](docs/AnyRegionAllOf.md)
  - [BillingPortal](docs/BillingPortal.md)
  - [BillingPortalResponse](docs/BillingPortalResponse.md)
  - [BillingSetup](docs/BillingSetup.md)
@@ -123,7 +122,6 @@ Class | Method | HTTP request | Description
  - [CreateOrganizationResponse](docs/CreateOrganizationResponse.md)
  - [CreatePrivateRegionRequest](docs/CreatePrivateRegionRequest.md)
  - [CreateStackRequest](docs/CreateStackRequest.md)
- - [CreateStackRequestAllOf](docs/CreateStackRequestAllOf.md)
  - [CreateStackResponse](docs/CreateStackResponse.md)
  - [CreatedPrivateRegionResponse](docs/CreatedPrivateRegionResponse.md)
  - [Error](docs/Error.md)
@@ -132,44 +130,37 @@ Class | Method | HTTP request | Description
  - [ListInvitationsResponse](docs/ListInvitationsResponse.md)
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
  - [ListOrganizationExpandedResponseDataInner](docs/ListOrganizationExpandedResponseDataInner.md)
- - [ListOrganizationExpandedResponseDataInnerAllOf](docs/ListOrganizationExpandedResponseDataInnerAllOf.md)
  - [ListOrganizationResponse](docs/ListOrganizationResponse.md)
  - [ListRegionsResponse](docs/ListRegionsResponse.md)
  - [ListStacksResponse](docs/ListStacksResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
  - [Organization](docs/Organization.md)
- - [OrganizationAllOf](docs/OrganizationAllOf.md)
  - [OrganizationData](docs/OrganizationData.md)
  - [PrivateRegion](docs/PrivateRegion.md)
- - [PrivateRegionAllOf](docs/PrivateRegionAllOf.md)
  - [PrivateRegionAllOfSecret](docs/PrivateRegionAllOfSecret.md)
  - [PublicRegion](docs/PublicRegion.md)
- - [PublicRegionAllOf](docs/PublicRegionAllOf.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
  - [Region](docs/Region.md)
  - [ServerInfo](docs/ServerInfo.md)
  - [Stack](docs/Stack.md)
- - [StackAllOf](docs/StackAllOf.md)
  - [StackData](docs/StackData.md)
  - [UpdatableUserData](docs/UpdatableUserData.md)
  - [UpdateUserResponse](docs/UpdateUserResponse.md)
  - [User](docs/User.md)
- - [UserAllOf](docs/UserAllOf.md)
  - [UserData](docs/UserData.md)
- - [UserDataAllOf](docs/UserDataAllOf.md)
 
 
 ## Documentation For Authorization
 
 
-
+Authentication schemes defined for the API:
 ### oauth2
 
 
 - **Type**: OAuth
 - **Flow**: accessCode
 - **Authorization URL**: /authorize
-- **Scopes**:
+- **Scopes**: 
  - **openid**: Enable OIDC
  - **email**: Ask email access
 
@@ -210,3 +201,6 @@ Each of these functions takes a value of the given basic type and returns a poin
 * `PtrTime`
 
 ## Author
+
+
+

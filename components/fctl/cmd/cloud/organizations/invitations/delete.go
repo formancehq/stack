@@ -64,7 +64,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
-	_, err = apiClient.DefaultApi.
+	_, err = apiClient.DefaultAPI.
 		DeleteInvitation(cmd.Context(), organizationID, args[0]).
 		Execute()
 	if err != nil {

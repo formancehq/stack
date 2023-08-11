@@ -57,7 +57,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, _, err := apiClient.DefaultApi.
+	response, _, err := apiClient.DefaultAPI.
 		CreateOrganization(cmd.Context()).
 		Body(membershipclient.OrganizationData{
 			Name: args[0],

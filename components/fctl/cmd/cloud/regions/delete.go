@@ -55,7 +55,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	_, err = apiClient.DefaultApi.DeleteRegion(cmd.Context(), organizationID, args[0]).Execute()
+	_, err = apiClient.DefaultAPI.DeleteRegion(cmd.Context(), organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

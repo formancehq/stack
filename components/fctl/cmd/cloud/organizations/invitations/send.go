@@ -65,7 +65,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fctl.ErrMissingApproval
 	}
 
-	_, _, err = apiClient.DefaultApi.
+	_, _, err = apiClient.DefaultAPI.
 		CreateInvitation(cmd.Context(), organizationID).
 		Email(args[0]).
 		Execute()

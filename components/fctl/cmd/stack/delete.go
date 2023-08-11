@@ -73,7 +73,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
 
-		rsp, _, err := apiClient.DefaultApi.ReadStack(cmd.Context(), organization, args[0]).Execute()
+		rsp, _, err := apiClient.DefaultAPI.ReadStack(cmd.Context(), organization, args[0]).Execute()
 		if err != nil {
 			return nil, err
 		}
@@ -82,7 +82,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		if fctl.GetString(cmd, stackNameFlag) == "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stacks, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
+		stacks, _, err := apiClient.DefaultAPI.ListStacks(cmd.Context(), organization).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing stacks")
 		}
@@ -101,7 +101,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fctl.ErrMissingApproval
 	}
 
-	if _, err := apiClient.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id).Execute(); err != nil {
+	if _, err := apiClient.DefaultAPI.DeleteStack(cmd.Context(), organization, stack.Id).Execute(); err != nil {
 		return nil, errors.Wrap(err, "deleting stack")
 	}
 

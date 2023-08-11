@@ -19,8 +19,8 @@ var _ MappedNullable = &UserData{}
 
 // UserData struct for UserData
 type UserData struct {
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Email string `json:"email"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
 // NewUserData instantiates a new UserData object
@@ -39,6 +39,38 @@ func NewUserData(email string) *UserData {
 func NewUserDataWithDefaults() *UserData {
 	this := UserData{}
 	return &this
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *UserData) GetMetadata() map[string]interface{} {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]interface{}
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *UserData) GetMetadataOk() (map[string]interface{}, bool) {
+	if o == nil || IsNil(o.Metadata) {
+		return map[string]interface{}{}, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *UserData) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
+func (o *UserData) SetMetadata(v map[string]interface{}) {
+	o.Metadata = v
 }
 
 // GetEmail returns the Email field value
@@ -65,38 +97,6 @@ func (o *UserData) SetEmail(v string) {
 	o.Email = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *UserData) GetMetadata() map[string]string {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]string
-		return ret
-	}
-	return *o.Metadata
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *UserData) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return nil, false
-	}
-	return o.Metadata, true
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *UserData) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *UserData) SetMetadata(v map[string]string) {
-	o.Metadata = &v
-}
-
 func (o UserData) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -107,10 +107,10 @@ func (o UserData) MarshalJSON() ([]byte, error) {
 
 func (o UserData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["email"] = o.Email
 	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
+	toSerialize["email"] = o.Email
 	return toSerialize, nil
 }
 

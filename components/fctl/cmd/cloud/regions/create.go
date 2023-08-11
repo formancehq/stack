@@ -67,7 +67,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		}
 	}
 
-	regionResponse, _, err := apiClient.DefaultApi.CreatePrivateRegion(cmd.Context(), organizationID).
+	regionResponse, _, err := apiClient.DefaultAPI.CreatePrivateRegion(cmd.Context(), organizationID).
 		CreatePrivateRegionRequest(membershipclient.CreatePrivateRegionRequest{
 			Name: name,
 		}).

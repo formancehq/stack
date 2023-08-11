@@ -66,7 +66,7 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, err
 	}
 
-	response, _, err := apiClient.DefaultApi.
+	response, _, err := apiClient.DefaultAPI.
 		RestoreStack(cmd.Context(), organization, args[0]).
 		Execute()
 	if err != nil {

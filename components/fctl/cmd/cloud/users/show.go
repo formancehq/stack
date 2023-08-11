@@ -55,7 +55,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	userResponse, _, err := apiClient.DefaultApi.ReadUser(cmd.Context(), organizationID, args[0]).Execute()
+	userResponse, _, err := apiClient.DefaultAPI.ReadUser(cmd.Context(), organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}
