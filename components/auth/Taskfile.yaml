@@ -63,23 +63,6 @@ tasks:
     cmds:
       - docker run --rm github.com/formancehq/{{.COMPONENT}}
 
-  generate-client:
-    cmds:
-      - rm -rf ./authclient
-      - >
-        docker run --rm
-        -w /local
-        -v ${PWD}:/local
-        openapitools/openapi-generator-cli:latest generate
-        -i swagger.yaml
-        -g go
-        -o ./authclient
-        --git-user-id=formancehq
-        --git-repo-id=auth
-        -p packageVersion=latest
-        -p isGoSubmodule=true
-        -p packageName=authclient
-
   install-deps-demo-client:
     cmds:
       - cd demo && yarn install
