@@ -162,12 +162,15 @@ func init() {
 								delete(account.Metadata, k)
 								updated = true
 							case k == "destination" || k == "void_destination" || k == "wallets/holds/subject":
-								m := make(map[string]any)
-								if err := json.Unmarshal([]byte(v.(string)), &m); err != nil {
-									return err
+								switch v := v.(type) {
+								case string:
+									m := make(map[string]any)
+									if err := json.Unmarshal([]byte(v), &m); err != nil {
+										return err
+									}
+									account.Metadata[k] = m
+									updated = true
 								}
-								account.Metadata[k] = m
-								updated = true
 							}
 						}
 						if !updated {
