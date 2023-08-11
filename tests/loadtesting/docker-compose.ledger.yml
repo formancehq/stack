@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     command: run /k6/dist/ledger-write.js
-    volumes:
-      - ./results:/results
     depends_on:
       ledger:
         condition: service_healthy

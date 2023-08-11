@@ -4,8 +4,8 @@ import testInfo from "./../src/ledger/infos-test";
 import testWriteTransactions from "./../src/ledger/write-transactions-test";
 
 export let options: Options = {
-    vus: 10,
-    duration: '1m',
+    vus: 20,
+    duration: '5m',
 };
 
 export default () => {
