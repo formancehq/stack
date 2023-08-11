@@ -8,3 +8,11 @@ And you need [direnv](https://direnv.net/).
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
 go install github.com/onsi/ginkgo/v2/ginkgo@v2.8.3
 ```
+
+
+## Generate SDK with Moon and Speakeasy
+
+```
+moon run openapi:build
+```
+

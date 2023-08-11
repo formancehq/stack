@@ -162,14 +162,14 @@ Class | Method | HTTP request | Description
 ## Documentation For Authorization
 
 
-
+Authentication schemes defined for the API:
 ### oauth2
 
 
 - **Type**: OAuth
 - **Flow**: accessCode
 - **Authorization URL**: /authorize
-- **Scopes**:
+- **Scopes**: 
  - **openid**: Enable OIDC
  - **email**: Ask email access
 
@@ -210,3 +210,6 @@ Each of these functions takes a value of the given basic type and returns a poin
 * `PtrTime`
 
 ## Author
+
+
+
