@@ -12,7 +12,6 @@ exec:
     --config garden/k3d.yaml
     ${variables contains "registries" ? "--registry-config " + variables.registries : ""}
     ${variables contains "network" ? "--network " + variables.network : ""}
-    --registry-create internal-registry
     --k3s-arg "--disable=traefik@server:0" && garden plugins kubernetes cluster-init --env=default --force-refresh
 ---
 kind: Command
