@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: monopod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.5
+    clusterIP: 10.0.0.145
     clusterIPs:
-        - 10.0.0.5
+        - 10.0.0.145
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

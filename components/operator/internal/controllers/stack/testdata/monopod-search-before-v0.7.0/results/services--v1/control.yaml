@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: monopod-search-before-v0-7-0
 spec:
-    clusterIP: 10.0.0.213
+    clusterIP: 10.0.0.80
     clusterIPs:
-        - 10.0.0.213
+        - 10.0.0.80
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: multipod-debug
 spec:
-    clusterIP: 10.0.0.55
+    clusterIP: 10.0.0.86
     clusterIPs:
-        - 10.0.0.55
+        - 10.0.0.86
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

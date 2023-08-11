@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.124
+    clusterIP: 10.0.0.168
     clusterIPs:
-        - 10.0.0.124
+        - 10.0.0.168
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

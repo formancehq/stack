@@ -8,9 +8,9 @@ metadata:
     name: gateway
     namespace: multipod-service-annotation
 spec:
-    clusterIP: 10.0.0.19
+    clusterIP: 10.0.0.82
     clusterIPs:
-        - 10.0.0.19
+        - 10.0.0.82
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
