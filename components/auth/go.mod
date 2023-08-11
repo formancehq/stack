@@ -75,8 +75,8 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
-	github.com/uptrace/bun v1.1.12 // indirect
-	github.com/uptrace/bun/dialect/pgdialect v1.1.12 // indirect
+	github.com/uptrace/bun v1.1.14 // indirect
+	github.com/uptrace/bun/dialect/pgdialect v1.1.14 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect

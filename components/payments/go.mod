@@ -23,7 +23,7 @@ require (
 	github.com/stripe/stripe-go/v72 v72.122.0
 	github.com/uptrace/bun v1.1.14
 	github.com/uptrace/bun/dialect/pgdialect v1.1.14
-	github.com/uptrace/bun/extra/bundebug v1.1.12
+	github.com/uptrace/bun/extra/bundebug v1.1.14
 	github.com/uptrace/bun/extra/bunotel v1.1.14
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.39.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
@@ -46,7 +46,7 @@ require (
 	github.com/eapache/go-resiliency v1.3.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230111030713-bf00bc1b83b6 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
-	github.com/fatih/color v1.14.1 // indirect
+	github.com/fatih/color v1.15.0 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
@@ -95,6 +95,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
+	github.com/uptrace/bun/driver/pgdriver v1.1.14 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelsql v0.2.1 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 // indirect
@@ -124,7 +125,7 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
@@ -134,6 +135,7 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	mellium.im/sasl v0.3.1 // indirect
 )
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
