@@ -21,6 +21,7 @@ func init() {
 							ExposeHTTP:              true,
 							InjectPostgresVariables: true,
 							ListenEnvVar:            "LISTEN",
+							Annotations:             ctx.Configuration.Spec.Services.Webhooks.Annotations.Service,
 							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 								return modules.Container{
 									Image:     modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
@@ -34,6 +35,7 @@ func init() {
 							InjectPostgresVariables: true,
 							ListenEnvVar:            "LISTEN",
 							Liveness:                modules.LivenessDisable,
+							Annotations:             ctx.Configuration.Spec.Services.Webhooks.Annotations.Service,
 							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 								return modules.Container{
 									Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),

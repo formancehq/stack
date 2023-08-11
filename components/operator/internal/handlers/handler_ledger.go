@@ -20,6 +20,7 @@ func init() {
 						HasVersionEndpoint:      true,
 						ExposeHTTP:              true,
 						NeedTopic:               true,
+						Annotations:             ctx.Configuration.Spec.Services.Ledger.Annotations.Service,
 						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 							env := modules.NewEnv().Append(
 								modules.Env("STORAGE_DRIVER", "postgres"),

@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.233
+    clusterIP: 10.0.0.77
     clusterIPs:
-        - 10.0.0.233
+        - 10.0.0.77
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

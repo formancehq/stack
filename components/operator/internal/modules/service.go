@@ -293,7 +293,9 @@ type Service struct {
 	// All services should have the --listen flag to allow the operator to specify the port
 	Port int32
 	// Path indicates the path used to expose the service using an ingress
-	Path                    string
+	Path string
+	// Annotations indicates the annotations apply to the Service
+	Annotations             map[string]string
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
 	Liveness                Liveness
@@ -361,6 +363,14 @@ func (service *Service) Prepare(ctx ModuleContext, serviceName string) {
 
 func (service Service) installService(ctx ServiceInstallContext, deployer Deployer, serviceName string) error {
 	return controllerutils.JustError(deployer.Services().CreateOrUpdate(ctx, serviceName, func(t *corev1.Service) {
+		annotations := service.Annotations
+		if annotations == nil {
+			annotations = map[string]string{}
+		} else {
+			annotations = collectionutils.CopyMap(annotations)
+		}
+		t.ObjectMeta.Annotations = annotations
+
 		selector := serviceName
 		if ctx.Configuration.Spec.LightMode {
 			selector = ctx.Stack.Name

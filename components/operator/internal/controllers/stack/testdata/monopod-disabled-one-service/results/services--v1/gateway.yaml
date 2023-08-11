@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: monopod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.195
+    clusterIP: 10.0.0.188
     clusterIPs:
-        - 10.0.0.195
+        - 10.0.0.188
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

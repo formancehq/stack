@@ -1,4 +1,7 @@
 package v1beta3
 
 // +kubebuilder:object:generate=true
-type ControlSpec struct{}
+type ControlSpec struct {
+	// +optional
+	Annotations AnnotationsServicesSpec `json:"service"`
+}

@@ -38,6 +38,7 @@ type ConfigurationServicesSpec struct {
 	Auth          AuthSpec          `json:"auth,omitempty"`
 
 	// +optional
+	Gateway  GatewaySpec  `json:"gateway,omitempty"`
 	Stargate StargateSpec `json:"stargate,omitempty"`
 }
 
@@ -78,6 +79,11 @@ type MonitoringSpec struct {
 	Traces *TracesSpec `json:"traces,omitempty"`
 	// +optional
 	Metrics *MetricsSpec `json:"metrics,omitempty"`
+}
+
+type AnnotationsServicesSpec struct {
+	// +optional
+	Service map[string]string `json:"service,omitempty"`
 }
 
 type OtlpSpec struct {

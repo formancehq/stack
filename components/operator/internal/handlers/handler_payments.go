@@ -40,6 +40,7 @@ func init() {
 						ExposeHTTP:              true,
 						NeedTopic:               true,
 						Liveness:                modules.LivenessLegacy,
+						Annotations:             ctx.Configuration.Spec.Services.Payments.Annotations.Service,
 						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 							return modules.Container{
 								Env:       env(resolveContext),

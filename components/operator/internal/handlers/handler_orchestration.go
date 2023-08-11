@@ -34,6 +34,7 @@ func init() {
 							ExposeHTTP:              true,
 							HasVersionEndpoint:      true,
 							InjectPostgresVariables: true,
+							Annotations:             ctx.Configuration.Spec.Services.Orchestration.Annotations.Service,
 							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 								return modules.Container{
 									Env:       orchestrationEnvVars(resolveContext),

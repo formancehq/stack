@@ -6,9 +6,9 @@ metadata:
     name: stargate
     namespace: multipod-latest-no-monitoring
 spec:
-    clusterIP: 10.0.0.136
+    clusterIP: 10.0.0.139
     clusterIPs:
-        - 10.0.0.136
+        - 10.0.0.139
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

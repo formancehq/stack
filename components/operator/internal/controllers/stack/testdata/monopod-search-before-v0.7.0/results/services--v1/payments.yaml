@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: monopod-search-before-v0-7-0
 spec:
-    clusterIP: 10.0.0.123
+    clusterIP: 10.0.0.220
     clusterIPs:
-        - 10.0.0.123
+        - 10.0.0.220
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

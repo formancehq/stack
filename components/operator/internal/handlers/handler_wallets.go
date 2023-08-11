@@ -20,6 +20,7 @@ func init() {
 			HasVersionEndpoint: true,
 			ExposeHTTP:         true,
 			ListenEnvVar:       "LISTEN",
+			Annotations:        ctx.Configuration.Spec.Services.Wallets.Annotations.Service,
 			AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
 				return stackv1beta3.NewClientConfiguration()
 			},

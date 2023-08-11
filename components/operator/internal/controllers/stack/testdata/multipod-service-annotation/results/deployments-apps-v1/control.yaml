@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+        reloader.stakater.com/auto: "true"
+    generation: 1
+    labels:
+        app.kubernetes.io/name: control
+        formance.com/monopod: "false"
+        stack: "true"
+    name: control
+    namespace: multipod-service-annotation
+spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: control
+    strategy:
+        rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+        type: RollingUpdate
+    template:
+        metadata:
+            creationTimestamp: null
+            labels:
+                app.kubernetes.io/name: control
+        spec:
+            containers:
+                - env:
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: control
+                    - name: STACK
+                      value: multipod-service-annotation
+                    - name: API_URL
+                      value: http://example.net
+                    - name: ENCRYPTION_KEY
+                      value: 9h44y2ZqrDuUy5R9NGLA9hca7uRUr932
+                    - name: ENCRYPTION_IV
+                      value: b6747T6eP9DnMvEw
+                    - name: CLIENT_ID
+                      value: control
+                    - name: CLIENT_SECRET
+                      value: mocked-secret
+                    - name: REDIRECT_URI
+                      value: http://example.net
+                    - name: UNSECURE_COOKIES
+                      value: "false"
+                  image: ghcr.io/formancehq/control:latest
+                  imagePullPolicy: Always
+                  name: control
+                  ports:
+                    - containerPort: 3000
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 512Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+status:
+    conditions:
+        - lastTransitionTime: "2023-08-10T13:52:00Z"
+          lastUpdateTime: "2023-08-10T13:52:00Z"
+          status: "True"
+          type: Available
+    observedGeneration: 1
