@@ -1,6 +1,6 @@
 # regions
 
-![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 Formance Private Regions Helm Chart
 
@@ -21,7 +21,7 @@ Formance Private Regions Helm Chart
 | Repository | Name | Version |
 |------------|------|---------|
 | file://../../components/agent/helm | agent | 0.2.0 |
-| file://../../components/operator/helm | operator | 0.2.2 |
+| file://../../components/operator/helm | operator | 0.2.3 |
 
 ## Values
 
@@ -41,7 +41,7 @@ Formance Private Regions Helm Chart
 | operator.enabled | bool | `true` |  |
 | operator.fullnameOverride | string | `"operator"` |  |
 | operator.image.repository | string | `"ghcr.io/formancehq/operator"` |  |
-| operator.image.tag | string | `"v0.16.7"` |  |
+| operator.image.tag | string | `"v0.16.8"` |  |
 | operator.nameOverride | string | `"operator"` |  |
 | operator.operator.disableWebhooks | bool | `false` |  |
 | operator.operator.enableLeaderElection | bool | `true` |  |
