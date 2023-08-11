@@ -95,7 +95,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
-	github.com/uptrace/bun/driver/pgdriver v1.1.14 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelsql v0.2.1 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 // indirect
@@ -135,7 +134,6 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	mellium.im/sasl v0.3.1 // indirect
 )
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs

@@ -398,12 +398,8 @@ github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc h1:9lRDQMhESg+zvGYm
 github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc/go.mod h1:bciPuU6GHm1iF1pBvUfxfsH0Wmnc2VbpgvbI9ZWuIRs=
 github.com/uptrace/bun v1.1.14 h1:S5vvNnjEynJ0CvnrBOD7MIRW7q/WbtvFXrdfy0lddAM=
 github.com/uptrace/bun v1.1.14/go.mod h1:RHk6DrIisO62dv10pUOJCz5MphXThuOTpVNYEYv7NI8=
-github.com/uptrace/bun/dialect/pgdialect v1.1.12 h1:m/CM1UfOkoBTglGO5CUTKnIKKOApOYxkcP2qn0F9tJk=
-github.com/uptrace/bun/dialect/pgdialect v1.1.12/go.mod h1:Ij6WIxQILxLlL2frUBxUBOZJtLElD2QQNDcu/PWDHTc=
 github.com/uptrace/bun/dialect/pgdialect v1.1.14 h1:b7+V1KDJPQSFYgkG/6YLXCl2uvwEY3kf/GSM7hTHRDY=
 github.com/uptrace/bun/dialect/pgdialect v1.1.14/go.mod h1:v6YiaXmnKQ2FlhRD2c0ZfKd+QXH09pYn4H8ojaavkKk=
-github.com/uptrace/bun/driver/pgdriver v1.1.12 h1:3rRWB1GK0psTJrHwxzNfEij2MLibggiLdTqjTtfHc1w=
-github.com/uptrace/bun/driver/pgdriver v1.1.12/go.mod h1:ssYUP+qwSEgeDDS1xm2XBip9el1y9Mi5mTAvLoiADLM=
 github.com/uptrace/bun/driver/pgdriver v1.1.14 h1:V2Etm7mLGS3mhx8ddxZcUnwZLX02Jmq9JTlo0sNVDhA=
 github.com/uptrace/bun/driver/pgdriver v1.1.14/go.mod h1:D4FjWV9arDYct6sjMJhFoyU71SpllZRHXFRRP2Kd0Kw=
 github.com/uptrace/bun/extra/bunotel v1.1.14 h1:jKA1zNfD2/Y/O3eFP15ao+V0cMigXN+ReNbsVUqrOhg=
@@ -502,8 +498,6 @@ golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
-golang.org/x/crypto v0.6.0 h1:qfktjS5LUO+fFKeJXZ+ikTRijMmljikvG68fpMMruSc=
-golang.org/x/crypto v0.6.0/go.mod h1:OFC/31mSvZgRz0V1QTNCzfAI1aIRzbiufJtkMIlEp58=
 golang.org/x/crypto v0.9.0 h1:LF6fAI+IutBocDJ2OT0Q1g8plpYljMZ4+lty+dsqw3g=
 golang.org/x/crypto v0.9.0/go.mod h1:yrmDGqONDYtNj3tH8X9dzUun2m2lzPa9ngI6/RUPGR0=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=

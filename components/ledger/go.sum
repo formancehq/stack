@@ -130,8 +130,6 @@ github.com/envoyproxy/go-control-plane v0.9.9-0.20201210154907-fd9021fe5dad/go.m
 github.com/envoyproxy/go-control-plane v0.9.9-0.20210512163311-63b5d3c536b0/go.mod h1:hliV/p42l8fGbc6Y9bQ70uLwIvmJyVE5k4iMKlh8wCQ=
 github.com/envoyproxy/go-control-plane v0.9.10-0.20210907150352-cf90f659a021/go.mod h1:AFq3mo9L8Lqqiid3OhADV3RfLJnjiw63cSpi+fDTRC0=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
-github.com/fatih/color v1.14.1 h1:qfhVLaG5s+nCROl1zJsZRxFeYrHLqWroPOQ8BWiNb4w=
-github.com/fatih/color v1.14.1/go.mod h1:2oHN61fhTpgcxD3TSWCgKDiH1+x4OiDVVGH8WlgGZGg=
 github.com/fatih/color v1.15.0 h1:kOqh6YHBtK8aywxGerMG2Eq3H6Qgoqeo13Bk2Mv/nBs=
 github.com/fatih/color v1.15.0/go.mod h1:0h5ZqXfHYED7Bhv2ZJamyIOUej9KtShiJESRwBDUSsw=
 github.com/felixge/httpsnoop v1.0.2/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
@@ -459,8 +457,6 @@ github.com/uptrace/bun/dialect/pgdialect v1.1.14 h1:b7+V1KDJPQSFYgkG/6YLXCl2uvwE
 github.com/uptrace/bun/dialect/pgdialect v1.1.14/go.mod h1:v6YiaXmnKQ2FlhRD2c0ZfKd+QXH09pYn4H8ojaavkKk=
 github.com/uptrace/bun/extra/bunbig v1.1.14 h1:3vAI0x2ObtWaXp2G5YJA0fBJTGzwv5gwTPbtEj0Ma00=
 github.com/uptrace/bun/extra/bunbig v1.1.14/go.mod h1:+tVzMLS0bTkILD9JcRm5INUd/Wwd/1gKIw6GogAUAfw=
-github.com/uptrace/bun/extra/bundebug v1.1.12 h1:y8nrHvo7TUCR91kXngWuF7Bk0E1nCTsWzYL1CDEriTo=
-github.com/uptrace/bun/extra/bundebug v1.1.12/go.mod h1:psjCrCMf5JaAyivW/A8MDBW5MwIy/jZFBCkIaBgabtM=
 github.com/uptrace/bun/extra/bundebug v1.1.14 h1:9OCGfP9ZDlh41u6OLerWdhBtJAVGXHr0xtxO4xWi6t0=
 github.com/uptrace/bun/extra/bundebug v1.1.14/go.mod h1:lto3guzS2v6mnQp1+akyE+ecBLOltevDDe324NXEYdw=
 github.com/uptrace/bun/extra/bunotel v1.1.14 h1:jKA1zNfD2/Y/O3eFP15ao+V0cMigXN+ReNbsVUqrOhg=
