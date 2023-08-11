@@ -1,12 +1,11 @@
 ---
 apiVersion: garden.io/v0
-kind: Module
+kind: Deploy
 description: OTEL collector
 # Use exec as the chart as a values.schema.yaml and garden inject a .garden keyn inside values
 type: exec
 name: otel-collector
-services:
-- name: otel-collector
+spec:
   deployCommand:
     - sh
     - -c

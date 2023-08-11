@@ -1,5 +1,5 @@
 ---
-apiVersion: garden.io/v0
+apiVersion: garden.io/v1
 kind: Project
 name: operator
 
@@ -11,6 +11,7 @@ environments:
 
 providers:
   - name: kubernetes
+    environments: ["default"]
     setupIngressController: false
     context: k3d-formance
     buildMode: kaniko
@@ -21,8 +22,7 @@ providers:
       - --force
       - --snapshotMode=redo
       - --use-new-run
-    deploymentRegistry:
-      hostname: internal-registry
-      namespace: formancehq
+    deploymentRegistry: # This need to point to the registry created by k3d
+      hostname: k3d-registry.host.k3d.internal
       insecure: true
       port: 5000
