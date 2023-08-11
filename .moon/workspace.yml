@@ -27,4 +27,4 @@ vcs:
   hooks:
     pre-commit:
       - 'pre-commit run'
-      - 'moon run :lint :test :mod :helm :sync :docs --affected'
+      - 'devbox run -- moon run :lint :test :mod :helm :sync :docs --affected'

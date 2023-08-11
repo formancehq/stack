@@ -5,4 +5,4 @@ set -eo pipefail
 # https://moonrepo.dev/docs/guides/vcs-hooks
 
 pre-commit run
-moon run :lint :test :mod :helm :sync :docs --affected
+devbox run -- moon run :lint :test :mod :helm :sync :docs --affected
