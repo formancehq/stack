@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: run -o json=/results/results.json /k6/dist/ledger-all.js --verbose
+    command: run /k6/dist/ledger-write.js
     volumes:
       - ./results:/results
     depends_on:
@@ -32,7 +32,7 @@ services:
       - postgres:/data/postgres
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:v1.8.2"
+    image: "ghcr.io/formancehq/ledger:v1.10.4"
     healthcheck:
       test: [ "CMD", "wget", "http://127.0.0.1:3068/_info", "-O", "-", "-q" ]
       interval: 10s
@@ -42,11 +42,11 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      STORAGE_DRIVER: "postgres"
-      STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger"
-      SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.10"
-          memory: "25M"
+      NUMARY_STORAGE_DRIVER: "postgres"
+      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger"
+      NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
+        #    deploy:
+        #      resources:
+        #        limits:
+        #          cpus: "0.10"
+        #          memory: "25M"
