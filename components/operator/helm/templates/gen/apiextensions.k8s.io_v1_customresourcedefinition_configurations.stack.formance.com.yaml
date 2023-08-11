@@ -4227,6 +4227,13 @@ spec:
                 properties:
                   auth:
                     properties:
+                      annotations:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4244,13 +4251,6 @@ spec:
                         - password
                         - port
                         - username
-                        type: object
-                      service:
-                        properties:
-                          service:
-                            additionalProperties:
-                              type: string
-                            type: object
                         type: object
                       staticClients:
                         items:
@@ -4286,7 +4286,7 @@ spec:
                     type: object
                   control:
                     properties:
-                      service:
+                      annotations:
                         properties:
                           service:
                             additionalProperties:
@@ -4308,6 +4308,13 @@ spec:
                     properties:
                       allowPastTimestamps:
                         type: boolean
+                      annotations:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4325,19 +4332,19 @@ spec:
                         - password
                         - port
                         - username
-                        type: object
-                      service:
-                        properties:
-                          service:
-                            additionalProperties:
-                              type: string
-                            type: object
                         type: object
                     required:
                     - postgres
                     type: object
                   orchestration:
                     properties:
+                      annotations:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4356,18 +4363,18 @@ spec:
                         - port
                         - username
                         type: object
-                      service:
+                    required:
+                    - postgres
+                    type: object
+                  payments:
+                    properties:
+                      annotations:
                         properties:
                           service:
                             additionalProperties:
                               type: string
                             type: object
                         type: object
-                    required:
-                    - postgres
-                    type: object
-                  payments:
-                    properties:
                       encryptionKey:
                         type: string
                       postgres:
@@ -4388,19 +4395,19 @@ spec:
                         - port
                         - username
                         type: object
-                      service:
-                        properties:
-                          service:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                     required:
                     - encryptionKey
                     - postgres
                     type: object
                   search:
                     properties:
+                      annotations:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                       batching:
                         properties:
                           count:
@@ -4444,19 +4451,12 @@ spec:
                           useZinc:
                             type: boolean
                         type: object
-                      service:
-                        properties:
-                          service:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                     required:
                     - elasticSearch
                     type: object
                   stargate:
                     properties:
-                      service:
+                      annotations:
                         properties:
                           service:
                             additionalProperties:
@@ -4466,7 +4466,7 @@ spec:
                     type: object
                   wallets:
                     properties:
-                      service:
+                      annotations:
                         properties:
                           service:
                             additionalProperties:
@@ -4476,6 +4476,13 @@ spec:
                     type: object
                   webhooks:
                     properties:
+                      annotations:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4493,13 +4500,6 @@ spec:
                         - password
                         - port
                         - username
-                        type: object
-                      service:
-                        properties:
-                          service:
-                            additionalProperties:
-                              type: string
-                            type: object
                         type: object
                     required:
                     - postgres

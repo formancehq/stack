@@ -22,7 +22,7 @@ type LedgerSpec struct {
 	// +optional
 	AllowPastTimestamps bool `json:"allowPastTimestamps"`
 	// +optional
-	Annotations AnnotationsServicesSpec `json:"service"`
+	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
 }
 
 type ServiceSpec struct {

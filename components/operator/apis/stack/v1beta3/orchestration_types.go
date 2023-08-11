@@ -4,5 +4,5 @@ package v1beta3
 type OrchestrationSpec struct {
 	Postgres PostgresConfig `json:"postgres"`
 	// +optional
-	Annotations AnnotationsServicesSpec `json:"service"`
+	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
 }

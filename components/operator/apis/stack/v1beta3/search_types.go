@@ -50,7 +50,7 @@ type SearchSpec struct {
 	Batching Batching `json:"batching"`
 
 	// +optional
-	Annotations AnnotationsServicesSpec `json:"service"`
+	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
 }
 
 const DefaultESIndex = "stacks"
