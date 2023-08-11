@@ -17,7 +17,7 @@ Also, we use [Garden](https://docs.garden.io/) for management.
 garden create-cluster
 ```
 
-2. Build the operator image:
+2. Build the operator image yourself or skip and deploy:
 
 > Add an entry for `k3d-registry.host.k3d.internal` inside /etc/hosts file, pointing to 127.0.0.1.
 
