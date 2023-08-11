@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: multipod-service-annotation
 spec:
-    clusterIP: 10.0.0.33
+    clusterIP: 10.0.0.99
     clusterIPs:
-        - 10.0.0.33
+        - 10.0.0.99
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
@@ -49,7 +50,29 @@ func init() {
 			ctx.Stack.Status.Ports["ledger"]["ledger"])
 	}
 
-	updateAccountMetadata := func(ctx modules.PostInstallContext, account account) error {
+	updateMetadata := func(ctx modules.PostInstallContext, account account) error {
+		data, err := json.Marshal(account.Metadata)
+		if err != nil {
+			return err
+		}
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, ledgerUrl(ctx)+"/accounts/"+account.Address+"/metadata", bytes.NewBuffer(data))
+		if err != nil {
+			return err
+		}
+
+		rsp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
+		if rsp.StatusCode != http.StatusOK && rsp.StatusCode != http.StatusNoContent {
+			return fmt.Errorf("unexpected status code %d while waiting for %d or %d", rsp.StatusCode, http.StatusOK, http.StatusNoContent)
+		}
+
+		return nil
+	}
+
+	updateAccountMetadataForLedgerV2 := func(ctx modules.PostInstallContext, account account) error {
 
 		customMetadataRaw := account.Metadata["wallets/custom_data"]
 		newMetadata := account.Metadata
@@ -71,26 +94,9 @@ func init() {
 		default:
 			panic("should not happen")
 		}
+		account.Metadata = newMetadata
 
-		data, err := json.Marshal(newMetadata)
-		if err != nil {
-			return err
-		}
-
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, ledgerUrl(ctx)+"/accounts/"+account.Address+"/metadata", bytes.NewBuffer(data))
-		if err != nil {
-			return err
-		}
-
-		rsp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			return err
-		}
-		if rsp.StatusCode != http.StatusOK && rsp.StatusCode != http.StatusNoContent {
-			return fmt.Errorf("unexpected status code %d while waiting for %d or %d", rsp.StatusCode, http.StatusOK, http.StatusNoContent)
-		}
-
-		return nil
+		return updateMetadata(ctx, account)
 	}
 
 	modules.Register("wallets", modules.Module{
@@ -119,9 +125,59 @@ func init() {
 					for _, account := range accounts {
 						walletCustomMetadata, ok := account.Metadata["wallets/custom_data"]
 						if ok && walletCustomMetadata != "" {
-							if err := updateAccountMetadata(ctx, account); err != nil {
+							if err := updateAccountMetadataForLedgerV2(ctx, account); err != nil {
 								return errors.Wrapf(err, "updating account metadata of account: %s", account.Address)
 							}
+						}
+					}
+
+					return nil
+				},
+			},
+			"v0.4.4": {
+				Services: service,
+				PostUpgrade: func(ctx modules.PostInstallContext) error {
+
+					_, ok := ctx.Stack.Status.Ports["ledger"]
+					if !ok {
+						return errors.New("not ready, missing ledger port")
+					}
+					_, ok = ctx.Stack.Status.Ports["ledger"]["ledger"]
+					if !ok {
+						return errors.New("not ready, missing ledger port")
+					}
+
+					accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(ctx)+"/accounts", url.Values{})
+					if err != nil {
+						return errors.Wrap(err, "fetching accounts")
+					}
+
+					for _, account := range accounts {
+						customData := map[string]any{}
+						updated := false
+						for k, v := range account.Metadata {
+							switch {
+							case strings.HasPrefix(k, "wallets/custom_data_"):
+								customData[strings.TrimPrefix(k, "wallets/custom_data_")] = v
+								delete(account.Metadata, k)
+								updated = true
+							case k == "destination" || k == "void_destination" || k == "wallets/holds/subject":
+								m := make(map[string]any)
+								if err := json.Unmarshal([]byte(v.(string)), &m); err != nil {
+									return err
+								}
+								account.Metadata[k] = m
+								updated = true
+							}
+						}
+						if !updated {
+							continue
+						}
+
+						account.Metadata["wallets/custom_data"] = customData
+
+						if err := updateMetadata(ctx, account); err != nil {
+							return err
 						}
 					}
 

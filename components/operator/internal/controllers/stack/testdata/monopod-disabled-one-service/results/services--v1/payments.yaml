@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: monopod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.3
+    clusterIP: 10.0.0.165
     clusterIPs:
-        - 10.0.0.3
+        - 10.0.0.165
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
