@@ -1,10 +1,12 @@
 ---
 apiVersion: garden.io/v0
-kind: Module
+kind: Deploy
 description: Reloader
 type: helm
 name: reloader
-namespace: default
-repo: https://stakater.github.io/stakater-charts
-chart: reloader
 timeout: 3600
+spec:
+  namespace: default
+  chart:
+    name: reloader
+    repo: https://stakater.github.io/stakater-charts

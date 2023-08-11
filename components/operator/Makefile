@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller
+IMG ?= operator
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.24.1
 
@@ -71,9 +71,19 @@ build: generate fmt vet ## Build manager binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
+.PHONY: docker-build-local-prod
+docker-build-local-prod: ## Build docker image with the manager.
+	go build -o operator main.go
+	docker build -t ${IMG} -f ./build.Dockerfile ./  --no-cache
+
 .PHONY: docker-build
 docker-build: ## Build docker image with the manager.
-	docker build -t ${IMG} .
+	docker build -t ${IMG} -f ./Dockerfile ../../  --no-cache
+
+.PHONY: docker-push-local-prod
+docker-push-local-prod: ## Build docker image with the manager.
+	docker tag ${IMG} k3d-registry.host.k3d.internal:12345/${IMG}:dev-latest
+	docker push k3d-registry.host.k3d.internal:12345/${IMG}:dev-latest
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.

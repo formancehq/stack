@@ -1,25 +1,27 @@
 ---
 apiVersion: garden.io/v0
-kind: Module
+kind: Deploy
 description: Postgres
 type: helm
 name: postgres
-namespace: default
-repo: https://charts.bitnami.com/bitnami
-chart: postgresql
 timeout: 3600
-version: 12.1.2
-values:
-  architecture: standalone
-  primary:
-    service:
-      type: NodePort
-      nodePorts:
-        postgresql: 30000
-  global:
-    postgresql:
-      auth:
-        postgresPassword: formance
-        username: formance
-        password: formance
-        database: formance
+spec:
+  namespace: default
+  chart:
+    repo: https://charts.bitnami.com/bitnami
+    name: postgresql
+    version: 12.1.2
+  values:
+    architecture: standalone
+    primary:
+      service:
+        type: NodePort
+        nodePorts:
+          postgresql: 30000
+    global:
+      postgresql:
+        auth:
+          postgresPassword: formance
+          username: formance
+          password: formance
+          database: formance

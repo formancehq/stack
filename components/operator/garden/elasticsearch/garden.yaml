@@ -1,22 +1,24 @@
 ---
 apiVersion: garden.io/v0
-kind: Module
+kind: Deploy
 description: Zinc
 type: helm
-namespace: default
 name: elasticsearch
-repo: https://helm.elastic.co
-chart: elasticsearch
-version: 7.17.3
 timeout: 3600
-values:
-  replicas: 1
-  esJavaOpts: "-Xmx512m -Xms512m"
-  clusterHealthCheckParams: wait_for_status=yellow&timeout=1s
-  resources:
-    requests:
-      cpu: 100m
-      memory: 512M
-    limits:
-      cpu: 100m
-      memory: 512M
+spec:
+  namespace: default
+  chart:
+    repo: https://helm.elastic.co
+    name: elasticsearch
+    version: 7.17.3
+  values:
+    replicas: 1
+    esJavaOpts: "-Xmx512m -Xms512m"
+    clusterHealthCheckParams: wait_for_status=yellow&timeout=1s
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512M
+      limits:
+        cpu: 200m
+        memory: 1024M

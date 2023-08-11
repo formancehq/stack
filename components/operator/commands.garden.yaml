@@ -26,6 +26,26 @@ exec:
   - k3d cluster delete ${variables.cluster-name}
 ---
 kind: Command
+name: stop
+description:
+  short: Stop K3D cluster
+exec:
+  command:
+  - sh
+  - -c
+  - k3d cluster stop ${variables.cluster-name}
+---
+kind: Command
+name: start
+description:
+  short: Start K3D cluster
+exec:
+  command:
+  - sh
+  - -c
+  - k3d cluster start ${variables.cluster-name}
+---
+kind: Command
 name: manifests
 description:
   short: Generate manifests
