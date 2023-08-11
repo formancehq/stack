@@ -6,5 +6,6 @@ type AuthSpec struct {
 	StaticClients []StaticClient `json:"staticClients,omitempty"`
 
 	// +optional
-	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
+	DevProperties `json:",inline"`
+	Annotations   AnnotationsServicesSpec `json:"annotations,omitempty"`
 }

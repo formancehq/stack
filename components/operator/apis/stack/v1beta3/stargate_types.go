@@ -2,5 +2,6 @@ package v1beta3
 
 type StargateSpec struct {
 	// +optional
-	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
+	DevProperties `json:",inline"`
+	Annotations   AnnotationsServicesSpec `json:"annotations,omitempty"`
 }

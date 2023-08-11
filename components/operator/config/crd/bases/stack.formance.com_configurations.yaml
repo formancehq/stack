@@ -4223,6 +4223,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4282,6 +4286,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                     type: object
                   gateway:
                     properties:
@@ -4304,6 +4312,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4334,6 +4346,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4364,6 +4380,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                       encryptionKey:
                         type: string
                       postgres:
@@ -4407,6 +4427,10 @@ spec:
                         - count
                         - period
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                       elasticSearch:
                         properties:
                           basicAuth:
@@ -4452,6 +4476,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                     type: object
                   wallets:
                     properties:
@@ -4462,6 +4490,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                     type: object
                   webhooks:
                     properties:
@@ -4472,6 +4504,10 @@ spec:
                               type: string
                             type: object
                         type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:

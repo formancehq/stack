@@ -6,5 +6,6 @@ type PaymentsSpec struct {
 	Postgres      PostgresConfig `json:"postgres"`
 
 	// +optional
-	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
+	DevProperties `json:",inline"`
+	Annotations   AnnotationsServicesSpec `json:"annotations,omitempty"`
 }
