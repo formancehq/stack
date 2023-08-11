@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/alitto/pond"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -17,7 +18,6 @@ import (
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -36,7 +36,7 @@ func StartModule(serviceName string, retriesCron time.Duration, retriesSchedule 
 	))
 	options = append(options, fx.Invoke(run))
 	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
-		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retriesSchedule)
+		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retriesSchedule, pond.New(50, 50))
 	}))
 
 	logging.Debugf("starting worker with env:")
@@ -71,62 +71,69 @@ func run(lc fx.Lifecycle, w *Retrier) {
 }
 
 func configureMessageRouter(r *message.Router, subscriber message.Subscriber, topics []string,
-	store storage.Store, httpClient *http.Client, retriesSchedule []time.Duration,
+	store storage.Store, httpClient *http.Client, retriesSchedule []time.Duration, pool *pond.WorkerPool,
 ) {
 	for _, topic := range topics {
-		r.AddNoPublisherHandler(fmt.Sprintf("messages-%s", topic), topic, subscriber, processMessages(store, httpClient, retriesSchedule))
+		r.AddNoPublisherHandler(fmt.Sprintf("messages-%s", topic), topic, subscriber, processMessages(store, httpClient, retriesSchedule, pool))
 	}
 }
 
-func processMessages(store storage.Store, httpClient *http.Client, retriesSchedule []time.Duration) func(msg *message.Message) error {
+func processMessages(store storage.Store, httpClient *http.Client, retriesSchedule []time.Duration, pool *pond.WorkerPool) func(msg *message.Message) error {
 	return func(msg *message.Message) error {
-		var ev webhooks.EventMessage
-		if err := json.Unmarshal(msg.Payload, &ev); err != nil {
-			return errors.Wrap(err, "json.Unmarshal event message")
-		}
+		pool.Submit(func() {
+			var ev webhooks.EventMessage
+			if err := json.Unmarshal(msg.Payload, &ev); err != nil {
+				logging.FromContext(context.Background()).Error(err)
+				return
+			}
 
-		eventApp := strings.ToLower(ev.App)
-		eventType := strings.ToLower(ev.Type)
+			eventApp := strings.ToLower(ev.App)
+			eventType := strings.ToLower(ev.Type)
 
-		if eventApp == "" {
-			ev.Type = eventType
-		} else {
-			ev.Type = strings.Join([]string{eventApp, eventType}, ".")
-		}
+			if eventApp == "" {
+				ev.Type = eventType
+			} else {
+				ev.Type = strings.Join([]string{eventApp, eventType}, ".")
+			}
 
-		filter := map[string]any{
-			"event_types": ev.Type,
-			"active":      true,
-		}
-		logging.FromContext(msg.Context()).Debugf("searching configs with filter: %+v", filter)
-		cfgs, err := store.FindManyConfigs(msg.Context(), filter)
-		if err != nil {
-			return errors.Wrap(err, "storage.store.FindManyConfigs")
-		}
-
-		for _, cfg := range cfgs {
-			logging.FromContext(msg.Context()).Debugf("found one config: %+v", cfg)
-			data, err := json.Marshal(ev)
+			filter := map[string]any{
+				"event_types": ev.Type,
+				"active":      true,
+			}
+			logging.FromContext(context.Background()).Debugf("searching configs with filter: %+v", filter)
+			cfgs, err := store.FindManyConfigs(context.Background(), filter)
 			if err != nil {
-				return errors.Wrap(err, "json.Marshal event message")
+				logging.FromContext(context.Background()).Error(err)
+				return
 			}
 
-			attempt, err := webhooks.MakeAttempt(msg.Context(), httpClient, retriesSchedule, uuid.NewString(),
-				uuid.NewString(), 0, cfg, data, false)
-			if err != nil {
-				return errors.Wrap(err, "sending webhook")
-			}
+			for _, cfg := range cfgs {
+				logging.FromContext(context.Background()).Debugf("found one config: %+v", cfg)
+				data, err := json.Marshal(ev)
+				if err != nil {
+					logging.FromContext(context.Background()).Error(err)
+					return
+				}
 
-			if attempt.Status == webhooks.StatusAttemptSuccess {
-				logging.FromContext(msg.Context()).Debugf(
-					"webhook sent with ID %s to %s of type %s",
-					attempt.WebhookID, cfg.Endpoint, ev.Type)
-			}
+				attempt, err := webhooks.MakeAttempt(context.Background(), httpClient, retriesSchedule, uuid.NewString(),
+					uuid.NewString(), 0, cfg, data, false)
+				if err != nil {
+					logging.FromContext(context.Background()).Error(err)
+					return
+				}
 
-			if err := store.InsertOneAttempt(msg.Context(), attempt); err != nil {
-				return errors.Wrap(err, "storage.store.InsertOneAttempt")
+				if attempt.Status == webhooks.StatusAttemptSuccess {
+					logging.FromContext(context.Background()).Debugf(
+						"webhook sent with ID %s to %s of type %s",
+						attempt.WebhookID, cfg.Endpoint, ev.Type)
+				}
+
+				if err := store.InsertOneAttempt(context.Background(), attempt); err != nil {
+					logging.FromContext(context.Background()).Error(err)
+					return
+				}
 			}
-		}
+		})
 		return nil
 	}
 }
