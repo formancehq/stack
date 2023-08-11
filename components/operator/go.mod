@@ -18,7 +18,7 @@ require (
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/uptrace/bun v1.1.14
-	github.com/uptrace/bun/dialect/pgdialect v1.1.12
+	github.com/uptrace/bun/dialect/pgdialect v1.1.14
 	golang.org/x/mod v0.8.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.26.1
