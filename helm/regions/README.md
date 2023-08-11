@@ -1,6 +1,6 @@
 # regions
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 Formance Private Regions Helm Chart
 
@@ -21,7 +21,7 @@ Formance Private Regions Helm Chart
 | Repository | Name | Version |
 |------------|------|---------|
 | file://../../components/agent/helm | agent | 0.2.0 |
-| file://../../components/operator/helm | operator | 0.2.0 |
+| file://../../components/operator/helm | operator | 0.2.1 |
 
 ## Values
 
@@ -34,14 +34,14 @@ Formance Private Regions Helm Chart
 | agent.agent.baseUrl | string | `"https://sandbox.formance.cloud"` |  |
 | agent.agent.id | string | `"aws-eu-west-1-sandbox"` |  |
 | agent.enabled | bool | `true` |  |
-| agent.image.tag | string | `"v0.3.0"` |  |
+| agent.image.tag | string | `"v0.5.0"` |  |
 | agent.server.address | string | `"app.formance.cloud:443"` |  |
 | agent.server.tls.enabled | bool | `true` |  |
 | agent.server.tls.insecureSkipVerify | bool | `true` |  |
 | operator.enabled | bool | `true` |  |
 | operator.fullnameOverride | string | `"operator"` |  |
 | operator.image.repository | string | `"ghcr.io/formancehq/operator"` |  |
-| operator.image.tag | string | `"v0.14.1"` |  |
+| operator.image.tag | string | `"v0.16.6"` |  |
 | operator.nameOverride | string | `"operator"` |  |
 | operator.operator.disableWebhooks | bool | `false` |  |
 | operator.operator.enableLeaderElection | bool | `true` |  |

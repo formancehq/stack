@@ -4,6 +4,6 @@ dependencies:
   version: 0.2.0
 - name: operator
   repository: file://../../components/operator/helm
-  version: 0.2.0
-digest: sha256:61e3405dda0c40de67f66ade4eed5e5ee3fd0913051a2db2556790b81bc7fbbc
-generated: "2023-07-28T14:04:12.916727+02:00"
+  version: 0.2.1
+digest: sha256:e446d0d2fad3b6b111730d0748a7bec931b3ec9359e074d3a861a1516225ee56
+generated: "2023-08-11T11:08:15.431335+02:00"

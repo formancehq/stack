@@ -1955,11 +1955,6 @@ spec:
                       disabled:
                         type: boolean
                     type: object
-                  search:
-                    properties:
-                      disabled:
-                        type: boolean
-                    type: object
                   wallets:
                     properties:
                       disabled:

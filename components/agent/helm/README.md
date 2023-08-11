@@ -33,7 +33,7 @@ Formance Membership Agent Helm Chart
 | global.serviceName | string | `"agent"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/formancehq/agent"` |  |
-| image.tag | string | `"v0.4.0"` |  |
+| image.tag | string | `"v0.5.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
