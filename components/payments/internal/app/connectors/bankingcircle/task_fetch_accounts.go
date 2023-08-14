@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -35,13 +36,13 @@ func taskFetchAccounts(
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsBalancesAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(accountsBalancesAttrs...))
 		}()
 
 		for page := 1; ; page++ {
 			pagedAccounts, err := client.GetAccounts(ctx, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsBalancesAttrs...))
 				return err
 			}
 
@@ -138,16 +139,16 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs...)
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs...)
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), metric.WithAttributes(accountsAttrs...))
 
 	if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), balancesAttrs...)
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), metric.WithAttributes(balancesAttrs...))
 
 	return nil
 }

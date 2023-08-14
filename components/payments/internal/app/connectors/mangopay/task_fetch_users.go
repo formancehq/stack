@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -27,12 +28,12 @@ func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), usersAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(usersAttrs...))
 		}()
 
 		users, err := client.GetAllUsers(ctx)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, usersAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(usersAttrs...))
 			return err
 		}
 
@@ -56,7 +57,7 @@ func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 				return err
 			}
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(users)), usersAttrs...)
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(users)), metric.WithAttributes(usersAttrs...))
 
 		return nil
 	}

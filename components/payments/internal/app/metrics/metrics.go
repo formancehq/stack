@@ -2,7 +2,7 @@ package metrics
 
 import (
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/metric/instrument"
+	"go.opentelemetry.io/otel/metric/noop"
 )
 
 const (
@@ -10,15 +10,15 @@ const (
 )
 
 type MetricsRegistry interface {
-	ConnectorObjects() instrument.Int64Counter
-	ConnectorObjectsLatency() instrument.Int64Histogram
-	ConnectorObjectsErrors() instrument.Int64Counter
+	ConnectorObjects() metric.Int64Counter
+	ConnectorObjectsLatency() metric.Int64Histogram
+	ConnectorObjectsErrors() metric.Int64Counter
 }
 
 type metricsRegistry struct {
-	connectorObjects        instrument.Int64Counter
-	connectorObjectsLatency instrument.Int64Histogram
-	connectorObjectsErrors  instrument.Int64Counter
+	connectorObjects        metric.Int64Counter
+	connectorObjectsLatency metric.Int64Histogram
+	connectorObjectsErrors  metric.Int64Counter
 }
 
 func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistry, error) {
@@ -26,8 +26,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	connectorObjects, err := meter.Int64Counter(
 		"payments_connectors_objects",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Object fetch from connectors (accounts, payments, balances, ...)"),
+		metric.WithUnit("1"),
+		metric.WithDescription("Object fetch from connectors (accounts, payments, balances, ...)"),
 	)
 	if err != nil {
 		return nil, err
@@ -35,8 +35,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	connectorObjectLatencies, err := meter.Int64Histogram(
 		"payments_connectors_object_latencies",
-		instrument.WithUnit("ms"),
-		instrument.WithDescription("Object latencies from connectors (accounts, payments, balances, ...)"),
+		metric.WithUnit("ms"),
+		metric.WithDescription("Object latencies from connectors (accounts, payments, balances, ...)"),
 	)
 	if err != nil {
 		return nil, err
@@ -44,8 +44,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	connectorObjectErrors, err := meter.Int64Counter(
 		"payments_connectors_object_errors",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Obejct errors from connectors (accounts, payments, balances, ...)"),
+		metric.WithUnit("1"),
+		metric.WithDescription("Obejct errors from connectors (accounts, payments, balances, ...)"),
 	)
 	if err != nil {
 		return nil, err
@@ -58,15 +58,15 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 	}, nil
 }
 
-func (m *metricsRegistry) ConnectorObjects() instrument.Int64Counter {
+func (m *metricsRegistry) ConnectorObjects() metric.Int64Counter {
 	return m.connectorObjects
 }
 
-func (m *metricsRegistry) ConnectorObjectsLatency() instrument.Int64Histogram {
+func (m *metricsRegistry) ConnectorObjectsLatency() metric.Int64Histogram {
 	return m.connectorObjectsLatency
 }
 
-func (m *metricsRegistry) ConnectorObjectsErrors() instrument.Int64Counter {
+func (m *metricsRegistry) ConnectorObjectsErrors() metric.Int64Counter {
 	return m.connectorObjectsErrors
 }
 
@@ -76,17 +76,17 @@ func NewNoOpMetricsRegistry() *NoopMetricsRegistry {
 	return &NoopMetricsRegistry{}
 }
 
-func (m *NoopMetricsRegistry) ConnectorObjects() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("payments_connectors_objects")
+func (m *NoopMetricsRegistry) ConnectorObjects() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("payments").Int64Counter("payments_connectors_objects")
 	return counter
 }
 
-func (m *NoopMetricsRegistry) ConnectorObjectsLatency() instrument.Int64Histogram {
-	histogram, _ := metric.NewNoopMeter().Int64Histogram("payments_connectors_object_latencies")
+func (m *NoopMetricsRegistry) ConnectorObjectsLatency() metric.Int64Histogram {
+	histogram, _ := noop.NewMeterProvider().Meter("payments").Int64Histogram("payments_connectors_object_latencies")
 	return histogram
 }
 
-func (m *NoopMetricsRegistry) ConnectorObjectsErrors() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("payments_connectors_object_errors")
+func (m *NoopMetricsRegistry) ConnectorObjectsErrors() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("payments").Int64Counter("payments_connectors_object_errors")
 	return counter
 }

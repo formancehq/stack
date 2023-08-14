@@ -8,7 +8,7 @@ import (
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/metric/instrument"
+	"go.opentelemetry.io/otel/metric/noop"
 )
 
 var (
@@ -27,19 +27,19 @@ func init() {
 }
 
 type MetricsRegistry interface {
-	UnAuthenticatedCalls() instrument.Int64Counter
-	ClientsConnected() instrument.Int64ObservableGauge
-	StreamErrors() instrument.Int64Counter
-	GRPCLatencies() instrument.Int64Histogram
-	CorrelationIDNotFound() instrument.Int64Counter
+	UnAuthenticatedCalls() metric.Int64Counter
+	ClientsConnected() metric.Int64ObservableGauge
+	StreamErrors() metric.Int64Counter
+	GRPCLatencies() metric.Int64Histogram
+	CorrelationIDNotFound() metric.Int64Counter
 }
 
 type metricsRegistry struct {
-	unAuthenticatedCalls  instrument.Int64Counter
-	clientsConnected      instrument.Int64ObservableGauge
-	streamErrors          instrument.Int64Counter
-	grpcLatencies         instrument.Int64Histogram
-	correlationIDNotFound instrument.Int64Counter
+	unAuthenticatedCalls  metric.Int64Counter
+	clientsConnected      metric.Int64ObservableGauge
+	streamErrors          metric.Int64Counter
+	grpcLatencies         metric.Int64Histogram
+	correlationIDNotFound metric.Int64Counter
 }
 
 func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistry, error) {
@@ -47,8 +47,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	unAuthenticatedCalls, err := meter.Int64Counter(
 		"stargate_server_unauthenticated_calls",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Unauthenticated calls"),
+		metric.WithUnit("1"),
+		metric.WithDescription("Unauthenticated calls"),
 	)
 	if err != nil {
 		return nil, err
@@ -56,10 +56,10 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	clientsConnected, err := meter.Int64ObservableGauge(
 		"stargate_server_clients_connected",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Number of connected clients"),
-		instrument.WithInt64Callback(func(ctx context.Context, obs instrument.Int64Observer) error {
-			obs.Observe(ClientsConnected.Load(), attrs...)
+		metric.WithUnit("1"),
+		metric.WithDescription("Number of connected clients"),
+		metric.WithInt64Callback(func(ctx context.Context, obs metric.Int64Observer) error {
+			obs.Observe(ClientsConnected.Load(), metric.WithAttributes(attrs...))
 			return nil
 		}),
 	)
@@ -69,8 +69,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	streamErrors, err := meter.Int64Counter(
 		"stargate_server_stream_errors",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Stream errors"),
+		metric.WithUnit("1"),
+		metric.WithDescription("Stream errors"),
 	)
 	if err != nil {
 		return nil, err
@@ -78,8 +78,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	grpcLatencies, err := meter.Int64Histogram(
 		"stargate_server_grpc_latencies",
-		instrument.WithUnit("ms"),
-		instrument.WithDescription("Latency of gRPC calls"),
+		metric.WithUnit("ms"),
+		metric.WithDescription("Latency of gRPC calls"),
 	)
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 
 	correlationIDNotFound, err := meter.Int64Counter(
 		"stargate_server_correlation_id_not_found",
-		instrument.WithUnit("1"),
-		instrument.WithDescription("Correlation ID not found"),
+		metric.WithUnit("1"),
+		metric.WithDescription("Correlation ID not found"),
 	)
 	if err != nil {
 		return nil, err
@@ -103,23 +103,23 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 	}, nil
 }
 
-func (m *metricsRegistry) UnAuthenticatedCalls() instrument.Int64Counter {
+func (m *metricsRegistry) UnAuthenticatedCalls() metric.Int64Counter {
 	return m.unAuthenticatedCalls
 }
 
-func (m *metricsRegistry) GRPCLatencies() instrument.Int64Histogram {
+func (m *metricsRegistry) GRPCLatencies() metric.Int64Histogram {
 	return m.grpcLatencies
 }
 
-func (m *metricsRegistry) CorrelationIDNotFound() instrument.Int64Counter {
+func (m *metricsRegistry) CorrelationIDNotFound() metric.Int64Counter {
 	return m.correlationIDNotFound
 }
 
-func (m *metricsRegistry) ClientsConnected() instrument.Int64ObservableGauge {
+func (m *metricsRegistry) ClientsConnected() metric.Int64ObservableGauge {
 	return m.clientsConnected
 }
 
-func (m *metricsRegistry) StreamErrors() instrument.Int64Counter {
+func (m *metricsRegistry) StreamErrors() metric.Int64Counter {
 	return m.streamErrors
 }
 
@@ -129,27 +129,27 @@ func NewNoOpMetricsRegistry() *NoOpMetricsRegistry {
 	return &NoOpMetricsRegistry{}
 }
 
-func (m *NoOpMetricsRegistry) UnAuthenticatedCalls() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_unauthenticated_calls")
+func (m *NoOpMetricsRegistry) UnAuthenticatedCalls() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("server_grpc").Int64Counter("stargate_server_unauthenticated_calls")
 	return counter
 }
 
-func (m *NoOpMetricsRegistry) GRPCLatencies() instrument.Int64Histogram {
-	histogram, _ := metric.NewNoopMeter().Int64Histogram("stargate_server_grpc_latencies")
+func (m *NoOpMetricsRegistry) GRPCLatencies() metric.Int64Histogram {
+	histogram, _ := noop.NewMeterProvider().Meter("server_grpc").Int64Histogram("stargate_server_grpc_latencies")
 	return histogram
 }
 
-func (m *NoOpMetricsRegistry) CorrelationIDNotFound() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_correlation_id_not_found")
+func (m *NoOpMetricsRegistry) CorrelationIDNotFound() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("server_grpc").Int64Counter("stargate_server_correlation_id_not_found")
 	return counter
 }
 
-func (m *NoOpMetricsRegistry) ClientsConnected() instrument.Int64ObservableGauge {
-	counter, _ := metric.NewNoopMeter().Int64ObservableGauge("stargate_server_clients_connected")
+func (m *NoOpMetricsRegistry) ClientsConnected() metric.Int64ObservableGauge {
+	counter, _ := noop.NewMeterProvider().Meter("server_grpc").Int64ObservableGauge("stargate_server_clients_connected")
 	return counter
 }
 
-func (m *NoOpMetricsRegistry) StreamErrors() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_stream_errors")
+func (m *NoOpMetricsRegistry) StreamErrors() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("server_grpc").Int64Counter("stargate_server_stream_errors")
 	return counter
 }

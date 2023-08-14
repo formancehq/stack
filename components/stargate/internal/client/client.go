@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/opentelemetry"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/metadata"
@@ -197,7 +198,7 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 		ctx = opentelemetry.Propagator.Extract(ctx, propagation.MapCarrier(ev.ApiCall.OtlpContext))
 
 		attrs = append(attrs, attribute.String("message_type", "api_call"))
-		c.metricsRegistry.ServerMessageReceivedByType().Add(ctx, 1, attrs...)
+		c.metricsRegistry.ServerMessageReceivedByType().Add(ctx, 1, metric.WithAttributes(attrs...))
 
 		attrs = append(attrs, attribute.String("path", ev.ApiCall.Path))
 		path := strings.TrimPrefix(ev.ApiCall.Path, "/")
@@ -242,7 +243,7 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 			}
 		}
 		latency := time.Since(now)
-		c.metricsRegistry.HTTPCallLatencies().Record(ctx, latency.Milliseconds(), attrs...)
+		c.metricsRegistry.HTTPCallLatencies().Record(ctx, latency.Milliseconds(), metric.WithAttributes(attrs...))
 
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -259,7 +260,7 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 		}
 
 		attrs = append(attrs, attribute.Int("status_code", resp.StatusCode))
-		c.metricsRegistry.HTTPCallStatusCodes().Add(ctx, 1, attrs...)
+		c.metricsRegistry.HTTPCallStatusCodes().Add(ctx, 1, metric.WithAttributes(attrs...))
 
 		return &ResponseChanEvent{
 			err: nil,

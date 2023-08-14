@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -54,9 +55,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	ctx := stream.Context()
 	organizationID, stackID, err := orgaAndStackIDFromIncomingContext(ctx)
 	if err != nil {
-		s.metricsRegistry.StreamErrors().Add(ctx, 1, []attribute.KeyValue{
+		s.metricsRegistry.StreamErrors().Add(ctx, 1, metric.WithAttributes([]attribute.KeyValue{
 			attribute.Int("code", int(codes.InvalidArgument)),
-		}...)
+		}...))
 		return status.Errorf(codes.InvalidArgument, "cannot get organization and stack id from contex metadata: %v", err)
 	}
 
@@ -77,9 +78,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	logger.Debugf("[GRPC] subscribing to nats subject %s", subject)
 	sub, err := s.natsConn.QueueSubscribeSync(subject, subject)
 	if err != nil {
-		s.metricsRegistry.StreamErrors().Add(ctx, 1, []attribute.KeyValue{
+		s.metricsRegistry.StreamErrors().Add(ctx, 1, metric.WithAttributes([]attribute.KeyValue{
 			attribute.Int("code", int(codes.Internal)),
-		}...)
+		}...))
 		return status.Errorf(codes.Internal, "cannot subscribe to nats subject")
 	}
 	defer sub.Unsubscribe()
@@ -203,9 +204,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	})
 
 	if err := eg.Wait(); err != nil {
-		s.metricsRegistry.StreamErrors().Add(ctx, 1, []attribute.KeyValue{
+		s.metricsRegistry.StreamErrors().Add(ctx, 1, metric.WithAttributes([]attribute.KeyValue{
 			attribute.Int("code", int(codes.Internal)),
-		}...)
+		}...))
 		return status.Errorf(codes.Internal, "internal error: %v", err)
 	}
 

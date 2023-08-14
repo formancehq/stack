@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 const taskKeyIngest = "ingest"
@@ -38,22 +39,22 @@ func taskIngest(config Config, descriptor TaskDescriptor, fs fs) task.Task {
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsAttrs...))
 		}()
 
 		ingestionPayload, err := parseIngestionPayload(config, descriptor, fs)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 			return err
 		}
 
 		// Ingest the payment into the system.
 		err = ingester.IngestPayments(ctx, ingestionPayload, struct{}{})
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 			return fmt.Errorf("failed to ingest file '%s': %w", descriptor.FileName, err)
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, 1, paymentsAttrs...)
+		metricsRegistry.ConnectorObjects().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
 
 		return nil
 	}

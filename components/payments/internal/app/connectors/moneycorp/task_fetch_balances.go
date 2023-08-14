@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -31,20 +32,20 @@ func taskFetchBalances(logger logging.Logger, client *client.Client, accountID s
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(balancesAttrs...))
 		}()
 
 		balances, err := client.GetAccountBalances(ctx, accountID)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 			return err
 		}
 
 		if err := ingestBalancesBatch(ctx, ingester, accountID, balances); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances)), balancesAttrs...)
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances)), metric.WithAttributes(balancesAttrs...))
 
 		return nil
 	}

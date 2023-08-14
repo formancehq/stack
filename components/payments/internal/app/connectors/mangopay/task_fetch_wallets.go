@@ -16,6 +16,7 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -35,13 +36,13 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), walletsAndBalancesAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(walletsAndBalancesAttrs...))
 		}()
 
 		for page := 1; ; page++ {
 			pagedWallets, err := client.GetWallets(ctx, userID, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, walletsAndBalancesAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(walletsAndBalancesAttrs...))
 				return err
 			}
 
@@ -105,16 +106,16 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 			}
 
 			if err := ingester.IngestAccounts(ctx, accountBatch); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, walletsAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(walletsAttrs...))
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountBatch)), walletsAttrs...)
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountBatch)), metric.WithAttributes(walletsAttrs...))
 
 			if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balanceBatch)), balancesAttrs...)
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balanceBatch)), metric.WithAttributes(balancesAttrs...))
 
 			for _, transactionTask := range transactionTasks {
 				err = scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{

@@ -14,6 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
@@ -31,7 +32,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(accountsAttrs...))
 		}()
 
 		tt := NewTimelineTrigger(
@@ -45,7 +46,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 					if err := ingestAccountsBatch(ctx, ingester, batch); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), accountsAttrs...)
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(accountsAttrs...))
 
 					for _, account := range batch {
 						transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
@@ -92,7 +93,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
 			return err
 		}
 
