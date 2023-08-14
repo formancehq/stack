@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	accountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
+	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
 func taskFetchAccounts(
@@ -34,7 +34,7 @@ func taskFetchAccounts(
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs)
 		}()
 
 		page := 1
@@ -45,17 +45,17 @@ func taskFetchAccounts(
 
 			pagedAccounts, nextPage, err := client.GetAccounts(ctx, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
 
 			page = nextPage
 
 			if err := ingestAccountsBatch(ctx, ingester, pagedAccounts); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedAccounts)), metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedAccounts)), accountsAttrs)
 		}
 
 		taskTransactions, err := models.EncodeTaskDescriptor(TaskDescriptor{

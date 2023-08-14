@@ -20,9 +20,9 @@ import (
 )
 
 var (
-	walletsAndBalancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "wallets_and_balances"))
-	walletsAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "wallets"))
-	balancesAttrs           = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+	walletsAndBalancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "wallets_and_balances"))...)
+	walletsAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "wallets"))...)
+	balancesAttrs           = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func taskFetchWallets(logger logging.Logger, client *client.Client, userID string) task.Task {
@@ -36,13 +36,13 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(walletsAndBalancesAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), walletsAndBalancesAttrs)
 		}()
 
 		for page := 1; ; page++ {
 			pagedWallets, err := client.GetWallets(ctx, userID, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(walletsAndBalancesAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, walletsAndBalancesAttrs)
 				return err
 			}
 
@@ -106,16 +106,16 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 			}
 
 			if err := ingester.IngestAccounts(ctx, accountBatch); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(walletsAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, walletsAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountBatch)), metric.WithAttributes(walletsAttrs...))
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountBatch)), walletsAttrs)
 
 			if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balanceBatch)), metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balanceBatch)), balancesAttrs)
 
 			for _, transactionTask := range transactionTasks {
 				err = scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{

@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	accountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
+	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
 func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
@@ -31,13 +31,13 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs)
 		}()
 
 		for page := 1; ; page++ {
 			pagedAccounts, err := client.GetAccounts(ctx, page, pageSize)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
 
@@ -46,10 +46,10 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 			}
 
 			if err := ingestAccountsBatch(ctx, ingester, pagedAccounts); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedAccounts)), metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedAccounts)), accountsAttrs)
 
 			for _, account := range pagedAccounts {
 				logger.Infof("scheduling fetch-transactions: %s", account.ID)
@@ -81,6 +81,23 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 					return err
 				}
 				err = scheduler.Schedule(ctx, balancesTask, models.TaskSchedulerOptions{
+					ScheduleOption: models.OPTIONS_RUN_NOW,
+					Restart:        true,
+				})
+				if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+					return err
+				}
+
+				taskRecipients, err := models.EncodeTaskDescriptor(TaskDescriptor{
+					Name:      "Fetch recipients from client",
+					Key:       taskNameFetchRecipients,
+					AccountID: account.ID,
+				})
+				if err != nil {
+					return err
+				}
+
+				err = scheduler.Schedule(ctx, taskRecipients, models.TaskSchedulerOptions{
 					ScheduleOption: models.OPTIONS_RUN_NOW,
 					Restart:        true,
 				})

@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	accountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
+	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
 func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
@@ -32,7 +32,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs)
 		}()
 
 		tt := NewTimelineTrigger(
@@ -46,7 +46,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 					if err := ingestAccountsBatch(ctx, ingester, batch); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(accountsAttrs...))
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), accountsAttrs)
 
 					for _, account := range batch {
 						transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
@@ -82,9 +82,30 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 						if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 							return errors.Wrap(err, "scheduling connected account")
 						}
+
+						externalAccountsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+							Name:    "Fetch external account for a specific connected account",
+							Key:     taskNameFetchExternalAccounts,
+							Account: account.ID,
+						})
+						if err != nil {
+							return errors.Wrap(err, "failed to transform task descriptor")
+						}
+
+						err = scheduler.Schedule(ctx, externalAccountsTask, models.TaskSchedulerOptions{
+							ScheduleOption: models.OPTIONS_RUN_NOW,
+							Restart:        true,
+						})
+						if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+							return errors.Wrap(err, "scheduling connected account")
+						}
 					}
 
 					return nil
+				},
+				func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
+					return nil
+
 				},
 			),
 			NewTimeline(client,
@@ -93,7 +114,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 			return err
 		}
 

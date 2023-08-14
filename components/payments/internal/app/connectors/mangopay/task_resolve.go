@@ -14,6 +14,7 @@ const (
 	taskNameFetchUsers        = "fetch-users"
 	taskNameFetchTransactions = "fetch-transactions"
 	taskNameFetchWallets      = "fetch-wallets"
+	taskNameFetchBankAccounts = "fetch-bank-accounts"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -45,6 +46,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskMain(logger)
 		case taskNameFetchUsers:
 			return taskFetchUsers(logger, mangopayClient)
+		case taskNameFetchBankAccounts:
+			return taskFetchBankAccounts(logger, mangopayClient, taskDescriptor.UserID)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, mangopayClient, taskDescriptor.WalletID)
 		case taskNameFetchWallets:

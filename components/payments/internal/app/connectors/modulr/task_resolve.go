@@ -10,9 +10,10 @@ import (
 )
 
 const (
-	taskNameMain              = "main"
-	taskNameFetchTransactions = "fetch-transactions"
-	taskNameFetchAccounts     = "fetch-accounts"
+	taskNameMain               = "main"
+	taskNameFetchTransactions  = "fetch-transactions"
+	taskNameFetchAccounts      = "fetch-accounts"
+	taskNameFetchBeneficiaries = "fetch-beneficiaries"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -38,6 +39,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskMain(logger)
 		case taskNameFetchAccounts:
 			return taskFetchAccounts(logger, modulrClient)
+		case taskNameFetchBeneficiaries:
+			return taskFetchBeneficiaries(logger, modulrClient)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, modulrClient, taskDefinition.AccountID)
 		}

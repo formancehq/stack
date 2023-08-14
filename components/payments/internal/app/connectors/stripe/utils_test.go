@@ -104,6 +104,12 @@ func (m *ClientMock) Balance(ctx context.Context,
 	return nil, nil
 }
 
+func (m *ClientMock) ExternalAccounts(ctx context.Context,
+	options ...ClientOption,
+) ([]*stripe.ExternalAccount, bool, error) {
+	return nil, false, nil
+}
+
 func (m *ClientMock) BalanceTransactions(ctx context.Context,
 	options ...ClientOption,
 ) ([]*stripe.BalanceTransaction, bool, error) {

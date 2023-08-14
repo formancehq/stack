@@ -21,9 +21,9 @@ import (
 )
 
 var (
-	accountsAndBalancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts_and_balances"))
-	accountsAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
-	balancesAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+	accountsAndBalancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts_and_balances"))...)
+	accountsAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
+	balancesAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
@@ -37,12 +37,12 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(accountsAndBalancesAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAndBalancesAttrs)
 		}()
 
 		accounts, err := client.GetAccounts()
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAndBalancesAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAndBalancesAttrs)
 			return err
 		}
 
@@ -132,16 +132,16 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), metric.WithAttributes(accountsAttrs...))
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs)
 
 	if err := ingester.IngestBalances(ctx, balancesBatch, false); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), metric.WithAttributes(balancesAttrs...))
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), balancesAttrs)
 
 	return nil
 }

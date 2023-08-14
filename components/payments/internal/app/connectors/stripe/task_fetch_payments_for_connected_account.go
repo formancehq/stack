@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	paymentsConnectedAccountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))
+	paymentsConnectedAccountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))...)
 )
 
 func ingestBatch(ctx context.Context, account string, logger logging.Logger, ingester ingestion.Ingester,
@@ -59,7 +59,7 @@ func ConnectedAccountTask(config Config, account string, client *DefaultClient) 
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsConnectedAccountsAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsConnectedAccountsAttrs)
 		}()
 
 		trigger := NewTimelineTrigger(
@@ -69,11 +69,14 @@ func ConnectedAccountTask(config Config, account string, client *DefaultClient) 
 					if err := ingestBatch(ctx, account, logger, ingester, batch, commitState, tail); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(paymentsConnectedAccountsAttrs...))
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsConnectedAccountsAttrs)
 
 					return nil
 				},
 				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
+					return nil
+				},
+				func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
 					return nil
 				},
 			),
@@ -83,7 +86,7 @@ func ConnectedAccountTask(config Config, account string, client *DefaultClient) 
 		)
 
 		if err := trigger.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsConnectedAccountsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsConnectedAccountsAttrs)
 			return err
 		}
 

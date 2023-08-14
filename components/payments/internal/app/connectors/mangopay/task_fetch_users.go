@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	usersAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "users"))
+	usersAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "users"))...)
 )
 
 func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
@@ -28,12 +28,12 @@ func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(usersAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), usersAttrs)
 		}()
 
 		users, err := client.GetAllUsers(ctx)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(usersAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, usersAttrs)
 			return err
 		}
 
@@ -56,8 +56,25 @@ func taskFetchUsers(logger logging.Logger, client *client.Client) task.Task {
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 				return err
 			}
+
+			bankAccountsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+				Name:   "Fetch bank accounts from client by user",
+				Key:    taskNameFetchBankAccounts,
+				UserID: user.ID,
+			})
+			if err != nil {
+				return err
+			}
+
+			err = scheduler.Schedule(ctx, bankAccountsTask, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				Restart:        true,
+			})
+			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				return err
+			}
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(users)), metric.WithAttributes(usersAttrs...))
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(users)), usersAttrs)
 
 		return nil
 	}

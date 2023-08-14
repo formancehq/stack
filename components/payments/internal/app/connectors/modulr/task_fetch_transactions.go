@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	paymentsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))
+	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
@@ -32,12 +32,12 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
 		}()
 
 		transactions, err := client.GetTransactions(accountID)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
@@ -110,11 +110,11 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 		}
 
 		if err := ingester.IngestPayments(ctx, batch, struct{}{}); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(transactions)), metric.WithAttributes(paymentsAttrs...))
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(transactions)), paymentsAttrs)
 		return nil
 	}
 }

@@ -23,7 +23,7 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 	endpoint := fmt.Sprintf("%s/accounts", c.endpoint)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create login request: %w", err)
+		return nil, fmt.Errorf("failed to create accounts request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -44,6 +44,10 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 			c.logger.Error(err)
 		}
 	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get accounts: %s", resp.Status)
+	}
 
 	var accounts accountsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&accounts); err != nil {

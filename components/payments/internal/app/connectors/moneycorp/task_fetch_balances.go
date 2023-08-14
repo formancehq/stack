@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	balancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func taskFetchBalances(logger logging.Logger, client *client.Client, accountID string) task.Task {
@@ -32,20 +32,20 @@ func taskFetchBalances(logger logging.Logger, client *client.Client, accountID s
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs)
 		}()
 
 		balances, err := client.GetAccountBalances(ctx, accountID)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
 
 		if err := ingestBalancesBatch(ctx, ingester, accountID, balances); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances)), metric.WithAttributes(balancesAttrs...))
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances)), balancesAttrs)
 
 		return nil
 	}

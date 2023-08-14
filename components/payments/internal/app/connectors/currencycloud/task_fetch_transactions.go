@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	paymentsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))
+	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func taskFetchTransactions(logger logging.Logger, client *client.Client, config Config) task.Task {
@@ -36,7 +36,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 ) error {
 	now := time.Now()
 	defer func() {
-		metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsAttrs...))
+		metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
 	}()
 
 	page := 1
@@ -49,7 +49,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 
 		transactions, nextPage, err := client.GetTransactions(ctx, page)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
@@ -63,7 +63,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 			var amount big.Float
 			_, ok := amount.SetString(transaction.Amount)
 			if !ok {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return fmt.Errorf("failed to parse amount %s", transaction.Amount)
 			}
 
@@ -74,7 +74,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 
 			rawData, err = json.Marshal(transaction)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return fmt.Errorf("failed to marshal transaction: %w", err)
 			}
 
@@ -117,10 +117,10 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 
 		err = ingester.IngestPayments(ctx, batch, struct{}{})
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(paymentsAttrs...))
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs)
 	}
 
 	return nil

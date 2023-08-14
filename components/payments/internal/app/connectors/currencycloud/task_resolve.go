@@ -4,17 +4,16 @@ import (
 	"fmt"
 
 	"github.com/formancehq/payments/internal/app/connectors/currencycloud/client"
-
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const (
-	taskNameMain              = "main"
-	taskNameFetchTransactions = "fetch-transactions"
-	taskNameFetchAccounts     = "fetch-accounts"
-	taskNameFetchBalances     = "fetch-balances"
+	taskNameMain               = "main"
+	taskNameFetchTransactions  = "fetch-transactions"
+	taskNameFetchAccounts      = "fetch-accounts"
+	taskNameFetchBeneficiaries = "fetch-beneficiaries"
+	taskNameFetchBalances      = "fetch-balances"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -45,6 +44,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskMain(logger)
 		case taskNameFetchAccounts:
 			return taskFetchAccounts(logger, currencyCloudClient)
+		case taskNameFetchBeneficiaries:
+			return taskFetchBeneficiaries(logger, currencyCloudClient)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, currencyCloudClient, config)
 		case taskNameFetchBalances:
