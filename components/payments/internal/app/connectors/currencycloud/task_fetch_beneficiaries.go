@@ -12,10 +12,11 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
-	beneficiariesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "beneficiaries"))
+	beneficiariesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "beneficiaries"))...)
 )
 
 func taskFetchBeneficiaries(
@@ -32,7 +33,7 @@ func taskFetchBeneficiaries(
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), beneficiariesAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), beneficiariesAttrs)
 		}()
 
 		page := 1
@@ -43,17 +44,17 @@ func taskFetchBeneficiaries(
 
 			pagedBeneficiaries, nextPage, err := client.GetBeneficiaries(ctx, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 				return err
 			}
 
 			page = nextPage
 
 			if err := ingestBeneficiariesAccountsBatch(ctx, ingester, pagedBeneficiaries); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedBeneficiaries)), beneficiariesAttrs...)
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedBeneficiaries)), beneficiariesAttrs)
 		}
 
 		return nil

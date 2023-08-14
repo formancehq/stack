@@ -33,22 +33,6 @@ func taskMain(logger logging.Logger) task.Task {
 			return err
 		}
 
-		taskRecipients, err := models.EncodeTaskDescriptor(TaskDescriptor{
-			Name: "Fetch recipients from client",
-			Key:  taskNameFetchRecipients,
-		})
-		if err != nil {
-			return err
-		}
-
-		err = scheduler.Schedule(ctx, taskRecipients, models.TaskSchedulerOptions{
-			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        true,
-		})
-		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-			return err
-		}
-
 		return nil
 	}
 }

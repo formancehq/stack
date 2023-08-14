@@ -13,10 +13,11 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
-	recipientAccountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "recipient_accounts"))
+	recipientAccountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "recipient_accounts"))...)
 )
 
 func taskFetchRecipientAccounts(logger logging.Logger, client *client.Client, profileID uint64) task.Task {
@@ -27,12 +28,12 @@ func taskFetchRecipientAccounts(logger logging.Logger, client *client.Client, pr
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), recipientAccountsAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), recipientAccountsAttrs)
 		}()
 
 		recipientAccounts, err := client.GetRecipientAccounts(ctx, profileID)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, recipientAccountsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, recipientAccountsAttrs)
 			return err
 		}
 
@@ -73,10 +74,10 @@ func ingestRecipientAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, recipientAccountsAttrs...)
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, recipientAccountsAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), recipientAccountsAttrs...)
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), recipientAccountsAttrs)
 
 	return nil
 }

@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	balancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func BalancesTask(config Config, account string, client *DefaultClient) func(ctx context.Context, logger logging.Logger,
@@ -28,12 +28,12 @@ func BalancesTask(config Config, account string, client *DefaultClient) func(ctx
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs)
 		}()
 
 		balances, err := client.ForAccount(account).Balance(ctx)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
 
@@ -53,10 +53,10 @@ func BalancesTask(config Config, account string, client *DefaultClient) func(ctx
 		}
 
 		if err := ingester.IngestBalances(ctx, batch, false); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances.Available)), metric.WithAttributes(balancesAttrs...))
+		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances.Available)), balancesAttrs)
 
 		return nil
 	}

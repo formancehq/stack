@@ -13,13 +13,14 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
-	externalAccountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
+	externalAccountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
-func FetchExternalAccountsTask(config Config, client *DefaultClient) task.Task {
+func FetchExternalAccountsTask(config Config, account string, client *DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
@@ -30,7 +31,7 @@ func FetchExternalAccountsTask(config Config, client *DefaultClient) task.Task {
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), externalAccountsAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), externalAccountsAttrs)
 		}()
 
 		tt := NewTimelineTrigger(
@@ -47,17 +48,17 @@ func FetchExternalAccountsTask(config Config, client *DefaultClient) task.Task {
 					if err := ingestExternalAccountsBatch(ctx, ingester, batch); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), externalAccountsAttrs...)
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), externalAccountsAttrs)
 					return nil
 				},
 			),
-			NewTimeline(client,
+			NewTimeline(client.ForAccount(account),
 				config.TimelineConfig, task.MustResolveTo(ctx, resolver, TimelineState{})),
 			TimelineTriggerTypeExternalAccounts,
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, externalAccountsAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, externalAccountsAttrs)
 			return err
 		}
 

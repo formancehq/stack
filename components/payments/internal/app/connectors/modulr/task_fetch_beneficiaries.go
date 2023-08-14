@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 
 	"github.com/formancehq/payments/internal/app/connectors/modulr/client"
 	"github.com/formancehq/payments/internal/app/task"
@@ -17,7 +18,7 @@ import (
 )
 
 var (
-	beneficiariesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "beneficiaries"))
+	beneficiariesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "beneficiaries"))...)
 )
 
 func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.Task {
@@ -31,12 +32,12 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), beneficiariesAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), beneficiariesAttrs)
 		}()
 
 		beneficiaries, err := client.GetBeneficiaries()
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs...)
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 			return err
 		}
 
@@ -82,10 +83,10 @@ func ingestBeneficiariesAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs...)
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), beneficiariesAttrs...)
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), beneficiariesAttrs)
 
 	return nil
 }

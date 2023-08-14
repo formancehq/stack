@@ -42,7 +42,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameFetchAccounts:
 			return FetchAccountsTask(config, client)
 		case taskNameFetchExternalAccounts:
-			return FetchExternalAccountsTask(config, client)
+			return FetchExternalAccountsTask(config, taskDescriptor.Account, client)
 		case taskNameFetchPaymentsForAccounts:
 			return ConnectedAccountTask(config, taskDescriptor.Account, client)
 		case taskNameFetchBalances:

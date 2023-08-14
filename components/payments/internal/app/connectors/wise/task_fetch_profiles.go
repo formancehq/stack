@@ -19,9 +19,9 @@ import (
 )
 
 var (
-	profilesAndBalancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles_and_balances"))
-	profilesAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles"))
-	balancesAttrs            = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+	profilesAndBalancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles_and_balances"))...)
+	profilesAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles"))...)
+	balancesAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
@@ -33,12 +33,12 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(profilesAndBalancesAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), profilesAndBalancesAttrs)
 		}()
 
 		profiles, err := client.GetProfiles()
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(profilesAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs)
 			return err
 		}
 
@@ -46,7 +46,7 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 		for _, profile := range profiles {
 			balances, err := client.GetBalances(ctx, profile.ID)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 				return err
 			}
 
@@ -146,16 +146,16 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(profilesAttrs...))
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), metric.WithAttributes(profilesAttrs...))
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), profilesAttrs)
 
 	if err := ingester.IngestBalances(ctx, balancesBatch, false); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), metric.WithAttributes(balancesAttrs...))
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), balancesAttrs)
 
 	return nil
 }

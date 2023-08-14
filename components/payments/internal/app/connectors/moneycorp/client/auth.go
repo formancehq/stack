@@ -89,6 +89,10 @@ func (t *apiTransport) login(ctx context.Context) error {
 		}
 	}()
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to get login: %s", resp.Status)
+	}
+
 	var res loginResponse
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return fmt.Errorf("failed to decode login response: %w", err)

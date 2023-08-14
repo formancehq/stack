@@ -13,14 +13,16 @@ type recipientsResponse struct {
 }
 
 type Recipient struct {
-	AccountID           string `json:"accountId"`
-	BankAccountCurrency string `json:"bankAccountCurrency"`
-	CreatedAt           string `json:"createdAt"`
-	TemplateReference   string `json:"templateReference"`
+	ID         string `json:"id"`
+	Attributes struct {
+		BankAccountCurrency string `json:"bankAccountCurrency"`
+		CreatedAt           string `json:"createdAt"`
+		BankAccountName     string `json:"bankAccountName"`
+	} `json:"attributes"`
 }
 
-func (c *Client) GetRecipients(ctx context.Context, page int, pageSize int) ([]*Recipient, error) {
-	endpoint := fmt.Sprintf("%s/recipients", c.endpoint)
+func (c *Client) GetRecipients(ctx context.Context, accountID string, page int, pageSize int) ([]*Recipient, error) {
+	endpoint := fmt.Sprintf("%s/accounts/%s/recipients", c.endpoint, accountID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create recipients request: %w", err)
@@ -44,6 +46,10 @@ func (c *Client) GetRecipients(ctx context.Context, page int, pageSize int) ([]*
 			c.logger.Error(err)
 		}
 	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get recipient accounts: %s", resp.Status)
+	}
 
 	var recipients recipientsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&recipients); err != nil {

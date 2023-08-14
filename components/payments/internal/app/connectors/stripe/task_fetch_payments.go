@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	paymentsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))
+	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))...)
 )
 
 func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
@@ -24,7 +24,7 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(paymentsAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
 		}()
 
 		tt := NewTimelineTrigger(
@@ -34,7 +34,7 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 					if err := ingestBatch(ctx, "", logger, ingester, batch, commitState, tail); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(paymentsAttrs...))
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs)
 
 					return nil
 				},
@@ -51,7 +51,7 @@ func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Co
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(paymentsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 

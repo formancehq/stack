@@ -12,10 +12,11 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var (
-	bankAccountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "bank_accounts"))
+	bankAccountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "bank_accounts"))...)
 )
 
 func taskFetchBankAccounts(logger logging.Logger, client *client.Client, userID string) task.Task {
@@ -29,13 +30,13 @@ func taskFetchBankAccounts(logger logging.Logger, client *client.Client, userID 
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), bankAccountsAttrs...)
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), bankAccountsAttrs)
 		}()
 
 		for page := 1; ; page++ {
 			pagedBankAccounts, err := client.GetBankAccounts(ctx, userID, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, bankAccountsAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, bankAccountsAttrs)
 				return err
 			}
 
@@ -65,10 +66,10 @@ func taskFetchBankAccounts(logger logging.Logger, client *client.Client, userID 
 			}
 
 			if err := ingester.IngestAccounts(ctx, accountBatch); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, bankAccountsAttrs...)
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, bankAccountsAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountBatch)), bankAccountsAttrs...)
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountBatch)), bankAccountsAttrs)
 		}
 
 		return nil

@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	balancesAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))
+	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func taskFetchBalances(
@@ -33,7 +33,7 @@ func taskFetchBalances(
 
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs)
 		}()
 
 		page := 1
@@ -44,17 +44,17 @@ func taskFetchBalances(
 
 			pagedBalances, nextPage, err := client.GetBalances(ctx, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 				return err
 			}
 
 			page = nextPage
 
 			if err := ingestBalancesBatch(ctx, ingester, pagedBalances); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(balancesAttrs...))
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedBalances)), metric.WithAttributes(balancesAttrs...))
+			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedBalances)), balancesAttrs)
 		}
 
 		return nil

@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	accountsAttrs = append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))
+	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
 func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
@@ -32,7 +32,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 	) error {
 		now := time.Now()
 		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs)
 		}()
 
 		tt := NewTimelineTrigger(
@@ -46,7 +46,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 					if err := ingestAccountsBatch(ctx, ingester, batch); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), metric.WithAttributes(accountsAttrs...))
+					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), accountsAttrs)
 
 					for _, account := range batch {
 						transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
@@ -114,7 +114,7 @@ func FetchAccountsTask(config Config, client *DefaultClient) task.Task {
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, metric.WithAttributes(accountsAttrs...))
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 			return err
 		}
 

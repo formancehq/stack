@@ -45,6 +45,10 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 		}
 	}()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get accounts: %s", resp.Status)
+	}
+
 	var accounts accountsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&accounts); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal accounts response body: %w", err)
