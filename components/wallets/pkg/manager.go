@@ -402,7 +402,7 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 	}
 
 	newCustomMetadata := metadata.Metadata{}
-	newCustomMetadata = newCustomMetadata.Merge(LedgerMetadataToWalletMetadata(account.GetMetadata()[MetadataKeyWalletCustomData].(map[string]any)))
+	newCustomMetadata = newCustomMetadata.Merge(GetCustomMetadata(account))
 	newCustomMetadata = newCustomMetadata.Merge(data.Metadata)
 
 	accountMetadata := account.Metadata

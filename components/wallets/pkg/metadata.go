@@ -75,5 +75,9 @@ func LedgerMetadataToWalletMetadata(m map[string]any) metadata.Metadata {
 }
 
 func GetCustomMetadata(owner MetadataOwner) metadata.Metadata {
-	return LedgerMetadataToWalletMetadata(owner.GetMetadata()[MetadataKeyWalletCustomData].(map[string]any))
+	ret := owner.GetMetadata()[MetadataKeyWalletCustomData]
+	if ret == nil {
+		return metadata.Metadata{}
+	}
+	return LedgerMetadataToWalletMetadata(ret.(map[string]any))
 }

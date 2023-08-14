@@ -115,7 +115,7 @@ func FromAccount(ledger string, account Account) Wallet {
 	return Wallet{
 		ID:        GetMetadata(account, MetadataKeyWalletID).(string),
 		Name:      GetMetadata(account, MetadataKeyWalletName).(string),
-		Metadata:  LedgerMetadataToWalletMetadata(GetMetadata(account, MetadataKeyWalletCustomData).(map[string]any)),
+		Metadata:  GetCustomMetadata(account),
 		CreatedAt: createdAt,
 		Ledger:    ledger,
 	}
