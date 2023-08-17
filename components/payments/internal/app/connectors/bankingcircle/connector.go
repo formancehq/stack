@@ -45,7 +45,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		Duration:       c.cfg.PollingPeriod.Duration,
 		// No need to restart this task, since the connector is not existing or
 		// was uninstalled previously, the task does not exists in the database
-		Restart: false,
+		RestartOption: models.OPTIONS_RESTART_NEVER,
 	})
 }
 

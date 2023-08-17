@@ -89,7 +89,7 @@ func TestTaskScheduler(t *testing.T) {
 		descriptor := newDescriptor()
 		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        false,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		})
 		require.NoError(t, err)
 
@@ -115,14 +115,14 @@ func TestTaskScheduler(t *testing.T) {
 		descriptor := newDescriptor()
 		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        false,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		})
 		require.NoError(t, err)
 		require.Eventually(t, TaskActive(store, provider, descriptor), time.Second, 100*time.Millisecond)
 
 		err = scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        false,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		})
 		require.Equal(t, ErrAlreadyScheduled, err)
 	})
@@ -142,7 +142,7 @@ func TestTaskScheduler(t *testing.T) {
 		descriptor := newDescriptor()
 		err := scheduler.Schedule(context.TODO(), descriptor, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        false,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		})
 		require.NoError(t, err)
 		require.Eventually(t, TaskFailed(store, provider, descriptor, "test"), time.Second,
@@ -188,11 +188,11 @@ func TestTaskScheduler(t *testing.T) {
 
 		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor1, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        false,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		}))
 		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor2, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        false,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		}))
 		require.Eventually(t, TaskActive(store, provider, descriptor1), time.Second, 100*time.Millisecond)
 		require.Eventually(t, TaskPending(store, provider, descriptor2), time.Second, 100*time.Millisecond)
@@ -219,7 +219,7 @@ func TestTaskScheduler(t *testing.T) {
 						<-ctx.Done()
 						require.NoError(t, scheduler.Schedule(ctx, workerDescriptor, models.TaskSchedulerOptions{
 							ScheduleOption: models.OPTIONS_RUN_NOW,
-							Restart:        false,
+							RestartOption:  models.OPTIONS_RESTART_NEVER,
 						}))
 					}
 				default:
@@ -229,7 +229,7 @@ func TestTaskScheduler(t *testing.T) {
 
 		require.NoError(t, scheduler.Schedule(context.TODO(), mainDescriptor, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			Restart:        false,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		}))
 		require.Eventually(t, TaskActive(store, provider, mainDescriptor), time.Second, 100*time.Millisecond)
 		require.NoError(t, scheduler.Shutdown(context.TODO()))

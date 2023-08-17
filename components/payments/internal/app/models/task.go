@@ -20,6 +20,14 @@ const (
 	OPTIONS_RUN_NOW_SYNC
 )
 
+type RestartOption int
+
+const (
+	OPTIONS_RESTART_NEVER RestartOption = iota
+	OPTIONS_RESTART_ALWAYS
+	OPTIONS_RESTART_IF_NOT_ACTIVE
+)
+
 type Task struct {
 	bun.BaseModel `bun:"tasks.task"`
 
@@ -44,7 +52,12 @@ func (t Task) GetDescriptor() TaskDescriptor {
 type TaskSchedulerOptions struct {
 	ScheduleOption ScheduleOption
 	Duration       time.Duration
-	Restart        bool
+
+	// TODO(polo): Deprecated, will be removed in the next release, use
+	// RestartOption instead.
+	// We have to keep it for now for db compatibility.
+	Restart       bool
+	RestartOption RestartOption
 }
 
 type TaskDescriptor json.RawMessage
