@@ -2,6 +2,7 @@ package login
 
 import (
 	"context"
+	"errors"
 	"net/url"
 	"time"
 
@@ -24,10 +25,11 @@ func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*o
 	query.Set("user_code", deviceCode.UserCode)
 	uri.RawQuery = query.Encode()
 
-	dialog.DisplayURIAndCode(deviceCode.VerificationURI, deviceCode.UserCode)
-
 	if err := fctl.Open(uri.String()); err != nil {
-		return nil, err
+		dialog.DisplayURIAndCode(err, deviceCode.VerificationURI, deviceCode.UserCode)
+		if !errors.Is(err, fctl.ErrOpenningBrowser) {
+			return nil, err
+		}
 	}
 
 	return rp.DeviceAccessToken(ctx, deviceCode.DeviceCode, time.Duration(deviceCode.Interval)*time.Second, relyingParty)
