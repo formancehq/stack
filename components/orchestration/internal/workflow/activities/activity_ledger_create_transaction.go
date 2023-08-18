@@ -20,7 +20,7 @@ import (
 
 // CreateTransactionResponse - OK
 type CreateTransactionResponse struct {
-	Data []shared.Transaction `json:"data"`
+	Data shared.Transaction `json:"data"`
 }
 
 type CreateTransactionWrapper struct {
@@ -137,7 +137,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 		switch v.StatusCode {
 		case http.StatusOK:
 			return &shared.CreateTransactionResponse{
-				Data: v.CreateTransactionResponse.Data[0],
+				Data: v.CreateTransactionResponse.Data,
 			}, nil
 		default:
 			if v.ErrorResponse != nil {
