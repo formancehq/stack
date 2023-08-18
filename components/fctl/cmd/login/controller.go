@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
 	"time"
 
@@ -29,6 +30,7 @@ func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*o
 		if !errors.Is(err, fctl.ErrOpenningBrowser) {
 			return nil, err
 		}
+		fmt.Println("No browser detected")
 	}
 
 	dialog.DisplayURIAndCode(deviceCode.VerificationURI, deviceCode.UserCode)
