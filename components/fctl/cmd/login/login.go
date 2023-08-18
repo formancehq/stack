@@ -1,7 +1,6 @@
 package login
 
 import (
-	"errors"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -10,12 +9,12 @@ import (
 )
 
 type Dialog interface {
-	DisplayURIAndCode(err error, uri, code string)
+	DisplayURIAndCode(uri, code string)
 }
-type DialogFn func(err error, uri, code string)
+type DialogFn func(uri, code string)
 
-func (fn DialogFn) DisplayURIAndCode(err error, uri, code string) {
-	fn(err, uri, code)
+func (fn DialogFn) DisplayURIAndCode(uri, code string) {
+	fn(uri, code)
 }
 
 type LoginStore struct {
@@ -69,13 +68,10 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 
 	c.store.profile = profile
 
-	ret, err := LogIn(cmd.Context(), DialogFn(func(err error, uri, code string) {
+	ret, err := LogIn(cmd.Context(), DialogFn(func(uri, code string) {
 		c.store.DeviceCode = code
 		c.store.LoginURI = uri
-		if errors.Is(err, fctl.ErrOpenningBrowser) {
-			fmt.Println("No browser detected")
-			fmt.Println("Link :", fmt.Sprintf("%s?user_code=%s", c.store.LoginURI, c.store.DeviceCode))
-		}
+		fmt.Println("Link :", fmt.Sprintf("%s?user_code=%s", c.store.LoginURI, c.store.DeviceCode))
 	}), relyingParty)
 
 	// Other relying error not related to browser
@@ -99,17 +95,8 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 }
 
 func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
-	if !c.store.Success && c.store.BrowserURL != "" {
-		fmt.Printf("Unable to find a browser, please open the following link: %s", c.store.BrowserURL)
-		return nil
-	}
-
-	if c.store.Success {
-		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
-	}
-
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
 	return nil
-
 }
 
 func NewCommand() *cobra.Command {

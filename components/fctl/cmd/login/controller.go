@@ -26,11 +26,12 @@ func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*o
 	uri.RawQuery = query.Encode()
 
 	if err := fctl.Open(uri.String()); err != nil {
-		dialog.DisplayURIAndCode(err, deviceCode.VerificationURI, deviceCode.UserCode)
 		if !errors.Is(err, fctl.ErrOpenningBrowser) {
 			return nil, err
 		}
 	}
+
+	dialog.DisplayURIAndCode(deviceCode.VerificationURI, deviceCode.UserCode)
 
 	return rp.DeviceAccessToken(ctx, deviceCode.DeviceCode, time.Duration(deviceCode.Interval)*time.Second, relyingParty)
 }
