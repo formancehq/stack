@@ -71,20 +71,21 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	ret, err := LogIn(cmd.Context(), DialogFn(func(uri, code string) {
 		c.store.DeviceCode = code
 		c.store.LoginURI = uri
+		fmt.Println("Link :", fmt.Sprintf("%s?user_code=%s", c.store.LoginURI, c.store.DeviceCode))
 	}), relyingParty)
 
 	// Other relying error not related to browser
-	if err != nil && err.Error() != "error_opening_browser" {
+	if err != nil {
 		return nil, err
 	}
 
 	// Browser not found
-	if err == nil {
+	if ret != nil {
 		c.store.Success = true
+		profile.UpdateToken(ret)
 	}
 
 	profile.SetMembershipURI(membershipUri)
-	profile.UpdateToken(ret)
 
 	currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
 
@@ -94,21 +95,8 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 }
 
 func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
-
-	fmt.Println("Please enter the following code on your browser:", c.store.DeviceCode)
-	fmt.Println("Link:", c.store.LoginURI)
-
-	if !c.store.Success && c.store.BrowserURL != "" {
-		fmt.Printf("Unable to find a browser, please open the following link: %s", c.store.BrowserURL)
-		return nil
-	}
-
-	if c.store.Success {
-		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
-	}
-
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
 	return nil
-
 }
 
 func NewCommand() *cobra.Command {
