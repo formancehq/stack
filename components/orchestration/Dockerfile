@@ -4,7 +4,7 @@ ARG VERSION
 WORKDIR /src
 COPY . .
 WORKDIR /src/components/orchestration
-RUN go mod download
+RUN --mount=type=cache,mode=0755,target=/go/pkg/mod  go mod download
 RUN GOOS=linux go build -o orchestration \
     -ldflags="-X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Version=${VERSION} \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \

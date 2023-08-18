@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 FROM ghcr.io/formancehq/gateway:v0.1.7 as gateway
 FROM ghcr.io/formancehq/ledger:v1.10.3 as ledger
-FROM ghcr.io/formancehq/payments:v0.8.0 as payments
+FROM ghcr.io/formancehq/payments:v0.9.7 as payments
+FROM ghcr.io/formancehq/orchestration:v0.1.5 as orchestration
 FROM ghcr.io/formancehq/auth:v0.4.3 as auth
 FROM ghcr.io/formancehq/search:v0.7.0 as search
 FROM ghcr.io/formancehq/wallets:v0.4.3 as wallets
@@ -22,6 +23,7 @@ FROM node:18
 WORKDIR /tmp
 COPY --from=builder /usr/bin/process-compose /usr/bin/process-compose
 COPY --from=gateway /usr/bin/caddy /usr/bin/gateway
+COPY --from=orchestration /usr/bin/orchestration /usr/bin/orchestration
 COPY --from=dex /usr/local/bin/dex /usr/bin/dex
 COPY --from=auth /usr/bin/auth /usr/bin/auth
 COPY --from=ledger /usr/local/bin/numary /usr/bin/ledger

@@ -45,7 +45,7 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
 
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, "PostTransaction", "json")
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, "Data", "json")
 	if err != nil {
 		return nil, fmt.Errorf("error serializing request body: %w", err)
 	}
@@ -109,8 +109,8 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 }
 
 type CreateTransactionRequest struct {
-	Ledger string                 `json:"ledger"`
-	Data   shared.PostTransaction `json:"data"`
+	Ledger string                 `pathParam:"style=simple,explode=false,name=ledger"`
+	Data   shared.PostTransaction `request:"mediaType=application/json"`
 }
 
 func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.CreateTransactionResponse, error) {
@@ -134,9 +134,21 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 			return nil, err
 		}
 
-		return &shared.CreateTransactionResponse{
-			Data: v.CreateTransactionResponse.Data[0],
-		}, nil
+		switch v.StatusCode {
+		case http.StatusOK:
+			return &shared.CreateTransactionResponse{
+				Data: v.CreateTransactionResponse.Data[0],
+			}, nil
+		default:
+			if v.ErrorResponse != nil {
+				return nil, temporal.NewApplicationError(
+					v.ErrorResponse.ErrorMessage,
+					string(v.ErrorResponse.ErrorCode),
+					v.ErrorResponse.Details)
+			}
+
+			return nil, fmt.Errorf("unexpected status code: %d", v.StatusCode)
+		}
 	} else {
 		response, err := a.client.Ledger.
 			CreateTransaction(
