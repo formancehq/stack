@@ -82,6 +82,13 @@ processes:
     environment:
       - "OTEL_SERVICE_NAME=webhooks"
 
+  orchestration:
+    command: orchestration serve --listen 0.0.0.0:8086 --postgres-dsn postgresql://formance:formance@postgres/orchestration?sslmode=disable --temporal-address temporalite:7233
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=orchestration"
+
   benthos:
     command: benthos -r "/benthos/resources/*.yaml" -t "/benthos/templates/*.yaml" -c /benthos/config.yml --log.level trace streams "/benthos/streams/*.yaml"
     availability:

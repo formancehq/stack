@@ -39,6 +39,17 @@ services:
       - "8222:8222"
     command: --js
 
+  temporalite:
+    container_name: temporalite
+    build:
+      dockerfile: tests/integration/temporalite.Dockerfile
+      context: .
+    ports:
+    - 7233:7233
+    - 8233:8233
+    stdin_open: true
+    tty: true
+
   postgres:
     image: "postgres:13-alpine"
     restart: always
@@ -52,7 +63,7 @@ services:
     environment:
       POSTGRES_USER: "formance"
       POSTGRES_PASSWORD: "formance"
-      POSTGRES_MULTIPLE_DATABASES: "auth,ledger,webhooks,payments"
+      POSTGRES_MULTIPLE_DATABASES: "auth,ledger,webhooks,payments,orchestration"
       PGDATA: "/data/postgres"
     volumes:
       - postgres_data:/data/postgres
