@@ -20,7 +20,7 @@ import (
 
 // CreateTransactionResponse - OK
 type CreateTransactionResponse struct {
-	Data shared.Transaction `json:"data"`
+	Data []shared.Transaction `json:"data"`
 }
 
 type CreateTransactionWrapper struct {
@@ -45,7 +45,7 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
 
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, "PostTransaction", "json")
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, "Data", "json")
 	if err != nil {
 		return nil, fmt.Errorf("error serializing request body: %w", err)
 	}
@@ -109,8 +109,8 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 }
 
 type CreateTransactionRequest struct {
-	Ledger          string                 `pathParam:"style=simple,explode=false,name=ledger"`
-	PostTransaction shared.PostTransaction `request:"mediaType=application/json"`
+	Ledger string                 `pathParam:"style=simple,explode=false,name=ledger"`
+	Data   shared.PostTransaction `request:"mediaType=application/json"`
 }
 
 func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.CreateTransactionResponse, error) {
@@ -137,7 +137,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 		switch v.StatusCode {
 		case http.StatusOK:
 			return &shared.CreateTransactionResponse{
-				Data: v.CreateTransactionResponse.Data,
+				Data: v.CreateTransactionResponse.Data[0],
 			}, nil
 		default:
 			if v.ErrorResponse != nil {
@@ -154,7 +154,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 			CreateTransaction(
 				ctx,
 				operations.CreateTransactionRequest{
-					PostTransaction: request.PostTransaction,
+					PostTransaction: request.Data,
 					Ledger:          request.Ledger,
 				},
 			)
@@ -183,8 +183,8 @@ var CreateTransactionActivity = Activities{}.CreateTransaction
 func CreateTransaction(ctx workflow.Context, ledger string, request shared.PostTransaction) (*shared.Transaction, error) {
 	tx := &shared.CreateTransactionResponse{}
 	if err := executeActivity(ctx, CreateTransactionActivity, tx, CreateTransactionRequest{
-		Ledger:          ledger,
-		PostTransaction: request,
+		Ledger: ledger,
+		Data:   request,
 	}); err != nil {
 		return nil, err
 	}

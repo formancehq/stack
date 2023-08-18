@@ -139,7 +139,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -160,7 +160,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -258,7 +258,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -279,7 +279,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -301,7 +301,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -359,7 +359,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -378,7 +378,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -400,7 +400,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -441,7 +441,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -480,7 +480,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -502,7 +502,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -607,7 +607,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -700,7 +700,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -827,7 +827,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						PostTransaction: shared.PostTransaction{
+						Data: shared.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
