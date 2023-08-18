@@ -35,6 +35,10 @@ func ContainValue[V comparable](array []V, value V) bool {
 	return false
 }
 
+var (
+	ErrOpenningBrowser = errors.New("opening browser")
+)
+
 func Open(url string) error {
 	var (
 		cmd  string
@@ -55,5 +59,6 @@ func Open(url string) error {
 		args = append(args, url)
 		return exec.Command(cmd, args...).Start()
 	}
-	return errors.New("error_opening_browser")
+
+	return ErrOpenningBrowser
 }
