@@ -109,8 +109,8 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 }
 
 type CreateTransactionRequest struct {
-	Ledger string                 `json:"ledger"`
-	Data   shared.PostTransaction `json:"data"`
+	Ledger          string                 `pathParam:"style=simple,explode=false,name=ledger"`
+	PostTransaction shared.PostTransaction `request:"mediaType=application/json"`
 }
 
 func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.CreateTransactionResponse, error) {
@@ -134,15 +134,27 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 			return nil, err
 		}
 
-		return &shared.CreateTransactionResponse{
-			Data: v.CreateTransactionResponse.Data[0],
-		}, nil
+		switch v.StatusCode {
+		case http.StatusOK:
+			return &shared.CreateTransactionResponse{
+				Data: v.CreateTransactionResponse.Data[0],
+			}, nil
+		default:
+			if v.ErrorResponse != nil {
+				return nil, temporal.NewApplicationError(
+					v.ErrorResponse.ErrorMessage,
+					string(v.ErrorResponse.ErrorCode),
+					v.ErrorResponse.Details)
+			}
+
+			return nil, fmt.Errorf("unexpected status code: %d", v.StatusCode)
+		}
 	} else {
 		response, err := a.client.Ledger.
 			CreateTransaction(
 				ctx,
 				operations.CreateTransactionRequest{
-					PostTransaction: request.Data,
+					PostTransaction: request.PostTransaction,
 					Ledger:          request.Ledger,
 				},
 			)
@@ -171,8 +183,8 @@ var CreateTransactionActivity = Activities{}.CreateTransaction
 func CreateTransaction(ctx workflow.Context, ledger string, request shared.PostTransaction) (*shared.Transaction, error) {
 	tx := &shared.CreateTransactionResponse{}
 	if err := executeActivity(ctx, CreateTransactionActivity, tx, CreateTransactionRequest{
-		Ledger: ledger,
-		Data:   request,
+		Ledger:          ledger,
+		PostTransaction: request,
 	}); err != nil {
 		return nil, err
 	}

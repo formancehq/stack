@@ -5,6 +5,7 @@ volumes:
   opensearch_data:
 services:
   jaeger:
+    platform: linux/x86_64
     image: jaegertracing/all-in-one:latest
     ports:
       - "16686:16686"
@@ -51,6 +52,7 @@ services:
     tty: true
 
   postgres:
+    platform: linux/x86_64
     image: "postgres:13-alpine"
     restart: always
     healthcheck:
@@ -70,6 +72,7 @@ services:
       - ./config/postgres:/docker-entrypoint-initdb.d
 
   opensearch:
+    platform: linux/x86_64
     image: "opensearchproject/opensearch:2.2.1"
     restart: always
     environment:
@@ -85,6 +88,7 @@ services:
       - opensearch_data:/usr/share/opensearch/data
 
   opensearch-dashboards:
+    platform: linux/x86_64
     image: "opensearchproject/opensearch-dashboards:2.2.1"
     environment:
       OPENSEARCH_HOSTS: '["http://opensearch:9200"]' # must be a string with no spaces when specified as an environment variable
