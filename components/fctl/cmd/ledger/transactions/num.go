@@ -179,6 +179,13 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 	if err != nil {
 		return nil, err
 	}
+	if ret.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", *ret.ErrorResponse.ErrorCode, *ret.ErrorResponse.ErrorMessage)
+	}
+
+	if ret.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %d", ret.StatusCode)
+	}
 
 	c.store.Transaction = &ret.TransactionsResponse.Data[0]
 
