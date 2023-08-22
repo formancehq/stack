@@ -79,5 +79,13 @@ func GetCustomMetadata(owner MetadataOwner) metadata.Metadata {
 	if ret == nil {
 		return metadata.Metadata{}
 	}
-	return LedgerMetadataToWalletMetadata(ret.(map[string]any))
+
+	switch v := ret.(type) {
+	case string:
+		return metadata.Metadata{}
+	case map[string]any:
+		return LedgerMetadataToWalletMetadata(v)
+	default:
+		return metadata.Metadata{}
+	}
 }
