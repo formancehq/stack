@@ -38,6 +38,7 @@ func (s *Storage) UpsertAccounts(ctx context.Context, provider models.ConnectorP
 		Set("raw_data = EXCLUDED.raw_data").
 		Set("default_currency = EXCLUDED.default_currency").
 		Set("account_name = EXCLUDED.account_name").
+		Set("metadata = EXCLUDED.metadata").
 		Exec(ctx)
 	if err != nil {
 		return e("failed to create accounts", err)

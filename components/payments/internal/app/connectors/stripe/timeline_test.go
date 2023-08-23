@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/stretchr/testify/require"
 	"github.com/stripe/stripe-go/v72"
 )
@@ -39,9 +40,9 @@ func TestTimeline(t *testing.T) {
 	require.True(t, hasMore)
 	require.Equal(t, TimelineState{
 		OldestID:       "tx2",
-		OldestDate:     DatePtr(time.Unix(tx2.Created, 0)),
+		OldestDate:     client.DatePtr(time.Unix(tx2.Created, 0)),
 		MoreRecentID:   "tx1",
-		MoreRecentDate: DatePtr(time.Unix(tx1.Created, 0)),
+		MoreRecentDate: client.DatePtr(time.Unix(tx1.Created, 0)),
 		NoMoreHistory:  false,
 	}, state)
 
@@ -59,9 +60,9 @@ func TestTimeline(t *testing.T) {
 	require.False(t, hasMore)
 	require.Equal(t, TimelineState{
 		OldestID:       "tx3",
-		OldestDate:     DatePtr(time.Unix(tx3.Created, 0)),
+		OldestDate:     client.DatePtr(time.Unix(tx3.Created, 0)),
 		MoreRecentID:   "tx1",
-		MoreRecentDate: DatePtr(time.Unix(tx1.Created, 0)),
+		MoreRecentDate: client.DatePtr(time.Unix(tx1.Created, 0)),
 		NoMoreHistory:  true,
 	}, state)
 }

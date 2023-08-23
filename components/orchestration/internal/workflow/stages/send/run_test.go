@@ -688,7 +688,7 @@ var (
 			{
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
-					mock.Anything, shared.StripeTransferRequest{
+					mock.Anything, shared.ActivityStripeTransfer{
 						Amount:      big.NewInt(100),
 						Asset:       pointer.For("USD"),
 						Destination: pointer.For("abcd"),
@@ -1025,7 +1025,7 @@ var (
 			{
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
-					mock.Anything, shared.StripeTransferRequest{
+					mock.Anything, shared.ActivityStripeTransfer{
 						Amount:      big.NewInt(100),
 						Asset:       pointer.For("USD"),
 						Destination: pointer.For("abcd"),

@@ -65,8 +65,13 @@ func ingestBalancesBatch(
 			return fmt.Errorf("failed to parse amount %s", balance.Attributes.AvailableBalance.String())
 		}
 
+		precision, err := currency.GetPrecision(balance.Attributes.CurrencyCode)
+		if err != nil {
+			return err
+		}
+
 		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(currency.GetPrecision(balance.Attributes.CurrencyCode))))).Int(&amountInt)
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 		now := time.Now()
 		batch = append(batch, &models.Balance{

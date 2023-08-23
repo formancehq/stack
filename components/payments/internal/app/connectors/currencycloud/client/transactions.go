@@ -41,7 +41,7 @@ func (c *Client) GetTransactions(ctx context.Context, page int) ([]Transaction, 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, 0, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
 	//nolint:tagliatelle // allow for client code

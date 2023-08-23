@@ -28,7 +28,7 @@ func (w *Client) GetProfiles() ([]Profile, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+		return nil, unmarshalError(res.StatusCode, res.Body).Error()
 	}
 
 	err = json.Unmarshal(body, &profiles)

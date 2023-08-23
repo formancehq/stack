@@ -30,7 +30,7 @@ func (c *Client) GetAccounts(ctx context.Context, page int) ([]*Account, int, er
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, 0, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
 	//nolint:tagliatelle // allow for client code

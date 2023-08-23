@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/task"
@@ -17,7 +18,7 @@ var (
 	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))...)
 )
 
-func FetchPaymentsTask(config Config, client *DefaultClient) func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
+func FetchPaymentsTask(config Config, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
 	scheduler task.Scheduler, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry) error {
 	return func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
 		scheduler task.Scheduler, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry,

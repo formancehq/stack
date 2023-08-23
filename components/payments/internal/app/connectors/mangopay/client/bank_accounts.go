@@ -37,6 +37,10 @@ func (c *Client) GetBankAccounts(ctx context.Context, userID string, page int) (
 		}
 	}()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+	}
+
 	var bankAccounts []*bankAccount
 	if err := json.NewDecoder(resp.Body).Decode(&bankAccounts); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)

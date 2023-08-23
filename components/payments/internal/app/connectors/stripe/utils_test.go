@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/stripe/stripe-go/v72"
 )
 
@@ -67,11 +68,11 @@ func (e *ClientMockExpectation) RespondsWith(hasMore bool,
 	return e
 }
 
-func (e *ClientMockExpectation) handle(options ...ClientOption) ([]*stripe.BalanceTransaction, bool, error) {
+func (e *ClientMockExpectation) handle(options ...client.ClientOption) ([]*stripe.BalanceTransaction, bool, error) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 
 	for _, option := range options {
-		option.apply(req)
+		option.Apply(req)
 	}
 
 	for key := range e.query {
@@ -88,30 +89,51 @@ type ClientMock struct {
 	expectations *FIFO[*ClientMockExpectation]
 }
 
-func (m *ClientMock) ForAccount(account string) Client {
+func (m *ClientMock) ForAccount(account string) client.Client {
 	return m
 }
 
 func (m *ClientMock) Accounts(ctx context.Context,
-	options ...ClientOption,
+	options ...client.ClientOption,
 ) ([]*stripe.Account, bool, error) {
 	return nil, false, nil
 }
 
 func (m *ClientMock) Balance(ctx context.Context,
-	options ...ClientOption,
+	options ...client.ClientOption,
 ) (*stripe.Balance, error) {
 	return nil, nil
 }
 
 func (m *ClientMock) ExternalAccounts(ctx context.Context,
-	options ...ClientOption,
+	options ...client.ClientOption,
 ) ([]*stripe.ExternalAccount, bool, error) {
 	return nil, false, nil
 }
 
+func (m *ClientMock) CreateTransfer(ctx context.Context,
+	createTransferRequest *client.CreateTransferRequest,
+	options ...client.ClientOption,
+) (*stripe.Transfer, error) {
+	return nil, nil
+}
+
+func (m *ClientMock) CreatePayout(ctx context.Context,
+	createPayoutRequest *client.CreatePayoutRequest,
+	options ...client.ClientOption,
+) (*stripe.Payout, error) {
+	return nil, nil
+}
+
+func (m *ClientMock) GetPayout(ctx context.Context,
+	payoutID string,
+	options ...client.ClientOption,
+) (*stripe.Payout, error) {
+	return nil, nil
+}
+
 func (m *ClientMock) BalanceTransactions(ctx context.Context,
-	options ...ClientOption,
+	options ...client.ClientOption,
 ) ([]*stripe.BalanceTransaction, bool, error) {
 	e, ok := m.expectations.Pop()
 	if !ok {
@@ -148,7 +170,7 @@ func NewClientMock(t *testing.T, expectationsShouldBeConsumed bool) *ClientMock 
 	return m
 }
 
-var _ Client = &ClientMock{}
+var _ client.Client = &ClientMock{}
 
 type FIFO[ITEM any] struct {
 	mu    sync.Mutex

@@ -1,6 +1,7 @@
 package currency
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -135,13 +136,28 @@ func FormatAsset(cur string) models.Asset {
 	return models.Asset(fmt.Sprintf("%s/%d", asset, def.decimals))
 }
 
-func GetPrecision(cur string) int {
+func GetPrecision(cur string) (int, error) {
 	asset := strings.ToUpper(string(cur))
 
 	def, ok := currencies()[asset]
 	if !ok {
-		return 0
+		return 0, errors.New("missing currencies")
 	}
 
-	return def.decimals
+	return def.decimals, nil
+}
+
+func GetCurrencyAndPrecisionFromAsset(asset models.Asset) (string, int, error) {
+	parts := strings.Split(asset.String(), "/")
+	if len(parts) != 2 {
+		return "", 0, errors.New("invalid asset")
+	}
+
+	currency := parts[0]
+	precision, err := GetPrecision(currency)
+	if err != nil {
+		return "", 0, err
+	}
+
+	return currency, precision, nil
 }

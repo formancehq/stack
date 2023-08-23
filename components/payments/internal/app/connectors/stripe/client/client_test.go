@@ -1,4 +1,4 @@
-package stripe
+package client
 
 import (
 	"bytes"
@@ -217,10 +217,6 @@ func ExpectBalanceTransactionList(mock *httpMock) *StripeBalanceTransactionListE
 	return &StripeBalanceTransactionListExpect{
 		HTTPExpect: e,
 	}
-}
-
-func DatePtr(t time.Time) *time.Time {
-	return &t
 }
 
 type BalanceTransactionSource stripe.BalanceTransactionSource

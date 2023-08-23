@@ -76,7 +76,9 @@ func httpServeFunc(handler http.Handler) http.Handler {
 }
 
 func handleStorageErrors(w http.ResponseWriter, r *http.Request, err error) {
-	if errors.Is(err, storage.ErrNotFound) {
+	if errors.Is(err, storage.ErrDuplicateKeyValue) {
+		handleErrorBadRequest(w, r, errors.New("unique reference already existing"))
+	} else if errors.Is(err, storage.ErrNotFound) {
 		handleNotFoundError(w, r, err)
 	} else {
 		handleServerError(w, r, err)

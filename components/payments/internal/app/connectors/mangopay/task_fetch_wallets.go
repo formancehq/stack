@@ -82,7 +82,10 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 					AccountName:  wallet.Description,
 					// Wallets are internal accounts on our side, since we
 					// can have their balances.
-					Type:    models.AccountTypeInternal,
+					Type: models.AccountTypeInternal,
+					Metadata: map[string]string{
+						"user_id": userID,
+					},
 					RawData: buf,
 				})
 

@@ -42,6 +42,10 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wa
 		}
 	}()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+	}
+
 	var wallets []*wallet
 	if err := json.NewDecoder(resp.Body).Decode(&wallets); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)

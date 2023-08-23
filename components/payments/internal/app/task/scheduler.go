@@ -71,40 +71,65 @@ func (s *DefaultTaskScheduler) ReadTaskByDescriptor(ctx context.Context, descrip
 	return s.store.GetTaskByDescriptor(ctx, s.provider, taskDescriptor)
 }
 
+// Schedule schedules a task to be executed.
+// Schedule waits for:
+//   - Context to be done
+//   - Task creation if the scheduler option is not equal to OPTIONS_RUN_NOW_SYNC
+//   - Task termination if the scheduler option is equal to OPTIONS_RUN_NOW_SYNC
 func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) error {
+	select {
+	case err := <-s.schedule(ctx, descriptor, options):
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+// schedule schedules a task to be executed.
+// It returns an error chan that will be closed when the task is terminated if
+// the scheduler option is equal to OPTIONS_RUN_NOW_SYNC. Otherwise, it will
+// return an error chan that will be closed immediately after task creation.
+func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) <-chan error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	returnErrorFunc := func(err error) <-chan error {
+		errChan := make(chan error, 1)
+		if err != nil {
+			errChan <- err
+		}
+		close(errChan)
+		return errChan
+	}
+
 	taskID, err := descriptor.EncodeToString()
 	if err != nil {
-		return err
+		return returnErrorFunc(err)
 	}
 
 	if _, ok := s.tasks[taskID]; ok {
-		return ErrAlreadyScheduled
+		return returnErrorFunc(ErrAlreadyScheduled)
 	}
 
 	if !options.Restart {
 		_, err := s.ReadTaskByDescriptor(ctx, descriptor)
 		if err == nil {
-			return nil
+			return returnErrorFunc(nil)
 		}
 	}
 
 	if s.maxTasks != 0 && len(s.tasks) >= s.maxTasks || s.stopped {
 		err := s.stackTask(ctx, descriptor)
 		if err != nil {
-			return errors.Wrap(err, "stacking task")
+			return returnErrorFunc(errors.Wrap(err, "stacking task"))
 		}
 
-		return nil
+		return returnErrorFunc(nil)
 	}
 
-	if err := s.startTask(ctx, descriptor, options); err != nil {
-		return errors.Wrap(err, "starting task")
-	}
+	errChan := s.startTask(ctx, descriptor, options)
 
-	return nil
+	return errChan
 }
 
 func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
@@ -143,9 +168,13 @@ func (s *DefaultTaskScheduler) Restore(ctx context.Context) error {
 	}
 
 	for _, task := range tasks {
-		err = s.startTask(ctx, task.GetDescriptor(), task.SchedulerOptions)
-		if err != nil {
-			s.logger(ctx).Errorf("Unable to restore task %s: %s", task.ID, err)
+		errChan := s.startTask(ctx, task.GetDescriptor(), task.SchedulerOptions)
+		select {
+		case err := <-errChan:
+			if err != nil {
+				s.logger(ctx).Errorf("Unable to restore task %s: %s", task.ID, err)
+			}
+		case <-ctx.Done():
 		}
 	}
 
@@ -205,21 +234,33 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 		return
 	}
 
-	err = s.startTask(ctx, oldestPendingTask.GetDescriptor(), models.TaskSchedulerOptions{
+	errChan := s.startTask(ctx, oldestPendingTask.GetDescriptor(), models.TaskSchedulerOptions{
 		ScheduleOption: models.OPTIONS_RUN_NOW,
 	})
-	if err != nil {
-		logging.FromContext(ctx).Error(err)
+	select {
+	case err, ok := <-errChan:
+		if !ok {
+			return
+		}
+		if err != nil {
+			logging.FromContext(ctx).Error(err)
+		}
+	case <-ctx.Done():
+		return
 	}
 }
 
 type StopChan chan chan struct{}
 
-func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) error {
+func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) <-chan error {
+	errChan := make(chan error, 1)
+
 	task, err := s.store.FindAndUpsertTask(ctx, s.provider, descriptor,
 		models.TaskStatusActive, options, "")
 	if err != nil {
-		return errors.Wrap(err, "finding task and update")
+		errChan <- errors.Wrap(err, "finding task and update")
+		close(errChan)
+		return errChan
 	}
 
 	logger := s.logger(ctx).WithFields(map[string]interface{}{
@@ -228,7 +269,9 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 
 	taskResolver := s.resolver.Resolve(task.GetDescriptor())
 	if taskResolver == nil {
-		return ErrUnableToResolve
+		errChan <- ErrUnableToResolve
+		close(errChan)
+		return errChan
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -304,12 +347,18 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 
 	taskID, err := holder.descriptor.EncodeToString()
 	if err != nil {
-		return err
+		errChan <- err
+		close(errChan)
+		return errChan
 	}
 
 	s.tasks[taskID] = holder
 
+	sendError := false
 	switch options.ScheduleOption {
+	case models.OPTIONS_RUN_NOW_SYNC:
+		sendError = true
+		fallthrough
 	case models.OPTIONS_RUN_NOW:
 		options.Duration = 0
 		fallthrough
@@ -326,10 +375,22 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				defer span.End()
 				defer s.deleteTask(ctx, holder)
 
+				if sendError {
+					defer close(errChan)
+				}
+
 				if e := recover(); e != nil {
 					s.registerTaskError(ctx, holder, e)
 					debug.PrintStack()
 
+					if sendError {
+						switch v := e.(type) {
+						case error:
+							errChan <- v
+						default:
+							errChan <- fmt.Errorf("%s", v)
+						}
+					}
 					return
 				}
 			}()
@@ -337,6 +398,11 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 			err = container.Invoke(taskResolver)
 			if err != nil {
 				s.registerTaskError(ctx, holder, err)
+
+				if sendError {
+					errChan <- err
+					return
+				}
 
 				return
 			}
@@ -346,6 +412,9 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 			err = s.store.UpdateTaskStatus(ctx, s.provider, descriptor, models.TaskStatusTerminated, "")
 			if err != nil {
 				logger.Error("Error updating task status: %s", err)
+				if sendError {
+					errChan <- err
+				}
 			}
 		}()
 	case models.OPTIONS_RUN_INDEFINITELY:
@@ -394,7 +463,11 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 		}()
 	}
 
-	return nil
+	if !sendError {
+		close(errChan)
+	}
+
+	return errChan
 }
 
 func (s *DefaultTaskScheduler) stackTask(ctx context.Context, descriptor models.TaskDescriptor) error {

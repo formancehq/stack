@@ -61,7 +61,10 @@ func taskFetchBankAccounts(logger logging.Logger, client *client.Client, userID 
 					Provider:    models.ConnectorProviderMangopay,
 					AccountName: bankAccount.OwnerName,
 					Type:        models.AccountTypeExternal,
-					RawData:     buf,
+					Metadata: map[string]string{
+						"user_id": userID,
+					},
+					RawData: buf,
 				})
 			}
 

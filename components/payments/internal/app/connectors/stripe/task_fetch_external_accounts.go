@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/currency"
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
@@ -20,7 +21,7 @@ var (
 	externalAccountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
-func FetchExternalAccountsTask(config Config, account string, client *DefaultClient) task.Task {
+func FetchExternalAccountsTask(config Config, account string, client *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,

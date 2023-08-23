@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"math/big"
+	"net/http"
 
 	"github.com/google/uuid"
 )
@@ -14,7 +15,7 @@ type Quote struct {
 	ID uuid.UUID `json:"id"`
 }
 
-func (w *Client) CreateQuote(profileID uint64, currency string, amount *big.Int) (Quote, error) {
+func (w *Client) CreateQuote(profileID string, currency string, amount *big.Float) (Quote, error) {
 	var response Quote
 
 	req, err := json.Marshal(map[string]interface{}{
@@ -26,12 +27,15 @@ func (w *Client) CreateQuote(profileID uint64, currency string, amount *big.Int)
 		return response, err
 	}
 
-	res, err := w.httpClient.Post(w.endpoint("v3/profiles/"+fmt.Sprint(profileID)+"/quotes"), "application/json", bytes.NewBuffer(req))
+	res, err := w.httpClient.Post(w.endpoint("v3/profiles/"+profileID+"/quotes"), "application/json", bytes.NewBuffer(req))
 	if err != nil {
 		return response, err
 	}
-
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return response, unmarshalError(res.StatusCode, res.Body).Error()
+	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -27,9 +28,9 @@ type Connector struct {
 	fs     fs
 }
 
-func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
+func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
 	// TODO implement me
-	panic("implement me")
+	return errors.New("not implemented")
 }
 
 // Install executes post-installation steps to read and generate files.

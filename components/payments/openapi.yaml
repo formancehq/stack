@@ -51,6 +51,66 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  /transfer-initiation:
+    get:
+      summary: List Transfer Initiations
+      operationId: listTransferInitiations
+      tags:
+        - Payments
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          $ref: '#/components/responses/TransferInitiations'
+    post:
+      summary: Create a TransferInitiation
+      tags:
+        - Payments
+      operationId: createTransferInitiation
+      description: Create a transfer initiation
+      requestBody:
+        $ref: '#/components/requestBodies/TransferInitiation'
+      responses:
+        '200':
+          $ref: '#/components/responses/TransferInitiation'
+  /transfer-initiation/{transferId}:
+    get:
+      summary: Get a transfer initiation
+      tags:
+        - Payments
+      operationId: getTransferInitiation
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      responses:
+        '200':
+          $ref: '#/components/responses/TransferInitiation'
+    delete:
+      summary: Delete a transfer initiation
+      operationId: deleteTransferInitiation
+      tags:
+        - Payments
+      description: Delete a transfer initiation by its id.
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+  /transfer-initiation/{transferId}/status:
+    post:
+      summary: Update the status of a transfer initiation
+      tags:
+        - Payments
+      operationId: udpateTransferInitiationStatus
+      description: Update a transfer initiation status
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateTransferInitiationStatus'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
   /accounts:
       get:
         summary: List accounts
@@ -122,6 +182,38 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/AccountBalances'
+  /bank-accounts:
+    post:
+      summary: Create a BankAccount in Payments and on the PSP
+      tags:
+        - Payments
+      operationId: createBankAccount
+      description: Create a bank account in Payments and on the PSP.
+      requestBody:
+        $ref: '#/components/requestBodies/BankAccount'
+      responses:
+        '200':
+          $ref: '#/components/responses/BankAccount'
+    get:
+      summary: List bank accounts created by user on Formance
+      operationId: listBankAccounts
+      tags:
+        - Payments
+      description: List all bank accounts created by user on Formance.
+      responses:
+        '200':
+          $ref: '#/components/responses/BankAccounts'
+  /bank-accounts/{bankAccountId}:
+    get:
+      summary: Get a bank account created by user on Formance
+      tags:
+        - Payments
+      operationId: getBankAccount
+      parameters:
+        - $ref: '#/components/parameters/BankAccountId'
+      responses:
+        '200':
+          $ref: '#/components/responses/BankAccount'
   /connectors:
     get:
       summary: List all installed connectors
@@ -245,18 +337,6 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Transfers'
-  /connectors/stripe/transfers:
-    post:
-      summary: Transfer funds between Stripe accounts
-      tags:
-        - Payments
-      operationId: connectorsStripeTransfer
-      description: Execute a transfer between two Stripe accounts.
-      requestBody:
-        $ref: '#/components/requestBodies/StripeTransfer'
-      responses:
-        '200':
-            $ref: '#/components/responses/StripeTransfer'
 
 # ---------------------- COMPONENTS ----------------------
 components:
@@ -312,6 +392,22 @@ components:
       description: The account ID.
       example: XXX
       required: true
+    TransferId:
+      name: transferId
+      in: path
+      schema:
+        type: string
+      description: The transfer ID.
+      example: XXX
+      required: true
+    BankAccountId:
+      name: bankAccountId
+      in: path
+      schema:
+        type: string
+      description: The bank account ID.
+      example: XXX
+      required: true
     Connector:
       name: connector
       description: The name of the connector.
@@ -350,6 +446,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentResponse'
+    TransferInitiations:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferInitiationsCursor'
+    TransferInitiation:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferInitiationResponse'
     Accounts:
       description: OK
       content:
@@ -374,6 +482,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ConnectorsResponse'
+    BankAccounts:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BankAccountsResponse'
+    BankAccount:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BankAccountResponse'
     ConnectorsConfigs:
       description: OK
       content:
@@ -398,12 +518,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/TaskResponse'
-    StripeTransfer:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/StripeTransferResponse'
     Transfer:
       description: OK
       content:
@@ -424,18 +538,30 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ConnectorConfig'
-    StripeTransfer:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/StripeTransferRequest'
     UpdateMetadata:
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentMetadata'
+    TransferInitiation:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferInitiationRequest'
+    BankAccount:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BankAccountRequest'
+    UpdateTransferInitiationStatus:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateTransferInitiationStatusRequest'
     Transfer:
       required: true
       content:
@@ -484,6 +610,22 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/Payment'
+    TransferInitiationsCursor:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/CursorBase'
+            - type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TransferInitiation'
     AccountsCursor:
       type: object
       required:
@@ -556,6 +698,13 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Payment'
+    TransferInitiationResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/TransferInitiation'
     AccountResponse:
       type: object
       required:
@@ -578,6 +727,20 @@ components:
               enabled:
                 type: boolean
                 example: true
+    BankAccountsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/BankAccount'
+    BankAccountResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/BankAccount'
     ConnectorsConfigsResponse:
       type: object
       required:
@@ -723,7 +886,7 @@ components:
           type: string
           example: '60s'
           description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.
           default: '120s'
     ModulrConfig:
       type: object
@@ -744,7 +907,7 @@ components:
           type: string
           example: '60s'
           description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.
           default: '120s'
     BankingCircleConfig:
       type: object
@@ -778,7 +941,7 @@ components:
           type: string
           example: '60s'
           description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Banking Circle API.
           default: '120s'
     MangoPayConfig:
       type: object
@@ -791,7 +954,7 @@ components:
           type: string
           example: '60s'
           description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from MangoPay API.
           default: '120s'
         clientID:
           type: string
@@ -822,7 +985,7 @@ components:
           type: string
           example: '60s'
           description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.
           default: '120s'
     CurrencyCloudConfig:
       type: object
@@ -846,6 +1009,78 @@ components:
           type: string
           example: 'XXX'
           description: 'The endpoint to use for the API. Defaults to https://devapi.currencycloud.com'
+    TransferInitiation:
+      type: object
+      required:
+        - id
+        - createdAt
+        - updatedAt
+        - description
+        - sourceAccountID
+        - destinationAccountID
+        - provider
+        - type
+        - amount
+        - asset
+        - status
+        - error
+      properties:
+        id:
+          type: string
+          example: XXX
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        sourceAccountID:
+          type: string
+        destinationAccountID:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Connector'
+        type:
+          type: string
+          enum:
+            - TRANSFER
+            - PAYOUT
+        amount:
+          type: integer
+          format: bigint
+        asset:
+          type: string
+          example: USD
+        status:
+          type: string
+          enum:
+            - WAITING_FOR_VALIDATION
+            - PROCESSING
+            - PROCESSED
+            - FAILED
+            - REJECTED
+            - VALIDATED
+        error:
+          type: string
+    BankAccount:
+      type: object
+      required:
+        - id
+        - createdAt
+        - country
+        - provider
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        country:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Connector'
     Payment:
       type: object
       required:
@@ -1191,29 +1426,82 @@ components:
         source:
           type: string
           example: acct_1Gqj58KZcSIg2N2q
-    StripeTransferRequest:
+    BankAccountRequest:
       type: object
+      required:
+        - country
+        - provider
+        - name
       properties:
+        country:
+          type: string
+          example: GB
+        provider:
+          $ref: '#/components/schemas/Connector'
+        name:
+          type: string
+          example: 'My account'
+        accountNumber:
+          type: string
+        iban:
+          type: string
+        swiftBicCode:
+          type: string
+    TransferInitiationRequest:
+      type: object
+      required:
+        - uniqueRequestID
+        - createdAt
+        - description
+        - sourceAccountID
+        - destinationAccountID
+        - provider
+        - type
+        - amount
+        - asset
+        - validated
+      properties:
+        uniqueRequestID:
+          type: string
+          example: XXX
+        createdAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        sourceAccountID:
+          type: string
+        destinationAccountID:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Connector'
+        type:
+          type: string
+          enum:
+            - TRANSFER
+            - PAYOUT
         amount:
           type: integer
           format: bigint
-          minimum: 0
-          example: 100
         asset:
           type: string
           example: USD
-        destination:
-          type: string
-          example: acct_1Gqj58KZcSIg2N2q
-        metadata:
-          type: object
-          description: |
-            A set of key/value pairs that you can attach to a transfer object.
-            It can be useful for storing additional information about the transfer in a structured format.
-          example:
-            order_id: '6735'
-    StripeTransferResponse:
+        validated:
+          type: boolean
+    UpdateTransferInitiationStatusRequest:
       type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - WAITING_FOR_VALIDATION
+            - PROCESSING
+            - PROCESSED
+            - FAILED
+            - REJECTED
+            - VALIDATED
     PaymentStatus:
       type: string
       enum:

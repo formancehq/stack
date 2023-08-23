@@ -10,11 +10,13 @@ import (
 )
 
 const (
-	taskNameMain              = "main"
-	taskNameFetchUsers        = "fetch-users"
-	taskNameFetchTransactions = "fetch-transactions"
-	taskNameFetchWallets      = "fetch-wallets"
-	taskNameFetchBankAccounts = "fetch-bank-accounts"
+	taskNameMain                = "main"
+	taskNameFetchUsers          = "fetch-users"
+	taskNameFetchTransactions   = "fetch-transactions"
+	taskNameFetchWallets        = "fetch-wallets"
+	taskNameFetchBankAccounts   = "fetch-bank-accounts"
+	taskNameInitiatePayment     = "initiate-payment"
+	taskNameUpdatePaymentStatus = "update-payment-status"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -23,6 +25,8 @@ type TaskDescriptor struct {
 	Key           string              `json:"key" yaml:"key" bson:"key"`
 	UserID        string              `json:"userID" yaml:"userID" bson:"userID"`
 	WalletID      string              `json:"walletID" yaml:"walletID" bson:"walletID"`
+	TransferID    string              `json:"transferID" yaml:"transferID" bson:"transferID"`
+	Attempt       int                 `json:"attempt" yaml:"attempt" bson:"attempt"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
 
@@ -50,6 +54,10 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskFetchBankAccounts(logger, mangopayClient, taskDescriptor.UserID)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, mangopayClient, taskDescriptor.WalletID)
+		case taskNameInitiatePayment:
+			return taskInitiatePayment(logger, mangopayClient, taskDescriptor.TransferID)
+		case taskNameUpdatePaymentStatus:
+			return taskUpdatePaymentStatus(logger, mangopayClient, taskDescriptor.TransferID, taskDescriptor.Attempt)
 		case taskNameFetchWallets:
 			return taskFetchWallets(logger, mangopayClient, taskDescriptor.UserID)
 		}

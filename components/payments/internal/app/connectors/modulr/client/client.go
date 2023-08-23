@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/formancehq/payments/internal/app/connectors/modulr/hmac"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -34,7 +35,8 @@ type Client struct {
 }
 
 func (m *Client) buildEndpoint(path string, args ...interface{}) string {
-	return fmt.Sprintf("%s/%s", m.endpoint, fmt.Sprintf(path, args...))
+	endpoint := strings.TrimSuffix(m.endpoint, "/")
+	return fmt.Sprintf("%s/%s", endpoint, fmt.Sprintf(path, args...))
 }
 
 const sandboxAPIEndpoint = "https://api-sandbox.modulrfinance.com/api-sandbox-token"
@@ -59,4 +61,12 @@ func NewClient(apiKey, apiSecret, endpoint string) (*Client, error) {
 		},
 		endpoint: endpoint,
 	}, nil
+}
+
+type ErrorResponse struct {
+	Field         string `json:"field"`
+	Code          string `json:"code"`
+	Message       string `json:"message"`
+	ErrorCode     string `json:"errorCode"`
+	SourceService string `json:"sourceService"`
 }

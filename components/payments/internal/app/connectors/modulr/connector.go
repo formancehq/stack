@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/task"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
@@ -24,9 +26,32 @@ type Connector struct {
 	cfg    Config
 }
 
-func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
-	// TODO implement me
-	panic("implement me")
+func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, _ := contextutil.Detached(ctx.Context())
+	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:       "Initiate payment",
+		Key:        taskNameInitiatePayment,
+		TransferID: transfer.ID.String(),
+	})
+	if err != nil {
+		return err
+	}
+
+	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
+		// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
+		// and their transactions.
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+		// No need to restart this task, since the connector is not existing or
+		// was uninstalled previously, the task does not exists in the database
+		Restart: true,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {

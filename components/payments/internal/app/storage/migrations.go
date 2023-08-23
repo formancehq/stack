@@ -479,5 +479,78 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				ALTER TABLE accounts.account ADD COLUMN IF NOT EXISTS metadata jsonb;
+
+				CREATE SCHEMA IF NOT EXISTS transfers;
+
+				CREATE TABLE IF NOT EXISTS transfers.transfer_initiation (
+					id character varying  NOT NULL,
+					reference text,
+					created_at timestamp with time zone  NOT NULL,
+					updated_at timestamp with time zone  NOT NULL,
+					description text NOT NULL,
+					type int NOT NULL,
+					source_account_id character varying  NOT NULL,
+					destination_account_id character varying  NOT NULL,
+					provider connector_provider  NOT NULL,
+					amount numeric NOT NULL,
+					asset text  NOT NULL,
+					status int NOT NULL,
+					error text,
+					PRIMARY KEY (id)
+				);
+
+				ALTER TABLE transfers.transfer_initiation ADD CONSTRAINT source_account
+				FOREIGN KEY (source_account_id)
+				REFERENCES accounts.account (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+
+				ALTER TABLE transfers.transfer_initiation ADD CONSTRAINT destination_account
+				FOREIGN KEY (destination_account_id)
+				REFERENCES accounts.account (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				ALTER TABLE transfers.transfer_initiation ALTER COLUMN source_account_id DROP NOT NULL;
+				ALTER TABLE transfers.transfer_initiation RENAME COLUMN reference TO payment_id;
+				ALTER TYPE "public".account_type ADD VALUE IF NOT EXISTS 'EXTERNAL_FORMANCE';
+
+				CREATE TABLE accounts.bank_account (
+					id uuid  NOT NULL DEFAULT gen_random_uuid(),
+					created_at timestamp with time zone  NOT NULL DEFAULT NOW() CHECK (created_at<=NOW()),
+					name text  NOT NULL,
+					provider connector_provider  NOT NULL,
+					account_number bytea,
+					iban bytea,
+					swift_bic_code bytea,
+					country text,
+					CONSTRAINT bank_account_pk PRIMARY KEY (id)
+				);
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

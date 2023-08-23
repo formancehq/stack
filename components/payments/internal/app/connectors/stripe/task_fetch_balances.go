@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/currency"
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
@@ -19,7 +20,7 @@ var (
 	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
-func BalancesTask(config Config, account string, client *DefaultClient) func(ctx context.Context, logger logging.Logger,
+func BalancesTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger,
 	ingester ingestion.Ingester, resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry) error {
 	return func(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
 		resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry,

@@ -32,16 +32,15 @@ func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64) ([]
 	if err != nil {
 		return recipientAccounts, err
 	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, unmarshalError(res.StatusCode, res.Body).Error()
+	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		res.Body.Close()
-
 		return nil, fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	if err = res.Body.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close response body: %w", err)
 	}
 
 	err = json.Unmarshal(body, &recipientAccounts)
