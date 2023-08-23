@@ -5,5 +5,7 @@ type WebhooksSpec struct {
 	Postgres PostgresConfig `json:"postgres"`
 	// +optional
 	DevProperties `json:",inline"`
-	Annotations   AnnotationsServicesSpec `json:"annotations,omitempty"`
+	// +optional
+	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
+	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
 }

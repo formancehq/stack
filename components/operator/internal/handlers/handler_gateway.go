@@ -42,9 +42,12 @@ func init() {
 									"--config", resolveContext.GetConfig("config").GetMountPath() + "/Caddyfile",
 									"--adapter", "caddyfile",
 								},
-								Image:     modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
-								Env:       modules.NewEnv(),
-								Resources: modules.ResourceSizeSmall(),
+								Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
+								Env:   modules.NewEnv(),
+								Resources: getResourcesWithDefault(
+									resolveContext.Configuration.Spec.Services.Gateway.ResourceProperties,
+									modules.ResourceSizeSmall(),
+								),
 							}
 						},
 					}}

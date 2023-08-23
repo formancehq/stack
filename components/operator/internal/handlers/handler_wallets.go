@@ -32,8 +32,11 @@ func init() {
 						modules.Env("STACK_CLIENT_ID", resolveContext.Stack.Status.StaticAuthClients["wallets"].ID),
 						modules.Env("STACK_CLIENT_SECRET", resolveContext.Stack.Status.StaticAuthClients["wallets"].Secrets[0]),
 					},
-					Image:     modules.GetImage("wallets", resolveContext.Versions.Spec.Wallets),
-					Resources: modules.ResourceSizeSmall(),
+					Image: modules.GetImage("wallets", resolveContext.Versions.Spec.Wallets),
+					Resources: getResourcesWithDefault(
+						resolveContext.Configuration.Spec.Services.Wallets.ResourceProperties,
+						modules.ResourceSizeSmall(),
+					),
 				}
 			},
 		}}

@@ -4,5 +4,7 @@ package v1beta3
 type WalletsSpec struct {
 	// +optional
 	DevProperties `json:",inline"`
-	Annotations   AnnotationsServicesSpec `json:"annotations,omitempty"`
+	// +optional
+	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
+	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
 }

@@ -24,9 +24,12 @@ func init() {
 							Annotations:             ctx.Configuration.Spec.Services.Webhooks.Annotations.Service,
 							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 								return modules.Container{
-									Image:     modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
-									Env:       webhooksEnvVars(resolveContext.Configuration),
-									Resources: modules.ResourceSizeSmall(),
+									Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
+									Env:   webhooksEnvVars(resolveContext.Configuration),
+									Resources: getResourcesWithDefault(
+										resolveContext.Configuration.Spec.Services.Webhooks.ResourceProperties,
+										modules.ResourceSizeSmall(),
+									),
 								}
 							},
 						},
@@ -45,8 +48,11 @@ func init() {
 											resolveContext.Stack.GetServiceName("payments"),
 										}, " ")),
 									),
-									Args:      []string{"worker"},
-									Resources: modules.ResourceSizeSmall(),
+									Args: []string{"worker"},
+									Resources: getResourcesWithDefault(
+										resolveContext.Configuration.Spec.Services.Webhooks.ResourceProperties,
+										modules.ResourceSizeSmall(),
+									),
 								}
 							},
 						},

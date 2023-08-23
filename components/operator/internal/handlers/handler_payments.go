@@ -43,9 +43,12 @@ func init() {
 						Annotations:             ctx.Configuration.Spec.Services.Payments.Annotations.Service,
 						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 							return modules.Container{
-								Env:       env(resolveContext),
-								Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-								Resources: modules.ResourceSizeSmall(),
+								Env:   env(resolveContext),
+								Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+								Resources: getResourcesWithDefault(
+									resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
+									modules.ResourceSizeSmall(),
+								),
 							}
 						},
 						InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {
@@ -182,9 +185,12 @@ func paymentsServices(
 		Liveness:                modules.LivenessLegacy,
 		Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 			return modules.Container{
-				Env:       env(resolveContext),
-				Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-				Resources: modules.ResourceSizeSmall(),
+				Env:   env(resolveContext),
+				Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+				Resources: getResourcesWithDefault(
+					resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
+					modules.ResourceSizeSmall(),
+				),
 			}
 		},
 	}}

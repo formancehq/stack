@@ -295,7 +295,10 @@ spec:
                     - containerPort: 10002
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - env:
@@ -658,7 +661,7 @@ spec:
                     - name: BROKER
                       value: kafka
                   image: public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1
-                  imagePullPolicy: IfNotPresent
+                  imagePullPolicy: Always
                   name: search-benthos
                   ports:
                     - containerPort: 4195
@@ -980,7 +983,7 @@ spec:
                     - name: OPEN_SEARCH_SERVICE
                       value: $(OPEN_SEARCH_HOST):$(OPEN_SEARCH_PORT)$(OPEN_SEARCH_PATH_PREFIX)
                   image: curlimages/curl:7.86.0
-                  imagePullPolicy: IfNotPresent
+                  imagePullPolicy: Always
                   name: init-mapping
                   resources: {}
                   terminationMessagePath: /dev/termination-log

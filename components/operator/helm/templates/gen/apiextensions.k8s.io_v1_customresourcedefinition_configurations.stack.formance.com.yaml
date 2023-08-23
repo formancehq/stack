@@ -4256,6 +4256,23 @@ spec:
                         - port
                         - username
                         type: object
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
                       staticClients:
                         items:
                           properties:
@@ -4301,6 +4318,23 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
                     type: object
                   gateway:
                     properties:
@@ -4309,6 +4343,23 @@ spec:
                           service:
                             additionalProperties:
                               type: string
+                            type: object
+                        type: object
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
                             type: object
                         type: object
                     type: object
@@ -4374,6 +4425,23 @@ spec:
                         - port
                         - username
                         type: object
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
                     required:
                     - postgres
                     type: object
@@ -4407,6 +4475,23 @@ spec:
                         - password
                         - port
                         - username
+                        type: object
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
                         type: object
                     required:
                     - postgres
@@ -4444,6 +4529,23 @@ spec:
                         - port
                         - username
                         type: object
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
                     required:
                     - encryptionKey
                     - postgres
@@ -4466,6 +4568,23 @@ spec:
                         required:
                         - count
                         - period
+                        type: object
+                      benthosResourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
                         type: object
                       debug:
                         type: boolean
@@ -4504,6 +4623,23 @@ spec:
                           useZinc:
                             type: boolean
                         type: object
+                      searchResourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
                     required:
                     - elasticSearch
                     type: object
@@ -4520,6 +4656,23 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
                     type: object
                   wallets:
                     properties:
@@ -4534,6 +4687,23 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
                     type: object
                   webhooks:
                     properties:
@@ -4565,6 +4735,23 @@ spec:
                         - password
                         - port
                         - username
+                        type: object
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
                         type: object
                     required:
                     - postgres
