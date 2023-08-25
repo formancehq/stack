@@ -39,4 +39,8 @@ export class PaymentsAccount extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "reference" })
   reference: string;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "type" })
+  type: string;
 }

@@ -78,7 +78,15 @@ public class PaymentsAccount {
         return this;
     }
     
-    public PaymentsAccount(@JsonProperty("accountName") String accountName, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("defaultAsset") String defaultAsset, @JsonProperty("defaultCurrency") String defaultCurrency, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference) {
+    @JsonProperty("type")
+    public String type;
+
+    public PaymentsAccount withType(String type) {
+        this.type = type;
+        return this;
+    }
+    
+    public PaymentsAccount(@JsonProperty("accountName") String accountName, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("defaultAsset") String defaultAsset, @JsonProperty("defaultCurrency") String defaultCurrency, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("type") String type) {
         this.accountName = accountName;
         this.createdAt = createdAt;
         this.defaultAsset = defaultAsset;
@@ -87,5 +95,6 @@ public class PaymentsAccount {
         this.provider = provider;
         this.raw = raw;
         this.reference = reference;
+        this.type = type;
   }
 }
