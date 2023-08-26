@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.94
+    clusterIP: 10.0.0.220
     clusterIPs:
-        - 10.0.0.94
+        - 10.0.0.220
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: orchestration
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.111
+    clusterIP: 10.0.0.61
     clusterIPs:
-        - 10.0.0.111
+        - 10.0.0.61
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

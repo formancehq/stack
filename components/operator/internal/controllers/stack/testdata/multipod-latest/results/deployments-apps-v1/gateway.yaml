@@ -94,8 +94,8 @@ spec:
                   name: config
 status:
     conditions:
-        - lastTransitionTime: "2023-08-11T09:21:38Z"
-          lastUpdateTime: "2023-08-11T09:21:38Z"
+        - lastTransitionTime: "2023-08-26T12:19:21Z"
+          lastUpdateTime: "2023-08-26T12:19:21Z"
           status: "True"
           type: Available
     observedGeneration: 1

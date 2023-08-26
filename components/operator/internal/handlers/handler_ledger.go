@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )
@@ -26,8 +28,22 @@ func init() {
 								modules.Env("STORAGE_DRIVER", "postgres"),
 								modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
 							).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger")...)
+
 							if resolveContext.Configuration.Spec.Services.Ledger.AllowPastTimestamps {
 								env = env.Append(modules.Env("COMMIT_POLICY", "allow-past-timestamps"))
+							}
+
+							// Strategy
+							env = env.Append(modules.Env("LOCKING_STRATEGY", resolveContext.Configuration.Spec.Services.Ledger.Locking.Strategy))
+							if resolveContext.Configuration.Spec.Services.Ledger.Locking.Redis != nil {
+								redisConfiguration := resolveContext.Configuration.Spec.Services.Ledger.Locking.Redis
+								env = env.Append(
+									modules.Env("LOCK_STRATEGY_REDIS_URL", redisConfiguration.Uri),
+									modules.Env("LOCK_STRATEGY_REDIS_TLS_ENABLED", strconv.FormatBool(redisConfiguration.TLS)),
+									modules.Env("LOCK_STRATEGY_REDIS_TLS_INSECURE", strconv.FormatBool(redisConfiguration.InsecureTLS)),
+									modules.Env("LOCK_STRATEGY_REDIS_DURATION", redisConfiguration.Duration.String()),
+									modules.Env("LOCK_STRATEGY_REDIS_RETRY", redisConfiguration.Retry.String()),
+								)
 							}
 
 							return modules.Container{

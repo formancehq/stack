@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: multipod-latest
 spec:
-    clusterIP: 10.0.0.138
+    clusterIP: 10.0.0.90
     clusterIPs:
-        - 10.0.0.138
+        - 10.0.0.90
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
