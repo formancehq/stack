@@ -41,7 +41,7 @@ Formance Private Regions Helm Chart
 | operator.enabled | bool | `true` |  |
 | operator.fullnameOverride | string | `"operator"` |  |
 | operator.image.repository | string | `"ghcr.io/formancehq/operator"` |  |
-| operator.image.tag | string | `"v0.16.10"` |  |
+| operator.image.tag | string | `"v0.16.11"` |  |
 | operator.nameOverride | string | `"operator"` |  |
 | operator.operator.disableWebhooks | bool | `false` |  |
 | operator.operator.enableLeaderElection | bool | `true` |  |
