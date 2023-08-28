@@ -10,7 +10,7 @@ import (
 )
 
 func PrintHold(out io.Writer, hold shared.ExpandedDebitHold) error {
-	fctl.Section.Println("Information")
+	fctl.Section.WithWriter(out).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(hold.ID)})
 	tableData = append(tableData, []string{pterm.LightCyan("Wallet ID"), hold.WalletID})

@@ -1,6 +1,7 @@
 package install
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -12,61 +13,82 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PaymentsConnectorsWiseStore struct {
+const (
+	useWise         = internal.WiseConnector + " <api-key>"
+	descriptionWise = "Install Wise connector"
+	shortWise       = "Install Wise connector"
+)
+
+type WiseStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
 }
-type PaymentsConnectorsWiseController struct {
-	store                *PaymentsConnectorsWiseStore
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-}
 
-var _ fctl.Controller[*PaymentsConnectorsWiseStore] = (*PaymentsConnectorsWiseController)(nil)
-
-func NewDefaultPaymentsConnectorsWiseStore() *PaymentsConnectorsWiseStore {
-	return &PaymentsConnectorsWiseStore{
+func NewWiseStore() *WiseStore {
+	return &WiseStore{
 		Success: false,
 	}
 }
+func NewWiseConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useWise, flag.ExitOnError)
+	flags.String(PollingPeriodFlag, DefaultPollingPeriod, "Polling duration")
+	return fctl.NewControllerConfig(
+		useWise,
+		descriptionWise,
+		shortWise,
+		[]string{},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 
-func NewPaymentsConnectorsWiseController() *PaymentsConnectorsWiseController {
-	return &PaymentsConnectorsWiseController{
-		store:                NewDefaultPaymentsConnectorsWiseStore(),
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
+}
+
+var _ fctl.Controller[*WiseStore] = (*WiseController)(nil)
+
+type WiseController struct {
+	store  *WiseStore
+	config *fctl.ControllerConfig
+}
+
+func NewWiseController(config *fctl.ControllerConfig) *WiseController {
+	return &WiseController{
+		store:  NewWiseStore(),
+		config: config,
 	}
 }
 
-func NewWiseCommand() *cobra.Command {
-	c := NewPaymentsConnectorsWiseController()
-	return fctl.NewCommand(internal.WiseConnector+" <api-key>",
-		fctl.WithShortDescription("Install a Wise connector"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithController[*PaymentsConnectorsWiseStore](c),
-	)
-}
-
-func (c *PaymentsConnectorsWiseController) GetStore() *PaymentsConnectorsWiseStore {
+func (c *WiseController) GetStore() *WiseStore {
 	return c.store
 }
 
-func (c *PaymentsConnectorsWiseController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.WiseConnector)
+func (c *WiseController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *WiseController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	if len(args) < 1 {
+		return nil, fmt.Errorf("missing api key")
+	}
+
+	soc, err := fctl.GetStackOrganizationConfigApprobation(flags, ctx, fmt.Sprintf("You are about to install connector '%s'", internal.WiseConnector), c.config.GetOut())
 	if err != nil {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	paymentsClient, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	response, err := paymentsClient.Payments.InstallConnector(ctx, operations.InstallConnectorRequest{
 		RequestBody: shared.WiseConfig{
 			APIKey:        args[1],
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			PollingPeriod: fctl.Ptr(fctl.GetString(flags, PollingPeriodFlag)),
 		},
 		Connector: shared.ConnectorWise,
 	})
@@ -84,9 +106,17 @@ func (c *PaymentsConnectorsWiseController) Run(cmd *cobra.Command, args []string
 	return c, nil
 }
 
-func (c *PaymentsConnectorsWiseController) Render(cmd *cobra.Command, args []string) error {
+func (c *WiseController) Render() error {
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
 
 	return nil
+}
+func NewWiseCommand() *cobra.Command {
+	config := NewWiseConfig()
+	c := NewWiseController(config)
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*WiseStore](c),
+	)
 }

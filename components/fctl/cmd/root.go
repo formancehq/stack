@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"os/signal"
 	"runtime/debug"
@@ -22,6 +21,7 @@ import (
 	"github.com/formancehq/fctl/cmd/version"
 	"github.com/formancehq/fctl/cmd/wallets"
 	"github.com/formancehq/fctl/cmd/webhooks"
+
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -31,11 +31,6 @@ import (
 )
 
 func NewRootCommand() *cobra.Command {
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-
 	cmd := fctl.NewCommand("fctl",
 		fctl.WithSilenceError(),
 		fctl.WithShortDescription("Formance Control CLI"),
@@ -56,16 +51,16 @@ func NewRootCommand() *cobra.Command {
 			wallets.NewCommand(),
 			orchestration.NewCommand(),
 		),
-		fctl.WithPersistentStringPFlag(fctl.ProfileFlag, "p", "", "config profile to use"),
-		fctl.WithPersistentStringPFlag(fctl.FileFlag, "c", fmt.Sprintf("%s/.formance/fctl.config", homedir), "Debug mode"),
-		fctl.WithPersistentBoolPFlag(fctl.DebugFlag, "d", false, "Debug mode"),
-		fctl.WithPersistentStringPFlag(fctl.OutputFlag, "o", "plain", "Output format (plain, json)"),
-		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
-		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
+		fctl.WithGoPersistentFlagSet(fctl.GlobalFlags),
 	)
-	cmd.Version = version.Version
-	cmd.RegisterFlagCompletionFunc(fctl.ProfileFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		cfg, err := fctl.GetConfig(cmd)
+
+	// Register flag completion functions
+	// Already registered with fctl.WithGoFlagSet(fctl.GlobalFlags)
+	// And in ControllerConfig who is assigned by each WithController call
+	err := cmd.RegisterFlagCompletionFunc(fctl.ProfileFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		flags := fctl.ConvertPFlagSetToFlagSet(cmd.Flags())
+
+		cfg, err := fctl.GetConfig(flags)
 		if err != nil {
 			return []string{}, cobra.ShellCompDirectiveError
 		}
@@ -75,6 +70,11 @@ func NewRootCommand() *cobra.Command {
 		}
 		return ret, cobra.ShellCompDirectiveDefault
 	})
+
+	if err != nil {
+		panic(err)
+	}
+
 	return cmd
 }
 
@@ -87,6 +87,7 @@ func Execute() {
 	}()
 
 	ctx, _ := signal.NotifyContext(context.TODO(), os.Interrupt)
+
 	err := NewRootCommand().ExecuteContext(ctx)
 	if err != nil {
 		switch {

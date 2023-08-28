@@ -1,61 +1,83 @@
 package regions
 
 import (
+	"flag"
+
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
+const (
+	useDelete   = "delete [region-id]"
+	shortDelete = "Delete a private region with id"
+)
+
 type DeleteStore struct {
 	Success bool `json:"success"`
 }
-type DeleteController struct {
-	store *DeleteStore
+
+func NewDeleteStore() *DeleteStore {
+	return &DeleteStore{}
+}
+func NewDeleteConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useDelete, flag.ExitOnError)
+	return fctl.NewControllerConfig(
+		useDelete,
+		shortDelete,
+		shortDelete,
+		[]string{
+			"del", "d",
+		},
+		flags,
+		fctl.Organization,
+	)
 }
 
 var _ fctl.Controller[*DeleteStore] = (*DeleteController)(nil)
 
-func NewDefaultDeleteStore() *DeleteStore {
-	return &DeleteStore{}
+type DeleteController struct {
+	store  *DeleteStore
+	config *fctl.ControllerConfig
 }
 
-func NewDeleteController() *DeleteController {
+func NewDeleteController(config *fctl.ControllerConfig) *DeleteController {
 	return &DeleteController{
-		store: NewDefaultDeleteStore(),
+		store:  NewDeleteStore(),
+		config: config,
 	}
-}
-
-func NewDeleteCommand() *cobra.Command {
-	return fctl.NewCommand("delete <region-id>",
-		fctl.WithAliases("del", "d"),
-		fctl.WithShortDescription("Delete a private region"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*DeleteStore](NewDeleteController()),
-	)
 }
 
 func (c *DeleteController) GetStore() *DeleteStore {
 	return c.store
 }
 
-func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *DeleteController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *DeleteController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = apiClient.DefaultApi.DeleteRegion(cmd.Context(), organizationID, args[0]).Execute()
+	_, err = apiClient.DefaultApi.DeleteRegion(ctx, organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -65,9 +87,18 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	return c, nil
 }
 
-func (c *DeleteController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Region deleted successfully!")
+func (c *DeleteController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Region deleted successfully!")
 
 	return nil
 
+}
+
+func NewDeleteCommand() *cobra.Command {
+
+	config := NewDeleteConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*DeleteStore](NewDeleteController(config)),
+	)
 }

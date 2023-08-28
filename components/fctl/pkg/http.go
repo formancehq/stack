@@ -4,20 +4,21 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
 
 	"github.com/TylerBrock/colorjson"
-	"github.com/spf13/cobra"
 )
 
-func GetHttpClient(cmd *cobra.Command, defaultHeaders map[string][]string) *http.Client {
+func GetHttpClient(flags *flag.FlagSet, defaultHeaders map[string][]string, out io.Writer) *http.Client {
 	return NewHTTPClient(
-		GetBool(cmd, InsecureTlsFlag),
-		GetBool(cmd, DebugFlag),
+		GetBool(flags, InsecureTlsFlag),
+		GetBool(flags, DebugFlag),
 		defaultHeaders,
+		out,
 	)
 }
 
@@ -27,7 +28,7 @@ func (fn RoundTripperFn) RoundTrip(req *http.Request) (*http.Response, error) {
 	return fn(req)
 }
 
-func printBody(data []byte) {
+func printBody(out io.Writer, data []byte) {
 	if len(data) == 0 {
 		return
 	}
@@ -39,19 +40,19 @@ func printBody(data []byte) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(colorized))
+		fmt.Fprintln(out, string(colorized))
 	} else {
-		fmt.Println(string(data))
+		fmt.Fprintln(out, string(data))
 	}
 }
 
-func debugRoundTripper(rt http.RoundTripper) RoundTripperFn {
+func debugRoundTripper(rt http.RoundTripper, out io.Writer) RoundTripperFn {
 	return func(req *http.Request) (*http.Response, error) {
 		data, err := httputil.DumpRequest(req, false)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(data))
+		fmt.Fprintln(out, string(data))
 
 		if req.Body != nil {
 			data, err = io.ReadAll(req.Body)
@@ -60,7 +61,7 @@ func debugRoundTripper(rt http.RoundTripper) RoundTripperFn {
 			}
 			req.Body.Close()
 			req.Body = io.NopCloser(bytes.NewBuffer(data))
-			printBody(data)
+			printBody(out, data)
 		}
 
 		rsp, err := rt.RoundTrip(req)
@@ -72,7 +73,7 @@ func debugRoundTripper(rt http.RoundTripper) RoundTripperFn {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(data))
+		fmt.Fprintln(out, string(data))
 
 		if rsp.Body != nil {
 			data, err = io.ReadAll(rsp.Body)
@@ -81,7 +82,7 @@ func debugRoundTripper(rt http.RoundTripper) RoundTripperFn {
 			}
 			rsp.Body.Close()
 			rsp.Body = io.NopCloser(bytes.NewBuffer(data))
-			printBody(data)
+			printBody(out, data)
 		}
 
 		return rsp, nil
@@ -99,14 +100,14 @@ func defaultHeadersRoundTripper(rt http.RoundTripper, headers map[string][]strin
 	}
 }
 
-func NewHTTPClient(insecureTLS, debug bool, defaultHeaders map[string][]string) *http.Client {
+func NewHTTPClient(insecureTLS bool, debug bool, defaultHeaders map[string][]string, out io.Writer) *http.Client {
 	var transport http.RoundTripper = &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: insecureTLS,
 		},
 	}
 	if debug {
-		transport = debugRoundTripper(transport)
+		transport = debugRoundTripper(transport, out)
 	}
 	if len(defaultHeaders) > 0 {
 		transport = defaultHeadersRoundTripper(transport, defaultHeaders)

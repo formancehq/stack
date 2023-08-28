@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
@@ -11,63 +12,85 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useStats         = "stats"
+	descriptionStats = "Read ledger stats"
+)
+
 type StatsStore struct {
-	Stats shared.Stats `json:"stats`
+	Stats shared.Stats `json:"stats"`
 }
-type StatsController struct {
-	store *StatsStore
+
+func NewStatsStore() *StatsStore {
+	return &StatsStore{}
+}
+
+func NewStatsConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useStats, flag.ExitOnError)
+
+	return fctl.NewControllerConfig(
+		useStats,
+		descriptionStats,
+		descriptionStats,
+		[]string{
+			"st",
+		},
+		flags,
+		fctl.Organization, fctl.Stack, fctl.Ledger,
+	)
 }
 
 var _ fctl.Controller[*StatsStore] = (*StatsController)(nil)
 
-func NewDefaultStatsStore() *StatsStore {
-	return &StatsStore{}
+type StatsController struct {
+	store  *StatsStore
+	config *fctl.ControllerConfig
 }
 
-func NewStatsController() *StatsController {
+func NewStatsController(config *fctl.ControllerConfig) *StatsController {
 	return &StatsController{
-		store: NewDefaultStatsStore(),
+		store:  NewStatsStore(),
+		config: config,
 	}
-}
-
-func NewStatsCommand() *cobra.Command {
-	return fctl.NewCommand("stats",
-		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithAliases("st"),
-		fctl.WithShortDescription("Read ledger stats"),
-		fctl.WithController[*StatsStore](NewStatsController()),
-	)
 }
 
 func (c *StatsController) GetStore() *StatsStore {
 	return c.store
 }
 
-func (c *StatsController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *StatsController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *StatsController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	ledgerClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
 
 	request := operations.ReadStatsRequest{
-		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
+		Ledger: fctl.GetString(flags, internal.LedgerFlag),
 	}
-	response, err := ledgerClient.Ledger.ReadStats(cmd.Context(), request)
+	response, err := ledgerClient.Ledger.ReadStats(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -85,15 +108,22 @@ func (c *StatsController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	return c, nil
 }
 
-// TODO: This need to use the ui.NewListModel
-func (c *StatsController) Render(cmd *cobra.Command, args []string) error {
+func (c *StatsController) Render() error {
 
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("Transactions"), fmt.Sprint(c.store.Stats.Transactions)})
 	tableData = append(tableData, []string{pterm.LightCyan("Accounts"), fmt.Sprint(c.store.Stats.Accounts)})
 
 	return pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
+}
+
+func NewStatsCommand() *cobra.Command {
+	config := NewStatsConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(0)),
+		fctl.WithController[*StatsStore](NewStatsController(config)),
+	)
 }

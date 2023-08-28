@@ -1,6 +1,7 @@
 package workflows
 
 import (
+	"flag"
 	"fmt"
 	"strings"
 
@@ -14,71 +15,89 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type WorkflowsRunStore struct {
+const (
+	variableFlag = "variable"
+	waitFlag     = "wait"
+	useRun       = "run <id>"
+	shortRun     = "Run a workflow"
+)
+
+type RunStore struct {
 	WorkflowInstance shared.WorkflowInstance `json:"workflowInstance"`
 }
-type WorkflowsRunController struct {
-	store        *WorkflowsRunStore
-	variableFlag string
-	waitFlag     string
-	client       *formance.Formance
-	wait         bool
+
+func NewRunStore() *RunStore {
+	return &RunStore{}
 }
 
-var _ fctl.Controller[*WorkflowsRunStore] = (*WorkflowsRunController)(nil)
+func NewRunConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useRun, flag.ExitOnError)
+	flags.Bool(waitFlag, false, "Wait end of the run")
+	flags.String(variableFlag, "", "Variable to pass to the workflow")
 
-func NewDefaultWorkflowsRunStore() *WorkflowsRunStore {
-	return &WorkflowsRunStore{}
+	c := fctl.NewControllerConfig(
+		useRun,
+		shortRun,
+		shortRun,
+		[]string{
+			"r",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+	return c
 }
 
-func NewWorkflowsRunController() *WorkflowsRunController {
-	return &WorkflowsRunController{
-		store:        NewDefaultWorkflowsRunStore(),
-		variableFlag: "variable",
-		waitFlag:     "wait",
-		wait:         false,
+type RunController struct {
+	store  *RunStore
+	client *formance.Formance
+	config *fctl.ControllerConfig
+}
+
+var _ fctl.Controller[*RunStore] = (*RunController)(nil)
+
+func NewRunController(config *fctl.ControllerConfig) *RunController {
+	return &RunController{
+		store:  NewRunStore(),
+		config: config,
 	}
 }
 
-func NewRunCommand() *cobra.Command {
-	c := NewWorkflowsRunController()
-	return fctl.NewCommand("run <id>",
-		fctl.WithShortDescription("Run a workflow"),
-		fctl.WithAliases("r"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithBoolFlag(c.waitFlag, false, "Wait end of the run"),
-		fctl.WithStringSliceFlag(c.variableFlag, []string{}, "Variable to pass to the workflow"),
-		fctl.WithController[*WorkflowsRunStore](c),
-	)
-}
-
-func (c *WorkflowsRunController) GetStore() *WorkflowsRunStore {
+func (c *RunController) GetStore() *RunStore {
 	return c.store
 }
 
-func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *RunController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
+func (c *RunController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	soc, err := fctl.GetStackOrganizationConfig(flags, ctx, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	client, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	wait := fctl.GetBool(cmd, c.waitFlag)
 	variables := make(map[string]string)
-	for _, variable := range fctl.GetStringSlice(cmd, c.variableFlag) {
+	for _, variable := range fctl.GetStringSlice(flags, variableFlag) {
 		parts := strings.SplitN(variable, "=", 2)
 		if len(parts) != 2 {
 			return nil, errors.New("malformed flag: " + variable)
 		}
 		variables[parts[0]] = parts[1]
 	}
-
+	wait := fctl.GetBool(flags, waitFlag)
 	response, err := client.Orchestration.
-		RunWorkflow(cmd.Context(), operations.RunWorkflowRequest{
+		RunWorkflow(ctx, operations.RunWorkflowRequest{
 			RequestBody: variables,
 			Wait:        &wait,
 			WorkflowID:  args[0],
@@ -95,17 +114,21 @@ func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.wait = wait
 	c.store.WorkflowInstance = response.RunWorkflowResponse.Data
 	c.client = client
 	return c, nil
 }
 
-func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error {
+func (c *RunController) Render() error {
+	flags := c.config.GetFlags()
+	out := c.config.GetOut()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	wait := fctl.GetBool(flags, waitFlag)
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow instance created with ID: %s", c.store.WorkflowInstance.ID)
-	if c.wait {
-		w, err := c.client.Orchestration.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
+	pterm.Success.WithWriter(out).Printfln("Workflow instance created with ID: %s", c.store.WorkflowInstance.ID)
+	if wait {
+		w, err := c.client.Orchestration.GetWorkflow(ctx, operations.GetWorkflowRequest{
 			FlowID: args[0],
 		})
 		if err != nil {
@@ -120,7 +143,15 @@ func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error
 			panic(fmt.Sprintf("unexpected status code: %d", w.StatusCode))
 		}
 
-		return internal.PrintWorkflowInstance(cmd.OutOrStdout(), w.GetWorkflowResponse.Data, c.store.WorkflowInstance)
+		return internal.PrintWorkflowInstance(out, w.GetWorkflowResponse.Data, c.store.WorkflowInstance)
 	}
 	return nil
+}
+
+func NewRunCommand() *cobra.Command {
+	c := NewRunConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*RunStore](NewRunController(c)),
+	)
 }

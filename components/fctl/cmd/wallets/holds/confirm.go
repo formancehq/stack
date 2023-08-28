@@ -1,6 +1,7 @@
 package holds
 
 import (
+	"flag"
 	"fmt"
 	"math/big"
 
@@ -12,78 +13,96 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useConfirm   = "confirm <hold-id>"
+	shortConfirm = "Confirm a hold"
+	finalFlag    = "final"
+	amountFlag   = "amount"
+)
+
 type ConfirmStore struct {
 	Success bool   `json:"success"`
 	HoldId  string `json:"holdId"`
 }
 type ConfirmController struct {
-	store      *ConfirmStore
-	finalFlag  string
-	amountFlag string
+	store  *ConfirmStore
+	config *fctl.ControllerConfig
 }
 
 var _ fctl.Controller[*ConfirmStore] = (*ConfirmController)(nil)
 
-func NewDefaultConfirmStore() *ConfirmStore {
+func NewConfirmStore() *ConfirmStore {
 	return &ConfirmStore{}
 }
+func NewConfirmConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useConfirm, flag.ExitOnError)
+	flags.Bool(finalFlag, false, "Is final debit (close hold)")
+	flags.Int(amountFlag, 0, "Amount to confirm")
 
-func NewConfirmController() *ConfirmController {
-	return &ConfirmController{
-		store:      NewDefaultConfirmStore(),
-		finalFlag:  "final",
-		amountFlag: "amount",
-	}
-}
-
-func NewConfirmCommand() *cobra.Command {
-	c := NewConfirmController()
-	return fctl.NewCommand("confirm <hold-id>",
-		fctl.WithShortDescription("Confirm a hold"),
-		fctl.WithAliases("c", "conf"),
-		fctl.WithArgs(cobra.RangeArgs(1, 2)),
-		fctl.WithBoolFlag(c.finalFlag, false, "Is final debit (close hold)"),
-		fctl.WithIntFlag(c.amountFlag, 0, "Amount to confirm"),
-		fctl.WithController[*ConfirmStore](c),
+	c := fctl.NewControllerConfig(
+		useConfirm,
+		shortConfirm,
+		shortConfirm,
+		[]string{
+			"c", "conf",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
 	)
+
+	return c
+}
+func NewConfirmController(config *fctl.ControllerConfig) *ConfirmController {
+	return &ConfirmController{
+		store:  NewConfirmStore(),
+		config: config,
+	}
 }
 
 func (c *ConfirmController) GetStore() *ConfirmStore {
 	return c.store
 }
 
-func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ConfirmController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ConfirmController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving config")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	stackClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	final := fctl.GetBool(cmd, c.finalFlag)
-	amount := int64(fctl.GetInt(cmd, c.amountFlag))
+	final := fctl.GetBool(flags, finalFlag)
+	amount := int64(fctl.GetInt(flags, amountFlag))
 
 	request := operations.ConfirmHoldRequest{
-		HoldID: args[0],
+		HoldID: c.config.GetArgs()[0],
 		ConfirmHoldRequest: &shared.ConfirmHoldRequest{
 			Amount: big.NewInt(amount),
 			Final:  &final,
 		},
 	}
-	response, err := stackClient.Wallets.ConfirmHold(cmd.Context(), request)
+	response, err := stackClient.Wallets.ConfirmHold(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "confirming hold")
 	}
@@ -97,14 +116,20 @@ func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	}
 
 	c.store.Success = true //Todo: check status code
-	c.store.HoldId = args[0]
+	c.store.HoldId = c.config.GetArgs()[0]
 
 	return c, nil
 }
 
-func (c *ConfirmController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Hold '%s' confirmed!", args[0])
-
+func (c *ConfirmController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Hold '%s' confirmed!", c.config.GetArgs()[0])
 	return nil
+}
 
+func NewConfirmCommand() *cobra.Command {
+	c := NewConfirmConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.RangeArgs(1, 2)),
+		fctl.WithController[*ConfirmStore](NewConfirmController(c)),
+	)
 }

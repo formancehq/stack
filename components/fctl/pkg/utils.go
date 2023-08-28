@@ -39,6 +39,10 @@ var (
 	ErrOpenningBrowser = errors.New("opening browser")
 )
 
+func Ptr[T any](t T) *T {
+	return &t
+}
+
 func Open(url string) error {
 	var (
 		cmd  string

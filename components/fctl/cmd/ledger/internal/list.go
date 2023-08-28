@@ -13,7 +13,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 )
 
-// Copy from SDK
+// TransactionsCursorResponseCursor Copy from SDK
 type TransactionsCursorResponseCursor struct {
 	Data     []ExpandedTransaction `json:"data"`
 	HasMore  bool                  `json:"hasMore"`
@@ -22,12 +22,12 @@ type TransactionsCursorResponseCursor struct {
 	Previous *string               `json:"previous,omitempty"`
 }
 
-// Copy from SDK
+// TransactionsCursorResponse Copy from SDK
 type TransactionsCursorResponse struct {
 	Cursor TransactionsCursorResponseCursor `json:"cursor"`
 }
 
-// Copy from SDK
+// ListTransactionsResponse Copy from SDK
 type ListTransactionsResponse struct {
 	ContentType string
 	// Error
@@ -38,7 +38,7 @@ type ListTransactionsResponse struct {
 	TransactionsCursorResponse *TransactionsCursorResponse
 }
 
-// Copy from SDK
+// ListTransactionsRequest Copy from SDK
 type ListTransactionsRequest struct {
 	// Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
 	Account *string `queryParam:"style=form,explode=true,name=account"`

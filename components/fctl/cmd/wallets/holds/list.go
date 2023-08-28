@@ -1,6 +1,7 @@
 package holds
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
@@ -12,72 +13,86 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useList   = "list"
+	shortList = "List holds of a wallets"
+)
+
 type ListStore struct {
 	Holds []shared.Hold `json:"holds"`
 }
 type ListController struct {
-	store        *ListStore
-	metadataFlag string
+	store  *ListStore
+	config *fctl.ControllerConfig
 }
 
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
-func NewDefaultListStore() *ListStore {
+func NewListStore() *ListStore {
 	return &ListStore{}
 }
-
-func NewListController() *ListController {
-	return &ListController{
-		store:        NewDefaultListStore(),
-		metadataFlag: "metadata",
-	}
-}
-
-func NewListCommand() *cobra.Command {
-	c := NewListController()
-	return fctl.NewCommand("list",
-		fctl.WithShortDescription("List holds of a wallets"),
-		fctl.WithAliases("ls", "l"),
-		fctl.WithArgs(cobra.RangeArgs(0, 1)),
-		internal.WithTargetingWalletByName(),
-		internal.WithTargetingWalletByID(),
-		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
-		fctl.WithController[*ListStore](c),
+func NewListConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
+	internal.WithTargetingWalletByName(flags)
+	internal.WithTargetingWalletByID(flags)
+	fctl.WithMetadataFlag(flags)
+	return fctl.NewControllerConfig(
+		useList,
+		shortList,
+		shortList,
+		[]string{
+			"ls", "l",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
 	)
+
+}
+func NewListController(config *fctl.ControllerConfig) *ListController {
+	return &ListController{
+		store:  NewListStore(),
+		config: config,
+	}
 }
 
 func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ListController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving config")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	walletID, err := internal.RetrieveWalletID(cmd, client)
+	walletID, err := internal.RetrieveWalletID(flags, ctx, client)
 	if err != nil {
 		return nil, err
 	}
 
-	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
+	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(flags, fctl.MetadataFlag))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +101,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		WalletID: &walletID,
 		Metadata: metadata,
 	}
-	response, err := client.Wallets.GetHolds(cmd.Context(), request)
+	response, err := client.Wallets.GetHolds(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting holds")
 	}
@@ -104,15 +119,15 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	return c, nil
 }
 
-func (c *ListController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render() error {
 	if len(c.store.Holds) == 0 {
-		fctl.Println("No holds found.")
+		fmt.Fprintln(c.config.GetOut(), "No holds found.")
 		return nil
 	}
 
 	if err := pterm.DefaultTable.
 		WithHasHeader(true).
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(
 			fctl.Prepend(
 				fctl.Map(c.store.Holds,
@@ -132,4 +147,12 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 
 	return nil
 
+}
+
+func NewListCommand() *cobra.Command {
+	c := NewListConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.RangeArgs(0, 1)),
+		fctl.WithController[*ListStore](NewListController(c)),
+	)
 }

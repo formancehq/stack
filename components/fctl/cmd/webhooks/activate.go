@@ -1,6 +1,7 @@
 package webhooks
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -10,56 +11,93 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ActivateWebhookStore struct {
+const (
+	useActivate         = "activate <config-id>"
+	descriptionActivate = "Activate one config"
+	shortActivate       = "Activate one config"
+)
+
+type ActivateStore struct {
 	Success bool `json:"success"`
 }
-type ActivateWebhookController struct {
-	store *ActivateWebhookStore
-}
 
-func NewDefaultVersionStore() *ActivateWebhookStore {
-	return &ActivateWebhookStore{
+func NewActivateStore() *ActivateStore {
+	return &ActivateStore{
 		Success: true,
 	}
 }
-func NewActivateWebhookController() *ActivateWebhookController {
-	return &ActivateWebhookController{
-		store: NewDefaultVersionStore(),
+func NewActivateConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useActivate, flag.ExitOnError)
+	fctl.WithConfirmFlag(flags)
+
+	return fctl.NewControllerConfig(
+		useActivate,
+		descriptionActivate,
+		shortActivate,
+		[]string{"ac"},
+		flags,
+	)
+}
+
+var _ fctl.Controller[*ActivateStore] = (*Activate)(nil)
+
+type Activate struct {
+	store  *ActivateStore
+	config *fctl.ControllerConfig
+}
+
+func NewActivateController(config *fctl.ControllerConfig) *Activate {
+	return &Activate{
+		store:  NewActivateStore(),
+		config: config,
 	}
 }
-func (c *ActivateWebhookController) GetStore() *ActivateWebhookStore {
+
+func (c *Activate) GetStore() *ActivateStore {
 	return c.store
 }
 
-func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *Activate) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *Activate) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are bout to activate a webhook") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are bout to activate a webhook") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	request := operations.ActivateConfigRequest{
-		ID: args[0],
+	if len(c.config.GetArgs()) < 1 {
+		return nil, fmt.Errorf("missing config id")
 	}
-	response, err := client.Webhooks.ActivateConfig(cmd.Context(), request)
+
+	request := operations.ActivateConfigRequest{
+		ID: c.config.GetArgs()[0],
+	}
+	response, err := client.Webhooks.ActivateConfig(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "activating config")
 	}
@@ -75,18 +113,16 @@ func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl
 	return c, nil
 }
 
-func (*ActivateWebhookController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config activated successfully")
+func (c *Activate) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Config activated successfully")
 
 	return nil
 }
 
 func NewActivateCommand() *cobra.Command {
-	return fctl.NewCommand("activate <config-id>",
-		fctl.WithShortDescription("Activate one config"),
-		fctl.WithAliases("ac", "a"),
-		fctl.WithConfirmFlag(),
+	config := NewActivateConfig()
+	return fctl.NewCommand(config.GetUse(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*ActivateWebhookStore](NewActivateWebhookController()),
+		fctl.WithController[*ActivateStore](NewActivateController(config)),
 	)
 }

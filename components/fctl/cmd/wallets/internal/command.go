@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"context"
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 )
 
 const (
@@ -19,19 +20,21 @@ var (
 	ErrUndefinedName = errors.New("missing wallet name")
 )
 
-func WithTargetingWalletByName() fctl.CommandOptionFn {
-	return fctl.WithStringFlag(walletNameFlag, "", "Wallet name to use")
+func WithTargetingWalletByName(flag *flag.FlagSet) *flag.FlagSet {
+	flag.String(walletNameFlag, "", "Wallet name to use")
+	return flag
 }
 
-func WithTargetingWalletByID() fctl.CommandOptionFn {
-	return fctl.WithStringFlag(walletIDFlag, "", "Wallet ID to use")
+func WithTargetingWalletByID(flag *flag.FlagSet) *flag.FlagSet {
+	flag.String(walletIDFlag, "", "Wallet ID to use")
+	return flag
 }
 
-func DiscoverWalletIDFromName(cmd *cobra.Command, client *formance.Formance, walletName string) (string, error) {
+func DiscoverWalletIDFromName(flags *flag.FlagSet, ctx context.Context, client *formance.Formance, walletName string) (string, error) {
 	request := operations.ListWalletsRequest{
 		Name: &walletName,
 	}
-	wallets, err := client.Wallets.ListWallets(cmd.Context(), request)
+	wallets, err := client.Wallets.ListWallets(ctx, request)
 	if err != nil {
 		return "", errors.Wrap(err, "listing wallets to retrieve wallet by name")
 	}
@@ -49,27 +52,27 @@ func DiscoverWalletIDFromName(cmd *cobra.Command, client *formance.Formance, wal
 	return wallets.ListWalletsResponse.Cursor.Data[0].ID, nil
 }
 
-func RetrieveWalletIDFromName(cmd *cobra.Command, client *formance.Formance) (string, error) {
-	walletName := fctl.GetString(cmd, walletNameFlag)
+func RetrieveWalletIDFromName(flags *flag.FlagSet, ctx context.Context, client *formance.Formance) (string, error) {
+	walletName := fctl.GetString(flags, walletNameFlag)
 	if walletName == "" {
 		return "", ErrUndefinedName
 	}
-	return DiscoverWalletIDFromName(cmd, client, walletName)
+	return DiscoverWalletIDFromName(flags, ctx, client, walletName)
 }
 
-func RetrieveWalletID(cmd *cobra.Command, client *formance.Formance) (string, error) {
-	walletID, err := RetrieveWalletIDFromName(cmd, client)
+func RetrieveWalletID(flags *flag.FlagSet, ctx context.Context, client *formance.Formance) (string, error) {
+	walletID, err := RetrieveWalletIDFromName(flags, ctx, client)
 	if err != nil && err != ErrUndefinedName {
 		return "", err
 	}
 	if err == ErrUndefinedName {
-		return fctl.GetString(cmd, walletIDFlag), nil
+		return fctl.GetString(flags, walletIDFlag), nil
 	}
 	return walletID, nil
 }
 
-func RequireWalletID(cmd *cobra.Command, client *formance.Formance) (string, error) {
-	walletID, err := RetrieveWalletID(cmd, client)
+func RequireWalletID(flags *flag.FlagSet, ctx context.Context, client *formance.Formance) (string, error) {
+	walletID, err := RetrieveWalletID(flags, ctx, client)
 	if err != nil {
 		return "", err
 	}

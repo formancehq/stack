@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"flag"
 	"fmt"
 	"math/big"
 
@@ -11,68 +12,86 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	referenceFlag = "reference"
+	useSend       = "send [<source>] <destination> <amount> <asset>"
+	shortSend     = "Send from one account to another"
+	descriptionSend
+)
+
 type SendStore struct {
-	Transaction *internal.Transaction `json:"transaction"`
+	Transaction *internal.ExportTransaction `json:"transaction"`
 }
+
+func NewSendStore() *SendStore {
+	return &SendStore{}
+}
+func NewSendConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useSend, flag.ExitOnError)
+	fctl.WithConfirmFlag(flags)
+	fctl.WithMetadataFlag(flags)
+	flags.String(referenceFlag, "", "Reference to add to the generated transaction")
+
+	return fctl.NewControllerConfig(
+		useSend,
+		descriptionSend,
+		shortSend,
+		[]string{
+			"s", "se",
+		},
+		flags,
+		fctl.Organization, fctl.Stack, fctl.Ledger,
+	)
+}
+
 type SendController struct {
-	store         *SendStore
-	metadataFlag  string
-	referenceFlag string
+	store  *SendStore
+	config *fctl.ControllerConfig
 }
 
 var _ fctl.Controller[*SendStore] = (*SendController)(nil)
 
-func NewDefaultSendStore() *SendStore {
-	return &SendStore{}
-}
-
-func NewSendController() *SendController {
+func NewSendController(config *fctl.ControllerConfig) *SendController {
 	return &SendController{
-		store:         NewDefaultSendStore(),
-		metadataFlag:  "metadata",
-		referenceFlag: "reference",
+		store:  NewSendStore(),
+		config: config,
 	}
-}
-
-func NewSendCommand() *cobra.Command {
-	c := NewSendController()
-	return fctl.NewCommand("send [<source>] <destination> <amount> <asset>",
-		fctl.WithAliases("s", "se"),
-		fctl.WithShortDescription("Send from one account to another"),
-		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.RangeArgs(3, 4)),
-		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
-		fctl.WithStringFlag(c.referenceFlag, "", "Reference to add to the generated transaction"),
-		fctl.WithController[*SendStore](c),
-	)
 }
 
 func (c *SendController) GetStore() *SendStore {
 	return c.store
 }
 
-func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *SendController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *SendController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a new transaction") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to create a new transaction") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	ledgerClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
@@ -95,14 +114,14 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unable to parse '%s' as big int", amountStr)
 	}
 
-	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
+	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(flags, fctl.MetadataFlag))
 	if err != nil {
 		return nil, err
 	}
 
-	reference := fctl.GetString(cmd, c.referenceFlag)
+	reference := fctl.GetString(flags, referenceFlag)
 
-	tx, err := internal.CreateTransaction(ledgerClient, cmd.Context(), operations.CreateTransactionRequest{
+	tx, err := internal.CreateTransaction(ledgerClient, ctx, operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata: metadata,
 			Postings: []shared.Posting{
@@ -115,16 +134,23 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 			},
 			Reference: &reference,
 		},
-		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
+		Ledger: fctl.GetString(flags, internal.LedgerFlag),
 	})
 	if err != nil {
 		return nil, err
 	}
-	c.store.Transaction = tx
+	c.store.Transaction = internal.NewExportTransaction(tx)
 	return c, nil
 }
 
-// TODO: This need to use the ui.NewListModel
-func (c *SendController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintTransaction(cmd.OutOrStdout(), *c.store.Transaction)
+func (c *SendController) Render() error {
+	return internal.PrintTransaction(c.config.GetOut(), c.store.Transaction)
+}
+
+func NewSendCommand() *cobra.Command {
+	c := NewSendConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.RangeArgs(3, 4)),
+		fctl.WithController[*SendStore](NewSendController(c)),
+	)
 }

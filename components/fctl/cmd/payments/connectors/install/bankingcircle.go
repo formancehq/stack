@@ -1,6 +1,7 @@
 package install
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -12,63 +13,74 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PaymentsConnectorsBankingCircleStore struct {
+const (
+	authorizationEndpointFlag    = "authorization-endpoint"
+	defaultEndpointBankingCircle = "https://sandbox.bankingcircle.com"
+	defaultAuthorizationEndpoint = "https://authorizationsandbox.bankingcircleconnect.com"
+	useBankingCircle             = internal.BankingCircleConnector + " <username> <password>"
+	descriptionBankingCircle     = "Install Banking Circle connector"
+)
+
+type BankingCircleStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
 }
-type PaymentsConnectorsBankingCircleController struct {
-	store                        *PaymentsConnectorsBankingCircleStore
-	endpointFlag                 string
-	authorizationEndpointFlag    string
-	defaultEndpoint              string
-	defaultAuthorizationEndpoint string
-	pollingPeriodFlag            string
-	defaultpollingPeriod         string
-}
 
-var _ fctl.Controller[*PaymentsConnectorsBankingCircleStore] = (*PaymentsConnectorsBankingCircleController)(nil)
-
-func NewDefaultPaymentsConnectorsBankingCircleStore() *PaymentsConnectorsBankingCircleStore {
-	return &PaymentsConnectorsBankingCircleStore{
+func NewBankingCircleStore() *BankingCircleStore {
+	return &BankingCircleStore{
 		Success: false,
 	}
 }
 
-func NewPaymentsConnectorsBankingCircleController() *PaymentsConnectorsBankingCircleController {
-	return &PaymentsConnectorsBankingCircleController{
-		store:                        NewDefaultPaymentsConnectorsBankingCircleStore(),
-		endpointFlag:                 "endpoint",
-		authorizationEndpointFlag:    "authorization-endpoint",
-		defaultEndpoint:              "https://sandbox.bankingcircle.com",
-		defaultAuthorizationEndpoint: "https://authorizationsandbox.bankingcircleconnect.com",
-		pollingPeriodFlag:            "polling-period",
-		defaultpollingPeriod:         "2m",
-	}
-}
-
-func NewBankingCircleCommand() *cobra.Command {
-	c := NewPaymentsConnectorsBankingCircleController()
-	return fctl.NewCommand(internal.BankingCircleConnector+" <username> <password>",
-		fctl.WithShortDescription("Install a Banking Circle connector"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
-		fctl.WithStringFlag(c.authorizationEndpointFlag, c.defaultAuthorizationEndpoint, "Authorization endpoint"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithController[*PaymentsConnectorsBankingCircleStore](c),
+func NewBankingCircleConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useBankingCircle, flag.ExitOnError)
+	flags.String(EndpointFlag, defaultEndpointBankingCircle, "API endpoint")
+	flags.String(authorizationEndpointFlag, defaultAuthorizationEndpoint, "Authorization endpoint")
+	flags.String(PollingPeriodFlag, DefaultPollingPeriod, "Polling duration")
+	return fctl.NewControllerConfig(
+		useBankingCircle,
+		descriptionBankingCircle,
+		descriptionBankingCircle,
+		[]string{},
+		flags,
+		fctl.Organization, fctl.Stack,
 	)
 }
 
-func (c *PaymentsConnectorsBankingCircleController) GetStore() *PaymentsConnectorsBankingCircleStore {
+type BankingCircleController struct {
+	store  *BankingCircleStore
+	config *fctl.ControllerConfig
+}
+
+var _ fctl.Controller[*BankingCircleStore] = (*BankingCircleController)(nil)
+
+func NewBankingCircleController(config *fctl.ControllerConfig) *BankingCircleController {
+	return &BankingCircleController{
+		store:  NewBankingCircleStore(),
+		config: config,
+	}
+}
+
+func (c *BankingCircleController) GetStore() *BankingCircleStore {
 	return c.store
 }
 
-func (c *PaymentsConnectorsBankingCircleController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.BankingCircleConnector)
+func (c *BankingCircleController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *BankingCircleController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	soc, err := fctl.GetStackOrganizationConfigApprobation(flags, ctx, fmt.Sprintf("You are about to install connector '%s'", internal.BankingCircleConnector), c.config.GetOut())
 	if err != nil {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	paymentsClient, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
@@ -78,12 +90,12 @@ func (c *PaymentsConnectorsBankingCircleController) Run(cmd *cobra.Command, args
 		RequestBody: shared.BankingCircleConfig{
 			Username:              args[0],
 			Password:              args[1],
-			Endpoint:              fctl.GetString(cmd, c.endpointFlag),
-			AuthorizationEndpoint: fctl.GetString(cmd, c.authorizationEndpointFlag),
-			PollingPeriod:         fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			Endpoint:              fctl.GetString(flags, EndpointFlag),
+			AuthorizationEndpoint: fctl.GetString(flags, authorizationEndpointFlag),
+			PollingPeriod:         fctl.Ptr(fctl.GetString(flags, PollingPeriodFlag)),
 		},
 	}
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)
+	response, err := paymentsClient.Payments.InstallConnector(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "installing connector")
 	}
@@ -98,9 +110,16 @@ func (c *PaymentsConnectorsBankingCircleController) Run(cmd *cobra.Command, args
 	return c, nil
 }
 
-func (c *PaymentsConnectorsBankingCircleController) Render(cmd *cobra.Command, args []string) error {
+func (c *BankingCircleController) Render() error {
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
 
 	return nil
+}
+func NewBankingCircleCommand() *cobra.Command {
+	c := NewBankingCircleConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(2)),
+		fctl.WithController[*BankingCircleStore](NewBankingCircleController(c)),
+	)
 }

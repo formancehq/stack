@@ -1,6 +1,7 @@
 package wallets
 
 import (
+	"flag"
 	"fmt"
 	"math/big"
 
@@ -14,79 +15,99 @@ import (
 	cobra "github.com/spf13/cobra"
 )
 
-type CreditWalletStore struct {
+const (
+	useCredit   = "credit <amount> <asset>"
+	shortCredit = "Credit a wallet"
+	sourceFlag  = "source"
+)
+
+type CreditStore struct {
 	Success bool `json:"success"`
 }
-type CreditWalletController struct {
-	store        *CreditWalletStore
-	metadataFlag string
-	balanceFlag  string
-	sourceFlag   string
+type CreditController struct {
+	store  *CreditStore
+	config *fctl.ControllerConfig
 }
 
-var _ fctl.Controller[*CreditWalletStore] = (*CreditWalletController)(nil)
+var _ fctl.Controller[*CreditStore] = (*CreditController)(nil)
 
-func NewDefaultCreditWalletStore() *CreditWalletStore {
-	return &CreditWalletStore{}
+func NewCreditStore() *CreditStore {
+	return &CreditStore{}
 }
 
-func NewCreditWalletController() *CreditWalletController {
-	return &CreditWalletController{
-		store:        NewDefaultCreditWalletStore(),
-		metadataFlag: "metadata",
-		balanceFlag:  "balance",
-		sourceFlag:   "source",
+func NewCreditController(config *fctl.ControllerConfig) *CreditController {
+	return &CreditController{
+		store:  NewCreditStore(),
+		config: config,
 	}
 }
-func NewCreditWalletCommand() *cobra.Command {
-	c := NewCreditWalletController()
-	return fctl.NewCommand("credit <amount> <asset>",
-		fctl.WithShortDescription("Credit a wallets"),
-		fctl.WithAliases("cr"),
-		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
-		fctl.WithStringFlag(c.balanceFlag, "", "Balance to credit"),
-		fctl.WithStringSliceFlag(c.sourceFlag, []string{}, `Use --source account=<account> | --source wallet=id:<wallet-id>[/<balance>] | --source wallet=name:<wallet-name>[/<balance>]`),
-		internal.WithTargetingWalletByName(),
-		internal.WithTargetingWalletByID(),
-		fctl.WithController[*CreditWalletStore](c),
+func NewCreditConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useCredit, flag.ExitOnError)
+	fctl.WithMetadataFlag(flags)
+	fctl.WithConfirmFlag(flags)
+
+	flags.String(balanceFlag, "", "Balance to credit")
+	flags.String(sourceFlag, "", `Use --source account=<account> | --source wallet=id:<wallet-id>[/<balance>] | --source wallet=name:<wallet-name>[/<balance>]`)
+
+	internal.WithTargetingWalletByName(flags)
+	internal.WithTargetingWalletByID(flags)
+
+	return fctl.NewControllerConfig(
+		useCredit,
+		shortCredit,
+		shortCredit,
+		[]string{
+			"list",
+			"ls",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
 	)
 }
-
-func (c *CreditWalletController) GetStore() *CreditWalletStore {
+func (c *CreditController) GetStore() *CreditStore {
 	return c.store
 }
 
-func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *CreditController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *CreditController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading config")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to credit a wallets") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to credit a wallets") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	amountStr := args[0]
-	asset := args[1]
-	walletID, err := internal.RetrieveWalletID(cmd, client)
+	if len(c.config.GetArgs()) < 2 {
+		return nil, errors.New("You need to specify amount and asset")
+	}
+
+	amountStr := c.config.GetArgs()[0]
+	asset := c.config.GetArgs()[1]
+	walletID, err := internal.RetrieveWalletID(flags, ctx, client)
 	if err != nil {
 		return nil, err
 	}
@@ -100,14 +121,14 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, fmt.Errorf("unable to parse '%s' as big int", amountStr)
 	}
 
-	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
+	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(flags, fctl.MetadataFlag))
 	if err != nil {
 		return nil, err
 	}
 
 	sources := make([]shared.Subject, 0)
-	for _, sourceStr := range fctl.GetStringSlice(cmd, c.sourceFlag) {
-		source, err := internal.ParseSubject(sourceStr, cmd, client)
+	for _, sourceStr := range fctl.GetStringSlice(flags, sourceFlag) {
+		source, err := internal.ParseSubject(sourceStr, flags, ctx, client)
 		if err != nil {
 			return nil, err
 		}
@@ -123,10 +144,10 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 			},
 			Metadata: metadata,
 			Sources:  sources,
-			Balance:  formance.String(fctl.GetString(cmd, c.balanceFlag)),
+			Balance:  formance.String(fctl.GetString(flags, balanceFlag)),
 		},
 	}
-	response, err := client.Wallets.CreditWallet(cmd.Context(), request)
+	response, err := client.Wallets.CreditWallet(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "crediting wallet")
 	}
@@ -144,7 +165,14 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	return c, nil
 }
 
-func (c *CreditWalletController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet credited successfully!")
+func (c *CreditController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Wallet credited successfully!")
 	return nil
+}
+func NewCreditWalletCommand() *cobra.Command {
+	c := NewCreditConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(2)),
+		fctl.WithController[*CreditStore](NewCreditController(c)),
+	)
 }

@@ -1,6 +1,7 @@
 package install
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -12,73 +13,85 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PaymentsConnectorsModulrStore struct {
+const (
+	defaultEndpointModulr = "https://api-sandbox.modulrfinance.com"
+	useModulrConnector    = internal.ModulrConnector + " <api-key> <api-secret>"
+	shortModulrConnector  = "Install Modulr connector"
+)
+
+type ModulrStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
 }
-type PaymentsConnectorsModulrController struct {
-	store                *PaymentsConnectorsModulrStore
-	endpointFlag         string
-	defaultEndpoint      string
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-}
 
-var _ fctl.Controller[*PaymentsConnectorsModulrStore] = (*PaymentsConnectorsModulrController)(nil)
-
-func NewDefaultPaymentsConnectorsModulrStore() *PaymentsConnectorsModulrStore {
-	return &PaymentsConnectorsModulrStore{
+func NewDefaultModulrStore() *ModulrStore {
+	return &ModulrStore{
 		Success: false,
 	}
 }
+func NewModulrConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useModulrConnector, flag.ExitOnError)
+	flags.String(EndpointFlag, defaultEndpointModulr, "API endpoint")
+	flags.String(PollingPeriodFlag, DefaultPollingPeriod, "Polling duration")
+	return fctl.NewControllerConfig(
+		useModulrConnector,
+		shortModulrConnector,
+		shortModulrConnector,
+		[]string{},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 
-func NewPaymentsConnectorsModulrController() *PaymentsConnectorsModulrController {
-	return &PaymentsConnectorsModulrController{
-		store:                NewDefaultPaymentsConnectorsModulrStore(),
-		endpointFlag:         "endpoint",
-		defaultEndpoint:      "https://api-sandbox.modulrfinance.com",
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
+}
+
+type ModulrController struct {
+	store  *ModulrStore
+	config *fctl.ControllerConfig
+}
+
+var _ fctl.Controller[*ModulrStore] = (*ModulrController)(nil)
+
+func NewModulrController(config *fctl.ControllerConfig) *ModulrController {
+	return &ModulrController{
+		store:  NewDefaultModulrStore(),
+		config: config,
 	}
 }
 
-func NewModulrCommand() *cobra.Command {
-	c := NewPaymentsConnectorsModulrController()
-	return fctl.NewCommand(internal.ModulrConnector+" <api-key> <api-secret>",
-		fctl.WithShortDescription("Install a Modulr connector"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithController[*PaymentsConnectorsModulrStore](c),
-	)
-}
-
-func (c *PaymentsConnectorsModulrController) GetStore() *PaymentsConnectorsModulrStore {
+func (c *ModulrController) GetStore() *ModulrStore {
 	return c.store
 }
 
-func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.ModulrConnector)
+func (c *ModulrController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ModulrController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	soc, err := fctl.GetStackOrganizationConfigApprobation(flags, ctx, fmt.Sprintf("You are about to install connector '%s'", internal.ModulrConnector), c.config.GetOut())
 	if err != nil {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	paymentsClient, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
 	var endpoint *string
-	if e := fctl.GetString(cmd, c.endpointFlag); e != "" {
+	if e := fctl.GetString(flags, EndpointFlag); e != "" {
 		endpoint = &e
 	}
 
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	response, err := paymentsClient.Payments.InstallConnector(ctx, operations.InstallConnectorRequest{
 		RequestBody: shared.ModulrConfig{
 			APIKey:        args[0],
 			APISecret:     args[1],
 			Endpoint:      endpoint,
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			PollingPeriod: fctl.Ptr(fctl.GetString(flags, PollingPeriodFlag)),
 		},
 		Connector: shared.ConnectorModulr,
 	})
@@ -96,9 +109,17 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 	return c, nil
 }
 
-func (c *PaymentsConnectorsModulrController) Render(cmd *cobra.Command, args []string) error {
+func (c *ModulrController) Render() error {
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
 
 	return nil
+}
+
+func NewModulrCommand() *cobra.Command {
+	config := NewModulrConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(2)),
+		fctl.WithController[*ModulrStore](NewModulrController(config)),
+	)
 }

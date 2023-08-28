@@ -1,6 +1,7 @@
 package webhooks
 
 import (
+	"flag"
 	"fmt"
 	"net/url"
 
@@ -12,68 +13,100 @@ import (
 )
 
 const (
-	secretFlag = "secret"
+	secretFlag        = "secret"
+	useCreate         = "create <endpoint> [<event-type>...]"
+	descriptionCreate = "Create a new config. At least one event type is required."
+	shortCreate       = "Create a new config"
 )
 
-type CreateWebhookController struct {
-	store *CreateWebhookStore
-}
-
-type CreateWebhookStore struct {
+type CreateStore struct {
 	Webhook shared.WebhooksConfig `json:"webhook"`
 }
 
-var _ fctl.Controller[*CreateWebhookStore] = (*CreateWebhookController)(nil)
-
-func NewDefaultCreateWebhookStore() *CreateWebhookStore {
-	return &CreateWebhookStore{
+func NewCreateStore() *CreateStore {
+	return &CreateStore{
 		Webhook: shared.WebhooksConfig{},
 	}
 }
 
-func NewCreateWebhookController() *CreateWebhookController {
-	return &CreateWebhookController{
-		store: NewDefaultCreateWebhookStore(),
+func NewCreateConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useCreate, flag.ExitOnError)
+	flags.String(secretFlag, "", "Bring your own webhooks signing secret. If not passed or empty, a secret is automatically generated. The format is a string of bytes of size 24, base64 encoded. (larger size after encoding)")
+	fctl.WithConfirmFlag(flags)
+
+	return fctl.NewControllerConfig(
+		useCreate,
+		descriptionCreate,
+		shortCreate,
+		[]string{"cr"},
+		flags,
+	)
+}
+
+var _ fctl.Controller[*CreateStore] = (*CreateController)(nil)
+
+type CreateController struct {
+	store  *CreateStore
+	config *fctl.ControllerConfig
+}
+
+func NewCreateController(config *fctl.ControllerConfig) *CreateController {
+	return &CreateController{
+		store:  NewCreateStore(),
+		config: config,
 	}
 }
-func (c *CreateWebhookController) GetStore() *CreateWebhookStore {
+
+func (c *CreateController) GetStore() *CreateStore {
 	return c.store
 }
 
-func (c *CreateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *CreateController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *CreateController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a webhook") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to create a webhook") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	if _, err := url.Parse(args[0]); err != nil {
+	if len(c.config.GetArgs()) < 2 {
+		return nil, fmt.Errorf("at least one event type is required")
+	}
+
+	if _, err := url.Parse(c.config.GetArgs()[0]); err != nil {
 		return nil, errors.Wrap(err, "invalid endpoint URL")
 	}
 
-	secret := fctl.GetString(cmd, secretFlag)
+	secret := fctl.GetString(flags, secretFlag)
 
-	response, err := client.Webhooks.InsertConfig(cmd.Context(), shared.ConfigUser{
-		Endpoint:   args[0],
-		EventTypes: args[1:],
+	response, err := client.Webhooks.InsertConfig(ctx, shared.ConfigUser{
+		Endpoint:   c.config.GetArgs()[0],
+		EventTypes: c.config.GetArgs()[1:],
 		Secret:     &secret,
 	})
 
@@ -94,19 +127,15 @@ func (c *CreateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 	return c, nil
 }
 
-func (c *CreateWebhookController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config created successfully")
+func (c *CreateController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Config created successfully")
 	return nil
 }
 
 func NewCreateCommand() *cobra.Command {
-
-	return fctl.NewCommand("create <endpoint> [<event-type>...]",
-		fctl.WithShortDescription("Create a new config. At least one event type is required."),
-		fctl.WithAliases("cr"),
-		fctl.WithConfirmFlag(),
+	config := NewCreateConfig()
+	return fctl.NewCommand(config.GetUse(),
 		fctl.WithArgs(cobra.MinimumNArgs(2)),
-		fctl.WithStringFlag(secretFlag, "", "Bring your own webhooks signing secret. If not passed or empty, a secret is automatically generated. The format is a string of bytes of size 24, base64 encoded. (larger size after encoding)"),
-		fctl.WithController[*CreateWebhookStore](NewCreateWebhookController()),
+		fctl.WithController[*CreateStore](NewCreateController(config)),
 	)
 }

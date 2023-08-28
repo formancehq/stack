@@ -1,6 +1,7 @@
 package install
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -12,70 +13,83 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PaymentsConnectorsMangoPayStore struct {
+const (
+	defaultEndpointMangoPay = "https://api.sandbox.mangopay.com"
+	useMangoPay             = internal.MangoPayConnector + " <clientID> <apiKey>"
+	shortMangoPay           = "Install MangoPay connector"
+)
+
+type MangoPayStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
 }
-type PaymentsConnectorsMangoPayController struct {
-	store                *PaymentsConnectorsMangoPayStore
-	endpointFlag         string
-	defaultEndpoint      string
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-}
 
-func NewDefaultPaymentsConnectorsMangoPayStore() *PaymentsConnectorsMangoPayStore {
-	return &PaymentsConnectorsMangoPayStore{
+func NewMangoPayStore() *MangoPayStore {
+	return &MangoPayStore{
 		Success:       false,
 		ConnectorName: internal.MangoPayConnector,
 	}
 }
-func NewPaymentsConnectorsMangoPayController() *PaymentsConnectorsMangoPayController {
-	return &PaymentsConnectorsMangoPayController{
-		store:                NewDefaultPaymentsConnectorsMangoPayStore(),
-		endpointFlag:         "endpoint",
-		defaultEndpoint:      "https://api.sandbox.mangopay.com",
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
-	}
-}
-
-func NewMangoPayCommand() *cobra.Command {
-	c := NewPaymentsConnectorsMangoPayController()
-	return fctl.NewCommand(internal.MangoPayConnector+" <clientID> <apiKey>",
-		fctl.WithShortDescription("Install a MangoPay connector"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithController[*PaymentsConnectorsMangoPayStore](c),
+func NewMangoPayConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useMangoPay, flag.ExitOnError)
+	flags.String(EndpointFlag, defaultEndpointMangoPay, "API endpoint")
+	flags.String(PollingPeriodFlag, DefaultPollingPeriod, "Polling duration")
+	return fctl.NewControllerConfig(
+		useMangoPay,
+		shortMangoPay,
+		shortMangoPay,
+		[]string{},
+		flags,
+		fctl.Organization, fctl.Stack,
 	)
 }
 
-func (c *PaymentsConnectorsMangoPayController) GetStore() *PaymentsConnectorsMangoPayStore {
+type MangoPayController struct {
+	store  *MangoPayStore
+	config *fctl.ControllerConfig
+}
+
+func NewMangoPayController(config *fctl.ControllerConfig) *MangoPayController {
+	return &MangoPayController{
+		store:  NewMangoPayStore(),
+		config: config,
+	}
+}
+
+func (c *MangoPayController) GetStore() *MangoPayStore {
 	return c.store
 }
 
-func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *MangoPayController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *MangoPayController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to install connector '%s'", internal.MangoPayConnector) {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to install connector '%s'", internal.MangoPayConnector) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	paymentsClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	paymentsClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
@@ -85,11 +99,11 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 		RequestBody: shared.MangoPayConfig{
 			ClientID:      args[0],
 			APIKey:        args[1],
-			Endpoint:      fctl.GetString(cmd, c.endpointFlag),
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			Endpoint:      fctl.GetString(flags, EndpointFlag),
+			PollingPeriod: fctl.Ptr(fctl.GetString(flags, PollingPeriodFlag)),
 		},
 	}
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)
+	response, err := paymentsClient.Payments.InstallConnector(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "installing connector")
 	}
@@ -103,9 +117,16 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 	return c, nil
 }
 
-func (c *PaymentsConnectorsMangoPayController) Render(cmd *cobra.Command, args []string) error {
+func (c *MangoPayController) Render() error {
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector %s installed!", c.store.ConnectorName)
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Connector %s installed!", c.store.ConnectorName)
 
 	return nil
+}
+func NewMangoPayCommand() *cobra.Command {
+	c := NewMangoPayConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(2)),
+		fctl.WithController[*MangoPayStore](NewMangoPayController(c)),
+	)
 }

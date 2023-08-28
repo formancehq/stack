@@ -1,12 +1,22 @@
 package invitations
 
 import (
+	"flag"
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+)
+
+const (
+	statusFlag       = "status"
+	organizationFlag = "organization"
+)
+const (
+	useList   = "list"
+	shortList = "List all invitations"
 )
 
 type Invitations struct {
@@ -19,56 +29,65 @@ type Invitations struct {
 type ListStore struct {
 	Invitations []Invitations `json:"invitations"`
 }
-type ListController struct {
-	store            *ListStore
-	statusFlag       string
-	organizationFlag string
+
+func NewListStore() *ListStore {
+	return &ListStore{}
+}
+func NewListConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
+	flags.String(statusFlag, "", "Filter invitations by status")
+	return fctl.NewControllerConfig(
+		useList,
+		shortList,
+		shortList,
+		[]string{
+			"ls", "l",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 }
 
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
-func NewDefaultListStore() *ListStore {
-	return &ListStore{}
+type ListController struct {
+	store  *ListStore
+	config *fctl.ControllerConfig
 }
 
-func NewListController() *ListController {
+func NewListController(config *fctl.ControllerConfig) *ListController {
 	return &ListController{
-		store:            NewDefaultListStore(),
-		statusFlag:       "status",
-		organizationFlag: "organization",
+		store:  NewListStore(),
+		config: config,
 	}
-}
-
-func NewListCommand() *cobra.Command {
-	c := NewListController()
-	return fctl.NewCommand("list",
-		fctl.WithAliases("ls", "l"),
-		fctl.WithShortDescription("List invitations"),
-		fctl.WithStringFlag(c.statusFlag, "", "Filter invitations by status"),
-		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithStringFlag(c.organizationFlag, "", "Filter invitations by organization"),
-		fctl.WithController[*ListStore](c),
-	)
 }
 
 func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ListController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ListController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
-	client, err := fctl.NewMembershipClient(cmd, cfg)
+	client, err := fctl.NewMembershipClient(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
 	listInvitationsResponse, _, err := client.DefaultApi.
-		ListInvitations(cmd.Context()).
-		Status(fctl.GetString(cmd, c.statusFlag)).
-		Organization(fctl.GetString(cmd, c.organizationFlag)).
+		ListInvitations(ctx).
+		Status(fctl.GetString(flags, statusFlag)).
+		Organization(fctl.GetString(flags, organizationFlag)).
 		Execute()
 	if err != nil {
 		return nil, err
@@ -86,7 +105,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	return c, nil
 }
 
-func (c *ListController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render() error {
 	tableData := fctl.Map(c.store.Invitations, func(i Invitations) []string {
 		return []string{
 			i.Id,
@@ -98,8 +117,16 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	tableData = fctl.Prepend(tableData, []string{"ID", "Email", "Status", "CreationDate"})
 	return pterm.DefaultTable.
 		WithHasHeader().
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
 
+}
+
+func NewListCommand() *cobra.Command {
+	config := NewListConfig()
+	return fctl.NewCommand("list",
+		fctl.WithArgs(cobra.ExactArgs(0)),
+		fctl.WithController[*ListStore](NewListController(config)),
+	)
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func NewCommand() *cobra.Command {
-	return fctl.NewStackCommand("wallets",
+	return fctl.NewCommand("wallets",
 		fctl.WithAliases("wal", "wa", "wallet"),
 		fctl.WithShortDescription("Wallets management"),
 		fctl.WithChildCommands(
@@ -23,5 +23,6 @@ func NewCommand() *cobra.Command {
 			holds.NewCommand(),
 			balances.NewCommand(),
 		),
+		fctl.WithCommandScopesFlags(fctl.Organization, fctl.Stack),
 	)
 }

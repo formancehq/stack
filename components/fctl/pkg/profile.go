@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,7 +16,6 @@ import (
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"github.com/zitadel/oidc/v2/pkg/client"
 	"github.com/zitadel/oidc/v2/pkg/client/rp"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
@@ -170,7 +170,7 @@ func (p *Profile) GetClaims() (jwt.MapClaims, error) {
 	return claims, nil
 }
 
-func (p *Profile) GetUserInfo(cmd *cobra.Command) (*userClaims, error) {
+func (p *Profile) GetUserInfo() (*userClaims, error) {
 	claims := &userClaims{}
 	if p.token != nil && p.token.IDToken != "" {
 		_, err := oidc.ParseToken(p.token.IDToken, claims)
@@ -272,8 +272,8 @@ func (p *Profile) IsConnected() bool {
 
 type CurrentProfile Profile
 
-func ListProfiles(cmd *cobra.Command, toComplete string) ([]string, error) {
-	config, err := GetConfig(cmd)
+func ListProfiles(flags *flag.FlagSet, toComplete string) ([]string, error) {
+	config, err := GetConfig(flags)
 	if err != nil {
 		return []string{}, nil
 	}

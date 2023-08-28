@@ -1,15 +1,16 @@
 package internal
 
 import (
+	"context"
+	"flag"
 	"strings"
 
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 )
 
-func ParseSubject(subject string, cmd *cobra.Command, client *formance.Formance) (*shared.Subject, error) {
+func ParseSubject(subject string, flags *flag.FlagSet, ctx context.Context, client *formance.Formance) (*shared.Subject, error) {
 	var err error
 	switch {
 	case strings.HasPrefix(subject, "wallet="):
@@ -25,7 +26,7 @@ func ParseSubject(subject string, cmd *cobra.Command, client *formance.Formance)
 		case strings.HasPrefix(walletDefinition, "id:"):
 			walletID = strings.TrimPrefix(parts[0], "id:")
 		case strings.HasPrefix(walletDefinition, "name:"):
-			walletID, err = DiscoverWalletIDFromName(cmd, client, strings.TrimPrefix(parts[0], "name:"))
+			walletID, err = DiscoverWalletIDFromName(flags, ctx, client, strings.TrimPrefix(parts[0], "name:"))
 			if err != nil {
 				return nil, err
 			}

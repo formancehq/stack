@@ -1,6 +1,7 @@
 package login
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -8,67 +9,85 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Dialog interface {
-	DisplayURIAndCode(uri, code string)
-}
-type DialogFn func(uri, code string)
+const (
+	useLogin         = "login"
+	descriptionLogin = "Login to the service"
+)
 
-func (fn DialogFn) DisplayURIAndCode(uri, code string) {
-	fn(uri, code)
-}
-
-type LoginStore struct {
-	profile    *fctl.Profile `json:"-"`
-	DeviceCode string        `json:"deviceCode"`
-	LoginURI   string        `json:"loginUri"`
-	BrowserURL string        `json:"browserUrl"`
-	Success    bool          `json:"success"`
-}
-type LoginController struct {
-	store *LoginStore
+type Store struct {
+	DeviceCode string `json:"deviceCode"`
+	LoginURI   string `json:"loginUri"`
+	BrowserURL string `json:"browserUrl"`
+	Success    bool   `json:"success"`
 }
 
-func NewDefaultLoginStore() *LoginStore {
-	return &LoginStore{
-		profile:    nil,
+func NewStore() *Store {
+	return &Store{
 		DeviceCode: "",
 		LoginURI:   "",
 		BrowserURL: "",
 		Success:    false,
 	}
 }
-func (c *LoginController) GetStore() *LoginStore {
+
+func NewConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useLogin, flag.ExitOnError)
+	flags.String(fctl.MembershipURIFlag, "", "service url")
+
+	return fctl.NewControllerConfig(
+		useLogin,
+		descriptionLogin,
+		descriptionLogin,
+		[]string{
+			"log",
+		},
+		flags,
+	)
+}
+
+var _ fctl.Controller[*Store] = (*LoginController)(nil)
+
+type LoginController struct {
+	store  *Store
+	config *fctl.ControllerConfig
+}
+
+func NewController(config *fctl.ControllerConfig) *LoginController {
+	return &LoginController{
+		store:  NewStore(),
+		config: config,
+	}
+}
+
+func (c *LoginController) GetStore() *Store {
 	return c.store
 }
-func NewLoginController() *LoginController {
-	return &LoginController{
-		store: NewDefaultLoginStore(),
-	}
+
+func (c *LoginController) GetConfig() *fctl.ControllerConfig {
+	return c.config
 }
-func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *LoginController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	membershipUri, err := cmd.Flags().GetString(fctl.MembershipURIFlag)
-	if err != nil {
-		return nil, err
-	}
+	profile := fctl.GetCurrentProfile(flags, cfg)
+	membershipUri := fctl.GetString(flags, fctl.MembershipURIFlag)
 	if membershipUri == "" {
 		membershipUri = profile.GetMembershipURI()
 	}
 
-	relyingParty, err := fctl.GetAuthRelyingParty(fctl.GetHttpClient(cmd, map[string][]string{}), membershipUri)
+	relyingParty, err := fctl.GetAuthRelyingParty(fctl.GetHttpClient(flags, map[string][]string{}, c.config.GetOut()), membershipUri)
 	if err != nil {
 		return nil, err
 	}
 
-	c.store.profile = profile
-
-	ret, err := LogIn(cmd.Context(), DialogFn(func(uri, code string) {
+	ret, err := LogIn(ctx, DialogFn(func(uri, code string) {
 		c.store.DeviceCode = code
 		c.store.LoginURI = uri
 		fmt.Println("Link :", fmt.Sprintf("%s?user_code=%s", c.store.LoginURI, c.store.DeviceCode))
@@ -87,24 +106,22 @@ func (c *LoginController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 
 	profile.SetMembershipURI(membershipUri)
 
-	currentProfileName := fctl.GetCurrentProfileName(cmd, cfg)
+	currentProfileName := fctl.GetCurrentProfileName(flags, cfg)
 
 	cfg.SetCurrentProfile(currentProfileName, profile)
 
 	return c, cfg.Persist()
 }
 
-func (c *LoginController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
+func (c *LoginController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Logged!")
 	return nil
 }
 
 func NewCommand() *cobra.Command {
-	return fctl.NewCommand("login",
-		fctl.WithStringFlag(fctl.MembershipURIFlag, "", "service url"),
-		fctl.WithHiddenFlag(fctl.MembershipURIFlag),
-		fctl.WithShortDescription("Login"),
+	config := NewConfig()
+	return fctl.NewCommand(config.GetUse(),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithController[*LoginStore](NewLoginController()),
+		fctl.WithController[*Store](NewController(config)),
 	)
 }

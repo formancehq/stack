@@ -12,6 +12,14 @@ import (
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 )
 
+type Dialog interface {
+	DisplayURIAndCode(uri, code string)
+}
+type DialogFn func(uri, code string)
+
+func (fn DialogFn) DisplayURIAndCode(uri, code string) {
+	fn(uri, code)
+}
 func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*oidc.AccessTokenResponse, error) {
 	deviceCode, err := rp.DeviceAuthorization(relyingParty.OAuthConfig().Scopes, relyingParty)
 	if err != nil {

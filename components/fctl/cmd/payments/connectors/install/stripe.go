@@ -1,6 +1,7 @@
 package install
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -12,57 +13,76 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PaymentsConnectorsStripeStore struct {
+const (
+	stripeApiKeyFLag     = "api-key"
+	useStripeConnector   = internal.StripeConnector + " <api-key>"
+	shortStripeConnector = "Install Stripe connector"
+)
+
+type StripeStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
 }
-type PaymentsConnectorsStripeController struct {
-	store            *PaymentsConnectorsStripeStore
-	stripeApiKeyFlag string
+type StripeController struct {
+	store  *StripeStore
+	config *fctl.ControllerConfig
 }
 
-var _ fctl.Controller[*PaymentsConnectorsStripeStore] = (*PaymentsConnectorsStripeController)(nil)
+func NewStripeConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useStripeConnector, flag.ExitOnError)
+	flags.String(stripeApiKeyFLag, "", "Stripe API key")
+	fctl.WithConfirmFlag(flags)
+	return fctl.NewControllerConfig(
+		useStripeConnector,
+		shortStripeConnector,
+		shortStripeConnector,
+		[]string{},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 
-func NewDefaultPaymentsConnectorsStripeStore() *PaymentsConnectorsStripeStore {
-	return &PaymentsConnectorsStripeStore{
+}
+
+var _ fctl.Controller[*StripeStore] = (*StripeController)(nil)
+
+func NewDefaultStripeStore() *StripeStore {
+	return &StripeStore{
 		Success: false,
 	}
 }
 
-func NewPaymentsConnectorsStripeController() *PaymentsConnectorsStripeController {
-	return &PaymentsConnectorsStripeController{
-		store:            NewDefaultPaymentsConnectorsStripeStore(),
-		stripeApiKeyFlag: "api-key",
+func NewStripeController(config *fctl.ControllerConfig) *StripeController {
+	return &StripeController{
+		store:  NewDefaultStripeStore(),
+		config: config,
 	}
 }
 
-func NewStripeCommand() *cobra.Command {
-	c := NewPaymentsConnectorsStripeController()
-	return fctl.NewCommand(internal.StripeConnector+" <api-key>",
-		fctl.WithShortDescription("Install a stripe connector"),
-		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithStringFlag(c.stripeApiKeyFlag, "", "Stripe API key"),
-		fctl.WithController[*PaymentsConnectorsStripeStore](c),
-	)
-}
-
-func (c *PaymentsConnectorsStripeController) GetStore() *PaymentsConnectorsStripeStore {
+func (c *StripeController) GetStore() *StripeStore {
 	return c.store
 }
 
-func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.StripeConnector)
+func (c *StripeController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *StripeController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	soc, err := fctl.GetStackOrganizationConfigApprobation(flags, ctx, fmt.Sprintf("You are about to install connector '%s'", internal.StripeConnector), c.config.GetOut())
 	if err != nil {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	paymentsClient, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	response, err := paymentsClient.Payments.InstallConnector(ctx, operations.InstallConnectorRequest{
 		RequestBody: shared.StripeConfig{
 			APIKey: args[0],
 		},
@@ -82,9 +102,16 @@ func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []stri
 	return c, nil
 }
 
-func (c *PaymentsConnectorsStripeController) Render(cmd *cobra.Command, args []string) error {
+func (c *StripeController) Render() error {
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
 
 	return nil
+}
+func NewStripeCommand() *cobra.Command {
+	config := NewStripeConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*StripeStore](NewStripeController(config)),
+	)
 }

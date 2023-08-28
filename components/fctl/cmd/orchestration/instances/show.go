@@ -1,6 +1,7 @@
 package instances
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
@@ -13,50 +14,75 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type InstancesShowStore struct {
+const (
+	useShow   = "show <instance-id>"
+	shortShow = "Show a specific workflow instance"
+)
+
+type ShowStore struct {
 	WorkflowInstance shared.WorkflowInstance `json:"workflowInstance"`
 	Workflow         shared.Workflow         `json:"workflow"`
 }
-type InstancesShowController struct {
-	store *InstancesShowStore
+
+func NewDefaultShowStore() *ShowStore {
+	return &ShowStore{}
+}
+func NewShowConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useShow, flag.ExitOnError)
+
+	c := fctl.NewControllerConfig(
+		useShow,
+		shortShow,
+		shortShow,
+		[]string{
+			"sh",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+	return c
 }
 
-var _ fctl.Controller[*InstancesShowStore] = (*InstancesShowController)(nil)
+var _ fctl.Controller[*ShowStore] = (*ShowController)(nil)
 
-func NewDefaultInstancesShowStore() *InstancesShowStore {
-	return &InstancesShowStore{}
+type ShowController struct {
+	store  *ShowStore
+	config *fctl.ControllerConfig
 }
 
-func NewInstancesShowController() *InstancesShowController {
-	return &InstancesShowController{
-		store: NewDefaultInstancesShowStore(),
+func NewShowController(config *fctl.ControllerConfig) *ShowController {
+	return &ShowController{
+		store:  NewDefaultShowStore(),
+		config: config,
 	}
 }
 
-func NewShowCommand() *cobra.Command {
-	return fctl.NewCommand("show <instance-id>",
-		fctl.WithShortDescription("Show a specific workflow instance"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*InstancesShowStore](NewInstancesShowController()),
-	)
-}
-
-func (c *InstancesShowController) GetStore() *InstancesShowStore {
+func (c *ShowController) GetStore() *ShowStore {
 	return c.store
 }
 
-func (c *InstancesShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
+func (c *ShowController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ShowController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	soc, err := fctl.GetStackOrganizationConfig(flags, ctx, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	client, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	res, err := client.Orchestration.GetInstance(cmd.Context(), operations.GetInstanceRequest{
+	res, err := client.Orchestration.GetInstance(ctx, operations.GetInstanceRequest{
 		InstanceID: args[0],
 	})
 	if err != nil {
@@ -72,7 +98,7 @@ func (c *InstancesShowController) Run(cmd *cobra.Command, args []string) (fctl.R
 	}
 
 	c.store.WorkflowInstance = res.GetWorkflowInstanceResponse.Data
-	response, err := client.Orchestration.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
+	response, err := client.Orchestration.GetWorkflow(ctx, operations.GetWorkflowRequest{
 		FlowID: res.GetWorkflowInstanceResponse.Data.WorkflowID,
 	})
 	if err != nil {
@@ -92,9 +118,12 @@ func (c *InstancesShowController) Run(cmd *cobra.Command, args []string) (fctl.R
 	return c, nil
 }
 
-func (c *InstancesShowController) Render(cmd *cobra.Command, args []string) error {
+func (c *ShowController) Render() error {
+
+	out := c.config.GetOut()
+
 	// Print the instance information
-	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
+	fctl.Section.WithWriter(out).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.WorkflowInstance.ID})
 	tableData = append(tableData, []string{pterm.LightCyan("Created at"), c.store.WorkflowInstance.CreatedAt.Format(time.RFC3339)})
@@ -107,15 +136,24 @@ func (c *InstancesShowController) Render(cmd *cobra.Command, args []string) erro
 	}
 
 	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(out).
 		WithData(tableData).
 		Render(); err != nil {
 		return err
 	}
 
-	if err := internal.PrintWorkflowInstance(cmd.OutOrStdout(), c.store.Workflow, c.store.WorkflowInstance); err != nil {
+	if err := internal.PrintWorkflowInstance(out, c.store.Workflow, c.store.WorkflowInstance); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func NewShowCommand() *cobra.Command {
+
+	config := NewShowConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*ShowStore](NewShowController(config)),
+	)
 }

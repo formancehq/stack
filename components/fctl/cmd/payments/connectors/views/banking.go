@@ -2,13 +2,13 @@ package views
 
 import (
 	"errors"
+	"io"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
-	"github.com/spf13/cobra"
 )
 
-func DisplayBankingCircleConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+func DisplayBankingCircleConfig(writer io.Writer, connectorConfig *shared.ConnectorConfigResponse) error {
 	config, ok := connectorConfig.Data.(*shared.BankingCircleConfig)
 	if !ok {
 		return errors.New("invalid banking circle connector config")
@@ -21,7 +21,7 @@ func DisplayBankingCircleConfig(cmd *cobra.Command, connectorConfig *shared.Conn
 	tableData = append(tableData, []string{pterm.LightCyan("Authorization endpoint:"), config.AuthorizationEndpoint})
 
 	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(writer).
 		WithData(tableData).
 		Render(); err != nil {
 		return err

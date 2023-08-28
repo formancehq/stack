@@ -1,6 +1,7 @@
 package instances
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
@@ -12,6 +13,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	workflowFlag    = "workflow"
+	runningFlag     = "running"
+	useList         = "list"
+	descriptionList = "List all workflow instances"
+	shortList       = "List all workflow instances"
+)
+
 type WorkflowInstance struct {
 	InstanceID   string `json:"instanceId"`
 	WorkflowID   string `json:"workflowId"`
@@ -20,59 +29,71 @@ type WorkflowInstance struct {
 	TerminatedAt string `json:"terminatedAt"`
 }
 
-type InstancesListStore struct {
+type ListStore struct {
 	WorkflowInstance []WorkflowInstance `json:"workflowInstances"`
 }
-type InstancesListController struct {
-	store        *InstancesListStore
-	workflowFlag string
-	runningFlag  string
+
+func NewDefaultListStore() *ListStore {
+	return &ListStore{}
+}
+func NewListConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
+	flags.String(workflowFlag, "", "Filter on workflow id")
+	flags.Bool(runningFlag, false, "Filter on running instances")
+	c := fctl.NewControllerConfig(
+		useList,
+		descriptionList,
+		shortList,
+		[]string{
+			"list",
+			"ls",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+	return c
 }
 
-var _ fctl.Controller[*InstancesListStore] = (*InstancesListController)(nil)
-
-func NewDefaultInstancesListStore() *InstancesListStore {
-	return &InstancesListStore{}
+type ListController struct {
+	store  *ListStore
+	config *fctl.ControllerConfig
 }
 
-func NewInstancesListController() *InstancesListController {
-	return &InstancesListController{
-		store:        NewDefaultInstancesListStore(),
-		workflowFlag: "workflow",
-		runningFlag:  "running",
+var _ fctl.Controller[*ListStore] = (*ListController)(nil)
+
+func NewListController(config *fctl.ControllerConfig) *ListController {
+	return &ListController{
+		store:  NewDefaultListStore(),
+		config: config,
 	}
 }
 
-func NewListCommand() *cobra.Command {
-	c := NewInstancesListController()
-	return fctl.NewCommand("list",
-		fctl.WithShortDescription("List all workflows instances"),
-		fctl.WithAliases("ls", "l"),
-		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithStringFlag(c.workflowFlag, "", "Filter on workflow id"),
-		fctl.WithBoolFlag(c.runningFlag, false, "Filter on running instances"),
-		fctl.WithController[*InstancesListStore](c),
-	)
-}
-
-func (c *InstancesListController) GetStore() *InstancesListStore {
+func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *InstancesListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
+func (c *ListController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ListController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+
+	soc, err := fctl.GetStackOrganizationConfig(flags, ctx, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	client, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	response, err := client.Orchestration.ListInstances(cmd.Context(), operations.ListInstancesRequest{
-		Running:    fctl.Ptr(fctl.GetBool(cmd, c.runningFlag)),
-		WorkflowID: fctl.Ptr(fctl.GetString(cmd, c.workflowFlag)),
+	response, err := client.Orchestration.ListInstances(ctx, operations.ListInstancesRequest{
+		Running:    fctl.Ptr(fctl.GetBool(flags, runningFlag)),
+		WorkflowID: fctl.Ptr(fctl.GetString(flags, workflowFlag)),
 	})
 	if err != nil {
 		return nil, err
@@ -104,15 +125,15 @@ func (c *InstancesListController) Run(cmd *cobra.Command, args []string) (fctl.R
 	return c, nil
 }
 
-func (c *InstancesListController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render() error {
 
 	if len(c.store.WorkflowInstance) == 0 {
-		fctl.Println("No workflows found.")
+		fmt.Fprintln(c.config.GetOut(), "No workflows found.")
 		return nil
 	}
 	if err := pterm.DefaultTable.
 		WithHasHeader(true).
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(
 			fctl.Prepend(
 				fctl.Map(c.store.WorkflowInstance,
@@ -132,4 +153,12 @@ func (c *InstancesListController) Render(cmd *cobra.Command, args []string) erro
 	}
 
 	return nil
+}
+
+func NewListCommand() *cobra.Command {
+	c := NewListConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(0)),
+		fctl.WithController[*ListStore](NewListController(c)),
+	)
 }

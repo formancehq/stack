@@ -13,5 +13,6 @@ func NewCommand() *cobra.Command {
 			invitations.NewCommand(),
 			NewInfoCommand(),
 		),
+		fctl.WithCommandScopesFlags(fctl.Organization, fctl.Stack),
 	)
 }

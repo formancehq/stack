@@ -2,13 +2,13 @@ package views
 
 import (
 	"errors"
+	"io"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
-	"github.com/spf13/cobra"
 )
 
-func DisplayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+func DisplayCurrencyCloudConfig(writer io.Writer, connectorConfig *shared.ConnectorConfigResponse) error {
 	config, ok := connectorConfig.Data.(*shared.CurrencyCloudConfig)
 	if !ok {
 		return errors.New("invalid currency cloud connector config")
@@ -25,7 +25,7 @@ func DisplayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.Conn
 	}()})
 
 	if err := pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(writer).
 		WithData(tableData).
 		Render(); err != nil {
 		return err

@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
@@ -11,68 +12,88 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	addressFlag   = "address"
+	useBalances   = "balances"
+	shortBalances = "Read balances"
+)
+
 type BalancesStore struct {
 	Balances shared.BalancesCursorResponseCursor `json:"balances"`
 }
+
+func NewBalancesStore() *BalancesStore {
+	return &BalancesStore{}
+}
+
+func NewBalancesConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useBalances, flag.ExitOnError)
+	flags.String(addressFlag, "", "Filter on specific address")
+	return fctl.NewControllerConfig(
+		useBalances,
+		shortBalances,
+		shortBalances,
+		[]string{
+			"balance", "bal", "b",
+		},
+		flags,
+		fctl.Organization, fctl.Stack, fctl.Ledger,
+	)
+}
+
 type BalancesController struct {
-	store       *BalancesStore
-	addressFlag string
+	store  *BalancesStore
+	config *fctl.ControllerConfig
 }
 
 var _ fctl.Controller[*BalancesStore] = (*BalancesController)(nil)
 
-func NewDefaultBalancesStore() *BalancesStore {
-	return &BalancesStore{}
-}
-
-func NewBalancesController() *BalancesController {
+func NewBalancesController(config *fctl.ControllerConfig) *BalancesController {
 	return &BalancesController{
-		store:       NewDefaultBalancesStore(),
-		addressFlag: "address",
+		store:  NewBalancesStore(),
+		config: config,
 	}
-}
-
-func NewBalancesCommand() *cobra.Command {
-	c := NewBalancesController()
-	return fctl.NewCommand("balances",
-		fctl.WithAliases("balance", "bal", "b"),
-		fctl.WithStringFlag(c.addressFlag, "", "Filter on specific address"),
-		fctl.WithShortDescription("Read balances"),
-		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithController[*BalancesStore](c),
-	)
 }
 
 func (c *BalancesController) GetStore() *BalancesStore {
 	return c.store
 }
 
-func (c *BalancesController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *BalancesController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *BalancesController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
 
 	response, err := client.Ledger.GetBalances(
-		cmd.Context(),
+		ctx,
 		operations.GetBalancesRequest{
-			Address: fctl.Ptr(fctl.GetString(cmd, c.addressFlag)),
-			Ledger:  fctl.GetString(cmd, internal.LedgerFlag),
+			Address: fctl.Ptr(fctl.GetString(flags, addressFlag)),
+			Ledger:  fctl.GetString(flags, internal.LedgerFlag),
 		},
 	)
 	if err != nil {
@@ -92,7 +113,7 @@ func (c *BalancesController) Run(cmd *cobra.Command, args []string) (fctl.Render
 	return c, nil
 }
 
-func (c *BalancesController) Render(cmd *cobra.Command, args []string) error {
+func (c *BalancesController) Render() error {
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{"Account", "Asset", "Balance"})
 	for _, accountBalances := range c.store.Balances.Data {
@@ -107,7 +128,15 @@ func (c *BalancesController) Render(cmd *cobra.Command, args []string) error {
 
 	return pterm.DefaultTable.
 		WithHasHeader(true).
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
+}
+
+func NewBalancesCommand() *cobra.Command {
+	c := NewBalancesConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(0)),
+		fctl.WithController[*BalancesStore](NewBalancesController(c)),
+	)
 }

@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 
@@ -12,79 +13,105 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type StackRestoreStore struct {
+const (
+	useRestore   = "restore <stack-id>"
+	shortRestore = "Restore a stack"
+)
+
+type RestoreStore struct {
 	Stack    *membershipclient.Stack     `json:"stack"`
 	Versions *shared.GetVersionsResponse `json:"versions"`
 }
-type StackRestoreController struct {
-	store  *StackRestoreStore
-	config *fctl.Config
-}
 
-var _ fctl.Controller[*StackRestoreStore] = (*StackRestoreController)(nil)
-
-func NewDefaultVersionStore() *StackRestoreStore {
-	return &StackRestoreStore{
+func NewRestoreStore() *RestoreStore {
+	return &RestoreStore{
 		Stack:    &membershipclient.Stack{},
 		Versions: &shared.GetVersionsResponse{},
 	}
 }
 
-func NewStackRestoreController() *StackRestoreController {
-	return &StackRestoreController{
-		store: NewDefaultVersionStore(),
+func NewRestoreConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useRestore, flag.ExitOnError)
+	flags.String(internal.StackNameFlag, "", "Stack name")
+
+	return fctl.NewControllerConfig(
+		useRestore,
+		shortRestore,
+		shortRestore,
+		[]string{
+			"restore",
+			"re",
+		},
+		flags,
+		fctl.Organization,
+	)
+}
+
+var _ fctl.Controller[*RestoreStore] = (*RestoreController)(nil)
+
+type RestoreController struct {
+	store      *RestoreStore
+	config     *fctl.ControllerConfig
+	fctlConfig *fctl.Config
+}
+
+func NewRestoreController(config *fctl.ControllerConfig) *RestoreController {
+	return &RestoreController{
+		store:  NewRestoreStore(),
+		config: config,
 	}
 }
 
-func NewRestoreStackCommand() *cobra.Command {
-	const stackNameFlag = "name"
-
-	return fctl.NewMembershipCommand("restore <stack-id>",
-		fctl.WithShortDescription("Restore a deleted stack"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithStringFlag(stackNameFlag, "", ""),
-		fctl.WithController[*StackRestoreStore](NewStackRestoreController()),
-	)
-}
-func (c *StackRestoreController) GetStore() *StackRestoreStore {
+func (c *RestoreController) GetStore() *RestoreStore {
 	return c.store
 }
 
-func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *RestoreController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *RestoreController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organization, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "searching default organization")
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
+	if len(c.config.GetArgs()) == 0 {
+		return nil, fmt.Errorf("stack id is required")
+	}
+
 	response, _, err := apiClient.DefaultApi.
-		RestoreStack(cmd.Context(), organization, args[0]).
+		RestoreStack(ctx, organization, c.config.GetArgs()[0]).
 		Execute()
 	if err != nil {
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
+	profile := fctl.GetCurrentProfile(flags, cfg)
 
-	if err := waitStackReady(cmd, profile, response.Data); err != nil {
+	if err := waitStackReady(ctx, c.config.GetOut(), flags, profile, response.Data); err != nil {
 		return nil, err
 	}
 
-	stackClient, err := fctl.NewStackClient(cmd, cfg, response.Data)
+	stackClient, err := fctl.NewStackClient(flags, ctx, cfg, response.Data, out)
 	if err != nil {
 		return nil, err
 	}
 
-	versions, err := stackClient.GetVersions(cmd.Context())
+	versions, err := stackClient.GetVersions(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -95,11 +122,19 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 
 	c.store.Stack = response.Data
 	c.store.Versions = versions.GetVersionsResponse
-	c.config = cfg
+	c.fctlConfig = cfg
 
 	return c, nil
 }
 
-func (c *StackRestoreController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, c.config), c.store.Stack, c.store.Versions)
+func (c *RestoreController) Render() error {
+	return internal.PrintStackInformation(c.config.GetOut(), fctl.GetCurrentProfile(c.config.GetAllFLags(), c.fctlConfig), c.store.Stack, c.store.Versions)
+}
+
+func NewRestoreStackCommand() *cobra.Command {
+	config := NewRestoreConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*RestoreStore](NewRestoreController(config)),
+	)
 }

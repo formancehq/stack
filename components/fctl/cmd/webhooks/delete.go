@@ -1,6 +1,7 @@
 package webhooks
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -11,65 +12,99 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type DeleteWebhookStore struct {
+const (
+	useDelete              = "delete <config-id>"
+	shortDescriptionDelete = "Delete a config"
+)
+
+type DeleteStore struct {
 	ErrorResponse *shared.ErrorResponse `json:"error"`
 	Success       bool                  `json:"success"`
 }
 
-type DeleteWebhookController struct {
-	store  *DeleteWebhookStore
-	config *fctl.Config
-}
-
-var _ fctl.Controller[*DeleteWebhookStore] = (*DeleteWebhookController)(nil)
-
-func NewDefaultDeleteWebhookStore() *DeleteWebhookStore {
-	return &DeleteWebhookStore{
+func NewDeleteStore() *DeleteStore {
+	return &DeleteStore{
 		Success: true,
 	}
 }
 
-func NewDeleteWebhookController() *DeleteWebhookController {
-	return &DeleteWebhookController{
-		store:  NewDefaultDeleteWebhookStore(),
-		config: nil,
+func NewDeleteConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useDelete, flag.ExitOnError)
+	fctl.WithConfirmFlag(flags)
+
+	return fctl.NewControllerConfig(
+		useDelete,
+		shortDescriptionDelete,
+		shortDescriptionDelete,
+		[]string{
+			"delete",
+			"del",
+		},
+		flags,
+	)
+
+}
+
+var _ fctl.Controller[*DeleteStore] = (*DeleteController)(nil)
+
+type DeleteController struct {
+	store      *DeleteStore
+	config     *fctl.ControllerConfig
+	fctlConfig *fctl.Config
+}
+
+func NewDeleteController(config *fctl.ControllerConfig) *DeleteController {
+	return &DeleteController{
+		store:  NewDeleteStore(),
+		config: config,
 	}
 }
 
-func (c *DeleteWebhookController) GetStore() *DeleteWebhookStore {
+func (c *DeleteController) GetStore() *DeleteStore {
 	return c.store
 }
 
-func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *DeleteController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *DeleteController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
-	c.config = cfg
+	c.fctlConfig = cfg
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete a webhook") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to delete a webhook") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	webhookClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	webhookClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	request := operations.DeleteConfigRequest{
-		ID: args[0],
+	if len(c.config.GetArgs()) == 0 {
+		return nil, errors.New("missing config id")
 	}
-	response, err := webhookClient.Webhooks.DeleteConfig(cmd.Context(), request)
+
+	request := operations.DeleteConfigRequest{
+		ID: c.config.GetArgs()[0],
+	}
+	response, err := webhookClient.Webhooks.DeleteConfig(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "deleting config")
 	}
@@ -92,9 +127,9 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 	return c, nil
 }
 
-func (c *DeleteWebhookController) Render(cmd *cobra.Command, args []string) error {
+func (c *DeleteController) Render() error {
 	if !c.store.Success {
-		pterm.Warning.WithShowLineNumber(false).Printfln("Config %s not found", args[0])
+		pterm.Warning.WithShowLineNumber(false).Printfln("Config %s not found", c.config.GetArgs()[0])
 		return nil
 	}
 
@@ -103,17 +138,15 @@ func (c *DeleteWebhookController) Render(cmd *cobra.Command, args []string) erro
 		return nil
 	}
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config deleted successfully")
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Config deleted successfully")
 
 	return nil
 }
 
 func NewDeleteCommand() *cobra.Command {
-	return fctl.NewCommand("delete <config-id>",
-		fctl.WithShortDescription("Delete a config"),
-		fctl.WithConfirmFlag(),
-		fctl.WithAliases("del"),
+	config := NewDeleteConfig()
+	return fctl.NewCommand(config.GetUse(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*DeleteWebhookStore](NewDeleteWebhookController()),
+		fctl.WithController[*DeleteStore](NewDeleteController(config)),
 	)
 }

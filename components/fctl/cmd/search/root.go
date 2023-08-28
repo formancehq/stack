@@ -2,6 +2,7 @@ package search
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"strings"
 
@@ -13,25 +14,36 @@ import (
 )
 
 const (
-	sizeFlag      = "size"
-	defaultTarget = "ANY"
+	useSearch         = "search <object-type> <terms>..."
+	shortDescription  = "Search for transactions, accounts, assets, and payments"
+	descriptionSearch = "Search in all services (Default: ANY), or in a specific service (ACCOUNT, TRANSACTION, ASSET, PAYMENT)"
+	sizeFlag          = "size"
+	defaultTarget     = "ANY"
 )
 
 var targets = []string{"TRANSACTION", "ACCOUNT", "ASSET", "PAYMENT"}
 
-type SearchStore struct {
+type Store struct {
 	Response *shared.Response `json:"response"`
 }
 
-type SearchController struct {
-	store  *SearchStore
-	target string
+func NewSearchConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useSearch, flag.ExitOnError)
+	flags.Int(sizeFlag, 5, "Number of items to fetch")
+	return fctl.NewControllerConfig(
+		useSearch,
+		descriptionSearch,
+		shortDescription,
+		[]string{
+			"se",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 }
 
-var _ fctl.Controller[*SearchStore] = (*SearchController)(nil)
-
-func NewDefaultSearchStore() *SearchStore {
-	return &SearchStore{
+func NewStore() *Store {
+	return &Store{
 		Response: &shared.Response{
 			Data: make(map[string]interface{}, 0),
 			Cursor: &shared.ResponseCursor{
@@ -41,34 +53,51 @@ func NewDefaultSearchStore() *SearchStore {
 	}
 }
 
-func NewSearchController() *SearchController {
-	return &SearchController{
-		store: NewDefaultSearchStore(),
+var _ fctl.Controller[*Store] = (*Controller)(nil)
+
+type Controller struct {
+	store  *Store
+	target string
+	config *fctl.ControllerConfig
+}
+
+func NewController(config *fctl.ControllerConfig) *Controller {
+	return &Controller{
+		store:  NewStore(),
+		config: config,
 	}
 }
 
-func (c *SearchController) GetStore() *SearchStore {
+func (c *Controller) GetStore() *Store {
 	return c.store
 }
 
-func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *Controller) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *Controller) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	searchClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	searchClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +106,7 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	if len(args) > 1 {
 		terms = args[1:]
 	}
-	size := int64(fctl.GetInt(cmd, sizeFlag))
+	size := int64(fctl.GetInt(flags, sizeFlag))
 
 	target := strings.ToUpper(args[0])
 
@@ -90,7 +119,7 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		Terms:    terms,
 		Target:   &target,
 	}
-	response, err := searchClient.Search.Search(cmd.Context(), request)
+	response, err := searchClient.Search.Search(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -110,11 +139,12 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	return c, err
 }
 
-func (c *SearchController) Render(cmd *cobra.Command, args []string) error {
+func (c *Controller) Render() error {
 	var err error
+	out := c.config.GetOut()
 	// No Data
 	if (c.store.Response.Cursor != nil && len(c.store.Response.Cursor.Data) == 0) && len(c.store.Response.Data) == 0 {
-		fctl.Section.WithWriter(cmd.OutOrStdout()).Println("No data found")
+		fctl.Section.WithWriter(out).Println("No data found")
 		return nil
 	}
 
@@ -123,24 +153,24 @@ func (c *SearchController) Render(cmd *cobra.Command, args []string) error {
 	if ok && c.store.Response.Cursor != nil {
 		//But no data
 		if len(c.store.Response.Cursor.Data) == 0 {
-			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("No data found")
+			fctl.Section.WithWriter(out).Println("No data found")
 			return nil
 		}
 
 		// Display the data
 		switch c.target {
 		case "TRANSACTION":
-			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Transactions")
-			err = views.DisplayTransactions(cmd.OutOrStdout(), c.store.Response.Cursor.Data)
+			fctl.Section.WithWriter(out).Println("Transactions")
+			err = views.DisplayTransactions(out, c.store.Response.Cursor.Data)
 		case "ACCOUNT":
-			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Accounts")
-			err = views.DisplayAccounts(cmd.OutOrStdout(), c.store.Response.Cursor.Data)
+			fctl.Section.WithWriter(out).Println("Accounts")
+			err = views.DisplayAccounts(out, c.store.Response.Cursor.Data)
 		case "ASSET":
-			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Assets")
-			err = views.DisplayAssets(cmd.OutOrStdout(), c.store.Response.Cursor.Data)
+			fctl.Section.WithWriter(out).Println("Assets")
+			err = views.DisplayAssets(out, c.store.Response.Cursor.Data)
 		case "PAYMENT":
-			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Payments")
-			err = views.DisplayPayments(cmd.OutOrStdout(), c.store.Response.Cursor.Data)
+			fctl.Section.WithWriter(out).Println("Payments")
+			err = views.DisplayPayments(out, c.store.Response.Cursor.Data)
 		}
 	}
 
@@ -169,7 +199,7 @@ func (c *SearchController) Render(cmd *cobra.Command, args []string) error {
 		tableData = fctl.Prepend(tableData, []string{"Kind", "Object"})
 		return pterm.DefaultTable.
 			WithHasHeader().
-			WithWriter(cmd.OutOrStdout()).
+			WithWriter(out).
 			WithData(tableData).
 			Render()
 	}
@@ -178,16 +208,10 @@ func (c *SearchController) Render(cmd *cobra.Command, args []string) error {
 }
 
 func NewCommand() *cobra.Command {
-
-	return fctl.NewStackCommand("search <object-type> <terms>...",
-		fctl.WithAliases("se"),
+	config := NewSearchConfig()
+	return fctl.NewCommand(config.GetUse(),
 		fctl.WithArgs(cobra.MinimumNArgs(1)),
-		fctl.WithIntFlag(sizeFlag, 5, "Number of items to fetch"),
 		fctl.WithValidArgs(append(targets, defaultTarget)...),
-		// fctl.WithValidArgsFunction(func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		// 	return append(targets, defaultTarget), cobra.ShellCompDirectiveNoFileComp
-		// }),
-		fctl.WithShortDescription("Search in all services (Default: ANY), or in a specific service (ACCOUNT, TRANSACTION, ASSET, PAYMENT)"),
-		fctl.WithController[*SearchStore](NewSearchController()),
+		fctl.WithController[*Store](NewController(config)),
 	)
 }

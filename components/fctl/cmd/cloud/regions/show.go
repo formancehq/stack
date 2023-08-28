@@ -1,6 +1,7 @@
 package regions
 
 import (
+	"flag"
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
@@ -9,56 +10,77 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useShow   = "show <region-id>"
+	shortShow = "Show region details with id"
+)
+
 type ShowStore struct {
 	Region membershipclient.AnyRegion `json:"region"`
 }
-type ShowController struct {
-	store *ShowStore
+
+func NewShowStore() *ShowStore {
+	return &ShowStore{}
+}
+
+func NewShowConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useShow, flag.ExitOnError)
+	return fctl.NewControllerConfig(
+		useShow,
+		shortShow,
+		shortShow,
+		[]string{
+			"sh", "s",
+		},
+		flags,
+		fctl.Organization,
+	)
 }
 
 var _ fctl.Controller[*ShowStore] = (*ShowController)(nil)
 
-func NewDefaultShowStore() *ShowStore {
-	return &ShowStore{}
+type ShowController struct {
+	store  *ShowStore
+	config *fctl.ControllerConfig
 }
 
-func NewShowController() *ShowController {
+func NewShowController(config *fctl.ControllerConfig) *ShowController {
 	return &ShowController{
-		store: NewDefaultShowStore(),
+		store:  NewShowStore(),
+		config: config,
 	}
-}
-
-func NewShowCommand() *cobra.Command {
-	return fctl.NewCommand("show <region-id>",
-		fctl.WithAliases("sh", "s"),
-		fctl.WithShortDescription("Show region details"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*ShowStore](NewShowController()),
-	)
 }
 
 func (c *ShowController) GetStore() *ShowStore {
 	return c.store
 }
 
-func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ShowController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ShowController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	response, _, err := apiClient.DefaultApi.GetRegion(cmd.Context(), organizationID, args[0]).Execute()
+	response, _, err := apiClient.DefaultApi.GetRegion(ctx, organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +90,8 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	return c, nil
 }
 
-func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
-	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
+func (c *ShowController) Render() error {
+	fctl.Section.WithWriter(c.config.GetOut()).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Region.Id})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), c.store.Region.Name})
@@ -84,8 +106,16 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	}
 
 	return pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
 
+}
+func NewShowCommand() *cobra.Command {
+
+	config := NewShowConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*ShowStore](NewShowController(config)),
+	)
 }

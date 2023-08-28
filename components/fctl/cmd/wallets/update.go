@@ -1,6 +1,7 @@
 package wallets
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -10,79 +11,105 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useUpdate   = "update <wallet-id>"
+	shortUpdate = "Update a wallets"
+)
+
 type UpdateStore struct {
 	Success bool `json:"success"`
 }
-type UpdateController struct {
-	store        *UpdateStore
-	metadataFlag string
+
+func NewUpdateStore() *UpdateStore {
+	return &UpdateStore{
+		Success: false,
+	}
+}
+func NewUpdateConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useUpdate, flag.ExitOnError)
+	fctl.WithMetadataFlag(flags)
+	fctl.WithConfirmFlag(flags)
+
+	c := fctl.NewControllerConfig(
+		useUpdate,
+		shortUpdate,
+		shortUpdate,
+		[]string{
+			"up",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+	return c
 }
 
 var _ fctl.Controller[*UpdateStore] = (*UpdateController)(nil)
 
-func NewDefaultUpdateStore() *UpdateStore {
-	return &UpdateStore{}
+type UpdateController struct {
+	store        *UpdateStore
+	metadataFlag string
+	config       *fctl.ControllerConfig
 }
 
-func NewUpdateController() *UpdateController {
+func NewUpdateController(config *fctl.ControllerConfig) *UpdateController {
 	return &UpdateController{
-		store:        NewDefaultUpdateStore(),
+		store:        NewUpdateStore(),
 		metadataFlag: "metadata",
+		config:       config,
 	}
-}
-
-func NewUpdateCommand() *cobra.Command {
-	c := NewUpdateController()
-	return fctl.NewCommand("update <wallet-id>",
-		fctl.WithShortDescription("Update a wallets"),
-		fctl.WithAliases("up"),
-		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
-		fctl.WithController[*UpdateStore](c),
-	)
 }
 
 func (c *UpdateController) GetStore() *UpdateStore {
 	return c.store
 }
 
-func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *UpdateController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *UpdateController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving config")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to update a wallets") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to update a wallets") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
+	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(flags, fctl.MetadataFlag))
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := client.Wallets.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
+	if len(c.config.GetArgs()) == 0 {
+		return nil, fmt.Errorf("wallet id is required")
+	}
+
+	response, err := client.Wallets.UpdateWallet(ctx, operations.UpdateWalletRequest{
 		RequestBody: &operations.UpdateWalletRequestBody{
 			Metadata: metadata,
 		},
-		ID: args[0],
+		ID: c.config.GetArgs()[0],
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "updating wallet")
@@ -100,7 +127,14 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	return c, nil
 }
 
-func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet updated successfully!")
+func (c *UpdateController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Wallet updated successfully!")
 	return nil
+}
+func NewUpdateCommand() *cobra.Command {
+	c := NewUpdateConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*UpdateStore](NewUpdateController(c)),
+	)
 }

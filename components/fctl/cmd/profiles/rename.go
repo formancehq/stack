@@ -1,42 +1,71 @@
 package profiles
 
 import (
+	"flag"
+
+	"github.com/formancehq/fctl/cmd/profiles/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
-type ProfilesRenameStore struct {
+const (
+	useRename   = "rename <old-name> <new-name>"
+	shortRename = "Rename a profile"
+)
+
+type RenameStore struct {
 	Success bool `json:"success"`
 }
-type ProfilesRenameController struct {
-	store *ProfilesRenameStore
-}
 
-var _ fctl.Controller[*ProfilesRenameStore] = (*ProfilesRenameController)(nil)
-
-func NewDefaultProfilesRenameStore() *ProfilesRenameStore {
-	return &ProfilesRenameStore{
+func NewRenameStore() *RenameStore {
+	return &RenameStore{
 		Success: false,
 	}
 }
+func NewRenameConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useRename, flag.ExitOnError)
 
-func NewProfilesRenameController() *ProfilesRenameController {
-	return &ProfilesRenameController{
-		store: NewDefaultProfilesRenameStore(),
+	return fctl.NewControllerConfig(
+		useRename,
+		shortRename,
+		shortRename,
+		[]string{},
+		flags,
+	)
+}
+
+var _ fctl.Controller[*RenameStore] = (*RenameController)(nil)
+
+type RenameController struct {
+	store  *RenameStore
+	config *fctl.ControllerConfig
+}
+
+func NewRenameController(config *fctl.ControllerConfig) *RenameController {
+	return &RenameController{
+		store:  NewRenameStore(),
+		config: config,
 	}
 }
 
-func (c *ProfilesRenameController) GetStore() *ProfilesRenameStore {
+func (c *RenameController) GetStore() *RenameStore {
 	return c.store
 }
 
-func (c *ProfilesRenameController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *RenameController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *RenameController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetFlags()
+	args := c.config.GetArgs()
+
 	oldName := args[0]
 	newName := args[1]
 
-	config, err := fctl.GetConfig(cmd)
+	config, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
@@ -63,16 +92,16 @@ func (c *ProfilesRenameController) Run(cmd *cobra.Command, args []string) (fctl.
 	return c, nil
 }
 
-func (c *ProfilesRenameController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Profile renamed!")
+func (c *RenameController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Profile renamed!")
 	return nil
 }
 
 func NewRenameCommand() *cobra.Command {
-	return fctl.NewCommand("rename <old-name> <new-name>",
+	config := NewRenameConfig()
+	return fctl.NewCommand(config.GetUse(),
 		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithShortDescription("Rename a profile"),
-		fctl.WithValidArgsFunction(ProfileNamesAutoCompletion),
-		fctl.WithController[*ProfilesRenameStore](NewProfilesRenameController()),
+		fctl.WithValidArgsFunction(internal.ProfileCobraAutoCompletion),
+		fctl.WithController[*RenameStore](NewRenameController(config)),
 	)
 }

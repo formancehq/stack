@@ -1,63 +1,84 @@
 package cloud
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
 
-type GeneratePersonalTokenStore struct {
+const (
+	useGPT         = "generate-personal-token"
+	shortGPT       = "Generate a personal bearer token"
+	descriptionGPT = "Generate a personal bearer token"
+)
+
+type Store struct {
 	Token string `json:"token"`
 }
-type GeneratePersonalTokenController struct {
-	store *GeneratePersonalTokenStore
+
+func NewStore() *Store {
+	return &Store{}
 }
-
-var _ fctl.Controller[*GeneratePersonalTokenStore] = (*GeneratePersonalTokenController)(nil)
-
-func NewDefaultGeneratePersonalTokenStore() *GeneratePersonalTokenStore {
-	return &GeneratePersonalTokenStore{}
-}
-
-func NewGeneratePersonalTokenController() *GeneratePersonalTokenController {
-	return &GeneratePersonalTokenController{
-		store: NewDefaultGeneratePersonalTokenStore(),
-	}
-}
-
-func NewGeneratePersonalTokenCommand() *cobra.Command {
-	return fctl.NewStackCommand("generate-personal-token",
-		fctl.WithAliases("gpt"),
-		fctl.WithShortDescription("Generate a personal bearer token"),
-		fctl.WithDescription("Generate a personal bearer token"),
-		fctl.WithController[*GeneratePersonalTokenStore](NewGeneratePersonalTokenController()),
+func NewConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useGPT, flag.ExitOnError)
+	return fctl.NewControllerConfig(
+		useGPT,
+		descriptionGPT,
+		shortGPT,
+		[]string{
+			"gpt",
+		},
+		flags,
+		fctl.Stack,
+		fctl.Organization,
 	)
 }
 
-func (c *GeneratePersonalTokenController) GetStore() *GeneratePersonalTokenStore {
+var _ fctl.Controller[*Store] = (*Controller)(nil)
+
+type Controller struct {
+	store  *Store
+	config *fctl.ControllerConfig
+}
+
+func NewController(config *fctl.ControllerConfig) *Controller {
+	return &Controller{
+		store:  NewStore(),
+		config: config,
+	}
+}
+
+func (c *Controller) GetStore() *Store {
 	return c.store
 }
 
-func (c *GeneratePersonalTokenController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *Controller) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *Controller) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
-	profile := fctl.GetCurrentProfile(cmd, cfg)
+	profile := fctl.GetCurrentProfile(flags, cfg)
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := profile.GetStackToken(cmd.Context(), fctl.GetHttpClient(cmd, map[string][]string{}), stack)
+	token, err := profile.GetStackToken(ctx, fctl.GetHttpClient(flags, map[string][]string{}, c.config.GetOut()), stack)
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +88,15 @@ func (c *GeneratePersonalTokenController) Run(cmd *cobra.Command, args []string)
 	return c, nil
 }
 
-func (c *GeneratePersonalTokenController) Render(cmd *cobra.Command, args []string) error {
+func (c *Controller) Render() error {
 
-	fmt.Fprintln(cmd.OutOrStdout(), c.store.Token)
+	fmt.Fprintln(c.config.GetOut(), c.store.Token)
 	return nil
+}
+
+func NewGeneratePersonalTokenCommand() *cobra.Command {
+	config := NewConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithController[*Store](NewController(config)),
+	)
 }

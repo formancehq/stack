@@ -1,13 +1,22 @@
 package clients
 
 import (
+	"flag"
 	"fmt"
 	"strings"
+
+	"github.com/formancehq/fctl/cmd/auth/clients/internal"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+)
+
+const (
+	useCreate         = "create <name>"
+	descriptionCreate = "Create a new client with the given name, and configure it with flags"
+	shortCreate       = "Create a new client"
 )
 
 type CreateClient struct {
@@ -22,90 +31,97 @@ type CreateClient struct {
 type CreateStore struct {
 	Client *CreateClient `json:"client"`
 }
-type CreateController struct {
-	store                     *CreateStore
-	publicFlag                string
-	trustedFlag               string
-	descriptionFlag           string
-	redirectUriFlag           string
-	postLogoutRedirectUriFlag string
+
+func NewCreateStore() *CreateStore {
+	return &CreateStore{}
+}
+func NewCreateConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useCreate, flag.ExitOnError)
+	fctl.WithConfirmFlag(flags)
+	flags.Bool(internal.PublicFlag, false, "Is client public")
+	flags.Bool(internal.TrustedFlag, false, "Is the client trusted")
+	flags.String(internal.DescriptionFlag, "", "Client description")
+	flags.String(internal.RedirectUriFlag, "", "Redirect URIS")                       // Slice
+	flags.String(internal.PostLogoutRedirectUriFlag, "", "Post logout redirect uris") // Slice
+
+	return fctl.NewControllerConfig(
+		useCreate,
+		descriptionCreate,
+		shortCreate,
+		[]string{
+			"c",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 }
 
 var _ fctl.Controller[*CreateStore] = (*CreateController)(nil)
 
-func NewDefaultCreateStore() *CreateStore {
-	return &CreateStore{}
+type CreateController struct {
+	store  *CreateStore
+	config *fctl.ControllerConfig
 }
 
-func NewCreateController() *CreateController {
+func NewCreateController(config *fctl.ControllerConfig) *CreateController {
 	return &CreateController{
-		store:                     NewDefaultCreateStore(),
-		publicFlag:                "public",
-		trustedFlag:               "trusted",
-		descriptionFlag:           "description",
-		redirectUriFlag:           "redirect-uri",
-		postLogoutRedirectUriFlag: "post-logout-redirect-uri",
+		store:  NewCreateStore(),
+		config: config,
 	}
-}
-
-func NewCreateCommand() *cobra.Command {
-	c := NewCreateController()
-	return fctl.NewCommand("create <name>",
-		fctl.WithAliases("c"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithConfirmFlag(),
-		fctl.WithBoolFlag(c.publicFlag, false, "Is client public"),
-		fctl.WithBoolFlag(c.trustedFlag, false, "Is the client trusted"),
-		fctl.WithStringFlag(c.descriptionFlag, "", "Client description"),
-		fctl.WithStringSliceFlag(c.redirectUriFlag, []string{}, "Redirect URIS"),
-		fctl.WithStringSliceFlag(c.postLogoutRedirectUriFlag, []string{}, "Post logout redirect uris"),
-		fctl.WithShortDescription("Create client"),
-		fctl.WithController[*CreateStore](c),
-	)
 }
 
 func (c *CreateController) GetStore() *CreateStore {
 	return c.store
 }
 
-func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *CreateController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *CreateController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a new OAuth2 client") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to create a new OAuth2 client") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	authClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	authClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
 
-	public := fctl.GetBool(cmd, c.publicFlag)
-	trusted := fctl.GetBool(cmd, c.trustedFlag)
-	description := fctl.GetString(cmd, c.descriptionFlag)
+	public := fctl.GetBool(flags, internal.PublicFlag)
+	trusted := fctl.GetBool(flags, internal.TrustedFlag)
+	description := fctl.GetString(flags, internal.DescriptionFlag)
 
 	request := shared.CreateClientRequest{
 		Public:                 &public,
-		RedirectUris:           fctl.GetStringSlice(cmd, c.redirectUriFlag),
+		RedirectUris:           fctl.GetStringSlice(flags, internal.RedirectUriFlag),
 		Description:            &description,
 		Name:                   args[0],
 		Trusted:                &trusted,
-		PostLogoutRedirectUris: fctl.GetStringSlice(cmd, c.postLogoutRedirectUriFlag),
+		PostLogoutRedirectUris: fctl.GetStringSlice(flags, internal.PostLogoutRedirectUriFlag),
 	}
-	response, err := authClient.Auth.CreateClient(cmd.Context(), request)
+	response, err := authClient.Auth.CreateClient(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +142,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	return c, nil
 }
 
-func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
+func (c *CreateController) Render() error {
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Client.ID})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), c.store.Client.Name})
@@ -135,7 +151,15 @@ func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Redirect URIs"), c.store.Client.RedirectUri})
 	tableData = append(tableData, []string{pterm.LightCyan("Post logout redirect URIs"), c.store.Client.PostLogoutRedirectUri})
 	return pterm.DefaultTable.
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
+}
+
+func NewCreateCommand() *cobra.Command {
+	config := NewCreateConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*CreateStore](NewCreateController(config)),
+	)
 }

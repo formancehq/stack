@@ -1,6 +1,7 @@
 package webhooks
 
 import (
+	"flag"
 	"fmt"
 	"strings"
 	"time"
@@ -13,53 +14,85 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ListWebhookStore struct {
+const (
+	useListWebhook         = "list"
+	descriptionListWebhook = "List all webhooks"
+)
+
+type ListStore struct {
 	Webhooks []shared.WebhooksConfig `json:"webhooks"`
 }
-type ListWebhookController struct {
-	store *ListWebhookStore
-}
 
-var _ fctl.Controller[*ListWebhookStore] = (*ListWebhookController)(nil)
-
-func NewDefaultListWebhookStore() *ListWebhookStore {
-	return &ListWebhookStore{
+func NewListStore() *ListStore {
+	return &ListStore{
 		Webhooks: []shared.WebhooksConfig{},
 	}
 }
 
-func NewListWebhookController() *ListWebhookController {
-	return &ListWebhookController{
-		store: NewDefaultListWebhookStore(),
+func NewListConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useListWebhook, flag.ExitOnError)
+
+	return fctl.NewControllerConfig(
+		useListWebhook,
+		descriptionListWebhook,
+		descriptionListWebhook,
+		[]string{
+			"list",
+			"ls",
+		},
+		flags,
+	)
+}
+
+var _ fctl.Controller[*ListStore] = (*ListController)(nil)
+
+type ListController struct {
+	store  *ListStore
+	config *fctl.ControllerConfig
+}
+
+func NewListController(config *fctl.ControllerConfig) *ListController {
+	return &ListController{
+		store:  NewListStore(),
+		config: config,
 	}
 }
-func (c *ListWebhookController) GetStore() *ListWebhookStore {
+
+func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *ListWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ListController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ListController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fctl.GetConfig")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	webhookClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	webhookClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	request := operations.GetManyConfigsRequest{}
-	response, err := webhookClient.Webhooks.GetManyConfigs(cmd.Context(), request)
+	response, err := webhookClient.Webhooks.GetManyConfigs(ctx, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "listing all config")
 	}
@@ -77,11 +110,11 @@ func (c *ListWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	return c, nil
 }
 
-func (c *ListWebhookController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render() error {
 	// TODO: WebhooksConfig is missing ?
 	if err := pterm.DefaultTable.
 		WithHasHeader(true).
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(
 			fctl.Prepend(
 				fctl.Map(c.store.Webhooks,
@@ -104,9 +137,10 @@ func (c *ListWebhookController) Render(cmd *cobra.Command, args []string) error 
 }
 
 func NewListCommand() *cobra.Command {
-	return fctl.NewCommand("list",
-		fctl.WithShortDescription("List all configs"),
-		fctl.WithAliases("ls", "l"),
-		fctl.WithController[*ListWebhookStore](NewListWebhookController()),
+
+	config := NewListConfig()
+
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithController[*ListStore](NewListController(config)),
 	)
 }

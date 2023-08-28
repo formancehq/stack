@@ -1,6 +1,7 @@
 package connectors
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -10,65 +11,86 @@ import (
 )
 
 var (
-	PaymentsConnectorsList = "develop"
+	useList         = "list"
+	descriptionList = "List all enabled connectors"
 )
 
-type PaymentsConnectorsListStore struct {
+type ListStore struct {
 	Connectors []shared.ConnectorsResponseData `json:"connectors"`
 }
-type PaymentsConnectorsListController struct {
-	store *PaymentsConnectorsListStore
-}
 
-var _ fctl.Controller[*PaymentsConnectorsListStore] = (*PaymentsConnectorsListController)(nil)
-
-func NewDefaultPaymentsConnectorsListStore() *PaymentsConnectorsListStore {
-	return &PaymentsConnectorsListStore{
+func NewListStore() *ListStore {
+	return &ListStore{
 		Connectors: []shared.ConnectorsResponseData{},
 	}
 }
 
-func NewPaymentsConnectorsListController() *PaymentsConnectorsListController {
-	return &PaymentsConnectorsListController{
-		store: NewDefaultPaymentsConnectorsListStore(),
+func NewListConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
+
+	return fctl.NewControllerConfig(
+		useList,
+		descriptionList,
+		"",
+		[]string{
+			"list",
+			"ls",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+}
+
+var _ fctl.Controller[*ListStore] = (*ListController)(nil)
+
+func NewListController(config *fctl.ControllerConfig) *ListController {
+	return &ListController{
+		store:  NewListStore(),
+		config: config,
 	}
 }
 
-func NewListCommand() *cobra.Command {
-	return fctl.NewCommand("list",
-		fctl.WithAliases("ls", "l"),
-		fctl.WithShortDescription("List all enabled connectors"),
-		fctl.WithController[*PaymentsConnectorsListStore](NewPaymentsConnectorsListController()),
-	)
+type ListController struct {
+	store  *ListStore
+	config *fctl.ControllerConfig
 }
 
-func (c *PaymentsConnectorsListController) GetStore() *PaymentsConnectorsListStore {
+func (c *ListController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListController) Run() (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := client.Payments.ListAllConnectors(cmd.Context())
+	response, err := client.Payments.ListAllConnectors(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +108,7 @@ func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string
 	return c, nil
 }
 
-func (c *PaymentsConnectorsListController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render() error {
 	tableData := fctl.Map(c.store.Connectors, func(connector shared.ConnectorsResponseData) []string {
 		return []string{
 			string(*connector.Provider),
@@ -96,7 +118,14 @@ func (c *PaymentsConnectorsListController) Render(cmd *cobra.Command, args []str
 	tableData = fctl.Prepend(tableData, []string{"Provider", "Enabled"})
 	return pterm.DefaultTable.
 		WithHasHeader().
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
+}
+
+func NewListCommand() *cobra.Command {
+	c := NewListConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithController[*ListStore](NewListController(c)),
+	)
 }

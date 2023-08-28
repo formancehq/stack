@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 
@@ -12,72 +13,90 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useShow   = "show (<stack-id> | --name=<stack-name>)"
+	shortShow = "Show a stack"
+)
+
 var errStackNotFound = errors.New("stack not found")
 
-type StackShowStore struct {
+type ShowStore struct {
 	Stack    *membershipclient.Stack     `json:"stack"`
 	Versions *shared.GetVersionsResponse `json:"versions"`
 }
 
-type StackShowController struct {
-	store  *StackShowStore
-	config *fctl.Config
-}
-
-var _ fctl.Controller[*StackShowStore] = (*StackShowController)(nil)
-
-func NewDefaultStackShowStore() *StackShowStore {
-	return &StackShowStore{
+func NewShowStore() *ShowStore {
+	return &ShowStore{
 		Stack:    &membershipclient.Stack{},
 		Versions: &shared.GetVersionsResponse{},
 	}
 }
 
-func NewStackShowController() *StackShowController {
-	return &StackShowController{
-		store: NewDefaultStackShowStore(),
-	}
-}
+func NewShowControllerConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useShow, flag.ExitOnError)
+	flags.String(internal.StackNameFlag, "", "Stack name")
 
-func NewShowCommand() *cobra.Command {
-	var stackNameFlag = "name"
-
-	return fctl.NewMembershipCommand("show (<stack-id> | --name=<stack-name>)",
-		fctl.WithAliases("s", "sh"),
-		fctl.WithShortDescription("Show stack"),
-		fctl.WithArgs(cobra.MaximumNArgs(1)),
-		fctl.WithStringFlag(stackNameFlag, "", ""),
-		fctl.WithController[*StackShowStore](NewStackShowController()),
+	return fctl.NewControllerConfig(
+		useShow,
+		shortShow,
+		shortShow,
+		[]string{
+			"show",
+			"sh",
+		},
+		flags,
+		fctl.Organization,
 	)
 }
 
-func (c *StackShowController) GetStore() *StackShowStore {
+var _ fctl.Controller[*ShowStore] = (*ShowController)(nil)
+
+type ShowController struct {
+	store      *ShowStore
+	config     *fctl.ControllerConfig
+	fctlConfig *fctl.Config
+}
+
+func NewShowController(config *fctl.ControllerConfig) *ShowController {
+	return &ShowController{
+		store:  NewShowStore(),
+		config: config,
+	}
+}
+
+func (c *ShowController) GetStore() *ShowStore {
 	return c.store
 }
 
-func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	var stackNameFlag = "name"
+func (c *ShowController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ShowController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
+
 	if err != nil {
 		return nil, err
 	}
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organization, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "searching default organization")
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
 	var stack *membershipclient.Stack
-	if len(args) == 1 {
-		if fctl.GetString(cmd, stackNameFlag) != "" {
+	if len(c.config.GetArgs()) == 1 {
+		if fctl.GetString(flags, internal.StackNameFlag) != "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stackResponse, httpResponse, err := apiClient.DefaultApi.ReadStack(cmd.Context(), organization, args[0]).Execute()
+		stackResponse, httpResponse, err := apiClient.DefaultApi.ReadStack(ctx, organization, c.config.GetArgs()[0]).Execute()
 		if err != nil {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return nil, errStackNotFound
@@ -86,15 +105,15 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		}
 		stack = stackResponse.Data
 	} else {
-		if fctl.GetString(cmd, stackNameFlag) == "" {
+		if fctl.GetString(flags, internal.StackNameFlag) == "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stacksResponse, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
+		stacksResponse, _, err := apiClient.DefaultApi.ListStacks(ctx, organization).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing stacks")
 		}
 		for _, s := range stacksResponse.Data {
-			if s.Name == fctl.GetString(cmd, stackNameFlag) {
+			if s.Name == fctl.GetString(flags, internal.StackNameFlag) {
 				stack = &s
 				break
 			}
@@ -105,12 +124,12 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, errStackNotFound
 	}
 
-	stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	stackClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
 
-	versions, err := stackClient.GetVersions(cmd.Context())
+	versions, err := stackClient.GetVersions(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -121,12 +140,20 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 
 	c.store.Stack = stack
 	c.store.Versions = versions.GetVersionsResponse
-	c.config = cfg
+	c.fctlConfig = cfg
 
 	return c, nil
 
 }
 
-func (c *StackShowController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, c.config), c.store.Stack, c.store.Versions)
+func (c *ShowController) Render() error {
+	return internal.PrintStackInformation(c.config.GetOut(), fctl.GetCurrentProfile(c.config.GetAllFLags(), c.fctlConfig), c.store.Stack, c.store.Versions)
+}
+
+func NewShowCommand() *cobra.Command {
+	config := NewShowControllerConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.MaximumNArgs(1)),
+		fctl.WithController[*ShowStore](NewShowController(config)),
+	)
 }

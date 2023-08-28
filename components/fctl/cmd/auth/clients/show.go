@@ -1,65 +1,90 @@
 package clients
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/auth/clients/views"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+)
+
+const (
+	useShow   = "show <client-id>"
+	shortShow = "Show client details"
 )
 
 type ShowStore struct {
 	Client *shared.Client `json:"client,omitempty"`
 }
-type ShowController struct {
-	store *ShowStore
+
+func NewShowStore() *ShowStore {
+	return &ShowStore{}
+}
+
+func NewShowConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useShow, flag.ExitOnError)
+	return fctl.NewControllerConfig(
+		useShow,
+		shortShow,
+		shortShow,
+		[]string{
+			"sh",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 }
 
 var _ fctl.Controller[*ShowStore] = (*ShowController)(nil)
 
-func NewDefaultShowStore() *ShowStore {
-	return &ShowStore{}
+type ShowController struct {
+	store  *ShowStore
+	config *fctl.ControllerConfig
 }
 
-func NewShowController() *ShowController {
+func NewShowController(config *fctl.ControllerConfig) *ShowController {
 	return &ShowController{
-		store: NewDefaultShowStore(),
+		store:  NewShowStore(),
+		config: config,
 	}
-}
-
-func NewShowCommand() *cobra.Command {
-	return fctl.NewCommand("show <client-id>",
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithAliases("s"),
-		fctl.WithShortDescription("Show client"),
-		fctl.WithController[*ShowStore](NewShowController()),
-	)
 }
 
 func (c *ShowController) GetStore() *ShowStore {
 	return c.store
 }
 
-func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ShowController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *ShowController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	authClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	authClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +92,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	request := operations.ReadClientRequest{
 		ClientID: args[0],
 	}
-	response, err := authClient.Auth.ReadClient(cmd.Context(), request)
+	response, err := authClient.Auth.ReadClient(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -81,13 +106,16 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	return c, nil
 }
 
-func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
-
-	views.PrintClient(cmd.OutOrStdout(), c.store.Client)
+func (c *ShowController) Render() error {
+	out := c.config.GetOut()
+	err := views.PrintClient(out, c.store.Client)
+	if err != nil {
+		return errors.Wrap(err, "failed to print client")
+	}
 
 	if len(c.store.Client.RedirectUris) > 0 {
-		fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Redirect URIs :")
-		if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(c.store.Client.RedirectUris, func(redirectURI string) pterm.BulletListItem {
+		fctl.BasicTextCyan.WithWriter(out).Printfln("Redirect URIs :")
+		if err := pterm.DefaultBulletList.WithWriter(out).WithItems(fctl.Map(c.store.Client.RedirectUris, func(redirectURI string) pterm.BulletListItem {
 			return pterm.BulletListItem{
 				Text:        redirectURI,
 				TextStyle:   pterm.NewStyle(pterm.FgDefault),
@@ -99,8 +127,8 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(c.store.Client.PostLogoutRedirectUris) > 0 {
-		fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Post logout redirect URIs :")
-		if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(c.store.Client.PostLogoutRedirectUris, func(redirectURI string) pterm.BulletListItem {
+		fctl.BasicTextCyan.WithWriter(out).Printfln("Post logout redirect URIs :")
+		if err := pterm.DefaultBulletList.WithWriter(out).WithItems(fctl.Map(c.store.Client.PostLogoutRedirectUris, func(redirectURI string) pterm.BulletListItem {
 			return pterm.BulletListItem{
 				Text:        redirectURI,
 				TextStyle:   pterm.NewStyle(pterm.FgDefault),
@@ -112,9 +140,16 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(c.store.Client.Secrets) > 0 {
-		if err := views.PrintSecrets(cmd.OutOrStdout(), c.store.Client.Secrets); err != nil {
+		if err := views.PrintSecrets(out, c.store.Client.Secrets); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+func NewShowCommand() *cobra.Command {
+	config := NewShowConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*ShowStore](NewShowController(config)),
+	)
 }

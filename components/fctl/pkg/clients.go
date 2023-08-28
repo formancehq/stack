@@ -1,43 +1,40 @@
 package fctl
 
 import (
+	"context"
+	"flag"
 	"fmt"
+	"io"
 
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/formancehq/formance-sdk-go"
-	"github.com/spf13/cobra"
 )
 
-func getVersion(cmd *cobra.Command) string {
-	for cmd != nil {
-		if cmd.Version != "" {
-			return cmd.Version
-		}
-		cmd = cmd.Parent()
-	}
-	return "cmd.Version"
-}
+func NewMembershipClient(flags *flag.FlagSet, ctx context.Context, cfg *Config, out io.Writer) (*membershipclient.APIClient, error) {
+	profile := GetCurrentProfile(flags, cfg)
 
-func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*membershipclient.APIClient, error) {
-	profile := GetCurrentProfile(cmd, cfg)
-	httpClient := GetHttpClient(cmd, map[string][]string{})
+	httpClient := GetHttpClient(flags, map[string][]string{}, out)
+
 	configuration := membershipclient.NewConfiguration()
-	token, err := profile.GetToken(cmd.Context(), httpClient)
+
+	token, err := profile.GetToken(ctx, httpClient)
 	if err != nil {
 		return nil, err
 	}
+
 	configuration.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
 	configuration.HTTPClient = httpClient
-	configuration.UserAgent = "fctl/" + getVersion(cmd)
+	configuration.UserAgent = "fctl/" + Version
 	configuration.Servers[0].URL = profile.GetMembershipURI()
+
 	return membershipclient.NewAPIClient(configuration), nil
 }
 
-func NewStackClient(cmd *cobra.Command, cfg *Config, stack *membershipclient.Stack) (*formance.Formance, error) {
-	profile := GetCurrentProfile(cmd, cfg)
-	httpClient := GetHttpClient(cmd, map[string][]string{})
+func NewStackClient(flags *flag.FlagSet, ctx context.Context, cfg *Config, stack *membershipclient.Stack, out io.Writer) (*formance.Formance, error) {
+	profile := GetCurrentProfile(flags, cfg)
+	httpClient := GetHttpClient(flags, map[string][]string{}, out)
 
-	token, err := profile.GetStackToken(cmd.Context(), httpClient, stack)
+	token, err := profile.GetStackToken(ctx, httpClient, stack)
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +42,12 @@ func NewStackClient(cmd *cobra.Command, cfg *Config, stack *membershipclient.Sta
 	return formance.New(
 		formance.WithServerURL(stack.Uri),
 		formance.WithClient(
-			GetHttpClient(cmd, map[string][]string{
+			GetHttpClient(flags, map[string][]string{
 				"Authorization": {fmt.Sprintf("Bearer %s", token)},
-				"User-Agent":    {"fctl/" + getVersion(cmd)},
-			}),
+				"User-Agent":    {"fctl/" + Version},
+			},
+				out,
+			),
 		),
 	), nil
 }

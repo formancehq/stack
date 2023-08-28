@@ -8,22 +8,18 @@ import (
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 )
 
 func printCommonInformation(
 	out io.Writer,
-	txID int64,
-	reference string,
-	postings []*shared.Posting,
-	timestamp time.Time,
+	transaction *ExportTransaction,
 ) error {
 	fctl.Section.WithWriter(out).Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(txID)})
-	tableData = append(tableData, []string{pterm.LightCyan("Reference"), reference})
-	tableData = append(tableData, []string{pterm.LightCyan("Date"), timestamp.Format(time.RFC3339)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(transaction.Info.ID)})
+	tableData = append(tableData, []string{pterm.LightCyan("Reference"), transaction.Info.Reference})
+	tableData = append(tableData, []string{pterm.LightCyan("Date"), transaction.Info.Date.Format(time.RFC3339)})
 
 	if err := pterm.DefaultTable.
 		WithWriter(out).
@@ -35,7 +31,7 @@ func printCommonInformation(
 	fctl.Section.WithWriter(out).Println("Postings")
 	tableData = pterm.TableData{}
 	tableData = append(tableData, []string{"Source", "Destination", "Asset", "Amount"})
-	for _, posting := range postings {
+	for _, posting := range transaction.Postings {
 		tableData = append(tableData, []string{
 			posting.Source, posting.Destination, posting.Asset, fmt.Sprint(posting.Amount),
 		})
@@ -53,14 +49,10 @@ func printCommonInformation(
 	return nil
 }
 
-func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) error {
-
+func PrintExpandedTransaction(out io.Writer, export *ExportTransaction) error {
 	if err := printCommonInformation(
 		out,
-		transaction.Txid,
-		*transaction.Reference,
-		transaction.Postings,
-		transaction.Timestamp,
+		export,
 	); err != nil {
 		return err
 	}
@@ -68,19 +60,17 @@ func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) er
 	fctl.Section.WithWriter(out).Println("Summary")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{"Account", "Asset", "Movement", "Final balance"})
-	for account, postCommitVolume := range transaction.PostCommitVolumes {
-		for asset, volumes := range postCommitVolume {
-			movement := big.NewInt(0)
-			movement = movement.Sub(volumes.Balance, (transaction.PreCommitVolumes)[account][asset].Balance)
-			movementStr := fmt.Sprint(movement)
-			if movement.Cmp(big.NewInt(0)) > 0 {
-				movementStr = "+" + movementStr
-			}
-			tableData = append(tableData, []string{
-				account, asset, movementStr, fmt.Sprint(*volumes.Balance),
-			})
+	for _, summary := range export.Summary {
+		movementStr := fmt.Sprint(summary.Movement)
+		if summary.Movement.Cmp(big.NewInt(0)) > 0 {
+			movementStr = "+" + movementStr
 		}
+
+		tableData = append(tableData, []string{
+			summary.Account, summary.Asset, movementStr, summary.FinalBalance.String(),
+		})
 	}
+
 	if err := pterm.DefaultTable.
 		WithHasHeader(true).
 		WithWriter(out).
@@ -90,25 +80,22 @@ func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) er
 	}
 
 	fmt.Fprintln(out, "")
-	if err := PrintMetadata(out, transaction.Metadata); err != nil {
+	if err := PrintMetadata(out, export.Metadata); err != nil {
 		return err
 	}
 	return nil
 }
 
-func PrintTransaction(out io.Writer, transaction Transaction) error {
+func PrintTransaction(out io.Writer, export *ExportTransaction) error {
 
 	if err := printCommonInformation(
 		out,
-		transaction.Txid,
-		*transaction.Reference,
-		transaction.Postings,
-		transaction.Timestamp,
+		export,
 	); err != nil {
 		return err
 	}
 
-	if err := PrintMetadata(out, transaction.Metadata); err != nil {
+	if err := PrintMetadata(out, export.Metadata); err != nil {
 		return err
 	}
 	return nil
@@ -116,7 +103,7 @@ func PrintTransaction(out io.Writer, transaction Transaction) error {
 func PrintMetadata(out io.Writer, metadata Metadata) error {
 	fctl.Section.WithWriter(out).Println("Metadata")
 	if len(metadata) == 0 {
-		fmt.Println("No metadata.")
+		fmt.Fprintln(out, "No metadata.")
 		return nil
 	}
 	tableData := pterm.TableData{}

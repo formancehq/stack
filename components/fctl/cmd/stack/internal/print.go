@@ -49,7 +49,7 @@ func printInformation(out io.Writer, stack *membershipclient.Stack) error {
 }
 
 func printVersion(out io.Writer, url *url.URL, versions *shared.GetVersionsResponse, stack *membershipclient.Stack) error {
-	fctl.Println()
+	fmt.Fprintln(out)
 	fctl.Section.WithWriter(out).Println("Versions")
 
 	tableData := pterm.TableData{}
@@ -66,7 +66,7 @@ func printVersion(out io.Writer, url *url.URL, versions *shared.GetVersionsRespo
 }
 
 func printMetadata(out io.Writer, stack *membershipclient.Stack) error {
-	fctl.Println()
+
 	fctl.Section.WithWriter(out).Println("Metadata")
 
 	tableData := pterm.TableData{}

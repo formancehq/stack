@@ -1,6 +1,7 @@
 package regions
 
 import (
+	"flag"
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
@@ -9,56 +10,75 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useList   = "list"
+	shortList = "List all private regions"
+)
+
 type ListStore struct {
 	Regions []membershipclient.AnyRegion `json:"regions"`
 }
-type ListController struct {
-	store *ListStore
+
+func NewListStore() *ListStore {
+	return &ListStore{}
+}
+
+func NewListConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
+	return fctl.NewControllerConfig(
+		useList,
+		shortList,
+		shortList,
+		[]string{
+			"ls", "l",
+		},
+		flags,
+		fctl.Organization,
+	)
 }
 
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
-func NewDefaultListStore() *ListStore {
-	return &ListStore{}
+type ListController struct {
+	store  *ListStore
+	config *fctl.ControllerConfig
 }
 
-func NewListController() *ListController {
+func NewListController(config *fctl.ControllerConfig) *ListController {
 	return &ListController{
-		store: NewDefaultListStore(),
+		store:  NewListStore(),
+		config: config,
 	}
-}
-
-func NewListCommand() *cobra.Command {
-	return fctl.NewCommand("list",
-		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithAliases("ls", "l"),
-		fctl.WithShortDescription("List users"),
-		fctl.WithController[*ListStore](NewListController()),
-	)
 }
 
 func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *ListController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	regionsResponse, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organizationID).Execute()
+	regionsResponse, _, err := apiClient.DefaultApi.ListRegions(ctx, organizationID).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +88,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	return c, nil
 }
 
-func (c *ListController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render() error {
 	tableData := fctl.Map(c.store.Regions, func(i membershipclient.AnyRegion) []string {
 		return []string{
 			i.Id,
@@ -93,7 +113,16 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Base url", "Public", "Active", "Last ping", "Owner"})
 	return pterm.DefaultTable.
 		WithHasHeader().
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
+}
+
+func NewListCommand() *cobra.Command {
+
+	config := NewListConfig()
+	return fctl.NewCommand("list",
+		fctl.WithArgs(cobra.ExactArgs(0)),
+		fctl.WithController[*ListStore](NewListController(config)),
+	)
 }

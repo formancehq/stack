@@ -1,9 +1,16 @@
 package invitations
 
 import (
+	"flag"
+
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+)
+
+const (
+	useSend   = "send <email>"
+	shortSend = "Invite a user by email"
 )
 
 type InvitationSend struct {
@@ -13,60 +20,75 @@ type InvitationSend struct {
 type SendStore struct {
 	Invitation InvitationSend `json:"invitation"`
 }
-type SendController struct {
-	store *SendStore
-}
 
-var _ fctl.Controller[*SendStore] = (*SendController)(nil)
-
-func NewDefaultSendStore() *SendStore {
+func NewSendStore() *SendStore {
 	return &SendStore{
 		Invitation: InvitationSend{},
 	}
 }
+func NewSendConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useSend, flag.ExitOnError)
+	fctl.WithConfirmFlag(flags)
 
-func NewSendController() *SendController {
-	return &SendController{
-		store: NewDefaultSendStore(),
-	}
+	return fctl.NewControllerConfig(
+		useSend,
+		shortSend,
+		shortSend,
+		[]string{},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 }
 
-func NewSendCommand() *cobra.Command {
-	return fctl.NewCommand("send <email>",
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithShortDescription("Invite a user by email"),
-		fctl.WithAliases("s"),
-		fctl.WithConfirmFlag(),
-		fctl.WithController[*SendStore](NewSendController()),
-	)
+var _ fctl.Controller[*SendStore] = (*SendController)(nil)
+
+type SendController struct {
+	store  *SendStore
+	config *fctl.ControllerConfig
+}
+
+func NewSendController(config *fctl.ControllerConfig) *SendController {
+	return &SendController{
+		store:  NewSendStore(),
+		config: config,
+	}
 }
 
 func (c *SendController) GetStore() *SendStore {
 	return c.store
 }
 
-func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *SendController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *SendController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckOrganizationApprobation(cmd, "You are about to send an invitation") {
+	if !fctl.CheckOrganizationApprobation(flags, "You are about to send an invitation") {
 		return nil, fctl.ErrMissingApproval
 	}
 
 	_, _, err = apiClient.DefaultApi.
-		CreateInvitation(cmd.Context(), organizationID).
+		CreateInvitation(ctx, organizationID).
 		Email(args[0]).
 		Execute()
 	if err != nil {
@@ -78,8 +100,17 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	return c, nil
 }
 
-func (c *SendController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Invitation sent to %s", c.store.Invitation.Email)
+func (c *SendController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Invitation sent to %s", c.store.Invitation.Email)
 	return nil
 
+}
+
+func NewSendCommand() *cobra.Command {
+
+	config := NewSendConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*SendStore](NewSendController(config)),
+	)
 }

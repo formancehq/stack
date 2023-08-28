@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 
@@ -17,72 +18,91 @@ const (
 	unprotectFlag = "unprotect"
 	regionFlag    = "region"
 	nowaitFlag    = "no-wait"
+	useCreate     = "create [name]"
+	shortCreate   = "Create a new stack"
 )
 
-type StackCreateStore struct {
-	Stack    *membershipclient.Stack
-	Versions *shared.GetVersionsResponse
+type CreateStore struct {
+	Stack    *membershipclient.Stack     `json:"stack"`
+	Versions *shared.GetVersionsResponse `json:"versions"`
 }
 
-type StackCreateController struct {
-	store   *StackCreateStore
-	profile *fctl.Profile
-}
-
-var _ fctl.Controller[*StackCreateStore] = (*StackCreateController)(nil)
-
-func NewDefaultStackCreateStore() *StackCreateStore {
-	return &StackCreateStore{
+func NewCreateStore() *CreateStore {
+	return &CreateStore{
 		Stack:    &membershipclient.Stack{},
 		Versions: &shared.GetVersionsResponse{},
 	}
 }
-func NewStackCreateController() *StackCreateController {
-	return &StackCreateController{
-		store: NewDefaultStackCreateStore(),
+
+func NewStackConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useCreate, flag.ExitOnError)
+	flags.Bool(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)")
+	flags.String(regionFlag, "", "Region on which deploy the stack")
+	flags.Bool(nowaitFlag, false, "Not wait stack availability")
+
+	return fctl.NewControllerConfig(
+		useCreate,
+		shortCreate,
+		shortCreate,
+		[]string{
+			"cr",
+			"c",
+		},
+		flags,
+		fctl.Organization,
+	)
+}
+
+var _ fctl.Controller[*CreateStore] = (*CreateController)(nil)
+
+type CreateController struct {
+	store   *CreateStore
+	profile *fctl.Profile
+	config  *fctl.ControllerConfig
+}
+
+func NewStackController(config *fctl.ControllerConfig) *CreateController {
+	return &CreateController{
+		store:  NewCreateStore(),
+		config: config,
 	}
 }
 
-func NewCreateCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("create [name]",
-		fctl.WithShortDescription("Create a new stack"),
-		fctl.WithAliases("c", "cr"),
-		fctl.WithArgs(cobra.RangeArgs(0, 1)),
-		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
-		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
-		fctl.WithBoolFlag(nowaitFlag, false, "Not wait stack availability"),
-		fctl.WithController[*StackCreateStore](NewStackCreateController()),
-	)
-}
-func (c *StackCreateController) GetStore() *StackCreateStore {
+func (c *CreateController) GetStore() *CreateStore {
 	return c.store
 }
 
-func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *CreateController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *CreateController) Run() (fctl.Renderable, error) {
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organization, err := fctl.ResolveOrganizationID(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	apiClient, err := fctl.NewMembershipClient(flags, ctx, cfg, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	protected := !fctl.GetBool(cmd, unprotectFlag)
+	protected := !fctl.GetBool(flags, unprotectFlag)
 	metadata := map[string]string{
 		fctl.ProtectedStackMetadata: fctl.BoolPointerToString(&protected),
 	}
 
 	name := ""
-	if len(args) > 0 {
-		name = args[0]
+	if len(c.config.GetArgs()) > 0 {
+		name = c.config.GetArgs()[0]
 	} else {
 		name, err = pterm.DefaultInteractiveTextInput.WithMultiLine(false).Show("Enter a name")
 		if err != nil {
@@ -90,9 +110,9 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		}
 	}
 
-	region := fctl.GetString(cmd, regionFlag)
+	region := fctl.GetString(flags, regionFlag)
 	if region == "" {
-		regions, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
+		regions, _, err := apiClient.DefaultApi.ListRegions(ctx, organization).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing regions")
 		}
@@ -123,7 +143,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		}
 	}
 
-	stackResponse, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).CreateStackRequest(membershipclient.CreateStackRequest{
+	stackResponse, _, err := apiClient.DefaultApi.CreateStack(ctx, organization).CreateStackRequest(membershipclient.CreateStackRequest{
 		Name:     name,
 		Metadata: metadata,
 		RegionID: region,
@@ -132,32 +152,34 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, errors.Wrap(err, "creating stack")
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
+	profile := fctl.GetCurrentProfile(flags, cfg)
 
-	if !fctl.GetBool(cmd, nowaitFlag) {
-		spinner, err := pterm.DefaultSpinner.Start("Waiting services availability")
-		if err != nil {
+	if !fctl.GetBool(flags, nowaitFlag) {
+		var spinner *pterm.SpinnerPrinter
+		if fctl.GetString(flags, fctl.OutputFlag) == "plain" {
+			spinner, err = pterm.DefaultSpinner.Start("Waiting services availability")
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if err := waitStackReady(ctx, c.config.GetOut(), flags, profile, stackResponse.Data); err != nil {
 			return nil, err
 		}
 
-		if err := waitStackReady(cmd, profile, stackResponse.Data); err != nil {
-			return nil, err
-		}
-
-		if err := spinner.Stop(); err != nil {
-			return nil, err
+		if spinner != nil {
+			if err := spinner.Stop(); err != nil {
+				return nil, err
+			}
 		}
 	}
 
-	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Your dashboard will be reachable on: %s",
-		profile.ServicesBaseUrl(stackResponse.Data).String())
-
-	stackClient, err := fctl.NewStackClient(cmd, cfg, stackResponse.Data)
+	stackClient, err := fctl.NewStackClient(flags, ctx, cfg, stackResponse.Data, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	versions, err := stackClient.GetVersions(cmd.Context())
+	versions, err := stackClient.GetVersions(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -172,6 +194,18 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	return c, nil
 }
 
-func (c *StackCreateController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintStackInformation(cmd.OutOrStdout(), c.profile, c.store.Stack, c.store.Versions)
+func (c *CreateController) Render() error {
+	fctl.BasicTextCyan.WithWriter(c.config.GetOut()).Printfln("Your dashboard will be reachable on: %s",
+		c.profile.ServicesBaseUrl(c.store.Stack).String())
+	return internal.PrintStackInformation(c.config.GetOut(), c.profile, c.store.Stack, c.store.Versions)
+}
+
+func NewCreateCommand() *cobra.Command {
+
+	config := NewStackConfig()
+
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.RangeArgs(0, 1)),
+		fctl.WithController[*CreateStore](NewStackController(config)),
+	)
 }

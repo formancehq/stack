@@ -14,5 +14,6 @@ func NewCommand() *cobra.Command {
 			NewAcceptCommand(),
 			NewDeclineCommand(),
 		),
+		fctl.WithCommandScopesFlags(fctl.Organization, fctl.Stack),
 	)
 }

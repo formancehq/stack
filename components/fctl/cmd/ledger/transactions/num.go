@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"flag"
 	"fmt"
 	"math/big"
 	"strings"
@@ -13,106 +14,119 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	amountVarFlag  = "amount-var"
+	portionVarFlag = "portion-var"
+	accountVarFlag = "account-var"
+	timestampFlag  = "timestamp"
+)
+
+const (
+	useNum         = "num -|<filename>"
+	shortNum       = "Execute a numscript script on a ledger"
+	descriptionNum = `More help on variables can be found here: https://docs.formance.com/oss/ledger/reference/numscript/variables`
+)
+
 type NumStore struct {
-	Transaction *internal.Transaction `json:"transaction"`
+	Transaction *internal.ExportTransaction `json:"transaction"`
 }
-type NumController struct {
-	store          *NumStore
-	amountVarFlag  string
-	portionVarFlag string
-	accountVarFlag string
-	metadataFlag   string
-	referenceFlag  string
-	timestampFlag  string
+
+func NewNumStore() *NumStore {
+	return &NumStore{}
+}
+func NewNumConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
+	fctl.WithConfirmFlag(flags)
+	flags.String(amountVarFlag, "", "Pass a variable of type 'amount'")
+	flags.String(portionVarFlag, "", "Pass a variable of type 'portion'")
+	flags.String(accountVarFlag, "", "Pass a variable of type 'account'")
+	flags.String(timestampFlag, "", "Timestamp to use (format RFC3339)")
+	flags.String(internal.ReferenceFlag, "", "Reference to add to the generated transaction")
+	flags.String(internal.MetadataFlag, "", "Filter accounts with metadata") //  experimental feature: Should be hidden
+	return fctl.NewControllerConfig(
+		useNum,
+		descriptionNum,
+		shortNum,
+		[]string{},
+		flags,
+		fctl.Organization, fctl.Stack, fctl.Ledger,
+	)
 }
 
 var _ fctl.Controller[*NumStore] = (*NumController)(nil)
 
-func NewDefaultNumStore() *NumStore {
-	return &NumStore{}
+type NumController struct {
+	store  *NumStore
+	config *fctl.ControllerConfig
 }
 
-func NewNumController() *NumController {
+func NewNumController(config *fctl.ControllerConfig) *NumController {
 	return &NumController{
-		store:          NewDefaultNumStore(),
-		amountVarFlag:  "amount-var",
-		portionVarFlag: "portion-var",
-		accountVarFlag: "account-var",
-		metadataFlag:   "metadata",
-		referenceFlag:  "reference",
-		timestampFlag:  "timestamp",
+		store:  NewNumStore(),
+		config: config,
 	}
-}
-
-func NewNumCommand() *cobra.Command {
-	c := NewNumController()
-
-	return fctl.NewCommand("num -|<filename>",
-		fctl.WithShortDescription("Execute a numscript script on a ledger"),
-		fctl.WithDescription(`More help on variables can be found here: https://docs.formance.com/oss/ledger/reference/numscript/variables`),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithConfirmFlag(),
-		fctl.WithStringSliceFlag(c.amountVarFlag, []string{""}, "Pass a variable of type 'amount'"),
-		fctl.WithStringSliceFlag(c.portionVarFlag, []string{""}, "Pass a variable of type 'portion'"),
-		fctl.WithStringSliceFlag(c.accountVarFlag, []string{""}, "Pass a variable of type 'account'"),
-		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
-		fctl.WithStringFlag(c.timestampFlag, "", "Timestamp to use (format RFC3339)"),
-		fctl.WithStringFlag(c.referenceFlag, "", "Reference to add to the generated transaction"),
-		fctl.WithController[*NumStore](c),
-	)
 }
 
 func (c *NumController) GetStore() *NumStore {
 	return c.store
 }
 
-func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *NumController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *NumController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	script, err := fctl.ReadFile(cmd, stack, args[0])
+	script, err := fctl.ReadFile(flags, stack, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to apply a numscript") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to apply a numscript") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
 
 	vars := map[string]interface{}{}
-	for _, v := range fctl.GetStringSlice(cmd, c.accountVarFlag) {
+	for _, v := range fctl.GetStringSlice(flags, accountVarFlag) {
 		parts := strings.SplitN(v, "=", 2)
 		if len(parts) == 1 {
 			return nil, fmt.Errorf("malformed var: %s", v)
 		}
 		vars[parts[0]] = parts[1]
 	}
-	for _, v := range fctl.GetStringSlice(cmd, c.portionVarFlag) {
+	for _, v := range fctl.GetStringSlice(flags, portionVarFlag) {
 		parts := strings.SplitN(v, "=", 2)
 		if len(parts) == 1 {
 			return nil, fmt.Errorf("malformed var: %s", v)
 		}
 		vars[parts[0]] = parts[1]
 	}
-	for _, v := range fctl.GetStringSlice(cmd, c.amountVarFlag) {
+	for _, v := range fctl.GetStringSlice(flags, amountVarFlag) {
 		parts := strings.SplitN(v, "=", 2)
 		if len(parts) == 1 {
 			return nil, fmt.Errorf("malformed var: %s", v)
@@ -134,7 +148,7 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 		}
 	}
 
-	timestampStr := fctl.GetString(cmd, c.timestampFlag)
+	timestampStr := fctl.GetString(flags, timestampFlag)
 	var (
 		timestamp time.Time
 	)
@@ -145,16 +159,16 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 		}
 	}
 
-	reference := fctl.GetString(cmd, c.referenceFlag)
+	reference := fctl.GetString(flags, internal.ReferenceFlag)
 
-	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
+	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(flags, fctl.MetadataFlag))
 	if err != nil {
 		return nil, err
 	}
 
-	ledger := fctl.GetString(cmd, internal.LedgerFlag)
+	ledger := fctl.GetString(flags, internal.LedgerFlag)
 
-	tx, err := internal.CreateTransaction(client, cmd.Context(), operations.CreateTransactionRequest{
+	tx, err := internal.CreateTransaction(client, ctx, operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata:  metadata,
 			Reference: &reference,
@@ -175,12 +189,19 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 		return nil, err
 	}
 
-	c.store.Transaction = tx
+	c.store.Transaction = internal.NewExportTransaction(tx)
 
 	return c, nil
 }
 
-func (c *NumController) Render(cmd *cobra.Command, args []string) error {
+func (c *NumController) Render() error {
+	return internal.PrintTransaction(c.config.GetOut(), c.store.Transaction)
+}
 
-	return internal.PrintTransaction(cmd.OutOrStdout(), *c.store.Transaction)
+func NewNumCommand() *cobra.Command {
+	c := NewNumConfig()
+	return fctl.NewCommand(c.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*NumStore](NewNumController(c)),
+	)
 }

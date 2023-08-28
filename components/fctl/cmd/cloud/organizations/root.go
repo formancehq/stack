@@ -7,7 +7,7 @@ import (
 )
 
 func NewCommand() *cobra.Command {
-	return fctl.NewStackCommand("organizations",
+	return fctl.NewCommand("organizations",
 		fctl.WithAliases("org", "o"),
 		fctl.WithShortDescription("Organizations management"),
 		fctl.WithChildCommands(
@@ -16,5 +16,6 @@ func NewCommand() *cobra.Command {
 			NewDeleteCommand(),
 			invitations.NewCommand(),
 		),
+		fctl.WithCommandScopesFlags(fctl.Organization, fctl.Stack),
 	)
 }

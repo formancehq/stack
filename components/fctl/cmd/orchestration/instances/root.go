@@ -6,7 +6,7 @@ import (
 )
 
 func NewCommand() *cobra.Command {
-	return fctl.NewStackCommand("instances",
+	return fctl.NewCommand("instances",
 		fctl.WithAliases("ins", "i"),
 		fctl.WithShortDescription("Instances management"),
 		fctl.WithChildCommands(
@@ -16,5 +16,6 @@ func NewCommand() *cobra.Command {
 			NewSendEventCommand(),
 			NewStopCommand(),
 		),
+		fctl.WithCommandScopesFlags(fctl.Organization, fctl.Stack),
 	)
 }

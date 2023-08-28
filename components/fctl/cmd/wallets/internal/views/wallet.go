@@ -10,7 +10,7 @@ import (
 )
 
 func PrintWallet(out io.Writer, wallet shared.WalletWithBalances) error {
-	fctl.Section.Println("Information")
+	fctl.Section.WithWriter(out).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(wallet.ID)})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), wallet.Name})
@@ -22,9 +22,9 @@ func PrintWallet(out io.Writer, wallet shared.WalletWithBalances) error {
 		return err
 	}
 
-	fctl.Section.Println("Balances")
+	fctl.Section.WithWriter(out).Println("Balances")
 	if len(wallet.Balances.Main.Assets) == 0 {
-		fctl.Println("No balances found.")
+		fmt.Fprintln(out, "No balances found.")
 		return nil
 	}
 	tableData = pterm.TableData{}
@@ -39,6 +39,8 @@ func PrintWallet(out io.Writer, wallet shared.WalletWithBalances) error {
 		Render(); err != nil {
 		return err
 	}
+
+	fmt.Fprintln(out, "")
 
 	return nil
 }

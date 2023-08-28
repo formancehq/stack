@@ -9,11 +9,10 @@ var (
 	StyleRed   = pterm.NewStyle(pterm.FgLightRed)
 	StyleCyan  = pterm.NewStyle(pterm.FgLightCyan)
 
-	BasicText      = pterm.DefaultBasicText
-	BasicTextGreen = pterm.DefaultBasicText.WithStyle(StyleGreen)
-	BasicTextRed   = pterm.DefaultBasicText.WithStyle(StyleRed)
-	BasicTextCyan  = pterm.DefaultBasicText.WithStyle(StyleCyan)
-	Section        = pterm.SectionPrinter{
+	BasicText     = pterm.DefaultBasicText
+	BasicTextRed  = pterm.DefaultBasicText.WithStyle(StyleRed)
+	BasicTextCyan = pterm.DefaultBasicText.WithStyle(StyleCyan)
+	Section       = pterm.SectionPrinter{
 		Style:           &pterm.ThemeDefault.SectionStyle,
 		Level:           1,
 		TopPadding:      0,

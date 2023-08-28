@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewLedgerAccountsCommand() *cobra.Command {
+func NewCommand() *cobra.Command {
 	return fctl.NewCommand("accounts",
 		fctl.WithAliases("acc", "a", "ac", "account"),
 		fctl.WithShortDescription("Accounts management"),
@@ -14,5 +14,6 @@ func NewLedgerAccountsCommand() *cobra.Command {
 			NewShowCommand(),
 			NewSetMetadataCommand(),
 		),
+		fctl.WithCommandScopesFlags(fctl.Organization, fctl.Stack, fctl.Ledger),
 	)
 }

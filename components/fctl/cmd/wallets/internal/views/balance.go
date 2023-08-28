@@ -10,7 +10,7 @@ import (
 )
 
 func PrintBalance(out io.Writer, balance shared.BalanceWithAssets) error {
-	fctl.Section.Println("Information")
+	fctl.Section.WithWriter(out).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), balance.Name})
 
@@ -21,9 +21,9 @@ func PrintBalance(out io.Writer, balance shared.BalanceWithAssets) error {
 		return err
 	}
 
-	fctl.Section.Println("Assets")
+	fctl.Section.WithWriter(out).Println("Assets")
 	if len(balance.Assets) == 0 {
-		fctl.Println("No assets found.")
+		fmt.Fprintln(out, "No assets found.")
 		return nil
 	}
 	tableData = pterm.TableData{}

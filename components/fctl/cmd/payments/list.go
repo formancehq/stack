@@ -1,6 +1,7 @@
 package payments
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
@@ -11,55 +12,87 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PaymentsListStore struct {
+const (
+	useList         = "list"
+	descriptionList = "List all payments"
+	shortList       = "List all payments"
+)
+
+type ListStore struct {
 	Cursor *shared.PaymentsCursorCursor `json:"cursor"`
 }
-type PaymentsListController struct {
-	store *PaymentsListStore
-}
 
-var _ fctl.Controller[*PaymentsListStore] = (*PaymentsListController)(nil)
-
-func NewDefaultPaymentsListStore() *PaymentsListStore {
-	return &PaymentsListStore{
+func NewListStore() *ListStore {
+	return &ListStore{
 		Cursor: &shared.PaymentsCursorCursor{},
 	}
 }
 
-func NewPaymentsListController() *PaymentsListController {
-	return &PaymentsListController{
-		store: NewDefaultPaymentsListStore(),
+func NewListConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useList, flag.ExitOnError)
+
+	return fctl.NewControllerConfig(
+		useList,
+		descriptionList,
+		shortList,
+		[]string{
+			"list",
+			"ls",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+}
+
+var _ fctl.Controller[*ListStore] = (*ListController)(nil)
+
+type ListController struct {
+	store  *ListStore
+	config *fctl.ControllerConfig
+}
+
+func NewListController(config *fctl.ControllerConfig) *ListController {
+	return &ListController{
+		store:  NewListStore(),
+		config: config,
 	}
 }
 
-func (c *PaymentsListController) GetStore() *PaymentsListStore {
+func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
+func (c *ListController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-func (c *PaymentsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListController) Run() (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
 
 	response, err := client.Payments.ListPayments(
-		cmd.Context(),
+		ctx,
 		operations.ListPaymentsRequest{},
 	)
 	if err != nil {
@@ -75,7 +108,7 @@ func (c *PaymentsListController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	return c, nil
 }
 
-func (c *PaymentsListController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render() error {
 	tableData := fctl.Map(c.store.Cursor.Data, func(payment shared.Payment) []string {
 		return []string{
 			payment.ID,
@@ -95,16 +128,17 @@ func (c *PaymentsListController) Render(cmd *cobra.Command, args []string) error
 		"Scheme", "Reference", "Source Account ID", "Destination Account ID", "Provider", "Created at"})
 	return pterm.DefaultTable.
 		WithHasHeader().
-		WithWriter(cmd.OutOrStdout()).
+		WithWriter(c.config.GetOut()).
 		WithData(tableData).
 		Render()
 }
 
 func NewListPaymentsCommand() *cobra.Command {
-	return fctl.NewCommand("list",
-		fctl.WithAliases("ls"),
+
+	config := NewListConfig()
+
+	return fctl.NewCommand(config.GetUse(),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithShortDescription("List payments"),
-		fctl.WithController[*PaymentsListStore](NewPaymentsListController()),
+		fctl.WithController[*ListStore](NewListController(config)),
 	)
 }

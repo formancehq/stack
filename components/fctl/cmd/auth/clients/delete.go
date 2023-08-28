@@ -1,6 +1,7 @@
 package clients
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -9,61 +10,83 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	useDelete   = "delete <client-id>"
+	shortDelete = "Delete client with id"
+)
+
 type DeleteStore struct {
 	Success bool `json:"success"`
 }
-type DeleteController struct {
-	store *DeleteStore
+
+func NewDeleteStore() *DeleteStore {
+	return &DeleteStore{}
+}
+
+func NewDeleteConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useDelete, flag.ExitOnError)
+
+	fctl.WithConfirmFlag(flags)
+	return fctl.NewControllerConfig(
+		useDelete,
+		shortDelete,
+		shortDelete,
+		[]string{
+			"del", "d",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
 }
 
 var _ fctl.Controller[*DeleteStore] = (*DeleteController)(nil)
 
-func NewDefaultDeleteStore() *DeleteStore {
-	return &DeleteStore{}
+type DeleteController struct {
+	store  *DeleteStore
+	config *fctl.ControllerConfig
 }
 
-func NewDeleteController() *DeleteController {
+func NewDeleteController(config *fctl.ControllerConfig) *DeleteController {
 	return &DeleteController{
-		store: NewDefaultDeleteStore(),
+		store:  NewDeleteStore(),
+		config: config,
 	}
-}
-
-func NewDeleteCommand() *cobra.Command {
-	return fctl.NewCommand("delete <client-id>",
-		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithAliases("d", "del"),
-		fctl.WithShortDescription("Delete client"),
-		fctl.WithController[*DeleteStore](NewDeleteController()),
-	)
 }
 
 func (c *DeleteController) GetStore() *DeleteStore {
 	return c.store
 }
 
-func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *DeleteController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
 
-	cfg, err := fctl.GetConfig(cmd)
+func (c *DeleteController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete an OAuth2 client") {
+	if !fctl.CheckStackApprobation(flags, stack, "You are about to delete an OAuth2 client") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	authClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	authClient, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +94,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	request := operations.DeleteClientRequest{
 		ClientID: args[0],
 	}
-	response, err := authClient.Auth.DeleteClient(cmd.Context(), request)
+	response, err := authClient.Auth.DeleteClient(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +108,16 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	return c, nil
 }
 
-func (c *DeleteController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Client deleted!")
+func (c *DeleteController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Client deleted!")
 	return nil
+}
+
+func NewDeleteCommand() *cobra.Command {
+
+	config := NewDeleteConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*DeleteStore](NewDeleteController(config)),
+	)
 }

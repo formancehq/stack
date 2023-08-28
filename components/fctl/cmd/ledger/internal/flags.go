@@ -1,5 +1,7 @@
 package internal
 
 const (
-	LedgerFlag = "ledger"
+	LedgerFlag    = "ledger"
+	MetadataFlag  = "metadata"
+	ReferenceFlag = "reference"
 )

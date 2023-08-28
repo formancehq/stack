@@ -12,9 +12,9 @@ builds:
   - binary: fctl
     id: fctl
     ldflags:
-      - -X github.com/formancehq/fctl/cmd/version.BuildDate={{ .Date }}
-      - -X github.com/formancehq/fctl/cmd/version.Version={{ .Version }}
-      - -X github.com/formancehq/fctl/cmd/version.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/fctl/pkg.BuildDate={{ .Date }}
+      - -X github.com/formancehq/fctl/pkg.Version={{ .Version }}
+      - -X github.com/formancehq/fctl/pkg.Commit={{ .ShortCommit }}
       - -X github.com/formancehq/fctl/pkg.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
       - -extldflags "-static"
     env:

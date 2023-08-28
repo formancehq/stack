@@ -1,6 +1,7 @@
 package workflows
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -10,61 +11,87 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type WorkflowsDeleteStore struct {
+const (
+	useDelete   = "delete <workflow-id>"
+	shortDelete = "Delete a workflow"
+)
+
+type DeleteStore struct {
 	WorkflowId string `json:"workflowId"`
 	Success    bool   `json:"success"`
 }
-type WorkflowsDeleteController struct {
-	store *WorkflowsDeleteStore
+
+func NewDeleteStore() *DeleteStore {
+	return &DeleteStore{}
 }
 
-var _ fctl.Controller[*WorkflowsDeleteStore] = (*WorkflowsDeleteController)(nil)
+func NewDeleteConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useDelete, flag.ExitOnError)
 
-func NewDefaultWorkflowsDeleteStore() *WorkflowsDeleteStore {
-	return &WorkflowsDeleteStore{}
+	c := fctl.NewControllerConfig(
+		useDelete,
+		shortDelete,
+		shortDelete,
+		[]string{
+			"del", "d",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+	return c
 }
 
-func NewWorkflowsDeleteController() *WorkflowsDeleteController {
-	return &WorkflowsDeleteController{
-		store: NewDefaultWorkflowsDeleteStore(),
+type DeleteController struct {
+	store  *DeleteStore
+	config *fctl.ControllerConfig
+}
+
+var _ fctl.Controller[*DeleteStore] = (*DeleteController)(nil)
+
+func NewDeleteController(config *fctl.ControllerConfig) *DeleteController {
+	return &DeleteController{
+		store:  NewDeleteStore(),
+		config: config,
 	}
 }
-func NewDeleteCommand() *cobra.Command {
-	return fctl.NewCommand("delete <workflow-id>",
-		fctl.WithAliases("del", "d"),
-		fctl.WithShortDescription("Soft delete a workflow"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*WorkflowsDeleteStore](NewWorkflowsDeleteController()),
-	)
-}
 
-func (c *WorkflowsDeleteController) GetStore() *WorkflowsDeleteStore {
+func (c *DeleteController) GetStore() *DeleteStore {
 	return c.store
 }
 
-func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
+func (c *DeleteController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *DeleteController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+	out := c.config.GetOut()
+	cfg, err := fctl.GetConfig(flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving config")
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(flags, ctx, cfg, out)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(flags, ctx, cfg, organizationID, out)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(flags, ctx, cfg, stack, out)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	response, err := client.Orchestration.DeleteWorkflow(
-		cmd.Context(),
+		ctx,
 		operations.DeleteWorkflowRequest{
 			FlowID: args[0],
 		},
@@ -88,7 +115,15 @@ func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl
 	return c, nil
 }
 
-func (c *WorkflowsDeleteController) Render(cmd *cobra.Command, args []string) error {
+func (c *DeleteController) Render() error {
 	pterm.Success.WithShowLineNumber().Printfln("Workflow %s Deleted!", c.store.WorkflowId)
 	return nil
+}
+
+func NewDeleteCommand() *cobra.Command {
+	config := NewDeleteConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithController[*DeleteStore](NewDeleteController(config)),
+	)
 }

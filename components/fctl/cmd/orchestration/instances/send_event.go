@@ -1,6 +1,7 @@
 package instances
 
 import (
+	"flag"
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -10,54 +11,80 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type InstancesSendEventStore struct {
+const (
+	useSendEvent   = "send-event <instance-id> <event>"
+	shortSendEvent = "Send an event to an instance"
+)
+
+type SendEventStore struct {
 	Success    bool   `json:"success"`
 	InstanceID string `json:"instanceId"`
 	Event      string `json:"event"`
 }
-type InstancesSendEventController struct {
-	store *InstancesSendEventStore
+
+func NewSendEventConfig() *fctl.ControllerConfig {
+	flags := flag.NewFlagSet(useSendEvent, flag.ExitOnError)
+
+	c := fctl.NewControllerConfig(
+		useSendEvent,
+		shortSendEvent,
+		shortSendEvent,
+		[]string{
+			"se",
+		},
+		flags,
+		fctl.Organization, fctl.Stack,
+	)
+
+	return c
 }
 
-var _ fctl.Controller[*InstancesSendEventStore] = (*InstancesSendEventController)(nil)
+type SendEventController struct {
+	store  *SendEventStore
+	config *fctl.ControllerConfig
+}
 
-func NewDefaultInstancesSendEventStore() *InstancesSendEventStore {
-	return &InstancesSendEventStore{
+var _ fctl.Controller[*SendEventStore] = (*SendEventController)(nil)
+
+func NewSendEventStore() *SendEventStore {
+	return &SendEventStore{
 		Success:    false,
 		InstanceID: "",
 		Event:      "",
 	}
 }
 
-func NewInstancesSendEventController() *InstancesSendEventController {
-	return &InstancesSendEventController{
-		store: NewDefaultInstancesSendEventStore(),
+func NewSendEventController(config *fctl.ControllerConfig) *SendEventController {
+	return &SendEventController{
+		store:  NewSendEventStore(),
+		config: config,
 	}
 }
 
-func NewSendEventCommand() *cobra.Command {
-	return fctl.NewCommand("send-event <instance-id> <event>",
-		fctl.WithShortDescription("Send an event to an instance"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithController[*InstancesSendEventStore](NewInstancesSendEventController()),
-	)
-}
-
-func (c *InstancesSendEventController) GetStore() *InstancesSendEventStore {
+func (c *SendEventController) GetStore() *SendEventStore {
 	return c.store
 }
 
-func (c *InstancesSendEventController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
+func (c *SendEventController) GetConfig() *fctl.ControllerConfig {
+	return c.config
+}
+
+func (c *SendEventController) Run() (fctl.Renderable, error) {
+
+	flags := c.config.GetAllFLags()
+	ctx := c.config.GetContext()
+	args := c.config.GetArgs()
+
+	soc, err := fctl.GetStackOrganizationConfig(flags, ctx, c.config.GetOut())
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
+	client, err := fctl.NewStackClient(flags, ctx, soc.Config, soc.Stack, c.config.GetOut())
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
 	}
-	response, err := client.Orchestration.SendEvent(cmd.Context(), operations.SendEventRequest{
+	response, err := client.Orchestration.SendEvent(ctx, operations.SendEventRequest{
 		RequestBody: &operations.SendEventRequestBody{
 			Name: args[1],
 		},
@@ -83,7 +110,15 @@ func (c *InstancesSendEventController) Run(cmd *cobra.Command, args []string) (f
 	return c, nil
 }
 
-func (c *InstancesSendEventController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Event '%s' sent", args[1])
+func (c *SendEventController) Render() error {
+	pterm.Success.WithWriter(c.config.GetOut()).Printfln("Event '%s' sent", c.config.GetArgs()[1])
 	return nil
+}
+
+func NewSendEventCommand() *cobra.Command {
+	config := NewSendEventConfig()
+	return fctl.NewCommand(config.GetUse(),
+		fctl.WithArgs(cobra.ExactArgs(2)),
+		fctl.WithController[*SendEventStore](NewSendEventController(config)),
+	)
 }
