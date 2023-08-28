@@ -34,7 +34,11 @@ func init() {
 							}
 
 							// Strategy
-							env = env.Append(modules.Env("LOCKING_STRATEGY", resolveContext.Configuration.Spec.Services.Ledger.Locking.Strategy))
+							strategy := "memory"
+							if resolveContext.Configuration.Spec.Services.Ledger.Locking.Strategy != "" {
+								strategy = resolveContext.Configuration.Spec.Services.Ledger.Locking.Strategy
+							}
+							env = env.Append(modules.Env("LOCKING_STRATEGY", strategy))
 							if resolveContext.Configuration.Spec.Services.Ledger.Locking.Redis != nil {
 								redisConfiguration := resolveContext.Configuration.Spec.Services.Ledger.Locking.Redis
 								env = env.Append(
