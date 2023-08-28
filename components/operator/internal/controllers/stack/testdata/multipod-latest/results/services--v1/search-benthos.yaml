@@ -6,9 +6,9 @@ metadata:
     name: search-benthos
     namespace: multipod-latest
 spec:
-    clusterIP: 10.0.0.27
+    clusterIP: 10.0.0.223
     clusterIPs:
-        - 10.0.0.27
+        - 10.0.0.223
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

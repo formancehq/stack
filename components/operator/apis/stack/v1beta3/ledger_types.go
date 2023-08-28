@@ -5,6 +5,7 @@ import (
 )
 
 type LockingStrategyRedisConfig struct {
+	// +optional
 	Uri string `json:"uri,omitempty"`
 	// +optional
 	TLS bool `json:"tls"`

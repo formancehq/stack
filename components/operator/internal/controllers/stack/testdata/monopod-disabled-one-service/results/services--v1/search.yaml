@@ -6,9 +6,9 @@ metadata:
     name: search
     namespace: monopod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.212
+    clusterIP: 10.0.0.157
     clusterIPs:
-        - 10.0.0.212
+        - 10.0.0.157
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: multipod-latest-no-monitoring
 spec:
-    clusterIP: 10.0.0.195
+    clusterIP: 10.0.0.43
     clusterIPs:
-        - 10.0.0.195
+        - 10.0.0.43
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

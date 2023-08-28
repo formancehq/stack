@@ -6,9 +6,9 @@ metadata:
     name: search
     namespace: multipod-service-annotation
 spec:
-    clusterIP: 10.0.0.151
+    clusterIP: 10.0.0.36
     clusterIPs:
-        - 10.0.0.151
+        - 10.0.0.36
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: multipod-service-annotation
 spec:
-    clusterIP: 10.0.0.111
+    clusterIP: 10.0.0.238
     clusterIPs:
-        - 10.0.0.111
+        - 10.0.0.238
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: search-benthos
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.83
+    clusterIP: 10.0.0.235
     clusterIPs:
-        - 10.0.0.83
+        - 10.0.0.235
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

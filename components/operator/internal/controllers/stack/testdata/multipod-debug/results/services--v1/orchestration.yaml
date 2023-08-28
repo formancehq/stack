@@ -6,9 +6,9 @@ metadata:
     name: orchestration
     namespace: multipod-debug
 spec:
-    clusterIP: 10.0.0.34
+    clusterIP: 10.0.0.18
     clusterIPs:
-        - 10.0.0.34
+        - 10.0.0.18
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

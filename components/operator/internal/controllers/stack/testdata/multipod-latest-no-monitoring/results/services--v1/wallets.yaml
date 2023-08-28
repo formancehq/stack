@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: multipod-latest-no-monitoring
 spec:
-    clusterIP: 10.0.0.236
+    clusterIP: 10.0.0.38
     clusterIPs:
-        - 10.0.0.236
+        - 10.0.0.38
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: stargate
     namespace: monopod-ledgerv1
 spec:
-    clusterIP: 10.0.0.193
+    clusterIP: 10.0.0.10
     clusterIPs:
-        - 10.0.0.193
+        - 10.0.0.10
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

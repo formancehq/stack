@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.86
+    clusterIP: 10.0.0.64
     clusterIPs:
-        - 10.0.0.86
+        - 10.0.0.64
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
