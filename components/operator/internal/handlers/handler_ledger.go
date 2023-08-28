@@ -45,9 +45,15 @@ func init() {
 									modules.Env("LOCK_STRATEGY_REDIS_URL", redisConfiguration.Uri),
 									modules.Env("LOCK_STRATEGY_REDIS_TLS_ENABLED", strconv.FormatBool(redisConfiguration.TLS)),
 									modules.Env("LOCK_STRATEGY_REDIS_TLS_INSECURE", strconv.FormatBool(redisConfiguration.InsecureTLS)),
-									modules.Env("LOCK_STRATEGY_REDIS_DURATION", redisConfiguration.Duration.String()),
-									modules.Env("LOCK_STRATEGY_REDIS_RETRY", redisConfiguration.Retry.String()),
 								)
+
+								if redisConfiguration.Duration != 0 {
+									env = append(env, modules.Env("LOCK_STRATEGY_REDIS_DURATION", redisConfiguration.Duration.String()))
+								}
+
+								if redisConfiguration.Retry != 0 {
+									env = append(env, modules.Env("LOCK_STRATEGY_REDIS_RETRY", redisConfiguration.Retry.String()))
+								}
 							}
 
 							return modules.Container{
