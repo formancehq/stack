@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: multipod-latest-no-monitoring
 spec:
-    clusterIP: 10.0.0.93
+    clusterIP: 10.0.0.154
     clusterIPs:
-        - 10.0.0.93
+        - 10.0.0.154
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

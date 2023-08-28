@@ -4327,6 +4327,35 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
+                      locking:
+                        properties:
+                          redis:
+                            properties:
+                              duration:
+                                description: A Duration represents the elapsed time
+                                  between two instants as an int64 nanosecond count.
+                                  The representation limits the largest representable
+                                  duration to approximately 290 years.
+                                format: int64
+                                type: integer
+                              insecure:
+                                type: boolean
+                              retry:
+                                description: A Duration represents the elapsed time
+                                  between two instants as an int64 nanosecond count.
+                                  The representation limits the largest representable
+                                  duration to approximately 290 years.
+                                format: int64
+                                type: integer
+                              tls:
+                                type: boolean
+                              uri:
+                                type: string
+                            type: object
+                          strategy:
+                            default: memory
+                            type: string
+                        type: object
                       postgres:
                         properties:
                           disableSSLMode:

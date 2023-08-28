@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.104
+    clusterIP: 10.0.0.213
     clusterIPs:
-        - 10.0.0.104
+        - 10.0.0.213
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

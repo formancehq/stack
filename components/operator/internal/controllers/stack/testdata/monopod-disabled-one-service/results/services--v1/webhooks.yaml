@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: monopod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.120
+    clusterIP: 10.0.0.23
     clusterIPs:
-        - 10.0.0.120
+        - 10.0.0.23
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

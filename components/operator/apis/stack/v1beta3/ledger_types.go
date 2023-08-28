@@ -16,9 +16,20 @@ type LockingStrategyRedisConfig struct {
 	Retry time.Duration `json:"retry,omitempty"`
 }
 
+type LockingStrategy struct {
+	// +kubebuilder:Enum:={memory,redis}
+	// +kubebuilder:default:=memory
+	// +optional
+	Strategy string `json:"strategy,omitempty"`
+	// +optional
+	Redis *LockingStrategyRedisConfig `json:"redis"`
+}
+
 // +kubebuilder:object:generate=true
 type LedgerSpec struct {
 	Postgres PostgresConfig `json:"postgres"`
+	// +optional
+	Locking LockingStrategy `json:"locking"`
 	// +optional
 	AllowPastTimestamps bool `json:"allowPastTimestamps"`
 	// +optional
