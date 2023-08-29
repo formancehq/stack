@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: multipod-latest
 spec:
-    clusterIP: 10.0.0.131
+    clusterIP: 10.0.0.239
     clusterIPs:
-        - 10.0.0.131
+        - 10.0.0.239
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

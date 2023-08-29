@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: multipod-latest
 spec:
-    clusterIP: 10.0.0.216
+    clusterIP: 10.0.0.156
     clusterIPs:
-        - 10.0.0.216
+        - 10.0.0.156
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

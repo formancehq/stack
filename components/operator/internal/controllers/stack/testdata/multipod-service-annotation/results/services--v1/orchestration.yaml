@@ -6,9 +6,9 @@ metadata:
     name: orchestration
     namespace: multipod-service-annotation
 spec:
-    clusterIP: 10.0.0.161
+    clusterIP: 10.0.0.139
     clusterIPs:
-        - 10.0.0.161
+        - 10.0.0.139
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

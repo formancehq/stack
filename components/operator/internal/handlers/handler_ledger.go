@@ -39,7 +39,7 @@ func init() {
 								strategy = resolveContext.Configuration.Spec.Services.Ledger.Locking.Strategy
 							}
 							env = env.Append(modules.Env("LOCKING_STRATEGY", strategy))
-							if resolveContext.Configuration.Spec.Services.Ledger.Locking.Redis != nil {
+							if strategy == "redis" {
 								redisConfiguration := resolveContext.Configuration.Spec.Services.Ledger.Locking.Redis
 								env = env.Append(
 									modules.Env("LOCK_STRATEGY_REDIS_URL", redisConfiguration.Uri),

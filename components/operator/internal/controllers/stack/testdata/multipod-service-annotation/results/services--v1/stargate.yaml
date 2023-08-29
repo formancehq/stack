@@ -6,9 +6,9 @@ metadata:
     name: stargate
     namespace: multipod-service-annotation
 spec:
-    clusterIP: 10.0.0.240
+    clusterIP: 10.0.0.75
     clusterIPs:
-        - 10.0.0.240
+        - 10.0.0.75
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
