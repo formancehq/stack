@@ -98,7 +98,7 @@ To deploy the Formance operator in your k8s cluster, the first step is to instal
 Run the following command to apply the Kubernetes manifest that includes the operator:
 
 ```shell
-helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions --version 0.2.4 --namespace formance-system --create-namespace --set agent.enabled=false
+helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions --version 0.2.5 --namespace formance-system --create-namespace --set agent.enabled=false
 ```
 
 This will deploy the operator in your cluster, and allow you to start using it with the CRDs mentioned below.
