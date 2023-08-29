@@ -6,9 +6,9 @@ metadata:
     name: stargate
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.243
+    clusterIP: 10.0.0.245
     clusterIPs:
-        - 10.0.0.243
+        - 10.0.0.245
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -5,6 +5,7 @@ import (
 )
 
 type LockingStrategyRedisConfig struct {
+	// +optional
 	Uri string `json:"uri,omitempty"`
 	// +optional
 	TLS bool `json:"tls"`
@@ -22,7 +23,7 @@ type LockingStrategy struct {
 	// +optional
 	Strategy string `json:"strategy,omitempty"`
 	// +optional
-	Redis *LockingStrategyRedisConfig `json:"redis"`
+	Redis LockingStrategyRedisConfig `json:"redis"`
 }
 
 // +kubebuilder:object:generate=true
