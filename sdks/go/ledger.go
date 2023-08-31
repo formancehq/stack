@@ -993,7 +993,7 @@ func (s *ledger) RevertTransaction(ctx context.Context, request operations.Rever
 		RawResponse: httpRes,
 	}
 	switch {
-	case httpRes.StatusCode == 201:
+	case httpRes.StatusCode == 200:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
 			var out *shared.RevertTransactionResponse

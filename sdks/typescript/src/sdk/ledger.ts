@@ -1148,7 +1148,7 @@ export class Ledger {
         rawResponse: httpRes,
       });
     switch (true) {
-      case httpRes?.status == 201:
+      case httpRes?.status == 200:
         if (utils.matchContentType(contentType, `application/json`)) {
           res.revertTransactionResponse = utils.objectToClass(
             httpRes?.data,

@@ -847,7 +847,7 @@ public class Ledger {
         }};
         res.rawResponse = httpRes;
         
-        if (httpRes.statusCode() == 201) {
+        if (httpRes.statusCode() == 200) {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
                 com.formance.formance_sdk.models.shared.RevertTransactionResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.RevertTransactionResponse.class);

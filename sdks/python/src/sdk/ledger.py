@@ -483,7 +483,7 @@ class Ledger:
 
         res = operations.RevertTransactionResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
         
-        if http_res.status_code == 201:
+        if http_res.status_code == 200:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.RevertTransactionResponse])
                 res.revert_transaction_response = out

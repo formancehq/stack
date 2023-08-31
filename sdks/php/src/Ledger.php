@@ -722,7 +722,7 @@ class Ledger
         $response->contentType = $contentType;
         $response->rawResponse = $httpResponse;
         
-        if ($httpResponse->getStatusCode() === 201) {
+        if ($httpResponse->getStatusCode() === 200) {
             if (Utils\Utils::matchContentType($contentType, 'application/json')) {
                 $serializer = Utils\JSON::createSerializer();
                 $response->revertTransactionResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\RevertTransactionResponse', 'json');
