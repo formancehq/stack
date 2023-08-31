@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"sort"
 	"time"
@@ -422,10 +423,12 @@ func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, erro
 		m.chart.GetMainBalanceAccount(id),
 	)
 	if err != nil {
+		fmt.Println("ERROR GETTING ACCOUNT/WALLET", m.ledgerName, id, ": ", err)
 		return nil, errors.Wrap(err, "getting account")
 	}
 
 	if !IsPrimary(account) {
+		fmt.Println("ERROR GETTING ACCOUNT/WALLET NOT PRIMARY ACCOUNT", m.ledgerName, id)
 		return nil, ErrWalletNotFound
 	}
 
