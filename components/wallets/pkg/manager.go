@@ -427,6 +427,9 @@ func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, erro
 		return nil, errors.Wrap(err, "getting account")
 	}
 
+	fmt.Println("ACCOUNT", account.Address)
+	fmt.Println("METADATA", account.Metadata)
+
 	if !IsPrimary(account) {
 		fmt.Println("ERROR GETTING ACCOUNT/WALLET NOT PRIMARY ACCOUNT", m.ledgerName, id)
 		return nil, ErrWalletNotFound

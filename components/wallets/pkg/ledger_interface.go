@@ -256,8 +256,14 @@ func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (
 		Data AccountWithVolumesAndBalances `json:"data"`
 	}
 
+	body, err := io.ReadAll(httpResponse.Body)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("TOTOTOT", string(body))
+
 	ret := &accountResponse{}
-	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
+	if err := json.Unmarshal(body, ret); err != nil {
 		return nil, err
 	}
 
