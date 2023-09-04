@@ -40,7 +40,7 @@ sdk.wallets.confirmHold({
     amount: 100,
     final: true,
   },
-  holdId: "facere",
+  holdId: "magnam",
 }).then((res: ConfirmHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -79,11 +79,11 @@ const sdk = new SDK({
 
 sdk.wallets.createBalance({
   createBalanceRequest: {
-    expiresAt: new Date("2022-08-09T06:36:34.417Z"),
-    name: "Tomas Friesen",
-    priority: 881736,
+    expiresAt: new Date("2020-07-23T21:23:35.691Z"),
+    name: "Beth Padberg",
+    priority: 581273,
   },
-  id: "fb9ba88f-3a66-4997-874b-a4469b6e2141",
+  id: "5efb9ba8-8f3a-4669-9707-4ba4469b6e21",
 }).then((res: CreateBalanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -122,11 +122,10 @@ const sdk = new SDK({
 
 sdk.wallets.createWallet({
   metadata: {
+    "et": "excepturi",
     "ullam": "provident",
-    "quos": "sint",
-    "accusantium": "mollitia",
   },
-  name: "Shaun Hammes",
+  name: "Kirk Bartoletti",
 }).then((res: CreateWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -166,27 +165,22 @@ const sdk = new SDK({
 sdk.wallets.creditWallet({
   creditWalletRequest: {
     amount: {
-      amount: 896547,
-      asset: "odit",
+      amount: 652103,
+      asset: "ad",
     },
-    balance: "nemo",
+    balance: "eum",
     metadata: {
-      "iure": "doloribus",
+      "necessitatibus": "odit",
     },
-    reference: "debitis",
+    reference: "nemo",
     sources: [
       {
-        balance: "deleniti",
-        identifier: "facilis",
-        type: "in",
-      },
-      {
-        identifier: "architecto",
-        type: "repudiandae",
+        identifier: "doloribus",
+        type: "debitis",
       },
     ],
   },
-  id: "5b7fd2ed-0289-421c-9dc6-92601fb576b0",
+  id: "4c8b711e-5b7f-4d2e-9028-921cddc69260",
 }).then((res: CreditWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -226,28 +220,28 @@ const sdk = new SDK({
 sdk.wallets.debitWallet({
   debitWalletRequest: {
     amount: {
-      amount: 866383,
-      asset: "nemo",
+      amount: 69167,
+      asset: "maiores",
     },
     balances: [
-      "perferendis",
-      "fugiat",
-      "amet",
-      "aut",
+      "ipsam",
+      "voluptate",
+      "autem",
     ],
-    description: "cumque",
+    description: "nam",
     destination: {
-      identifier: "hic",
-      type: "libero",
+      identifier: "pariatur",
+      type: "nemo",
     },
     metadata: {
-      "dolores": "quis",
-      "totam": "dignissimos",
-      "eaque": "quis",
+      "perferendis": "fugiat",
+      "amet": "aut",
+      "cumque": "corporis",
+      "hic": "libero",
     },
     pending: false,
   },
-  id: "3202c73d-5fe9-4b90-8289-09b3fe49a8d9",
+  id: "b2587053-202c-473d-9fe9-b90c28909b3f",
 }).then((res: DebitWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -285,8 +279,8 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getBalance({
-  balanceName: "nobis",
-  id: "bf486333-23f9-4b77-b3a4-100674ebf692",
+  balanceName: "earum",
+  id: "49a8d9cb-f486-4333-a3f9-b77f3a410067",
 }).then((res: GetBalanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -324,7 +318,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getHold({
-  holdID: "atque",
+  holdID: "quaerat",
 }).then((res: GetHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -364,10 +358,13 @@ const sdk = new SDK({
 sdk.wallets.getHolds({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   metadata: {
-    "fugiat": "ab",
+    "quidem": "voluptatibus",
+    "voluptas": "natus",
+    "eos": "atque",
+    "sit": "fugiat",
   },
-  pageSize: 743835,
-  walletID: "dolorum",
+  pageSize: 67249,
+  walletID: "soluta",
 }).then((res: GetHoldsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -404,8 +401,8 @@ const sdk = new SDK({
 
 sdk.wallets.getTransactions({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 478596,
-  walletID: "voluptate",
+  pageSize: 679393,
+  walletID: "iusto",
 }).then((res: GetTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -443,7 +440,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getWallet({
-  id: "a89ebf73-7ae4-4203-8e5e-6a95d8a0d446",
+  id: "7a89ebf7-37ae-4420-bce5-e6a95d8a0d44",
 }).then((res: GetWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -481,7 +478,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getWalletSummary({
-  id: "ce2af7a7-3cf3-4be4-93f8-70b326b5a734",
+  id: "6ce2af7a-73cf-43be-853f-870b326b5a73",
 }).then((res: GetWalletSummaryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -519,7 +516,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.listBalances({
-  id: "29cdb1a8-422b-4b67-9d23-22715bf0cbb1",
+  id: "429cdb1a-8422-4bb6-b9d2-322715bf0cbb",
 }).then((res: ListBalancesResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -559,13 +556,10 @@ const sdk = new SDK({
 sdk.wallets.listWallets({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   metadata: {
-    "ipsum": "veritatis",
-    "nobis": "quos",
-    "tempore": "cupiditate",
-    "aperiam": "delectus",
+    "saepe": "ipsum",
   },
-  name: "Joanne Grant",
-  pageSize: 100294,
+  name: "Gayle Lueilwitz",
+  pageSize: 45614,
 }).then((res: ListWalletsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -605,10 +599,13 @@ const sdk = new SDK({
 sdk.wallets.updateWallet({
   requestBody: {
     metadata: {
-      "aut": "quas",
+      "dolorem": "dolore",
+      "labore": "adipisci",
+      "dolorum": "architecto",
+      "quae": "aut",
     },
   },
-  id: "e0adcf4b-9218-479f-8e95-3f73ef7fbc7a",
+  id: "8e0adcf4-b921-4879-bce9-53f73ef7fbc7",
 }).then((res: UpdateWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -646,7 +643,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.voidHold({
-  holdId: "facilis",
+  holdId: "similique",
 }).then((res: VoidHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response

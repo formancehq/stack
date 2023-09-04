@@ -8,17 +8,8 @@ import (
 )
 
 type GetBalancesAggregatedRequest struct {
-	// Filter balances involving given account, either as source or destination.
-	Address *string `queryParam:"style=form,explode=true,name=address"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-}
-
-func (o *GetBalancesAggregatedRequest) GetAddress() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Address
 }
 
 func (o *GetBalancesAggregatedRequest) GetLedger() string {

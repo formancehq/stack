@@ -91,7 +91,6 @@ public class Application {
 * [countTransactions](docs/sdks/ledger/README.md#counttransactions) - Count the transactions from a ledger
 * [createTransaction](docs/sdks/ledger/README.md#createtransaction) - Create a new transaction to a ledger
 * [getAccount](docs/sdks/ledger/README.md#getaccount) - Get account by its address
-* [getBalances](docs/sdks/ledger/README.md#getbalances) - Get the balances from a ledger's account
 * [getBalancesAggregated](docs/sdks/ledger/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [getInfo](docs/sdks/ledger/README.md#getinfo) - Show server information
 * [getLedgerInfo](docs/sdks/ledger/README.md#getledgerinfo) - Get information about a ledger

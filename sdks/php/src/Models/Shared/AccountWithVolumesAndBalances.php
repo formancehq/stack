@@ -16,15 +16,6 @@ class AccountWithVolumesAndBalances
     public string $address;
     
     /**
-     * $balances
-     * 
-     * @var array<string, int> $balances
-     */
-	#[\JMS\Serializer\Annotation\SerializedName('balances')]
-    #[\JMS\Serializer\Annotation\Type('array<string, int>')]
-    public array $balances;
-    
-    /**
      * $metadata
      * 
      * @var array<string, string> $metadata
@@ -41,18 +32,18 @@ class AccountWithVolumesAndBalances
     /**
      * $volumes
      * 
-     * @var array<string, array<string, int>> $volumes
+     * @var ?array<string, array<string, int>> $volumes
      */
 	#[\JMS\Serializer\Annotation\SerializedName('volumes')]
     #[\JMS\Serializer\Annotation\Type('array<string, array<string, int>>')]
-    public array $volumes;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $volumes = null;
     
 	public function __construct()
 	{
 		$this->address = "";
-		$this->balances = [];
 		$this->metadata = [];
 		$this->type = null;
-		$this->volumes = [];
+		$this->volumes = null;
 	}
 }

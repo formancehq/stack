@@ -6,11 +6,12 @@ import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/spf13/cobra"
 )
 
 type ShowStore struct {
-	Transaction internal.ExpandedTransaction `json:"transaction"`
+	Transaction shared.ExpandedTransaction `json:"transaction"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -78,7 +79,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		baseUrl,
 		operations.GetTransactionRequest{
 			Ledger: ledger,
-			Txid:   txId,
+			ID:     txId,
 		},
 	)
 	if err != nil {

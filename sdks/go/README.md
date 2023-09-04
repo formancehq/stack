@@ -79,7 +79,6 @@ func main() {
 * [CountTransactions](docs/sdks/ledger/README.md#counttransactions) - Count the transactions from a ledger
 * [CreateTransaction](docs/sdks/ledger/README.md#createtransaction) - Create a new transaction to a ledger
 * [GetAccount](docs/sdks/ledger/README.md#getaccount) - Get account by its address
-* [GetBalances](docs/sdks/ledger/README.md#getbalances) - Get the balances from a ledger's account
 * [GetBalancesAggregated](docs/sdks/ledger/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [GetInfo](docs/sdks/ledger/README.md#getinfo) - Show server information
 * [GetLedgerInfo](docs/sdks/ledger/README.md#getledgerinfo) - Get information about a ledger

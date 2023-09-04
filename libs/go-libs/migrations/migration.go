@@ -5,5 +5,6 @@ import (
 )
 
 type Migration struct {
-	Up func(tx bun.Tx) error
+	Name string
+	Up   func(tx bun.Tx) error
 }

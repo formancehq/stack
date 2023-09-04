@@ -9,25 +9,26 @@ import (
 )
 
 type ListLogsRequest struct {
+	RequestBody map[string]interface{} `request:"mediaType=application/json"`
 	// Parameter used in pagination requests. Maximum page size is set to 15.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.
 	// No other parameters can be set when this parameter is set.
 	//
 	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
-	// Filter transactions that occurred before this timestamp.
-	// The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-	//
-	EndTime *time.Time `queryParam:"style=form,explode=true,name=endTime"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// The maximum number of results to return per page.
 	//
-	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
-	// Filter transactions that occurred after this timestamp.
-	// The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-	//
-	StartTime *time.Time `queryParam:"style=form,explode=true,name=startTime"`
+	PageSize *int64     `queryParam:"style=form,explode=true,name=pageSize"`
+	Pit      *time.Time `queryParam:"style=form,explode=true,name=pit"`
+}
+
+func (o *ListLogsRequest) GetRequestBody() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.RequestBody
 }
 
 func (o *ListLogsRequest) GetCursor() *string {
@@ -35,13 +36,6 @@ func (o *ListLogsRequest) GetCursor() *string {
 		return nil
 	}
 	return o.Cursor
-}
-
-func (o *ListLogsRequest) GetEndTime() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.EndTime
 }
 
 func (o *ListLogsRequest) GetLedger() string {
@@ -58,11 +52,11 @@ func (o *ListLogsRequest) GetPageSize() *int64 {
 	return o.PageSize
 }
 
-func (o *ListLogsRequest) GetStartTime() *time.Time {
+func (o *ListLogsRequest) GetPit() *time.Time {
 	if o == nil {
 		return nil
 	}
-	return o.StartTime
+	return o.Pit
 }
 
 type ListLogsResponse struct {

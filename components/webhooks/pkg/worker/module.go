@@ -100,7 +100,7 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 				"event_types": ev.Type,
 				"active":      true,
 			}
-			logging.FromContext(context.Background()).Infof("searching configs with event types: %+v", ev.Type)
+			logging.FromContext(context.Background()).Debugf("searching configs with event types: %+v", ev.Type)
 			cfgs, err := store.FindManyConfigs(context.Background(), filter)
 			if err != nil {
 				logging.FromContext(context.Background()).Error(err)

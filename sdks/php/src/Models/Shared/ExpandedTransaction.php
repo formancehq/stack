@@ -11,6 +11,10 @@ namespace formance\stack\Models\Shared;
 
 class ExpandedTransaction
 {
+	#[\JMS\Serializer\Annotation\SerializedName('id')]
+    #[\JMS\Serializer\Annotation\Type('int')]
+    public int $id;
+    
     /**
      * $metadata
      * 
@@ -23,11 +27,12 @@ class ExpandedTransaction
     /**
      * $postCommitVolumes
      * 
-     * @var array<string, array<string, \formance\stack\Models\Shared\Volume>> $postCommitVolumes
+     * @var ?array<string, array<string, \formance\stack\Models\Shared\Volume>> $postCommitVolumes
      */
 	#[\JMS\Serializer\Annotation\SerializedName('postCommitVolumes')]
     #[\JMS\Serializer\Annotation\Type('array<string, array<string, formance\stack\Models\Shared\Volume>>')]
-    public array $postCommitVolumes;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $postCommitVolumes = null;
     
     /**
      * $postings
@@ -41,33 +46,35 @@ class ExpandedTransaction
     /**
      * $preCommitVolumes
      * 
-     * @var array<string, array<string, \formance\stack\Models\Shared\Volume>> $preCommitVolumes
+     * @var ?array<string, array<string, \formance\stack\Models\Shared\Volume>> $preCommitVolumes
      */
 	#[\JMS\Serializer\Annotation\SerializedName('preCommitVolumes')]
     #[\JMS\Serializer\Annotation\Type('array<string, array<string, formance\stack\Models\Shared\Volume>>')]
-    public array $preCommitVolumes;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?array $preCommitVolumes = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('reference')]
     #[\JMS\Serializer\Annotation\Type('string')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $reference = null;
     
+	#[\JMS\Serializer\Annotation\SerializedName('reverted')]
+    #[\JMS\Serializer\Annotation\Type('bool')]
+    public bool $reverted;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('timestamp')]
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $timestamp;
     
-	#[\JMS\Serializer\Annotation\SerializedName('txid')]
-    #[\JMS\Serializer\Annotation\Type('int')]
-    public int $txid;
-    
 	public function __construct()
 	{
+		$this->id = 0;
 		$this->metadata = [];
-		$this->postCommitVolumes = [];
+		$this->postCommitVolumes = null;
 		$this->postings = [];
-		$this->preCommitVolumes = [];
+		$this->preCommitVolumes = null;
 		$this->reference = null;
+		$this->reverted = false;
 		$this->timestamp = new \DateTime();
-		$this->txid = 0;
 	}
 }

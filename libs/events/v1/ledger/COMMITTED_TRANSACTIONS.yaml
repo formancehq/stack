@@ -31,16 +31,19 @@ properties:
           type: object
           properties: {}
           required: []
-        txid:
+        id:
           type: number
         timestamp:
           type: string
+        reverted:
+          type: boolean
       required:
       - postings
       - reference
       - metadata
-      - txid
+      - id
       - timestamp
+      - reverted
 required:
 - ledger
 - transactions

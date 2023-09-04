@@ -86,7 +86,7 @@ sdk.payments.connectorsTransfer({
     destination: "acct_1Gqj58KZcSIg2N2q",
     source: "acct_1Gqj58KZcSIg2N2q",
   },
-  connector: Connector.Modulr,
+  connector: Connector.BankingCircle,
 }).then((res: ConnectorsTransferResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -124,16 +124,18 @@ const sdk = new SDK({
 });
 
 sdk.payments.getAccountBalances({
-  accountId: "cupiditate",
-  asset: "quos",
+  accountId: "distinctio",
+  asset: "quibusdam",
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  from: new Date("2022-11-01T19:07:16.800Z"),
-  limit: 828940,
-  pageSize: 369808,
+  from: new Date("2022-09-26T08:57:48.803Z"),
+  limit: 183191,
+  pageSize: 397821,
   sort: [
-    "fugit",
+    "quos",
+    "perferendis",
+    "magni",
   ],
-  to: new Date("2021-11-11T04:17:07.569Z"),
+  to: new Date("2021-11-22T01:26:35.048Z"),
 }).then((res: GetAccountBalancesResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -172,8 +174,8 @@ const sdk = new SDK({
 });
 
 sdk.payments.getConnectorTask({
-  connector: Connector.Wise,
-  taskId: "facilis",
+  connector: Connector.Stripe,
+  taskId: "fugit",
 }).then((res: GetConnectorTaskResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -211,7 +213,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getPayment({
-  paymentId: "tempore",
+  paymentId: "dolorum",
 }).then((res: GetPaymentResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -252,9 +254,11 @@ const sdk = new SDK({
 sdk.payments.installConnector({
   requestBody: {
     apiKey: "XXX",
+    endpoint: "XXX",
+    loginID: "XXX",
     pollingPeriod: "60s",
   },
-  connector: Connector.Moneycorp,
+  connector: Connector.Wise,
 }).then((res: InstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -363,9 +367,9 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorTasks({
-  connector: Connector.Modulr,
+  connector: Connector.BankingCircle,
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 248753,
+  pageSize: 735194,
 }).then((res: ListConnectorTasksResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -404,7 +408,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorsTransfers({
-  connector: Connector.Mangopay,
+  connector: Connector.Wise,
 }).then((res: ListConnectorsTransfersResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -443,10 +447,10 @@ const sdk = new SDK({
 
 sdk.payments.listPayments({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 576157,
+  pageSize: 962189,
   sort: [
-    "provident",
-    "necessitatibus",
+    "non",
+    "eligendi",
   ],
 }).then((res: ListPaymentsResponse) => {
   if (res.statusCode == 200) {
@@ -559,9 +563,11 @@ const sdk = new SDK({
 
 sdk.payments.paymentslistAccounts({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 638921,
+  pageSize: 396098,
   sort: [
-    "debitis",
+    "necessitatibus",
+    "sint",
+    "officia",
   ],
 }).then((res: PaymentslistAccountsResponse) => {
   if (res.statusCode == 200) {
@@ -601,7 +607,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.readConnectorConfig({
-  connector: Connector.Moneycorp,
+  connector: Connector.DummyPay,
 }).then((res: ReadConnectorConfigResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -642,7 +648,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.resetConnector({
-  connector: Connector.BankingCircle,
+  connector: Connector.Moneycorp,
 }).then((res: ResetConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -681,7 +687,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.uninstallConnector({
-  connector: Connector.Modulr,
+  connector: Connector.Moneycorp,
 }).then((res: UninstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -720,9 +726,9 @@ const sdk = new SDK({
 
 sdk.payments.updateMetadata({
   paymentMetadata: {
-    key: "in",
+    key: "dolorum",
   },
-  paymentId: "illum",
+  paymentId: "in",
 }).then((res: UpdateMetadataResponse) => {
   if (res.statusCode == 200) {
     // handle response

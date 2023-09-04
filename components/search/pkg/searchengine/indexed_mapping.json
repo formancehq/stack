@@ -47,8 +47,8 @@
   "timestamp" : {
     "type" : "date"
   },
-  "txid" : {
-    "type" : "long"
+  "id" : {
+    "type" : "keyword"
   },
   "type" : {
     "type": "keyword"

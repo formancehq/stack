@@ -8,7 +8,6 @@
 * [count_transactions](#count_transactions) - Count the transactions from a ledger
 * [create_transaction](#create_transaction) - Create a new transaction to a ledger
 * [get_account](#get_account) - Get account by its address
-* [get_balances](#get_balances) - Get the balances from a ledger's account
 * [get_balances_aggregated](#get_balances_aggregated) - Get the aggregated balances from selected accounts
 * [get_info](#get_info) - Show server information
 * [get_ledger_info](#get_ledger_info) - Get information about a ledger
@@ -41,10 +40,9 @@ req = operations.AddMetadataOnTransactionRequest(
         "explicabo": 'nobis',
         "enim": 'omnis',
     },
-    async_=True,
     dry_run=True,
+    id=1234,
     ledger='ledger001',
-    txid=1234,
 )
 
 res = s.ledger.add_metadata_on_transaction(req)
@@ -88,7 +86,6 @@ req = operations.AddMetadataToAccountRequest(
         "iure": 'culpa',
     },
     address='users:001',
-    async_=True,
     dry_run=True,
     ledger='ledger001',
 )
@@ -128,9 +125,13 @@ s = sdk.SDK(
 )
 
 req = operations.CountAccountsRequest(
-    address='users:.+',
+    request_body={
+        "sapiente": 'architecto',
+        "mollitia": 'dolorem',
+        "culpa": 'consequuntur',
+        "repellat": 'mollitia',
+    },
     ledger='ledger001',
-    metadata=operations.CountAccountsMetadata(),
 )
 
 res = s.ledger.count_accounts(req)
@@ -169,16 +170,13 @@ s = sdk.SDK(
 )
 
 req = operations.CountTransactionsRequest(
-    account='users:001',
-    destination='users:001',
-    end_time=dateutil.parser.isoparse('2020-02-15T22:48:47.492Z'),
-    ledger='ledger001',
-    metadata={
-        "mollitia": 'dolorem',
+    request_body={
+        "numquam": 'commodi',
+        "quam": 'molestiae',
+        "velit": 'error',
     },
-    reference='ref:001',
-    source='users:001',
-    start_time=dateutil.parser.isoparse('2022-09-05T05:51:25.673Z'),
+    ledger='ledger001',
+    pit=dateutil.parser.isoparse('2022-08-30T15:03:11.112Z'),
 )
 
 res = s.ledger.count_transactions(req)
@@ -217,20 +215,14 @@ s = sdk.SDK(
 )
 
 req = operations.CreateTransactionRequest(
-    idempotency_key='repellat',
+    idempotency_key='vitae',
     post_transaction=shared.PostTransaction(
         metadata={
-            "occaecati": 'numquam',
-            "commodi": 'quam',
-            "molestiae": 'velit',
+            "animi": 'enim',
+            "odit": 'quo',
+            "sequi": 'tenetur',
         },
         postings=[
-            shared.Posting(
-                amount=100,
-                asset='COIN',
-                destination='users:002',
-                source='users:001',
-            ),
             shared.Posting(
                 amount=100,
                 asset='COIN',
@@ -255,12 +247,13 @@ req = operations.CreateTransactionRequest(
         )
         ',
             vars={
-                "quis": 'vitae',
+                "possimus": 'aut',
+                "quasi": 'error',
+                "temporibus": 'laborum',
             },
         ),
-        timestamp=dateutil.parser.isoparse('2021-09-08T21:06:19.630Z'),
+        timestamp=dateutil.parser.isoparse('2022-01-11T05:45:42.485Z'),
     ),
-    async_=True,
     dry_run=True,
     ledger='ledger001',
 )
@@ -301,6 +294,7 @@ s = sdk.SDK(
 
 req = operations.GetAccountRequest(
     address='users:001',
+    expand='voluptatibus',
     ledger='ledger001',
 )
 
@@ -322,47 +316,6 @@ if res.account_response is not None:
 **[operations.GetAccountResponse](../../models/operations/getaccountresponse.md)**
 
 
-## get_balances
-
-Get the balances from a ledger's account
-
-### Example Usage
-
-```python
-import sdk
-from sdk.models import operations, shared
-
-s = sdk.SDK(
-    security=shared.Security(
-        authorization="",
-    ),
-)
-
-req = operations.GetBalancesRequest(
-    address='users:001',
-    cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    ledger='ledger001',
-    page_size=317202,
-)
-
-res = s.ledger.get_balances(req)
-
-if res.balances_cursor_response is not None:
-    # handle response
-```
-
-### Parameters
-
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `request`                                                                      | [operations.GetBalancesRequest](../../models/operations/getbalancesrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
-
-
-### Response
-
-**[operations.GetBalancesResponse](../../models/operations/getbalancesresponse.md)**
-
-
 ## get_balances_aggregated
 
 Get the aggregated balances from selected accounts
@@ -380,7 +333,6 @@ s = sdk.SDK(
 )
 
 req = operations.GetBalancesAggregatedRequest(
-    address='users:001',
     ledger='ledger001',
 )
 
@@ -486,8 +438,9 @@ s = sdk.SDK(
 )
 
 req = operations.GetTransactionRequest(
+    expand='vero',
+    id=1234,
     ledger='ledger001',
-    txid=1234,
 )
 
 res = s.ledger.get_transaction(req)
@@ -516,6 +469,7 @@ List accounts from a ledger, sorted by address in descending order.
 
 ```python
 import sdk
+import dateutil.parser
 from sdk.models import operations, shared
 
 s = sdk.SDK(
@@ -525,13 +479,15 @@ s = sdk.SDK(
 )
 
 req = operations.ListAccountsRequest(
-    address='users:.+',
-    cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    ledger='ledger001',
-    metadata={
-        "quo": 'sequi',
+    request_body={
+        "praesentium": 'voluptatibus',
+        "ipsa": 'omnis',
     },
-    page_size=949572,
+    cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
+    expand='voluptate',
+    ledger='ledger001',
+    page_size=739264,
+    pit=dateutil.parser.isoparse('2022-12-17T16:42:52.927Z'),
 )
 
 res = s.ledger.list_accounts(req)
@@ -570,11 +526,14 @@ s = sdk.SDK(
 )
 
 req = operations.ListLogsRequest(
+    request_body={
+        "ut": 'maiores',
+        "dicta": 'corporis',
+    },
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    end_time=dateutil.parser.isoparse('2022-05-04T04:15:52.352Z'),
     ledger='ledger001',
-    page_size=820994,
-    start_time=dateutil.parser.isoparse('2022-11-26T13:23:33.410Z'),
+    page_size=296140,
+    pit=dateutil.parser.isoparse('2022-11-18T15:56:41.921Z'),
 )
 
 res = s.ledger.list_logs(req)
@@ -597,7 +556,7 @@ if res.logs_cursor_response is not None:
 
 ## list_transactions
 
-List transactions from a ledger, sorted by txid in descending order.
+List transactions from a ledger, sorted by id in descending order.
 
 ### Example Usage
 
@@ -613,20 +572,16 @@ s = sdk.SDK(
 )
 
 req = operations.ListTransactionsRequest(
-    account='users:001',
-    cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    destination='users:001',
-    end_time=dateutil.parser.isoparse('2021-04-29T07:12:18.684Z'),
-    ledger='ledger001',
-    metadata={
-        "quasi": 'reiciendis',
-        "voluptatibus": 'vero',
-        "nihil": 'praesentium',
+    request_body={
+        "enim": 'accusamus',
+        "commodi": 'repudiandae',
+        "quae": 'ipsum',
     },
-    page_size=976762,
-    reference='ref:001',
-    source='users:001',
-    start_time=dateutil.parser.isoparse('2022-05-25T05:33:11.349Z'),
+    cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
+    expand='quidem',
+    ledger='ledger001',
+    page_size=565189,
+    pit=dateutil.parser.isoparse('2021-04-09T11:24:10.949Z'),
 )
 
 res = s.ledger.list_transactions(req)
@@ -703,8 +658,8 @@ s = sdk.SDK(
 )
 
 req = operations.RevertTransactionRequest(
+    id=1234,
     ledger='ledger001',
-    txid=1234,
 )
 
 res = s.ledger.revert_transaction(req)

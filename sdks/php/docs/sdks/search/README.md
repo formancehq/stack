@@ -39,13 +39,12 @@ try {
         'quickstart',
         'quickstart',
     ];
-    $request->pageSize = 116202;
+    $request->pageSize = 588465;
     $request->policy = 'OR';
     $request->raw = new QueryRaw();
-    $request->sort = 'txid:asc';
-    $request->target = 'magnam';
+    $request->sort = 'id:asc';
+    $request->target = 'nam';
     $request->terms = [
-        'destination=central_bank1',
         'destination=central_bank1',
         'destination=central_bank1',
         'destination=central_bank1',

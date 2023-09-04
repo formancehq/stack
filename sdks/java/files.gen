@@ -72,7 +72,6 @@ lib/src/main/java/com/formance/formance_sdk/models/operations/AddMetadataOnTrans
 lib/src/main/java/com/formance/formance_sdk/models/operations/AddMetadataOnTransactionResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/AddMetadataToAccountRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/AddMetadataToAccountResponse.java
-lib/src/main/java/com/formance/formance_sdk/models/operations/CountAccountsMetadata.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/CountAccountsRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/CountAccountsResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/CountTransactionsRequest.java
@@ -81,8 +80,6 @@ lib/src/main/java/com/formance/formance_sdk/models/operations/CreateTransactionR
 lib/src/main/java/com/formance/formance_sdk/models/operations/CreateTransactionResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetAccountRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetAccountResponse.java
-lib/src/main/java/com/formance/formance_sdk/models/operations/GetBalancesRequest.java
-lib/src/main/java/com/formance/formance_sdk/models/operations/GetBalancesResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetBalancesAggregatedRequest.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetBalancesAggregatedResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/operations/GetInfoResponse.java
@@ -232,8 +229,6 @@ lib/src/main/java/com/formance/formance_sdk/models/shared/PostTransactionScript.
 lib/src/main/java/com/formance/formance_sdk/models/shared/PostTransaction.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AccountResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AccountWithVolumesAndBalances.java
-lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursorResponseCursor.java
-lib/src/main/java/com/formance/formance_sdk/models/shared/BalancesCursorResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/AggregateBalancesResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConfigInfoResponse.java
 lib/src/main/java/com/formance/formance_sdk/models/shared/ConfigInfo.java
@@ -471,7 +466,6 @@ docs/models/operations/AddMetadataOnTransactionRequest.md
 docs/models/operations/AddMetadataOnTransactionResponse.md
 docs/models/operations/AddMetadataToAccountRequest.md
 docs/models/operations/AddMetadataToAccountResponse.md
-docs/models/operations/CountAccountsMetadata.md
 docs/models/operations/CountAccountsRequest.md
 docs/models/operations/CountAccountsResponse.md
 docs/models/operations/CountTransactionsRequest.md
@@ -480,8 +474,6 @@ docs/models/operations/CreateTransactionRequest.md
 docs/models/operations/CreateTransactionResponse.md
 docs/models/operations/GetAccountRequest.md
 docs/models/operations/GetAccountResponse.md
-docs/models/operations/GetBalancesRequest.md
-docs/models/operations/GetBalancesResponse.md
 docs/models/operations/GetBalancesAggregatedRequest.md
 docs/models/operations/GetBalancesAggregatedResponse.md
 docs/models/operations/GetInfoResponse.md
@@ -631,8 +623,6 @@ docs/models/shared/PostTransactionScript.md
 docs/models/shared/PostTransaction.md
 docs/models/shared/AccountResponse.md
 docs/models/shared/AccountWithVolumesAndBalances.md
-docs/models/shared/BalancesCursorResponseCursor.md
-docs/models/shared/BalancesCursorResponse.md
 docs/models/shared/AggregateBalancesResponse.md
 docs/models/shared/ConfigInfoResponse.md
 docs/models/shared/ConfigInfo.md

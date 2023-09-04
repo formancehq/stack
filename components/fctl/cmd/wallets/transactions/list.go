@@ -101,7 +101,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 
 	tableData := fctl.Map(c.store.Transactions, func(tx shared.WalletsTransaction) []string {
 		return []string{
-			fmt.Sprintf("%d", tx.Txid),
+			fmt.Sprintf("%d", tx.ID),
 			tx.Timestamp.Format(time.RFC3339),
 			fctl.MetadataAsShortString(tx.Metadata),
 		}

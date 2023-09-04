@@ -47,17 +47,6 @@ public class AddMetadataToAccountRequest {
     }
     
     /**
-     * Set async mode.
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=async")
-    public Boolean async;
-
-    public AddMetadataToAccountRequest withAsync(Boolean async) {
-        this.async = async;
-        return this;
-    }
-    
-    /**
      * Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
      */
     @SpeakeasyMetadata("queryParam:style=form,explode=true,name=dryRun")

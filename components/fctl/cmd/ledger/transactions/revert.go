@@ -6,11 +6,12 @@ import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/spf13/cobra"
 )
 
 type RevertStore struct {
-	Transaction *internal.Transaction `json:"transaction"`
+	Transaction *shared.Transaction `json:"transaction"`
 }
 type RevertController struct {
 	store *RevertStore
@@ -75,7 +76,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 
 	request := operations.RevertTransactionRequest{
 		Ledger: ledger,
-		Txid:   txId,
+		ID:     txId,
 	}
 
 	profile := fctl.GetCurrentProfile(cmd, cfg)

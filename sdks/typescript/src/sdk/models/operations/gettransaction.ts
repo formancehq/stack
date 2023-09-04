@@ -7,17 +7,20 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetTransactionRequest extends SpeakeasyBase {
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=expand" })
+    expand?: string;
+
+    /**
+     * Transaction ID.
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
+    id: number;
+
     /**
      * Name of the ledger.
      */
     @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
     ledger: string;
-
-    /**
-     * Transaction ID.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=txid" })
-    txid: number;
 }
 
 export class GetTransactionResponse extends SpeakeasyBase {

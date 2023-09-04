@@ -62,7 +62,6 @@ src/Models/Operations/AddMetadataOnTransactionRequest.php
 src/Models/Operations/AddMetadataOnTransactionResponse.php
 src/Models/Operations/AddMetadataToAccountRequest.php
 src/Models/Operations/AddMetadataToAccountResponse.php
-src/Models/Operations/CountAccountsMetadata.php
 src/Models/Operations/CountAccountsRequest.php
 src/Models/Operations/CountAccountsResponse.php
 src/Models/Operations/CountTransactionsRequest.php
@@ -71,8 +70,6 @@ src/Models/Operations/CreateTransactionRequest.php
 src/Models/Operations/CreateTransactionResponse.php
 src/Models/Operations/GetAccountRequest.php
 src/Models/Operations/GetAccountResponse.php
-src/Models/Operations/GetBalancesRequest.php
-src/Models/Operations/GetBalancesResponse.php
 src/Models/Operations/GetBalancesAggregatedRequest.php
 src/Models/Operations/GetBalancesAggregatedResponse.php
 src/Models/Operations/GetInfoResponse.php
@@ -222,8 +219,6 @@ src/Models/Shared/PostTransactionScript.php
 src/Models/Shared/PostTransaction.php
 src/Models/Shared/AccountResponse.php
 src/Models/Shared/AccountWithVolumesAndBalances.php
-src/Models/Shared/BalancesCursorResponseCursor.php
-src/Models/Shared/BalancesCursorResponse.php
 src/Models/Shared/AggregateBalancesResponse.php
 src/Models/Shared/ConfigInfoResponse.php
 src/Models/Shared/ConfigInfo.php
@@ -461,7 +456,6 @@ docs/models/operations/AddMetadataOnTransactionRequest.md
 docs/models/operations/AddMetadataOnTransactionResponse.md
 docs/models/operations/AddMetadataToAccountRequest.md
 docs/models/operations/AddMetadataToAccountResponse.md
-docs/models/operations/CountAccountsMetadata.md
 docs/models/operations/CountAccountsRequest.md
 docs/models/operations/CountAccountsResponse.md
 docs/models/operations/CountTransactionsRequest.md
@@ -470,8 +464,6 @@ docs/models/operations/CreateTransactionRequest.md
 docs/models/operations/CreateTransactionResponse.md
 docs/models/operations/GetAccountRequest.md
 docs/models/operations/GetAccountResponse.md
-docs/models/operations/GetBalancesRequest.md
-docs/models/operations/GetBalancesResponse.md
 docs/models/operations/GetBalancesAggregatedRequest.md
 docs/models/operations/GetBalancesAggregatedResponse.md
 docs/models/operations/GetInfoResponse.md
@@ -621,8 +613,6 @@ docs/models/shared/PostTransactionScript.md
 docs/models/shared/PostTransaction.md
 docs/models/shared/AccountResponse.md
 docs/models/shared/AccountWithVolumesAndBalances.md
-docs/models/shared/BalancesCursorResponseCursor.md
-docs/models/shared/BalancesCursorResponse.md
 docs/models/shared/AggregateBalancesResponse.md
 docs/models/shared/ConfigInfoResponse.md
 docs/models/shared/ConfigInfo.md

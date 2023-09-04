@@ -172,7 +172,6 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.14 // indirect
 	github.com/uptrace/bun/driver/sqliteshim v1.1.14 // indirect
-	github.com/uptrace/bun/extra/bunbig v1.1.14 // indirect
 	github.com/uptrace/bun/extra/bundebug v1.1.14 // indirect
 	github.com/uptrace/bun/extra/bunotel v1.1.14 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect

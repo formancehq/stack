@@ -6,8 +6,7 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/ledger/pkg/bus"
-	"github.com/formancehq/ledger/pkg/core"
+	ledgerevents "github.com/formancehq/ledger/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
@@ -64,7 +63,7 @@ var _ = Given("some empty environment", func() {
 					TestContext(),
 					operations.RevertTransactionRequest{
 						Ledger: "default",
-						Txid:   createTransactionResponse.Data.Txid,
+						ID:     createTransactionResponse.Data.ID,
 					},
 				)
 				Expect(err).To(Succeed())
@@ -73,20 +72,20 @@ var _ = Given("some empty environment", func() {
 			It("should trigger a new event", func() {
 				// Wait for created transaction event
 				msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-				Expect(events.Check(msg.Data, "ledger", bus.EventTypeRevertedTransaction)).Should(Succeed())
+				Expect(events.Check(msg.Data, "ledger", ledgerevents.TypeRevertedTransaction)).Should(Succeed())
 			})
-			It("should set a metadata on the original transaction", func() {
+			It("should revert the original transaction", func() {
 				response, err := Client().Ledger.GetTransaction(
 					TestContext(),
 					operations.GetTransactionRequest{
 						Ledger: "default",
-						Txid:   createTransactionResponse.Data.Txid,
+						ID:     createTransactionResponse.Data.ID,
 					},
 				)
-				Expect(err).To(Succeed())
+				Expect(err).NotTo(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				Expect(core.IsReverted(response.GetTransactionResponse.Data.Metadata)).To(BeTrue())
+				Expect(response.GetTransactionResponse.Data.Reverted).To(BeTrue())
 			})
 			Then("trying to revert again", func() {
 				It("should be rejected", func() {
@@ -94,7 +93,7 @@ var _ = Given("some empty environment", func() {
 						TestContext(),
 						operations.RevertTransactionRequest{
 							Ledger: "default",
-							Txid:   createTransactionResponse.Data.Txid,
+							ID:     createTransactionResponse.Data.ID,
 						},
 					)
 					Expect(err).To(BeNil())

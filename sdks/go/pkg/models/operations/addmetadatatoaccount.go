@@ -18,8 +18,6 @@ type AddMetadataToAccountRequest struct {
 	// ```
 	//
 	Address string `pathParam:"style=simple,explode=false,name=address"`
-	// Set async mode.
-	Async *bool `queryParam:"style=form,explode=true,name=async"`
 	// Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
 	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Name of the ledger.
@@ -45,13 +43,6 @@ func (o *AddMetadataToAccountRequest) GetAddress() string {
 		return ""
 	}
 	return o.Address
-}
-
-func (o *AddMetadataToAccountRequest) GetAsync() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.Async
 }
 
 func (o *AddMetadataToAccountRequest) GetDryRun() *bool {

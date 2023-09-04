@@ -40,7 +40,6 @@ src/sdk/models/operations/countaccounts.py
 src/sdk/models/operations/counttransactions.py
 src/sdk/models/operations/createtransaction.py
 src/sdk/models/operations/getaccount.py
-src/sdk/models/operations/getbalances.py
 src/sdk/models/operations/getbalancesaggregated.py
 src/sdk/models/operations/getinfo.py
 src/sdk/models/operations/getledgerinfo.py
@@ -137,7 +136,6 @@ src/sdk/models/shared/posting.py
 src/sdk/models/shared/posttransaction.py
 src/sdk/models/shared/accountresponse.py
 src/sdk/models/shared/accountwithvolumesandbalances.py
-src/sdk/models/shared/balancescursorresponse.py
 src/sdk/models/shared/aggregatebalancesresponse.py
 src/sdk/models/shared/configinforesponse.py
 src/sdk/models/shared/configinfo.py
@@ -328,7 +326,6 @@ docs/models/operations/addmetadataontransactionrequest.md
 docs/models/operations/addmetadataontransactionresponse.md
 docs/models/operations/addmetadatatoaccountrequest.md
 docs/models/operations/addmetadatatoaccountresponse.md
-docs/models/operations/countaccountsmetadata.md
 docs/models/operations/countaccountsrequest.md
 docs/models/operations/countaccountsresponse.md
 docs/models/operations/counttransactionsrequest.md
@@ -337,8 +334,6 @@ docs/models/operations/createtransactionrequest.md
 docs/models/operations/createtransactionresponse.md
 docs/models/operations/getaccountrequest.md
 docs/models/operations/getaccountresponse.md
-docs/models/operations/getbalancesrequest.md
-docs/models/operations/getbalancesresponse.md
 docs/models/operations/getbalancesaggregatedrequest.md
 docs/models/operations/getbalancesaggregatedresponse.md
 docs/models/operations/getinforesponse.md
@@ -488,8 +483,6 @@ docs/models/shared/posttransactionscript.md
 docs/models/shared/posttransaction.md
 docs/models/shared/accountresponse.md
 docs/models/shared/accountwithvolumesandbalances.md
-docs/models/shared/balancescursorresponsecursor.md
-docs/models/shared/balancescursorresponse.md
 docs/models/shared/aggregatebalancesresponse.md
 docs/models/shared/configinforesponse.md
 docs/models/shared/configinfo.md

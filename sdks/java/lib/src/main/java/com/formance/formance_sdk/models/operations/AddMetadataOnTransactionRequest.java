@@ -32,17 +32,6 @@ public class AddMetadataOnTransactionRequest {
     }
     
     /**
-     * Set async mode.
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=async")
-    public Boolean async;
-
-    public AddMetadataOnTransactionRequest withAsync(Boolean async) {
-        this.async = async;
-        return this;
-    }
-    
-    /**
      * Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
      */
     @SpeakeasyMetadata("queryParam:style=form,explode=true,name=dryRun")
@@ -50,6 +39,17 @@ public class AddMetadataOnTransactionRequest {
 
     public AddMetadataOnTransactionRequest withDryRun(Boolean dryRun) {
         this.dryRun = dryRun;
+        return this;
+    }
+    
+    /**
+     * Transaction ID.
+     */
+    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=id")
+    public Long id;
+
+    public AddMetadataOnTransactionRequest withId(Long id) {
+        this.id = id;
         return this;
     }
     
@@ -64,19 +64,8 @@ public class AddMetadataOnTransactionRequest {
         return this;
     }
     
-    /**
-     * Transaction ID.
-     */
-    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=txid")
-    public Long txid;
-
-    public AddMetadataOnTransactionRequest withTxid(Long txid) {
-        this.txid = txid;
-        return this;
-    }
-    
-    public AddMetadataOnTransactionRequest(@JsonProperty("ledger") String ledger, @JsonProperty("txid") Long txid) {
+    public AddMetadataOnTransactionRequest(@JsonProperty("id") Long id, @JsonProperty("ledger") String ledger) {
+        this.id = id;
         this.ledger = ledger;
-        this.txid = txid;
   }
 }

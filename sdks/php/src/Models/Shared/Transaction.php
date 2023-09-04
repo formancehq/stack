@@ -11,6 +11,10 @@ namespace formance\stack\Models\Shared;
 
 class Transaction
 {
+	#[\JMS\Serializer\Annotation\SerializedName('id')]
+    #[\JMS\Serializer\Annotation\Type('int')]
+    public int $id;
+    
     /**
      * $metadata
      * 
@@ -34,20 +38,21 @@ class Transaction
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $reference = null;
     
+	#[\JMS\Serializer\Annotation\SerializedName('reverted')]
+    #[\JMS\Serializer\Annotation\Type('bool')]
+    public bool $reverted;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('timestamp')]
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $timestamp;
     
-	#[\JMS\Serializer\Annotation\SerializedName('txid')]
-    #[\JMS\Serializer\Annotation\Type('int')]
-    public int $txid;
-    
 	public function __construct()
 	{
+		$this->id = 0;
 		$this->metadata = [];
 		$this->postings = [];
 		$this->reference = null;
+		$this->reverted = false;
 		$this->timestamp = new \DateTime();
-		$this->txid = 0;
 	}
 }

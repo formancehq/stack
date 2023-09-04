@@ -10,6 +10,14 @@ import java.time.OffsetDateTime;
 
 
 public class ListLogsRequest {
+    @SpeakeasyMetadata("request:mediaType=application/json")
+    public java.util.Map<String, Object> requestBody;
+
+    public ListLogsRequest withRequestBody(java.util.Map<String, Object> requestBody) {
+        this.requestBody = requestBody;
+        return this;
+    }
+    
     /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * Set to the value of next for the next page of results.
@@ -22,19 +30,6 @@ public class ListLogsRequest {
 
     public ListLogsRequest withCursor(String cursor) {
         this.cursor = cursor;
-        return this;
-    }
-    
-    /**
-     * Filter transactions that occurred before this timestamp.
-     * The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-     * 
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=endTime")
-    public OffsetDateTime endTime;
-
-    public ListLogsRequest withEndTime(OffsetDateTime endTime) {
-        this.endTime = endTime;
         return this;
     }
     
@@ -61,16 +56,11 @@ public class ListLogsRequest {
         return this;
     }
     
-    /**
-     * Filter transactions that occurred after this timestamp.
-     * The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-     * 
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=startTime")
-    public OffsetDateTime startTime;
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=pit")
+    public OffsetDateTime pit;
 
-    public ListLogsRequest withStartTime(OffsetDateTime startTime) {
-        this.startTime = startTime;
+    public ListLogsRequest withPit(OffsetDateTime pit) {
+        this.pit = pit;
         return this;
     }
     

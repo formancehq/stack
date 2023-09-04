@@ -8,16 +8,16 @@ import { AxiosResponse } from "axios";
 
 export class RevertTransactionRequest extends SpeakeasyBase {
     /**
+     * Transaction ID.
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
+    id: number;
+
+    /**
      * Name of the ledger.
      */
     @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
     ledger: string;
-
-    /**
-     * Transaction ID.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=txid" })
-    txid: number;
 }
 
 export class RevertTransactionResponse extends SpeakeasyBase {

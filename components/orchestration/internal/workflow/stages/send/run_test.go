@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/stretchr/testify/mock"
 	"go.temporal.io/sdk/temporal"
 )
@@ -146,7 +147,7 @@ var (
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
-							Reference: ptrString(paymentAccountName("payment1")),
+							Reference: pointer.For(paymentAccountName("payment1")),
 							Metadata:  metadata.Metadata{},
 						},
 					},
@@ -208,7 +209,7 @@ var (
 								},
 								Type: shared.SubjectTypeAccount,
 							}},
-							Balance: ptrString("main"),
+							Balance: pointer.For("main"),
 							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: internalLedger,
 							},
@@ -265,7 +266,7 @@ var (
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
-							Reference: ptrString(paymentAccountName("payment1")),
+							Reference: pointer.For(paymentAccountName("payment1")),
 							Metadata:  metadata.Metadata{},
 						},
 					},
@@ -366,7 +367,7 @@ var (
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
-							Reference: ptrString(paymentAccountName("payment1")),
+							Reference: pointer.For(paymentAccountName("payment1")),
 							Metadata:  metadata.Metadata{},
 						},
 					},
@@ -566,7 +567,7 @@ var (
 								},
 								Type: shared.SubjectTypeAccount,
 							}},
-							Balance: ptrString("main"),
+							Balance: pointer.For("main"),
 						},
 					},
 				},
@@ -641,7 +642,7 @@ var (
 								},
 								Type: shared.SubjectTypeAccount,
 							}},
-							Balance: ptrString("main"),
+							Balance: pointer.For("main"),
 							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
@@ -689,8 +690,8 @@ var (
 				Args: []any{
 					mock.Anything, shared.StripeTransferRequest{
 						Amount:      big.NewInt(100),
-						Asset:       ptrString("USD"),
-						Destination: ptrString("abcd"),
+						Asset:       pointer.For("USD"),
+						Destination: pointer.For("abcd"),
 					},
 				},
 				Returns: []any{nil},
@@ -899,11 +900,11 @@ var (
 								WalletSubject: &shared.WalletSubject{
 									Type:       "WALLET",
 									Identifier: "foo",
-									Balance:    ptrString("main"),
+									Balance:    pointer.For("main"),
 								},
 								Type: shared.SubjectTypeWallet,
 							}},
-							Balance:  ptrString("main"),
+							Balance:  pointer.For("main"),
 							Metadata: map[string]string{},
 						},
 					},
@@ -980,7 +981,7 @@ var (
 								Asset:  "USD",
 								Amount: big.NewInt(100),
 							},
-							Balance: ptrString("main"),
+							Balance: pointer.For("main"),
 							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
@@ -1026,8 +1027,8 @@ var (
 				Args: []any{
 					mock.Anything, shared.StripeTransferRequest{
 						Amount:      big.NewInt(100),
-						Asset:       ptrString("USD"),
-						Destination: ptrString("abcd"),
+						Asset:       pointer.For("USD"),
+						Destination: pointer.For("abcd"),
 					},
 				},
 				Returns: []any{nil},
@@ -1070,12 +1071,4 @@ var testCases = []stagestesting.WorkflowTestCase[Send]{
 
 func TestSend(t *testing.T) {
 	stagestesting.RunWorkflows(t, testCases...)
-}
-
-func ptrString(s string) *string {
-	return &s
-}
-
-func ptrInt64(i int64) *int64 {
-	return &i
 }

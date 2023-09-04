@@ -113,8 +113,12 @@ var _ = Given("some empty environment", func() {
 			response, err := Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
-					Address: ptr("foo:"),
-					Ledger:  "default",
+					Ledger: "default",
+					RequestBody: map[string]interface{}{
+						"$match": map[string]any{
+							"address": "foo:",
+						},
+					},
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -134,8 +138,12 @@ var _ = Given("some empty environment", func() {
 			response, err = Client().Ledger.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
-					Address: ptr(":foo"),
-					Ledger:  "default",
+					Ledger: "default",
+					RequestBody: map[string]interface{}{
+						"$match": map[string]any{
+							"address": ":foo",
+						},
+					},
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -153,8 +161,10 @@ var _ = Given("some empty environment", func() {
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
-					Metadata: map[string]string{
-						"clientType": "gold",
+					RequestBody: map[string]interface{}{
+						"$match": map[string]any{
+							"metadata[clientType]": "gold",
+						},
 					},
 				},
 			)

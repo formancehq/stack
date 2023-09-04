@@ -86,14 +86,10 @@ sdk.getVersions().then((res: GetVersionsResponse) => {
 * [countTransactions](docs/sdks/ledger/README.md#counttransactions) - Count the transactions from a ledger
 * [createTransaction](docs/sdks/ledger/README.md#createtransaction) - Create a new transaction to a ledger
 * [getAccount](docs/sdks/ledger/README.md#getaccount) - Get account by its address
-* [getBalances](docs/sdks/ledger/README.md#getbalances) - Get the balances from a ledger's account
 * [getBalancesAggregated](docs/sdks/ledger/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [getInfo](docs/sdks/ledger/README.md#getinfo) - Show server information
 * [getLedgerInfo](docs/sdks/ledger/README.md#getledgerinfo) - Get information about a ledger
 * [getTransaction](docs/sdks/ledger/README.md#gettransaction) - Get transaction from a ledger by its ID
-* [listAccounts](docs/sdks/ledger/README.md#listaccounts) - List accounts from a ledger
-* [listLogs](docs/sdks/ledger/README.md#listlogs) - List the logs from a ledger
-* [listTransactions](docs/sdks/ledger/README.md#listtransactions) - List transactions from a ledger
 * [readStats](docs/sdks/ledger/README.md#readstats) - Get statistics from a ledger
 * [revertTransaction](docs/sdks/ledger/README.md#reverttransaction) - Revert a ledger transaction by its ID
 

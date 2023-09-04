@@ -28,20 +28,20 @@ class AddMetadataOnTransactionRequest
     public ?array $requestBody = null;
     
     /**
-     * Set async mode.
-     * 
-     * @var ?bool $async
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=async')]
-    public ?bool $async = null;
-    
-    /**
      * Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
      * 
      * @var ?bool $dryRun
      */
 	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=dryRun')]
     public ?bool $dryRun = null;
+    
+    /**
+     * Transaction ID.
+     * 
+     * @var int $id
+     */
+	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=id')]
+    public int $id;
     
     /**
      * Name of the ledger.
@@ -51,21 +51,12 @@ class AddMetadataOnTransactionRequest
 	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=ledger')]
     public string $ledger;
     
-    /**
-     * Transaction ID.
-     * 
-     * @var int $txid
-     */
-	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=txid')]
-    public int $txid;
-    
 	public function __construct()
 	{
 		$this->idempotencyKey = null;
 		$this->requestBody = null;
-		$this->async = null;
 		$this->dryRun = null;
+		$this->id = 0;
 		$this->ledger = "";
-		$this->txid = 0;
 	}
 }

@@ -8,12 +8,6 @@ import { AxiosResponse } from "axios";
 
 export class GetBalancesAggregatedRequest extends SpeakeasyBase {
     /**
-     * Filter balances involving given account, either as source or destination.
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=address" })
-    address?: string;
-
-    /**
      * Name of the ledger.
      */
     @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })

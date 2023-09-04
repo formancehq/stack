@@ -28,7 +28,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("quidem") {{
+                .setSecurity(new Security("nihil") {{
                     authorization = "";
                 }})
                 .build();
@@ -82,7 +82,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("voluptatibus") {{
+                .setSecurity(new Security("ipsum") {{
                     authorization = "";
                 }})
                 .build();
@@ -133,7 +133,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("voluptas") {{
+                .setSecurity(new Security("voluptate") {{
                     authorization = "";
                 }})
                 .build();
@@ -182,7 +182,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("natus") {{
+                .setSecurity(new Security("id") {{
                     authorization = "";
                 }})
                 .build();
@@ -231,7 +231,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("eos") {{
+                .setSecurity(new Security("saepe") {{
                     authorization = "";
                 }})
                 .build();
@@ -292,7 +292,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("atque") {{
+                .setSecurity(new Security("eius") {{
                     authorization = "";
                 }})
                 .build();
@@ -345,7 +345,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("fugiat") {{
+                .setSecurity(new Security("perferendis") {{
                     authorization = "";
                 }})
                 .build();

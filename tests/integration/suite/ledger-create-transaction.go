@@ -6,9 +6,10 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/ledger/pkg/bus"
+	ledgerevents "github.com/formancehq/ledger/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
@@ -59,7 +60,8 @@ var _ = Given("some empty environment", func() {
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
-					Txid:   rsp.Data.Txid,
+					ID:     rsp.Data.ID,
+					Expand: pointer.For("volumes"),
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -71,7 +73,7 @@ var _ = Given("some empty environment", func() {
 				Postings:  rsp.Data.Postings,
 				Reference: rsp.Data.Reference,
 				Metadata:  rsp.Data.Metadata,
-				Txid:      rsp.Data.Txid,
+				ID:        rsp.Data.ID,
 				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
@@ -111,6 +113,7 @@ var _ = Given("some empty environment", func() {
 				operations.GetAccountRequest{
 					Address: "alice",
 					Ledger:  "default",
+					Expand:  pointer.For("volumes"),
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -127,15 +130,12 @@ var _ = Given("some empty environment", func() {
 						"balance": big.NewInt(100),
 					},
 				},
-				Balances: map[string]*big.Int{
-					"USD": big.NewInt(100),
-				},
 			}))
 		})
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", bus.EventTypeCommittedTransactions)).Should(Succeed())
+			Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeCommittedTransactions)).Should(Succeed())
 		})
 		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{
@@ -149,7 +149,7 @@ var _ = Given("some empty environment", func() {
 						"destination": "alice",
 					},
 				},
-				"txid":      float64(0),
+				"id":        float64(0),
 				"timestamp": timestamp.Format(time.RFC3339),
 				"ledger":    "default",
 			}
@@ -281,13 +281,13 @@ var _ = Given("some empty environment", func() {
 		BeforeEach(createTransaction)
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(response.CreateTransactionResponse.Data.Txid).To(Equal(int64(0)))
+			Expect(response.CreateTransactionResponse.Data.ID).To(Equal(int64(0)))
 		})
 		Then("replaying with the same IK", func() {
 			BeforeEach(createTransaction)
 			It("should respond with the same tx id", func() {
 				Expect(err).To(Succeed())
-				Expect(response.CreateTransactionResponse.Data.Txid).To(Equal(int64(0)))
+				Expect(response.CreateTransactionResponse.Data.ID).To(Equal(int64(0)))
 			})
 		})
 	})

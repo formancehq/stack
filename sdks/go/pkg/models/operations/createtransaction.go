@@ -15,8 +15,6 @@ type CreateTransactionRequest struct {
 	//   - `script`: enabling more complex transactions with Numscript
 	//
 	PostTransaction shared.PostTransaction `request:"mediaType=application/json"`
-	// Set async mode.
-	Async *bool `queryParam:"style=form,explode=true,name=async"`
 	// Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
 	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Name of the ledger.
@@ -35,13 +33,6 @@ func (o *CreateTransactionRequest) GetPostTransaction() shared.PostTransaction {
 		return shared.PostTransaction{}
 	}
 	return o.PostTransaction
-}
-
-func (o *CreateTransactionRequest) GetAsync() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.Async
 }
 
 func (o *CreateTransactionRequest) GetDryRun() *bool {
