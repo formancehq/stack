@@ -8,16 +8,18 @@ from ..shared import walletserrorresponse as shared_walletserrorresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class GetBalanceRequest:
-    
     balance_name: str = dataclasses.field(metadata={'path_param': { 'field_name': 'balanceName', 'style': 'simple', 'explode': False }})
     id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'id', 'style': 'simple', 'explode': False }})
     
 
+
+
+
 @dataclasses.dataclass
 class GetBalanceResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     get_balance_response: Optional[shared_getbalanceresponse.GetBalanceResponse] = dataclasses.field(default=None)
@@ -26,3 +28,4 @@ class GetBalanceResponse:
     wallets_error_response: Optional[shared_walletserrorresponse.WalletsErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
+

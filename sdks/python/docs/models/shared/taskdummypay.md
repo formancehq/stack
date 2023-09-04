@@ -1,0 +1,15 @@
+# TaskDummyPay
+
+
+## Fields
+
+| Field                                                                   | Type                                                                    | Required                                                                | Description                                                             |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `connector_id`                                                          | *str*                                                                   | :heavy_check_mark:                                                      | N/A                                                                     |
+| `created_at`                                                            | [date](https://docs.python.org/3/library/datetime.html#date-objects)    | :heavy_check_mark:                                                      | N/A                                                                     |
+| `descriptor`                                                            | [TaskDummyPayDescriptor](../../models/shared/taskdummypaydescriptor.md) | :heavy_check_mark:                                                      | N/A                                                                     |
+| `error`                                                                 | *Optional[str]*                                                         | :heavy_minus_sign:                                                      | N/A                                                                     |
+| `id`                                                                    | *str*                                                                   | :heavy_check_mark:                                                      | N/A                                                                     |
+| `state`                                                                 | [TaskDummyPayState](../../models/shared/taskdummypaystate.md)           | :heavy_check_mark:                                                      | N/A                                                                     |
+| `status`                                                                | [PaymentStatus](../../models/shared/paymentstatus.md)                   | :heavy_check_mark:                                                      | N/A                                                                     |
+| `updated_at`                                                            | [date](https://docs.python.org/3/library/datetime.html#date-objects)    | :heavy_check_mark:                                                      | N/A                                                                     |

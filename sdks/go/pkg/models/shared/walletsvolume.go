@@ -11,3 +11,24 @@ type WalletsVolume struct {
 	Input   *big.Int `json:"input"`
 	Output  *big.Int `json:"output"`
 }
+
+func (o *WalletsVolume) GetBalance() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Balance
+}
+
+func (o *WalletsVolume) GetInput() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Input
+}
+
+func (o *WalletsVolume) GetOutput() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Output
+}

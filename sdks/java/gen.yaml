@@ -3,6 +3,12 @@ generation:
   sdkClassName: SDK
   singleTagPerOp: true
   telemetryEnabled: false
+features:
+  java:
+    core: 2.85.2
+    deprecations: 2.81.1
+    globalSecurity: 2.81.1
+    globalServerURLs: 2.82.0
 java:
   version: v0.1.0
   artifactID: formance-sdk

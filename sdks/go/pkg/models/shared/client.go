@@ -14,3 +14,73 @@ type Client struct {
 	Secrets                []ClientSecret         `json:"secrets,omitempty"`
 	Trusted                *bool                  `json:"trusted,omitempty"`
 }
+
+func (o *Client) GetDescription() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Description
+}
+
+func (o *Client) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
+func (o *Client) GetMetadata() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *Client) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *Client) GetPostLogoutRedirectUris() []string {
+	if o == nil {
+		return nil
+	}
+	return o.PostLogoutRedirectUris
+}
+
+func (o *Client) GetPublic() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Public
+}
+
+func (o *Client) GetRedirectUris() []string {
+	if o == nil {
+		return nil
+	}
+	return o.RedirectUris
+}
+
+func (o *Client) GetScopes() []string {
+	if o == nil {
+		return nil
+	}
+	return o.Scopes
+}
+
+func (o *Client) GetSecrets() []ClientSecret {
+	if o == nil {
+		return nil
+	}
+	return o.Secrets
+}
+
+func (o *Client) GetTrusted() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Trusted
+}

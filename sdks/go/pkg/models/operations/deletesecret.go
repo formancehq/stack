@@ -13,8 +13,43 @@ type DeleteSecretRequest struct {
 	SecretID string `pathParam:"style=simple,explode=false,name=secretId"`
 }
 
+func (o *DeleteSecretRequest) GetClientID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ClientID
+}
+
+func (o *DeleteSecretRequest) GetSecretID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SecretID
+}
+
 type DeleteSecretResponse struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
+}
+
+func (o *DeleteSecretResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *DeleteSecretResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *DeleteSecretResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

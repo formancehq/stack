@@ -42,6 +42,6 @@ class Log
 		$this->date = new \DateTime();
 		$this->hash = "";
 		$this->id = 0;
-		$this->type = \formance\stack\Models\Shared\LogType::NEW_TRANSACTION;
+		$this->type = \formance\stack\Models\Shared\LogType::NewTransaction;
 	}
 }

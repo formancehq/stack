@@ -1,0 +1,9 @@
+# CreateSecretRequest
+
+
+## Fields
+
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `createSecretRequest`                                                                            | [?\formance\stack\Models\Shared\CreateSecretRequest](../../models/shared/CreateSecretRequest.md) | :heavy_minus_sign:                                                                               | N/A                                                                                              |
+| `clientId`                                                                                       | *string*                                                                                         | :heavy_check_mark:                                                                               | Client ID                                                                                        |

@@ -8,9 +8,10 @@ from sdk import utils
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
+
 @dataclasses.dataclass
 class GetBalanceResponse:
     r"""Balance summary"""
-    
     data: shared_balancewithassets.BalanceWithAssets = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     
+

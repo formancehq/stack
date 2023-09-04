@@ -11,8 +11,36 @@ type DeleteScopeRequest struct {
 	ScopeID string `pathParam:"style=simple,explode=false,name=scopeId"`
 }
 
+func (o *DeleteScopeRequest) GetScopeID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ScopeID
+}
+
 type DeleteScopeResponse struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
+}
+
+func (o *DeleteScopeResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *DeleteScopeResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *DeleteScopeResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

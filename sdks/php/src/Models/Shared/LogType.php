@@ -11,7 +11,7 @@ namespace formance\stack\Models\Shared;
 
 enum LogType: string
 {
-    case NEW_TRANSACTION = 'NEW_TRANSACTION';
-    case SET_METADATA = 'SET_METADATA';
-    case REVERTED_TRANSACTION = 'REVERTED_TRANSACTION';
+    case NewTransaction = 'NEW_TRANSACTION';
+    case SetMetadata = 'SET_METADATA';
+    case RevertedTransaction = 'REVERTED_TRANSACTION';
 }

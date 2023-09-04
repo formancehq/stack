@@ -45,3 +45,38 @@ type Log struct {
 	ID   int64                  `json:"id"`
 	Type LogType                `json:"type"`
 }
+
+func (o *Log) GetData() map[string]interface{} {
+	if o == nil {
+		return map[string]interface{}{}
+	}
+	return o.Data
+}
+
+func (o *Log) GetDate() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.Date
+}
+
+func (o *Log) GetHash() string {
+	if o == nil {
+		return ""
+	}
+	return o.Hash
+}
+
+func (o *Log) GetID() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.ID
+}
+
+func (o *Log) GetType() LogType {
+	if o == nil {
+		return LogType("")
+	}
+	return o.Type
+}

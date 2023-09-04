@@ -11,6 +11,13 @@ type GetWalletRequest struct {
 	ID string `pathParam:"style=simple,explode=false,name=id"`
 }
 
+func (o *GetWalletRequest) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
 type GetWalletResponse struct {
 	ContentType string
 	// Wallet
@@ -19,4 +26,39 @@ type GetWalletResponse struct {
 	RawResponse       *http.Response
 	// Error
 	WalletsErrorResponse *shared.WalletsErrorResponse
+}
+
+func (o *GetWalletResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *GetWalletResponse) GetGetWalletResponse() *shared.GetWalletResponse {
+	if o == nil {
+		return nil
+	}
+	return o.GetWalletResponse
+}
+
+func (o *GetWalletResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *GetWalletResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *GetWalletResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.WalletsErrorResponse
 }

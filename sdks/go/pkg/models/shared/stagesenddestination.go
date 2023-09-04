@@ -7,3 +7,24 @@ type StageSendDestination struct {
 	Payment *StageSendDestinationPayment `json:"payment,omitempty"`
 	Wallet  *StageSendDestinationWallet  `json:"wallet,omitempty"`
 }
+
+func (o *StageSendDestination) GetAccount() *StageSendDestinationAccount {
+	if o == nil {
+		return nil
+	}
+	return o.Account
+}
+
+func (o *StageSendDestination) GetPayment() *StageSendDestinationPayment {
+	if o == nil {
+		return nil
+	}
+	return o.Payment
+}
+
+func (o *StageSendDestination) GetWallet() *StageSendDestinationWallet {
+	if o == nil {
+		return nil
+	}
+	return o.Wallet
+}

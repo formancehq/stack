@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ListWorkflowsResponse - List of workflows
  */
+
 public class ListWorkflowsResponse {
     @JsonProperty("data")
     public Workflow[] data;

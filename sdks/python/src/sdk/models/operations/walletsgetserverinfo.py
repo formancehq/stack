@@ -8,9 +8,9 @@ from ..shared import walletserrorresponse as shared_walletserrorresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class WalletsgetServerInfoResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
@@ -19,3 +19,4 @@ class WalletsgetServerInfoResponse:
     wallets_error_response: Optional[shared_walletserrorresponse.WalletsErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
+

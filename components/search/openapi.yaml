@@ -127,3 +127,4 @@ components:
               items:
                 allOf:
                 - type: object
+                  additionalProperties: true

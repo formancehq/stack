@@ -7,6 +7,7 @@ import (
 	"math/big"
 )
 
+// BigInt is a wrapper around big.Int that allows for JSON marshaling a big integer as a string.
 type BigInt struct {
 	big.Int
 }

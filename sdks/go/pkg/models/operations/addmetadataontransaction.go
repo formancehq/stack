@@ -22,10 +22,80 @@ type AddMetadataOnTransactionRequest struct {
 	Txid int64 `pathParam:"style=simple,explode=false,name=txid"`
 }
 
+func (o *AddMetadataOnTransactionRequest) GetIdempotencyKey() *string {
+	if o == nil {
+		return nil
+	}
+	return o.IdempotencyKey
+}
+
+func (o *AddMetadataOnTransactionRequest) GetRequestBody() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.RequestBody
+}
+
+func (o *AddMetadataOnTransactionRequest) GetAsync() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Async
+}
+
+func (o *AddMetadataOnTransactionRequest) GetDryRun() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.DryRun
+}
+
+func (o *AddMetadataOnTransactionRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
+func (o *AddMetadataOnTransactionRequest) GetTxid() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Txid
+}
+
 type AddMetadataOnTransactionResponse struct {
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
 	StatusCode    int
 	RawResponse   *http.Response
+}
+
+func (o *AddMetadataOnTransactionResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *AddMetadataOnTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *AddMetadataOnTransactionResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *AddMetadataOnTransactionResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

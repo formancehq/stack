@@ -1,29 +1,29 @@
 # vim: set ft=nix ts=2 sw=2 sts=2 et sta
-{ system ? builtins.currentSystem, pkgs, lib, fetchurl, installShellFiles }:
+{ system ? builtins.currentSystem, pkgs, lib, fetchurl, installShellFiles, unzip }:
 let
   shaMap = {
-    x86_64-linux = "158a1c3303dee0307f12a04b9e17c97beef3081c4a58386b6b794c27cc7ae2d8";
-    aarch64-linux = "4094df1bfc7b7b741cf85470185e65359d7339b65ef43351679812fcf831e4f3";
-    i686-linux = "024835afffb1989662bed57facc2b1b5c23d299b93f4b6a90e5e9a745987b6aa";
-    x86_64-darwin = "c4e2f99957f08c3cdf33b662798685f6c7c5db41a3e8d17265792d5e34624f56";
-    aarch64-darwin = "fbdb38e8df1b86c943e319e7787c074f31d233af08bca12aaf9ae73b4cbaad5e";
+    x86_64-linux = "3453b764cb8f5f51b8bbf6f5d3846408157546f9370f62d71f1480160b102806";
+    aarch64-linux = "446ac0310add7e27e0276678bdd03b667fae1e6d5b4c1bf34d1607e04a641aec";
+    i686-linux = "f69e22967b87fa680e2f4d2a600c3865b6ae226f08fc6898514fbfa925a0fb8e";
+    x86_64-darwin = "ef8a25c3b8048a02b0740537946f72268e2fab0ddb07872d5c39c659d8a240b2";
+    aarch64-darwin = "54f39aef42b2504ff731940d224bcd94aaef9fb3c83a77bb9653ec49b00c0fb6";
   };
 
   urlMap = {
     i686-linux =
-      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.36.1/speakeasy_linux_386.tar.gz";
+      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.78.1/speakeasy_linux_386.zip";
     x86_64-linux =
-      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.36.1/speakeasy_linux_amd64.tar.gz";
+      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.78.1/speakeasy_linux_amd64.zip";
     aarch64-linux =
-      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.36.1/speakeasy_linux_arm64.tar.gz";
+      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.78.1/speakeasy_linux_arm64.zip";
     x86_64-darwin =
-      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.36.1/speakeasy_darwin_amd64.tar.gz";
+      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.78.1/speakeasy_darwin_amd64.zip";
     aarch64-darwin =
-      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.36.1/speakeasy_darwin_arm64.tar.gz";
+      "https://github.com/speakeasy-api/speakeasy/releases/download/v1.78.1/speakeasy_darwin_arm64.zip";
   };
 in pkgs.stdenv.mkDerivation {
   pname = "speakeasy";
-  version = "1.36.1";
+  version = "1.78.1";
   src = fetchurl {
     url = urlMap.${system};
     sha256 = shaMap.${system};
@@ -31,7 +31,7 @@ in pkgs.stdenv.mkDerivation {
 
   sourceRoot = ".";
 
-  nativeBuildInputs = [ installShellFiles ];
+  nativeBuildInputs = [ installShellFiles unzip ];
 
   installPhase = ''
     mkdir -p $out/bin

@@ -27,7 +27,7 @@ class Error
     
 	public function __construct()
 	{
-		$this->errorCode = \formance\stack\Models\Shared\ErrorErrorCode::VALIDATION;
+		$this->errorCode = \formance\stack\Models\Shared\ErrorErrorCode::Validation;
 		$this->errorMessage = "";
 	}
 }

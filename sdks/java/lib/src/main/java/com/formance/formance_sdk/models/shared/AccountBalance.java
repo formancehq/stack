@@ -11,6 +11,7 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
+
 public class AccountBalance {
     @JsonProperty("accountId")
     public String accountId;
@@ -46,9 +47,14 @@ public class AccountBalance {
         return this;
     }
     
+    /**
+     * @deprecated field: This will be removed in a future release, please migrate away from it as soon as possible.
+     */
     @JsonProperty("currency")
+    @Deprecated
     public String currency;
 
+    @Deprecated
     public AccountBalance withCurrency(String currency) {
         this.currency = currency;
         return this;

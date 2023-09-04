@@ -11,3 +11,24 @@ type StripeConfig struct {
 	//
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }
+
+func (o *StripeConfig) GetAPIKey() string {
+	if o == nil {
+		return ""
+	}
+	return o.APIKey
+}
+
+func (o *StripeConfig) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
+}
+
+func (o *StripeConfig) GetPollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PollingPeriod
+}

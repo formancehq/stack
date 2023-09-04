@@ -13,3 +13,38 @@ type Transaction struct {
 	Timestamp time.Time         `json:"timestamp"`
 	Txid      int64             `json:"txid"`
 }
+
+func (o *Transaction) GetMetadata() map[string]string {
+	if o == nil {
+		return map[string]string{}
+	}
+	return o.Metadata
+}
+
+func (o *Transaction) GetPostings() []Posting {
+	if o == nil {
+		return []Posting{}
+	}
+	return o.Postings
+}
+
+func (o *Transaction) GetReference() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Reference
+}
+
+func (o *Transaction) GetTimestamp() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.Timestamp
+}
+
+func (o *Transaction) GetTxid() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Txid
+}

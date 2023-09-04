@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 import java.time.OffsetDateTime;
 
+
 public class ListLogsRequest {
     /**
      * Parameter used in pagination requests. Maximum page size is set to 15.

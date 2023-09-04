@@ -33,7 +33,7 @@ class ErrorResponse
 	public function __construct()
 	{
 		$this->details = null;
-		$this->errorCode = \formance\stack\Models\Shared\ErrorsEnum::INTERNAL;
+		$this->errorCode = \formance\stack\Models\Shared\ErrorsEnum::Internal;
 		$this->errorMessage = "";
 	}
 }

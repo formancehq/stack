@@ -5,3 +5,10 @@ package shared
 type StageWaitEvent struct {
 	Event string `json:"event"`
 }
+
+func (o *StageWaitEvent) GetEvent() string {
+	if o == nil {
+		return ""
+	}
+	return o.Event
+}

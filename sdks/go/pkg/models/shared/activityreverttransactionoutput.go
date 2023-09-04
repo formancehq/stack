@@ -5,3 +5,10 @@ package shared
 type ActivityRevertTransactionOutput struct {
 	Data Transaction `json:"data"`
 }
+
+func (o *ActivityRevertTransactionOutput) GetData() Transaction {
+	if o == nil {
+		return Transaction{}
+	}
+	return o.Data
+}

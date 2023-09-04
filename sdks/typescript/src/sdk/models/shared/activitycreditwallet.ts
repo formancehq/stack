@@ -7,12 +7,12 @@ import { CreditWalletRequest } from "./creditwalletrequest";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityCreditWallet extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "data" })
-  @Type(() => CreditWalletRequest)
-  data?: CreditWalletRequest;
+    @SpeakeasyMetadata()
+    @Expose({ name: "data" })
+    @Type(() => CreditWalletRequest)
+    data?: CreditWalletRequest;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id?: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id?: string;
 }

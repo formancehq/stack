@@ -16,3 +16,38 @@ type CreateWorkflowResponse struct {
 	StatusCode  int
 	RawResponse *http.Response
 }
+
+func (o *CreateWorkflowResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *CreateWorkflowResponse) GetCreateWorkflowResponse() *shared.CreateWorkflowResponse {
+	if o == nil {
+		return nil
+	}
+	return o.CreateWorkflowResponse
+}
+
+func (o *CreateWorkflowResponse) GetError() *shared.Error {
+	if o == nil {
+		return nil
+	}
+	return o.Error
+}
+
+func (o *CreateWorkflowResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *CreateWorkflowResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}

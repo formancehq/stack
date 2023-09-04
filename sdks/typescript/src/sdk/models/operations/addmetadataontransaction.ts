@@ -7,64 +7,56 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class AddMetadataOnTransactionRequest extends SpeakeasyBase {
-  /**
-   * Use an idempotency key
-   */
-  @SpeakeasyMetadata({
-    data: "header, style=simple;explode=false;name=Idempotency-Key",
-  })
-  idempotencyKey?: string;
+    /**
+     * Use an idempotency key
+     */
+    @SpeakeasyMetadata({ data: "header, style=simple;explode=false;name=Idempotency-Key" })
+    idempotencyKey?: string;
 
-  /**
-   * metadata
-   */
-  @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-  requestBody?: Record<string, string>;
+    /**
+     * metadata
+     */
+    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+    requestBody?: Record<string, string>;
 
-  /**
-   * Set async mode.
-   */
-  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=async" })
-  async?: boolean;
+    /**
+     * Set async mode.
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=async" })
+    async?: boolean;
 
-  /**
-   * Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=dryRun",
-  })
-  dryRun?: boolean;
+    /**
+     * Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=dryRun" })
+    dryRun?: boolean;
 
-  /**
-   * Name of the ledger.
-   */
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=ledger",
-  })
-  ledger: string;
+    /**
+     * Name of the ledger.
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
+    ledger: string;
 
-  /**
-   * Transaction ID.
-   */
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=txid",
-  })
-  txid: number;
+    /**
+     * Transaction ID.
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=txid" })
+    txid: number;
 }
 
 export class AddMetadataOnTransactionResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * Error
-   */
-  @SpeakeasyMetadata()
-  errorResponse?: shared.ErrorResponse;
+    /**
+     * Error
+     */
+    @SpeakeasyMetadata()
+    errorResponse?: shared.ErrorResponse;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

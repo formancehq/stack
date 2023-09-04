@@ -5,3 +5,10 @@ package shared
 type ActivityCreateTransactionOutput struct {
 	Data Transaction `json:"data"`
 }
+
+func (o *ActivityCreateTransactionOutput) GetData() Transaction {
+	if o == nil {
+		return Transaction{}
+	}
+	return o.Data
+}

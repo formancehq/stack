@@ -9,20 +9,23 @@ from ..shared import transferresponse as shared_transferresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class ConnectorsTransferRequest:
-    
     connector: shared_connector.Connector = dataclasses.field(metadata={'path_param': { 'field_name': 'connector', 'style': 'simple', 'explode': False }})
     r"""The name of the connector."""
     transfer_request: shared_transferrequest.TransferRequest = dataclasses.field(metadata={'request': { 'media_type': 'application/json' }})
     
 
+
+
+
 @dataclasses.dataclass
 class ConnectorsTransferResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     transfer_response: Optional[shared_transferresponse.TransferResponse] = dataclasses.field(default=None)
     r"""OK"""
     
+

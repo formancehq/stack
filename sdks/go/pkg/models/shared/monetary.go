@@ -12,3 +12,17 @@ type Monetary struct {
 	// The asset of the monetary value.
 	Asset string `json:"asset"`
 }
+
+func (o *Monetary) GetAmount() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Amount
+}
+
+func (o *Monetary) GetAsset() string {
+	if o == nil {
+		return ""
+	}
+	return o.Asset
+}

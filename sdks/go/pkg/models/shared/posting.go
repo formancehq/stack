@@ -12,3 +12,31 @@ type Posting struct {
 	Destination string   `json:"destination"`
 	Source      string   `json:"source"`
 }
+
+func (o *Posting) GetAmount() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Amount
+}
+
+func (o *Posting) GetAsset() string {
+	if o == nil {
+		return ""
+	}
+	return o.Asset
+}
+
+func (o *Posting) GetDestination() string {
+	if o == nil {
+		return ""
+	}
+	return o.Destination
+}
+
+func (o *Posting) GetSource() string {
+	if o == nil {
+		return ""
+	}
+	return o.Source
+}

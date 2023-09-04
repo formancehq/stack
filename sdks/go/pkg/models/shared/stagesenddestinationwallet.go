@@ -6,3 +6,17 @@ type StageSendDestinationWallet struct {
 	Balance *string `json:"balance,omitempty"`
 	ID      string  `json:"id"`
 }
+
+func (o *StageSendDestinationWallet) GetBalance() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Balance
+}
+
+func (o *StageSendDestinationWallet) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}

@@ -7,6 +7,7 @@ package com.formance.formance_sdk.models.operations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
+
 public class VoidHoldRequest {
     @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=hold_id")
     public String holdId;

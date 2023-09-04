@@ -7,35 +7,35 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ChangeConfigSecretRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-  configChangeSecret?: shared.ConfigChangeSecret;
+    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+    configChangeSecret?: shared.ConfigChangeSecret;
 
-  /**
-   * Config ID
-   */
-  @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
-  id: string;
+    /**
+     * Config ID
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
+    id: string;
 }
 
 export class ChangeConfigSecretResponse extends SpeakeasyBase {
-  /**
-   * Secret successfully changed.
-   */
-  @SpeakeasyMetadata()
-  configResponse?: shared.ConfigResponse;
+    /**
+     * Secret successfully changed.
+     */
+    @SpeakeasyMetadata()
+    configResponse?: shared.ConfigResponse;
 
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * Error
-   */
-  @SpeakeasyMetadata()
-  errorResponse?: shared.ErrorResponse;
+    /**
+     * Error
+     */
+    @SpeakeasyMetadata()
+    errorResponse?: shared.ErrorResponse;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

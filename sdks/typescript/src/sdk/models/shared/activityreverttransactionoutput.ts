@@ -7,8 +7,8 @@ import { Transaction } from "./transaction";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityRevertTransactionOutput extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "data" })
-  @Type(() => Transaction)
-  data: Transaction;
+    @SpeakeasyMetadata()
+    @Expose({ name: "data" })
+    @Type(() => Transaction)
+    data: Transaction;
 }

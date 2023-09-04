@@ -7,31 +7,29 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class CreateSecretRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-  createSecretRequest?: shared.CreateSecretRequest;
+    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+    createSecretRequest?: shared.CreateSecretRequest;
 
-  /**
-   * Client ID
-   */
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=clientId",
-  })
-  clientId: string;
+    /**
+     * Client ID
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=clientId" })
+    clientId: string;
 }
 
 export class CreateSecretResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * Created secret
-   */
-  @SpeakeasyMetadata()
-  createSecretResponse?: shared.CreateSecretResponse;
+    /**
+     * Created secret
+     */
+    @SpeakeasyMetadata()
+    createSecretResponse?: shared.CreateSecretResponse;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

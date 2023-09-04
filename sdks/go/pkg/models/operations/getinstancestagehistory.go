@@ -14,6 +14,20 @@ type GetInstanceStageHistoryRequest struct {
 	Number int64 `pathParam:"style=simple,explode=false,name=number"`
 }
 
+func (o *GetInstanceStageHistoryRequest) GetInstanceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.InstanceID
+}
+
+func (o *GetInstanceStageHistoryRequest) GetNumber() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Number
+}
+
 type GetInstanceStageHistoryResponse struct {
 	ContentType string
 	// General error
@@ -22,4 +36,39 @@ type GetInstanceStageHistoryResponse struct {
 	GetWorkflowInstanceHistoryStageResponse *shared.GetWorkflowInstanceHistoryStageResponse
 	StatusCode                              int
 	RawResponse                             *http.Response
+}
+
+func (o *GetInstanceStageHistoryResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *GetInstanceStageHistoryResponse) GetError() *shared.Error {
+	if o == nil {
+		return nil
+	}
+	return o.Error
+}
+
+func (o *GetInstanceStageHistoryResponse) GetGetWorkflowInstanceHistoryStageResponse() *shared.GetWorkflowInstanceHistoryStageResponse {
+	if o == nil {
+		return nil
+	}
+	return o.GetWorkflowInstanceHistoryStageResponse
+}
+
+func (o *GetInstanceStageHistoryResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *GetInstanceStageHistoryResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

@@ -41,3 +41,31 @@ type MigrationInfo struct {
 	State   *MigrationInfoState `json:"state,omitempty"`
 	Version *int64              `json:"version,omitempty"`
 }
+
+func (o *MigrationInfo) GetDate() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.Date
+}
+
+func (o *MigrationInfo) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
+}
+
+func (o *MigrationInfo) GetState() *MigrationInfoState {
+	if o == nil {
+		return nil
+	}
+	return o.State
+}
+
+func (o *MigrationInfo) GetVersion() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.Version
+}
