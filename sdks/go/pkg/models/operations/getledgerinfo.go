@@ -12,6 +12,13 @@ type GetLedgerInfoRequest struct {
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
+func (o *GetLedgerInfoRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
 type GetLedgerInfoResponse struct {
 	ContentType string
 	// Error
@@ -20,4 +27,39 @@ type GetLedgerInfoResponse struct {
 	LedgerInfoResponse *shared.LedgerInfoResponse
 	StatusCode         int
 	RawResponse        *http.Response
+}
+
+func (o *GetLedgerInfoResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *GetLedgerInfoResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *GetLedgerInfoResponse) GetLedgerInfoResponse() *shared.LedgerInfoResponse {
+	if o == nil {
+		return nil
+	}
+	return o.LedgerInfoResponse
+}
+
+func (o *GetLedgerInfoResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *GetLedgerInfoResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

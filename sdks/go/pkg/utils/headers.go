@@ -31,10 +31,11 @@ func PopulateHeaders(ctx context.Context, req *http.Request, headers interface{}
 }
 
 func serializeHeader(objType reflect.Type, objValue reflect.Value, explode bool) string {
+	if isNil(objType, objValue) {
+		return ""
+	}
+
 	if objType.Kind() == reflect.Pointer {
-		if objValue.IsNil() {
-			return ""
-		}
 		objType = objType.Elem()
 		objValue = objValue.Elem()
 	}
@@ -47,10 +48,11 @@ func serializeHeader(objType reflect.Type, objValue reflect.Value, explode bool)
 			fieldType := objType.Field(i)
 			valType := objValue.Field(i)
 
+			if isNil(fieldType.Type, valType) {
+				continue
+			}
+
 			if fieldType.Type.Kind() == reflect.Pointer {
-				if valType.IsNil() {
-					continue
-				}
 				valType = valType.Elem()
 			}
 

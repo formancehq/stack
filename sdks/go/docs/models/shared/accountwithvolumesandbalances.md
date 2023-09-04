@@ -1,0 +1,12 @@
+# AccountWithVolumesAndBalances
+
+
+## Fields
+
+| Field                                                             | Type                                                              | Required                                                          | Description                                                       | Example                                                           |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `Address`                                                         | *string*                                                          | :heavy_check_mark:                                                | N/A                                                               | users:001                                                         |
+| `Balances`                                                        | map[string][*big.Int](https://pkg.go.dev/math/big#Int)            | :heavy_check_mark:                                                | N/A                                                               |                                                                   |
+| `Metadata`                                                        | map[string]*string*                                               | :heavy_check_mark:                                                | N/A                                                               |                                                                   |
+| `Type`                                                            | **string*                                                         | :heavy_minus_sign:                                                | N/A                                                               | virtual                                                           |
+| `Volumes`                                                         | map[string]map[string][*big.Int](https://pkg.go.dev/math/big#Int) | :heavy_check_mark:                                                | N/A                                                               |                                                                   |

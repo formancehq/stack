@@ -6,3 +6,17 @@ type CreateWorkflowRequest struct {
 	Name   *string                  `json:"name,omitempty"`
 	Stages []map[string]interface{} `json:"stages"`
 }
+
+func (o *CreateWorkflowRequest) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
+}
+
+func (o *CreateWorkflowRequest) GetStages() []map[string]interface{} {
+	if o == nil {
+		return []map[string]interface{}{}
+	}
+	return o.Stages
+}

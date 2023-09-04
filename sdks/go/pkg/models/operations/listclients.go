@@ -14,3 +14,31 @@ type ListClientsResponse struct {
 	StatusCode          int
 	RawResponse         *http.Response
 }
+
+func (o *ListClientsResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ListClientsResponse) GetListClientsResponse() *shared.ListClientsResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ListClientsResponse
+}
+
+func (o *ListClientsResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ListClientsResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}

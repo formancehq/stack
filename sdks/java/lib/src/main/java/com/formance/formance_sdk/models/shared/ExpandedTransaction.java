@@ -13,6 +13,7 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
+
 public class ExpandedTransaction {
     @JsonProperty("metadata")
     public java.util.Map<String, String> metadata;

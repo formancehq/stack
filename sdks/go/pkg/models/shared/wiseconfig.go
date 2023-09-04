@@ -8,3 +8,17 @@ type WiseConfig struct {
 	//
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }
+
+func (o *WiseConfig) GetAPIKey() string {
+	if o == nil {
+		return ""
+	}
+	return o.APIKey
+}
+
+func (o *WiseConfig) GetPollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PollingPeriod
+}

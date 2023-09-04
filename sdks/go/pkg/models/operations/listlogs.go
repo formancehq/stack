@@ -30,6 +30,41 @@ type ListLogsRequest struct {
 	StartTime *time.Time `queryParam:"style=form,explode=true,name=startTime"`
 }
 
+func (o *ListLogsRequest) GetCursor() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Cursor
+}
+
+func (o *ListLogsRequest) GetEndTime() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.EndTime
+}
+
+func (o *ListLogsRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
+func (o *ListLogsRequest) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
+}
+
+func (o *ListLogsRequest) GetStartTime() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.StartTime
+}
+
 type ListLogsResponse struct {
 	ContentType string
 	// Error
@@ -38,4 +73,39 @@ type ListLogsResponse struct {
 	LogsCursorResponse *shared.LogsCursorResponse
 	StatusCode         int
 	RawResponse        *http.Response
+}
+
+func (o *ListLogsResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ListLogsResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *ListLogsResponse) GetLogsCursorResponse() *shared.LogsCursorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.LogsCursorResponse
+}
+
+func (o *ListLogsResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ListLogsResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

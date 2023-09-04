@@ -8,9 +8,9 @@ from ..shared import errorresponse as shared_errorresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class InsertConfigResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     config_response: Optional[shared_configresponse.ConfigResponse] = dataclasses.field(default=None)
@@ -19,3 +19,4 @@ class InsertConfigResponse:
     r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

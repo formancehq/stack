@@ -32,14 +32,9 @@ class TaskDummyPay
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $id;
     
-    /**
-     * $state
-     * 
-     * @var array<string, mixed> $state
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('state')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
-    public array $state;
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\TaskDummyPayState')]
+    public TaskDummyPayState $state;
     
 	#[\JMS\Serializer\Annotation\SerializedName('status')]
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\PaymentStatus>')]
@@ -56,8 +51,8 @@ class TaskDummyPay
 		$this->descriptor = new \formance\stack\Models\Shared\TaskDummyPayDescriptor();
 		$this->error = null;
 		$this->id = "";
-		$this->state = [];
-		$this->status = \formance\stack\Models\Shared\PaymentStatus::PENDING;
+		$this->state = new \formance\stack\Models\Shared\TaskDummyPayState();
+		$this->status = \formance\stack\Models\Shared\PaymentStatus::Pending;
 		$this->updatedAt = new \DateTime();
 	}
 }

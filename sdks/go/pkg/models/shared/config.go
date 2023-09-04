@@ -5,3 +5,10 @@ package shared
 type Config struct {
 	Storage LedgerStorage `json:"storage"`
 }
+
+func (o *Config) GetStorage() LedgerStorage {
+	if o == nil {
+		return LedgerStorage{}
+	}
+	return o.Storage
+}

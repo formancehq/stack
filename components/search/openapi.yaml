@@ -94,6 +94,7 @@ components:
         data:
           type: object
           description: The payload
+          additionalProperties: true
         cursor:
           title: cursor
           type: object
@@ -127,3 +128,4 @@ components:
               items:
                 allOf:
                 - type: object
+                  additionalProperties: true

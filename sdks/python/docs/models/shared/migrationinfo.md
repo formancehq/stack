@@ -1,0 +1,11 @@
+# MigrationInfo
+
+
+## Fields
+
+| Field                                                                     | Type                                                                      | Required                                                                  | Description                                                               | Example                                                                   |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `date_`                                                                   | [date](https://docs.python.org/3/library/datetime.html#date-objects)      | :heavy_minus_sign:                                                        | N/A                                                                       |                                                                           |
+| `name`                                                                    | *Optional[str]*                                                           | :heavy_minus_sign:                                                        | N/A                                                                       | migrations:001                                                            |
+| `state`                                                                   | [Optional[MigrationInfoState]](../../models/shared/migrationinfostate.md) | :heavy_minus_sign:                                                        | N/A                                                                       |                                                                           |
+| `version`                                                                 | *Optional[int]*                                                           | :heavy_minus_sign:                                                        | N/A                                                                       | 11                                                                        |

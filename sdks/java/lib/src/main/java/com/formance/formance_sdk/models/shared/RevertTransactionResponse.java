@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * RevertTransactionResponse - OK
  */
+
 public class RevertTransactionResponse {
     @JsonProperty("data")
     public Transaction data;

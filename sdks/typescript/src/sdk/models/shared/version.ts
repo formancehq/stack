@@ -6,15 +6,15 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class Version extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "health" })
-  health: boolean;
+    @SpeakeasyMetadata()
+    @Expose({ name: "health" })
+    health: boolean;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "name" })
-  name: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "name" })
+    name: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "version" })
-  version: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "version" })
+    version: string;
 }

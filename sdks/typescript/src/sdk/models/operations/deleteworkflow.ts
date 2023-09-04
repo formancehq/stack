@@ -7,28 +7,26 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class DeleteWorkflowRequest extends SpeakeasyBase {
-  /**
-   * The flow id
-   */
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=flowId",
-  })
-  flowId: string;
+    /**
+     * The flow id
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=flowId" })
+    flowId: string;
 }
 
 export class DeleteWorkflowResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * General error
-   */
-  @SpeakeasyMetadata()
-  error?: shared.ErrorT;
+    /**
+     * General error
+     */
+    @SpeakeasyMetadata()
+    error?: shared.ErrorT;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

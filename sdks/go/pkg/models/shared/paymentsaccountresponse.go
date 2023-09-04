@@ -6,3 +6,10 @@ package shared
 type PaymentsAccountResponse struct {
 	Data PaymentsAccount `json:"data"`
 }
+
+func (o *PaymentsAccountResponse) GetData() PaymentsAccount {
+	if o == nil {
+		return PaymentsAccount{}
+	}
+	return o.Data
+}

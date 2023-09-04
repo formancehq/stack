@@ -12,6 +12,20 @@ type DebitWalletRequest struct {
 	ID                 string                     `pathParam:"style=simple,explode=false,name=id"`
 }
 
+func (o *DebitWalletRequest) GetDebitWalletRequest() *shared.DebitWalletRequest {
+	if o == nil {
+		return nil
+	}
+	return o.DebitWalletRequest
+}
+
+func (o *DebitWalletRequest) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
 type DebitWalletResponse struct {
 	ContentType string
 	// Wallet successfully debited as a pending hold
@@ -20,4 +34,39 @@ type DebitWalletResponse struct {
 	RawResponse         *http.Response
 	// Error
 	WalletsErrorResponse *shared.WalletsErrorResponse
+}
+
+func (o *DebitWalletResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *DebitWalletResponse) GetDebitWalletResponse() *shared.DebitWalletResponse {
+	if o == nil {
+		return nil
+	}
+	return o.DebitWalletResponse
+}
+
+func (o *DebitWalletResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *DebitWalletResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *DebitWalletResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.WalletsErrorResponse
 }

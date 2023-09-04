@@ -13,9 +13,9 @@ from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
+
 @dataclasses.dataclass
 class ExpandedTransaction:
-    
     metadata: dict[str, str] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('metadata') }})
     post_commit_volumes: dict[str, dict[str, shared_volume.Volume]] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('postCommitVolumes') }})
     postings: list[shared_posting.Posting] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('postings') }})
@@ -24,3 +24,4 @@ class ExpandedTransaction:
     txid: int = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('txid') }})
     reference: Optional[str] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('reference'), 'exclude': lambda f: f is None }})
     
+

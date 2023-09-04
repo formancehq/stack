@@ -19,6 +19,7 @@ import java.time.OffsetDateTime;
  *   - `script`: enabling more complex transactions with Numscript
  * 
  */
+
 public class PostTransaction {
     @JsonProperty("metadata")
     public java.util.Map<String, String> metadata;

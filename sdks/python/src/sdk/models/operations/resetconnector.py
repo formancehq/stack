@@ -7,17 +7,20 @@ from ..shared import connector as shared_connector
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class ResetConnectorRequest:
-    
     connector: shared_connector.Connector = dataclasses.field(metadata={'path_param': { 'field_name': 'connector', 'style': 'simple', 'explode': False }})
     r"""The name of the connector."""
     
 
+
+
+
 @dataclasses.dataclass
 class ResetConnectorResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

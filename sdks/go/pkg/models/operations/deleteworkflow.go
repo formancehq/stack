@@ -12,10 +12,45 @@ type DeleteWorkflowRequest struct {
 	FlowID string `pathParam:"style=simple,explode=false,name=flowId"`
 }
 
+func (o *DeleteWorkflowRequest) GetFlowID() string {
+	if o == nil {
+		return ""
+	}
+	return o.FlowID
+}
+
 type DeleteWorkflowResponse struct {
 	ContentType string
 	// General error
 	Error       *shared.Error
 	StatusCode  int
 	RawResponse *http.Response
+}
+
+func (o *DeleteWorkflowResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *DeleteWorkflowResponse) GetError() *shared.Error {
+	if o == nil {
+		return nil
+	}
+	return o.Error
+}
+
+func (o *DeleteWorkflowResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *DeleteWorkflowResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

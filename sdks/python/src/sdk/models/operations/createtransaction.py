@@ -9,9 +9,9 @@ from ..shared import posttransaction as shared_posttransaction
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class CreateTransactionRequest:
-    
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
     post_transaction: shared_posttransaction.PostTransaction = dataclasses.field(metadata={'request': { 'media_type': 'application/json' }})
@@ -27,9 +27,11 @@ class CreateTransactionRequest:
     r"""Use an idempotency key"""
     
 
+
+
+
 @dataclasses.dataclass
 class CreateTransactionResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     create_transaction_response: Optional[shared_createtransactionresponse.CreateTransactionResponse] = dataclasses.field(default=None)
@@ -38,3 +40,4 @@ class CreateTransactionResponse:
     r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

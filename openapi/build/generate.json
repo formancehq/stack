@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230822"
+    "version": "v1.0.20230905"
   },
   "servers": [
     {
@@ -4500,6 +4500,7 @@
           "vars": {
             "type": "object",
             "properties": {},
+            "additionalProperties": true,
             "example": {
               "user": "users:042"
             }
@@ -4598,6 +4599,7 @@
               "vars": {
                 "type": "object",
                 "properties": {},
+                "additionalProperties": true,
                 "example": {
                   "user": "users:042"
                 }
@@ -4654,7 +4656,8 @@
           },
           "data": {
             "type": "object",
-            "properties": {}
+            "properties": {},
+            "additionalProperties": true
           },
           "hash": {
             "type": "string",
@@ -6098,7 +6101,8 @@
         "properties": {
           "data": {
             "type": "object",
-            "description": "The payload"
+            "description": "The payload",
+            "additionalProperties": true
           },
           "cursor": {
             "title": "cursor",
@@ -6141,7 +6145,8 @@
                 "items": {
                   "allOf": [
                     {
-                      "type": "object"
+                      "type": "object",
+                      "additionalProperties": true
                     }
                   ]
                 }

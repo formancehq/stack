@@ -7,75 +7,65 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ListAccountsRequest extends SpeakeasyBase {
-  /**
-   * Filter accounts by address pattern (regular expression placed between ^ and $).
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=address",
-  })
-  address?: string;
+    /**
+     * Filter accounts by address pattern (regular expression placed between ^ and $).
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=address" })
+    address?: string;
 
-  /**
-   * Parameter used in pagination requests. Maximum page size is set to 15.
-   *
-   * @remarks
-   * Set to the value of next for the next page of results.
-   * Set to the value of previous for the previous page of results.
-   * No other parameters can be set when this parameter is set.
-   *
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=cursor",
-  })
-  cursor?: string;
+    /**
+     * Parameter used in pagination requests. Maximum page size is set to 15.
+     *
+     * @remarks
+     * Set to the value of next for the next page of results.
+     * Set to the value of previous for the previous page of results.
+     * No other parameters can be set when this parameter is set.
+     *
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=cursor" })
+    cursor?: string;
 
-  /**
-   * Name of the ledger.
-   */
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=ledger",
-  })
-  ledger: string;
+    /**
+     * Name of the ledger.
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
+    ledger: string;
 
-  /**
-   * Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=deepObject;explode=true;name=metadata",
-  })
-  metadata?: Record<string, string>;
+    /**
+     * Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=deepObject;explode=true;name=metadata" })
+    metadata?: Record<string, string>;
 
-  /**
-   * The maximum number of results to return per page.
-   *
-   * @remarks
-   *
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=pageSize",
-  })
-  pageSize?: number;
+    /**
+     * The maximum number of results to return per page.
+     *
+     * @remarks
+     *
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=pageSize" })
+    pageSize?: number;
 }
 
 export class ListAccountsResponse extends SpeakeasyBase {
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  accountsCursorResponse?: shared.AccountsCursorResponse;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    accountsCursorResponse?: shared.AccountsCursorResponse;
 
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * Error
-   */
-  @SpeakeasyMetadata()
-  errorResponse?: shared.ErrorResponse;
+    /**
+     * Error
+     */
+    @SpeakeasyMetadata()
+    errorResponse?: shared.ErrorResponse;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

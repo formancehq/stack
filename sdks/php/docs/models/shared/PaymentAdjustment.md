@@ -1,0 +1,12 @@
+# PaymentAdjustment
+
+
+## Fields
+
+| Field                                                               | Type                                                                | Required                                                            | Description                                                         | Example                                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `absolute`                                                          | *bool*                                                              | :heavy_check_mark:                                                  | N/A                                                                 |                                                                     |
+| `amount`                                                            | *int*                                                               | :heavy_check_mark:                                                  | N/A                                                                 | 100                                                                 |
+| `date`                                                              | [\DateTime](https://www.php.net/manual/en/class.datetime.php)       | :heavy_check_mark:                                                  | N/A                                                                 |                                                                     |
+| `raw`                                                               | [PaymentAdjustmentRaw](../../models/shared/PaymentAdjustmentRaw.md) | :heavy_check_mark:                                                  | N/A                                                                 |                                                                     |
+| `status`                                                            | [PaymentStatus](../../models/shared/PaymentStatus.md)               | :heavy_check_mark:                                                  | N/A                                                                 |                                                                     |

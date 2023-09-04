@@ -6,3 +6,17 @@ type ActivityCreateTransaction struct {
 	Data   *PostTransaction `json:"data,omitempty"`
 	Ledger *string          `json:"ledger,omitempty"`
 }
+
+func (o *ActivityCreateTransaction) GetData() *PostTransaction {
+	if o == nil {
+		return nil
+	}
+	return o.Data
+}
+
+func (o *ActivityCreateTransaction) GetLedger() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Ledger
+}

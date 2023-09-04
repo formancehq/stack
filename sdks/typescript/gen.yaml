@@ -3,6 +3,12 @@ generation:
   sdkClassName: SDK
   singleTagPerOp: true
   telemetryEnabled: false
+features:
+  typescript:
+    core: 2.87.0
+    deprecations: 2.81.1
+    globalSecurity: 2.81.1
+    globalServerURLs: 2.82.0
 typescript:
   version: v0.1.0
   author: Formance

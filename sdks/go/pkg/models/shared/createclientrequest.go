@@ -11,3 +11,52 @@ type CreateClientRequest struct {
 	RedirectUris           []string               `json:"redirectUris,omitempty"`
 	Trusted                *bool                  `json:"trusted,omitempty"`
 }
+
+func (o *CreateClientRequest) GetDescription() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Description
+}
+
+func (o *CreateClientRequest) GetMetadata() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *CreateClientRequest) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *CreateClientRequest) GetPostLogoutRedirectUris() []string {
+	if o == nil {
+		return nil
+	}
+	return o.PostLogoutRedirectUris
+}
+
+func (o *CreateClientRequest) GetPublic() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Public
+}
+
+func (o *CreateClientRequest) GetRedirectUris() []string {
+	if o == nil {
+		return nil
+	}
+	return o.RedirectUris
+}
+
+func (o *CreateClientRequest) GetTrusted() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Trusted
+}

@@ -10,7 +10,49 @@ type GetHoldsResponseCursor struct {
 	Previous *string `json:"previous,omitempty"`
 }
 
+func (o *GetHoldsResponseCursor) GetData() []Hold {
+	if o == nil {
+		return []Hold{}
+	}
+	return o.Data
+}
+
+func (o *GetHoldsResponseCursor) GetHasMore() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.HasMore
+}
+
+func (o *GetHoldsResponseCursor) GetNext() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Next
+}
+
+func (o *GetHoldsResponseCursor) GetPageSize() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.PageSize
+}
+
+func (o *GetHoldsResponseCursor) GetPrevious() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Previous
+}
+
 // GetHoldsResponse - Holds
 type GetHoldsResponse struct {
 	Cursor GetHoldsResponseCursor `json:"cursor"`
+}
+
+func (o *GetHoldsResponse) GetCursor() GetHoldsResponseCursor {
+	if o == nil {
+		return GetHoldsResponseCursor{}
+	}
+	return o.Cursor
 }

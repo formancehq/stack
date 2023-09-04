@@ -6,6 +6,7 @@ package com.formance.formance_sdk.models.operations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class UpdateWalletRequestBody {
     /**
      * Custom metadata to attach to this wallet.

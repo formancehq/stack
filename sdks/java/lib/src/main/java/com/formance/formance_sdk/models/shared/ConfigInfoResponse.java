@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ConfigInfoResponse - OK
  */
+
 public class ConfigInfoResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")

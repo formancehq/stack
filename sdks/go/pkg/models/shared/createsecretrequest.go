@@ -6,3 +6,17 @@ type CreateSecretRequest struct {
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Name     string                 `json:"name"`
 }
+
+func (o *CreateSecretRequest) GetMetadata() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *CreateSecretRequest) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}

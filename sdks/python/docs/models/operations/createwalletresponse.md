@@ -1,0 +1,12 @@
+# CreateWalletResponse
+
+
+## Fields
+
+| Field                                                                                 | Type                                                                                  | Required                                                                              | Description                                                                           |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `content_type`                                                                        | *str*                                                                                 | :heavy_check_mark:                                                                    | N/A                                                                                   |
+| `create_wallet_response`                                                              | [Optional[shared.CreateWalletResponse]](../../models/shared/createwalletresponse.md)  | :heavy_minus_sign:                                                                    | Wallet created                                                                        |
+| `status_code`                                                                         | *int*                                                                                 | :heavy_check_mark:                                                                    | N/A                                                                                   |
+| `raw_response`                                                                        | [requests.Response](https://requests.readthedocs.io/en/latest/api/#requests.Response) | :heavy_minus_sign:                                                                    | N/A                                                                                   |
+| `wallets_error_response`                                                              | [Optional[shared.WalletsErrorResponse]](../../models/shared/walletserrorresponse.md)  | :heavy_minus_sign:                                                                    | Error                                                                                 |

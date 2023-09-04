@@ -46,15 +46,10 @@ class Query
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $policy = null;
     
-    /**
-     * $raw
-     * 
-     * @var ?array<string, mixed> $raw
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('raw')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\QueryRaw')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?array $raw = null;
+    public ?QueryRaw $raw = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('sort')]
     #[\JMS\Serializer\Annotation\Type('string')]

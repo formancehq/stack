@@ -7,3 +7,24 @@ type Version struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
 }
+
+func (o *Version) GetHealth() bool {
+	if o == nil {
+		return false
+	}
+	return o.Health
+}
+
+func (o *Version) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *Version) GetVersion() string {
+	if o == nil {
+		return ""
+	}
+	return o.Version
+}

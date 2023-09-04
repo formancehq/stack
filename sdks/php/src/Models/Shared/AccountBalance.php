@@ -27,6 +27,11 @@ class AccountBalance
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $createdAt;
     
+    /**
+     * 
+     * @var string $currency
+     * @deprecated  field: This will be removed in a future release, please migrate away from it as soon as possible.
+     */
 	#[\JMS\Serializer\Annotation\SerializedName('currency')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $currency;

@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Open, modular foundation for unique payments flows
+ * Formance Stack API: Open, modular foundation for unique payments flows
  * 
  * # Introduction
  * This API is documented in **OpenAPI format**.
@@ -50,21 +50,13 @@ public class SDK {
     public Wallets wallets;
     public Webhooks webhooks;	
 
-	private HTTPClient _defaultClient;
-	private HTTPClient _securityClient;
-	private com.formance.formance_sdk.models.shared.Security _security;
-	private String _serverUrl;
-	private String _language = "java";
-	private String _sdkVersion = "v0.1.0";
-	private String _genVersion = "2.31.0";
+	private SDKConfiguration sdkConfiguration;
+
 	/**
 	 * The Builder class allows the configuration of a new instance of the SDK.
 	 */
 	public static class Builder {
-		private HTTPClient client;
-		private com.formance.formance_sdk.models.shared.Security security;
-		private String serverUrl;
-		private java.util.Map<String, String> params = new java.util.HashMap<String, String>();
+		private SDKConfiguration sdkConfiguration = new SDKConfiguration();
 
 		private Builder() {
 		}
@@ -75,7 +67,7 @@ public class SDK {
 		 * @return The builder instance.
 		 */
 		public Builder setClient(HTTPClient client) {
-			this.client = client;
+			this.sdkConfiguration.defaultClient = client;
 			return this;
 		}
 		
@@ -85,7 +77,7 @@ public class SDK {
 		 * @return The builder instance.
 		 */
 		public Builder setSecurity(com.formance.formance_sdk.models.shared.Security security) {
-			this.security = security;
+			this.sdkConfiguration.security = security;
 			return this;
 		}
 		
@@ -95,7 +87,7 @@ public class SDK {
 		 * @return The builder instance.
 		 */
 		public Builder setServerURL(String serverUrl) {
-			this.serverUrl = serverUrl;
+			this.sdkConfiguration.serverUrl = serverUrl;
 			return this;
 		}
 		
@@ -106,8 +98,34 @@ public class SDK {
 		 * @return The builder instance.
 		 */
 		public Builder setServerURL(String serverUrl, java.util.Map<String, String> params) {
-			this.serverUrl = serverUrl;
-			this.params = params;
+			this.sdkConfiguration.serverUrl = com.formance.formance_sdk.utils.Utils.templateUrl(serverUrl, params);
+			return this;
+		}
+		
+		/**
+		 * Allows the overriding of the default server by index
+		 * @param serverIdx The server to use for all requests.
+		 * @return The builder instance.
+		 */
+		public Builder setServerIndex(int serverIdx) {
+			this.sdkConfiguration.serverIdx = serverIdx;
+			this.sdkConfiguration.serverUrl = SERVERS[serverIdx];
+			return this;
+		}
+		
+		/**
+		 * Allows setting the $name variable for url substitution.
+		 * @param organization The value to set.
+		 * @return The builder instance.
+		 */
+		public Builder setOrganization(String organization) {
+			for (java.util.Map<String, String> server : this.sdkConfiguration.serverDefaults) {
+				if (!server.containsKey("organization")) {
+					continue;
+				}
+				server.put("organization", organization.toString());
+			}
+
 			return this;
 		}
 		
@@ -117,7 +135,28 @@ public class SDK {
 		 * @throws Exception Thrown if the SDK could not be built.
 		 */
 		public SDK build() throws Exception {
-			return new SDK(this.client, this.security, this.serverUrl, this.params);
+			if (this.sdkConfiguration.defaultClient == null) {
+				this.sdkConfiguration.defaultClient = new SpeakeasyHTTPClient();
+			}
+			
+			if (this.sdkConfiguration.security != null) {
+				this.sdkConfiguration.securityClient = com.formance.formance_sdk.utils.Utils.configureSecurityClient(this.sdkConfiguration.defaultClient, this.sdkConfiguration.security);
+			}
+			
+			if (this.sdkConfiguration.securityClient == null) {
+				this.sdkConfiguration.securityClient = this.sdkConfiguration.defaultClient;
+			}
+			
+			if (this.sdkConfiguration.serverUrl == null || this.sdkConfiguration.serverUrl.isBlank()) {
+				this.sdkConfiguration.serverUrl = SERVERS[0];
+				this.sdkConfiguration.serverIdx = 0;
+			}
+
+			if (this.sdkConfiguration.serverUrl.endsWith("/")) {
+				this.sdkConfiguration.serverUrl = this.sdkConfiguration.serverUrl.substring(0, this.sdkConfiguration.serverUrl.length() - 1);
+			}
+			
+			return new SDK(this.sdkConfiguration);
 		}
 	}
 
@@ -129,98 +168,22 @@ public class SDK {
 		return new Builder();
 	}
 
-	private SDK(HTTPClient client, com.formance.formance_sdk.models.shared.Security security, String serverUrl, java.util.Map<String, String> params) throws Exception {
-		this._defaultClient = client;
+	private SDK(SDKConfiguration sdkConfiguration) throws Exception {
+		this.sdkConfiguration = sdkConfiguration;
 		
-		if (this._defaultClient == null) {
-			this._defaultClient = new SpeakeasyHTTPClient();
-		}
+		this.auth = new Auth(this.sdkConfiguration);
 		
-		if (security != null) {
-			this._security = security;
-			this._securityClient = com.formance.formance_sdk.utils.Utils.configureSecurityClient(this._defaultClient, this._security);
-		}
+		this.ledger = new Ledger(this.sdkConfiguration);
 		
-		if (this._securityClient == null) {
-			this._securityClient = this._defaultClient;
-		}
-
-		if (serverUrl != null && !serverUrl.isBlank()) {
-			this._serverUrl = com.formance.formance_sdk.utils.Utils.templateUrl(serverUrl, params);
-		}
+		this.orchestration = new Orchestration(this.sdkConfiguration);
 		
-		if (this._serverUrl == null) {
-			this._serverUrl = SERVERS[0];
-		}
-
-		if (this._serverUrl.endsWith("/")) {
-            this._serverUrl = this._serverUrl.substring(0, this._serverUrl.length() - 1);
-        }
-
+		this.payments = new Payments(this.sdkConfiguration);
 		
+		this.search = new Search(this.sdkConfiguration);
 		
-		this.auth = new Auth(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
+		this.wallets = new Wallets(this.sdkConfiguration);
 		
-		this.ledger = new Ledger(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.orchestration = new Orchestration(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.payments = new Payments(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.search = new Search(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.wallets = new Wallets(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
-		
-		this.webhooks = new Webhooks(
-			this._defaultClient,
-			this._securityClient,
-			this._serverUrl,
-			this._language,
-			this._sdkVersion,
-			this._genVersion
-		);
+		this.webhooks = new Webhooks(this.sdkConfiguration);
 	}
 
     /**
@@ -229,7 +192,7 @@ public class SDK {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.GetVersionsResponse getVersions() throws Exception {
-        String baseUrl = this._serverUrl;
+        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
         String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/versions");
         
         HTTPRequest req = new HTTPRequest();
@@ -237,9 +200,9 @@ public class SDK {
         req.setURL(url);
 
         req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
         
-        HTTPClient client = this._securityClient;
+        HTTPClient client = this.sdkConfiguration.securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 

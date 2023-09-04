@@ -6,3 +6,10 @@ package shared
 type GetTransactionResponse struct {
 	Data ExpandedTransaction `json:"data"`
 }
+
+func (o *GetTransactionResponse) GetData() ExpandedTransaction {
+	if o == nil {
+		return ExpandedTransaction{}
+	}
+	return o.Data
+}

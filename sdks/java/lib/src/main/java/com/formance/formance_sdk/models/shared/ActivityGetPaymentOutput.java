@@ -6,6 +6,7 @@ package com.formance.formance_sdk.models.shared;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class ActivityGetPaymentOutput {
     @JsonProperty("data")
     public Payment data;

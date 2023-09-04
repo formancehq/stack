@@ -66,11 +66,13 @@ class RequestBodies
         if (preg_match('/(application|text)\/.*?\+*json.*/', $mediaType)) {
             $serializer = JSON::createSerializer();
             $options['body'] = $serializer->serialize($value, 'json');
+            $options['headers']['content-type'] = $mediaType;
         } else if (preg_match('/multipart\/.*/', $mediaType)) {
             return $this->serializeMultipart($value);
         } else if (preg_match('/application\/x-www-form-urlencoded.*/', $mediaType)) {
             return $this->serializeFormData($fieldName, $value);
         } else {
+            $options['headers']['content-type'] = $mediaType;
             $type = gettype($value);
             switch ($type) {
                 case 'string':

@@ -6,3 +6,17 @@ type StageSendSourceAccount struct {
 	ID     string  `json:"id"`
 	Ledger *string `json:"ledger,omitempty"`
 }
+
+func (o *StageSendSourceAccount) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
+func (o *StageSendSourceAccount) GetLedger() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Ledger
+}

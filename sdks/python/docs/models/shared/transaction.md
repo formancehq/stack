@@ -1,0 +1,12 @@
+# Transaction
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `metadata`                                                           | dict[str, *str*]                                                     | :heavy_check_mark:                                                   | N/A                                                                  |                                                                      |
+| `postings`                                                           | list[[Posting](../../models/shared/posting.md)]                      | :heavy_check_mark:                                                   | N/A                                                                  |                                                                      |
+| `reference`                                                          | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | N/A                                                                  | ref:001                                                              |
+| `timestamp`                                                          | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_check_mark:                                                   | N/A                                                                  |                                                                      |
+| `txid`                                                               | *int*                                                                | :heavy_check_mark:                                                   | N/A                                                                  |                                                                      |

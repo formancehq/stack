@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * GetWorkflowInstanceHistoryStageResponse - The workflow instance stage history
  */
+
 public class GetWorkflowInstanceHistoryStageResponse {
     @JsonProperty("data")
     public WorkflowInstanceHistoryStage[] data;

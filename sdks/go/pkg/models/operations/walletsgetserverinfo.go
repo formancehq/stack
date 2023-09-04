@@ -16,3 +16,38 @@ type WalletsgetServerInfoResponse struct {
 	// Error
 	WalletsErrorResponse *shared.WalletsErrorResponse
 }
+
+func (o *WalletsgetServerInfoResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *WalletsgetServerInfoResponse) GetServerInfo() *shared.ServerInfo {
+	if o == nil {
+		return nil
+	}
+	return o.ServerInfo
+}
+
+func (o *WalletsgetServerInfoResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *WalletsgetServerInfoResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *WalletsgetServerInfoResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.WalletsErrorResponse
+}

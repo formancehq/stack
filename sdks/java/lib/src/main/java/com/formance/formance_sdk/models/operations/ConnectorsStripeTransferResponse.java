@@ -7,6 +7,7 @@ package com.formance.formance_sdk.models.operations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.http.HttpResponse;
 
+
 public class ConnectorsStripeTransferResponse {
     
     public String contentType;
@@ -36,9 +37,9 @@ public class ConnectorsStripeTransferResponse {
      * OK
      */
     
-    public java.util.Map<String, Object> stripeTransferResponse;
+    public com.formance.formance_sdk.models.shared.StripeTransferResponse stripeTransferResponse;
 
-    public ConnectorsStripeTransferResponse withStripeTransferResponse(java.util.Map<String, Object> stripeTransferResponse) {
+    public ConnectorsStripeTransferResponse withStripeTransferResponse(com.formance.formance_sdk.models.shared.StripeTransferResponse stripeTransferResponse) {
         this.stripeTransferResponse = stripeTransferResponse;
         return this;
     }

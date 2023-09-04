@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * GetTransactionsResponse - OK
  */
+
 public class GetTransactionsResponse {
     @JsonProperty("cursor")
     public GetTransactionsResponseCursor cursor;

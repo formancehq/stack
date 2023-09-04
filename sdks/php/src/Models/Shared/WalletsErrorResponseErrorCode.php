@@ -11,8 +11,8 @@ namespace formance\stack\Models\Shared;
 
 enum WalletsErrorResponseErrorCode: string
 {
-    case VALIDATION = 'VALIDATION';
-    case INTERNAL_ERROR = 'INTERNAL_ERROR';
-    case INSUFFICIENT_FUND = 'INSUFFICIENT_FUND';
-    case HOLD_CLOSED = 'HOLD_CLOSED';
+    case Validation = 'VALIDATION';
+    case InternalError = 'INTERNAL_ERROR';
+    case InsufficientFund = 'INSUFFICIENT_FUND';
+    case HoldClosed = 'HOLD_CLOSED';
 }

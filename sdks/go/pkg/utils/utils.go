@@ -45,6 +45,10 @@ func UnmarshalJsonFromResponseBody(body io.Reader, out interface{}) error {
 }
 
 func ReplaceParameters(stringWithParams string, params map[string]string) string {
+	if len(params) == 0 {
+		return stringWithParams
+	}
+
 	return paramRegex.ReplaceAllStringFunc(stringWithParams, func(match string) string {
 		match = match[1 : len(match)-1]
 		return params[match]
@@ -149,4 +153,12 @@ func populateFromGlobals(fieldType reflect.StructField, valType reflect.Value, p
 	}
 
 	return valType
+}
+
+func isNil(typ reflect.Type, val reflect.Value) bool {
+	if typ.Kind() == reflect.Ptr || typ.Kind() == reflect.Map || typ.Kind() == reflect.Slice || typ.Kind() == reflect.Interface {
+		return val.IsNil()
+	}
+
+	return false
 }

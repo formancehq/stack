@@ -12,10 +12,45 @@ type ReadScopeRequest struct {
 	ScopeID string `pathParam:"style=simple,explode=false,name=scopeId"`
 }
 
+func (o *ReadScopeRequest) GetScopeID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ScopeID
+}
+
 type ReadScopeResponse struct {
 	ContentType string
 	// Retrieved scope
 	ReadScopeResponse *shared.ReadScopeResponse
 	StatusCode        int
 	RawResponse       *http.Response
+}
+
+func (o *ReadScopeResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ReadScopeResponse) GetReadScopeResponse() *shared.ReadScopeResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ReadScopeResponse
+}
+
+func (o *ReadScopeResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ReadScopeResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }
