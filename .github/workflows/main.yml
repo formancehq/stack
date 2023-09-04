@@ -11,6 +11,9 @@ jobs:
 #  Sync:
 #    runs-on: formance-runner
 #    steps:
+#      - uses: 'actions/checkout@v4'
+#        with:
+#          fetch-depth: 0
 #      - name: Setup Env
 #        uses: ./.github/actions/env
 #        with:
@@ -21,6 +24,9 @@ jobs:
   TestsIntegration:
     runs-on: formance-runner
     steps:
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
       - name: Setup Env
         uses: ./.github/actions/env
         with:
@@ -38,6 +44,9 @@ jobs:
   Moon:
     runs-on: formance-runner
     steps:
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
       - name: Setup Env
         uses: ./.github/actions/env
         with:
