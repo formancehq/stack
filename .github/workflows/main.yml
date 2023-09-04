@@ -9,7 +9,7 @@ on:
 
 jobs:
 #  Sync:
-#    runs-on: formance-runner
+#    runs-on: self-hosted
 #    steps:
 #      - uses: 'actions/checkout@v3'
 #        with:
@@ -22,7 +22,7 @@ jobs:
 
 
   TestsIntegration:
-    runs-on: formance-runner
+    runs-on: self-hosted
     steps:
       - uses: 'actions/checkout@v3'
         with:
@@ -42,7 +42,7 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
 
   Moon:
-    runs-on: formance-runner
+    runs-on: self-hosted
     steps:
       - uses: 'actions/checkout@v3'
         with:
