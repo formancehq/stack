@@ -24,7 +24,7 @@ class SDKConfiguration {
 		}});
 	}};
 	public String language = "java";
-	public String openapiDocVersion = "v1.0.20230907";
+	public String openapiDocVersion = "v1.0.20230908";
 	public String sdkVersion = "v0.1.0";
 	public String genVersion = "2.96.3";
 	
