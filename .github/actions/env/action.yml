@@ -11,12 +11,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: cachix/install-nix-action@v20
+    - uses: cachix/install-nix-action@v23
     - name: Install devbox
-      uses: jetpack-io/devbox-install-action@v0.3.0
+      uses: jetpack-io/devbox-install-action@v0.6.0
       with:
         enable-cache: true
-        devbox-version: 0.5.8
+        devbox-version: 0.5.11
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
