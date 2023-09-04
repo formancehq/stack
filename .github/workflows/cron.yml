@@ -9,8 +9,6 @@ jobs:
   Base:
     runs-on: formance-runner
     steps:
-        - name: Checkout
-          uses: actions/checkout@v3
         - name: Set up QEMU
           uses: docker/setup-qemu-action@v2
         - name: Set up Docker Buildx

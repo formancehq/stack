@@ -19,7 +19,7 @@ on:
 
 jobs:
   benchmarks:
-    runs-on: self-hosted
+    runs-on: formance-runner
     steps:
     - uses: actions/checkout@v3
       with:
