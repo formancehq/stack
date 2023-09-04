@@ -1,19 +1,19 @@
-name: Ledger benchmarks - V2
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'components/ledger/**'
+# name: Ledger benchmarks - V2
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - 'components/ledger/**'
 
-jobs:
-  benchmarks-sync:
-    uses: ./.github/workflows/_v2_ledger_benchmark.yml
-    with:
-      mode: sync
-      branch: main
-  benchmarks-async:
-    uses: ./.github/workflows/_v2_ledger_benchmark.yml
-    with:
-      mode: async
-      branch: main
+# jobs:
+#   benchmarks-sync:
+#     uses: ./.github/workflows/_v2_ledger_benchmark.yml
+#     with:
+#       mode: sync
+#       branch: main
+#   benchmarks-async:
+#     uses: ./.github/workflows/_v2_ledger_benchmark.yml
+#     with:
+#       mode: async
+#       branch: main
