@@ -12,7 +12,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    runs-on: self-hosted
+    runs-on: Formance
     steps:
       - uses: actions/labeler@v4
         with:
@@ -20,7 +20,7 @@ jobs:
 
   PR:
     name: Check PR Title
-    runs-on: self-hosted
+    runs-on: Formance
     permissions:
       statuses: write
     steps:
