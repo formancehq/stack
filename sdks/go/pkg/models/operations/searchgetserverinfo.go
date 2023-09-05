@@ -14,3 +14,31 @@ type SearchgetServerInfoResponse struct {
 	StatusCode  int
 	RawResponse *http.Response
 }
+
+func (o *SearchgetServerInfoResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *SearchgetServerInfoResponse) GetServerInfo() *shared.ServerInfo {
+	if o == nil {
+		return nil
+	}
+	return o.ServerInfo
+}
+
+func (o *SearchgetServerInfoResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *SearchgetServerInfoResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}

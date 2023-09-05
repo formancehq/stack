@@ -11,3 +11,38 @@ type CreditWalletRequest struct {
 	Reference *string           `json:"reference,omitempty"`
 	Sources   []Subject         `json:"sources"`
 }
+
+func (o *CreditWalletRequest) GetAmount() Monetary {
+	if o == nil {
+		return Monetary{}
+	}
+	return o.Amount
+}
+
+func (o *CreditWalletRequest) GetBalance() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Balance
+}
+
+func (o *CreditWalletRequest) GetMetadata() map[string]string {
+	if o == nil {
+		return map[string]string{}
+	}
+	return o.Metadata
+}
+
+func (o *CreditWalletRequest) GetReference() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Reference
+}
+
+func (o *CreditWalletRequest) GetSources() []Subject {
+	if o == nil {
+		return []Subject{}
+	}
+	return o.Sources
+}

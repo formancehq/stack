@@ -23,14 +23,9 @@ class PaymentAdjustment
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $date;
     
-    /**
-     * $raw
-     * 
-     * @var array<string, mixed> $raw
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('raw')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
-    public array $raw;
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\PaymentAdjustmentRaw')]
+    public PaymentAdjustmentRaw $raw;
     
 	#[\JMS\Serializer\Annotation\SerializedName('status')]
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\PaymentStatus>')]
@@ -41,7 +36,7 @@ class PaymentAdjustment
 		$this->absolute = false;
 		$this->amount = 0;
 		$this->date = new \DateTime();
-		$this->raw = [];
-		$this->status = \formance\stack\Models\Shared\PaymentStatus::PENDING;
+		$this->raw = new \formance\stack\Models\Shared\PaymentAdjustmentRaw();
+		$this->status = \formance\stack\Models\Shared\PaymentStatus::Pending;
 	}
 }

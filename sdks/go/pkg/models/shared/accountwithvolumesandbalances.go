@@ -6,10 +6,48 @@ import (
 	"math/big"
 )
 
+type AccountWithVolumesAndBalancesMetadata struct {
+}
+
 type AccountWithVolumesAndBalances struct {
-	Address  string                         `json:"address"`
-	Balances map[string]*big.Int            `json:"balances,omitempty"`
-	Metadata map[string]interface{}         `json:"metadata,omitempty"`
-	Type     *string                        `json:"type,omitempty"`
-	Volumes  map[string]map[string]*big.Int `json:"volumes,omitempty"`
+	Address  string                                 `json:"address"`
+	Balances map[string]*big.Int                    `json:"balances,omitempty"`
+	Metadata *AccountWithVolumesAndBalancesMetadata `json:"metadata,omitempty"`
+	Type     *string                                `json:"type,omitempty"`
+	Volumes  map[string]map[string]*big.Int         `json:"volumes,omitempty"`
+}
+
+func (o *AccountWithVolumesAndBalances) GetAddress() string {
+	if o == nil {
+		return ""
+	}
+	return o.Address
+}
+
+func (o *AccountWithVolumesAndBalances) GetBalances() map[string]*big.Int {
+	if o == nil {
+		return nil
+	}
+	return o.Balances
+}
+
+func (o *AccountWithVolumesAndBalances) GetMetadata() *AccountWithVolumesAndBalancesMetadata {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *AccountWithVolumesAndBalances) GetType() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Type
+}
+
+func (o *AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]*big.Int {
+	if o == nil {
+		return nil
+	}
+	return o.Volumes
 }

@@ -9,17 +9,19 @@ from ..shared import transactionsresponse as shared_transactionsresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class CreateTransactionsRequest:
-    
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
     transactions: shared_transactions.Transactions = dataclasses.field(metadata={'request': { 'media_type': 'application/json' }})
     
 
+
+
+
 @dataclasses.dataclass
 class CreateTransactionsResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
@@ -28,3 +30,4 @@ class CreateTransactionsResponse:
     transactions_response: Optional[shared_transactionsresponse.TransactionsResponse] = dataclasses.field(default=None)
     r"""OK"""
     
+

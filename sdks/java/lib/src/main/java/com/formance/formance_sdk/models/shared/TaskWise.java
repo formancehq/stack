@@ -13,6 +13,7 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
+
 public class TaskWise {
     @JsonProperty("connectorId")
     public String connectorId;
@@ -58,9 +59,9 @@ public class TaskWise {
     }
     
     @JsonProperty("state")
-    public java.util.Map<String, Object> state;
+    public TaskWiseState state;
 
-    public TaskWise withState(java.util.Map<String, Object> state) {
+    public TaskWise withState(TaskWiseState state) {
         this.state = state;
         return this;
     }
@@ -83,7 +84,7 @@ public class TaskWise {
         return this;
     }
     
-    public TaskWise(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskWiseDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") java.util.Map<String, Object> state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
+    public TaskWise(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskWiseDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") TaskWiseState state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
         this.connectorId = connectorId;
         this.createdAt = createdAt;
         this.descriptor = descriptor;

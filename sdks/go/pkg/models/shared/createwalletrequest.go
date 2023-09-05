@@ -7,3 +7,17 @@ type CreateWalletRequest struct {
 	Metadata map[string]string `json:"metadata"`
 	Name     string            `json:"name"`
 }
+
+func (o *CreateWalletRequest) GetMetadata() map[string]string {
+	if o == nil {
+		return map[string]string{}
+	}
+	return o.Metadata
+}
+
+func (o *CreateWalletRequest) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}

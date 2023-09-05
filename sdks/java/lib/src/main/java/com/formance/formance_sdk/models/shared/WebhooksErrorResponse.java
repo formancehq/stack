@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * WebhooksErrorResponse - Error
  */
+
 public class WebhooksErrorResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("details")

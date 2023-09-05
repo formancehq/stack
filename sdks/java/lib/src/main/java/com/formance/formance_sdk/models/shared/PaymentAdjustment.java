@@ -11,6 +11,7 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
+
 public class PaymentAdjustment {
     @JsonProperty("absolute")
     public Boolean absolute;
@@ -39,9 +40,9 @@ public class PaymentAdjustment {
     }
     
     @JsonProperty("raw")
-    public java.util.Map<String, Object> raw;
+    public PaymentAdjustmentRaw raw;
 
-    public PaymentAdjustment withRaw(java.util.Map<String, Object> raw) {
+    public PaymentAdjustment withRaw(PaymentAdjustmentRaw raw) {
         this.raw = raw;
         return this;
     }
@@ -54,7 +55,7 @@ public class PaymentAdjustment {
         return this;
     }
     
-    public PaymentAdjustment(@JsonProperty("absolute") Boolean absolute, @JsonProperty("amount") Long amount, @JsonProperty("date") OffsetDateTime date, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("status") PaymentStatus status) {
+    public PaymentAdjustment(@JsonProperty("absolute") Boolean absolute, @JsonProperty("amount") Long amount, @JsonProperty("date") OffsetDateTime date, @JsonProperty("raw") PaymentAdjustmentRaw raw, @JsonProperty("status") PaymentStatus status) {
         this.absolute = absolute;
         this.amount = amount;
         this.date = date;

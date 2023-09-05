@@ -6,7 +6,28 @@ type LedgerInfoStorage struct {
 	Migrations []MigrationInfo `json:"migrations,omitempty"`
 }
 
+func (o *LedgerInfoStorage) GetMigrations() []MigrationInfo {
+	if o == nil {
+		return nil
+	}
+	return o.Migrations
+}
+
 type LedgerInfo struct {
 	Name    *string            `json:"name,omitempty"`
 	Storage *LedgerInfoStorage `json:"storage,omitempty"`
+}
+
+func (o *LedgerInfo) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
+}
+
+func (o *LedgerInfo) GetStorage() *LedgerInfoStorage {
+	if o == nil {
+		return nil
+	}
+	return o.Storage
 }

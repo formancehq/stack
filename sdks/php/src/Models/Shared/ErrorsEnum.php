@@ -11,12 +11,12 @@ namespace formance\stack\Models\Shared;
 
 enum ErrorsEnum: string
 {
-    case INTERNAL = 'INTERNAL';
-    case INSUFFICIENT_FUND = 'INSUFFICIENT_FUND';
-    case VALIDATION = 'VALIDATION';
-    case CONFLICT = 'CONFLICT';
-    case NO_SCRIPT = 'NO_SCRIPT';
-    case COMPILATION_FAILED = 'COMPILATION_FAILED';
-    case METADATA_OVERRIDE = 'METADATA_OVERRIDE';
-    case NOT_FOUND = 'NOT_FOUND';
+    case Internal = 'INTERNAL';
+    case InsufficientFund = 'INSUFFICIENT_FUND';
+    case Validation = 'VALIDATION';
+    case Conflict = 'CONFLICT';
+    case NoScript = 'NO_SCRIPT';
+    case CompilationFailed = 'COMPILATION_FAILED';
+    case MetadataOverride = 'METADATA_OVERRIDE';
+    case NotFound = 'NOT_FOUND';
 }

@@ -1,0 +1,15 @@
+# WorkflowInstance
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `created_at`                                                         | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_check_mark:                                                   | N/A                                                                  |
+| `error`                                                              | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | N/A                                                                  |
+| `id`                                                                 | *str*                                                                | :heavy_check_mark:                                                   | N/A                                                                  |
+| `status`                                                             | list[[StageStatus](../../models/shared/stagestatus.md)]              | :heavy_minus_sign:                                                   | N/A                                                                  |
+| `terminated`                                                         | *bool*                                                               | :heavy_check_mark:                                                   | N/A                                                                  |
+| `terminated_at`                                                      | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_minus_sign:                                                   | N/A                                                                  |
+| `updated_at`                                                         | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_check_mark:                                                   | N/A                                                                  |
+| `workflow_id`                                                        | *str*                                                                | :heavy_check_mark:                                                   | N/A                                                                  |

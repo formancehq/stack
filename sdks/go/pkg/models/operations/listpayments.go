@@ -21,10 +21,59 @@ type ListPaymentsRequest struct {
 	Sort []string `queryParam:"style=form,explode=true,name=sort"`
 }
 
+func (o *ListPaymentsRequest) GetCursor() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Cursor
+}
+
+func (o *ListPaymentsRequest) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
+}
+
+func (o *ListPaymentsRequest) GetSort() []string {
+	if o == nil {
+		return nil
+	}
+	return o.Sort
+}
+
 type ListPaymentsResponse struct {
 	ContentType string
 	// OK
 	PaymentsCursor *shared.PaymentsCursor
 	StatusCode     int
 	RawResponse    *http.Response
+}
+
+func (o *ListPaymentsResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ListPaymentsResponse) GetPaymentsCursor() *shared.PaymentsCursor {
+	if o == nil {
+		return nil
+	}
+	return o.PaymentsCursor
+}
+
+func (o *ListPaymentsResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ListPaymentsResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

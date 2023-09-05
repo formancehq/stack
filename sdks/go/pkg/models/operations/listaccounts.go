@@ -49,6 +49,10 @@ func (e *ListAccountsBalanceOperator) UnmarshalJSON(data []byte) error {
 	}
 }
 
+// ListAccountsMetadata - Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+type ListAccountsMetadata struct {
+}
+
 type ListAccountsRequest struct {
 	// Filter accounts by address pattern (regular expression placed between ^ and $).
 	Address *string `queryParam:"style=form,explode=true,name=address"`
@@ -68,10 +72,66 @@ type ListAccountsRequest struct {
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
-	Metadata map[string]interface{} `queryParam:"style=deepObject,explode=true,name=metadata"`
+	Metadata *ListAccountsMetadata `queryParam:"style=deepObject,explode=true,name=metadata"`
 	// The maximum number of results to return per page.
 	//
 	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
+}
+
+func (o *ListAccountsRequest) GetAddress() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Address
+}
+
+func (o *ListAccountsRequest) GetAfter() *string {
+	if o == nil {
+		return nil
+	}
+	return o.After
+}
+
+func (o *ListAccountsRequest) GetBalance() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.Balance
+}
+
+func (o *ListAccountsRequest) GetBalanceOperator() *ListAccountsBalanceOperator {
+	if o == nil {
+		return nil
+	}
+	return o.BalanceOperator
+}
+
+func (o *ListAccountsRequest) GetCursor() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Cursor
+}
+
+func (o *ListAccountsRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
+func (o *ListAccountsRequest) GetMetadata() *ListAccountsMetadata {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *ListAccountsRequest) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
 }
 
 type ListAccountsResponse struct {
@@ -82,4 +142,39 @@ type ListAccountsResponse struct {
 	ErrorResponse *shared.ErrorResponse
 	StatusCode    int
 	RawResponse   *http.Response
+}
+
+func (o *ListAccountsResponse) GetAccountsCursorResponse() *shared.AccountsCursorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.AccountsCursorResponse
+}
+
+func (o *ListAccountsResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ListAccountsResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *ListAccountsResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ListAccountsResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

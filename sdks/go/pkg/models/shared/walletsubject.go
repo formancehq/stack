@@ -7,3 +7,24 @@ type WalletSubject struct {
 	Identifier string  `json:"identifier"`
 	Type       string  `json:"type"`
 }
+
+func (o *WalletSubject) GetBalance() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Balance
+}
+
+func (o *WalletSubject) GetIdentifier() string {
+	if o == nil {
+		return ""
+	}
+	return o.Identifier
+}
+
+func (o *WalletSubject) GetType() string {
+	if o == nil {
+		return ""
+	}
+	return o.Type
+}

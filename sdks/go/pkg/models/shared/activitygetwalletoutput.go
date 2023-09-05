@@ -5,3 +5,10 @@ package shared
 type ActivityGetWalletOutput struct {
 	Data WalletWithBalances `json:"data"`
 }
+
+func (o *ActivityGetWalletOutput) GetData() WalletWithBalances {
+	if o == nil {
+		return WalletWithBalances{}
+	}
+	return o.Data
+}

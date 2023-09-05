@@ -7,26 +7,26 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class CreditWalletRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-  creditWalletRequest?: shared.CreditWalletRequest;
+    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+    creditWalletRequest?: shared.CreditWalletRequest;
 
-  @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
-  id: string;
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
+    id: string;
 }
 
 export class CreditWalletResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * Error
-   */
-  @SpeakeasyMetadata()
-  walletsErrorResponse?: shared.WalletsErrorResponse;
+    /**
+     * Error
+     */
+    @SpeakeasyMetadata()
+    walletsErrorResponse?: shared.WalletsErrorResponse;
 }

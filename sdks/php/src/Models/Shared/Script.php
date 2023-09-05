@@ -35,15 +35,10 @@ class Script
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $reference = null;
     
-    /**
-     * $vars
-     * 
-     * @var ?array<string, mixed> $vars
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('vars')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\ScriptVars')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?array $vars = null;
+    public ?ScriptVars $vars = null;
     
 	public function __construct()
 	{

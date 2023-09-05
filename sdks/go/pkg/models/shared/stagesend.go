@@ -7,3 +7,24 @@ type StageSend struct {
 	Destination *StageSendDestination `json:"destination,omitempty"`
 	Source      *StageSendSource      `json:"source,omitempty"`
 }
+
+func (o *StageSend) GetAmount() *Monetary {
+	if o == nil {
+		return nil
+	}
+	return o.Amount
+}
+
+func (o *StageSend) GetDestination() *StageSendDestination {
+	if o == nil {
+		return nil
+	}
+	return o.Destination
+}
+
+func (o *StageSend) GetSource() *StageSendSource {
+	if o == nil {
+		return nil
+	}
+	return o.Source
+}

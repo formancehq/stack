@@ -15,6 +15,27 @@ type RunScriptRequest struct {
 	Preview *bool `queryParam:"style=form,explode=true,name=preview"`
 }
 
+func (o *RunScriptRequest) GetScript() shared.Script {
+	if o == nil {
+		return shared.Script{}
+	}
+	return o.Script
+}
+
+func (o *RunScriptRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
+func (o *RunScriptRequest) GetPreview() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Preview
+}
+
 type RunScriptResponse struct {
 	ContentType string
 	// On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.
@@ -27,4 +48,32 @@ type RunScriptResponse struct {
 	ScriptResponse *shared.ScriptResponse
 	StatusCode     int
 	RawResponse    *http.Response
+}
+
+func (o *RunScriptResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *RunScriptResponse) GetScriptResponse() *shared.ScriptResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ScriptResponse
+}
+
+func (o *RunScriptResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *RunScriptResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

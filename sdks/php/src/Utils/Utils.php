@@ -59,6 +59,7 @@ class Utils
     public static function generateUrl(string $url, string $path, string $type = null, mixed $pathParams = null, array $globals = null): string
     {
         $url = removeSuffix($url, '/') . $path;
+        $globals ??= [];
 
         $pp = new PathParameters();
         $params = $type !== null ? $pp->parsePathParams($type, $pathParams, $globals) : [];
@@ -123,6 +124,7 @@ class Utils
     public static function getQueryParams(string $type, mixed $queryParams, array $globals = null): array
     {
         $qp = new QueryParameters();
+        $globals ??= [];
 
         $query = $qp->parseQueryParams($type, $queryParams, $globals);
 

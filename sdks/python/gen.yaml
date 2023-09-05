@@ -3,6 +3,12 @@ generation:
   sdkClassName: SDK
   singleTagPerOp: true
   telemetryEnabled: false
+features:
+  python:
+    core: 2.85.2
+    deprecations: 2.81.1
+    globalSecurity: 2.81.1
+    globalServerURLs: 2.82.0
 python:
   version: v0.1.0
   author: Formance

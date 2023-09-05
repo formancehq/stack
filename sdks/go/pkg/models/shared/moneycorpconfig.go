@@ -10,3 +10,31 @@ type MoneycorpConfig struct {
 	//
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }
+
+func (o *MoneycorpConfig) GetAPIKey() string {
+	if o == nil {
+		return ""
+	}
+	return o.APIKey
+}
+
+func (o *MoneycorpConfig) GetClientID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ClientID
+}
+
+func (o *MoneycorpConfig) GetEndpoint() string {
+	if o == nil {
+		return ""
+	}
+	return o.Endpoint
+}
+
+func (o *MoneycorpConfig) GetPollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PollingPeriod
+}

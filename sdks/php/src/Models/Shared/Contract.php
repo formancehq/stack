@@ -16,18 +16,13 @@ class Contract
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $account = null;
     
-    /**
-     * $expr
-     * 
-     * @var array<string, mixed> $expr
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('expr')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
-    public array $expr;
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\ContractExpr')]
+    public ContractExpr $expr;
     
 	public function __construct()
 	{
 		$this->account = null;
-		$this->expr = [];
+		$this->expr = new \formance\stack\Models\Shared\ContractExpr();
 	}
 }

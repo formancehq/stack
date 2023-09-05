@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * DebitWalletResponse - Wallet successfully debited as a pending hold
  */
+
 public class DebitWalletResponse {
     @JsonProperty("data")
     public Hold data;

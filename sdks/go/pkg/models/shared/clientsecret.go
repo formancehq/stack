@@ -8,3 +8,31 @@ type ClientSecret struct {
 	Metadata   map[string]interface{} `json:"metadata,omitempty"`
 	Name       string                 `json:"name"`
 }
+
+func (o *ClientSecret) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
+func (o *ClientSecret) GetLastDigits() string {
+	if o == nil {
+		return ""
+	}
+	return o.LastDigits
+}
+
+func (o *ClientSecret) GetMetadata() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *ClientSecret) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}

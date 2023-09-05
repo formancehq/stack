@@ -12,3 +12,31 @@ type TransferRequest struct {
 	Destination string   `json:"destination"`
 	Source      *string  `json:"source,omitempty"`
 }
+
+func (o *TransferRequest) GetAmount() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Amount
+}
+
+func (o *TransferRequest) GetAsset() string {
+	if o == nil {
+		return ""
+	}
+	return o.Asset
+}
+
+func (o *TransferRequest) GetDestination() string {
+	if o == nil {
+		return ""
+	}
+	return o.Destination
+}
+
+func (o *TransferRequest) GetSource() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Source
+}

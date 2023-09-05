@@ -6,3 +6,17 @@ type CreateScopeRequest struct {
 	Label    string                 `json:"label"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
+
+func (o *CreateScopeRequest) GetLabel() string {
+	if o == nil {
+		return ""
+	}
+	return o.Label
+}
+
+func (o *CreateScopeRequest) GetMetadata() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}

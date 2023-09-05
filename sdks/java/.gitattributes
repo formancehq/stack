@@ -7,3 +7,6 @@
 # These are Windows script files and should use crlf
 *.bat           text eol=crlf
 
+# This allows generated code to be indexed correctly
+*.java linguist-generated=false
+

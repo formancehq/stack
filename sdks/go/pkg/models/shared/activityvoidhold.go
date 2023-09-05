@@ -5,3 +5,10 @@ package shared
 type ActivityVoidHold struct {
 	ID string `json:"id"`
 }
+
+func (o *ActivityVoidHold) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}

@@ -8,9 +8,9 @@ from ..shared import error as shared_error
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class CreateWorkflowResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     create_workflow_response: Optional[shared_createworkflowresponse.CreateWorkflowResponse] = dataclasses.field(default=None)
@@ -19,3 +19,4 @@ class CreateWorkflowResponse:
     r"""General error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

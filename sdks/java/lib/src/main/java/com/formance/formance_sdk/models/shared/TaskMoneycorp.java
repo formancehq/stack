@@ -13,6 +13,7 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
+
 public class TaskMoneycorp {
     @JsonProperty("connectorId")
     public String connectorId;
@@ -58,9 +59,9 @@ public class TaskMoneycorp {
     }
     
     @JsonProperty("state")
-    public java.util.Map<String, Object> state;
+    public TaskMoneycorpState state;
 
-    public TaskMoneycorp withState(java.util.Map<String, Object> state) {
+    public TaskMoneycorp withState(TaskMoneycorpState state) {
         this.state = state;
         return this;
     }
@@ -83,7 +84,7 @@ public class TaskMoneycorp {
         return this;
     }
     
-    public TaskMoneycorp(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskMoneycorpDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") java.util.Map<String, Object> state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
+    public TaskMoneycorp(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskMoneycorpDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") TaskMoneycorpState state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
         this.connectorId = connectorId;
         this.createdAt = createdAt;
         this.descriptor = descriptor;

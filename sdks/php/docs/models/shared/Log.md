@@ -1,0 +1,12 @@
+# Log
+
+
+## Fields
+
+| Field                                                            | Type                                                             | Required                                                         | Description                                                      | Example                                                          |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `data`                                                           | [LogData](../../models/shared/LogData.md)                        | :heavy_check_mark:                                               | N/A                                                              |                                                                  |
+| `date`                                                           | [\DateTime](https://www.php.net/manual/en/class.datetime.php)    | :heavy_check_mark:                                               | N/A                                                              |                                                                  |
+| `hash`                                                           | *string*                                                         | :heavy_check_mark:                                               | N/A                                                              | 9ee060170400f556b7e1575cb13f9db004f150a08355c7431c62bc639166431e |
+| `id`                                                             | *int*                                                            | :heavy_check_mark:                                               | N/A                                                              | 1234                                                             |
+| `type`                                                           | [LogType](../../models/shared/LogType.md)                        | :heavy_check_mark:                                               | N/A                                                              |                                                                  |

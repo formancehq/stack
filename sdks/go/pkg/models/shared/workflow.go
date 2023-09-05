@@ -12,3 +12,31 @@ type Workflow struct {
 	ID        string         `json:"id"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 }
+
+func (o *Workflow) GetConfig() WorkflowConfig {
+	if o == nil {
+		return WorkflowConfig{}
+	}
+	return o.Config
+}
+
+func (o *Workflow) GetCreatedAt() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.CreatedAt
+}
+
+func (o *Workflow) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
+func (o *Workflow) GetUpdatedAt() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.UpdatedAt
+}

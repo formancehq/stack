@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class AccountWithVolumesAndBalances {
     @JsonProperty("address")
     public String address;
@@ -28,9 +29,9 @@ public class AccountWithVolumesAndBalances {
     
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("metadata")
-    public java.util.Map<String, Object> metadata;
+    public AccountWithVolumesAndBalancesMetadata metadata;
 
-    public AccountWithVolumesAndBalances withMetadata(java.util.Map<String, Object> metadata) {
+    public AccountWithVolumesAndBalances withMetadata(AccountWithVolumesAndBalancesMetadata metadata) {
         this.metadata = metadata;
         return this;
     }

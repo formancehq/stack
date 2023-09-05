@@ -1,0 +1,17 @@
+# PostTransaction
+
+The request body must contain at least one of the following objects:
+  - `postings`: suitable for simple transactions
+  - `script`: enabling more complex transactions with Numscript
+
+
+
+## Fields
+
+| Field                                                                                     | Type                                                                                      | Required                                                                                  | Description                                                                               | Example                                                                                   |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `metadata`                                                                                | Map<String, *Object*>                                                                     | :heavy_minus_sign:                                                                        | N/A                                                                                       |                                                                                           |
+| `postings`                                                                                | List<[Posting](../../models/shared/Posting.md)>                                           | :heavy_minus_sign:                                                                        | N/A                                                                                       |                                                                                           |
+| `reference`                                                                               | *String*                                                                                  | :heavy_minus_sign:                                                                        | N/A                                                                                       | ref:001                                                                                   |
+| `script`                                                                                  | [PostTransactionScript](../../models/shared/PostTransactionScript.md)                     | :heavy_minus_sign:                                                                        | N/A                                                                                       |                                                                                           |
+| `timestamp`                                                                               | [OffsetDateTime](https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html) | :heavy_minus_sign:                                                                        | N/A                                                                                       |                                                                                           |

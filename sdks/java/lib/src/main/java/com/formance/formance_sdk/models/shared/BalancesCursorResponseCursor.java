@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class BalancesCursorResponseCursor {
     @JsonProperty("data")
     public java.util.Map<String, java.util.Map<String, Long>>[] data;

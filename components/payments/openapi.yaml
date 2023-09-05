@@ -234,6 +234,13 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Transfer'
+        5XX:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     get:
       summary: List transfers and their statuses
       tags:
@@ -257,6 +264,12 @@ paths:
       responses:
         '200':
             $ref: '#/components/responses/StripeTransfer'
+        5XX:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 # ---------------------- COMPONENTS ----------------------
 components:

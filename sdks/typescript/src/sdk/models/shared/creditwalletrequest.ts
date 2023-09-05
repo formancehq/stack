@@ -7,30 +7,30 @@ import { Monetary } from "./monetary";
 import { Expose, Type } from "class-transformer";
 
 export class CreditWalletRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount" })
-  @Type(() => Monetary)
-  amount: Monetary;
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount" })
+    @Type(() => Monetary)
+    amount: Monetary;
 
-  /**
-   * The balance to credit
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "balance" })
-  balance?: string;
+    /**
+     * The balance to credit
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "balance" })
+    balance?: string;
 
-  /**
-   * Metadata associated with the wallet.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "metadata" })
-  metadata: Record<string, string>;
+    /**
+     * Metadata associated with the wallet.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "metadata" })
+    metadata: Record<string, string>;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "reference" })
-  reference?: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "reference" })
+    reference?: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "sources" })
-  sources: any[];
+    @SpeakeasyMetadata()
+    @Expose({ name: "sources" })
+    sources: any[];
 }

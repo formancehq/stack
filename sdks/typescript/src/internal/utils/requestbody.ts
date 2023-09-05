@@ -6,6 +6,7 @@ import {isBooleanRecord, isNumberRecord, isStringRecord, SerializationMethodToCo
 
 import FormData from "form-data";
 import {RFCDate} from "../../sdk/types";
+import {classToPlain} from "class-transformer";
 
 export const requestMetadataKey = "request";
 const mpFormMetadataKey = "multipart_form";
@@ -66,6 +67,11 @@ const serializeContentType = (
       break;
 
     case "application/json":
+      [requestHeaders, requestBody] = [
+        {"Content-Type": `${contentType}`},
+        classToPlain(reqBody, {exposeUnsetFields: false}),
+      ];
+      break;
     case "text/json":
       [requestHeaders, requestBody] = [
         {"Content-Type": `${contentType}`},

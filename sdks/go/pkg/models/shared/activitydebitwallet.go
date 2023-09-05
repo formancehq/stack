@@ -6,3 +6,17 @@ type ActivityDebitWallet struct {
 	Data *DebitWalletRequest `json:"data,omitempty"`
 	ID   *string             `json:"id,omitempty"`
 }
+
+func (o *ActivityDebitWallet) GetData() *DebitWalletRequest {
+	if o == nil {
+		return nil
+	}
+	return o.Data
+}
+
+func (o *ActivityDebitWallet) GetID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ID
+}

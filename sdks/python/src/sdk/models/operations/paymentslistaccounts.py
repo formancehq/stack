@@ -7,9 +7,9 @@ from ..shared import accountscursor as shared_accountscursor
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class PaymentslistAccountsRequest:
-    
     cursor: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'cursor', 'style': 'form', 'explode': True }})
     r"""Parameter used in pagination requests. Maximum page size is set to 15.
     Set to the value of next for the next page of results.
@@ -22,12 +22,15 @@ class PaymentslistAccountsRequest:
     r"""Fields used to sort payments (default is date:desc)."""
     
 
+
+
+
 @dataclasses.dataclass
 class PaymentslistAccountsResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     accounts_cursor: Optional[shared_accountscursor.AccountsCursor] = dataclasses.field(default=None)
     r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

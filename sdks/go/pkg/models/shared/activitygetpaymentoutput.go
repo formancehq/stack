@@ -5,3 +5,10 @@ package shared
 type ActivityGetPaymentOutput struct {
 	Data Payment `json:"data"`
 }
+
+func (o *ActivityGetPaymentOutput) GetData() Payment {
+	if o == nil {
+		return Payment{}
+	}
+	return o.Data
+}
