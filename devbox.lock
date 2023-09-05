@@ -1,0 +1,59 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "ginkgo@2.8.3": {
+      "last_modified": "2023-03-05T05:58:10Z",
+      "resolved": "github:NixOS/nixpkgs/a1240f6b4a0bcc84fc48008b396a140d9f3638f6#ginkgo",
+      "source": "devbox-search",
+      "version": "2.8.3"
+    },
+    "go-task@3.24.0": {
+      "last_modified": "2023-05-25T10:59:13Z",
+      "resolved": "github:NixOS/nixpkgs/aeb75dba965e790de427b73315d5addf91a54955#go-task",
+      "source": "devbox-search",
+      "version": "3.24.0"
+    },
+    "go@1.20.6": {
+      "last_modified": "2023-08-17T05:54:58Z",
+      "resolved": "github:NixOS/nixpkgs/4107024ef4d9f637b568296f40a2ba0f62b13437#go",
+      "source": "devbox-search",
+      "version": "1.20.6"
+    },
+    "golangci-lint@1.53.3": {
+      "last_modified": "2023-08-09T15:05:23Z",
+      "resolved": "github:NixOS/nixpkgs/54d734a42084589365252987f89642f7525f522b#golangci-lint",
+      "source": "devbox-search",
+      "version": "1.53.3"
+    },
+    "helm-docs@1.11.0": {
+      "last_modified": "2023-08-30T00:25:28Z",
+      "resolved": "github:NixOS/nixpkgs/a63a64b593dcf2fe05f7c5d666eb395950f36bc9#helm-docs",
+      "source": "devbox-search",
+      "version": "1.11.0"
+    },
+    "moon@1.10.1": {
+      "last_modified": "2023-08-30T00:25:28Z",
+      "resolved": "github:NixOS/nixpkgs/a63a64b593dcf2fe05f7c5d666eb395950f36bc9#moon",
+      "source": "devbox-search",
+      "version": "1.10.1"
+    },
+    "nodejs@18.16.0": {
+      "last_modified": "2023-05-21T19:52:09Z",
+      "resolved": "github:NixOS/nixpkgs/9356eead97d8d16956b0226d78f76bd66e06cb60#nodejs",
+      "source": "devbox-search",
+      "version": "18.16.0"
+    },
+    "process-compose@0.43.1": {
+      "last_modified": "2023-05-20T19:54:14Z",
+      "resolved": "github:NixOS/nixpkgs/8bf3e834daedadc6d0f4172616b2bdede1109c48#process-compose",
+      "source": "devbox-search",
+      "version": "0.43.1"
+    },
+    "yarn@1.22.19": {
+      "last_modified": "2023-08-30T00:25:28Z",
+      "resolved": "github:NixOS/nixpkgs/a63a64b593dcf2fe05f7c5d666eb395950f36bc9#yarn",
+      "source": "devbox-search",
+      "version": "1.22.19"
+    }
+  }
+}

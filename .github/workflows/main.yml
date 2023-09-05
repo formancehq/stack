@@ -22,7 +22,7 @@ jobs:
 
 
   TestsIntegration:
-    runs-on: formance-runner
+    runs-on: formance-dedicated-runner
     steps:
       - uses: 'actions/checkout@v4'
         with:
@@ -42,7 +42,7 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
 
   Moon:
-    runs-on: formance-runner
+    runs-on: formance-dedicated-runner
     steps:
       - uses: 'actions/checkout@v4'
         with:
