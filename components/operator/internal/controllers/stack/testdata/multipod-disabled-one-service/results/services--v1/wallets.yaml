@@ -6,9 +6,6 @@ metadata:
     name: wallets
     namespace: multipod-disabled-one-service
 spec:
-    clusterIP: 10.0.0.71
-    clusterIPs:
-        - 10.0.0.71
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

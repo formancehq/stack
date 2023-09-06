@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/operator/internal/common"
 	"github.com/formancehq/operator/internal/controllerutils"
 	appsv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -57,6 +58,12 @@ func (d *ResourceDeployer) Migrations(options ...controllerutils.ObjectMutator[*
 func (d *ResourceDeployer) ConfigMaps(options ...controllerutils.ObjectMutator[*corev1.ConfigMap]) *controllerutils.ObjectFactory[*corev1.ConfigMap] {
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
 		CommonOptions[*corev1.ConfigMap](d.stack, d.scheme)...,
+	)...)
+}
+
+func (d *ResourceDeployer) CronJobs(options ...controllerutils.ObjectMutator[*v1.CronJob]) *controllerutils.ObjectFactory[*v1.CronJob] {
+	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
+		CommonOptions[*v1.CronJob](d.stack, d.scheme)...,
 	)...)
 }
 

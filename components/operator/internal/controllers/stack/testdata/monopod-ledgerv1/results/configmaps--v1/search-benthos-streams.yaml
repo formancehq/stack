@@ -190,6 +190,7 @@ data:
           - bloblang: |
               meta loopCount = (this.accounts_count.number() / meta("batchSize").number()).ceil()
               meta loopIndex = 0
+              root = if this.accounts_count.number() == 0 { deleted() } else { this }
           - while:
               check: 'meta("loopIndex") < meta("loopCount")'
               processors:
@@ -210,7 +211,7 @@ data:
                   })
               - bloblang: |
                   meta action = "upsert"
-                  meta id = "ACCOUNT-%s-%d".format(meta("ledger"), this.address)
+                  meta id = "ACCOUNT-%s-%s".format(meta("ledger"), this.address)
                   root = {
                     "data": {
                       "address": this.address,
@@ -239,6 +240,8 @@ data:
               query: 'select * from "_system".ledgers'
           - unarchive:
               format: json_array
+          - log:
+              message: "Process ledger: ${! this.ledger }"
 
         output:
           broker:
@@ -264,6 +267,7 @@ data:
           - bloblang: |
               meta loopCount = (this.transactions_count.number() / meta("batchSize").number()).ceil()
               meta loopIndex = 0
+              root = if this.transactions_count.number() == 0 { deleted() } else { this }
           - while:
               check: 'meta("loopIndex") < meta("loopCount")'
               processors:
@@ -334,6 +338,7 @@ data:
           - bloblang: |
               meta loopCount = (this.volumes_count.number() / meta("batchSize").number()).ceil()
               meta loopIndex = 0
+              root = if this.volumes_count.number() == 0 { deleted() } else { this }
           - while:
               check: 'meta("loopIndex") < meta("loopCount")'
               processors:

@@ -9,6 +9,8 @@ pipeline:
       query: 'select * from "_system".ledgers'
   - unarchive:
       format: json_array
+  - log:
+      message: "Process ledger: ${! this.ledger }"
 
 output:
   broker:

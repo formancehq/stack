@@ -18,6 +18,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/yaml.v3"
+	batchv1 "k8s.io/api/batch/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -274,6 +275,11 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 			Resource: "deployments",
 		},
 		{
+			Group:    batchv1.GroupName,
+			Version:  batchv1.SchemeGroupVersion.Version,
+			Resource: "cronjobs",
+		},
+		{
 			Group:    "",
 			Version:  "v1",
 			Resource: "configmaps",
@@ -331,4 +337,21 @@ func clearUnstructuredContent(v map[string]any) {
 	delete(metadata, "resourceVersion")
 	delete(metadata, "creationTimestamp")
 	delete(metadata, "ownerReferences")
+
+	spec, ok := v["spec"]
+	if ok {
+		delete(spec.(map[string]any), "clusterIP")
+		delete(spec.(map[string]any), "clusterIPs")
+	}
+
+	status, ok := v["status"]
+	if ok {
+		conditions, ok := status.(map[string]any)["conditions"]
+		if ok {
+			for _, condition := range conditions.([]any) {
+				delete(condition.(map[string]any), "lastTransitionTime")
+				delete(condition.(map[string]any), "lastUpdateTime")
+			}
+		}
+	}
 }
