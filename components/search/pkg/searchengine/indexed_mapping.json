@@ -17,8 +17,8 @@
   "destination" : {
     "type": "keyword"
   },
-  "id" : {
-    "type": "keyword"
+  "txid" : {
+    "type": "long"
   },
   "initialAmount" : {
     "type" : "long"

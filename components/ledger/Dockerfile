@@ -4,7 +4,9 @@ ARG VERSION
 ARG APP_SHA
 
 WORKDIR /src
-COPY . .
+COPY libs libs
+COPY components/ledger components/ledger
+WORKDIR components/ledger
 RUN --mount=type=cache,mode=0755,target=/go/pkg/mod go mod download
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
@@ -16,7 +18,7 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
 
 FROM alpine:3.16 as app
 RUN apk update && apk add ca-certificates
-COPY --from=builder /src/ledger /usr/local/bin/ledger
+COPY --from=builder /src/components/ledger/ledger /usr/local/bin/ledger
 RUN chmod +x /usr/local/bin/ledger
 EXPOSE 3068
 ENTRYPOINT ["ledger"]

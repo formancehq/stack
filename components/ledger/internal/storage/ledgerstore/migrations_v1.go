@@ -9,6 +9,7 @@ import (
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/storage/paginate"
 	"github.com/lib/pq"
+	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
@@ -18,8 +19,6 @@ var (
 )
 
 type LogV1 struct {
-	bun.BaseModel `bun:"log,alias:log"`
-
 	ID   uint64          `bun:"id,unique,type:bigint"`
 	Type string          `bun:"type,type:varchar"`
 	Hash string          `bun:"hash,type:varchar"`
@@ -36,22 +35,17 @@ func readLogsRange(
 	rawLogs := make([]LogV1, 0)
 	if err := sqlTx.
 		NewSelect().
-		Table(fmt.Sprintf(`"%s".log`, schema)).
+		Table(fmt.Sprintf(`%s.log`, schema)).
 		Where("id >= ?", idMin).
 		Where("id < ?", idMax).
-		Model(&rawLogs).
-		Scan(ctx); err != nil {
+		Scan(ctx, &rawLogs); err != nil {
 		return nil, err
 	}
 
 	return rawLogs, nil
 }
 
-func convertMetadata(data []byte) any {
-	ret := make(map[string]any)
-	if err := json.Unmarshal(data, &ret); err != nil {
-		panic(err)
-	}
+func convertMetadata(ret map[string]any) map[string]any {
 	oldMetadata := ret["metadata"].(map[string]any)
 	newMetadata := make(map[string]string)
 	for k, v := range oldMetadata {
@@ -62,18 +56,31 @@ func convertMetadata(data []byte) any {
 	return ret
 }
 
+func convertTransaction(ret map[string]any) map[string]any {
+	ret = convertMetadata(ret)
+	ret["id"] = ret["txid"]
+	delete(ret, "txid")
+
+	return ret
+}
+
 func (l *LogV1) ToLogsV2() (Logs, error) {
 	logType := ledger.LogTypeFromString(l.Type)
+
+	ret := make(map[string]any)
+	if err := json.Unmarshal(l.Data, &ret); err != nil {
+		panic(err)
+	}
 
 	var data any
 	switch logType {
 	case ledger.NewTransactionLogType:
 		data = map[string]any{
-			"transaction":     convertMetadata(l.Data),
+			"transaction":     convertTransaction(ret),
 			"accountMetadata": map[string]any{},
 		}
 	case ledger.SetMetadataLogType:
-		data = convertMetadata(l.Data)
+		data = convertMetadata(ret)
 	case ledger.RevertedTransactionLogType:
 		data = l.Data
 	default:
@@ -95,14 +102,15 @@ func (l *LogV1) ToLogsV2() (Logs, error) {
 }
 
 func batchLogs(
+	ctx context.Context,
 	schema string,
 	sqlTx bun.Tx,
 	logs []Logs,
 ) error {
 	// Beware: COPY query is not supported by bun if the pgx driver is used.
-	stmt, err := sqlTx.Prepare(pq.CopyInSchema(
+	stmt, err := sqlTx.PrepareContext(ctx, pq.CopyInSchema(
 		schema,
-		"log",
+		"logs",
 		"id", "type", "hash", "date", "data",
 	))
 	if err != nil {
@@ -110,13 +118,13 @@ func batchLogs(
 	}
 
 	for _, l := range logs {
-		_, err = stmt.Exec(l.ID, l.Type, l.Hash, l.Date, RawMessage(l.Data))
+		_, err = stmt.ExecContext(ctx, l.ID, l.Type, l.Hash, l.Date, RawMessage(l.Data))
 		if err != nil {
 			return err
 		}
 	}
 
-	_, err = stmt.Exec()
+	_, err = stmt.ExecContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -141,7 +149,7 @@ func migrateLogs(
 	for {
 		logs, err := readLogsRange(ctx, schemaV1Name, sqlTx, idMin, idMax)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "reading logs from old table")
 		}
 
 		if len(logs) == 0 {
@@ -158,7 +166,7 @@ func migrateLogs(
 			logsV2 = append(logsV2, logV2)
 		}
 
-		err = batchLogs(schemaV2Name, sqlTx, logsV2)
+		err = batchLogs(ctx, schemaV2Name, sqlTx, logsV2)
 		if err != nil {
 			return err
 		}

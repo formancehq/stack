@@ -38,13 +38,13 @@ data:
                           "data": {
                             "postings": this.postings,
                             "reference": this.reference,
-                            "id": this.id,
+                            "txid": this.id,
                             "timestamp": this.timestamp,
                             "metadata": if this.metadata { this.metadata } else {{}}
                           },
                           "indexed": {
                             "reference": this.reference,
-                            "id": this.id,
+                            "txid": this.id,
                             "timestamp": this.timestamp,
                             "asset": this.postings.map_each(p -> p.asset),
                             "source": this.postings.map_each(p -> p.source),

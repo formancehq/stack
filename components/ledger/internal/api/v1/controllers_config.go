@@ -30,7 +30,7 @@ func getInfo(backend backend.Backend) func(w http.ResponseWriter, r *http.Reques
 			panic(err)
 		}
 
-		sharedapi.RawOk(w, ConfigInfo{
+		sharedapi.Ok(w, ConfigInfo{
 			Server:  "ledger",
 			Version: backend.GetVersion(),
 			Config: &LedgerConfig{

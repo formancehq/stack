@@ -71,7 +71,7 @@ func TestMultiSearch(t *testing.T) {
 				},
 				"TRANSACTION": {
 					map[string]any{
-						"id": 1,
+						"txid": 1,
 						"postings": []map[string]any{{
 							"source":      "world",
 							"destination": "central_bank",
@@ -102,7 +102,7 @@ func TestMultiSearch(t *testing.T) {
 					},
 					"TRANSACTION": []interface{}{
 						map[string]interface{}{
-							"id":        float64(1),
+							"txid":      float64(1),
 							"reference": "tx1",
 							"timestamp": now.Format(time.RFC3339),
 							"metadata": map[string]interface{}{

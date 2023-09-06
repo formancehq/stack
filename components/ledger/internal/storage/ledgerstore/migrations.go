@@ -38,10 +38,10 @@ func registerMigrations(migrator *migrations.Migrator, name string) {
 	migrator.RegisterMigrations(
 		migrations.Migration{
 			Name: "Init schema",
-			Up: func(tx bun.Tx) error {
+			UpWithContext: func(ctx context.Context, tx bun.Tx) error {
 
 				v1SchemaExists := false
-				row := tx.QueryRow(`select exists (
+				row := tx.QueryRowContext(ctx, `select exists (
 					select from pg_tables
 					where schemaname = ? and tablename  = 'log'
 				)`, name)
@@ -54,26 +54,32 @@ func registerMigrations(migrator *migrations.Migrator, name string) {
 				}
 				v1SchemaExists = ret != "false"
 
+				oldSchemaRenamed := fmt.Sprintf(name + oldSchemaRenameSuffix)
 				if v1SchemaExists {
-					_, err := tx.Exec(`alter schema rename ? to ?`, name, fmt.Sprintf(name+oldSchemaRenameSuffix))
+					_, err := tx.ExecContext(ctx, fmt.Sprintf(`alter schema "%s" rename to "%s"`, name, oldSchemaRenamed))
 					if err != nil {
 						return errors.Wrap(err, "renaming old schema")
 					}
-					_, err = tx.Exec(`create schema if not exists ?`, name)
+					_, err = tx.ExecContext(ctx, fmt.Sprintf(`create schema if not exists "%s"`, name))
 					if err != nil {
 						return errors.Wrap(err, "creating new schema")
 					}
 				}
 
-				_, err := tx.Exec(initSchema)
+				_, err := tx.ExecContext(ctx, initSchema)
 				if err != nil {
 					return errors.Wrap(err, "initializing new schema")
 				}
 
 				if v1SchemaExists {
-					if err := migrateLogs(context.Background(), fmt.Sprintf(name+oldSchemaRenameSuffix), name, tx); err != nil {
+					if err := migrateLogs(ctx, oldSchemaRenamed, name, tx); err != nil {
 						return errors.Wrap(err, "migrating logs")
 					}
+				}
+
+				_, err = tx.ExecContext(ctx, fmt.Sprintf(`create table goose_db_version as table "%s".goose_db_version with no data`, oldSchemaRenamed))
+				if err != nil {
+					return err
 				}
 
 				return nil
