@@ -33,6 +33,7 @@ func init() {
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return modules.Services{searchService(ctx), benthosService(ctx)}
 				},
+				Cron: reindexCron,
 			},
 			"v0.7.0": {
 				PreUpgrade: func(ctx modules.Context) error {
@@ -71,9 +72,27 @@ func init() {
 				Services: func(ctx modules.ModuleContext) modules.Services {
 					return modules.Services{searchService(ctx), benthosService(ctx)}
 				},
+				Cron: reindexCron,
 			},
 		},
 	})
+}
+
+func reindexCron(ctx modules.Context) []modules.Cron {
+	return []modules.Cron{
+		{
+			Container: modules.Container{
+				Command: []string{
+					"/bin/sh", "-c",
+					fmt.Sprintf("curl http://search-benthos.%s.svc.cluster.local:4195/ledger_reindex_all -X POST -H 'Content-Type: application/json' -d '{}'", ctx.Stack.Name),
+				},
+				Image: "curlimages/curl:8.2.1",
+				Name:  "reindex-ledger",
+			},
+			Schedule: "* * * * *",
+			Suspend:  true,
+		},
+	}
 }
 
 func getOpenSearchClient(ctx modules.Context) (*opensearch.Client, error) {

@@ -12,7 +12,9 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	v1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -55,7 +57,7 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	// TODO: It's possible to remove more than one deployment or another resource
 	for moduleName := range modules {
 		if ctx.Stack.Spec.Services.IsDisabled(moduleName) {
-			if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
+			if err := deployer.client.DeleteAllOf(ctx, &appsv1.Deployment{},
 				client.InNamespace(ctx.Stack.Name),
 				client.MatchingLabels{
 					"app.kubernetes.io/name": moduleName,
@@ -71,7 +73,7 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	// When Stack is Disabled, we want to remove all deployments
 	if ctx.Stack.Spec.Disabled {
 		logger.Info("Stack is disabled, remove all deployments")
-		if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
+		if err := deployer.client.DeleteAllOf(ctx, &appsv1.Deployment{},
 			client.InNamespace(ctx.Stack.Name),
 			client.MatchingLabels{
 				"stack": "true",
@@ -151,7 +153,7 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	if matchingLabels != nil {
 		logger.Info("Delete orphan deployments")
 
-		if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
+		if err := deployer.client.DeleteAllOf(ctx, &appsv1.Deployment{},
 			client.InNamespace(ctx.Stack.Name),
 			matchingLabels,
 		); err != nil {
@@ -161,7 +163,7 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 
 	ctx.Stack.Status.LightMode = ctx.Configuration.Spec.LightMode
 
-	deploymentsList := v1.DeploymentList{}
+	deploymentsList := appsv1.DeploymentList{}
 	if err := deployer.client.List(ctx, &deploymentsList,
 		client.InNamespace(ctx.Stack.Name),
 		client.MatchingLabels(map[string]string{
@@ -175,18 +177,18 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready (generation not matching)", deployment.Name))
 			return false, nil
 		}
-		var moreRecentCondition v1.DeploymentCondition
+		var moreRecentCondition appsv1.DeploymentCondition
 		for _, condition := range deployment.Status.Conditions {
 			if moreRecentCondition.Type == "" || condition.LastTransitionTime.After(moreRecentCondition.LastTransitionTime.Time) {
 				moreRecentCondition = condition
 			}
 		}
-		if moreRecentCondition.Type != v1.DeploymentAvailable {
-			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready (last condition must be '%s', found '%s')", deployment.Name, v1.DeploymentAvailable, moreRecentCondition.Type))
+		if moreRecentCondition.Type != appsv1.DeploymentAvailable {
+			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready (last condition must be '%s', found '%s')", deployment.Name, appsv1.DeploymentAvailable, moreRecentCondition.Type))
 			return false, nil
 		}
 		if moreRecentCondition.Status != "True" {
-			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready ('%s' condition should be 'true')", deployment.Name, v1.DeploymentAvailable))
+			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready ('%s' condition should be 'true')", deployment.Name, appsv1.DeploymentAvailable))
 			return false, nil
 		}
 	}
@@ -269,10 +271,17 @@ var CreatePostgresDatabase = func(ctx context.Context, dsn, dbName string) error
 	return nil
 }
 
+type Cron struct {
+	Container Container
+	Schedule  string
+	Suspend   bool
+}
+
 type Version struct {
 	PreUpgrade  func(ctx Context) error
 	PostUpgrade func(ctx PostInstallContext) error
 	Services    func(ctx ModuleContext) Services
+	Cron        func(ctx Context) []Cron
 }
 
 type Module struct {
@@ -346,11 +355,12 @@ func (module Module) postInstall(ctx Context, deployer *ResourceDeployer, module
 	versions := collectionutils.Keys(module.Versions)
 	sort.Strings(versions)
 
+	var selectedVersion Version
 	for _, version := range versions {
 		if !ctx.Versions.IsHigherOrEqual(moduleName, version) {
 			break
 		}
-		selectedVersion := module.Versions[version]
+		selectedVersion = module.Versions[version]
 		if selectedVersion.PostUpgrade == nil {
 			continue
 		}
@@ -380,6 +390,36 @@ func (module Module) postInstall(ctx Context, deployer *ResourceDeployer, module
 		}
 		if !migration.Status.Terminated {
 			return false, nil
+		}
+	}
+
+	if selectedVersion.Cron != nil {
+		for _, cron := range selectedVersion.Cron(ctx) {
+			_, err := deployer.CronJobs().CreateOrUpdate(ctx, cron.Container.Name, func(t *batchv1.CronJob) {
+				t.Spec = batchv1.CronJobSpec{
+					Suspend:  &cron.Suspend,
+					Schedule: cron.Schedule,
+					JobTemplate: batchv1.JobTemplateSpec{
+						Spec: batchv1.JobSpec{
+							Template: corev1.PodTemplateSpec{
+								Spec: corev1.PodSpec{
+									RestartPolicy: corev1.RestartPolicyNever,
+									Containers: []corev1.Container{{
+										Name:    cron.Container.Name,
+										Image:   cron.Container.Image,
+										Command: cron.Container.Command,
+										Args:    cron.Container.Args,
+										Env:     cron.Container.Env.ToCoreEnv(),
+									}},
+								},
+							},
+						},
+					},
+				}
+			})
+			if err != nil {
+				return false, err
+			}
 		}
 	}
 

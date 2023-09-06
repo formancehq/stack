@@ -15,6 +15,7 @@ pipeline:
   - bloblang: |
       meta loopCount = (this.transactions_count.number() / meta("batchSize").number()).ceil()
       meta loopIndex = 0
+      root = if this.transactions_count.number() == 0 { deleted() } else { this }
   - while:
       check: 'meta("loopIndex") < meta("loopCount")'
       processors:

@@ -15,6 +15,7 @@ pipeline:
   - bloblang: |
       meta loopCount = (this.accounts_count.number() / meta("batchSize").number()).ceil()
       meta loopIndex = 0
+      root = if this.accounts_count.number() == 0 { deleted() } else { this }
   - while:
       check: 'meta("loopIndex") < meta("loopCount")'
       processors:
@@ -35,7 +36,7 @@ pipeline:
           })
       - bloblang: |
           meta action = "upsert"
-          meta id = "ACCOUNT-%s-%d".format(meta("ledger"), this.address)
+          meta id = "ACCOUNT-%s-%s".format(meta("ledger"), this.address)
           root = {
             "data": {
               "address": this.address,
