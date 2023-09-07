@@ -1,0 +1,46 @@
+type: object
+properties:
+  ledger:
+    type: string
+  transactions:
+    type: array
+    items:
+      type: object
+      properties:
+        postings:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              destination:
+                type: string
+              amount:
+                type: number
+              asset:
+                type: string
+            required:
+            - source
+            - destination
+            - amount
+            - asset
+        reference:
+          type: string
+        metadata:
+          type: object
+          properties: {}
+          required: []
+        txid:
+          type: number
+        timestamp:
+          type: string
+      required:
+      - postings
+      - reference
+      - metadata
+      - txid
+      - timestamp
+required:
+- ledger
+- transactions

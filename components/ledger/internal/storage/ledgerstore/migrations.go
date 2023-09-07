@@ -40,7 +40,7 @@ func registerMigrations(migrator *migrations.Migrator, name string) {
 			Name: "Init schema",
 			UpWithContext: func(ctx context.Context, tx bun.Tx) error {
 
-				v1SchemaExists := false
+				needV1Upgrade := false
 				row := tx.QueryRowContext(ctx, `select exists (
 					select from pg_tables
 					where schemaname = ? and tablename  = 'log'
@@ -52,10 +52,10 @@ func registerMigrations(migrator *migrations.Migrator, name string) {
 				if err := row.Scan(&ret); err != nil {
 					panic(err)
 				}
-				v1SchemaExists = ret != "false"
+				needV1Upgrade = ret != "false"
 
 				oldSchemaRenamed := fmt.Sprintf(name + oldSchemaRenameSuffix)
-				if v1SchemaExists {
+				if needV1Upgrade {
 					_, err := tx.ExecContext(ctx, fmt.Sprintf(`alter schema "%s" rename to "%s"`, name, oldSchemaRenamed))
 					if err != nil {
 						return errors.Wrap(err, "renaming old schema")
@@ -71,15 +71,15 @@ func registerMigrations(migrator *migrations.Migrator, name string) {
 					return errors.Wrap(err, "initializing new schema")
 				}
 
-				if v1SchemaExists {
+				if needV1Upgrade {
 					if err := migrateLogs(ctx, oldSchemaRenamed, name, tx); err != nil {
 						return errors.Wrap(err, "migrating logs")
 					}
-				}
 
-				_, err = tx.ExecContext(ctx, fmt.Sprintf(`create table goose_db_version as table "%s".goose_db_version with no data`, oldSchemaRenamed))
-				if err != nil {
-					return err
+					_, err = tx.ExecContext(ctx, fmt.Sprintf(`create table goose_db_version as table "%s".goose_db_version with no data`, oldSchemaRenamed))
+					if err != nil {
+						return err
+					}
 				}
 
 				return nil

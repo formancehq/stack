@@ -149,7 +149,7 @@ var _ = Given("some empty environment", func() {
 						"destination": "alice",
 					},
 				},
-				"id":        float64(0),
+				"txid":      float64(0),
 				"timestamp": timestamp.Format(time.RFC3339),
 				"ledger":    "default",
 			}

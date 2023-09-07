@@ -3,30 +3,46 @@ package events
 import (
 	"embed"
 	"fmt"
-	"io/fs"
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
-	yaml "gopkg.in/yaml.v3"
+	"golang.org/x/mod/semver"
+	"gopkg.in/yaml.v3"
 )
 
-//go:embed v1
-var V1 embed.FS
+//go:embed base.yaml
+var baseEvent string
+
+//go:embed ledger payments
+var services embed.FS
 
 func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) {
-	baseData, err := fs.ReadFile(V1, "v1/base/base.yaml")
-	if err != nil {
-		return nil, err
-	}
 	base := map[string]any{}
-	if err := yaml.Unmarshal(baseData, &base); err != nil {
+	if err := yaml.Unmarshal([]byte(baseEvent), &base); err != nil {
 		return nil, err
 	}
 
-	eventData, err := fs.ReadFile(V1, fmt.Sprintf("v1/%s/%s.yaml", serviceName, eventName))
+	ls, err := services.ReadDir(serviceName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "reading events directory for service '%s'", serviceName)
+	}
+
+	var moreRecent string
+	for _, directory := range ls {
+		if moreRecent == "" || semver.Compare(directory.Name(), moreRecent) > 0 {
+			moreRecent = directory.Name()
+		}
+	}
+
+	if moreRecent == "" {
+		return nil, fmt.Errorf("error retrieving more recent version directory for service '%s'", serviceName)
+	}
+
+	eventData, err := services.ReadFile(fmt.Sprintf("%s/%s/%s.yaml", serviceName, moreRecent, eventName))
 	if err != nil {
 		return nil, err
 	}
+
 	event := map[string]any{}
 	if err := yaml.Unmarshal(eventData, &event); err != nil {
 		return nil, err
