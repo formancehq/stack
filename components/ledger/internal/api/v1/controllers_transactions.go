@@ -21,6 +21,28 @@ import (
 	"github.com/pkg/errors"
 )
 
+func mapTransactionToV1(tx ledger.Transaction) any {
+	return struct {
+		ledger.Transaction
+		TxID *big.Int `json:"txid"`
+		ID   *big.Int `json:"-"`
+	}{
+		Transaction: tx,
+		TxID:        tx.ID,
+	}
+}
+
+func mapExpandedTransactionToV1(tx ledger.ExpandedTransaction) any {
+	return struct {
+		ledger.ExpandedTransaction
+		TxID *big.Int `json:"txid"`
+		ID   *big.Int `json:"-"`
+	}{
+		ExpandedTransaction: tx,
+		TxID:                tx.ID,
+	}
+}
+
 func buildGetTransactionsQuery(r *http.Request) (query.Builder, error) {
 	clauses := make([]query.Builder, 0)
 	if after := r.URL.Query().Get("after"); after != "" {
@@ -118,7 +140,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sharedapi.RenderCursor(w, *cursor)
+	sharedapi.RenderCursor(w, *sharedapi.MapCursor(cursor, mapExpandedTransactionToV1))
 }
 
 type Script struct {
@@ -201,7 +223,7 @@ func postTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sharedapi.Ok(w, []any{res})
+	sharedapi.Ok(w, []any{mapTransactionToV1(*res)})
 }
 
 func getTransaction(w http.ResponseWriter, r *http.Request) {
@@ -228,7 +250,7 @@ func getTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sharedapi.Ok(w, tx)
+	sharedapi.Ok(w, mapExpandedTransactionToV1(*tx))
 }
 
 func revertTransaction(w http.ResponseWriter, r *http.Request) {
@@ -246,7 +268,7 @@ func revertTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sharedapi.Created(w, tx)
+	sharedapi.Created(w, mapTransactionToV1(*tx))
 }
 
 func postTransactionMetadata(w http.ResponseWriter, r *http.Request) {
