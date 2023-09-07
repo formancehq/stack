@@ -87,16 +87,6 @@ func (m *InMemoryStore) ReadLogWithIdempotencyKey(ctx context.Context, key strin
 	return first, nil
 }
 
-func (m *InMemoryStore) ReadLastLogWithType(background context.Context, logType ...ledger.LogType) (*ledger.ChainedLog, error) {
-	first := collectionutils.First(m.logs, func(log *ledger.ChainedLog) bool {
-		return collectionutils.Contains(logType, log.Type)
-	})
-	if first == nil {
-		return nil, ErrNotFound
-	}
-	return first, nil
-}
-
 func (m *InMemoryStore) InsertLogs(ctx context.Context, logs ...*ledger.ChainedLog) error {
 	m.logs = append(m.logs, logs...)
 	for _, log := range logs {
@@ -118,6 +108,13 @@ func (m *InMemoryStore) InsertLogs(ctx context.Context, logs ...*ledger.ChainedL
 	}
 
 	return nil
+}
+
+func (m *InMemoryStore) GetLastTransaction(ctx context.Context) (*ledger.ExpandedTransaction, error) {
+	if len(m.transactions) == 0 {
+		return nil, ErrNotFound
+	}
+	return m.transactions[len(m.transactions)-1], nil
 }
 
 func NewInMemoryStore() *InMemoryStore {

@@ -259,6 +259,18 @@ func (store *Store) GetTransactionByReference(ctx context.Context, ref string) (
 		})
 }
 
+func (store *Store) GetLastTransaction(ctx context.Context) (*ledger.ExpandedTransaction, error) {
+	return fetchAndMap[*Transaction, *ledger.ExpandedTransaction](store, ctx,
+		(*Transaction).toCore,
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			return query.
+				Table("transactions").
+				ColumnExpr(`transactions.id, transactions.reference, transactions.metadata, transactions.postings, transactions.timestamp, transactions.reverted`).
+				Order("id desc").
+				Limit(1)
+		})
+}
+
 type GetTransactionsQuery paginate.ColumnPaginatedQuery[PaginatedQueryOptions[PITFilterWithVolumes]]
 
 func NewGetTransactionsQuery(options PaginatedQueryOptions[PITFilterWithVolumes]) *GetTransactionsQuery {

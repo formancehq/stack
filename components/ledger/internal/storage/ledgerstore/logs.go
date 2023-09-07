@@ -12,7 +12,6 @@ import (
 	"github.com/formancehq/ledger/internal/storage/paginate"
 	"github.com/formancehq/ledger/internal/storage/query"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -101,15 +100,6 @@ func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.Chaine
 			if err != nil {
 				return errors.Wrap(err, "marshaling log data")
 			}
-			fmt.Println("#############")
-			fmt.Println("#############")
-			fmt.Println("#############")
-			fmt.Println("#############")
-			fmt.Println("#############")
-			fmt.Println("#############")
-			fmt.Println("#############")
-			fmt.Println("#############")
-			fmt.Println(string(data))
 
 			ls[i] = Logs{
 				ID:             (*paginate.BigInt)(chainedLogs.ID),
@@ -157,17 +147,6 @@ func (store *Store) GetLogs(ctx context.Context, q *GetLogsQuery) (*api.Cursor[l
 	return api.MapCursor(logs, func(from Logs) ledger.ChainedLog {
 		return *from.ToCore()
 	}), nil
-}
-
-func (store *Store) ReadLastLogWithType(ctx context.Context, logTypes ...ledger.LogType) (*ledger.ChainedLog, error) {
-	return fetchAndMap[*Logs](store, ctx, (*Logs).ToCore,
-		func(query *bun.SelectQuery) *bun.SelectQuery {
-			return query.
-				Table(LogTableName).
-				Where("type IN (?)", bun.In(collectionutils.Map(logTypes, ledger.LogType.String))).
-				OrderExpr("date DESC").
-				Limit(1)
-		})
 }
 
 func (store *Store) ReadLogWithIdempotencyKey(ctx context.Context, key string) (*ledger.ChainedLog, error) {

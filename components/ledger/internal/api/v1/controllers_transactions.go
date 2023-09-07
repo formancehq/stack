@@ -206,7 +206,7 @@ func postTransaction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		sharedapi.Ok(w, []any{res})
+		sharedapi.Ok(w, []any{mapTransactionToV1(*res)})
 		return
 	}
 

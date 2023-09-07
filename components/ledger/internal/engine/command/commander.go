@@ -50,21 +50,12 @@ func New(store Store, locker Locker, compiler *Compiler, referencer *Referencer,
 }
 
 func (commander *Commander) Init(ctx context.Context) error {
-	log, err := commander.store.ReadLastLogWithType(ctx, ledger.NewTransactionLogType, ledger.RevertedTransactionLogType)
+	lastTx, err := commander.store.GetLastTransaction(ctx)
 	if err != nil && !storageerrors.IsNotFoundError(err) {
 		return err
 	}
-
-	commander.lastTXID = big.NewInt(-1)
-	if err == nil {
-		switch payload := log.Data.(type) {
-		case ledger.NewTransactionLogPayload:
-			commander.lastTXID = payload.Transaction.ID
-		case ledger.RevertedTransactionLogPayload:
-			commander.lastTXID = payload.RevertTransaction.ID
-		default:
-			panic(fmt.Sprintf("unhandled payload type: %T", payload))
-		}
+	if lastTx != nil {
+		commander.lastTXID = lastTx.ID
 	}
 
 	commander.lastLog, err = commander.store.GetLastLog(ctx)
