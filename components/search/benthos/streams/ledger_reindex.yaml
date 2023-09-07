@@ -7,9 +7,6 @@ output:
     outputs:
     - http_client:
         verb: POST
-        url: http://localhost:4195/ledger_reindex_volumes
-    - http_client:
-        verb: POST
         url: http://localhost:4195/ledger_reindex_transactions
     - http_client:
         verb: POST
