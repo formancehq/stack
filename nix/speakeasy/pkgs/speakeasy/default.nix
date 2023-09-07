@@ -36,6 +36,7 @@ in pkgs.stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/bin
     cp -vr ./speakeasy $out/bin/speakeasy
+    chmod +x $out/bin/speakeasy
   '';
 
   system = system;
