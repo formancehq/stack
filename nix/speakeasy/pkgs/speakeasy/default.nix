@@ -23,7 +23,7 @@ let
   };
 in pkgs.stdenv.mkDerivation {
   pname = "speakeasy";
-  version = "1.78.1";
+  version = "1.78.4";
   src = fetchurl {
     url = urlMap.${system};
     sha256 = shaMap.${system};
