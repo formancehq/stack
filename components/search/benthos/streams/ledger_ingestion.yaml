@@ -35,13 +35,13 @@ pipeline:
                   "data": {
                     "postings": this.postings,
                     "reference": this.reference,
-                    "txid": this.id,
+                    "txid": if this.txid { this.txid } else { this.id },
                     "timestamp": this.timestamp,
                     "metadata": if this.metadata { this.metadata } else {{}}
                   },
                   "indexed": {
                     "reference": this.reference,
-                    "txid": this.id,
+                    "txid": this.txid,
                     "timestamp": this.timestamp,
                     "asset": this.postings.map_each(p -> p.asset),
                     "source": this.postings.map_each(p -> p.source),

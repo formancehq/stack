@@ -13,7 +13,7 @@ type Ledgers struct {
 	bun.BaseModel `bun:"_system.ledgers,alias:ledgers"`
 
 	Ledger  string      `bun:"ledger,type:varchar(255),pk"` // Primary key
-	AddedAt ledger.Time `bun:"addedAt,type:timestamp"`
+	AddedAt ledger.Time `bun:"addedat,type:timestamp"`
 }
 
 func (s *Store) CreateLedgersTable(ctx context.Context) error {
