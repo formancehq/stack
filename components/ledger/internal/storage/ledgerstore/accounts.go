@@ -124,6 +124,7 @@ func (store *Store) GetAccount(ctx context.Context, address string) (*ledger.Acc
 		return query.
 			ColumnExpr("accounts.address").
 			ColumnExpr("coalesce(metadata, '{}'::jsonb) as metadata").
+			Table("accounts").
 			Join("left join accounts_metadata on accounts_metadata.address = accounts.address").
 			Where("accounts.address = ?", address).
 			Order("revision desc").

@@ -49,7 +49,28 @@ func convertMetadata(ret map[string]any) map[string]any {
 	oldMetadata := ret["metadata"].(map[string]any)
 	newMetadata := make(map[string]string)
 	for k, v := range oldMetadata {
-		newMetadata[k] = fmt.Sprint(v)
+		switch v := v.(type) {
+		case map[string]any:
+			if len(v) == 2 && v["type"] != nil && v["value"] != nil {
+				switch v["type"] {
+				case "asset", "string", "account":
+					newMetadata[k] = v["value"].(string)
+				case "monetary":
+					newMetadata[k] = fmt.Sprintf("%s %d",
+						v["value"].(map[string]any)["asset"].(string),
+						int(v["value"].(map[string]any)["amount"].(float64)),
+					)
+				case "portion":
+					newMetadata[k] = v["value"].(map[string]any)["specific"].(string)
+				case "number":
+					newMetadata[k] = fmt.Sprint(v["value"])
+				}
+			} else {
+				newMetadata[k] = fmt.Sprint(v)
+			}
+		default:
+			newMetadata[k] = fmt.Sprint(v)
+		}
 	}
 	ret["metadata"] = newMetadata
 

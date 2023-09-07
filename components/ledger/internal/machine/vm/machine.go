@@ -15,7 +15,7 @@ import (
 	"math/big"
 
 	ledger "github.com/formancehq/ledger/internal"
-	internal2 "github.com/formancehq/ledger/internal/machine/internal"
+	internal "github.com/formancehq/ledger/internal/machine/internal"
 	program2 "github.com/formancehq/ledger/internal/machine/vm/program"
 	"github.com/formancehq/stack/libs/go-libs/errorsutil"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -26,50 +26,50 @@ import (
 type Machine struct {
 	P                          uint
 	Program                    program2.Program
-	Vars                       map[string]internal2.Value
+	Vars                       map[string]internal.Value
 	UnresolvedResources        []program2.Resource
-	Resources                  []internal2.Value // Constants and Variables
+	Resources                  []internal.Value // Constants and Variables
 	UnresolvedResourceBalances map[string]int
 	resolveCalled              bool
-	Balances                   map[internal2.AccountAddress]map[internal2.Asset]*internal2.MonetaryInt // keeps track of balances throughout execution
+	Balances                   map[internal.AccountAddress]map[internal.Asset]*internal.MonetaryInt // keeps track of balances throughout execution
 	setBalanceCalled           bool
-	Stack                      []internal2.Value
-	Postings                   []Posting                                               // accumulates postings throughout execution
-	TxMeta                     map[string]internal2.Value                              // accumulates transaction meta throughout execution
-	AccountsMeta               map[internal2.AccountAddress]map[string]internal2.Value // accumulates accounts meta throughout execution
-	Printer                    func(chan internal2.Value)
-	printChan                  chan internal2.Value
+	Stack                      []internal.Value
+	Postings                   []Posting                                             // accumulates postings throughout execution
+	TxMeta                     map[string]internal.Value                             // accumulates transaction meta throughout execution
+	AccountsMeta               map[internal.AccountAddress]map[string]internal.Value // accumulates accounts meta throughout execution
+	Printer                    func(chan internal.Value)
+	printChan                  chan internal.Value
 	Debug                      bool
 }
 
 type Posting struct {
 	Source      string                 `json:"source"`
-	Destination string                 `json:"destination"`
-	Amount      *internal2.MonetaryInt `json:"amount"`
-	Asset       string                 `json:"asset"`
+	Destination string                `json:"destination"`
+	Amount      *internal.MonetaryInt `json:"amount"`
+	Asset       string                `json:"asset"`
 }
 
 type Metadata map[string]any
 
 func NewMachine(p program2.Program) *Machine {
-	printChan := make(chan internal2.Value)
+	printChan := make(chan internal.Value)
 
 	m := Machine{
 		Program:                    p,
 		UnresolvedResources:        p.Resources,
-		Resources:                  make([]internal2.Value, 0),
+		Resources:                  make([]internal.Value, 0),
 		printChan:                  printChan,
 		Printer:                    StdOutPrinter,
 		Postings:                   make([]Posting, 0),
-		TxMeta:                     map[string]internal2.Value{},
-		AccountsMeta:               map[internal2.AccountAddress]map[string]internal2.Value{},
+		TxMeta:                     map[string]internal.Value{},
+		AccountsMeta:               map[internal.AccountAddress]map[string]internal.Value{},
 		UnresolvedResourceBalances: map[string]int{},
 	}
 
 	return &m
 }
 
-func StdOutPrinter(c chan internal2.Value) {
+func StdOutPrinter(c chan internal.Value) {
 	for v := range c {
 		fmt.Println("OUT:", v)
 	}
@@ -79,7 +79,7 @@ func (m *Machine) GetTxMetaJSON() metadata.Metadata {
 	meta := metadata.Metadata{}
 	for k, v := range m.TxMeta {
 		var err error
-		meta[k], err = internal2.NewStringFromValue(v)
+		meta[k], err = internal.NewStringFromValue(v)
 		if err != nil {
 			panic(err)
 		}
@@ -96,7 +96,7 @@ func (m *Machine) GetAccountsMetaJSON() map[string]metadata.Metadata {
 			}
 
 			var err error
-			res[string(account)][k], err = internal2.NewStringFromValue(v)
+			res[string(account)][k], err = internal.NewStringFromValue(v)
 			if err != nil {
 				panic(err)
 			}
@@ -106,7 +106,7 @@ func (m *Machine) GetAccountsMetaJSON() map[string]metadata.Metadata {
 	return res
 }
 
-func (m *Machine) getResource(addr internal2.Address) (*internal2.Value, bool) {
+func (m *Machine) getResource(addr internal.Address) (*internal.Value, bool) {
 	a := int(addr)
 	if a >= len(m.Resources) {
 		return nil, false
@@ -114,19 +114,19 @@ func (m *Machine) getResource(addr internal2.Address) (*internal2.Value, bool) {
 	return &m.Resources[a], true
 }
 
-func (m *Machine) withdrawAll(account internal2.AccountAddress, asset internal2.Asset, overdraft *internal2.MonetaryInt) (*internal2.Funding, error) {
+func (m *Machine) withdrawAll(account internal.AccountAddress, asset internal.Asset, overdraft *internal.MonetaryInt) (*internal.Funding, error) {
 	if accBalances, ok := m.Balances[account]; ok {
 		if balance, ok := accBalances[asset]; ok {
-			amountTaken := internal2.Zero
+			amountTaken := internal.Zero
 			balanceWithOverdraft := balance.Add(overdraft)
-			if balanceWithOverdraft.Gt(internal2.Zero) {
+			if balanceWithOverdraft.Gt(internal.Zero) {
 				amountTaken = balanceWithOverdraft
 				accBalances[asset] = overdraft.Neg()
 			}
 
-			return &internal2.Funding{
+			return &internal.Funding{
 				Asset: asset,
-				Parts: []internal2.FundingPart{{
+				Parts: []internal.FundingPart{{
 					Account: account,
 					Amount:  amountTaken,
 				}},
@@ -136,13 +136,13 @@ func (m *Machine) withdrawAll(account internal2.AccountAddress, asset internal2.
 	return nil, fmt.Errorf("missing %v balance from %v", asset, account)
 }
 
-func (m *Machine) withdrawAlways(account internal2.AccountAddress, mon internal2.Monetary) (*internal2.Funding, error) {
+func (m *Machine) withdrawAlways(account internal.AccountAddress, mon internal.Monetary) (*internal.Funding, error) {
 	if accBalance, ok := m.Balances[account]; ok {
 		if balance, ok := accBalance[mon.Asset]; ok {
 			accBalance[mon.Asset] = balance.Sub(mon.Amount)
-			return &internal2.Funding{
+			return &internal.Funding{
 				Asset: mon.Asset,
-				Parts: []internal2.FundingPart{{
+				Parts: []internal.FundingPart{{
 					Account: account,
 					Amount:  mon.Amount,
 				}},
@@ -152,7 +152,7 @@ func (m *Machine) withdrawAlways(account internal2.AccountAddress, mon internal2
 	return nil, fmt.Errorf("missing %v balance from %v", mon.Asset, account)
 }
 
-func (m *Machine) credit(account internal2.AccountAddress, funding internal2.Funding) {
+func (m *Machine) credit(account internal.AccountAddress, funding internal.Funding) {
 	if account == "world" {
 		return
 	}
@@ -166,7 +166,7 @@ func (m *Machine) credit(account internal2.AccountAddress, funding internal2.Fun
 	}
 }
 
-func (m *Machine) repay(funding internal2.Funding) {
+func (m *Machine) repay(funding internal.Funding) {
 	for _, part := range funding.Parts {
 		if part.Account == "world" {
 			continue
@@ -189,7 +189,7 @@ func (m *Machine) tick() (bool, error) {
 	switch op {
 	case program2.OP_APUSH:
 		bytes := m.Program.Instructions[m.P+1 : m.P+3]
-		v, ok := m.getResource(internal2.Address(binary.LittleEndian.Uint16(bytes)))
+		v, ok := m.getResource(internal.Address(binary.LittleEndian.Uint16(bytes)))
 		if !ok {
 			return true, ErrResourceNotFound
 		}
@@ -197,7 +197,7 @@ func (m *Machine) tick() (bool, error) {
 		m.P += 2
 
 	case program2.OP_BUMP:
-		n := big.Int(*pop[internal2.Number](m))
+		n := big.Int(*pop[internal.Number](m))
 		idx := len(m.Stack) - int(n.Uint64()) - 1
 		v := m.Stack[idx]
 		m.Stack = append(m.Stack[:idx], m.Stack[idx+1:]...)
@@ -205,19 +205,19 @@ func (m *Machine) tick() (bool, error) {
 
 	case program2.OP_DELETE:
 		n := m.popValue()
-		if n.GetType() == internal2.TypeFunding {
+		if n.GetType() == internal.TypeFunding {
 			return true, errorsutil.NewError(ErrInvalidScript,
-				errors.Errorf("wrong type: want: %v, got: %v", n.GetType(), internal2.TypeFunding))
+				errors.Errorf("wrong type: want: %v, got: %v", n.GetType(), internal.TypeFunding))
 		}
 
 	case program2.OP_IADD:
-		b := pop[internal2.Number](m)
-		a := pop[internal2.Number](m)
+		b := pop[internal.Number](m)
+		a := pop[internal.Number](m)
 		m.pushValue(a.Add(b))
 
 	case program2.OP_ISUB:
-		b := pop[internal2.Number](m)
-		a := pop[internal2.Number](m)
+		b := pop[internal.Number](m)
+		a := pop[internal.Number](m)
 		m.pushValue(a.Sub(b))
 
 	case program2.OP_PRINT:
@@ -230,11 +230,11 @@ func (m *Machine) tick() (bool, error) {
 	case program2.OP_ASSET:
 		v := m.popValue()
 		switch v := v.(type) {
-		case internal2.Asset:
+		case internal.Asset:
 			m.pushValue(v)
-		case internal2.Monetary:
+		case internal.Monetary:
 			m.pushValue(v.Asset)
-		case internal2.Funding:
+		case internal.Funding:
 			m.pushValue(v.Asset)
 		default:
 			return true, errorsutil.NewError(ErrInvalidScript,
@@ -242,52 +242,52 @@ func (m *Machine) tick() (bool, error) {
 		}
 
 	case program2.OP_MONETARY_NEW:
-		amount := pop[internal2.Number](m)
-		asset := pop[internal2.Asset](m)
-		m.pushValue(internal2.Monetary{
+		amount := pop[internal.Number](m)
+		asset := pop[internal.Asset](m)
+		m.pushValue(internal.Monetary{
 			Asset:  asset,
 			Amount: amount,
 		})
 
 	case program2.OP_MONETARY_ADD:
-		b := pop[internal2.Monetary](m)
-		a := pop[internal2.Monetary](m)
+		b := pop[internal.Monetary](m)
+		a := pop[internal.Monetary](m)
 		if a.Asset != b.Asset {
 			return true, errorsutil.NewError(ErrInvalidScript,
 				errors.Errorf("cannot add different assets: %v and %v", a.Asset, b.Asset))
 		}
-		m.pushValue(internal2.Monetary{
+		m.pushValue(internal.Monetary{
 			Asset:  a.Asset,
 			Amount: a.Amount.Add(b.Amount),
 		})
 
 	case program2.OP_MONETARY_SUB:
-		b := pop[internal2.Monetary](m)
-		a := pop[internal2.Monetary](m)
+		b := pop[internal.Monetary](m)
+		a := pop[internal.Monetary](m)
 		if a.Asset != b.Asset {
 			return true, fmt.Errorf("%s", program2.OpcodeName(op))
 		}
-		m.pushValue(internal2.Monetary{
+		m.pushValue(internal.Monetary{
 			Asset:  a.Asset,
 			Amount: a.Amount.Sub(b.Amount),
 		})
 
 	case program2.OP_MAKE_ALLOTMENT:
-		n := pop[internal2.Number](m)
-		portions := make([]internal2.Portion, n.Uint64())
+		n := pop[internal.Number](m)
+		portions := make([]internal.Portion, n.Uint64())
 		for i := uint64(0); i < n.Uint64(); i++ {
-			p := pop[internal2.Portion](m)
+			p := pop[internal.Portion](m)
 			portions[i] = p
 		}
-		allotment, err := internal2.NewAllotment(portions)
+		allotment, err := internal.NewAllotment(portions)
 		if err != nil {
 			return true, errorsutil.NewError(ErrInvalidScript, err)
 		}
 		m.pushValue(*allotment)
 
 	case program2.OP_TAKE_ALL:
-		overdraft := pop[internal2.Monetary](m)
-		account := pop[internal2.AccountAddress](m)
+		overdraft := pop[internal.Monetary](m)
+		account := pop[internal.AccountAddress](m)
 		funding, err := m.withdrawAll(account, overdraft.Asset, overdraft.Amount)
 		if err != nil {
 			return true, errorsutil.NewError(ErrInvalidScript, err)
@@ -295,8 +295,8 @@ func (m *Machine) tick() (bool, error) {
 		m.pushValue(*funding)
 
 	case program2.OP_TAKE_ALWAYS:
-		mon := pop[internal2.Monetary](m)
-		account := pop[internal2.AccountAddress](m)
+		mon := pop[internal.Monetary](m)
+		account := pop[internal.AccountAddress](m)
 		funding, err := m.withdrawAlways(account, mon)
 		if err != nil {
 			return true, errorsutil.NewError(ErrInvalidScript, err)
@@ -304,8 +304,8 @@ func (m *Machine) tick() (bool, error) {
 		m.pushValue(*funding)
 
 	case program2.OP_TAKE:
-		mon := pop[internal2.Monetary](m)
-		funding := pop[internal2.Funding](m)
+		mon := pop[internal.Monetary](m)
+		funding := pop[internal.Funding](m)
 		if funding.Asset != mon.Asset {
 			return true, errorsutil.NewError(ErrInvalidScript,
 				errors.Errorf("cannot take from different assets: %v and %v", funding.Asset, mon.Asset))
@@ -318,23 +318,23 @@ func (m *Machine) tick() (bool, error) {
 		m.pushValue(result)
 
 	case program2.OP_TAKE_MAX:
-		mon := pop[internal2.Monetary](m)
+		mon := pop[internal.Monetary](m)
 		if mon.Amount.Ltz() {
 			return true, fmt.Errorf(
 				"cannot send a monetary with a negative amount: [%s %s]",
 				string(mon.Asset), mon.Amount)
 		}
-		funding := pop[internal2.Funding](m)
+		funding := pop[internal.Funding](m)
 		if funding.Asset != mon.Asset {
 			return true, errorsutil.NewError(ErrInvalidScript,
 				errors.Errorf("cannot take from different assets: %v and %v", funding.Asset, mon.Asset))
 		}
-		missing := internal2.Zero
+		missing := internal.Zero
 		total := funding.Total()
 		if mon.Amount.Gt(total) {
 			missing = mon.Amount.Sub(total)
 		}
-		m.pushValue(internal2.Monetary{
+		m.pushValue(internal.Monetary{
 			Asset:  mon.Asset,
 			Amount: missing,
 		})
@@ -343,20 +343,20 @@ func (m *Machine) tick() (bool, error) {
 		m.pushValue(result)
 
 	case program2.OP_FUNDING_ASSEMBLE:
-		num := pop[internal2.Number](m)
+		num := pop[internal.Number](m)
 		n := int(num.Uint64())
 		if n == 0 {
 			return true, errorsutil.NewError(ErrInvalidScript,
 				errors.New("cannot assemble zero fundings"))
 		}
-		first := pop[internal2.Funding](m)
-		result := internal2.Funding{
+		first := pop[internal.Funding](m)
+		result := internal.Funding{
 			Asset: first.Asset,
 		}
-		fundings_rev := make([]internal2.Funding, n)
+		fundings_rev := make([]internal.Funding, n)
 		fundings_rev[0] = first
 		for i := 1; i < n; i++ {
-			f := pop[internal2.Funding](m)
+			f := pop[internal.Funding](m)
 			if f.Asset != result.Asset {
 				return true, errorsutil.NewError(ErrInvalidScript,
 					errors.Errorf("cannot assemble different assets: %v and %v", f.Asset, result.Asset))
@@ -373,37 +373,37 @@ func (m *Machine) tick() (bool, error) {
 		m.pushValue(result)
 
 	case program2.OP_FUNDING_SUM:
-		funding := pop[internal2.Funding](m)
+		funding := pop[internal.Funding](m)
 		sum := funding.Total()
 		m.pushValue(funding)
-		m.pushValue(internal2.Monetary{
+		m.pushValue(internal.Monetary{
 			Asset:  funding.Asset,
 			Amount: sum,
 		})
 
 	case program2.OP_FUNDING_REVERSE:
-		funding := pop[internal2.Funding](m)
+		funding := pop[internal.Funding](m)
 		result := funding.Reverse()
 		m.pushValue(result)
 
 	case program2.OP_ALLOC:
-		allotment := pop[internal2.Allotment](m)
-		monetary := pop[internal2.Monetary](m)
+		allotment := pop[internal.Allotment](m)
+		monetary := pop[internal.Monetary](m)
 		total := monetary.Amount
 		parts := allotment.Allocate(total)
 		for i := len(parts) - 1; i >= 0; i-- {
-			m.pushValue(internal2.Monetary{
+			m.pushValue(internal.Monetary{
 				Asset:  monetary.Asset,
 				Amount: parts[i],
 			})
 		}
 
 	case program2.OP_REPAY:
-		m.repay(pop[internal2.Funding](m))
+		m.repay(pop[internal.Funding](m))
 
 	case program2.OP_SEND:
-		dest := pop[internal2.AccountAddress](m)
-		funding := pop[internal2.Funding](m)
+		dest := pop[internal.AccountAddress](m)
+		funding := pop[internal.Funding](m)
 		m.credit(dest, funding)
 		for _, part := range funding.Parts {
 			src := part.Account
@@ -417,26 +417,26 @@ func (m *Machine) tick() (bool, error) {
 		}
 
 	case program2.OP_TX_META:
-		k := pop[internal2.String](m)
+		k := pop[internal.String](m)
 		v := m.popValue()
 		m.TxMeta[string(k)] = v
 
 	case program2.OP_ACCOUNT_META:
-		a := pop[internal2.AccountAddress](m)
-		k := pop[internal2.String](m)
+		a := pop[internal.AccountAddress](m)
+		k := pop[internal.String](m)
 		v := m.popValue()
 		if m.AccountsMeta[a] == nil {
-			m.AccountsMeta[a] = map[string]internal2.Value{}
+			m.AccountsMeta[a] = map[string]internal.Value{}
 		}
 		m.AccountsMeta[a][string(k)] = v
 
 	case program2.OP_SAVE:
-		a := pop[internal2.AccountAddress](m)
+		a := pop[internal.AccountAddress](m)
 		v := m.popValue()
 		switch v := v.(type) {
-		case internal2.Asset:
-			m.Balances[a][v] = internal2.Zero
-		case internal2.Monetary:
+		case internal.Asset:
+			m.Balances[a][v] = internal.Zero
+		case internal.Monetary:
 			m.Balances[a][v.Asset] = m.Balances[a][v.Asset].Sub(v.Amount)
 		default:
 			panic(fmt.Errorf("invalid value type: %T", v))
@@ -482,7 +482,7 @@ func (m *Machine) Execute() error {
 type BalanceRequest struct {
 	Account  string
 	Asset    string
-	Response chan *internal2.MonetaryInt
+	Response chan *internal.MonetaryInt
 	Error    error
 }
 
@@ -494,10 +494,10 @@ func (m *Machine) ResolveBalances(ctx context.Context, store Store) error {
 		return errors.New("tried to call ResolveBalances twice")
 	}
 	m.setBalanceCalled = true
-	m.Balances = make(map[internal2.AccountAddress]map[internal2.Asset]*internal2.MonetaryInt)
+	m.Balances = make(map[internal.AccountAddress]map[internal.Asset]*internal.MonetaryInt)
 
 	for address, resourceIndex := range m.UnresolvedResourceBalances {
-		monetary := m.Resources[resourceIndex].(internal2.Monetary)
+		monetary := m.Resources[resourceIndex].(internal.Monetary)
 		balance, err := store.GetBalance(ctx, address, string(monetary.Asset))
 		if err != nil {
 			return err
@@ -507,7 +507,7 @@ func (m *Machine) ResolveBalances(ctx context.Context, store Store) error {
 				"tried to request the balance of account %s for asset %s: received %s: monetary amounts must be non-negative",
 				address, monetary.Asset, balance))
 		}
-		monetary.Amount = internal2.NewMonetaryIntFromBigInt(balance)
+		monetary.Amount = internal.NewMonetaryIntFromBigInt(balance)
 		m.Resources[resourceIndex] = monetary
 	}
 
@@ -517,8 +517,8 @@ func (m *Machine) ResolveBalances(ctx context.Context, store Store) error {
 		if !ok {
 			return errors.New("invalid program (resolve balances: invalid address of account)")
 		}
-		accountAddress := (*account).(internal2.AccountAddress)
-		m.Balances[accountAddress] = make(map[internal2.Asset]*internal2.MonetaryInt)
+		accountAddress := (*account).(internal.AccountAddress)
+		m.Balances[accountAddress] = make(map[internal.Asset]*internal.MonetaryInt)
 		// for every asset, send request
 		for addr := range neededAssets {
 			mon, ok := m.getResource(addr)
@@ -526,9 +526,9 @@ func (m *Machine) ResolveBalances(ctx context.Context, store Store) error {
 				return errors.New("invalid program (resolve balances: invalid address of monetary)")
 			}
 
-			asset := (*mon).(internal2.HasAsset).GetAsset()
+			asset := (*mon).(internal.HasAsset).GetAsset()
 			if string(accountAddress) == "world" {
-				m.Balances[accountAddress][asset] = internal2.Zero
+				m.Balances[accountAddress][asset] = internal.Zero
 				continue
 			}
 
@@ -537,7 +537,7 @@ func (m *Machine) ResolveBalances(ctx context.Context, store Store) error {
 				return errors.Wrap(err, fmt.Sprintf("could not get balance for account %q", addr))
 			}
 
-			m.Balances[accountAddress][asset] = internal2.NewMonetaryIntFromBigInt(balance)
+			m.Balances[accountAddress][asset] = internal.NewMonetaryIntFromBigInt(balance)
 		}
 	}
 	return nil
@@ -550,16 +550,16 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 	}
 
 	m.resolveCalled = true
-	involvedAccountsMap := make(map[internal2.Address]string)
+	involvedAccountsMap := make(map[internal.Address]string)
 	for len(m.Resources) != len(m.UnresolvedResources) {
 		idx := len(m.Resources)
 		res := m.UnresolvedResources[idx]
-		var val internal2.Value
+		var val internal.Value
 		switch res := res.(type) {
 		case program2.Constant:
 			val = res.Inner
-			if val.GetType() == internal2.TypeAccount {
-				involvedAccountsMap[internal2.Address(idx)] = string(val.(internal2.AccountAddress))
+			if val.GetType() == internal.TypeAccount {
+				involvedAccountsMap[internal.Address(idx)] = string(val.(internal.AccountAddress))
 			}
 		case program2.Variable:
 			var ok bool
@@ -567,12 +567,12 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 			if !ok {
 				return nil, nil, fmt.Errorf("missing variable '%s'", res.Name)
 			}
-			if val.GetType() == internal2.TypeAccount {
-				involvedAccountsMap[internal2.Address(idx)] = string(val.(internal2.AccountAddress))
+			if val.GetType() == internal.TypeAccount {
+				involvedAccountsMap[internal.Address(idx)] = string(val.(internal.AccountAddress))
 			}
 		case program2.VariableAccountMetadata:
 			acc, _ := m.getResource(res.Account)
-			addr := string((*acc).(internal2.AccountAddress))
+			addr := string((*acc).(internal.AccountAddress))
 
 			account, err := store.GetAccount(ctx, addr)
 			if err != nil {
@@ -585,14 +585,14 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 					fmt.Sprintf("missing key %v in metadata for account %s", res.Key, addr)))
 			}
 
-			val, err = internal2.NewValueFromString(res.Typ, metadata)
+			val, err = internal.NewValueFromString(res.Typ, metadata)
 			if err != nil {
 				return nil, nil, err
 			}
 		case program2.VariableAccountBalance:
 			acc, _ := m.getResource(res.Account)
-			address := string((*acc).(internal2.AccountAddress))
-			involvedAccountsMap[internal2.Address(idx)] = address
+			address := string((*acc).(internal.AccountAddress))
+			involvedAccountsMap[internal.Address(idx)] = address
 			m.UnresolvedResourceBalances[address] = idx
 
 			ass, ok := m.getResource(res.Asset)
@@ -601,19 +601,19 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 					"variable '%s': tried to request account balance of an asset which has not yet been solved",
 					res.Name)
 			}
-			if (*ass).GetType() != internal2.TypeAsset {
+			if (*ass).GetType() != internal.TypeAsset {
 				return nil, nil, fmt.Errorf(
 					"variable '%s': tried to request account balance for an asset on wrong entity: %v instead of asset",
 					res.Name, (*ass).GetType())
 			}
 
-			val = internal2.Monetary{
-				Asset: (*ass).(internal2.Asset),
+			val = internal.Monetary{
+				Asset: (*ass).(internal.Asset),
 			}
 		case program2.Monetary:
 			ass, _ := m.getResource(res.Asset)
-			val = internal2.Monetary{
-				Asset:  (*ass).(internal2.Asset),
+			val = internal.Monetary{
+				Asset:  (*ass).(internal.Asset),
 				Amount: res.Amount,
 			}
 		default:
