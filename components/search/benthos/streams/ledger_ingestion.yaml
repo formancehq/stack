@@ -10,6 +10,8 @@ pipeline:
       events:
       - label: COMMITTED_TRANSACTIONS
         processors:
+        - log:
+            message: "receive message: ${! this }"
         - bloblang: |
             map account {
               root = this.map_each(v -> v.value.map_each(v2 -> {
@@ -30,7 +32,7 @@ pipeline:
             map tx {
               root = {
                 "action": "index",
-                "id": "%d".format(if this.exists("txid") { this.txid } else { this.id }),
+                "id": if this.exists("txid") { "%s".format(this.txid) } else { "%s".format(this.id) },
                 "document": {
                   "data": {
                     "postings": this.postings,
