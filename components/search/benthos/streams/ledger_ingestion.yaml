@@ -30,7 +30,7 @@ pipeline:
             map tx {
               root = {
                 "action": "index",
-                "id": "%s".format(this.txid),
+                "id": "%d".format(if this.txid { this.txid } else { this.id }),
                 "document": {
                   "data": {
                     "postings": this.postings,
@@ -41,7 +41,7 @@ pipeline:
                   },
                   "indexed": {
                     "reference": this.reference,
-                    "txid": this.txid,
+                    "txid": if this.txid { this.txid } else { this.id },
                     "timestamp": this.timestamp,
                     "asset": this.postings.map_each(p -> p.asset),
                     "source": this.postings.map_each(p -> p.source),

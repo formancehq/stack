@@ -20,7 +20,7 @@ pipeline:
       })
   - bloblang: |
         meta action = "upsert"
-        meta id = "TRANSACTION-%s-%d".format(meta("ledger"), this.id)
+        meta id = "TRANSACTION-%s-%s".format(meta("ledger"), this.id)
         root = {
           "data": {
             "postings": this.postings,
