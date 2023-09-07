@@ -42,6 +42,7 @@ func getQueryBuilder(r *http.Request) (query.Builder, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if len(data) > 0 {
 		return query.ParseJSON(string(data))
 	}

@@ -38,40 +38,40 @@ type Commander struct {
 }
 
 func New(store Store, locker Locker, compiler *Compiler, referencer *Referencer, monitor bus.Monitor) *Commander {
-	log, err := store.ReadLastLogWithType(context.Background(), ledger.NewTransactionLogType, ledger.RevertedTransactionLogType)
-	if err != nil && !storageerrors.IsNotFoundError(err) {
-		panic(err)
-	}
-
-	lastTxID := big.NewInt(-1)
-	if err == nil {
-		switch payload := log.Data.(type) {
-		case ledger.NewTransactionLogPayload:
-			lastTxID = payload.Transaction.ID
-		case ledger.RevertedTransactionLogPayload:
-			lastTxID = payload.RevertTransaction.ID
-		default:
-			panic(fmt.Sprintf("unhandled payload type: %T", payload))
-		}
-	} else {
-
-	}
-
-	lastLog, err := store.GetLastLog(context.Background())
-	if err != nil && !storageerrors.IsNotFoundError(err) {
-		panic(err)
-	}
-
 	return &Commander{
 		store:      store,
 		locker:     locker,
 		compiler:   compiler,
+		lastTXID:   big.NewInt(-1),
 		referencer: referencer,
-		lastTXID:   lastTxID,
-		lastLog:    lastLog,
 		Batcher:    batching.NewBatcher(store.InsertLogs, 1, 4096),
 		monitor:    monitor,
 	}
+}
+
+func (commander *Commander) Init(ctx context.Context) error {
+	log, err := commander.store.ReadLastLogWithType(ctx, ledger.NewTransactionLogType, ledger.RevertedTransactionLogType)
+	if err != nil && !storageerrors.IsNotFoundError(err) {
+		return err
+	}
+
+	commander.lastTXID = big.NewInt(-1)
+	if err == nil {
+		switch payload := log.Data.(type) {
+		case ledger.NewTransactionLogPayload:
+			commander.lastTXID = payload.Transaction.ID
+		case ledger.RevertedTransactionLogPayload:
+			commander.lastTXID = payload.RevertTransaction.ID
+		default:
+			panic(fmt.Sprintf("unhandled payload type: %T", payload))
+		}
+	}
+
+	commander.lastLog, err = commander.store.GetLastLog(ctx)
+	if err != nil && !storageerrors.IsNotFoundError(err) {
+		return err
+	}
+	return nil
 }
 
 func (commander *Commander) GetLedgerStore() Store {

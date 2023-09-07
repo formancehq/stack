@@ -1,6 +1,7 @@
 package v2_test
 
 import (
+	"bytes"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -23,6 +24,7 @@ func TestGetBalancesAggregated(t *testing.T) {
 	type testCase struct {
 		name        string
 		queryParams url.Values
+		body        string
 		expectQuery ledgerstore.PaginatedQueryOptions[ledgerstore.PITFilter]
 	}
 
@@ -33,10 +35,7 @@ func TestGetBalancesAggregated(t *testing.T) {
 		},
 		{
 			name: "using address",
-			queryParams: url.Values{
-				"address": []string{"foo"},
-				"query":   []string{`{"$match": {"address": "foo"}}`},
-			},
+			body: `{"$match": {"address": "foo"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilter{}).
 				WithQueryBuilder(query.Match("address", "foo")),
 		},
@@ -55,9 +54,11 @@ func TestGetBalancesAggregated(t *testing.T) {
 
 			router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry())
 
-			req := httptest.NewRequest(http.MethodGet, "/xxx/aggregate/balances", nil)
+			req := httptest.NewRequest(http.MethodGet, "/xxx/aggregate/balances", bytes.NewBufferString(testCase.body))
 			rec := httptest.NewRecorder()
-			req.URL.RawQuery = testCase.queryParams.Encode()
+			if testCase.queryParams != nil {
+				req.URL.RawQuery = testCase.queryParams.Encode()
+			}
 
 			router.ServeHTTP(rec, req)
 

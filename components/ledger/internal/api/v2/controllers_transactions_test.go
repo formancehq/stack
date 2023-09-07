@@ -1,6 +1,7 @@
 package v2_test
 
 import (
+	"bytes"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -345,6 +346,7 @@ func TestGetTransactions(t *testing.T) {
 	type testCase struct {
 		name              string
 		queryParams       url.Values
+		body              string
 		expectQuery       ledgerstore.PaginatedQueryOptions[ledgerstore.PITFilterWithVolumes]
 		expectStatusCode  int
 		expectedErrorCode string
@@ -358,57 +360,43 @@ func TestGetTransactions(t *testing.T) {
 		},
 		{
 			name: "using metadata",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"metadata[roles]": "admin"}}`},
-			},
+			body: `{"$match": {"metadata[roles]": "admin"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("metadata[roles]", "admin")),
 		},
 		{
 			name: "using startTime",
-			queryParams: url.Values{
-				"query": []string{fmt.Sprintf(`{"$gte": {"start_time": "%s"}}`, now.Format(ledger.DateFormat))},
-			},
+			body: fmt.Sprintf(`{"$gte": {"start_time": "%s"}}`, now.Format(ledger.DateFormat)),
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Gte("start_time", now.Format(ledger.DateFormat))),
 		},
 		{
 			name: "using endTime",
-			queryParams: url.Values{
-				"query": []string{fmt.Sprintf(`{"$lte": {"end_time": "%s"}}`, now.Format(ledger.DateFormat))},
-			},
+			body: fmt.Sprintf(`{"$lte": {"end_time": "%s"}}`, now.Format(ledger.DateFormat)),
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Lte("end_time", now.Format(ledger.DateFormat))),
 		},
 		{
 			name: "using account",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"account": "xxx"}}`},
-			},
+			body: `{"$match": {"account": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("account", "xxx")),
 		},
 		{
 			name: "using reference",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"reference": "xxx"}}`},
-			},
+			body: `{"$match": {"reference": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("reference", "xxx")),
 		},
 		{
 			name: "using destination",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"destination": "xxx"}}`},
-			},
+			body: `{"$match": {"destination": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("destination", "xxx")),
 		},
 		{
 			name: "using source",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"source": "xxx"}}`},
-			},
+			body: `{"$match": {"source": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("source", "xxx")),
 		},
@@ -472,9 +460,11 @@ func TestGetTransactions(t *testing.T) {
 
 			router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry())
 
-			req := httptest.NewRequest(http.MethodGet, "/xxx/transactions", nil)
+			req := httptest.NewRequest(http.MethodGet, "/xxx/transactions", bytes.NewBufferString(testCase.body))
 			rec := httptest.NewRecorder()
-			req.URL.RawQuery = testCase.queryParams.Encode()
+			if testCase.queryParams != nil {
+				req.URL.RawQuery = testCase.queryParams.Encode()
+			}
 
 			router.ServeHTTP(rec, req)
 
@@ -497,6 +487,7 @@ func TestCountTransactions(t *testing.T) {
 	type testCase struct {
 		name              string
 		queryParams       url.Values
+		body              string
 		expectQuery       ledgerstore.PaginatedQueryOptions[ledgerstore.PITFilterWithVolumes]
 		expectStatusCode  int
 		expectedErrorCode string
@@ -510,57 +501,43 @@ func TestCountTransactions(t *testing.T) {
 		},
 		{
 			name: "using metadata",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"metadata[roles]": "admin"}}`},
-			},
+			body: `{"$match": {"metadata[roles]": "admin"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("metadata[roles]", "admin")),
 		},
 		{
 			name: "using startTime",
-			queryParams: url.Values{
-				"query": []string{fmt.Sprintf(`{"$gte": {"date": "%s"}}`, now.Format(ledger.DateFormat))},
-			},
+			body: fmt.Sprintf(`{"$gte": {"date": "%s"}}`, now.Format(ledger.DateFormat)),
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Gte("date", now.Format(ledger.DateFormat))),
 		},
 		{
 			name: "using endTime",
-			queryParams: url.Values{
-				"query": []string{fmt.Sprintf(`{"$gte": {"date": "%s"}}`, now.Format(ledger.DateFormat))},
-			},
+			body: fmt.Sprintf(`{"$gte": {"date": "%s"}}`, now.Format(ledger.DateFormat)),
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Gte("date", now.Format(ledger.DateFormat))),
 		},
 		{
 			name: "using account",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"account": "xxx"}}`},
-			},
+			body: `{"$match": {"account": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("account", "xxx")),
 		},
 		{
 			name: "using reference",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"reference": "xxx"}}`},
-			},
+			body: `{"$match": {"reference": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("reference", "xxx")),
 		},
 		{
 			name: "using destination",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"destination": "xxx"}}`},
-			},
+			body: `{"$match": {"destination": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("destination", "xxx")),
 		},
 		{
 			name: "using source",
-			queryParams: url.Values{
-				"query": []string{`{"$match": {"source": "xxx"}}`},
-			},
+			body: `{"$match": {"source": "xxx"}}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("source", "xxx")),
 		},
@@ -582,9 +559,11 @@ func TestCountTransactions(t *testing.T) {
 
 			router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry())
 
-			req := httptest.NewRequest(http.MethodHead, "/xxx/transactions", nil)
+			req := httptest.NewRequest(http.MethodHead, "/xxx/transactions", bytes.NewBufferString(testCase.body))
 			rec := httptest.NewRecorder()
-			req.URL.RawQuery = testCase.queryParams.Encode()
+			if testCase.queryParams != nil {
+				req.URL.RawQuery = testCase.queryParams.Encode()
+			}
 
 			router.ServeHTTP(rec, req)
 

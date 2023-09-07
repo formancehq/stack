@@ -101,6 +101,15 @@ func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.Chaine
 			if err != nil {
 				return errors.Wrap(err, "marshaling log data")
 			}
+			fmt.Println("#############")
+			fmt.Println("#############")
+			fmt.Println("#############")
+			fmt.Println("#############")
+			fmt.Println("#############")
+			fmt.Println("#############")
+			fmt.Println("#############")
+			fmt.Println("#############")
+			fmt.Println(string(data))
 
 			ls[i] = Logs{
 				ID:             (*paginate.BigInt)(chainedLogs.ID),

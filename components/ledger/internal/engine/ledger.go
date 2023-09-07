@@ -42,6 +42,9 @@ func New(
 }
 
 func (l *Ledger) Start(ctx context.Context) {
+	if err := l.commander.Init(ctx); err != nil {
+		panic(err)
+	}
 	go l.commander.Run(logging.ContextWithField(ctx, "component", "commander"))
 }
 

@@ -1,6 +1,7 @@
 package v2_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -100,6 +101,7 @@ func TestGetLogs(t *testing.T) {
 	type testCase struct {
 		name              string
 		queryParams       url.Values
+		body              string
 		expectQuery       ledgerstore.PaginatedQueryOptions[any]
 		expectStatusCode  int
 		expectedErrorCode string
@@ -112,17 +114,13 @@ func TestGetLogs(t *testing.T) {
 			expectQuery: ledgerstore.NewPaginatedQueryOptions[any](nil),
 		},
 		{
-			name: "using start time",
-			queryParams: url.Values{
-				"query": []string{fmt.Sprintf(`{"$gte": {"date": "%s"}}`, now.Format(ledger.DateFormat))},
-			},
+			name:        "using start time",
+			body:        fmt.Sprintf(`{"$gte": {"date": "%s"}}`, now.Format(ledger.DateFormat)),
 			expectQuery: ledgerstore.NewPaginatedQueryOptions[any](nil).WithQueryBuilder(query.Gte("date", now.Format(ledger.DateFormat))),
 		},
 		{
 			name: "using end time",
-			queryParams: url.Values{
-				"query": []string{fmt.Sprintf(`{"$lt": {"date": "%s"}}`, now.Format(ledger.DateFormat))},
-			},
+			body: fmt.Sprintf(`{"$lt": {"date": "%s"}}`, now.Format(ledger.DateFormat)),
 			expectQuery: ledgerstore.NewPaginatedQueryOptions[any](nil).
 				WithQueryBuilder(query.Lt("date", now.Format(ledger.DateFormat))),
 		},
@@ -166,9 +164,11 @@ func TestGetLogs(t *testing.T) {
 
 			router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry())
 
-			req := httptest.NewRequest(http.MethodGet, "/xxx/logs", nil)
+			req := httptest.NewRequest(http.MethodGet, "/xxx/logs", bytes.NewBufferString(testCase.body))
 			rec := httptest.NewRecorder()
-			req.URL.RawQuery = testCase.queryParams.Encode()
+			if testCase.queryParams != nil {
+				req.URL.RawQuery = testCase.queryParams.Encode()
+			}
 
 			router.ServeHTTP(rec, req)
 

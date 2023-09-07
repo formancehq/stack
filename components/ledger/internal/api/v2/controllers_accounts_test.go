@@ -1,6 +1,7 @@
 package v2_test
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -25,6 +26,7 @@ func TestGetAccounts(t *testing.T) {
 	type testCase struct {
 		name              string
 		queryParams       url.Values
+		body              string
 		expectQuery       ledgerstore.PaginatedQueryOptions[ledgerstore.PITFilterWithVolumes]
 		expectStatusCode  int
 		expectedErrorCode string
@@ -38,18 +40,14 @@ func TestGetAccounts(t *testing.T) {
 		},
 		{
 			name: "using metadata",
-			queryParams: url.Values{
-				"query": []string{`{"$match": { "metadata[roles]": "admin" }}`},
-			},
+			body: `{"$match": { "metadata[roles]": "admin" }}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("metadata[roles]", "admin")).
 				WithPageSize(v2.DefaultPageSize),
 		},
 		{
 			name: "using address",
-			queryParams: url.Values{
-				"query": []string{`{"$match": { "address": "foo" }}`},
-			},
+			body: `{"$match": { "address": "foo" }}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Match("address", "foo")).
 				WithPageSize(v2.DefaultPageSize),
@@ -87,9 +85,7 @@ func TestGetAccounts(t *testing.T) {
 		},
 		{
 			name: "using balance filter",
-			queryParams: url.Values{
-				"query": []string{`{"$lt": { "balance[USD/2]": 100 }}`},
-			},
+			body: `{"$lt": { "balance[USD/2]": 100 }}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{}).
 				WithQueryBuilder(query.Lt("balance[USD/2]", float64(100))).
 				WithPageSize(v2.DefaultPageSize),
@@ -123,9 +119,11 @@ func TestGetAccounts(t *testing.T) {
 
 			router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry())
 
-			req := httptest.NewRequest(http.MethodGet, "/xxx/accounts", nil)
+			req := httptest.NewRequest(http.MethodGet, "/xxx/accounts", bytes.NewBufferString(testCase.body))
 			rec := httptest.NewRecorder()
-			req.URL.RawQuery = testCase.queryParams.Encode()
+			if testCase.queryParams != nil {
+				req.URL.RawQuery = testCase.queryParams.Encode()
+			}
 
 			router.ServeHTTP(rec, req)
 
