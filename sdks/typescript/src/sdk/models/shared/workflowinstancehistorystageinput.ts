@@ -16,53 +16,53 @@ import { ActivityVoidHold } from "./activityvoidhold";
 import { Expose, Type } from "class-transformer";
 
 export class WorkflowInstanceHistoryStageInput extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "ConfirmHold" })
-  @Type(() => ActivityConfirmHold)
-  confirmHold?: ActivityConfirmHold;
+    @SpeakeasyMetadata()
+    @Expose({ name: "ConfirmHold" })
+    @Type(() => ActivityConfirmHold)
+    confirmHold?: ActivityConfirmHold;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "CreateTransaction" })
-  @Type(() => ActivityCreateTransaction)
-  createTransaction?: ActivityCreateTransaction;
+    @SpeakeasyMetadata()
+    @Expose({ name: "CreateTransaction" })
+    @Type(() => ActivityCreateTransaction)
+    createTransaction?: ActivityCreateTransaction;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "CreditWallet" })
-  @Type(() => ActivityCreditWallet)
-  creditWallet?: ActivityCreditWallet;
+    @SpeakeasyMetadata()
+    @Expose({ name: "CreditWallet" })
+    @Type(() => ActivityCreditWallet)
+    creditWallet?: ActivityCreditWallet;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "DebitWallet" })
-  @Type(() => ActivityDebitWallet)
-  debitWallet?: ActivityDebitWallet;
+    @SpeakeasyMetadata()
+    @Expose({ name: "DebitWallet" })
+    @Type(() => ActivityDebitWallet)
+    debitWallet?: ActivityDebitWallet;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "GetAccount" })
-  @Type(() => ActivityGetAccount)
-  getAccount?: ActivityGetAccount;
+    @SpeakeasyMetadata()
+    @Expose({ name: "GetAccount" })
+    @Type(() => ActivityGetAccount)
+    getAccount?: ActivityGetAccount;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "GetPayment" })
-  @Type(() => ActivityGetPayment)
-  getPayment?: ActivityGetPayment;
+    @SpeakeasyMetadata()
+    @Expose({ name: "GetPayment" })
+    @Type(() => ActivityGetPayment)
+    getPayment?: ActivityGetPayment;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "GetWallet" })
-  @Type(() => ActivityGetWallet)
-  getWallet?: ActivityGetWallet;
+    @SpeakeasyMetadata()
+    @Expose({ name: "GetWallet" })
+    @Type(() => ActivityGetWallet)
+    getWallet?: ActivityGetWallet;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "RevertTransaction" })
-  @Type(() => ActivityRevertTransaction)
-  revertTransaction?: ActivityRevertTransaction;
+    @SpeakeasyMetadata()
+    @Expose({ name: "RevertTransaction" })
+    @Type(() => ActivityRevertTransaction)
+    revertTransaction?: ActivityRevertTransaction;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "StripeTransfer" })
-  @Type(() => ActivityStripeTransfer)
-  stripeTransfer?: ActivityStripeTransfer;
+    @SpeakeasyMetadata()
+    @Expose({ name: "StripeTransfer" })
+    @Type(() => ActivityStripeTransfer)
+    stripeTransfer?: ActivityStripeTransfer;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "VoidHold" })
-  @Type(() => ActivityVoidHold)
-  voidHold?: ActivityVoidHold;
+    @SpeakeasyMetadata()
+    @Expose({ name: "VoidHold" })
+    @Type(() => ActivityVoidHold)
+    voidHold?: ActivityVoidHold;
 }

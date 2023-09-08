@@ -32,14 +32,9 @@ class TaskMoneycorp
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $id;
     
-    /**
-     * $state
-     * 
-     * @var array<string, mixed> $state
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('state')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
-    public array $state;
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\TaskMoneycorpState')]
+    public TaskMoneycorpState $state;
     
 	#[\JMS\Serializer\Annotation\SerializedName('status')]
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\PaymentStatus>')]
@@ -56,8 +51,8 @@ class TaskMoneycorp
 		$this->descriptor = new \formance\stack\Models\Shared\TaskMoneycorpDescriptor();
 		$this->error = null;
 		$this->id = "";
-		$this->state = [];
-		$this->status = \formance\stack\Models\Shared\PaymentStatus::PENDING;
+		$this->state = new \formance\stack\Models\Shared\TaskMoneycorpState();
+		$this->status = \formance\stack\Models\Shared\PaymentStatus::Pending;
 		$this->updatedAt = new \DateTime();
 	}
 }

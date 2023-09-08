@@ -8,3 +8,24 @@ type ErrorResponse struct {
 	ErrorCode    ErrorsEnum `json:"errorCode"`
 	ErrorMessage string     `json:"errorMessage"`
 }
+
+func (o *ErrorResponse) GetDetails() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Details
+}
+
+func (o *ErrorResponse) GetErrorCode() ErrorsEnum {
+	if o == nil {
+		return ErrorsEnum("")
+	}
+	return o.ErrorCode
+}
+
+func (o *ErrorResponse) GetErrorMessage() string {
+	if o == nil {
+		return ""
+	}
+	return o.ErrorMessage
+}

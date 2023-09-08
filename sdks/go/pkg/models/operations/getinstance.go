@@ -12,6 +12,13 @@ type GetInstanceRequest struct {
 	InstanceID string `pathParam:"style=simple,explode=false,name=instanceID"`
 }
 
+func (o *GetInstanceRequest) GetInstanceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.InstanceID
+}
+
 type GetInstanceResponse struct {
 	ContentType string
 	// General error
@@ -20,4 +27,39 @@ type GetInstanceResponse struct {
 	GetWorkflowInstanceResponse *shared.GetWorkflowInstanceResponse
 	StatusCode                  int
 	RawResponse                 *http.Response
+}
+
+func (o *GetInstanceResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *GetInstanceResponse) GetError() *shared.Error {
+	if o == nil {
+		return nil
+	}
+	return o.Error
+}
+
+func (o *GetInstanceResponse) GetGetWorkflowInstanceResponse() *shared.GetWorkflowInstanceResponse {
+	if o == nil {
+		return nil
+	}
+	return o.GetWorkflowInstanceResponse
+}
+
+func (o *GetInstanceResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *GetInstanceResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

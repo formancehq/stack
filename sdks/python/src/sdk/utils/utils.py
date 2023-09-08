@@ -112,7 +112,8 @@ def _parse_security_scheme_value(client: SecurityClient, scheme_metadata: dict, 
         client.client.headers[header_name] = value
     elif scheme_type == 'http':
         if sub_type == 'bearer':
-            client.client.headers[header_name] = value.lower().startswith('bearer ') and value or f'Bearer {value}'
+            client.client.headers[header_name] = value.lower().startswith(
+                'bearer ') and value or f'Bearer {value}'
         else:
             raise Exception('not supported')
     else:
@@ -235,7 +236,7 @@ def template_url(url_with_params: str, params: dict[str, str]) -> str:
 
 
 def get_query_params(clazz: type, query_params: dataclass, gbls: dict[str, dict[str, dict[str, Any]]] = None) -> dict[
-    str, list[str]]:
+        str, list[str]]:
     params: dict[str, list[str]] = {}
 
     param_fields: Tuple[Field, ...] = fields(clazz)
@@ -377,7 +378,7 @@ def _get_query_param_field_name(obj_field: Field) -> str:
 
 
 def _get_delimited_query_params(metadata: dict, field_name: str, obj: any, delimiter: str) -> dict[
-    str, list[str]]:
+        str, list[str]]:
     return _populate_form(field_name, metadata.get("explode", True), obj, _get_query_param_field_name, delimiter)
 
 
@@ -391,9 +392,9 @@ SERIALIZATION_METHOD_TO_CONTENT_TYPE = {
 
 
 def serialize_request_body(request: dataclass, request_field_name: str, serialization_method: str) -> Tuple[
-    str, any, any]:
+        str, any, any]:
     if request is None:
-        return None, None, None, None
+        return None, None, None
 
     if not is_dataclass(request) or not hasattr(request, request_field_name):
         return serialize_content_type(request_field_name, SERIALIZATION_METHOD_TO_CONTENT_TYPE[serialization_method],
@@ -486,7 +487,7 @@ def serialize_multipart_form(media_type: str, request: dataclass) -> Tuple[str, 
 
 
 def serialize_dict(original: dict, explode: bool, field_name, existing: Optional[dict[str, list[str]]]) -> dict[
-    str, list[str]]:
+        str, list[str]]:
     if existing is None:
         existing = []
 
@@ -604,7 +605,8 @@ def _populate_form(field_name: str, explode: boolean, obj: any, get_field_name_f
                 items.append(_val_to_string(value))
 
         if len(items) > 0:
-            params[field_name] = [delimiter.join([str(item) for item in items])]
+            params[field_name] = [delimiter.join(
+                [str(item) for item in items])]
     else:
         params[field_name] = [_val_to_string(obj)]
 
@@ -675,10 +677,14 @@ def _serialize_header(explode: bool, obj: any) -> str:
 
 
 def unmarshal_json(data, typ):
-    unmarhsal = make_dataclass('Unmarhsal', [('res', typ)],
+    unmarshal = make_dataclass('Unmarshal', [('res', typ)],
                                bases=(DataClassJsonMixin,))
     json_dict = json.loads(data)
-    out = unmarhsal.from_dict({"res": json_dict})
+    try:
+        out = unmarshal.from_dict({"res": json_dict})
+    except AttributeError as attr_err:
+        raise AttributeError(
+            f'unable to unmarshal {data} as {typ}') from attr_err
     return out.res
 
 

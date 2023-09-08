@@ -12,10 +12,45 @@ type ReadConnectorConfigRequest struct {
 	Connector shared.Connector `pathParam:"style=simple,explode=false,name=connector"`
 }
 
+func (o *ReadConnectorConfigRequest) GetConnector() shared.Connector {
+	if o == nil {
+		return shared.Connector("")
+	}
+	return o.Connector
+}
+
 type ReadConnectorConfigResponse struct {
 	// OK
 	ConnectorConfigResponse *shared.ConnectorConfigResponse
 	ContentType             string
 	StatusCode              int
 	RawResponse             *http.Response
+}
+
+func (o *ReadConnectorConfigResponse) GetConnectorConfigResponse() *shared.ConnectorConfigResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectorConfigResponse
+}
+
+func (o *ReadConnectorConfigResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ReadConnectorConfigResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ReadConnectorConfigResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

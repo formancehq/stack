@@ -6,6 +6,11 @@ import (
 	"math/big"
 )
 
+// ActivityStripeTransferMetadata - A set of key/value pairs that you can attach to a transfer object.
+// It can be useful for storing additional information about the transfer in a structured format.
+type ActivityStripeTransferMetadata struct {
+}
+
 type ActivityStripeTransfer struct {
 	Amount      *big.Int `json:"amount,omitempty"`
 	Asset       *string  `json:"asset,omitempty"`
@@ -13,5 +18,33 @@ type ActivityStripeTransfer struct {
 	// A set of key/value pairs that you can attach to a transfer object.
 	// It can be useful for storing additional information about the transfer in a structured format.
 	//
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata *ActivityStripeTransferMetadata `json:"metadata,omitempty"`
+}
+
+func (o *ActivityStripeTransfer) GetAmount() *big.Int {
+	if o == nil {
+		return nil
+	}
+	return o.Amount
+}
+
+func (o *ActivityStripeTransfer) GetAsset() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Asset
+}
+
+func (o *ActivityStripeTransfer) GetDestination() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Destination
+}
+
+func (o *ActivityStripeTransfer) GetMetadata() *ActivityStripeTransferMetadata {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
 }

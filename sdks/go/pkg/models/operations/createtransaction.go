@@ -23,6 +23,41 @@ type CreateTransactionRequest struct {
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
+func (o *CreateTransactionRequest) GetIdempotencyKey() *string {
+	if o == nil {
+		return nil
+	}
+	return o.IdempotencyKey
+}
+
+func (o *CreateTransactionRequest) GetPostTransaction() shared.PostTransaction {
+	if o == nil {
+		return shared.PostTransaction{}
+	}
+	return o.PostTransaction
+}
+
+func (o *CreateTransactionRequest) GetAsync() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Async
+}
+
+func (o *CreateTransactionRequest) GetDryRun() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.DryRun
+}
+
+func (o *CreateTransactionRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
 type CreateTransactionResponse struct {
 	ContentType string
 	// OK
@@ -31,4 +66,39 @@ type CreateTransactionResponse struct {
 	ErrorResponse *shared.ErrorResponse
 	StatusCode    int
 	RawResponse   *http.Response
+}
+
+func (o *CreateTransactionResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *CreateTransactionResponse) GetCreateTransactionResponse() *shared.CreateTransactionResponse {
+	if o == nil {
+		return nil
+	}
+	return o.CreateTransactionResponse
+}
+
+func (o *CreateTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *CreateTransactionResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *CreateTransactionResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

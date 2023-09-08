@@ -69,11 +69,11 @@ func parseSecurityStruct(c HTTPClient, security interface{}) *SecurityClient {
 	securityStructType := reflect.TypeOf(security)
 	securityValType := reflect.ValueOf(security)
 
-	if securityStructType.Kind() == reflect.Ptr {
-		if securityValType.IsNil() {
-			return nil
-		}
+	if isNil(securityStructType, securityValType) {
+		return nil
+	}
 
+	if securityStructType.Kind() == reflect.Ptr {
 		securityStructType = securityStructType.Elem()
 		securityValType = securityValType.Elem()
 	}
@@ -86,11 +86,11 @@ func parseSecurityStruct(c HTTPClient, security interface{}) *SecurityClient {
 
 		kind := valType.Kind()
 
-		if fieldType.Type.Kind() == reflect.Pointer {
-			if valType.IsNil() {
-				continue
-			}
+		if isNil(fieldType.Type, valType) {
+			continue
+		}
 
+		if fieldType.Type.Kind() == reflect.Pointer {
 			kind = valType.Elem().Kind()
 		}
 
@@ -117,11 +117,11 @@ func parseSecurityOption(c HTTPClient, option interface{}) *SecurityClient {
 	optionStructType := reflect.TypeOf(option)
 	optionValType := reflect.ValueOf(option)
 
-	if optionStructType.Kind() == reflect.Ptr {
-		if optionValType.IsNil() {
-			return nil
-		}
+	if isNil(optionStructType, optionValType) {
+		return nil
+	}
 
+	if optionStructType.Kind() == reflect.Ptr {
 		optionStructType = optionStructType.Elem()
 		optionValType = optionValType.Elem()
 	}
@@ -145,11 +145,11 @@ func parseSecurityScheme(client *SecurityClient, schemeTag *securityTag, scheme 
 	schemeType := reflect.TypeOf(scheme)
 	schemeVal := reflect.ValueOf(scheme)
 
-	if schemeType.Kind() == reflect.Ptr {
-		if schemeVal.IsNil() {
-			return
-		}
+	if isNil(schemeType, schemeVal) {
+		return
+	}
 
+	if schemeType.Kind() == reflect.Ptr {
 		schemeType = schemeType.Elem()
 		schemeVal = schemeVal.Elem()
 	}
@@ -164,11 +164,11 @@ func parseSecurityScheme(client *SecurityClient, schemeTag *securityTag, scheme 
 			fieldType := schemeType.Field(i)
 			valType := schemeVal.Field(i)
 
-			if fieldType.Type.Kind() == reflect.Ptr {
-				if valType.IsNil() {
-					continue
-				}
+			if isNil(fieldType.Type, valType) {
+				continue
+			}
 
+			if fieldType.Type.Kind() == reflect.Ptr {
 				valType = valType.Elem()
 			}
 

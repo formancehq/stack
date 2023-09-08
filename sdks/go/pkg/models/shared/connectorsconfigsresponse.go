@@ -7,15 +7,50 @@ type ConnectorsConfigsResponseDataConnectorKey struct {
 	Required bool   `json:"required"`
 }
 
+func (o *ConnectorsConfigsResponseDataConnectorKey) GetDataType() string {
+	if o == nil {
+		return ""
+	}
+	return o.DataType
+}
+
+func (o *ConnectorsConfigsResponseDataConnectorKey) GetRequired() bool {
+	if o == nil {
+		return false
+	}
+	return o.Required
+}
+
 type ConnectorsConfigsResponseDataConnector struct {
 	Key ConnectorsConfigsResponseDataConnectorKey `json:"key"`
+}
+
+func (o *ConnectorsConfigsResponseDataConnector) GetKey() ConnectorsConfigsResponseDataConnectorKey {
+	if o == nil {
+		return ConnectorsConfigsResponseDataConnectorKey{}
+	}
+	return o.Key
 }
 
 type ConnectorsConfigsResponseData struct {
 	Connector ConnectorsConfigsResponseDataConnector `json:"connector"`
 }
 
+func (o *ConnectorsConfigsResponseData) GetConnector() ConnectorsConfigsResponseDataConnector {
+	if o == nil {
+		return ConnectorsConfigsResponseDataConnector{}
+	}
+	return o.Connector
+}
+
 // ConnectorsConfigsResponse - OK
 type ConnectorsConfigsResponse struct {
 	Data ConnectorsConfigsResponseData `json:"data"`
+}
+
+func (o *ConnectorsConfigsResponse) GetData() ConnectorsConfigsResponseData {
+	if o == nil {
+		return ConnectorsConfigsResponseData{}
+	}
+	return o.Data
 }

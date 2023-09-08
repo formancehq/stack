@@ -15,3 +15,52 @@ type ExpandedTransaction struct {
 	Timestamp         time.Time                    `json:"timestamp"`
 	Txid              int64                        `json:"txid"`
 }
+
+func (o *ExpandedTransaction) GetMetadata() map[string]string {
+	if o == nil {
+		return map[string]string{}
+	}
+	return o.Metadata
+}
+
+func (o *ExpandedTransaction) GetPostCommitVolumes() map[string]map[string]Volume {
+	if o == nil {
+		return map[string]map[string]Volume{}
+	}
+	return o.PostCommitVolumes
+}
+
+func (o *ExpandedTransaction) GetPostings() []Posting {
+	if o == nil {
+		return []Posting{}
+	}
+	return o.Postings
+}
+
+func (o *ExpandedTransaction) GetPreCommitVolumes() map[string]map[string]Volume {
+	if o == nil {
+		return map[string]map[string]Volume{}
+	}
+	return o.PreCommitVolumes
+}
+
+func (o *ExpandedTransaction) GetReference() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Reference
+}
+
+func (o *ExpandedTransaction) GetTimestamp() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.Timestamp
+}
+
+func (o *ExpandedTransaction) GetTxid() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Txid
+}

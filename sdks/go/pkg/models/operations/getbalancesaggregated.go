@@ -14,6 +14,20 @@ type GetBalancesAggregatedRequest struct {
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
+func (o *GetBalancesAggregatedRequest) GetAddress() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Address
+}
+
+func (o *GetBalancesAggregatedRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
 type GetBalancesAggregatedResponse struct {
 	// OK
 	AggregateBalancesResponse *shared.AggregateBalancesResponse
@@ -22,4 +36,39 @@ type GetBalancesAggregatedResponse struct {
 	ErrorResponse *shared.ErrorResponse
 	StatusCode    int
 	RawResponse   *http.Response
+}
+
+func (o *GetBalancesAggregatedResponse) GetAggregateBalancesResponse() *shared.AggregateBalancesResponse {
+	if o == nil {
+		return nil
+	}
+	return o.AggregateBalancesResponse
+}
+
+func (o *GetBalancesAggregatedResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *GetBalancesAggregatedResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *GetBalancesAggregatedResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *GetBalancesAggregatedResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

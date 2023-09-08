@@ -1,0 +1,16 @@
+# Query
+
+
+## Fields
+
+| Field                                                 | Type                                                  | Required                                              | Description                                           | Example                                               |
+| ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| `after`                                               | list[*str*]                                           | :heavy_minus_sign:                                    | N/A                                                   |                                                       |
+| `cursor`                                              | *Optional[str]*                                       | :heavy_minus_sign:                                    | N/A                                                   | YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=          |
+| `ledgers`                                             | list[*str*]                                           | :heavy_minus_sign:                                    | N/A                                                   |                                                       |
+| `page_size`                                           | *Optional[int]*                                       | :heavy_minus_sign:                                    | N/A                                                   |                                                       |
+| `policy`                                              | *Optional[str]*                                       | :heavy_minus_sign:                                    | N/A                                                   | OR                                                    |
+| `raw`                                                 | [Optional[QueryRaw]](../../models/shared/queryraw.md) | :heavy_minus_sign:                                    | N/A                                                   |                                                       |
+| `sort`                                                | *Optional[str]*                                       | :heavy_minus_sign:                                    | N/A                                                   | txid:asc                                              |
+| `target`                                              | *Optional[str]*                                       | :heavy_minus_sign:                                    | N/A                                                   |                                                       |
+| `terms`                                               | list[*str*]                                           | :heavy_minus_sign:                                    | N/A                                                   |                                                       |

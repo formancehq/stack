@@ -6,6 +6,7 @@
       "resolved": "github:NixOS/nixpkgs/995edc972ad3a1e291ac22d74b9610821357175f#ginkgo",
       "version": "2.8.3"
     },
+    "github:goreleaser/nur#goreleaser-pro": {},
     "go-task@3.24.0": {
       "last_modified": "2023-05-01T16:53:22Z",
       "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#go-task",
@@ -38,6 +39,7 @@
       "resolved": "github:NixOS/nixpkgs/8d4d822bc0efa9de6eddc79cb0d82897a9baa750#nodejs_18",
       "version": "18.16.0"
     },
+    "path:nix/speakeasy#speakeasy": {},
     "process-compose@0.43.1": {
       "last_modified": "2023-05-01T16:53:22Z",
       "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#process-compose",

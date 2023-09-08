@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * GetWalletSummaryResponse - Wallet summary
  */
+
 public class GetWalletSummaryResponse {
     @JsonProperty("availableFunds")
     public java.util.Map<String, Long> availableFunds;

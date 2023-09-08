@@ -22,6 +22,34 @@ type GetHoldsRequest struct {
 	WalletID *string `queryParam:"style=form,explode=true,name=walletID"`
 }
 
+func (o *GetHoldsRequest) GetCursor() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Cursor
+}
+
+func (o *GetHoldsRequest) GetMetadata() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *GetHoldsRequest) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
+}
+
+func (o *GetHoldsRequest) GetWalletID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.WalletID
+}
+
 type GetHoldsResponse struct {
 	ContentType string
 	// Holds
@@ -30,4 +58,39 @@ type GetHoldsResponse struct {
 	RawResponse      *http.Response
 	// Error
 	WalletsErrorResponse *shared.WalletsErrorResponse
+}
+
+func (o *GetHoldsResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *GetHoldsResponse) GetGetHoldsResponse() *shared.GetHoldsResponse {
+	if o == nil {
+		return nil
+	}
+	return o.GetHoldsResponse
+}
+
+func (o *GetHoldsResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *GetHoldsResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *GetHoldsResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.WalletsErrorResponse
 }

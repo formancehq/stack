@@ -5,6 +5,7 @@
 import * as utils from "../internal/utils";
 import { Auth } from "./auth";
 import { Ledger } from "./ledger";
+import * as errors from "./models/errors";
 import * as operations from "./models/operations";
 import * as shared from "./models/shared";
 import { Orchestration } from "./orchestration";
@@ -19,36 +20,62 @@ import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
  * Contains the list of servers available to the SDK
  */
 export const ServerList = [
-  /**
-   * local server
-   */
-  "http://localhost",
-  /**
-   * sandbox server
-   */
-  "https://{organization}.sandbox.formance.cloud",
+    /**
+     * local server
+     */
+    "http://localhost",
+    /**
+     * sandbox server
+     */
+    "https://{organization}.sandbox.formance.cloud",
 ] as const;
 
 /**
  * The available configuration options for the SDK
  */
 export type SDKProps = {
-  /**
-   * The security details required to authenticate the SDK
-   */
-  security?: shared.Security;
-  /**
-   * Allows overriding the default axios client used by the SDK
-   */
-  defaultClient?: AxiosInstance;
-  /**
-   * Allows overriding the default server URL used by the SDK
-   */
-  serverURL?: string;
+    /**
+     * The security details required to authenticate the SDK
+     */
+    security?: shared.Security | (() => Promise<shared.Security>);
+    /**
+     * Allows overriding the default axios client used by the SDK
+     */
+    defaultClient?: AxiosInstance;
+
+    /**
+     * Allows overriding the default server used by the SDK
+     */
+    serverIdx?: number;
+
+    /**
+     * Allows setting the organization variable for url substitution
+     */
+    organization?: string;
+
+    /**
+     * Allows overriding the default server URL used by the SDK
+     */
+    serverURL?: string;
 };
 
+export class SDKConfiguration {
+    defaultClient: AxiosInstance;
+    security?: shared.Security | (() => Promise<shared.Security>);
+    serverURL: string;
+    serverDefaults: any;
+    language = "typescript";
+    openapiDocVersion = "v1.0.20230907";
+    sdkVersion = "v0.1.0";
+    genVersion = "2.96.3";
+
+    public constructor(init?: Partial<SDKConfiguration>) {
+        Object.assign(this, init);
+    }
+}
+
 /**
- * Open, modular foundation for unique payments flows
+ * Formance Stack API: Open, modular foundation for unique payments flows
  *
  * @remarks
  *
@@ -64,151 +91,114 @@ export type SDKProps = {
  *
  */
 export class SDK {
-  public auth: Auth;
-  public ledger: Ledger;
-  public orchestration: Orchestration;
-  public payments: Payments;
-  public search: Search;
-  public wallets: Wallets;
-  public webhooks: Webhooks;
+    public auth: Auth;
+    public ledger: Ledger;
+    public orchestration: Orchestration;
+    public payments: Payments;
+    public search: Search;
+    public wallets: Wallets;
+    public webhooks: Webhooks;
 
-  public _defaultClient: AxiosInstance;
-  public _securityClient: AxiosInstance;
-  public _serverURL: string;
-  private _language = "typescript";
-  private _sdkVersion = "v0.1.0";
-  private _genVersion = "2.31.0";
-  private _globals: any;
+    private sdkConfiguration: SDKConfiguration;
 
-  constructor(props?: SDKProps) {
-    this._serverURL = props?.serverURL ?? ServerList[0];
+    constructor(props?: SDKProps) {
+        let serverURL = props?.serverURL;
+        let defaults: any = {};
 
-    this._defaultClient =
-      props?.defaultClient ?? axios.create({ baseURL: this._serverURL });
-    if (props?.security) {
-      let security: shared.Security = props.security;
-      if (!(props.security instanceof utils.SpeakeasyBase))
-        security = new shared.Security(props.security);
-      this._securityClient = utils.createSecurityClient(
-        this._defaultClient,
-        security
-      );
-    } else {
-      this._securityClient = this._defaultClient;
-    }
+        const serverDefaults = [
+            {},
+            {
+                organization: props?.organization?.toString() ?? "",
+            },
+        ];
+        const serverIdx = props?.serverIdx ?? 0;
 
-    this.auth = new Auth(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.ledger = new Ledger(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.orchestration = new Orchestration(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.payments = new Payments(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.search = new Search(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.wallets = new Wallets(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.webhooks = new Webhooks(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-  }
-
-  /**
-   * Show stack version information
-   */
-  async getVersions(
-    config?: AxiosRequestConfig
-  ): Promise<operations.GetVersionsResponse> {
-    const baseURL: string = this._serverURL;
-    const url: string = baseURL.replace(/\/$/, "") + "/versions";
-
-    const client: AxiosInstance = this._securityClient || this._defaultClient;
-
-    const headers = { ...config?.headers };
-    headers["Accept"] = "application/json";
-    headers[
-      "user-agent"
-    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
-
-    const httpRes: AxiosResponse = await client.request({
-      validateStatus: () => true,
-      url: url,
-      method: "get",
-      headers: headers,
-      ...config,
-    });
-
-    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
-
-    if (httpRes?.status == null) {
-      throw new Error(`status code not found in response: ${httpRes}`);
-    }
-
-    const res: operations.GetVersionsResponse =
-      new operations.GetVersionsResponse({
-        statusCode: httpRes.status,
-        contentType: contentType,
-        rawResponse: httpRes,
-      });
-    switch (true) {
-      case httpRes?.status == 200:
-        if (utils.matchContentType(contentType, `application/json`)) {
-          res.getVersionsResponse = utils.objectToClass(
-            httpRes?.data,
-            shared.GetVersionsResponse
-          );
+        if (!serverURL) {
+            serverURL = ServerList[serverIdx];
+            defaults = serverDefaults[serverIdx];
         }
-        break;
+
+        const defaultClient = props?.defaultClient ?? axios.create({ baseURL: serverURL });
+        this.sdkConfiguration = new SDKConfiguration({
+            defaultClient: defaultClient,
+            security: props?.security,
+            serverURL: serverURL,
+            serverDefaults: defaults,
+        });
+
+        this.auth = new Auth(this.sdkConfiguration);
+        this.ledger = new Ledger(this.sdkConfiguration);
+        this.orchestration = new Orchestration(this.sdkConfiguration);
+        this.payments = new Payments(this.sdkConfiguration);
+        this.search = new Search(this.sdkConfiguration);
+        this.wallets = new Wallets(this.sdkConfiguration);
+        this.webhooks = new Webhooks(this.sdkConfiguration);
     }
 
-    return res;
-  }
+    /**
+     * Show stack version information
+     */
+    async getVersions(config?: AxiosRequestConfig): Promise<operations.GetVersionsResponse> {
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
+        const url: string = baseURL.replace(/\/$/, "") + "/versions";
+        const client: AxiosInstance = this.sdkConfiguration.defaultClient;
+        let globalSecurity = this.sdkConfiguration.security;
+        if (typeof globalSecurity === "function") {
+            globalSecurity = await globalSecurity();
+        }
+        if (!(globalSecurity instanceof utils.SpeakeasyBase)) {
+            globalSecurity = new shared.Security(globalSecurity);
+        }
+        const properties = utils.parseSecurityProperties(globalSecurity);
+        const headers = { ...config?.headers, ...properties.headers };
+        headers["Accept"] = "application/json";
+
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion} ${this.sdkConfiguration.openapiDocVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "get",
+            headers: headers,
+            responseType: "arraybuffer",
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.GetVersionsResponse = new operations.GetVersionsResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        const decodedRes = new TextDecoder().decode(httpRes?.data);
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.getVersionsResponse = utils.objectToClass(
+                        JSON.parse(decodedRes),
+                        shared.GetVersionsResponse
+                    );
+                } else {
+                    throw new errors.SDKError(
+                        "unknown content-type received: " + contentType,
+                        httpRes.status,
+                        decodedRes,
+                        httpRes
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
 }

@@ -10,7 +10,49 @@ type AccountsCursorResponseCursor struct {
 	Previous *string   `json:"previous,omitempty"`
 }
 
+func (o *AccountsCursorResponseCursor) GetData() []Account {
+	if o == nil {
+		return []Account{}
+	}
+	return o.Data
+}
+
+func (o *AccountsCursorResponseCursor) GetHasMore() bool {
+	if o == nil {
+		return false
+	}
+	return o.HasMore
+}
+
+func (o *AccountsCursorResponseCursor) GetNext() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Next
+}
+
+func (o *AccountsCursorResponseCursor) GetPageSize() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.PageSize
+}
+
+func (o *AccountsCursorResponseCursor) GetPrevious() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Previous
+}
+
 // AccountsCursorResponse - OK
 type AccountsCursorResponse struct {
 	Cursor AccountsCursorResponseCursor `json:"cursor"`
+}
+
+func (o *AccountsCursorResponse) GetCursor() AccountsCursorResponseCursor {
+	if o == nil {
+		return AccountsCursorResponseCursor{}
+	}
+	return o.Cursor
 }

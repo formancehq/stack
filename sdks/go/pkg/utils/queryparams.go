@@ -76,14 +76,12 @@ func PopulateQueryParams(ctx context.Context, req *http.Request, queryParams int
 }
 
 func populateSerializedParams(tag *paramTag, objType reflect.Type, objValue reflect.Value) (map[string]string, error) {
-	if objType.Kind() == reflect.Pointer {
-		if objValue.IsNil() {
-			return nil, nil
-		}
-		objValue = objValue.Elem()
-	}
-	if objValue.Interface() == nil {
+	if isNil(objType, objValue) {
 		return nil, nil
+	}
+
+	if objType.Kind() == reflect.Pointer {
+		objValue = objValue.Elem()
 	}
 
 	values := map[string]string{}
@@ -103,10 +101,11 @@ func populateSerializedParams(tag *paramTag, objType reflect.Type, objValue refl
 func populateDeepObjectParams(req *http.Request, tag *paramTag, objType reflect.Type, objValue reflect.Value) url.Values {
 	values := url.Values{}
 
+	if isNil(objType, objValue) {
+		return values
+	}
+
 	if objType.Kind() == reflect.Pointer {
-		if objValue.IsNil() {
-			return values
-		}
 		objType = objType.Elem()
 		objValue = objValue.Elem()
 	}
@@ -117,10 +116,11 @@ func populateDeepObjectParams(req *http.Request, tag *paramTag, objType reflect.
 			fieldType := objType.Field(i)
 			valType := objValue.Field(i)
 
+			if isNil(fieldType.Type, valType) {
+				continue
+			}
+
 			if fieldType.Type.Kind() == reflect.Pointer {
-				if valType.IsNil() {
-					continue
-				}
 				valType = valType.Elem()
 			}
 

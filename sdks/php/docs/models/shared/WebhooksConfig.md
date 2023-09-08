@@ -1,0 +1,14 @@
+# WebhooksConfig
+
+
+## Fields
+
+| Field                                                         | Type                                                          | Required                                                      | Description                                                   | Example                                                       |
+| ------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- |
+| `active`                                                      | *bool*                                                        | :heavy_check_mark:                                            | N/A                                                           | true                                                          |
+| `createdAt`                                                   | [\DateTime](https://www.php.net/manual/en/class.datetime.php) | :heavy_check_mark:                                            | N/A                                                           |                                                               |
+| `endpoint`                                                    | *string*                                                      | :heavy_check_mark:                                            | N/A                                                           | https://example.com                                           |
+| `eventTypes`                                                  | array<*string*>                                               | :heavy_check_mark:                                            | N/A                                                           |                                                               |
+| `id`                                                          | *string*                                                      | :heavy_check_mark:                                            | N/A                                                           |                                                               |
+| `secret`                                                      | *string*                                                      | :heavy_check_mark:                                            | N/A                                                           | V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3                              |
+| `updatedAt`                                                   | [\DateTime](https://www.php.net/manual/en/class.datetime.php) | :heavy_check_mark:                                            | N/A                                                           |                                                               |

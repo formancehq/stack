@@ -11,6 +11,6 @@ namespace formance\stack\Models\Shared;
 
 enum MigrationInfoState: string
 {
-    case TO_DO = 'to do';
-    case DONE = 'done';
+    case ToDo = 'to do';
+    case Done = 'done';
 }

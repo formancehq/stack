@@ -11,8 +11,36 @@ type DeleteClientRequest struct {
 	ClientID string `pathParam:"style=simple,explode=false,name=clientId"`
 }
 
+func (o *DeleteClientRequest) GetClientID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ClientID
+}
+
 type DeleteClientResponse struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
+}
+
+func (o *DeleteClientResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *DeleteClientResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *DeleteClientResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

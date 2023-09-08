@@ -439,7 +439,9 @@ disable=raw-checker-failed,
         using-constant-test,
         too-many-statements,
         cyclic-import,
-        too-many-nested-blocks
+        too-many-nested-blocks,
+        too-many-boolean-expressions,
+        no-else-raise
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -620,7 +622,7 @@ additional-builtins=
 allow-global-unused-variables=yes
 
 # List of names allowed to shadow builtins
-allowed-redefined-builtins=
+allowed-redefined-builtins=id,object
 
 # List of strings which can identify a callback function by name. A callback
 # name must start or end with one of those strings.

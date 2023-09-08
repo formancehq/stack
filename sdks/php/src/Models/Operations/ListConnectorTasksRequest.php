@@ -44,7 +44,7 @@ class ListConnectorTasksRequest
     
 	public function __construct()
 	{
-		$this->connector = \formance\stack\Models\Shared\Connector::STRIPE;
+		$this->connector = \formance\stack\Models\Shared\Connector::Stripe;
 		$this->cursor = null;
 		$this->pageSize = null;
 	}

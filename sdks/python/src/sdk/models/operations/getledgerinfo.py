@@ -8,16 +8,18 @@ from ..shared import ledgerinforesponse as shared_ledgerinforesponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class GetLedgerInfoRequest:
-    
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
     
 
+
+
+
 @dataclasses.dataclass
 class GetLedgerInfoResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
@@ -26,3 +28,4 @@ class GetLedgerInfoResponse:
     r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

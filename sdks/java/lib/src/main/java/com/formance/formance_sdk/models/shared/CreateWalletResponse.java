@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * CreateWalletResponse - Wallet created
  */
+
 public class CreateWalletResponse {
     @JsonProperty("data")
     public Wallet data;

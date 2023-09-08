@@ -6,3 +6,10 @@ package shared
 type DebitWalletResponse struct {
 	Data Hold `json:"data"`
 }
+
+func (o *DebitWalletResponse) GetData() Hold {
+	if o == nil {
+		return Hold{}
+	}
+	return o.Data
+}

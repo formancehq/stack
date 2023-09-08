@@ -26,15 +26,15 @@ var (
 	urlEncodedEncodingRegex = regexp.MustCompile(`application\/x-www-form-urlencoded.*`)
 )
 
-func SerializeRequestBody(ctx context.Context, request interface{}, requestFieldName string, serializationMethod string) (*bytes.Buffer, string, error) {
+func SerializeRequestBody(ctx context.Context, request interface{}, requestFieldName string, serializationMethod string) (io.Reader, string, error) {
 	requestStructType := reflect.TypeOf(request)
 	requestValType := reflect.ValueOf(request)
 
-	if requestStructType.Kind() == reflect.Pointer {
-		if requestValType.IsNil() {
-			return nil, "", nil
-		}
+	if isNil(requestStructType, requestValType) {
+		return nil, "", nil
+	}
 
+	if requestStructType.Kind() == reflect.Pointer {
 		requestStructType = requestStructType.Elem()
 		requestValType = requestValType.Elem()
 	}
@@ -50,7 +50,7 @@ func SerializeRequestBody(ctx context.Context, request interface{}, requestField
 		if tag != nil {
 			// request object (non-flattened)
 			requestVal := requestValType.FieldByName(requestFieldName)
-			if requestField.Type.Kind() == reflect.Pointer && requestVal.IsNil() {
+			if isNil(requestField.Type, requestVal) {
 				return nil, "", nil
 			}
 
@@ -116,11 +116,11 @@ func encodeMultipartFormData(w io.Writer, data interface{}) (string, error) {
 		fieldType := field.Type
 		valType := requestValType.Field(i)
 
-		if fieldType.Kind() == reflect.Pointer {
-			if valType.IsNil() {
-				continue
-			}
+		if isNil(fieldType, valType) {
+			continue
+		}
 
+		if fieldType.Kind() == reflect.Pointer {
 			fieldType = fieldType.Elem()
 			valType = valType.Elem()
 		}
@@ -231,11 +231,11 @@ func encodeFormData(fieldName string, w io.Writer, data interface{}) error {
 			fieldType := field.Type
 			valType := requestValType.Field(i)
 
-			if fieldType.Kind() == reflect.Pointer {
-				if valType.IsNil() {
-					continue
-				}
+			if isNil(fieldType, valType) {
+				continue
+			}
 
+			if fieldType.Kind() == reflect.Pointer {
 				fieldType = fieldType.Elem()
 				valType = valType.Elem()
 			}

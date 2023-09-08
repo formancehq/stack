@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ConnectorConfigResponse - OK
  */
+
 public class ConnectorConfigResponse {
     @JsonProperty("data")
     public Object data;

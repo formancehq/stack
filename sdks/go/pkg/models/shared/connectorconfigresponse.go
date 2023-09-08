@@ -6,3 +6,10 @@ package shared
 type ConnectorConfigResponse struct {
 	Data interface{} `json:"data"`
 }
+
+func (o *ConnectorConfigResponse) GetData() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Data
+}

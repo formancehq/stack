@@ -25,6 +25,41 @@ type ListAccountsRequest struct {
 	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
 }
 
+func (o *ListAccountsRequest) GetAddress() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Address
+}
+
+func (o *ListAccountsRequest) GetCursor() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Cursor
+}
+
+func (o *ListAccountsRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
+func (o *ListAccountsRequest) GetMetadata() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *ListAccountsRequest) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
+}
+
 type ListAccountsResponse struct {
 	// OK
 	AccountsCursorResponse *shared.AccountsCursorResponse
@@ -33,4 +68,39 @@ type ListAccountsResponse struct {
 	ErrorResponse *shared.ErrorResponse
 	StatusCode    int
 	RawResponse   *http.Response
+}
+
+func (o *ListAccountsResponse) GetAccountsCursorResponse() *shared.AccountsCursorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.AccountsCursorResponse
+}
+
+func (o *ListAccountsResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ListAccountsResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *ListAccountsResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ListAccountsResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

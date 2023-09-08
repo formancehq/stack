@@ -11,10 +11,31 @@ type SendEventRequestBody struct {
 	Name string `json:"name"`
 }
 
+func (o *SendEventRequestBody) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
 type SendEventRequest struct {
 	RequestBody *SendEventRequestBody `request:"mediaType=application/json"`
 	// The instance id
 	InstanceID string `pathParam:"style=simple,explode=false,name=instanceID"`
+}
+
+func (o *SendEventRequest) GetRequestBody() *SendEventRequestBody {
+	if o == nil {
+		return nil
+	}
+	return o.RequestBody
+}
+
+func (o *SendEventRequest) GetInstanceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.InstanceID
 }
 
 type SendEventResponse struct {
@@ -23,4 +44,32 @@ type SendEventResponse struct {
 	Error       *shared.Error
 	StatusCode  int
 	RawResponse *http.Response
+}
+
+func (o *SendEventResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *SendEventResponse) GetError() *shared.Error {
+	if o == nil {
+		return nil
+	}
+	return o.Error
+}
+
+func (o *SendEventResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *SendEventResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

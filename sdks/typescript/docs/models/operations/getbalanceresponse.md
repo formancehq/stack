@@ -1,0 +1,12 @@
+# GetBalanceResponse
+
+
+## Fields
+
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `contentType`                                                              | *string*                                                                   | :heavy_check_mark:                                                         | N/A                                                                        |
+| `getBalanceResponse`                                                       | [shared.GetBalanceResponse](../../models/shared/getbalanceresponse.md)     | :heavy_minus_sign:                                                         | Balance summary                                                            |
+| `statusCode`                                                               | *number*                                                                   | :heavy_check_mark:                                                         | N/A                                                                        |
+| `rawResponse`                                                              | [AxiosResponse>](https://axios-http.com/docs/res_schema)                   | :heavy_minus_sign:                                                         | N/A                                                                        |
+| `walletsErrorResponse`                                                     | [shared.WalletsErrorResponse](../../models/shared/walletserrorresponse.md) | :heavy_minus_sign:                                                         | Error                                                                      |

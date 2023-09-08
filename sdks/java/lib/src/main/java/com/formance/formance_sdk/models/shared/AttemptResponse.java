@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * AttemptResponse - OK
  */
+
 public class AttemptResponse {
     @JsonProperty("data")
     public Attempt data;

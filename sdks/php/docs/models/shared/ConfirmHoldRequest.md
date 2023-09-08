@@ -1,0 +1,9 @@
+# ConfirmHoldRequest
+
+
+## Fields
+
+| Field                                                                        | Type                                                                         | Required                                                                     | Description                                                                  | Example                                                                      |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `amount`                                                                     | *?int*                                                                       | :heavy_minus_sign:                                                           | Define the amount to transfer.                                               | 100                                                                          |
+| `final`                                                                      | *?bool*                                                                      | :heavy_minus_sign:                                                           | Define a final confirmation. Remaining funds will be returned to the wallet. | true                                                                         |

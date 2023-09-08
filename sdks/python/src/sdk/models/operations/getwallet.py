@@ -8,15 +8,17 @@ from ..shared import walletserrorresponse as shared_walletserrorresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class GetWalletRequest:
-    
     id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'id', 'style': 'simple', 'explode': False }})
     
 
+
+
+
 @dataclasses.dataclass
 class GetWalletResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     get_wallet_response: Optional[shared_getwalletresponse.GetWalletResponse] = dataclasses.field(default=None)
@@ -25,3 +27,4 @@ class GetWalletResponse:
     wallets_error_response: Optional[shared_walletserrorresponse.WalletsErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
+

@@ -9,3 +9,24 @@ type DummyPayConfig struct {
 	// The frequency at which the connector will try to fetch new payment objects from the directory
 	FilePollingPeriod *string `json:"filePollingPeriod,omitempty"`
 }
+
+func (o *DummyPayConfig) GetDirectory() string {
+	if o == nil {
+		return ""
+	}
+	return o.Directory
+}
+
+func (o *DummyPayConfig) GetFileGenerationPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.FileGenerationPeriod
+}
+
+func (o *DummyPayConfig) GetFilePollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.FilePollingPeriod
+}

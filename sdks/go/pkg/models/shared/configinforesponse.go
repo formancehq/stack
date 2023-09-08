@@ -6,3 +6,10 @@ package shared
 type ConfigInfoResponse struct {
 	Data *ConfigInfo `json:"data,omitempty"`
 }
+
+func (o *ConfigInfoResponse) GetData() *ConfigInfo {
+	if o == nil {
+		return nil
+	}
+	return o.Data
+}

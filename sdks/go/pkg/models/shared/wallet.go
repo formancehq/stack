@@ -15,3 +15,38 @@ type Wallet struct {
 	Metadata map[string]string `json:"metadata"`
 	Name     string            `json:"name"`
 }
+
+func (o *Wallet) GetCreatedAt() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.CreatedAt
+}
+
+func (o *Wallet) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
+func (o *Wallet) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
+func (o *Wallet) GetMetadata() map[string]string {
+	if o == nil {
+		return map[string]string{}
+	}
+	return o.Metadata
+}
+
+func (o *Wallet) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
