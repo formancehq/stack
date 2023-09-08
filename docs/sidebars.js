@@ -219,6 +219,7 @@ const sidebars = {
                   collapsed: true,
                   items: [
                     'ledger/reference/numscript/machine',
+                    'ledger/reference/numscript/postings',
                     'ledger/reference/numscript/sources',
                     'ledger/reference/numscript/destinations',
                     'ledger/reference/numscript/variables',
