@@ -43,9 +43,10 @@ func newLedgerStore(t *testing.T) *ledgerstore.Store {
 		require.NoError(t, db.Close())
 	})
 
+	ctx := logging.TestingContext()
 	driver := driver.New(db)
-	require.NoError(t, driver.Initialize(context.Background()))
-	ledgerStore, err := driver.CreateLedgerStore(context.Background(), uuid.NewString())
+	require.NoError(t, driver.Initialize(ctx))
+	ledgerStore, err := driver.CreateLedgerStore(ctx, uuid.NewString())
 	require.NoError(t, err)
 
 	return ledgerStore

@@ -32,8 +32,7 @@ type Transaction struct {
 	Metadata                   metadata.Metadata            `bun:"metadata,type:jsonb,default:'{}'"`
 	PostCommitEffectiveVolumes ledger.AccountsAssetsVolumes `bun:"post_commit_effective_volumes,type:jsonb"`
 	PostCommitVolumes          ledger.AccountsAssetsVolumes `bun:"post_commit_volumes,type:jsonb"`
-	Reverted                   bool                         `bun:"reverted"`
-	Revision                   int                          `bun:"revision"`
+	RevertedAt                 ledger.Time                  `bun:"reverted_at"`
 	LastUpdate                 *ledger.Time                 `bun:"last_update"`
 }
 
@@ -65,7 +64,7 @@ func (t *Transaction) toCore() *ledger.ExpandedTransaction {
 				Postings:  t.Postings,
 			},
 			ID:       (*big.Int)(t.ID),
-			Reverted: t.Reverted,
+			Reverted: !t.RevertedAt.IsZero(),
 		},
 		PreCommitEffectiveVolumes:  preCommitEffectiveVolumes,
 		PostCommitEffectiveVolumes: t.PostCommitEffectiveVolumes,
@@ -113,16 +112,19 @@ func (m1 *account) Scan(value interface{}) error {
 }
 
 func (store *Store) buildTransactionQuery(p PITFilterWithVolumes, query *bun.SelectQuery) *bun.SelectQuery {
-	subQuery := query.NewSelect().
-		Table("transactions").
-		ColumnExpr("distinct on(transactions.id) transactions.*").
-		Apply(filterPIT(p.PIT, "transactions.timestamp")).
-		OrderExpr("transactions.id desc, revision desc")
 
 	query = query.
-		TableExpr("(" + subQuery.String() + ") transactions").
-		Join("join moves m on m.transaction_id = transactions.id").
-		ColumnExpr("distinct on (transactions.id) transactions.*")
+		Table("transactions").
+		ColumnExpr("distinct on(transactions.id) transactions.*, transactions_metadata.metadata").
+		Join("join moves m on transactions.id = m.transaction_id").
+		Join(`cross join lateral (
+			select *
+			from transactions_metadata
+            where transactions.id = transactions_metadata.transaction_id
+            order by revision desc
+            limit 1
+		) as transactions_metadata`)
+
 	if p.ExpandEffectiveVolumes {
 		query = query.ColumnExpr("get_aggregated_effective_volumes_for_transaction(transactions) as post_commit_effective_volumes")
 	}
@@ -229,7 +231,7 @@ func (store *Store) GetTransactionWithVolumes(ctx context.Context, filter GetTra
 		(*Transaction).toCore,
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			return store.buildTransactionQuery(filter.PITFilterWithVolumes, query).
-				Where("id = ?", filter.ID).
+				Where("transactions.id = ?", filter.ID).
 				Limit(1)
 		})
 }
@@ -239,9 +241,10 @@ func (store *Store) GetTransaction(ctx context.Context, txId *big.Int) (*ledger.
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			return query.
 				Table("transactions").
-				ColumnExpr(`transactions.id, transactions.reference, transactions.metadata, transactions.postings, transactions.timestamp, transactions.reverted`).
-				Where("id = ?", (*paginate.BigInt)(txId)).
-				Order("revision desc").
+				ColumnExpr(`transactions.id, transactions.reference, transactions.postings, transactions.timestamp, transactions.reverted_at, tm.metadata`).
+				Join("left join transactions_metadata tm on tm.transaction_id = transactions.id").
+				Where("transactions.id = ?", (*paginate.BigInt)(txId)).
+				Order("tm.revision desc").
 				Limit(1)
 		})
 }
@@ -252,9 +255,10 @@ func (store *Store) GetTransactionByReference(ctx context.Context, ref string) (
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			return query.
 				Table("transactions").
-				ColumnExpr(`transactions.id, transactions.reference, transactions.metadata, transactions.postings, transactions.timestamp, transactions.reverted`).
-				Where("reference = ?", ref).
-				Order("revision desc").
+				ColumnExpr(`transactions.id, transactions.reference, transactions.postings, transactions.timestamp, transactions.reverted_at, tm.metadata`).
+				Join("left join transactions_metadata tm on tm.transaction_id = transactions.id").
+				Where("transactions.reference = ?", ref).
+				Order("tm.revision desc").
 				Limit(1)
 		})
 }
@@ -265,8 +269,9 @@ func (store *Store) GetLastTransaction(ctx context.Context) (*ledger.ExpandedTra
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			return query.
 				Table("transactions").
-				ColumnExpr(`transactions.id, transactions.reference, transactions.metadata, transactions.postings, transactions.timestamp, transactions.reverted`).
-				Order("id desc").
+				ColumnExpr(`transactions.id, transactions.reference, transactions.postings, transactions.timestamp, transactions.reverted_at, tm.metadata`).
+				Join("left join transactions_metadata tm on tm.transaction_id = transactions.id").
+				Order("transactions.id desc", "tm.revision desc").
 				Limit(1)
 		})
 }

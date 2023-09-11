@@ -2,6 +2,7 @@ package ledgerstore_test
 
 import (
 	"context"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"math/big"
 	"testing"
 	"time"
@@ -47,6 +48,7 @@ func TestGetTransactionWithVolumes(t *testing.T) {
 	t.Parallel()
 	store := newLedgerStore(t)
 	now := ledger.Now()
+	ctx := logging.TestingContext()
 
 	tx1 := ledger.ExpandedTransaction{
 		Transaction: ledger.Transaction{
@@ -139,9 +141,9 @@ func TestGetTransactionWithVolumes(t *testing.T) {
 		},
 	}
 
-	require.NoError(t, insertTransactions(context.Background(), store, tx1.Transaction, tx2.Transaction))
+	require.NoError(t, insertTransactions(ctx, store, tx1.Transaction, tx2.Transaction))
 
-	tx, err := store.GetTransactionWithVolumes(context.Background(), ledgerstore.NewGetTransactionQuery(tx1.ID).
+	tx, err := store.GetTransactionWithVolumes(ctx, ledgerstore.NewGetTransactionQuery(tx1.ID).
 		WithExpandVolumes().
 		WithExpandEffectiveVolumes())
 	require.NoError(t, err)
@@ -177,7 +179,7 @@ func TestGetTransactionWithVolumes(t *testing.T) {
 		},
 	}, tx.PreCommitVolumes)
 
-	tx, err = store.GetTransactionWithVolumes(context.Background(), ledgerstore.NewGetTransactionQuery(tx2.ID).
+	tx, err = store.GetTransactionWithVolumes(ctx, ledgerstore.NewGetTransactionQuery(tx2.ID).
 		WithExpandVolumes().
 		WithExpandEffectiveVolumes())
 	require.Equal(t, tx2.Postings, tx.Postings)

@@ -51,14 +51,20 @@ create type volumes_with_asset as (
 
 /** Define tables **/
 create table transactions (
-    id numeric not null,
-    metadata jsonb not null default '{}'::jsonb,
+    id numeric not null primary key,
     timestamp timestamp without time zone not null,
     reference varchar,
-    revision numeric default 0 not null,
-    last_update timestamp not null,
-    reverted bool default false not null,
+    reverted_at timestamp without time zone,
     postings varchar not null
+);
+
+create table transactions_metadata (
+    transaction_id numeric not null references transactions(id),
+    revision numeric default 0 not null,
+    date timestamp not null,
+    metadata jsonb not null default '{}'::jsonb,
+
+    primary key (transaction_id, revision)
 );
 
 create table accounts (
@@ -76,7 +82,7 @@ create table accounts_metadata (
 
 create table moves (
     seq serial not null primary key ,
-    transaction_id numeric not null,
+    transaction_id numeric not null references transactions(id),
     account_address varchar not null,
     account_address_array jsonb not null,
     asset varchar not null,
@@ -119,8 +125,8 @@ create index moves_range_dates on moves (account_address, asset, effective_date)
 
 /** Index requires for read */
 create index transactions_date on transactions (timestamp);
-create index transactions_metadata on transactions using gin (metadata);
-create unique index transactions_revisions on transactions(id desc, revision desc);
+create index transactions_metadata_metadata on transactions_metadata using gin (metadata);
+--create unique index transactions_revisions on transactions_metadata(id desc, revision desc);
 
 create index moves_account_address on moves (account_address);
 create index moves_account_address_array on moves using gin (account_address_array jsonb_ops);
@@ -172,10 +178,10 @@ create function get_transaction(_id numeric, _before timestamp default null)
     language sql
     stable
 as $$
-    select distinct on (id) *
+    select *
     from transactions t
-    where (_before is null or t.last_update <= _before) and t.id = _id
-    order by id desc, revision desc
+    where (_before is null or t.timestamp <= _before) and t.id = _id
+    order by id desc
     limit 1;
 $$;
 
@@ -251,48 +257,45 @@ create function update_transaction_metadata(_id numeric, _metadata jsonb, _date 
     returns void
     language sql
 as $$
-    insert into transactions (id, metadata, timestamp, reference, reverted, last_update, revision, postings)
-    select originalTX.id,
-           originalTX.metadata || _metadata,
-           originalTX.timestamp,
-           originalTX.reference,
-           originalTX.reverted,
-           _date,
-            originalTX.revision + 1,
-            originalTX.postings
-    from get_transaction(_id) originalTX
+    insert into transactions_metadata (transaction_id, metadata, date, revision)
+    (
+        select originalTX.transaction_id,
+               originalTX.metadata || _metadata,
+               _date,
+                originalTX.revision + 1
+        from transactions_metadata originalTX
+        where transaction_id = _id
+        order by revision desc
+        limit 1
+    )
+    union all (
+        select _id, '{}'::jsonb, null, -1
+    )
+    limit 1
 $$;
 
 create function delete_transaction_metadata(_id numeric, _key varchar, _date timestamp)
     returns void
     language sql
 as $$
-insert into transactions (id, metadata, timestamp, reference, reverted, last_update, revision, postings)
-select originalTX.id,
-       originalTX.metadata - _key,
-       originalTX.timestamp,
-       originalTX.reference,
-       originalTX.reverted,
-       _date,
-       originalTX.revision + 1,
-       originalTX.postings
-from get_transaction(_id) originalTX
+    insert into transactions_metadata (transaction_id, metadata, date, revision)
+    select originalTX.transaction_id,
+           originalTX.metadata - _key,
+           _date,
+           originalTX.revision + 1
+    from transactions_metadata originalTX
+    where transaction_id = _id
+    order by revision desc
+    limit 1;
 $$;
 
 create function revert_transaction(_id numeric, _date timestamp)
     returns void
     language sql
 as $$
-    insert into transactions (id, metadata, timestamp, reference, reverted, last_update, revision, postings)
-    select originalTX.id,
-        originalTX.metadata,
-        originalTX.timestamp,
-        originalTX.reference,
-        true,
-        _date,
-        originalTX.revision + 1,
-        originalTX.postings
-    from get_transaction(_id) originalTX
+    update transactions
+    set reverted_at = _date
+    where id = _id;
 $$;
 
 create or replace function insert_move(_transaction_id numeric, _insertion_date timestamp without time zone,
@@ -402,15 +405,23 @@ as $$
     declare
         posting jsonb;
     begin
-        insert into transactions (id, metadata, timestamp, reference, last_update, postings)
-        values ((data->>'id')::numeric, coalesce(data->'metadata', '{}'::jsonb),
-                (data->>'timestamp')::timestamp without time zone, data->>'reference',
-                (data->>'timestamp')::timestamp without time zone, jsonb_pretty(data->'postings'));
+        insert into transactions (id, timestamp, reference, postings)
+        values ((data->>'id')::numeric,
+                (data->>'timestamp')::timestamp without time zone,
+                data->>'reference',
+                jsonb_pretty(data->'postings'));
 
         for posting in (select jsonb_array_elements(data->'postings')) loop
             -- todo: sometimes the balance is known at commit time (for sources != world), we need to forward the value to populate the pre_commit_aggregated_input and output
             perform insert_posting((data->>'id')::numeric, _date, (data->>'timestamp')::timestamp without time zone, posting);
         end loop;
+
+        insert into transactions_metadata (transaction_id, revision, date, metadata) values (
+             (data->>'id')::numeric,
+             0,
+             (data->>'timestamp')::timestamp without time zone,
+             coalesce(data->'metadata', '{}'::jsonb)
+        );
     end
 $$;
 
