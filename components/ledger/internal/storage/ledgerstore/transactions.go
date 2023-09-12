@@ -32,7 +32,7 @@ type Transaction struct {
 	Metadata                   metadata.Metadata            `bun:"metadata,type:jsonb,default:'{}'"`
 	PostCommitEffectiveVolumes ledger.AccountsAssetsVolumes `bun:"post_commit_effective_volumes,type:jsonb"`
 	PostCommitVolumes          ledger.AccountsAssetsVolumes `bun:"post_commit_volumes,type:jsonb"`
-	RevertedAt                 ledger.Time                  `bun:"reverted_at"`
+	RevertedAt                 *ledger.Time                 `bun:"reverted_at"`
 	LastUpdate                 *ledger.Time                 `bun:"last_update"`
 }
 
@@ -64,7 +64,7 @@ func (t *Transaction) toCore() *ledger.ExpandedTransaction {
 				Postings:  t.Postings,
 			},
 			ID:       (*big.Int)(t.ID),
-			Reverted: !t.RevertedAt.IsZero(),
+			Reverted: t.RevertedAt != nil && !t.RevertedAt.IsZero(),
 		},
 		PreCommitEffectiveVolumes:  preCommitEffectiveVolumes,
 		PostCommitEffectiveVolumes: t.PostCommitEffectiveVolumes,
@@ -113,17 +113,27 @@ func (m1 *account) Scan(value interface{}) error {
 
 func (store *Store) buildTransactionQuery(p PITFilterWithVolumes, query *bun.SelectQuery) *bun.SelectQuery {
 
+	selectMetadata := query.NewSelect().
+		Table("transactions_metadata").
+		Where("transactions.id = transactions_metadata.transaction_id").
+		Order("revision desc").
+		Limit(1)
+
+	if p.PIT != nil && !p.PIT.IsZero() {
+		selectMetadata = selectMetadata.Where("date <= ?", p.PIT)
+	}
+
 	query = query.
 		Table("transactions").
 		ColumnExpr("distinct on(transactions.id) transactions.*, transactions_metadata.metadata").
 		Join("join moves m on transactions.id = m.transaction_id").
-		Join(`left join lateral (
-			select *
-			from transactions_metadata
-            where transactions.id = transactions_metadata.transaction_id
-            order by revision desc
-            limit 1
-		) as transactions_metadata on true`)
+		Join(fmt.Sprintf(`left join lateral (%s) as transactions_metadata on true`, selectMetadata.String()))
+
+	if p.PIT != nil && !p.PIT.IsZero() {
+		query = query.
+			Where("timestamp <= ?", p.PIT).
+			ColumnExpr(fmt.Sprintf("case when reverted_at is not null and reverted_at > '%s' then null else reverted_at end", p.PIT.Format(ledger.DateFormat)))
+	}
 
 	if p.ExpandEffectiveVolumes {
 		query = query.ColumnExpr("get_aggregated_effective_volumes_for_transaction(transactions) as post_commit_effective_volumes")

@@ -3,6 +3,7 @@ package ledgerstore_test
 import (
 	"context"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"math/big"
 	"testing"
 	"time"
@@ -16,32 +17,57 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func ExpandTransactions(txs ...*ledger.Transaction) []ledger.ExpandedTransaction {
-	ret := make([]ledger.ExpandedTransaction, len(txs))
+func expandLogs(logs ...*ledger.Log) []ledger.ExpandedTransaction {
+	ret := make([]ledger.ExpandedTransaction, 0)
 	accumulatedVolumes := ledger.AccountsAssetsVolumes{}
-	for ind, tx := range txs {
-		ret[ind].Transaction = *tx
+
+	appendTx := func(tx *ledger.Transaction) {
+		expandedTx := &ledger.ExpandedTransaction{
+			Transaction: *tx,
+		}
 		for _, posting := range tx.Postings {
-			ret[ind].PreCommitVolumes.AddInput(posting.Destination, posting.Asset, accumulatedVolumes.GetVolumes(posting.Destination, posting.Asset).Input)
-			ret[ind].PreCommitVolumes.AddOutput(posting.Source, posting.Asset, accumulatedVolumes.GetVolumes(posting.Source, posting.Asset).Output)
+			expandedTx.PreCommitVolumes.AddInput(posting.Destination, posting.Asset, accumulatedVolumes.GetVolumes(posting.Destination, posting.Asset).Input)
+			expandedTx.PreCommitVolumes.AddOutput(posting.Destination, posting.Asset, accumulatedVolumes.GetVolumes(posting.Destination, posting.Asset).Output)
+			expandedTx.PreCommitVolumes.AddOutput(posting.Source, posting.Asset, accumulatedVolumes.GetVolumes(posting.Source, posting.Asset).Output)
+			expandedTx.PreCommitVolumes.AddInput(posting.Source, posting.Asset, accumulatedVolumes.GetVolumes(posting.Source, posting.Asset).Input)
 		}
 		for _, posting := range tx.Postings {
 			accumulatedVolumes.AddOutput(posting.Source, posting.Asset, posting.Amount)
 			accumulatedVolumes.AddInput(posting.Destination, posting.Asset, posting.Amount)
 		}
 		for _, posting := range tx.Postings {
-			ret[ind].PostCommitVolumes.AddInput(posting.Destination, posting.Asset, accumulatedVolumes.GetVolumes(posting.Destination, posting.Asset).Input)
-			ret[ind].PostCommitVolumes.AddOutput(posting.Source, posting.Asset, accumulatedVolumes.GetVolumes(posting.Source, posting.Asset).Output)
+			expandedTx.PostCommitVolumes.AddInput(posting.Destination, posting.Asset, accumulatedVolumes.GetVolumes(posting.Destination, posting.Asset).Input)
+			expandedTx.PostCommitVolumes.AddOutput(posting.Destination, posting.Asset, accumulatedVolumes.GetVolumes(posting.Destination, posting.Asset).Output)
+			expandedTx.PostCommitVolumes.AddOutput(posting.Source, posting.Asset, accumulatedVolumes.GetVolumes(posting.Source, posting.Asset).Output)
+			expandedTx.PostCommitVolumes.AddInput(posting.Source, posting.Asset, accumulatedVolumes.GetVolumes(posting.Source, posting.Asset).Input)
+		}
+		ret = append(ret, *expandedTx)
+	}
+
+	for _, log := range logs {
+		switch payload := log.Data.(type) {
+		case ledger.NewTransactionLogPayload:
+			appendTx(payload.Transaction)
+		case ledger.RevertedTransactionLogPayload:
+			appendTx(payload.RevertTransaction)
+			ret[payload.RevertedTransactionID.Uint64()].Reverted = true
+		case ledger.SetMetadataLogPayload:
+			ret[payload.TargetID.(*big.Int).Uint64()].Metadata = ret[payload.TargetID.(*big.Int).Uint64()].Metadata.Merge(payload.Metadata)
 		}
 	}
+
 	return ret
 }
 
 func Reverse[T any](values ...T) []T {
+	ret := make([]T, len(values))
 	for i := 0; i < len(values)/2; i++ {
-		values[i], values[len(values)-i-1] = values[len(values)-i-1], values[i]
+		ret[i], ret[len(values)-i-1] = values[len(values)-i-1], values[i]
 	}
-	return values
+	if len(values)%2 == 1 {
+		ret[(len(values)-1)/2] = values[(len(values)-1)/2]
+	}
+	return ret
 }
 
 func TestGetTransactionWithVolumes(t *testing.T) {
@@ -878,6 +904,7 @@ func TestListTransactions(t *testing.T) {
 	t.Parallel()
 	store := newLedgerStore(t)
 	now := ledger.Now()
+	ctx := logging.TestingContext()
 
 	tx1 := ledger.NewTransaction().
 		WithIDUint64(0).
@@ -900,8 +927,24 @@ func TestListTransactions(t *testing.T) {
 		).
 		WithMetadata(metadata.Metadata{"category": "3"}).
 		WithDate(now.Add(-time.Hour))
+	tx4 := ledger.NewTransaction().
+		WithIDUint64(3).
+		WithPostings(
+			ledger.NewPosting("users:marley", "world", "USD", big.NewInt(100)),
+		).
+		WithDate(now)
 
-	require.NoError(t, insertTransactions(context.Background(), store, *tx1, *tx2, *tx3))
+	logs := []*ledger.Log{
+		ledger.NewTransactionLog(tx1, map[string]metadata.Metadata{}),
+		ledger.NewTransactionLog(tx2, map[string]metadata.Metadata{}),
+		ledger.NewTransactionLog(tx3, map[string]metadata.Metadata{}),
+		ledger.NewRevertedTransactionLog(ledger.Now(), tx3.ID, tx4),
+		ledger.NewSetMetadataOnTransactionLog(ledger.Now(), tx3.ID, metadata.Metadata{
+			"additional_metadata": "true",
+		}),
+	}
+
+	require.NoError(t, store.InsertLogs(ctx, ledger.ChainLogs(logs...)...))
 
 	type testCase struct {
 		name     string
@@ -915,7 +958,7 @@ func TestListTransactions(t *testing.T) {
 			expected: &api.Cursor[ledger.ExpandedTransaction]{
 				PageSize: 15,
 				HasMore:  false,
-				Data:     Reverse(ExpandTransactions(tx1, tx2, tx3)...),
+				Data:     Reverse(expandLogs(logs...)...),
 			},
 		},
 		{
@@ -925,7 +968,7 @@ func TestListTransactions(t *testing.T) {
 			expected: &api.Cursor[ledger.ExpandedTransaction]{
 				PageSize: 15,
 				HasMore:  false,
-				Data:     ExpandTransactions(tx1, tx2)[1:],
+				Data:     expandLogs(logs...)[1:2],
 			},
 		},
 		{
@@ -935,7 +978,7 @@ func TestListTransactions(t *testing.T) {
 			expected: &api.Cursor[ledger.ExpandedTransaction]{
 				PageSize: 15,
 				HasMore:  false,
-				Data:     ExpandTransactions(tx1, tx2, tx3)[2:],
+				Data:     Reverse(expandLogs(logs...)[2:]...),
 			},
 		},
 		{
@@ -945,7 +988,20 @@ func TestListTransactions(t *testing.T) {
 			expected: &api.Cursor[ledger.ExpandedTransaction]{
 				PageSize: 15,
 				HasMore:  false,
-				Data:     ExpandTransactions(tx1, tx2, tx3)[1:2],
+				Data:     expandLogs(logs...)[1:2],
+			},
+		},
+		{
+			name: "using point in time",
+			query: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterWithVolumes{
+				PITFilter: ledgerstore.PITFilter{
+					PIT: pointer.For(now.Add(-time.Hour)),
+				},
+			}),
+			expected: &api.Cursor[ledger.ExpandedTransaction]{
+				PageSize: 15,
+				HasMore:  false,
+				Data:     Reverse(expandLogs(logs[:3]...)...),
 			},
 		},
 	}
@@ -955,11 +1011,11 @@ func TestListTransactions(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.query.Options.ExpandVolumes = true
 			tc.query.Options.ExpandEffectiveVolumes = false
-			cursor, err := store.GetTransactions(context.Background(), ledgerstore.NewGetTransactionsQuery(tc.query))
+			cursor, err := store.GetTransactions(ctx, ledgerstore.NewGetTransactionsQuery(tc.query))
 			require.NoError(t, err)
 			internaltesting.RequireEqual(t, *tc.expected, *cursor)
 
-			count, err := store.CountTransactions(context.Background(), ledgerstore.NewGetTransactionsQuery(tc.query))
+			count, err := store.CountTransactions(ctx, ledgerstore.NewGetTransactionsQuery(tc.query))
 			require.NoError(t, err)
 			require.EqualValues(t, len(tc.expected.Data), count)
 		})
