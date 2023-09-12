@@ -3,6 +3,7 @@ package v2
 import (
 	"math/rand"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/formancehq/ledger/internal/api/backend"
@@ -11,7 +12,10 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-var r *rand.Rand
+var (
+	r  *rand.Rand
+	mu sync.Mutex
+)
 
 func init() {
 	r = rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -20,6 +24,9 @@ func init() {
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
 func randomTraceID(n int) string {
+	mu.Lock()
+	defer mu.Unlock()
+
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letterRunes[r.Intn(len(letterRunes))]
