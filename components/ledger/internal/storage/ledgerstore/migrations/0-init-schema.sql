@@ -416,12 +416,14 @@ as $$
             perform insert_posting((data->>'id')::numeric, _date, (data->>'timestamp')::timestamp without time zone, posting);
         end loop;
 
-        insert into transactions_metadata (transaction_id, revision, date, metadata) values (
-             (data->>'id')::numeric,
-             0,
-             (data->>'timestamp')::timestamp without time zone,
-             coalesce(data->'metadata', '{}'::jsonb)
-        );
+        if data->'metadata' is not null and data->>'metadata' <> '()' then
+            insert into transactions_metadata (transaction_id, revision, date, metadata) values (
+                (data->>'id')::numeric,
+                0,
+                (data->>'timestamp')::timestamp without time zone,
+                coalesce(data->'metadata', '{}'::jsonb)
+            );
+        end if;
     end
 $$;
 
