@@ -3,6 +3,7 @@ module github.com/formancehq/stack/tests/benchmarks/extension
 go 1.20
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/prometheus/client_golang v1.14.1-0.20221122130035-8b6e68085b10
 	github.com/sirupsen/logrus v1.9.3
@@ -14,7 +15,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
-	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
+	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/containerd/continuity v0.4.1 // indirect
 	github.com/dlclark/regexp2 v1.9.0 // indirect
 	github.com/docker/cli v24.0.4+incompatible // indirect

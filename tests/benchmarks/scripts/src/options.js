@@ -1,4 +1,4 @@
-import {read_accounts, read_aggregatebalances, read_balances} from "../benchs/ledger-v2";
+import {readAccounts, readAggregatedBalances, readBalances} from "../benchs/ledger-v2";
 
 export function K6Options() {
     return {
@@ -24,7 +24,7 @@ export function K6Options() {
                     { duration: '5m', target: 10 },
                 ],
                 gracefulRampDown: '0s',
-                exec: 'read_transactions',
+                exec: 'readTransactions',
                 tags: { testid: __ENV.TEST_ID}
             },
             read_accounts_constant: {
@@ -36,7 +36,7 @@ export function K6Options() {
                     { duration: '5m', target: 10 },
                 ],
                 gracefulRampDown: '0s',
-                exec: 'read_accounts',
+                exec: 'readAccounts',
                 tags: { testid: __ENV.TEST_ID}
             },
             read_balances_constant: {
@@ -48,7 +48,7 @@ export function K6Options() {
                     { duration: '5m', target: 10 },
                 ],
                 gracefulRampDown: '0s',
-                exec: 'read_balances',
+                exec: 'readBalances',
                 tags: { testid: __ENV.TEST_ID}
             },
             read_aggregatebalances_constant: {
@@ -60,7 +60,7 @@ export function K6Options() {
                     { duration: '5m', target: 10 },
                 ],
                 gracefulRampDown: '0s',
-                exec: 'read_aggregatebalances',
+                exec: 'readAggregatedBalances',
                 tags: { testid: __ENV.TEST_ID}
             },
         }

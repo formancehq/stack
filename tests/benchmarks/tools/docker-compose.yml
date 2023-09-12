@@ -64,22 +64,6 @@ services:
             cpus: "1"
             memory: 512M
 
-  otel:
-    image: "otel/opentelemetry-collector-contrib:0.81.0"
-    command: [ "--config=/etc/otel-collector-config.yaml" ]
-    volumes:
-    - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    ports:
-    - 4317:4317
-    networks:
-    - benchmarks
-    deploy:
-      replicas: 1
-      resources:
-          limits:
-            cpus: "1"
-            memory: 512M
-
   grafana:
     image: grafana/grafana
     restart: unless-stopped

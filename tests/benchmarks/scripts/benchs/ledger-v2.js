@@ -3,12 +3,12 @@ import {ReadAccounts} from "../src/steps/account";
 import {ReadBalances} from "../src/steps/balances";
 import {ReadAggregateBalances} from "../src/steps/aggregateBalances";
 import {K6Options} from "../src/options";
-import {startLedger, stopLedger, exportResults} from 'k6/x/formancehq/benchmarks';
+import {startLedger, stopLedger} from 'k6/x/formancehq/benchmarks';
 import exec from 'k6/execution';
 
 export function setup() {
     return startLedger({
-        version: '15a430c40e95d38d864599dece235bc3964a3588',
+        version: 'latest',
     });
 }
 
@@ -16,19 +16,19 @@ export let options = K6Options();
 
 const ledgerName = `/tests`;
 
-export function read_transactions(ledger) {
+export function readTransactions(ledger) {
     const url = ledger.url + ledgerName
     ReadTransactions(url);
 }
-export function read_accounts(ledger) {
+export function readAccounts(ledger) {
     const url = ledger.url + ledgerName
     ReadAccounts(url);
 }
-export function read_balances(ledger) {
+export function readBalances(ledger) {
     const url = ledger.url + ledgerName
     ReadBalances(url);
 }
-export function read_aggregatebalances(ledger) {
+export function readAggregatedBalances(ledger) {
     const url = ledger.url + ledgerName
     ReadAggregateBalances(url);
 }
@@ -41,5 +41,4 @@ export function write(ledger) {
 
 export function teardown(data) {
     stopLedger();
-    exportResults();
 }
