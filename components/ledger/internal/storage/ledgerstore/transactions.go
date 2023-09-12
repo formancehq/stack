@@ -117,13 +117,13 @@ func (store *Store) buildTransactionQuery(p PITFilterWithVolumes, query *bun.Sel
 		Table("transactions").
 		ColumnExpr("distinct on(transactions.id) transactions.*, transactions_metadata.metadata").
 		Join("join moves m on transactions.id = m.transaction_id").
-		Join(`cross join lateral (
+		Join(`left join lateral (
 			select *
 			from transactions_metadata
             where transactions.id = transactions_metadata.transaction_id
             order by revision desc
             limit 1
-		) as transactions_metadata`)
+		) as transactions_metadata on true`)
 
 	if p.ExpandEffectiveVolumes {
 		query = query.ColumnExpr("get_aggregated_effective_volumes_for_transaction(transactions) as post_commit_effective_volumes")
