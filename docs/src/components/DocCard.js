@@ -27,7 +27,8 @@ function Card({title, icon, cta, children}) {
         alignItems: 'center',
       }}>
         {icon && <Box sx={{
-          width: 36,
+          width: 55,
+					height: 60,
           mr: 1,
         }}>
           <img src={icon} />
