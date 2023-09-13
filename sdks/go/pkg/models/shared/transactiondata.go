@@ -12,3 +12,31 @@ type TransactionData struct {
 	Reference *string                `json:"reference,omitempty"`
 	Timestamp *time.Time             `json:"timestamp,omitempty"`
 }
+
+func (o *TransactionData) GetMetadata() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *TransactionData) GetPostings() []Posting {
+	if o == nil {
+		return []Posting{}
+	}
+	return o.Postings
+}
+
+func (o *TransactionData) GetReference() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Reference
+}
+
+func (o *TransactionData) GetTimestamp() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.Timestamp
+}

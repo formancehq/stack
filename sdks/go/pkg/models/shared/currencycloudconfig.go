@@ -11,3 +11,31 @@ type CurrencyCloudConfig struct {
 	// The frequency at which the connector will fetch transactions
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }
+
+func (o *CurrencyCloudConfig) GetAPIKey() string {
+	if o == nil {
+		return ""
+	}
+	return o.APIKey
+}
+
+func (o *CurrencyCloudConfig) GetEndpoint() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Endpoint
+}
+
+func (o *CurrencyCloudConfig) GetLoginID() string {
+	if o == nil {
+		return ""
+	}
+	return o.LoginID
+}
+
+func (o *CurrencyCloudConfig) GetPollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PollingPeriod
+}

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class Query {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("after")
@@ -56,9 +57,9 @@ public class Query {
     
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("raw")
-    public java.util.Map<String, Object> raw;
+    public QueryRaw raw;
 
-    public Query withRaw(java.util.Map<String, Object> raw) {
+    public Query withRaw(QueryRaw raw) {
         this.raw = raw;
         return this;
     }

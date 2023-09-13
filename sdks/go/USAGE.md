@@ -1,4 +1,6 @@
 <!-- Start SDK Example Usage -->
+
+
 ```go
 package main
 
@@ -6,12 +8,13 @@ import(
 	"context"
 	"log"
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 )
 
 func main() {
     s := formance.New(
         formance.WithSecurity(shared.Security{
-            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+            Authorization: "",
         }),
     )
 

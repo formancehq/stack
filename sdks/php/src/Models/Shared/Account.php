@@ -15,15 +15,10 @@ class Account
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $address;
     
-    /**
-     * $metadata
-     * 
-     * @var ?array<string, mixed> $metadata
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('metadata')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\AccountMetadata')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?array $metadata = null;
+    public ?AccountMetadata $metadata = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('type')]
     #[\JMS\Serializer\Annotation\Type('string')]

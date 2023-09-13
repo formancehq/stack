@@ -6,7 +6,7 @@ import requests as requests_http
 from ..shared import accountscursorresponse as shared_accountscursorresponse
 from ..shared import errorresponse as shared_errorresponse
 from enum import Enum
-from typing import Any, Optional
+from typing import Optional
 
 class ListAccountsBalanceOperator(str, Enum):
     r"""Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not."""
@@ -18,9 +18,17 @@ class ListAccountsBalanceOperator(str, Enum):
     NE = 'ne'
 
 
+
+@dataclasses.dataclass
+class ListAccountsMetadata:
+    r"""Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below."""
+    
+
+
+
+
 @dataclasses.dataclass
 class ListAccountsRequest:
-    
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
     address: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'address', 'style': 'form', 'explode': True }})
@@ -37,15 +45,17 @@ class ListAccountsRequest:
     Set to the value of previous for the previous page of results.
     No other parameters can be set when this parameter is set.
     """
-    metadata: Optional[dict[str, Any]] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'metadata', 'style': 'deepObject', 'explode': True }})
+    metadata: Optional[ListAccountsMetadata] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'metadata', 'style': 'deepObject', 'explode': True }})
     r"""Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below."""
     page_size: Optional[int] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'pageSize', 'style': 'form', 'explode': True }})
     r"""The maximum number of results to return per page."""
     
 
+
+
+
 @dataclasses.dataclass
 class ListAccountsResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     accounts_cursor_response: Optional[shared_accountscursorresponse.AccountsCursorResponse] = dataclasses.field(default=None)
@@ -54,3 +64,4 @@ class ListAccountsResponse:
     r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

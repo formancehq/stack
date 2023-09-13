@@ -10,3 +10,31 @@ type MangoPayConfig struct {
 	//
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }
+
+func (o *MangoPayConfig) GetAPIKey() string {
+	if o == nil {
+		return ""
+	}
+	return o.APIKey
+}
+
+func (o *MangoPayConfig) GetClientID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ClientID
+}
+
+func (o *MangoPayConfig) GetEndpoint() string {
+	if o == nil {
+		return ""
+	}
+	return o.Endpoint
+}
+
+func (o *MangoPayConfig) GetPollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PollingPeriod
+}

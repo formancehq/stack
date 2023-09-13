@@ -14,3 +14,31 @@ type ScriptResponse struct {
 	ErrorMessage *string      `json:"errorMessage,omitempty"`
 	Transaction  *Transaction `json:"transaction,omitempty"`
 }
+
+func (o *ScriptResponse) GetDetails() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Details
+}
+
+func (o *ScriptResponse) GetErrorCode() *ErrorsEnum {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorCode
+}
+
+func (o *ScriptResponse) GetErrorMessage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorMessage
+}
+
+func (o *ScriptResponse) GetTransaction() *Transaction {
+	if o == nil {
+		return nil
+	}
+	return o.Transaction
+}

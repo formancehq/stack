@@ -14,6 +14,20 @@ type RevertTransactionRequest struct {
 	Txid int64 `pathParam:"style=simple,explode=false,name=txid"`
 }
 
+func (o *RevertTransactionRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
+func (o *RevertTransactionRequest) GetTxid() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Txid
+}
+
 type RevertTransactionResponse struct {
 	ContentType string
 	// Error
@@ -22,4 +36,39 @@ type RevertTransactionResponse struct {
 	RawResponse   *http.Response
 	// OK
 	TransactionResponse *shared.TransactionResponse
+}
+
+func (o *RevertTransactionResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *RevertTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *RevertTransactionResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *RevertTransactionResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *RevertTransactionResponse) GetTransactionResponse() *shared.TransactionResponse {
+	if o == nil {
+		return nil
+	}
+	return o.TransactionResponse
 }

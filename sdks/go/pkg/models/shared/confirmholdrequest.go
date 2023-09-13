@@ -12,3 +12,17 @@ type ConfirmHoldRequest struct {
 	// Define a final confirmation. Remaining funds will be returned to the wallet.
 	Final *bool `json:"final,omitempty"`
 }
+
+func (o *ConfirmHoldRequest) GetAmount() *big.Int {
+	if o == nil {
+		return nil
+	}
+	return o.Amount
+}
+
+func (o *ConfirmHoldRequest) GetFinal() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Final
+}

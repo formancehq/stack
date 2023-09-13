@@ -14,3 +14,45 @@ type WorkflowInstanceHistory struct {
 	Terminated   bool        `json:"terminated"`
 	TerminatedAt *time.Time  `json:"terminatedAt,omitempty"`
 }
+
+func (o *WorkflowInstanceHistory) GetError() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Error
+}
+
+func (o *WorkflowInstanceHistory) GetInput() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Input
+}
+
+func (o *WorkflowInstanceHistory) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *WorkflowInstanceHistory) GetStartedAt() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.StartedAt
+}
+
+func (o *WorkflowInstanceHistory) GetTerminated() bool {
+	if o == nil {
+		return false
+	}
+	return o.Terminated
+}
+
+func (o *WorkflowInstanceHistory) GetTerminatedAt() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.TerminatedAt
+}

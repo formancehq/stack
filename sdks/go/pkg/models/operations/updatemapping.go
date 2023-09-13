@@ -13,6 +13,20 @@ type UpdateMappingRequest struct {
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
+func (o *UpdateMappingRequest) GetMapping() shared.Mapping {
+	if o == nil {
+		return shared.Mapping{}
+	}
+	return o.Mapping
+}
+
+func (o *UpdateMappingRequest) GetLedger() string {
+	if o == nil {
+		return ""
+	}
+	return o.Ledger
+}
+
 type UpdateMappingResponse struct {
 	ContentType string
 	// Error
@@ -21,4 +35,39 @@ type UpdateMappingResponse struct {
 	MappingResponse *shared.MappingResponse
 	StatusCode      int
 	RawResponse     *http.Response
+}
+
+func (o *UpdateMappingResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *UpdateMappingResponse) GetErrorResponse() *shared.ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ErrorResponse
+}
+
+func (o *UpdateMappingResponse) GetMappingResponse() *shared.MappingResponse {
+	if o == nil {
+		return nil
+	}
+	return o.MappingResponse
+}
+
+func (o *UpdateMappingResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *UpdateMappingResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

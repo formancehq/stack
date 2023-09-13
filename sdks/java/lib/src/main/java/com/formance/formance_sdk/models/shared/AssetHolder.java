@@ -6,6 +6,7 @@ package com.formance.formance_sdk.models.shared;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class AssetHolder {
     @JsonProperty("assets")
     public java.util.Map<String, Long> assets;

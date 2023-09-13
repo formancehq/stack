@@ -1,0 +1,12 @@
+# ErrorResponse
+
+Error
+
+
+## Fields
+
+| Field                                                                                        | Type                                                                                         | Required                                                                                     | Description                                                                                  | Example                                                                                      |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `details`                                                                                    | *String*                                                                                     | :heavy_minus_sign:                                                                           | N/A                                                                                          | https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9 |
+| `errorCode`                                                                                  | [ErrorsEnum](../../models/shared/ErrorsEnum.md)                                              | :heavy_minus_sign:                                                                           | N/A                                                                                          | INSUFFICIENT_FUND                                                                            |
+| `errorMessage`                                                                               | *String*                                                                                     | :heavy_minus_sign:                                                                           | N/A                                                                                          | [INSUFFICIENT_FUND] account had insufficient funds                                           |

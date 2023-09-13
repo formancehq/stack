@@ -14,10 +14,10 @@ class ResponseCursor
     /**
      * $data
      * 
-     * @var ?array<array<string, mixed>> $data
+     * @var ?array<\formance\stack\Models\Shared\ResponseCursorData> $data
      */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('array<array<string, mixed>>')]
+    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\ResponseCursorData>')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?array $data = null;
     

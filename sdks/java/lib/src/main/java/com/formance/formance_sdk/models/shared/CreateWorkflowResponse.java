@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * CreateWorkflowResponse - Created workflow
  */
+
 public class CreateWorkflowResponse {
     @JsonProperty("data")
     public Workflow data;

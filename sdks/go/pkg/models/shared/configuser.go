@@ -7,3 +7,24 @@ type ConfigUser struct {
 	EventTypes []string `json:"eventTypes"`
 	Secret     *string  `json:"secret,omitempty"`
 }
+
+func (o *ConfigUser) GetEndpoint() string {
+	if o == nil {
+		return ""
+	}
+	return o.Endpoint
+}
+
+func (o *ConfigUser) GetEventTypes() []string {
+	if o == nil {
+		return []string{}
+	}
+	return o.EventTypes
+}
+
+func (o *ConfigUser) GetSecret() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Secret
+}

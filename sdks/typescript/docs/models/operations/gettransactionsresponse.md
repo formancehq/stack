@@ -1,0 +1,12 @@
+# GetTransactionsResponse
+
+
+## Fields
+
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `contentType`                                                                    | *string*                                                                         | :heavy_check_mark:                                                               | N/A                                                                              |
+| `getTransactionsResponse`                                                        | [shared.GetTransactionsResponse](../../models/shared/gettransactionsresponse.md) | :heavy_minus_sign:                                                               | OK                                                                               |
+| `statusCode`                                                                     | *number*                                                                         | :heavy_check_mark:                                                               | N/A                                                                              |
+| `rawResponse`                                                                    | [AxiosResponse>](https://axios-http.com/docs/res_schema)                         | :heavy_minus_sign:                                                               | N/A                                                                              |
+| `walletsErrorResponse`                                                           | [shared.WalletsErrorResponse](../../models/shared/walletserrorresponse.md)       | :heavy_minus_sign:                                                               | Error                                                                            |

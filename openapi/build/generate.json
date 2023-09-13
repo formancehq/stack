@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230810"
+    "version": "v1.0.20230905"
   },
   "servers": [
     {
@@ -2345,6 +2345,16 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/Transfer"
+          },
+          "5XX": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -2381,6 +2391,16 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/StripeTransfer"
+          },
+          "5XX": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }

@@ -10,3 +10,31 @@ type ModulrConfig struct {
 	//
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }
+
+func (o *ModulrConfig) GetAPIKey() string {
+	if o == nil {
+		return ""
+	}
+	return o.APIKey
+}
+
+func (o *ModulrConfig) GetAPISecret() string {
+	if o == nil {
+		return ""
+	}
+	return o.APISecret
+}
+
+func (o *ModulrConfig) GetEndpoint() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Endpoint
+}
+
+func (o *ModulrConfig) GetPollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PollingPeriod
+}

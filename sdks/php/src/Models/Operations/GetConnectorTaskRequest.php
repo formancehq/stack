@@ -29,7 +29,7 @@ class GetConnectorTaskRequest
     
 	public function __construct()
 	{
-		$this->connector = \formance\stack\Models\Shared\Connector::STRIPE;
+		$this->connector = \formance\stack\Models\Shared\Connector::Stripe;
 		$this->taskId = "";
 	}
 }

@@ -15,3 +15,52 @@ type Transaction struct {
 	Timestamp         time.Time                    `json:"timestamp"`
 	Txid              int64                        `json:"txid"`
 }
+
+func (o *Transaction) GetMetadata() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
+}
+
+func (o *Transaction) GetPostCommitVolumes() map[string]map[string]Volume {
+	if o == nil {
+		return nil
+	}
+	return o.PostCommitVolumes
+}
+
+func (o *Transaction) GetPostings() []Posting {
+	if o == nil {
+		return []Posting{}
+	}
+	return o.Postings
+}
+
+func (o *Transaction) GetPreCommitVolumes() map[string]map[string]Volume {
+	if o == nil {
+		return nil
+	}
+	return o.PreCommitVolumes
+}
+
+func (o *Transaction) GetReference() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Reference
+}
+
+func (o *Transaction) GetTimestamp() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.Timestamp
+}
+
+func (o *Transaction) GetTxid() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Txid
+}

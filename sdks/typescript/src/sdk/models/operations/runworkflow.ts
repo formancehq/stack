@@ -7,43 +7,41 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class RunWorkflowRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-  requestBody?: Record<string, string>;
+    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+    requestBody?: Record<string, string>;
 
-  /**
-   * Wait end of the workflow before return
-   */
-  @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=wait" })
-  wait?: boolean;
+    /**
+     * Wait end of the workflow before return
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=wait" })
+    wait?: boolean;
 
-  /**
-   * The flow id
-   */
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=workflowID",
-  })
-  workflowID: string;
+    /**
+     * The flow id
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=workflowID" })
+    workflowID: string;
 }
 
 export class RunWorkflowResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * General error
-   */
-  @SpeakeasyMetadata()
-  error?: shared.ErrorT;
+    /**
+     * General error
+     */
+    @SpeakeasyMetadata()
+    error?: shared.ErrorT;
 
-  /**
-   * The workflow instance
-   */
-  @SpeakeasyMetadata()
-  runWorkflowResponse?: shared.RunWorkflowResponse;
+    /**
+     * The workflow instance
+     */
+    @SpeakeasyMetadata()
+    runWorkflowResponse?: shared.RunWorkflowResponse;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

@@ -8,16 +8,18 @@ from ..shared import webhookserrorresponse as shared_webhookserrorresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class TestConfigRequest:
-    
     id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'id', 'style': 'simple', 'explode': False }})
     r"""Config ID"""
     
 
+
+
+
 @dataclasses.dataclass
 class TestConfigResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     attempt_response: Optional[shared_attemptresponse.AttemptResponse] = dataclasses.field(default=None)
@@ -26,3 +28,4 @@ class TestConfigResponse:
     webhooks_error_response: Optional[shared_webhookserrorresponse.WebhooksErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
+

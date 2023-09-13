@@ -1,0 +1,13 @@
+# ResponseCursor
+
+
+## Fields
+
+| Field                                                             | Type                                                              | Required                                                          | Description                                                       | Example                                                           |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `data`                                                            | [ResponseCursorData](../../models/shared/responsecursordata.md)[] | :heavy_minus_sign:                                                | N/A                                                               |                                                                   |
+| `hasMore`                                                         | *boolean*                                                         | :heavy_minus_sign:                                                | N/A                                                               |                                                                   |
+| `next`                                                            | *string*                                                          | :heavy_minus_sign:                                                | N/A                                                               | YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=                      |
+| `pageSize`                                                        | *number*                                                          | :heavy_minus_sign:                                                | N/A                                                               |                                                                   |
+| `previous`                                                        | *string*                                                          | :heavy_minus_sign:                                                | N/A                                                               | YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=                      |
+| `total`                                                           | [ResponseCursorTotal](../../models/shared/responsecursortotal.md) | :heavy_minus_sign:                                                | N/A                                                               |                                                                   |

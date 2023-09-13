@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * WalletsErrorResponse - Error
  */
+
 public class WalletsErrorResponse {
     @JsonProperty("errorCode")
     public WalletsErrorResponseErrorCode errorCode;

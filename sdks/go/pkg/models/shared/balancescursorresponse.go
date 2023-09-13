@@ -14,7 +14,49 @@ type BalancesCursorResponseCursor struct {
 	Previous *string                          `json:"previous,omitempty"`
 }
 
+func (o *BalancesCursorResponseCursor) GetData() []map[string]map[string]*big.Int {
+	if o == nil {
+		return []map[string]map[string]*big.Int{}
+	}
+	return o.Data
+}
+
+func (o *BalancesCursorResponseCursor) GetHasMore() bool {
+	if o == nil {
+		return false
+	}
+	return o.HasMore
+}
+
+func (o *BalancesCursorResponseCursor) GetNext() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Next
+}
+
+func (o *BalancesCursorResponseCursor) GetPageSize() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.PageSize
+}
+
+func (o *BalancesCursorResponseCursor) GetPrevious() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Previous
+}
+
 // BalancesCursorResponse - OK
 type BalancesCursorResponse struct {
 	Cursor BalancesCursorResponseCursor `json:"cursor"`
+}
+
+func (o *BalancesCursorResponse) GetCursor() BalancesCursorResponseCursor {
+	if o == nil {
+		return BalancesCursorResponseCursor{}
+	}
+	return o.Cursor
 }

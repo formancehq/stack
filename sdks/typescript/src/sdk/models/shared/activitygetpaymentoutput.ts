@@ -7,8 +7,8 @@ import { Payment } from "./payment";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityGetPaymentOutput extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "data" })
-  @Type(() => Payment)
-  data: Payment;
+    @SpeakeasyMetadata()
+    @Expose({ name: "data" })
+    @Type(() => Payment)
+    data: Payment;
 }

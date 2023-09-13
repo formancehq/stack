@@ -14,6 +14,14 @@ class ConnectorsStripeTransferResponse
 	
     public string $contentType;
     
+    /**
+     * Error
+     * 
+     * @var ?\formance\stack\Models\Shared\ErrorResponse $errorResponse
+     */
+	
+    public ?\formance\stack\Models\Shared\ErrorResponse $errorResponse = null;
+    
 	
     public int $statusCode;
     
@@ -23,14 +31,15 @@ class ConnectorsStripeTransferResponse
     /**
      * OK
      * 
-     * @var ?array<string, mixed> $stripeTransferResponse
+     * @var ?\formance\stack\Models\Shared\StripeTransferResponse $stripeTransferResponse
      */
 	
-    public ?array $stripeTransferResponse = null;
+    public ?\formance\stack\Models\Shared\StripeTransferResponse $stripeTransferResponse = null;
     
 	public function __construct()
 	{
 		$this->contentType = "";
+		$this->errorResponse = null;
 		$this->statusCode = 0;
 		$this->rawResponse = null;
 		$this->stripeTransferResponse = null;

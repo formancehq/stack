@@ -13,6 +13,7 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
+
 public class TaskBankingCircle {
     @JsonProperty("connectorId")
     public String connectorId;
@@ -58,9 +59,9 @@ public class TaskBankingCircle {
     }
     
     @JsonProperty("state")
-    public java.util.Map<String, Object> state;
+    public TaskBankingCircleState state;
 
-    public TaskBankingCircle withState(java.util.Map<String, Object> state) {
+    public TaskBankingCircle withState(TaskBankingCircleState state) {
         this.state = state;
         return this;
     }
@@ -83,7 +84,7 @@ public class TaskBankingCircle {
         return this;
     }
     
-    public TaskBankingCircle(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskBankingCircleDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") java.util.Map<String, Object> state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
+    public TaskBankingCircle(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskBankingCircleDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") TaskBankingCircleState state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
         this.connectorId = connectorId;
         this.createdAt = createdAt;
         this.descriptor = descriptor;

@@ -49,10 +49,10 @@ class CountTransactionsRequest
     /**
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      * 
-     * @var ?array<string, mixed> $metadata
+     * @var ?\formance\stack\Models\Operations\CountTransactionsMetadata $metadata
      */
 	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
-    public ?array $metadata = null;
+    public ?CountTransactionsMetadata $metadata = null;
     
     /**
      * Filter transactions by reference field.

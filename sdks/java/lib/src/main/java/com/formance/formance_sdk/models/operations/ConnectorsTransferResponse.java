@@ -7,12 +7,24 @@ package com.formance.formance_sdk.models.operations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.http.HttpResponse;
 
+
 public class ConnectorsTransferResponse {
     
     public String contentType;
 
     public ConnectorsTransferResponse withContentType(String contentType) {
         this.contentType = contentType;
+        return this;
+    }
+    
+    /**
+     * Error
+     */
+    
+    public com.formance.formance_sdk.models.shared.ErrorResponse errorResponse;
+
+    public ConnectorsTransferResponse withErrorResponse(com.formance.formance_sdk.models.shared.ErrorResponse errorResponse) {
+        this.errorResponse = errorResponse;
         return this;
     }
     

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 public class Contract {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("account")
@@ -19,14 +20,14 @@ public class Contract {
     }
     
     @JsonProperty("expr")
-    public java.util.Map<String, Object> expr;
+    public ContractExpr expr;
 
-    public Contract withExpr(java.util.Map<String, Object> expr) {
+    public Contract withExpr(ContractExpr expr) {
         this.expr = expr;
         return this;
     }
     
-    public Contract(@JsonProperty("expr") java.util.Map<String, Object> expr) {
+    public Contract(@JsonProperty("expr") ContractExpr expr) {
         this.expr = expr;
   }
 }

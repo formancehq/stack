@@ -8,9 +8,9 @@ from datetime import datetime
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class GetAccountBalancesRequest:
-    
     account_id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'accountId', 'style': 'simple', 'explode': False }})
     r"""The account ID."""
     asset: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'asset', 'style': 'form', 'explode': True }})
@@ -39,12 +39,15 @@ class GetAccountBalancesRequest:
     """
     
 
+
+
+
 @dataclasses.dataclass
 class GetAccountBalancesResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     balances_cursor: Optional[shared_balancescursor.BalancesCursor] = dataclasses.field(default=None)
     r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

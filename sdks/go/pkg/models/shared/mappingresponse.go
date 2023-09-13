@@ -6,3 +6,10 @@ package shared
 type MappingResponse struct {
 	Data *Mapping `json:"data,omitempty"`
 }
+
+func (o *MappingResponse) GetData() *Mapping {
+	if o == nil {
+		return nil
+	}
+	return o.Data
+}

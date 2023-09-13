@@ -30,10 +30,10 @@ class CountAccountsRequest
     /**
      * Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
      * 
-     * @var ?array<string, mixed> $metadata
+     * @var ?\formance\stack\Models\Operations\CountAccountsMetadata $metadata
      */
 	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
-    public ?array $metadata = null;
+    public ?CountAccountsMetadata $metadata = null;
     
 	public function __construct()
 	{

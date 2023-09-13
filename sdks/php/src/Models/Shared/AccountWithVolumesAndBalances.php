@@ -25,15 +25,10 @@ class AccountWithVolumesAndBalances
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?array $balances = null;
     
-    /**
-     * $metadata
-     * 
-     * @var ?array<string, mixed> $metadata
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('metadata')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\AccountWithVolumesAndBalancesMetadata')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?array $metadata = null;
+    public ?AccountWithVolumesAndBalancesMetadata $metadata = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('type')]
     #[\JMS\Serializer\Annotation\Type('string')]

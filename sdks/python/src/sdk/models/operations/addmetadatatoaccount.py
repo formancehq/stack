@@ -7,9 +7,9 @@ from ..shared import errorresponse as shared_errorresponse
 from typing import Any, Optional
 
 
+
 @dataclasses.dataclass
 class AddMetadataToAccountRequest:
-    
     address: str = dataclasses.field(metadata={'path_param': { 'field_name': 'address', 'style': 'simple', 'explode': False }})
     r"""Exact address of the account. It must match the following regular expressions pattern:
     ```
@@ -22,12 +22,15 @@ class AddMetadataToAccountRequest:
     r"""metadata"""
     
 
+
+
+
 @dataclasses.dataclass
 class AddMetadataToAccountResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
+

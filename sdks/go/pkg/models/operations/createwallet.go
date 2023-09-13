@@ -16,3 +16,38 @@ type CreateWalletResponse struct {
 	// Error
 	WalletsErrorResponse *shared.WalletsErrorResponse
 }
+
+func (o *CreateWalletResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *CreateWalletResponse) GetCreateWalletResponse() *shared.CreateWalletResponse {
+	if o == nil {
+		return nil
+	}
+	return o.CreateWalletResponse
+}
+
+func (o *CreateWalletResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *CreateWalletResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *CreateWalletResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.WalletsErrorResponse
+}

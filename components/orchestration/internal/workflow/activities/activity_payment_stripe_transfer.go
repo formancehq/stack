@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -23,6 +24,13 @@ func (a Activities) StripeTransfer(ctx context.Context, request shared.StripeTra
 	case http.StatusOK:
 		return nil
 	default:
+		if response.ErrorResponse != nil {
+			return temporal.NewApplicationError(
+				*response.ErrorResponse.ErrorMessage,
+				string(*response.ErrorResponse.ErrorCode),
+				response.ErrorResponse.Details)
+		}
+
 		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 }

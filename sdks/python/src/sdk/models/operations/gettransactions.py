@@ -8,9 +8,9 @@ from ..shared import walletserrorresponse as shared_walletserrorresponse
 from typing import Optional
 
 
+
 @dataclasses.dataclass
 class GetTransactionsRequest:
-    
     cursor: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'cursor', 'style': 'form', 'explode': True }})
     r"""Parameter used in pagination requests.
     Set to the value of next for the next page of results.
@@ -23,9 +23,11 @@ class GetTransactionsRequest:
     r"""A wallet ID to filter on"""
     
 
+
+
+
 @dataclasses.dataclass
 class GetTransactionsResponse:
-    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     get_transactions_response: Optional[shared_gettransactionsresponse.GetTransactionsResponse] = dataclasses.field(default=None)
@@ -34,3 +36,4 @@ class GetTransactionsResponse:
     wallets_error_response: Optional[shared_walletserrorresponse.WalletsErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
+

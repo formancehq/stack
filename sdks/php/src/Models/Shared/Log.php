@@ -11,14 +11,9 @@ namespace formance\stack\Models\Shared;
 
 class Log
 {
-    /**
-     * $data
-     * 
-     * @var array<string, mixed> $data
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
-    public array $data;
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\LogData')]
+    public LogData $data;
     
 	#[\JMS\Serializer\Annotation\SerializedName('date')]
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
@@ -38,10 +33,10 @@ class Log
     
 	public function __construct()
 	{
-		$this->data = [];
+		$this->data = new \formance\stack\Models\Shared\LogData();
 		$this->date = new \DateTime();
 		$this->hash = "";
 		$this->id = 0;
-		$this->type = \formance\stack\Models\Shared\LogType::NEW_TRANSACTION;
+		$this->type = \formance\stack\Models\Shared\LogType::NewTransaction;
 	}
 }

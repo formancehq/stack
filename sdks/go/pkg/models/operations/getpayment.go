@@ -12,10 +12,45 @@ type GetPaymentRequest struct {
 	PaymentID string `pathParam:"style=simple,explode=false,name=paymentId"`
 }
 
+func (o *GetPaymentRequest) GetPaymentID() string {
+	if o == nil {
+		return ""
+	}
+	return o.PaymentID
+}
+
 type GetPaymentResponse struct {
 	ContentType string
 	// OK
 	PaymentResponse *shared.PaymentResponse
 	StatusCode      int
 	RawResponse     *http.Response
+}
+
+func (o *GetPaymentResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *GetPaymentResponse) GetPaymentResponse() *shared.PaymentResponse {
+	if o == nil {
+		return nil
+	}
+	return o.PaymentResponse
+}
+
+func (o *GetPaymentResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *GetPaymentResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
 }

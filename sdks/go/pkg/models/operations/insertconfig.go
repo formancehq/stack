@@ -16,3 +16,38 @@ type InsertConfigResponse struct {
 	// Error
 	WebhooksErrorResponse *shared.WebhooksErrorResponse
 }
+
+func (o *InsertConfigResponse) GetConfigResponse() *shared.ConfigResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ConfigResponse
+}
+
+func (o *InsertConfigResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *InsertConfigResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *InsertConfigResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *InsertConfigResponse) GetWebhooksErrorResponse() *shared.WebhooksErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.WebhooksErrorResponse
+}
