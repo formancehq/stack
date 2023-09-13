@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ListBalancesResponse - Balances list
  */
-
 public class ListBalancesResponse {
     @JsonProperty("cursor")
     public ListBalancesResponseCursor cursor;

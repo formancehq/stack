@@ -7,7 +7,6 @@ package com.formance.formance_sdk.models.operations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
-
 public class CountAccountsRequest {
     /**
      * Filter accounts by address pattern (regular expression placed between ^ and $).
@@ -35,9 +34,9 @@ public class CountAccountsRequest {
      * Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&amp;metadata[a.nested.key]=value2
      */
     @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
-    public CountAccountsMetadata metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public CountAccountsRequest withMetadata(CountAccountsMetadata metadata) {
+    public CountAccountsRequest withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }

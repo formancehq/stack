@@ -3,14 +3,11 @@
 package formance
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -47,28 +44,7 @@ func Float32(f float32) *float32 { return &f }
 // Float64 provides a helper function to return a pointer to a float64
 func Float64(f float64) *float64 { return &f }
 
-type sdkConfiguration struct {
-	DefaultClient     HTTPClient
-	SecurityClient    HTTPClient
-	Security          *shared.Security
-	ServerURL         string
-	ServerIndex       int
-	ServerDefaults    []map[string]string
-	Language          string
-	OpenAPIDocVersion string
-	SDKVersion        string
-	GenVersion        string
-}
-
-func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
-	if c.ServerURL != "" {
-		return c.ServerURL, nil
-	}
-
-	return ServerList[c.ServerIndex], c.ServerDefaults[c.ServerIndex]
-}
-
-// Formance - Formance Stack API: Open, modular foundation for unique payments flows
+// Formance - Open, modular foundation for unique payments flows
 //
 // # Introduction
 // This API is documented in **OpenAPI format**.
@@ -97,7 +73,14 @@ type Formance struct {
 	Wallets       *wallets
 	Webhooks      *webhooks
 
-	sdkConfiguration sdkConfiguration
+	// Non-idiomatic field names below are to namespace fields from the fields names above to avoid name conflicts
+	_defaultClient  HTTPClient
+	_securityClient HTTPClient
+	_security       *shared.Security
+	_serverURL      string
+	_language       string
+	_sdkVersion     string
+	_genVersion     string
 }
 
 type SDKOption func(*Formance)
@@ -105,7 +88,7 @@ type SDKOption func(*Formance)
 // WithServerURL allows the overriding of the default server URL
 func WithServerURL(serverURL string) SDKOption {
 	return func(sdk *Formance) {
-		sdk.sdkConfiguration.ServerURL = serverURL
+		sdk._serverURL = serverURL
 	}
 }
 
@@ -116,116 +99,192 @@ func WithTemplatedServerURL(serverURL string, params map[string]string) SDKOptio
 			serverURL = utils.ReplaceParameters(serverURL, params)
 		}
 
-		sdk.sdkConfiguration.ServerURL = serverURL
-	}
-}
-
-// WithServerIndex allows the overriding of the default server by index
-func WithServerIndex(serverIndex int) SDKOption {
-	return func(sdk *Formance) {
-		if serverIndex < 0 || serverIndex >= len(ServerList) {
-			panic(fmt.Errorf("server index %d out of range", serverIndex))
-		}
-
-		sdk.sdkConfiguration.ServerIndex = serverIndex
-	}
-}
-
-// WithOrganization allows setting the $name variable for url substitution
-func WithOrganization(organization string) SDKOption {
-	return func(sdk *Formance) {
-		for idx := range sdk.sdkConfiguration.ServerDefaults {
-			if _, ok := sdk.sdkConfiguration.ServerDefaults[idx]["organization"]; !ok {
-				continue
-			}
-
-			sdk.sdkConfiguration.ServerDefaults[idx]["organization"] = fmt.Sprintf("%v", organization)
-		}
+		sdk._serverURL = serverURL
 	}
 }
 
 // WithClient allows the overriding of the default HTTP client used by the SDK
 func WithClient(client HTTPClient) SDKOption {
 	return func(sdk *Formance) {
-		sdk.sdkConfiguration.DefaultClient = client
+		sdk._defaultClient = client
 	}
 }
 
 // WithSecurity configures the SDK to use the provided security details
 func WithSecurity(security shared.Security) SDKOption {
 	return func(sdk *Formance) {
-		sdk.sdkConfiguration.Security = &security
+		sdk._security = &security
 	}
 }
 
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Formance {
 	sdk := &Formance{
-		sdkConfiguration: sdkConfiguration{
-			Language:          "go",
-			OpenAPIDocVersion: "v1.0.20230905",
-			SDKVersion:        "v0.1.0",
-			GenVersion:        "2.95.0",
-			ServerDefaults: []map[string]string{
-				{},
-				{
-					"organization": "",
-				},
-			},
-		},
+		_language:   "go",
+		_sdkVersion: "v0.1.0",
+		_genVersion: "2.31.0",
 	}
 	for _, opt := range opts {
 		opt(sdk)
 	}
 
 	// Use WithClient to override the default client if you would like to customize the timeout
-	if sdk.sdkConfiguration.DefaultClient == nil {
-		sdk.sdkConfiguration.DefaultClient = &http.Client{Timeout: 60 * time.Second}
+	if sdk._defaultClient == nil {
+		sdk._defaultClient = &http.Client{Timeout: 60 * time.Second}
 	}
-	if sdk.sdkConfiguration.SecurityClient == nil {
-		if sdk.sdkConfiguration.Security != nil {
-			sdk.sdkConfiguration.SecurityClient = utils.ConfigureSecurityClient(sdk.sdkConfiguration.DefaultClient, sdk.sdkConfiguration.Security)
+	if sdk._securityClient == nil {
+		if sdk._security != nil {
+			sdk._securityClient = utils.ConfigureSecurityClient(sdk._defaultClient, sdk._security)
 		} else {
-			sdk.sdkConfiguration.SecurityClient = sdk.sdkConfiguration.DefaultClient
+			sdk._securityClient = sdk._defaultClient
 		}
 	}
 
-	sdk.Accounts = newAccounts(sdk.sdkConfiguration)
+	if sdk._serverURL == "" {
+		sdk._serverURL = ServerList[0]
+	}
 
-	sdk.Auth = newAuth(sdk.sdkConfiguration)
+	sdk.Accounts = newAccounts(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Balances = newBalances(sdk.sdkConfiguration)
+	sdk.Auth = newAuth(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Ledger = newLedger(sdk.sdkConfiguration)
+	sdk.Balances = newBalances(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Logs = newLogs(sdk.sdkConfiguration)
+	sdk.Ledger = newLedger(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Mapping = newMapping(sdk.sdkConfiguration)
+	sdk.Logs = newLogs(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Orchestration = newOrchestration(sdk.sdkConfiguration)
+	sdk.Mapping = newMapping(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Payments = newPayments(sdk.sdkConfiguration)
+	sdk.Orchestration = newOrchestration(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Script = newScript(sdk.sdkConfiguration)
+	sdk.Payments = newPayments(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Search = newSearch(sdk.sdkConfiguration)
+	sdk.Script = newScript(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Server = newServer(sdk.sdkConfiguration)
+	sdk.Search = newSearch(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Stats = newStats(sdk.sdkConfiguration)
+	sdk.Server = newServer(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Transactions = newTransactions(sdk.sdkConfiguration)
+	sdk.Stats = newStats(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Wallets = newWallets(sdk.sdkConfiguration)
+	sdk.Transactions = newTransactions(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
-	sdk.Webhooks = newWebhooks(sdk.sdkConfiguration)
+	sdk.Wallets = newWallets(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
+
+	sdk.Webhooks = newWebhooks(
+		sdk._defaultClient,
+		sdk._securityClient,
+		sdk._serverURL,
+		sdk._language,
+		sdk._sdkVersion,
+		sdk._genVersion,
+	)
 
 	return sdk
 }
 
 // GetVersions - Show stack version information
 func (s *Formance) GetVersions(ctx context.Context) (*operations.GetVersionsResponse, error) {
-	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	baseURL := s._serverURL
 	url := strings.TrimSuffix(baseURL, "/") + "/versions"
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
@@ -233,9 +292,9 @@ func (s *Formance) GetVersions(ctx context.Context) (*operations.GetVersionsResp
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s %s", s.sdkConfiguration.Language, s.sdkConfiguration.SDKVersion, s.sdkConfiguration.GenVersion, s.sdkConfiguration.OpenAPIDocVersion))
+	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s._language, s._sdkVersion, s._genVersion))
 
-	client := s.sdkConfiguration.SecurityClient
+	client := s._securityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -244,13 +303,7 @@ func (s *Formance) GetVersions(ctx context.Context) (*operations.GetVersionsResp
 	if httpRes == nil {
 		return nil, fmt.Errorf("error sending request: no response")
 	}
-
-	rawBody, err := io.ReadAll(httpRes.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading response body: %w", err)
-	}
-	httpRes.Body.Close()
-	httpRes.Body = io.NopCloser(bytes.NewBuffer(rawBody))
+	defer httpRes.Body.Close()
 
 	contentType := httpRes.Header.Get("Content-Type")
 
@@ -264,13 +317,11 @@ func (s *Formance) GetVersions(ctx context.Context) (*operations.GetVersionsResp
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
 			var out *shared.GetVersionsResponse
-			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out); err != nil {
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
 			res.GetVersionsResponse = out
-		default:
-			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
 		}
 	}
 

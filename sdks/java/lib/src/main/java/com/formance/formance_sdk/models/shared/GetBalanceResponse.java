@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * GetBalanceResponse - Balance summary
  */
-
 public class GetBalanceResponse {
     @JsonProperty("data")
     public BalanceWithAssets data;

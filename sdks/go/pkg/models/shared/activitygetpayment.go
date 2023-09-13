@@ -5,10 +5,3 @@ package shared
 type ActivityGetPayment struct {
 	ID string `json:"id"`
 }
-
-func (o *ActivityGetPayment) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}

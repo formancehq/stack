@@ -14,10 +14,20 @@ import java.nio.charset.StandardCharsets;
 
 public class Search {
 	
-	private SDKConfiguration sdkConfiguration;
+	private HTTPClient _defaultClient;
+	private HTTPClient _securityClient;
+	private String _serverUrl;
+	private String _language;
+	private String _sdkVersion;
+	private String _genVersion;
 
-	public Search(SDKConfiguration sdkConfiguration) {
-		this.sdkConfiguration = sdkConfiguration;
+	public Search(HTTPClient defaultClient, HTTPClient securityClient, String serverUrl, String language, String sdkVersion, String genVersion) {
+		this._defaultClient = defaultClient;
+		this._securityClient = securityClient;
+		this._serverUrl = serverUrl;
+		this._language = language;
+		this._sdkVersion = sdkVersion;
+		this._genVersion = genVersion;
 	}
 
     /**
@@ -28,7 +38,7 @@ public class Search {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.SearchResponse search(com.formance.formance_sdk.models.shared.Query request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/search/");
         
         HTTPRequest req = new HTTPRequest();
@@ -41,9 +51,9 @@ public class Search {
         req.setBody(serializedRequestBody);
 
         req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -73,7 +83,7 @@ public class Search {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.SearchgetServerInfoResponse searchgetServerInfo() throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/search/_info");
         
         HTTPRequest req = new HTTPRequest();
@@ -81,9 +91,9 @@ public class Search {
         req.setURL(url);
 
         req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 

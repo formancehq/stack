@@ -9,7 +9,7 @@ import { Expose } from "class-transformer";
  * OK
  */
 export class ConnectorConfigResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    data: any;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  data: any;
 }

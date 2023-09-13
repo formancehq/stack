@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *   - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.
  * 
  */
-
 public class ScriptResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("details")

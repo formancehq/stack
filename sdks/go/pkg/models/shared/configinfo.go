@@ -7,24 +7,3 @@ type ConfigInfo struct {
 	Server  string `json:"server"`
 	Version string `json:"version"`
 }
-
-func (o *ConfigInfo) GetConfig() Config {
-	if o == nil {
-		return Config{}
-	}
-	return o.Config
-}
-
-func (o *ConfigInfo) GetServer() string {
-	if o == nil {
-		return ""
-	}
-	return o.Server
-}
-
-func (o *ConfigInfo) GetVersion() string {
-	if o == nil {
-		return ""
-	}
-	return o.Version
-}

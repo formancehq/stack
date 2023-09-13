@@ -8,9 +8,9 @@ from ..shared import runworkflowresponse as shared_runworkflowresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class RunWorkflowRequest:
+    
     workflow_id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'workflowID', 'style': 'simple', 'explode': False }})
     r"""The flow id"""
     request_body: Optional[dict[str, str]] = dataclasses.field(default=None, metadata={'request': { 'media_type': 'application/json' }})
@@ -18,11 +18,9 @@ class RunWorkflowRequest:
     r"""Wait end of the workflow before return"""
     
 
-
-
-
 @dataclasses.dataclass
 class RunWorkflowResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     error: Optional[shared_error.Error] = dataclasses.field(default=None)
@@ -31,4 +29,3 @@ class RunWorkflowResponse:
     run_workflow_response: Optional[shared_runworkflowresponse.RunWorkflowResponse] = dataclasses.field(default=None)
     r"""The workflow instance"""
     
-

@@ -11,14 +11,30 @@ namespace formance\stack;
 class Webhooks 
 {
 
-	private SDKConfiguration $sdkConfiguration;
+	// SDK private variables namespaced with _ to avoid conflicts with API models
+	private \GuzzleHttp\ClientInterface $_defaultClient;
+	private \GuzzleHttp\ClientInterface $_securityClient;
+	private string $_serverUrl;
+	private string $_language;
+	private string $_sdkVersion;
+	private string $_genVersion;	
 
 	/**
-	 * @param SDKConfiguration $sdkConfig
+	 * @param \GuzzleHttp\ClientInterface $defaultClient
+	 * @param \GuzzleHttp\ClientInterface $securityClient
+	 * @param string $serverUrl
+	 * @param string $language
+	 * @param string $sdkVersion
+	 * @param string $genVersion
 	 */
-	public function __construct(SDKConfiguration $sdkConfig)
+	public function __construct(\GuzzleHttp\ClientInterface $defaultClient, \GuzzleHttp\ClientInterface $securityClient, string $serverUrl, string $language, string $sdkVersion, string $genVersion)
 	{
-		$this->sdkConfiguration = $sdkConfig;
+		$this->_defaultClient = $defaultClient;
+		$this->_securityClient = $securityClient;
+		$this->_serverUrl = $serverUrl;
+		$this->_language = $language;
+		$this->_sdkVersion = $sdkVersion;
+		$this->_genVersion = $genVersion;
 	}
 	
     /**
@@ -33,14 +49,14 @@ class Webhooks
         \formance\stack\Models\Operations\ActivateConfigRequest $request,
     ): \formance\stack\Models\Operations\ActivateConfigResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/webhooks/configs/{id}/activate', \formance\stack\Models\Operations\ActivateConfigRequest::class, $request);
         
         $options = ['http_errors' => false];
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('PUT', $url, $options);
+        $httpResponse = $this->_securityClient->request('PUT', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -81,16 +97,16 @@ class Webhooks
         \formance\stack\Models\Operations\ChangeConfigSecretRequest $request,
     ): \formance\stack\Models\Operations\ChangeConfigSecretResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/webhooks/configs/{id}/secret/change', \formance\stack\Models\Operations\ChangeConfigSecretRequest::class, $request);
         
         $options = ['http_errors' => false];
         $body = Utils\Utils::serializeRequestBody($request, "configChangeSecret", "json");
         $options = array_merge_recursive($options, $body);
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('PUT', $url, $options);
+        $httpResponse = $this->_securityClient->request('PUT', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -127,14 +143,14 @@ class Webhooks
         \formance\stack\Models\Operations\DeactivateConfigRequest $request,
     ): \formance\stack\Models\Operations\DeactivateConfigResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/webhooks/configs/{id}/deactivate', \formance\stack\Models\Operations\DeactivateConfigRequest::class, $request);
         
         $options = ['http_errors' => false];
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('PUT', $url, $options);
+        $httpResponse = $this->_securityClient->request('PUT', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -171,14 +187,14 @@ class Webhooks
         \formance\stack\Models\Operations\DeleteConfigRequest $request,
     ): \formance\stack\Models\Operations\DeleteConfigResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/webhooks/configs/{id}', \formance\stack\Models\Operations\DeleteConfigRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('DELETE', $url, $options);
+        $httpResponse = $this->_securityClient->request('DELETE', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -211,15 +227,15 @@ class Webhooks
         \formance\stack\Models\Operations\GetManyConfigsRequest $request,
     ): \formance\stack\Models\Operations\GetManyConfigsResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/webhooks/configs');
         
         $options = ['http_errors' => false];
         $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\GetManyConfigsRequest::class, $request, null));
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -265,7 +281,7 @@ class Webhooks
         \formance\stack\Models\Shared\ConfigUser $request,
     ): \formance\stack\Models\Operations\InsertConfigResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/webhooks/configs');
         
         $options = ['http_errors' => false];
@@ -274,10 +290,10 @@ class Webhooks
             throw new \Exception('Request body is required');
         }
         $options = array_merge_recursive($options, $body);
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('POST', $url, $options);
+        $httpResponse = $this->_securityClient->request('POST', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -314,14 +330,14 @@ class Webhooks
         \formance\stack\Models\Operations\TestConfigRequest $request,
     ): \formance\stack\Models\Operations\TestConfigResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/webhooks/configs/{id}/test', \formance\stack\Models\Operations\TestConfigRequest::class, $request);
         
         $options = ['http_errors' => false];
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 

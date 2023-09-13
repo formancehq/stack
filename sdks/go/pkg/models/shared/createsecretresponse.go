@@ -6,10 +6,3 @@ package shared
 type CreateSecretResponse struct {
 	Data *Secret `json:"data,omitempty"`
 }
-
-func (o *CreateSecretResponse) GetData() *Secret {
-	if o == nil {
-		return nil
-	}
-	return o.Data
-}

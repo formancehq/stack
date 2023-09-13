@@ -224,10 +224,3 @@ func (u TaskResponseData) MarshalJSON() ([]byte, error) {
 type TaskResponse struct {
 	Data TaskResponseData `json:"data"`
 }
-
-func (o *TaskResponse) GetData() TaskResponseData {
-	if o == nil {
-		return TaskResponseData{}
-	}
-	return o.Data
-}

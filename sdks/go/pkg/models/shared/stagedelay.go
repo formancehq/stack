@@ -10,17 +10,3 @@ type StageDelay struct {
 	Duration *string    `json:"duration,omitempty"`
 	Until    *time.Time `json:"until,omitempty"`
 }
-
-func (o *StageDelay) GetDuration() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Duration
-}
-
-func (o *StageDelay) GetUntil() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.Until
-}

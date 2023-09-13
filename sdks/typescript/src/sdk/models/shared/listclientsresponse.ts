@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * List of clients
  */
 export class ListClientsResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata({ elemType: Client })
-    @Expose({ name: "data" })
-    @Type(() => Client)
-    data?: Client[];
+  @SpeakeasyMetadata({ elemType: Client })
+  @Expose({ name: "data" })
+  @Type(() => Client)
+  data?: Client[];
 }

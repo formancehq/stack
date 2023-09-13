@@ -18,9 +18,9 @@ from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
-
 @dataclasses.dataclass
 class WorkflowInstanceHistoryStageInput:
+    
     confirm_hold: Optional[shared_activityconfirmhold.ActivityConfirmHold] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('ConfirmHold'), 'exclude': lambda f: f is None }})
     create_transaction: Optional[shared_activitycreatetransaction.ActivityCreateTransaction] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('CreateTransaction'), 'exclude': lambda f: f is None }})
     credit_wallet: Optional[shared_activitycreditwallet.ActivityCreditWallet] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('CreditWallet'), 'exclude': lambda f: f is None }})
@@ -32,4 +32,3 @@ class WorkflowInstanceHistoryStageInput:
     stripe_transfer: Optional[shared_activitystripetransfer.ActivityStripeTransfer] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('StripeTransfer'), 'exclude': lambda f: f is None }})
     void_hold: Optional[shared_activityvoidhold.ActivityVoidHold] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('VoidHold'), 'exclude': lambda f: f is None }})
     
-

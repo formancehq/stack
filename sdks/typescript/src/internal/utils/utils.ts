@@ -176,12 +176,10 @@ export function templateUrl(
   params: Record<string, string>
 ): string {
   let res: string = stringWithParams;
-  if(params) {
-    Object.entries(params).forEach(([key, value]) => {
-      const match: string = "{" + key + "}";
-      res = res.replaceAll(match, value);
-    });
-  }
+  Object.entries(params).forEach(([key, value]) => {
+    const match: string = "{" + key + "}";
+    res = res.replaceAll(match, value);
+  });
   return res;
 }
 

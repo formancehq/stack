@@ -8,9 +8,6 @@ import (
 	"time"
 )
 
-type LogData struct {
-}
-
 type LogType string
 
 const (
@@ -39,44 +36,9 @@ func (e *LogType) UnmarshalJSON(data []byte) error {
 }
 
 type Log struct {
-	Data LogData   `json:"data"`
-	Date time.Time `json:"date"`
-	Hash string    `json:"hash"`
-	ID   int64     `json:"id"`
-	Type LogType   `json:"type"`
-}
-
-func (o *Log) GetData() LogData {
-	if o == nil {
-		return LogData{}
-	}
-	return o.Data
-}
-
-func (o *Log) GetDate() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.Date
-}
-
-func (o *Log) GetHash() string {
-	if o == nil {
-		return ""
-	}
-	return o.Hash
-}
-
-func (o *Log) GetID() int64 {
-	if o == nil {
-		return 0
-	}
-	return o.ID
-}
-
-func (o *Log) GetType() LogType {
-	if o == nil {
-		return LogType("")
-	}
-	return o.Type
+	Data map[string]interface{} `json:"data"`
+	Date time.Time              `json:"date"`
+	Hash string                 `json:"hash"`
+	ID   int64                  `json:"id"`
+	Type LogType                `json:"type"`
 }

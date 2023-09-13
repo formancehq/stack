@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * The workflow instance
  */
 export class RunWorkflowResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => WorkflowInstance)
-    data: WorkflowInstance;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => WorkflowInstance)
+  data: WorkflowInstance;
 }

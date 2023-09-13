@@ -6,10 +6,3 @@ package shared
 type GetWorkflowInstanceResponse struct {
 	Data WorkflowInstance `json:"data"`
 }
-
-func (o *GetWorkflowInstanceResponse) GetData() WorkflowInstance {
-	if o == nil {
-		return WorkflowInstance{}
-	}
-	return o.Data
-}

@@ -6,11 +6,11 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class StageSendDestinationWallet extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "balance" })
-    balance?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "balance" })
+  balance?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "id" })
-    id: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "id" })
+  id: string;
 }

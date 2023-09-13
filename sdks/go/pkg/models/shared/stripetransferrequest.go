@@ -6,11 +6,6 @@ import (
 	"math/big"
 )
 
-// StripeTransferRequestMetadata - A set of key/value pairs that you can attach to a transfer object.
-// It can be useful for storing additional information about the transfer in a structured format.
-type StripeTransferRequestMetadata struct {
-}
-
 type StripeTransferRequest struct {
 	Amount      *big.Int `json:"amount,omitempty"`
 	Asset       *string  `json:"asset,omitempty"`
@@ -18,33 +13,5 @@ type StripeTransferRequest struct {
 	// A set of key/value pairs that you can attach to a transfer object.
 	// It can be useful for storing additional information about the transfer in a structured format.
 	//
-	Metadata *StripeTransferRequestMetadata `json:"metadata,omitempty"`
-}
-
-func (o *StripeTransferRequest) GetAmount() *big.Int {
-	if o == nil {
-		return nil
-	}
-	return o.Amount
-}
-
-func (o *StripeTransferRequest) GetAsset() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Asset
-}
-
-func (o *StripeTransferRequest) GetDestination() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Destination
-}
-
-func (o *StripeTransferRequest) GetMetadata() *StripeTransferRequestMetadata {
-	if o == nil {
-		return nil
-	}
-	return o.Metadata
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }

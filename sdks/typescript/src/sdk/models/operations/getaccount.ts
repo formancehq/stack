@@ -7,44 +7,48 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetAccountRequest extends SpeakeasyBase {
-    /**
-     * Exact address of the account. It must match the following regular expressions pattern:
-     *
-     * @remarks
-     * ```
-     * ^\w+(:\w+)*$
-     * ```
-     *
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=address" })
-    address: string;
+  /**
+   * Exact address of the account. It must match the following regular expressions pattern:
+   *
+   * @remarks
+   * ```
+   * ^\w+(:\w+)*$
+   * ```
+   *
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=address",
+  })
+  address: string;
 
-    /**
-     * Name of the ledger.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
-    ledger: string;
+  /**
+   * Name of the ledger.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=ledger",
+  })
+  ledger: string;
 }
 
 export class GetAccountResponse extends SpeakeasyBase {
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    accountResponse?: shared.AccountResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  accountResponse?: shared.AccountResponse;
 
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    errorResponse?: shared.ErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  errorResponse?: shared.ErrorResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

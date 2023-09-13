@@ -8,20 +8,18 @@ from ..shared import webhookserrorresponse as shared_webhookserrorresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class GetManyConfigsRequest:
+    
     endpoint: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'endpoint', 'style': 'form', 'explode': True }})
     r"""Optional filter by endpoint URL"""
     id: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'id', 'style': 'form', 'explode': True }})
     r"""Optional filter by Config ID"""
     
 
-
-
-
 @dataclasses.dataclass
 class GetManyConfigsResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     configs_response: Optional[shared_configsresponse.ConfigsResponse] = dataclasses.field(default=None)
@@ -30,4 +28,3 @@ class GetManyConfigsResponse:
     webhooks_error_response: Optional[shared_webhookserrorresponse.WebhooksErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
-

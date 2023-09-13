@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * Holds
  */
 export class GetHoldResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => ExpandedDebitHold)
-    data: ExpandedDebitHold;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => ExpandedDebitHold)
+  data: ExpandedDebitHold;
 }

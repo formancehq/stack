@@ -25,6 +25,6 @@ class ConnectorsTransferRequest
 	public function __construct()
 	{
 		$this->transferRequest = new \formance\stack\Models\Shared\TransferRequest();
-		$this->connector = \formance\stack\Models\Shared\Connector::Stripe;
+		$this->connector = \formance\stack\Models\Shared\Connector::STRIPE;
 	}
 }

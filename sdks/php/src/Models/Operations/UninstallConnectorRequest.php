@@ -21,6 +21,6 @@ class UninstallConnectorRequest
     
 	public function __construct()
 	{
-		$this->connector = \formance\stack\Models\Shared\Connector::Stripe;
+		$this->connector = \formance\stack\Models\Shared\Connector::STRIPE;
 	}
 }

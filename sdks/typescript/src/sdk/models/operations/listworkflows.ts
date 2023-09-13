@@ -7,24 +7,24 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ListWorkflowsResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * General error
-     */
-    @SpeakeasyMetadata()
-    error?: shared.ErrorT;
+  /**
+   * General error
+   */
+  @SpeakeasyMetadata()
+  error?: shared.ErrorT;
 
-    /**
-     * List of workflows
-     */
-    @SpeakeasyMetadata()
-    listWorkflowsResponse?: shared.ListWorkflowsResponse;
+  /**
+   * List of workflows
+   */
+  @SpeakeasyMetadata()
+  listWorkflowsResponse?: shared.ListWorkflowsResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

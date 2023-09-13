@@ -7,32 +7,34 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetHoldRequest extends SpeakeasyBase {
-    /**
-     * The hold ID
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=holdID" })
-    holdID: string;
+  /**
+   * The hold ID
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=holdID",
+  })
+  holdID: string;
 }
 
 export class GetHoldResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Holds
-     */
-    @SpeakeasyMetadata()
-    getHoldResponse?: shared.GetHoldResponse;
+  /**
+   * Holds
+   */
+  @SpeakeasyMetadata()
+  getHoldResponse?: shared.GetHoldResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    walletsErrorResponse?: shared.WalletsErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  walletsErrorResponse?: shared.WalletsErrorResponse;
 }

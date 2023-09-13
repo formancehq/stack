@@ -9,9 +9,9 @@ from datetime import datetime
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class ListLogsRequest:
+    
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
     after: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'after', 'style': 'form', 'explode': True }})
@@ -34,11 +34,9 @@ class ListLogsRequest:
     """
     
 
-
-
-
 @dataclasses.dataclass
 class ListLogsResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
@@ -47,4 +45,3 @@ class ListLogsResponse:
     r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
-

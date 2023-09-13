@@ -6,12 +6,12 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose, Transform } from "class-transformer";
 
 export class StageDelay extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "duration" })
-    duration?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "duration" })
+  duration?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "until" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    until?: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "until" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  until?: Date;
 }

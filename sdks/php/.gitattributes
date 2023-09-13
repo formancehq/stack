@@ -1,2 +1,0 @@
-# This allows generated code to be indexed correctly
-*.php linguist-generated=false

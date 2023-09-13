@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * OK
  */
 export class ConfigInfoResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => ConfigInfo)
-    data: ConfigInfo;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => ConfigInfo)
+  data: ConfigInfo;
 }

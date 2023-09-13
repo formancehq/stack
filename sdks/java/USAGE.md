@@ -1,6 +1,4 @@
 <!-- Start SDK Example Usage -->
-
-
 ```java
 package hello.world;
 
@@ -13,7 +11,7 @@ public class Application {
         try {
             SDK sdk = SDK.builder()
                 .setSecurity(new Security("corrupti") {{
-                    authorization = "";
+                    authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 

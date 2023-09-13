@@ -6,33 +6,33 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose, Transform } from "class-transformer";
 
 export class WebhooksConfig extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "active" })
-    active: boolean;
+  @SpeakeasyMetadata()
+  @Expose({ name: "active" })
+  active: boolean;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "createdAt" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    createdAt: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "createdAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  createdAt: Date;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "endpoint" })
-    endpoint: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "endpoint" })
+  endpoint: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "eventTypes" })
-    eventTypes: string[];
+  @SpeakeasyMetadata()
+  @Expose({ name: "eventTypes" })
+  eventTypes: string[];
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "id" })
-    id: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "id" })
+  id: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "secret" })
-    secret: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "secret" })
+  secret: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "updatedAt" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    updatedAt: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "updatedAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  updatedAt: Date;
 }

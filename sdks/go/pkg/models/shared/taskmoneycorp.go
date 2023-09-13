@@ -12,93 +12,13 @@ type TaskMoneycorpDescriptor struct {
 	Name      *string `json:"name,omitempty"`
 }
 
-func (o *TaskMoneycorpDescriptor) GetAccountID() *string {
-	if o == nil {
-		return nil
-	}
-	return o.AccountID
-}
-
-func (o *TaskMoneycorpDescriptor) GetKey() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Key
-}
-
-func (o *TaskMoneycorpDescriptor) GetName() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Name
-}
-
-type TaskMoneycorpState struct {
-}
-
 type TaskMoneycorp struct {
 	ConnectorID string                  `json:"connectorId"`
 	CreatedAt   time.Time               `json:"createdAt"`
 	Descriptor  TaskMoneycorpDescriptor `json:"descriptor"`
 	Error       *string                 `json:"error,omitempty"`
 	ID          string                  `json:"id"`
-	State       TaskMoneycorpState      `json:"state"`
+	State       map[string]interface{}  `json:"state"`
 	Status      PaymentStatus           `json:"status"`
 	UpdatedAt   time.Time               `json:"updatedAt"`
-}
-
-func (o *TaskMoneycorp) GetConnectorID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ConnectorID
-}
-
-func (o *TaskMoneycorp) GetCreatedAt() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.CreatedAt
-}
-
-func (o *TaskMoneycorp) GetDescriptor() TaskMoneycorpDescriptor {
-	if o == nil {
-		return TaskMoneycorpDescriptor{}
-	}
-	return o.Descriptor
-}
-
-func (o *TaskMoneycorp) GetError() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Error
-}
-
-func (o *TaskMoneycorp) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}
-
-func (o *TaskMoneycorp) GetState() TaskMoneycorpState {
-	if o == nil {
-		return TaskMoneycorpState{}
-	}
-	return o.State
-}
-
-func (o *TaskMoneycorp) GetStatus() PaymentStatus {
-	if o == nil {
-		return PaymentStatus("")
-	}
-	return o.Status
-}
-
-func (o *TaskMoneycorp) GetUpdatedAt() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.UpdatedAt
 }

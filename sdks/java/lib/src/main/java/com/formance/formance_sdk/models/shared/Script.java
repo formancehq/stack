@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class Script {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("metadata")
@@ -41,9 +40,9 @@ public class Script {
     
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("vars")
-    public ScriptVars vars;
+    public java.util.Map<String, Object> vars;
 
-    public Script withVars(ScriptVars vars) {
+    public Script withVars(java.util.Map<String, Object> vars) {
         this.vars = vars;
         return this;
     }

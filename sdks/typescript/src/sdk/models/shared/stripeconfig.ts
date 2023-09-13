@@ -6,27 +6,27 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class StripeConfig extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "apiKey" })
-    apiKey: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "apiKey" })
+  apiKey: string;
 
-    /**
-     * Number of BalanceTransaction to fetch at each polling interval.
-     *
-     * @remarks
-     *
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "pageSize" })
-    pageSize?: number;
+  /**
+   * Number of BalanceTransaction to fetch at each polling interval.
+   *
+   * @remarks
+   *
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "pageSize" })
+  pageSize?: number;
 
-    /**
-     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
-     *
-     * @remarks
-     *
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "pollingPeriod" })
-    pollingPeriod?: string;
+  /**
+   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+   *
+   * @remarks
+   *
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "pollingPeriod" })
+  pollingPeriod?: string;
 }

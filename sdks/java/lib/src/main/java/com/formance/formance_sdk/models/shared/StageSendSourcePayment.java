@@ -6,7 +6,6 @@ package com.formance.formance_sdk.models.shared;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class StageSendSourcePayment {
     @JsonProperty("id")
     public String id;

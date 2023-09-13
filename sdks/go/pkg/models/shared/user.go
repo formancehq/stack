@@ -7,24 +7,3 @@ type User struct {
 	ID      *string `json:"id,omitempty"`
 	Subject *string `json:"subject,omitempty"`
 }
-
-func (o *User) GetEmail() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Email
-}
-
-func (o *User) GetID() *string {
-	if o == nil {
-		return nil
-	}
-	return o.ID
-}
-
-func (o *User) GetSubject() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Subject
-}

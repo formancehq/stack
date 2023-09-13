@@ -9,18 +9,18 @@ import { StageSendSourceWallet } from "./stagesendsourcewallet";
 import { Expose, Type } from "class-transformer";
 
 export class StageSendSource extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "account" })
-    @Type(() => StageSendSourceAccount)
-    account?: StageSendSourceAccount;
+  @SpeakeasyMetadata()
+  @Expose({ name: "account" })
+  @Type(() => StageSendSourceAccount)
+  account?: StageSendSourceAccount;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "payment" })
-    @Type(() => StageSendSourcePayment)
-    payment?: StageSendSourcePayment;
+  @SpeakeasyMetadata()
+  @Expose({ name: "payment" })
+  @Type(() => StageSendSourcePayment)
+  payment?: StageSendSourcePayment;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "wallet" })
-    @Type(() => StageSendSourceWallet)
-    wallet?: StageSendSourceWallet;
+  @SpeakeasyMetadata()
+  @Expose({ name: "wallet" })
+  @Type(() => StageSendSourceWallet)
+  wallet?: StageSendSourceWallet;
 }

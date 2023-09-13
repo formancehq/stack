@@ -5,24 +5,11 @@
 export class RFCDate {
   private date: Date;
 
-  constructor(date: Date | {date:string} | string | undefined) {
-    if (!date) {
-      this.date = new Date();
-      return;
-    }
-
+  constructor(date?: Date | string) {
     if (typeof date === "string") {
       this.date = new Date(date);
-      return;
-    }
-    if (date instanceof Date) {
-      this.date = date as Date
-      return;
-    }
-
-    const anyDate = (date as any);
-    if (date && !!anyDate.date) {
-      this.date = new Date(anyDate.date);
+    } else {
+      this.date = date ?? new Date();
     }
   }
 

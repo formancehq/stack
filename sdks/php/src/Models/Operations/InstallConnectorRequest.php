@@ -25,6 +25,6 @@ class InstallConnectorRequest
 	public function __construct()
 	{
 		$this->requestBody = null;
-		$this->connector = \formance\stack\Models\Shared\Connector::Stripe;
+		$this->connector = \formance\stack\Models\Shared\Connector::STRIPE;
 	}
 }

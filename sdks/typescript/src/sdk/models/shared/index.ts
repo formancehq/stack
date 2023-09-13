@@ -139,7 +139,6 @@ export * from "./stats";
 export * from "./statsresponse";
 export * from "./stripeconfig";
 export * from "./stripetransferrequest";
-export * from "./stripetransferresponse";
 export * from "./taskbankingcircle";
 export * from "./taskcurrencycloud";
 export * from "./taskdummypay";

@@ -7,47 +7,47 @@ import { WebhooksConfig } from "./webhooksconfig";
 import { Expose, Transform, Type } from "class-transformer";
 
 export class Attempt extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "config" })
-    @Type(() => WebhooksConfig)
-    config: WebhooksConfig;
+  @SpeakeasyMetadata()
+  @Expose({ name: "config" })
+  @Type(() => WebhooksConfig)
+  config: WebhooksConfig;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "createdAt" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    createdAt: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "createdAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  createdAt: Date;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "id" })
-    id: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "id" })
+  id: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "nextRetryAfter" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    nextRetryAfter?: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "nextRetryAfter" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  nextRetryAfter?: Date;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "payload" })
-    payload: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "payload" })
+  payload: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "retryAttempt" })
-    retryAttempt: number;
+  @SpeakeasyMetadata()
+  @Expose({ name: "retryAttempt" })
+  retryAttempt: number;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "status" })
-    status: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "status" })
+  status: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "statusCode" })
-    statusCode: number;
+  @SpeakeasyMetadata()
+  @Expose({ name: "statusCode" })
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "updatedAt" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    updatedAt: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "updatedAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  updatedAt: Date;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "webhookID" })
-    webhookID: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "webhookID" })
+  webhookID: string;
 }

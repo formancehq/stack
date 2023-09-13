@@ -13,7 +13,6 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
-
 public class TaskCurrencyCloud {
     @JsonProperty("connectorId")
     public String connectorId;
@@ -59,9 +58,9 @@ public class TaskCurrencyCloud {
     }
     
     @JsonProperty("state")
-    public TaskCurrencyCloudState state;
+    public java.util.Map<String, Object> state;
 
-    public TaskCurrencyCloud withState(TaskCurrencyCloudState state) {
+    public TaskCurrencyCloud withState(java.util.Map<String, Object> state) {
         this.state = state;
         return this;
     }
@@ -84,7 +83,7 @@ public class TaskCurrencyCloud {
         return this;
     }
     
-    public TaskCurrencyCloud(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskCurrencyCloudDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") TaskCurrencyCloudState state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
+    public TaskCurrencyCloud(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskCurrencyCloudDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") java.util.Map<String, Object> state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
         this.connectorId = connectorId;
         this.createdAt = createdAt;
         this.descriptor = descriptor;

@@ -12,45 +12,10 @@ type PaymentsgetAccountRequest struct {
 	AccountID string `pathParam:"style=simple,explode=false,name=accountId"`
 }
 
-func (o *PaymentsgetAccountRequest) GetAccountID() string {
-	if o == nil {
-		return ""
-	}
-	return o.AccountID
-}
-
 type PaymentsgetAccountResponse struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
 	// OK
 	PaymentsAccountResponse *shared.PaymentsAccountResponse
-}
-
-func (o *PaymentsgetAccountResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *PaymentsgetAccountResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *PaymentsgetAccountResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *PaymentsgetAccountResponse) GetPaymentsAccountResponse() *shared.PaymentsAccountResponse {
-	if o == nil {
-		return nil
-	}
-	return o.PaymentsAccountResponse
 }

@@ -675,13 +675,10 @@ def _serialize_header(explode: bool, obj: any) -> str:
 
 
 def unmarshal_json(data, typ):
-    unmarshal = make_dataclass('Unmarshal', [('res', typ)],
+    unmarhsal = make_dataclass('Unmarhsal', [('res', typ)],
                                bases=(DataClassJsonMixin,))
     json_dict = json.loads(data)
-    try:
-        out = unmarshal.from_dict({"res": json_dict})
-    except AttributeError as attr_err:
-        raise AttributeError(f'unable to unmarshal {data} as {typ}') from attr_err
+    out = unmarhsal.from_dict({"res": json_dict})
     return out.res
 
 

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ServerInfo - Server information
  */
-
 public class ServerInfo {
     @JsonProperty("version")
     public String version;

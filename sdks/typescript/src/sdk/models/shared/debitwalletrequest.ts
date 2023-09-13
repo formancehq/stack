@@ -7,34 +7,34 @@ import { Monetary } from "./monetary";
 import { Expose, Type } from "class-transformer";
 
 export class DebitWalletRequest extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "amount" })
-    @Type(() => Monetary)
-    amount: Monetary;
+  @SpeakeasyMetadata()
+  @Expose({ name: "amount" })
+  @Type(() => Monetary)
+  amount: Monetary;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "balances" })
-    balances?: string[];
+  @SpeakeasyMetadata()
+  @Expose({ name: "balances" })
+  balances?: string[];
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "description" })
-    description?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "description" })
+  description?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "destination" })
-    destination?: any;
+  @SpeakeasyMetadata()
+  @Expose({ name: "destination" })
+  destination?: any;
 
-    /**
-     * Metadata associated with the wallet.
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "metadata" })
-    metadata: Record<string, string>;
+  /**
+   * Metadata associated with the wallet.
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "metadata" })
+  metadata: Record<string, string>;
 
-    /**
-     * Set to true to create a pending hold. If false, the wallet will be debited immediately.
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "pending" })
-    pending?: boolean;
+  /**
+   * Set to true to create a pending hold. If false, the wallet will be debited immediately.
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "pending" })
+  pending?: boolean;
 }

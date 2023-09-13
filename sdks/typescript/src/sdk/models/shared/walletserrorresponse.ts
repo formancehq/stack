@@ -6,21 +6,21 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export enum WalletsErrorResponseErrorCode {
-    Validation = "VALIDATION",
-    InternalError = "INTERNAL_ERROR",
-    InsufficientFund = "INSUFFICIENT_FUND",
-    HoldClosed = "HOLD_CLOSED",
+  Validation = "VALIDATION",
+  InternalError = "INTERNAL_ERROR",
+  InsufficientFund = "INSUFFICIENT_FUND",
+  HoldClosed = "HOLD_CLOSED",
 }
 
 /**
  * Error
  */
 export class WalletsErrorResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "errorCode" })
-    errorCode: WalletsErrorResponseErrorCode;
+  @SpeakeasyMetadata()
+  @Expose({ name: "errorCode" })
+  errorCode: WalletsErrorResponseErrorCode;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "errorMessage" })
-    errorMessage: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "errorMessage" })
+  errorMessage: string;
 }

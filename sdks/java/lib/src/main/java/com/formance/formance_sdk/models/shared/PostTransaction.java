@@ -19,7 +19,6 @@ import java.time.OffsetDateTime;
  *   - `script`: enabling more complex transactions with Numscript
  * 
  */
-
 public class PostTransaction {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("metadata")

@@ -21,34 +21,6 @@ type CreateTransactionRequest struct {
 	Preview *bool `queryParam:"style=form,explode=true,name=preview"`
 }
 
-func (o *CreateTransactionRequest) GetIdempotencyKey() *string {
-	if o == nil {
-		return nil
-	}
-	return o.IdempotencyKey
-}
-
-func (o *CreateTransactionRequest) GetPostTransaction() shared.PostTransaction {
-	if o == nil {
-		return shared.PostTransaction{}
-	}
-	return o.PostTransaction
-}
-
-func (o *CreateTransactionRequest) GetLedger() string {
-	if o == nil {
-		return ""
-	}
-	return o.Ledger
-}
-
-func (o *CreateTransactionRequest) GetPreview() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.Preview
-}
-
 type CreateTransactionResponse struct {
 	ContentType string
 	// Error
@@ -57,39 +29,4 @@ type CreateTransactionResponse struct {
 	RawResponse   *http.Response
 	// OK
 	TransactionsResponse *shared.TransactionsResponse
-}
-
-func (o *CreateTransactionResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *CreateTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ErrorResponse
-}
-
-func (o *CreateTransactionResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *CreateTransactionResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *CreateTransactionResponse) GetTransactionsResponse() *shared.TransactionsResponse {
-	if o == nil {
-		return nil
-	}
-	return o.TransactionsResponse
 }

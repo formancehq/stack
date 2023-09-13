@@ -9,18 +9,18 @@ import { StageSendSource } from "./stagesendsource";
 import { Expose, Type } from "class-transformer";
 
 export class StageSend extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "amount" })
-    @Type(() => Monetary)
-    amount?: Monetary;
+  @SpeakeasyMetadata()
+  @Expose({ name: "amount" })
+  @Type(() => Monetary)
+  amount?: Monetary;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "destination" })
-    @Type(() => StageSendDestination)
-    destination?: StageSendDestination;
+  @SpeakeasyMetadata()
+  @Expose({ name: "destination" })
+  @Type(() => StageSendDestination)
+  destination?: StageSendDestination;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "source" })
-    @Type(() => StageSendSource)
-    source?: StageSendSource;
+  @SpeakeasyMetadata()
+  @Expose({ name: "source" })
+  @Type(() => StageSendSource)
+  source?: StageSendSource;
 }

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * AggregateBalancesResponse - OK
  */
-
 public class AggregateBalancesResponse {
     @JsonProperty("data")
     public java.util.Map<String, Long> data;

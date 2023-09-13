@@ -13,7 +13,6 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
-
 public class WorkflowInstanceHistoryStage {
     @JsonProperty("attempt")
     public Long attempt;

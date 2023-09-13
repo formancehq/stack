@@ -45,17 +45,3 @@ type WalletsErrorResponse struct {
 	ErrorCode    WalletsErrorResponseErrorCode `json:"errorCode"`
 	ErrorMessage string                        `json:"errorMessage"`
 }
-
-func (o *WalletsErrorResponse) GetErrorCode() WalletsErrorResponseErrorCode {
-	if o == nil {
-		return WalletsErrorResponseErrorCode("")
-	}
-	return o.ErrorCode
-}
-
-func (o *WalletsErrorResponse) GetErrorMessage() string {
-	if o == nil {
-		return ""
-	}
-	return o.ErrorMessage
-}

@@ -70,10 +70,10 @@ class ListTransactionsRequest
     /**
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      * 
-     * @var ?\formance\stack\Models\Operations\ListTransactionsMetadata $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
-    public ?ListTransactionsMetadata $metadata = null;
+    public ?array $metadata = null;
     
     /**
      * The maximum number of results to return per page.

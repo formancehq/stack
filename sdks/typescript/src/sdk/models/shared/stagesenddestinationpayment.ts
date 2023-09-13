@@ -6,7 +6,7 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class StageSendDestinationPayment extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "psp" })
-    psp: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "psp" })
+  psp: string;
 }

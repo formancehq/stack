@@ -7,43 +7,47 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class RunScriptRequest extends SpeakeasyBase {
-    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-    script: shared.Script;
+  @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+  script: shared.Script;
 
-    /**
-     * Name of the ledger.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
-    ledger: string;
+  /**
+   * Name of the ledger.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=ledger",
+  })
+  ledger: string;
 
-    /**
-     * Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=preview" })
-    preview?: boolean;
+  /**
+   * Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+   */
+  @SpeakeasyMetadata({
+    data: "queryParam, style=form;explode=true;name=preview",
+  })
+  preview?: boolean;
 }
 
 export class RunScriptResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.
-     *
-     * @remarks
-     *
-     * On failure, it will also return a 200 status code, and the following fields:
-     *   - `details`: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.
-     *   - `errorCode` and `error_code` (deprecated): contains the string code of the error
-     *   - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.
-     *
-     */
-    @SpeakeasyMetadata()
-    scriptResponse?: shared.ScriptResponse;
+  /**
+   * On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.
+   *
+   * @remarks
+   *
+   * On failure, it will also return a 200 status code, and the following fields:
+   *   - `details`: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.
+   *   - `errorCode` and `error_code` (deprecated): contains the string code of the error
+   *   - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.
+   *
+   */
+  @SpeakeasyMetadata()
+  scriptResponse?: shared.ScriptResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

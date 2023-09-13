@@ -6,81 +6,14 @@ import (
 	"time"
 )
 
-type PaymentsAccountRaw struct {
-}
-
 type PaymentsAccount struct {
-	AccountName  string    `json:"accountName"`
-	CreatedAt    time.Time `json:"createdAt"`
-	DefaultAsset string    `json:"defaultAsset"`
-	// Deprecated field: This will be removed in a future release, please migrate away from it as soon as possible.
-	DefaultCurrency string             `json:"defaultCurrency"`
-	ID              string             `json:"id"`
-	Provider        Connector          `json:"provider"`
-	Raw             PaymentsAccountRaw `json:"raw"`
-	Reference       string             `json:"reference"`
-	Type            string             `json:"type"`
-}
-
-func (o *PaymentsAccount) GetAccountName() string {
-	if o == nil {
-		return ""
-	}
-	return o.AccountName
-}
-
-func (o *PaymentsAccount) GetCreatedAt() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.CreatedAt
-}
-
-func (o *PaymentsAccount) GetDefaultAsset() string {
-	if o == nil {
-		return ""
-	}
-	return o.DefaultAsset
-}
-
-func (o *PaymentsAccount) GetDefaultCurrency() string {
-	if o == nil {
-		return ""
-	}
-	return o.DefaultCurrency
-}
-
-func (o *PaymentsAccount) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}
-
-func (o *PaymentsAccount) GetProvider() Connector {
-	if o == nil {
-		return Connector("")
-	}
-	return o.Provider
-}
-
-func (o *PaymentsAccount) GetRaw() PaymentsAccountRaw {
-	if o == nil {
-		return PaymentsAccountRaw{}
-	}
-	return o.Raw
-}
-
-func (o *PaymentsAccount) GetReference() string {
-	if o == nil {
-		return ""
-	}
-	return o.Reference
-}
-
-func (o *PaymentsAccount) GetType() string {
-	if o == nil {
-		return ""
-	}
-	return o.Type
+	AccountName     string                 `json:"accountName"`
+	CreatedAt       time.Time              `json:"createdAt"`
+	DefaultAsset    string                 `json:"defaultAsset"`
+	DefaultCurrency string                 `json:"defaultCurrency"`
+	ID              string                 `json:"id"`
+	Provider        Connector              `json:"provider"`
+	Raw             map[string]interface{} `json:"raw"`
+	Reference       string                 `json:"reference"`
+	Type            string                 `json:"type"`
 }

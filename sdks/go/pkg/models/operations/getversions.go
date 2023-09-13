@@ -14,31 +14,3 @@ type GetVersionsResponse struct {
 	StatusCode          int
 	RawResponse         *http.Response
 }
-
-func (o *GetVersionsResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *GetVersionsResponse) GetGetVersionsResponse() *shared.GetVersionsResponse {
-	if o == nil {
-		return nil
-	}
-	return o.GetVersionsResponse
-}
-
-func (o *GetVersionsResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *GetVersionsResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}

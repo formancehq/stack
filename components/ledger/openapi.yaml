@@ -1178,6 +1178,7 @@ components:
           type: object
           properties: {}
           example: { admin: true, a: { nested: { key: value}} }
+          additionalProperties: true
         volumes:
           type: object
           additionalProperties:

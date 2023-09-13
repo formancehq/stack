@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * LedgerInfoResponse - OK
  */
-
 public class LedgerInfoResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")

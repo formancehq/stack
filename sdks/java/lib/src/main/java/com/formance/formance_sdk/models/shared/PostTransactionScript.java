@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class PostTransactionScript {
     @JsonProperty("plain")
     public String plain;
@@ -20,9 +19,9 @@ public class PostTransactionScript {
     
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("vars")
-    public PostTransactionScriptVars vars;
+    public java.util.Map<String, Object> vars;
 
-    public PostTransactionScript withVars(PostTransactionScriptVars vars) {
+    public PostTransactionScript withVars(java.util.Map<String, Object> vars) {
         this.vars = vars;
         return this;
     }

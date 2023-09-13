@@ -5,10 +5,3 @@ package shared
 type PaymentMetadata struct {
 	Key *string `json:"key,omitempty"`
 }
-
-func (o *PaymentMetadata) GetKey() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Key
-}

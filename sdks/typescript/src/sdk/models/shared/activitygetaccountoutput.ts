@@ -7,8 +7,8 @@ import { AccountWithVolumesAndBalances } from "./accountwithvolumesandbalances";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityGetAccountOutput extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => AccountWithVolumesAndBalances)
-    data: AccountWithVolumesAndBalances;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => AccountWithVolumesAndBalances)
+  data: AccountWithVolumesAndBalances;
 }

@@ -7,8 +7,8 @@ import { WalletWithBalances } from "./walletwithbalances";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityGetWalletOutput extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => WalletWithBalances)
-    data: WalletWithBalances;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => WalletWithBalances)
+  data: WalletWithBalances;
 }

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * GetWorkflowInstanceHistoryResponse - The workflow instance history
  */
-
 public class GetWorkflowInstanceHistoryResponse {
     @JsonProperty("data")
     public WorkflowInstanceHistory[] data;

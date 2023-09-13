@@ -20,27 +20,6 @@ type GetTransactionsRequest struct {
 	WalletID *string `queryParam:"style=form,explode=true,name=walletID"`
 }
 
-func (o *GetTransactionsRequest) GetCursor() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Cursor
-}
-
-func (o *GetTransactionsRequest) GetPageSize() *int64 {
-	if o == nil {
-		return nil
-	}
-	return o.PageSize
-}
-
-func (o *GetTransactionsRequest) GetWalletID() *string {
-	if o == nil {
-		return nil
-	}
-	return o.WalletID
-}
-
 type GetTransactionsResponse struct {
 	ContentType string
 	// OK
@@ -49,39 +28,4 @@ type GetTransactionsResponse struct {
 	RawResponse             *http.Response
 	// Error
 	WalletsErrorResponse *shared.WalletsErrorResponse
-}
-
-func (o *GetTransactionsResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *GetTransactionsResponse) GetGetTransactionsResponse() *shared.GetTransactionsResponse {
-	if o == nil {
-		return nil
-	}
-	return o.GetTransactionsResponse
-}
-
-func (o *GetTransactionsResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *GetTransactionsResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *GetTransactionsResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.WalletsErrorResponse
 }

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 import java.time.OffsetDateTime;
 
-
 public class ListLogsRequest {
     /**
      * Pagination cursor, will return the logs after a given ID. (in descending order).

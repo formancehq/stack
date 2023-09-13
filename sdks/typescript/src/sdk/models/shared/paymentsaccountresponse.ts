@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * OK
  */
 export class PaymentsAccountResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => PaymentsAccount)
-    data: PaymentsAccount;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => PaymentsAccount)
+  data: PaymentsAccount;
 }

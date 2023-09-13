@@ -8,10 +8,9 @@ from sdk import utils
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
-
 @dataclasses.dataclass
 class GetWorkflowInstanceHistoryStageResponse:
     r"""The workflow instance stage history"""
+    
     data: list[shared_workflowinstancehistorystage.WorkflowInstanceHistoryStage] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     
-

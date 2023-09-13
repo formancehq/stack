@@ -7,21 +7,21 @@ import { Connector } from "./connector";
 import { Expose, Type } from "class-transformer";
 
 export class ConnectorsResponseData extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "enabled" })
-    enabled?: boolean;
+  @SpeakeasyMetadata()
+  @Expose({ name: "enabled" })
+  enabled?: boolean;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "provider" })
-    provider?: Connector;
+  @SpeakeasyMetadata()
+  @Expose({ name: "provider" })
+  provider?: Connector;
 }
 
 /**
  * OK
  */
 export class ConnectorsResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata({ elemType: ConnectorsResponseData })
-    @Expose({ name: "data" })
-    @Type(() => ConnectorsResponseData)
-    data: ConnectorsResponseData[];
+  @SpeakeasyMetadata({ elemType: ConnectorsResponseData })
+  @Expose({ name: "data" })
+  @Type(() => ConnectorsResponseData)
+  data: ConnectorsResponseData[];
 }

@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * Created balance
  */
 export class CreateBalanceResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => Balance)
-    data: Balance;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => Balance)
+  data: Balance;
 }

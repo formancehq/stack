@@ -7,32 +7,32 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class TestConfigRequest extends SpeakeasyBase {
-    /**
-     * Config ID
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
-    id: string;
+  /**
+   * Config ID
+   */
+  @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
+  id: string;
 }
 
 export class TestConfigResponse extends SpeakeasyBase {
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    attemptResponse?: shared.AttemptResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  attemptResponse?: shared.AttemptResponse;
 
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    webhooksErrorResponse?: shared.WebhooksErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  webhooksErrorResponse?: shared.WebhooksErrorResponse;
 }

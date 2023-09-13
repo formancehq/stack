@@ -7,24 +7,24 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class CreateWalletResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Wallet created
-     */
-    @SpeakeasyMetadata()
-    createWalletResponse?: shared.CreateWalletResponse;
+  /**
+   * Wallet created
+   */
+  @SpeakeasyMetadata()
+  createWalletResponse?: shared.CreateWalletResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    walletsErrorResponse?: shared.WalletsErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  walletsErrorResponse?: shared.WalletsErrorResponse;
 }

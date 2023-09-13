@@ -7,13 +7,12 @@ from ..shared import getversionsresponse as shared_getversionsresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class GetVersionsResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     get_versions_response: Optional[shared_getversionsresponse.GetVersionsResponse] = dataclasses.field(default=None)
     r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
-

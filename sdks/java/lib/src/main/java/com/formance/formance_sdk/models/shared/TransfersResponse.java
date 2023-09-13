@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * TransfersResponse - OK
  */
-
 public class TransfersResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")

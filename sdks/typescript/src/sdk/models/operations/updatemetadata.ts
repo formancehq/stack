@@ -7,23 +7,25 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class UpdateMetadataRequest extends SpeakeasyBase {
-    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
-    paymentMetadata: shared.PaymentMetadata;
+  @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+  paymentMetadata: shared.PaymentMetadata;
 
-    /**
-     * The payment ID.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=paymentId" })
-    paymentId: string;
+  /**
+   * The payment ID.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=paymentId",
+  })
+  paymentId: string;
 }
 
 export class UpdateMetadataResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

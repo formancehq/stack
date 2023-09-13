@@ -6,7 +6,6 @@ package com.formance.formance_sdk.models.operations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class SendEventRequestBody {
     @JsonProperty("name")
     public String name;

@@ -38,94 +38,10 @@ type GetAccountBalancesRequest struct {
 	To *time.Time `queryParam:"style=form,explode=true,name=to"`
 }
 
-func (o *GetAccountBalancesRequest) GetAccountID() string {
-	if o == nil {
-		return ""
-	}
-	return o.AccountID
-}
-
-func (o *GetAccountBalancesRequest) GetAsset() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Asset
-}
-
-func (o *GetAccountBalancesRequest) GetCursor() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Cursor
-}
-
-func (o *GetAccountBalancesRequest) GetFrom() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.From
-}
-
-func (o *GetAccountBalancesRequest) GetLimit() *int64 {
-	if o == nil {
-		return nil
-	}
-	return o.Limit
-}
-
-func (o *GetAccountBalancesRequest) GetPageSize() *int64 {
-	if o == nil {
-		return nil
-	}
-	return o.PageSize
-}
-
-func (o *GetAccountBalancesRequest) GetSort() []string {
-	if o == nil {
-		return nil
-	}
-	return o.Sort
-}
-
-func (o *GetAccountBalancesRequest) GetTo() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.To
-}
-
 type GetAccountBalancesResponse struct {
 	// OK
 	BalancesCursor *shared.BalancesCursor
 	ContentType    string
 	StatusCode     int
 	RawResponse    *http.Response
-}
-
-func (o *GetAccountBalancesResponse) GetBalancesCursor() *shared.BalancesCursor {
-	if o == nil {
-		return nil
-	}
-	return o.BalancesCursor
-}
-
-func (o *GetAccountBalancesResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *GetAccountBalancesResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *GetAccountBalancesResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
 }
