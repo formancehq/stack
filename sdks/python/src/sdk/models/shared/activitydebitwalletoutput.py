@@ -8,9 +8,8 @@ from sdk import utils
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
-
 @dataclasses.dataclass
 class ActivityDebitWalletOutput:
+    
     data: shared_hold.Hold = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     
-

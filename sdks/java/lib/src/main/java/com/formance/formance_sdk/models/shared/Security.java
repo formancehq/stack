@@ -7,7 +7,6 @@ package com.formance.formance_sdk.models.shared;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
-
 public class Security {
     @SpeakeasyMetadata("security:scheme=true,type=oauth2,name=Authorization")
     public String authorization;

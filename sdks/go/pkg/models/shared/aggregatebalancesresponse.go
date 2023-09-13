@@ -10,10 +10,3 @@ import (
 type AggregateBalancesResponse struct {
 	Data map[string]*big.Int `json:"data"`
 }
-
-func (o *AggregateBalancesResponse) GetData() map[string]*big.Int {
-	if o == nil {
-		return map[string]*big.Int{}
-	}
-	return o.Data
-}

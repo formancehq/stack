@@ -15,10 +15,20 @@ import org.apache.http.NameValuePair;
 
 public class Orchestration {
 	
-	private SDKConfiguration sdkConfiguration;
+	private HTTPClient _defaultClient;
+	private HTTPClient _securityClient;
+	private String _serverUrl;
+	private String _language;
+	private String _sdkVersion;
+	private String _genVersion;
 
-	public Orchestration(SDKConfiguration sdkConfiguration) {
-		this.sdkConfiguration = sdkConfiguration;
+	public Orchestration(HTTPClient defaultClient, HTTPClient securityClient, String serverUrl, String language, String sdkVersion, String genVersion) {
+		this._defaultClient = defaultClient;
+		this._securityClient = securityClient;
+		this._serverUrl = serverUrl;
+		this._language = language;
+		this._sdkVersion = sdkVersion;
+		this._genVersion = genVersion;
 	}
 
     /**
@@ -29,7 +39,7 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.CancelEventResponse cancelEvent(com.formance.formance_sdk.models.operations.CancelEventRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.CancelEventRequest.class, baseUrl, "/api/orchestration/instances/{instanceID}/abort", request, null);
         
         HTTPRequest req = new HTTPRequest();
@@ -37,9 +47,9 @@ public class Orchestration {
         req.setURL(url);
 
         req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -71,7 +81,7 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.CreateWorkflowResponse createWorkflow(com.formance.formance_sdk.models.shared.CreateWorkflowRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/orchestration/workflows");
         
         HTTPRequest req = new HTTPRequest();
@@ -80,10 +90,10 @@ public class Orchestration {
         SerializedBody serializedRequestBody = com.formance.formance_sdk.utils.Utils.serializeRequestBody(request, "request", "json");
         req.setBody(serializedRequestBody);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -121,7 +131,7 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.DeleteWorkflowResponse deleteWorkflow(com.formance.formance_sdk.models.operations.DeleteWorkflowRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.DeleteWorkflowRequest.class, baseUrl, "/api/orchestration/workflows/{flowId}", request, null);
         
         HTTPRequest req = new HTTPRequest();
@@ -129,9 +139,9 @@ public class Orchestration {
         req.setURL(url);
 
         req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -163,17 +173,17 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.GetInstanceResponse getInstance(com.formance.formance_sdk.models.operations.GetInstanceRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetInstanceRequest.class, baseUrl, "/api/orchestration/instances/{instanceID}", request, null);
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
         req.setURL(url);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -211,17 +221,17 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.GetInstanceHistoryResponse getInstanceHistory(com.formance.formance_sdk.models.operations.GetInstanceHistoryRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetInstanceHistoryRequest.class, baseUrl, "/api/orchestration/instances/{instanceID}/history", request, null);
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
         req.setURL(url);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -259,17 +269,17 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.GetInstanceStageHistoryResponse getInstanceStageHistory(com.formance.formance_sdk.models.operations.GetInstanceStageHistoryRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetInstanceStageHistoryRequest.class, baseUrl, "/api/orchestration/instances/{instanceID}/stages/{number}/history", request, null);
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
         req.setURL(url);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -307,17 +317,17 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.GetWorkflowResponse getWorkflow(com.formance.formance_sdk.models.operations.GetWorkflowRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetWorkflowRequest.class, baseUrl, "/api/orchestration/workflows/{flowId}", request, null);
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
         req.setURL(url);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -355,15 +365,15 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.ListInstancesResponse listInstances(com.formance.formance_sdk.models.operations.ListInstancesRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/orchestration/instances");
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
         req.setURL(url);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         java.util.List<NameValuePair> queryParams = com.formance.formance_sdk.utils.Utils.getQueryParams(com.formance.formance_sdk.models.operations.ListInstancesRequest.class, request, null);
         if (queryParams != null) {
             for (NameValuePair queryParam : queryParams) {
@@ -371,7 +381,7 @@ public class Orchestration {
             }
         }
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -408,17 +418,17 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.ListWorkflowsResponse listWorkflows() throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/orchestration/workflows");
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
         req.setURL(url);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -454,17 +464,17 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.OrchestrationgetServerInfoResponse orchestrationgetServerInfo() throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/orchestration/_info");
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
         req.setURL(url);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -502,7 +512,7 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.RunWorkflowResponse runWorkflow(com.formance.formance_sdk.models.operations.RunWorkflowRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.RunWorkflowRequest.class, baseUrl, "/api/orchestration/workflows/{workflowID}/instances", request, null);
         
         HTTPRequest req = new HTTPRequest();
@@ -511,8 +521,8 @@ public class Orchestration {
         SerializedBody serializedRequestBody = com.formance.formance_sdk.utils.Utils.serializeRequestBody(request, "requestBody", "json");
         req.setBody(serializedRequestBody);
 
-        req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         java.util.List<NameValuePair> queryParams = com.formance.formance_sdk.utils.Utils.getQueryParams(com.formance.formance_sdk.models.operations.RunWorkflowRequest.class, request, null);
         if (queryParams != null) {
             for (NameValuePair queryParam : queryParams) {
@@ -520,7 +530,7 @@ public class Orchestration {
             }
         }
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 
@@ -558,7 +568,7 @@ public class Orchestration {
      * @throws Exception if the API call fails
      */
     public com.formance.formance_sdk.models.operations.SendEventResponse sendEvent(com.formance.formance_sdk.models.operations.SendEventRequest request) throws Exception {
-        String baseUrl = com.formance.formance_sdk.utils.Utils.templateUrl(this.sdkConfiguration.serverUrl, this.sdkConfiguration.getServerVariableDefaults());
+        String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.SendEventRequest.class, baseUrl, "/api/orchestration/instances/{instanceID}/events", request, null);
         
         HTTPRequest req = new HTTPRequest();
@@ -568,9 +578,9 @@ public class Orchestration {
         req.setBody(serializedRequestBody);
 
         req.addHeader("Accept", "application/json");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s %s", this.sdkConfiguration.language, this.sdkConfiguration.sdkVersion, this.sdkConfiguration.genVersion, this.sdkConfiguration.openapiDocVersion));
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
-        HTTPClient client = this.sdkConfiguration.securityClient;
+        HTTPClient client = this._securityClient;
         
         HttpResponse<byte[]> httpRes = client.send(req);
 

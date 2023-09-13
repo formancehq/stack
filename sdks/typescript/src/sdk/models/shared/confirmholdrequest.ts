@@ -6,17 +6,17 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class ConfirmHoldRequest extends SpeakeasyBase {
-    /**
-     * Define the amount to transfer.
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "amount" })
-    amount?: number;
+  /**
+   * Define the amount to transfer.
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "amount" })
+  amount?: number;
 
-    /**
-     * Define a final confirmation. Remaining funds will be returned to the wallet.
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "final" })
-    final?: boolean;
+  /**
+   * Define a final confirmation. Remaining funds will be returned to the wallet.
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "final" })
+  final?: boolean;
 }

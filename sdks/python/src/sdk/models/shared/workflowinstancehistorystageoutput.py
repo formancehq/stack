@@ -14,9 +14,9 @@ from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
-
 @dataclasses.dataclass
 class WorkflowInstanceHistoryStageOutput:
+    
     create_transaction: Optional[shared_activitycreatetransactionoutput.ActivityCreateTransactionOutput] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('CreateTransaction'), 'exclude': lambda f: f is None }})
     debit_wallet: Optional[shared_activitydebitwalletoutput.ActivityDebitWalletOutput] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('DebitWallet'), 'exclude': lambda f: f is None }})
     get_account: Optional[shared_activitygetaccountoutput.ActivityGetAccountOutput] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('GetAccount'), 'exclude': lambda f: f is None }})
@@ -24,4 +24,3 @@ class WorkflowInstanceHistoryStageOutput:
     get_wallet: Optional[shared_activitygetwalletoutput.ActivityGetWalletOutput] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('GetWallet'), 'exclude': lambda f: f is None }})
     revert_transaction: Optional[shared_activityreverttransactionoutput.ActivityRevertTransactionOutput] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('RevertTransaction'), 'exclude': lambda f: f is None }})
     
-

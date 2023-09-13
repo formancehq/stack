@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * CreateSecretResponse - Created secret
  */
-
 public class CreateSecretResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")

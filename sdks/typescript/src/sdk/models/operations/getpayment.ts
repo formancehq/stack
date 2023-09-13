@@ -7,26 +7,28 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetPaymentRequest extends SpeakeasyBase {
-    /**
-     * The payment ID.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=paymentId" })
-    paymentId: string;
+  /**
+   * The payment ID.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=paymentId",
+  })
+  paymentId: string;
 }
 
 export class GetPaymentResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    paymentResponse?: shared.PaymentResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  paymentResponse?: shared.PaymentResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

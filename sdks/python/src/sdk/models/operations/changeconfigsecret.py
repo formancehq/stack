@@ -9,19 +9,17 @@ from ..shared import webhookserrorresponse as shared_webhookserrorresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class ChangeConfigSecretRequest:
+    
     id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'id', 'style': 'simple', 'explode': False }})
     r"""Config ID"""
     config_change_secret: Optional[shared_configchangesecret.ConfigChangeSecret] = dataclasses.field(default=None, metadata={'request': { 'media_type': 'application/json' }})
     
 
-
-
-
 @dataclasses.dataclass
 class ChangeConfigSecretResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     config_response: Optional[shared_configresponse.ConfigResponse] = dataclasses.field(default=None)
@@ -30,4 +28,3 @@ class ChangeConfigSecretResponse:
     webhooks_error_response: Optional[shared_webhookserrorresponse.WebhooksErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
-

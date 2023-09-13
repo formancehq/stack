@@ -12,45 +12,10 @@ type CancelEventRequest struct {
 	InstanceID string `pathParam:"style=simple,explode=false,name=instanceID"`
 }
 
-func (o *CancelEventRequest) GetInstanceID() string {
-	if o == nil {
-		return ""
-	}
-	return o.InstanceID
-}
-
 type CancelEventResponse struct {
 	ContentType string
 	// General error
 	Error       *shared.Error
 	StatusCode  int
 	RawResponse *http.Response
-}
-
-func (o *CancelEventResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *CancelEventResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
-}
-
-func (o *CancelEventResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *CancelEventResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
 }

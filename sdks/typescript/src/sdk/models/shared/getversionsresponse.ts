@@ -10,16 +10,16 @@ import { Expose, Type } from "class-transformer";
  * OK
  */
 export class GetVersionsResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "env" })
-    env: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "env" })
+  env: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "region" })
-    region: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "region" })
+  region: string;
 
-    @SpeakeasyMetadata({ elemType: Version })
-    @Expose({ name: "versions" })
-    @Type(() => Version)
-    versions: Version[];
+  @SpeakeasyMetadata({ elemType: Version })
+  @Expose({ name: "versions" })
+  @Type(() => Version)
+  versions: Version[];
 }

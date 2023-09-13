@@ -6,7 +6,6 @@
     "rootDir": "src",
     "outDir": "dist",
     "allowJs": true,
-    "downlevelIteration": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

@@ -7,9 +7,9 @@ from ..shared import listwalletsresponse as shared_listwalletsresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class ListWalletsRequest:
+    
     cursor: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'cursor', 'style': 'form', 'explode': True }})
     r"""Parameter used in pagination requests.
     Set to the value of next for the next page of results.
@@ -24,15 +24,12 @@ class ListWalletsRequest:
     r"""The maximum number of results to return per page"""
     
 
-
-
-
 @dataclasses.dataclass
 class ListWalletsResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     list_wallets_response: Optional[shared_listwalletsresponse.ListWalletsResponse] = dataclasses.field(default=None)
     r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
-

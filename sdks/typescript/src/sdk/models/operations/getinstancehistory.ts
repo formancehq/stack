@@ -7,32 +7,34 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetInstanceHistoryRequest extends SpeakeasyBase {
-    /**
-     * The instance id
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=instanceID" })
-    instanceID: string;
+  /**
+   * The instance id
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=instanceID",
+  })
+  instanceID: string;
 }
 
 export class GetInstanceHistoryResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * General error
-     */
-    @SpeakeasyMetadata()
-    error?: shared.ErrorT;
+  /**
+   * General error
+   */
+  @SpeakeasyMetadata()
+  error?: shared.ErrorT;
 
-    /**
-     * The workflow instance history
-     */
-    @SpeakeasyMetadata()
-    getWorkflowInstanceHistoryResponse?: shared.GetWorkflowInstanceHistoryResponse;
+  /**
+   * The workflow instance history
+   */
+  @SpeakeasyMetadata()
+  getWorkflowInstanceHistoryResponse?: shared.GetWorkflowInstanceHistoryResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

@@ -7,18 +7,18 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class CreateScopeResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Created scope
-     */
-    @SpeakeasyMetadata()
-    createScopeResponse?: shared.CreateScopeResponse;
+  /**
+   * Created scope
+   */
+  @SpeakeasyMetadata()
+  createScopeResponse?: shared.CreateScopeResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

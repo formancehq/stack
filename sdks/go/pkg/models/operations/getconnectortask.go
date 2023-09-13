@@ -14,52 +14,10 @@ type GetConnectorTaskRequest struct {
 	TaskID string `pathParam:"style=simple,explode=false,name=taskId"`
 }
 
-func (o *GetConnectorTaskRequest) GetConnector() shared.Connector {
-	if o == nil {
-		return shared.Connector("")
-	}
-	return o.Connector
-}
-
-func (o *GetConnectorTaskRequest) GetTaskID() string {
-	if o == nil {
-		return ""
-	}
-	return o.TaskID
-}
-
 type GetConnectorTaskResponse struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
 	// OK
 	TaskResponse *shared.TaskResponse
-}
-
-func (o *GetConnectorTaskResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *GetConnectorTaskResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *GetConnectorTaskResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *GetConnectorTaskResponse) GetTaskResponse() *shared.TaskResponse {
-	if o == nil {
-		return nil
-	}
-	return o.TaskResponse
 }

@@ -13,31 +13,3 @@ type BalanceWithAssets struct {
 	Name      string              `json:"name"`
 	Priority  *big.Int            `json:"priority,omitempty"`
 }
-
-func (o *BalanceWithAssets) GetAssets() map[string]*big.Int {
-	if o == nil {
-		return map[string]*big.Int{}
-	}
-	return o.Assets
-}
-
-func (o *BalanceWithAssets) GetExpiresAt() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.ExpiresAt
-}
-
-func (o *BalanceWithAssets) GetName() string {
-	if o == nil {
-		return ""
-	}
-	return o.Name
-}
-
-func (o *BalanceWithAssets) GetPriority() *big.Int {
-	if o == nil {
-		return nil
-	}
-	return o.Priority
-}

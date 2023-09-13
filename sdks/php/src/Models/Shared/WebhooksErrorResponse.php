@@ -33,7 +33,7 @@ class WebhooksErrorResponse
 	public function __construct()
 	{
 		$this->details = null;
-		$this->errorCode = \formance\stack\Models\Shared\WebhooksErrorsEnum::Internal;
+		$this->errorCode = \formance\stack\Models\Shared\WebhooksErrorsEnum::INTERNAL;
 		$this->errorMessage = "";
 	}
 }

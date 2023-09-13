@@ -7,32 +7,36 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetConnectorTaskRequest extends SpeakeasyBase {
-    /**
-     * The name of the connector.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=connector" })
-    connector: shared.Connector;
+  /**
+   * The name of the connector.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=connector",
+  })
+  connector: shared.Connector;
 
-    /**
-     * The task ID.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=taskId" })
-    taskId: string;
+  /**
+   * The task ID.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=taskId",
+  })
+  taskId: string;
 }
 
 export class GetConnectorTaskResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    taskResponse?: shared.TaskResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  taskResponse?: shared.TaskResponse;
 }

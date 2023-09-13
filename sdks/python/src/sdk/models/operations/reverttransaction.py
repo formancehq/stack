@@ -8,20 +8,18 @@ from ..shared import transactionresponse as shared_transactionresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class RevertTransactionRequest:
+    
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
     txid: int = dataclasses.field(metadata={'path_param': { 'field_name': 'txid', 'style': 'simple', 'explode': False }})
     r"""Transaction ID."""
     
 
-
-
-
 @dataclasses.dataclass
 class RevertTransactionResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
@@ -30,4 +28,3 @@ class RevertTransactionResponse:
     transaction_response: Optional[shared_transactionresponse.TransactionResponse] = dataclasses.field(default=None)
     r"""OK"""
     
-

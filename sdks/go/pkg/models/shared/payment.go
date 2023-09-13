@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-type PaymentRaw struct {
-}
-
 type PaymentScheme string
 
 const (
@@ -121,116 +118,18 @@ func (e *PaymentType) UnmarshalJSON(data []byte) error {
 }
 
 type Payment struct {
-	Adjustments          []PaymentAdjustment `json:"adjustments"`
-	Asset                string              `json:"asset"`
-	CreatedAt            time.Time           `json:"createdAt"`
-	DestinationAccountID string              `json:"destinationAccountID"`
-	ID                   string              `json:"id"`
-	InitialAmount        *big.Int            `json:"initialAmount"`
-	Metadata             PaymentMetadata     `json:"metadata"`
-	Provider             Connector           `json:"provider"`
-	Raw                  PaymentRaw          `json:"raw"`
-	Reference            string              `json:"reference"`
-	Scheme               PaymentScheme       `json:"scheme"`
-	SourceAccountID      string              `json:"sourceAccountID"`
-	Status               PaymentStatus       `json:"status"`
-	Type                 PaymentType         `json:"type"`
-}
-
-func (o *Payment) GetAdjustments() []PaymentAdjustment {
-	if o == nil {
-		return []PaymentAdjustment{}
-	}
-	return o.Adjustments
-}
-
-func (o *Payment) GetAsset() string {
-	if o == nil {
-		return ""
-	}
-	return o.Asset
-}
-
-func (o *Payment) GetCreatedAt() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.CreatedAt
-}
-
-func (o *Payment) GetDestinationAccountID() string {
-	if o == nil {
-		return ""
-	}
-	return o.DestinationAccountID
-}
-
-func (o *Payment) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}
-
-func (o *Payment) GetInitialAmount() *big.Int {
-	if o == nil {
-		return big.NewInt(0)
-	}
-	return o.InitialAmount
-}
-
-func (o *Payment) GetMetadata() PaymentMetadata {
-	if o == nil {
-		return PaymentMetadata{}
-	}
-	return o.Metadata
-}
-
-func (o *Payment) GetProvider() Connector {
-	if o == nil {
-		return Connector("")
-	}
-	return o.Provider
-}
-
-func (o *Payment) GetRaw() PaymentRaw {
-	if o == nil {
-		return PaymentRaw{}
-	}
-	return o.Raw
-}
-
-func (o *Payment) GetReference() string {
-	if o == nil {
-		return ""
-	}
-	return o.Reference
-}
-
-func (o *Payment) GetScheme() PaymentScheme {
-	if o == nil {
-		return PaymentScheme("")
-	}
-	return o.Scheme
-}
-
-func (o *Payment) GetSourceAccountID() string {
-	if o == nil {
-		return ""
-	}
-	return o.SourceAccountID
-}
-
-func (o *Payment) GetStatus() PaymentStatus {
-	if o == nil {
-		return PaymentStatus("")
-	}
-	return o.Status
-}
-
-func (o *Payment) GetType() PaymentType {
-	if o == nil {
-		return PaymentType("")
-	}
-	return o.Type
+	Adjustments          []PaymentAdjustment    `json:"adjustments"`
+	Asset                string                 `json:"asset"`
+	CreatedAt            time.Time              `json:"createdAt"`
+	DestinationAccountID string                 `json:"destinationAccountID"`
+	ID                   string                 `json:"id"`
+	InitialAmount        *big.Int               `json:"initialAmount"`
+	Metadata             PaymentMetadata        `json:"metadata"`
+	Provider             Connector              `json:"provider"`
+	Raw                  map[string]interface{} `json:"raw"`
+	Reference            string                 `json:"reference"`
+	Scheme               PaymentScheme          `json:"scheme"`
+	SourceAccountID      string                 `json:"sourceAccountID"`
+	Status               PaymentStatus          `json:"status"`
+	Type                 PaymentType            `json:"type"`
 }

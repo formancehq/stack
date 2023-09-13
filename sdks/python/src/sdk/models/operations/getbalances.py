@@ -8,9 +8,9 @@ from ..shared import errorresponse as shared_errorresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class GetBalancesRequest:
+    
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
     address: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'address', 'style': 'form', 'explode': True }})
@@ -27,11 +27,9 @@ class GetBalancesRequest:
     r"""The maximum number of results to return per page."""
     
 
-
-
-
 @dataclasses.dataclass
 class GetBalancesResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     balances_cursor_response: Optional[shared_balancescursorresponse.BalancesCursorResponse] = dataclasses.field(default=None)
@@ -40,4 +38,3 @@ class GetBalancesResponse:
     r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
-

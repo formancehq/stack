@@ -7,7 +7,6 @@ package com.formance.formance_sdk.models.operations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
-
 public class ListAccountsRequest {
     /**
      * Filter accounts by address pattern (regular expression placed between ^ and $).
@@ -84,9 +83,9 @@ public class ListAccountsRequest {
      * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
     @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
-    public ListAccountsMetadata metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public ListAccountsRequest withMetadata(ListAccountsMetadata metadata) {
+    public ListAccountsRequest withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }

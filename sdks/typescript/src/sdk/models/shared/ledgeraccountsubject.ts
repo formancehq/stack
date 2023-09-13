@@ -6,11 +6,11 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class LedgerAccountSubject extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "identifier" })
-    identifier: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "identifier" })
+  identifier: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "type" })
-    type: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "type" })
+  type: string;
 }

@@ -11,11 +11,10 @@ from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
-
 @dataclasses.dataclass
 class StageSendDestination:
+    
     account: Optional[shared_stagesenddestinationaccount.StageSendDestinationAccount] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('account'), 'exclude': lambda f: f is None }})
     payment: Optional[shared_stagesenddestinationpayment.StageSendDestinationPayment] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('payment'), 'exclude': lambda f: f is None }})
     wallet: Optional[shared_stagesenddestinationwallet.StageSendDestinationWallet] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('wallet'), 'exclude': lambda f: f is None }})
     
-

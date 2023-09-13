@@ -3,33 +3,40 @@
 package formance
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"io"
 	"net/http"
 )
 
 type script struct {
-	sdkConfiguration sdkConfiguration
+	defaultClient  HTTPClient
+	securityClient HTTPClient
+	serverURL      string
+	language       string
+	sdkVersion     string
+	genVersion     string
 }
 
-func newScript(sdkConfig sdkConfiguration) *script {
+func newScript(defaultClient, securityClient HTTPClient, serverURL, language, sdkVersion, genVersion string) *script {
 	return &script{
-		sdkConfiguration: sdkConfig,
+		defaultClient:  defaultClient,
+		securityClient: securityClient,
+		serverURL:      serverURL,
+		language:       language,
+		sdkVersion:     sdkVersion,
+		genVersion:     genVersion,
 	}
 }
 
 // RunScript - Execute a Numscript
 // This route is deprecated, and has been merged into `POST /{ledger}/transactions`.
 //
-// Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
+// Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible.
 func (s *script) RunScript(ctx context.Context, request operations.RunScriptRequest) (*operations.RunScriptResponse, error) {
-	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	baseURL := s.serverURL
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/script", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
@@ -48,7 +55,7 @@ func (s *script) RunScript(ctx context.Context, request operations.RunScriptRequ
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s %s", s.sdkConfiguration.Language, s.sdkConfiguration.SDKVersion, s.sdkConfiguration.GenVersion, s.sdkConfiguration.OpenAPIDocVersion))
+	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
 
 	req.Header.Set("Content-Type", reqContentType)
 
@@ -56,7 +63,7 @@ func (s *script) RunScript(ctx context.Context, request operations.RunScriptRequ
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.SecurityClient
+	client := s.securityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -65,13 +72,7 @@ func (s *script) RunScript(ctx context.Context, request operations.RunScriptRequ
 	if httpRes == nil {
 		return nil, fmt.Errorf("error sending request: no response")
 	}
-
-	rawBody, err := io.ReadAll(httpRes.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading response body: %w", err)
-	}
-	httpRes.Body.Close()
-	httpRes.Body = io.NopCloser(bytes.NewBuffer(rawBody))
+	defer httpRes.Body.Close()
 
 	contentType := httpRes.Header.Get("Content-Type")
 
@@ -85,13 +86,11 @@ func (s *script) RunScript(ctx context.Context, request operations.RunScriptRequ
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
 			var out *shared.ScriptResponse
-			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out); err != nil {
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
 			res.ScriptResponse = out
-		default:
-			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
 		}
 	}
 

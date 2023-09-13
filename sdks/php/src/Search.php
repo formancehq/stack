@@ -11,14 +11,30 @@ namespace formance\stack;
 class Search 
 {
 
-	private SDKConfiguration $sdkConfiguration;
+	// SDK private variables namespaced with _ to avoid conflicts with API models
+	private \GuzzleHttp\ClientInterface $_defaultClient;
+	private \GuzzleHttp\ClientInterface $_securityClient;
+	private string $_serverUrl;
+	private string $_language;
+	private string $_sdkVersion;
+	private string $_genVersion;	
 
 	/**
-	 * @param SDKConfiguration $sdkConfig
+	 * @param \GuzzleHttp\ClientInterface $defaultClient
+	 * @param \GuzzleHttp\ClientInterface $securityClient
+	 * @param string $serverUrl
+	 * @param string $language
+	 * @param string $sdkVersion
+	 * @param string $genVersion
 	 */
-	public function __construct(SDKConfiguration $sdkConfig)
+	public function __construct(\GuzzleHttp\ClientInterface $defaultClient, \GuzzleHttp\ClientInterface $securityClient, string $serverUrl, string $language, string $sdkVersion, string $genVersion)
 	{
-		$this->sdkConfiguration = $sdkConfig;
+		$this->_defaultClient = $defaultClient;
+		$this->_securityClient = $securityClient;
+		$this->_serverUrl = $serverUrl;
+		$this->_language = $language;
+		$this->_sdkVersion = $sdkVersion;
+		$this->_genVersion = $genVersion;
 	}
 	
     /**
@@ -33,7 +49,7 @@ class Search
         \formance\stack\Models\Shared\Query $request,
     ): \formance\stack\Models\Operations\SearchResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/search/');
         
         $options = ['http_errors' => false];
@@ -43,9 +59,9 @@ class Search
         }
         $options = array_merge_recursive($options, $body);
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('POST', $url, $options);
+        $httpResponse = $this->_securityClient->request('POST', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -74,14 +90,14 @@ class Search
 	public function searchgetServerInfo(
     ): \formance\stack\Models\Operations\SearchgetServerInfoResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/search/_info');
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 

@@ -4,6 +4,7 @@ generation:
   singleTagPerOp: true
   telemetryEnabled: false
 features:
+  version: ""
   go:
     core: 2.86.3
     deprecations: 2.81.1

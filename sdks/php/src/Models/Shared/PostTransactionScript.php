@@ -15,10 +15,15 @@ class PostTransactionScript
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $plain;
     
+    /**
+     * $vars
+     * 
+     * @var ?array<string, mixed> $vars
+     */
 	#[\JMS\Serializer\Annotation\SerializedName('vars')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\PostTransactionScriptVars')]
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?PostTransactionScriptVars $vars = null;
+    public ?array $vars = null;
     
 	public function __construct()
 	{

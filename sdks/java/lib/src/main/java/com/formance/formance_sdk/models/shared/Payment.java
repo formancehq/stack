@@ -11,7 +11,6 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
-
 public class Payment {
     @JsonProperty("adjustments")
     public PaymentAdjustment[] adjustments;
@@ -80,9 +79,9 @@ public class Payment {
     }
     
     @JsonProperty("raw")
-    public PaymentRaw raw;
+    public java.util.Map<String, Object> raw;
 
-    public Payment withRaw(PaymentRaw raw) {
+    public Payment withRaw(java.util.Map<String, Object> raw) {
         this.raw = raw;
         return this;
     }
@@ -127,7 +126,7 @@ public class Payment {
         return this;
     }
     
-    public Payment(@JsonProperty("adjustments") PaymentAdjustment[] adjustments, @JsonProperty("asset") String asset, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("id") String id, @JsonProperty("initialAmount") Long initialAmount, @JsonProperty("metadata") PaymentMetadata metadata, @JsonProperty("provider") Connector provider, @JsonProperty("raw") PaymentRaw raw, @JsonProperty("reference") String reference, @JsonProperty("scheme") PaymentScheme scheme, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("status") PaymentStatus status, @JsonProperty("type") PaymentType type) {
+    public Payment(@JsonProperty("adjustments") PaymentAdjustment[] adjustments, @JsonProperty("asset") String asset, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("id") String id, @JsonProperty("initialAmount") Long initialAmount, @JsonProperty("metadata") PaymentMetadata metadata, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("scheme") PaymentScheme scheme, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("status") PaymentStatus status, @JsonProperty("type") PaymentType type) {
         this.adjustments = adjustments;
         this.asset = asset;
         this.createdAt = createdAt;

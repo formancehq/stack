@@ -12,13 +12,6 @@ type GetInstanceHistoryRequest struct {
 	InstanceID string `pathParam:"style=simple,explode=false,name=instanceID"`
 }
 
-func (o *GetInstanceHistoryRequest) GetInstanceID() string {
-	if o == nil {
-		return ""
-	}
-	return o.InstanceID
-}
-
 type GetInstanceHistoryResponse struct {
 	ContentType string
 	// General error
@@ -27,39 +20,4 @@ type GetInstanceHistoryResponse struct {
 	GetWorkflowInstanceHistoryResponse *shared.GetWorkflowInstanceHistoryResponse
 	StatusCode                         int
 	RawResponse                        *http.Response
-}
-
-func (o *GetInstanceHistoryResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *GetInstanceHistoryResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
-}
-
-func (o *GetInstanceHistoryResponse) GetGetWorkflowInstanceHistoryResponse() *shared.GetWorkflowInstanceHistoryResponse {
-	if o == nil {
-		return nil
-	}
-	return o.GetWorkflowInstanceHistoryResponse
-}
-
-func (o *GetInstanceHistoryResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *GetInstanceHistoryResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
 }

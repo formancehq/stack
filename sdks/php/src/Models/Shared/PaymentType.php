@@ -11,8 +11,8 @@ namespace formance\stack\Models\Shared;
 
 enum PaymentType: string
 {
-    case PayIn = 'PAY-IN';
-    case Payout = 'PAYOUT';
-    case Transfer = 'TRANSFER';
-    case Other = 'OTHER';
+    case PAY_IN = 'PAY-IN';
+    case PAYOUT = 'PAYOUT';
+    case TRANSFER = 'TRANSFER';
+    case OTHER = 'OTHER';
 }

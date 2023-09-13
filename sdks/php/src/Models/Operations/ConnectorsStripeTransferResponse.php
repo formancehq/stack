@@ -31,10 +31,10 @@ class ConnectorsStripeTransferResponse
     /**
      * OK
      * 
-     * @var ?\formance\stack\Models\Shared\StripeTransferResponse $stripeTransferResponse
+     * @var ?array<string, mixed> $stripeTransferResponse
      */
 	
-    public ?\formance\stack\Models\Shared\StripeTransferResponse $stripeTransferResponse = null;
+    public ?array $stripeTransferResponse = null;
     
 	public function __construct()
 	{

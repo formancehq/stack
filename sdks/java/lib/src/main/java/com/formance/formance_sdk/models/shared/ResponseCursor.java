@@ -8,13 +8,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class ResponseCursor {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")
-    public ResponseCursorData[] data;
+    public java.util.Map<String, Object>[] data;
 
-    public ResponseCursor withData(ResponseCursorData[] data) {
+    public ResponseCursor withData(java.util.Map<String, Object>[] data) {
         this.data = data;
         return this;
     }

@@ -7,38 +7,42 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class RevertTransactionRequest extends SpeakeasyBase {
-    /**
-     * Name of the ledger.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
-    ledger: string;
+  /**
+   * Name of the ledger.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=ledger",
+  })
+  ledger: string;
 
-    /**
-     * Transaction ID.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=txid" })
-    txid: number;
+  /**
+   * Transaction ID.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=txid",
+  })
+  txid: number;
 }
 
 export class RevertTransactionResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    errorResponse?: shared.ErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  errorResponse?: shared.ErrorResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    transactionResponse?: shared.TransactionResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  transactionResponse?: shared.TransactionResponse;
 }

@@ -12,45 +12,10 @@ type DeleteConfigRequest struct {
 	ID string `pathParam:"style=simple,explode=false,name=id"`
 }
 
-func (o *DeleteConfigRequest) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}
-
 type DeleteConfigResponse struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
 	// Error
 	WebhooksErrorResponse *shared.WebhooksErrorResponse
-}
-
-func (o *DeleteConfigResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *DeleteConfigResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *DeleteConfigResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *DeleteConfigResponse) GetWebhooksErrorResponse() *shared.WebhooksErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.WebhooksErrorResponse
 }

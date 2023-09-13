@@ -8,9 +8,9 @@ from ..shared import listworkflowsresponse as shared_listworkflowsresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class ListWorkflowsResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     error: Optional[shared_error.Error] = dataclasses.field(default=None)
@@ -19,4 +19,3 @@ class ListWorkflowsResponse:
     r"""List of workflows"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     
-

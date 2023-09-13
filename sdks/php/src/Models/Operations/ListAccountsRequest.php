@@ -69,10 +69,10 @@ class ListAccountsRequest
     /**
      * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
      * 
-     * @var ?\formance\stack\Models\Operations\ListAccountsMetadata $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
-    public ?ListAccountsMetadata $metadata = null;
+    public ?array $metadata = null;
     
     /**
      * The maximum number of results to return per page.

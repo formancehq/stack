@@ -28,13 +28,8 @@ export class RetryConfig {
   backoff?: BackoffStrategy;
   retryConnectionErrors: boolean;
 
-  constructor(
-    strategy: string,
-    backoff?: BackoffStrategy,
-    retryConnectionErrors = true
-  ) {
+  constructor(strategy: string, retryConnectionErrors = true) {
     this.strategy = strategy;
-    this.backoff = backoff;
     this.retryConnectionErrors = retryConnectionErrors;
   }
 }
@@ -55,8 +50,6 @@ class PermanentError extends Error {
   constructor(inner: unknown) {
     super("Permanent error");
     this.inner = inner;
-
-    Object.setPrototypeOf(this, PermanentError.prototype);
   }
 }
 
@@ -66,8 +59,6 @@ class TemporaryError extends Error {
   constructor(res: AxiosResponse<any, any>) {
     super("Temporary error");
     this.res = res;
-
-    Object.setPrototypeOf(this, TemporaryError.prototype);
   }
 }
 

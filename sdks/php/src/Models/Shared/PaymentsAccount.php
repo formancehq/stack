@@ -23,11 +23,6 @@ class PaymentsAccount
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $defaultAsset;
     
-    /**
-     * 
-     * @var string $defaultCurrency
-     * @deprecated  field: This will be removed in a future release, please migrate away from it as soon as possible.
-     */
 	#[\JMS\Serializer\Annotation\SerializedName('defaultCurrency')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $defaultCurrency;
@@ -40,9 +35,14 @@ class PaymentsAccount
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\Connector>')]
     public Connector $provider;
     
+    /**
+     * $raw
+     * 
+     * @var array<string, mixed> $raw
+     */
 	#[\JMS\Serializer\Annotation\SerializedName('raw')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\PaymentsAccountRaw')]
-    public PaymentsAccountRaw $raw;
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    public array $raw;
     
 	#[\JMS\Serializer\Annotation\SerializedName('reference')]
     #[\JMS\Serializer\Annotation\Type('string')]
@@ -59,8 +59,8 @@ class PaymentsAccount
 		$this->defaultAsset = "";
 		$this->defaultCurrency = "";
 		$this->id = "";
-		$this->provider = \formance\stack\Models\Shared\Connector::Stripe;
-		$this->raw = new \formance\stack\Models\Shared\PaymentsAccountRaw();
+		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
+		$this->raw = [];
 		$this->reference = "";
 		$this->type = "";
 	}

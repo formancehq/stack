@@ -6,21 +6,21 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class DummyPayConfig extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "directory" })
-    directory: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "directory" })
+  directory: string;
 
-    /**
-     * The frequency at which the connector will create new payment objects in the directory
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "fileGenerationPeriod" })
-    fileGenerationPeriod?: string;
+  /**
+   * The frequency at which the connector will create new payment objects in the directory
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "fileGenerationPeriod" })
+  fileGenerationPeriod?: string;
 
-    /**
-     * The frequency at which the connector will try to fetch new payment objects from the directory
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "filePollingPeriod" })
-    filePollingPeriod?: string;
+  /**
+   * The frequency at which the connector will try to fetch new payment objects from the directory
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "filePollingPeriod" })
+  filePollingPeriod?: string;
 }

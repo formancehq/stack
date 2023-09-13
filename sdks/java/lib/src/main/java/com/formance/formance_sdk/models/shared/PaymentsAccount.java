@@ -11,7 +11,6 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
-
 public class PaymentsAccount {
     @JsonProperty("accountName")
     public String accountName;
@@ -39,14 +38,9 @@ public class PaymentsAccount {
         return this;
     }
     
-    /**
-     * @deprecated field: This will be removed in a future release, please migrate away from it as soon as possible.
-     */
     @JsonProperty("defaultCurrency")
-    @Deprecated
     public String defaultCurrency;
 
-    @Deprecated
     public PaymentsAccount withDefaultCurrency(String defaultCurrency) {
         this.defaultCurrency = defaultCurrency;
         return this;
@@ -69,9 +63,9 @@ public class PaymentsAccount {
     }
     
     @JsonProperty("raw")
-    public PaymentsAccountRaw raw;
+    public java.util.Map<String, Object> raw;
 
-    public PaymentsAccount withRaw(PaymentsAccountRaw raw) {
+    public PaymentsAccount withRaw(java.util.Map<String, Object> raw) {
         this.raw = raw;
         return this;
     }
@@ -92,7 +86,7 @@ public class PaymentsAccount {
         return this;
     }
     
-    public PaymentsAccount(@JsonProperty("accountName") String accountName, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("defaultAsset") String defaultAsset, @JsonProperty("defaultCurrency") String defaultCurrency, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("raw") PaymentsAccountRaw raw, @JsonProperty("reference") String reference, @JsonProperty("type") String type) {
+    public PaymentsAccount(@JsonProperty("accountName") String accountName, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("defaultAsset") String defaultAsset, @JsonProperty("defaultCurrency") String defaultCurrency, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("type") String type) {
         this.accountName = accountName;
         this.createdAt = createdAt;
         this.defaultAsset = defaultAsset;

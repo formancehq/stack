@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * Config created successfully.
  */
 export class ConfigResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => WebhooksConfig)
-    data: WebhooksConfig;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => WebhooksConfig)
+  data: WebhooksConfig;
 }

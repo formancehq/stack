@@ -8,48 +8,48 @@ import { WorkflowInstanceHistoryStageOutput } from "./workflowinstancehistorysta
 import { Expose, Transform, Type } from "class-transformer";
 
 export class WorkflowInstanceHistoryStage extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "attempt" })
-    attempt: number;
+  @SpeakeasyMetadata()
+  @Expose({ name: "attempt" })
+  attempt: number;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "error" })
-    error?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "error" })
+  error?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "input" })
-    @Type(() => WorkflowInstanceHistoryStageInput)
-    input: WorkflowInstanceHistoryStageInput;
+  @SpeakeasyMetadata()
+  @Expose({ name: "input" })
+  @Type(() => WorkflowInstanceHistoryStageInput)
+  input: WorkflowInstanceHistoryStageInput;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "lastFailure" })
-    lastFailure?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "lastFailure" })
+  lastFailure?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "name" })
-    name: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "name" })
+  name: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "nextExecution" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    nextExecution?: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "nextExecution" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  nextExecution?: Date;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "output" })
-    @Type(() => WorkflowInstanceHistoryStageOutput)
-    output?: WorkflowInstanceHistoryStageOutput;
+  @SpeakeasyMetadata()
+  @Expose({ name: "output" })
+  @Type(() => WorkflowInstanceHistoryStageOutput)
+  output?: WorkflowInstanceHistoryStageOutput;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "startedAt" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    startedAt: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "startedAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  startedAt: Date;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "terminated" })
-    terminated: boolean;
+  @SpeakeasyMetadata()
+  @Expose({ name: "terminated" })
+  terminated: boolean;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "terminatedAt" })
-    @Transform(({ value }) => new Date(value), { toClassOnly: true })
-    terminatedAt?: Date;
+  @SpeakeasyMetadata()
+  @Expose({ name: "terminatedAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  terminatedAt?: Date;
 }

@@ -14,38 +14,3 @@ type GetWalletSummaryResponse struct {
 	ExpiredFunds   map[string]*big.Int `json:"expiredFunds"`
 	HoldFunds      map[string]*big.Int `json:"holdFunds"`
 }
-
-func (o *GetWalletSummaryResponse) GetAvailableFunds() map[string]*big.Int {
-	if o == nil {
-		return map[string]*big.Int{}
-	}
-	return o.AvailableFunds
-}
-
-func (o *GetWalletSummaryResponse) GetBalances() []BalanceWithAssets {
-	if o == nil {
-		return []BalanceWithAssets{}
-	}
-	return o.Balances
-}
-
-func (o *GetWalletSummaryResponse) GetExpirableFunds() map[string]*big.Int {
-	if o == nil {
-		return map[string]*big.Int{}
-	}
-	return o.ExpirableFunds
-}
-
-func (o *GetWalletSummaryResponse) GetExpiredFunds() map[string]*big.Int {
-	if o == nil {
-		return map[string]*big.Int{}
-	}
-	return o.ExpiredFunds
-}
-
-func (o *GetWalletSummaryResponse) GetHoldFunds() map[string]*big.Int {
-	if o == nil {
-		return map[string]*big.Int{}
-	}
-	return o.HoldFunds
-}

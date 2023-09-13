@@ -6,37 +6,37 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class BankingCircleConfig extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "authorizationEndpoint" })
-    authorizationEndpoint: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "authorizationEndpoint" })
+  authorizationEndpoint: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "endpoint" })
-    endpoint: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "endpoint" })
+  endpoint: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "password" })
-    password: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "password" })
+  password: string;
 
-    /**
-     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
-     *
-     * @remarks
-     *
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "pollingPeriod" })
-    pollingPeriod?: string;
+  /**
+   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+   *
+   * @remarks
+   *
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "pollingPeriod" })
+  pollingPeriod?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "userCertificate" })
-    userCertificate: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "userCertificate" })
+  userCertificate: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "userCertificateKey" })
-    userCertificateKey: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "userCertificateKey" })
+  userCertificateKey: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "username" })
-    username: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "username" })
+  username: string;
 }

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * CreateScopeResponse - Created scope
  */
-
 public class CreateScopeResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")

@@ -6,7 +6,7 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class StageWaitEvent extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "event" })
-    event: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "event" })
+  event: string;
 }

@@ -48,9 +48,14 @@ class Payment
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\Connector>')]
     public Connector $provider;
     
+    /**
+     * $raw
+     * 
+     * @var array<string, mixed> $raw
+     */
 	#[\JMS\Serializer\Annotation\SerializedName('raw')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\PaymentRaw')]
-    public PaymentRaw $raw;
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    public array $raw;
     
 	#[\JMS\Serializer\Annotation\SerializedName('reference')]
     #[\JMS\Serializer\Annotation\Type('string')]
@@ -81,12 +86,12 @@ class Payment
 		$this->id = "";
 		$this->initialAmount = 0;
 		$this->metadata = new \formance\stack\Models\Shared\PaymentMetadata();
-		$this->provider = \formance\stack\Models\Shared\Connector::Stripe;
-		$this->raw = new \formance\stack\Models\Shared\PaymentRaw();
+		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
+		$this->raw = [];
 		$this->reference = "";
-		$this->scheme = \formance\stack\Models\Shared\PaymentScheme::Visa;
+		$this->scheme = \formance\stack\Models\Shared\PaymentScheme::VISA;
 		$this->sourceAccountID = "";
-		$this->status = \formance\stack\Models\Shared\PaymentStatus::Pending;
-		$this->type = \formance\stack\Models\Shared\PaymentType::PayIn;
+		$this->status = \formance\stack\Models\Shared\PaymentStatus::PENDING;
+		$this->type = \formance\stack\Models\Shared\PaymentType::PAY_IN;
 	}
 }

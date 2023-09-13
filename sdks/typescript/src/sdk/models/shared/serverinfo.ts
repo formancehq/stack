@@ -9,7 +9,7 @@ import { Expose } from "class-transformer";
  * Server information
  */
 export class ServerInfo extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "version" })
-    version: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "version" })
+  version: string;
 }

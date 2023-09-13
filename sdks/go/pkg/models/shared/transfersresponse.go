@@ -17,70 +17,7 @@ type TransfersResponseData struct {
 	Status      *string  `json:"status,omitempty"`
 }
 
-func (o *TransfersResponseData) GetAmount() *big.Int {
-	if o == nil {
-		return nil
-	}
-	return o.Amount
-}
-
-func (o *TransfersResponseData) GetAsset() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Asset
-}
-
-func (o *TransfersResponseData) GetCurrency() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Currency
-}
-
-func (o *TransfersResponseData) GetDestination() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Destination
-}
-
-func (o *TransfersResponseData) GetError() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Error
-}
-
-func (o *TransfersResponseData) GetID() *string {
-	if o == nil {
-		return nil
-	}
-	return o.ID
-}
-
-func (o *TransfersResponseData) GetSource() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Source
-}
-
-func (o *TransfersResponseData) GetStatus() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Status
-}
-
 // TransfersResponse - OK
 type TransfersResponse struct {
 	Data []TransfersResponseData `json:"data,omitempty"`
-}
-
-func (o *TransfersResponse) GetData() []TransfersResponseData {
-	if o == nil {
-		return nil
-	}
-	return o.Data
 }

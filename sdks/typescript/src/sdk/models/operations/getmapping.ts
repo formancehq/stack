@@ -7,32 +7,34 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetMappingRequest extends SpeakeasyBase {
-    /**
-     * Name of the ledger.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
-    ledger: string;
+  /**
+   * Name of the ledger.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=ledger",
+  })
+  ledger: string;
 }
 
 export class GetMappingResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    errorResponse?: shared.ErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  errorResponse?: shared.ErrorResponse;
 
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    mappingResponse?: shared.MappingResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  mappingResponse?: shared.MappingResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

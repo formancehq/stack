@@ -13,7 +13,6 @@ import com.formance.formance_sdk.utils.DateTimeDeserializer;
 import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
-
 public class WalletsTransaction {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("ledger")

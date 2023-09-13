@@ -45,10 +45,6 @@ func UnmarshalJsonFromResponseBody(body io.Reader, out interface{}) error {
 }
 
 func ReplaceParameters(stringWithParams string, params map[string]string) string {
-	if len(params) == 0 {
-		return stringWithParams
-	}
-
 	return paramRegex.ReplaceAllStringFunc(stringWithParams, func(match string) string {
 		match = match[1 : len(match)-1]
 		return params[match]

@@ -21,59 +21,10 @@ type ListConnectorTasksRequest struct {
 	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
 }
 
-func (o *ListConnectorTasksRequest) GetConnector() shared.Connector {
-	if o == nil {
-		return shared.Connector("")
-	}
-	return o.Connector
-}
-
-func (o *ListConnectorTasksRequest) GetCursor() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Cursor
-}
-
-func (o *ListConnectorTasksRequest) GetPageSize() *int64 {
-	if o == nil {
-		return nil
-	}
-	return o.PageSize
-}
-
 type ListConnectorTasksResponse struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
 	// OK
 	TasksCursor *shared.TasksCursor
-}
-
-func (o *ListConnectorTasksResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *ListConnectorTasksResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *ListConnectorTasksResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *ListConnectorTasksResponse) GetTasksCursor() *shared.TasksCursor {
-	if o == nil {
-		return nil
-	}
-	return o.TasksCursor
 }

@@ -6,10 +6,3 @@ package shared
 type ReadClientResponse struct {
 	Data *Client `json:"data,omitempty"`
 }
-
-func (o *ReadClientResponse) GetData() *Client {
-	if o == nil {
-		return nil
-	}
-	return o.Data
-}

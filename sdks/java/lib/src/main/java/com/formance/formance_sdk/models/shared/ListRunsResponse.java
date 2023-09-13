@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ListRunsResponse - List of workflow instances
  */
-
 public class ListRunsResponse {
     @JsonProperty("data")
     public WorkflowInstance[] data;

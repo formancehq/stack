@@ -10,8 +10,8 @@ import { Expose, Type } from "class-transformer";
  * Wallet
  */
 export class GetWalletResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    @Type(() => WalletWithBalances)
-    data: WalletWithBalances;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  @Type(() => WalletWithBalances)
+  data: WalletWithBalances;
 }

@@ -14,20 +14,6 @@ type GetManyConfigsRequest struct {
 	ID *string `queryParam:"style=form,explode=true,name=id"`
 }
 
-func (o *GetManyConfigsRequest) GetEndpoint() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Endpoint
-}
-
-func (o *GetManyConfigsRequest) GetID() *string {
-	if o == nil {
-		return nil
-	}
-	return o.ID
-}
-
 type GetManyConfigsResponse struct {
 	// OK
 	ConfigsResponse *shared.ConfigsResponse
@@ -36,39 +22,4 @@ type GetManyConfigsResponse struct {
 	RawResponse     *http.Response
 	// Error
 	WebhooksErrorResponse *shared.WebhooksErrorResponse
-}
-
-func (o *GetManyConfigsResponse) GetConfigsResponse() *shared.ConfigsResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ConfigsResponse
-}
-
-func (o *GetManyConfigsResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *GetManyConfigsResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *GetManyConfigsResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *GetManyConfigsResponse) GetWebhooksErrorResponse() *shared.WebhooksErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.WebhooksErrorResponse
 }

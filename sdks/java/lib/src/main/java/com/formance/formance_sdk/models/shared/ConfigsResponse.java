@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ConfigsResponse - OK
  */
-
 public class ConfigsResponse {
     @JsonProperty("cursor")
     public ConfigsResponseCursor cursor;

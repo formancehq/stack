@@ -7,47 +7,53 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ListConnectorTasksRequest extends SpeakeasyBase {
-    /**
-     * The name of the connector.
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=connector" })
-    connector: shared.Connector;
+  /**
+   * The name of the connector.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=connector",
+  })
+  connector: shared.Connector;
 
-    /**
-     * Parameter used in pagination requests. Maximum page size is set to 15.
-     *
-     * @remarks
-     * Set to the value of next for the next page of results.
-     * Set to the value of previous for the previous page of results.
-     * No other parameters can be set when this parameter is set.
-     *
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=cursor" })
-    cursor?: string;
+  /**
+   * Parameter used in pagination requests. Maximum page size is set to 15.
+   *
+   * @remarks
+   * Set to the value of next for the next page of results.
+   * Set to the value of previous for the previous page of results.
+   * No other parameters can be set when this parameter is set.
+   *
+   */
+  @SpeakeasyMetadata({
+    data: "queryParam, style=form;explode=true;name=cursor",
+  })
+  cursor?: string;
 
-    /**
-     * The maximum number of results to return per page.
-     *
-     * @remarks
-     *
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=pageSize" })
-    pageSize?: number;
+  /**
+   * The maximum number of results to return per page.
+   *
+   * @remarks
+   *
+   */
+  @SpeakeasyMetadata({
+    data: "queryParam, style=form;explode=true;name=pageSize",
+  })
+  pageSize?: number;
 }
 
 export class ListConnectorTasksResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    tasksCursor?: shared.TasksCursor;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  tasksCursor?: shared.TasksCursor;
 }

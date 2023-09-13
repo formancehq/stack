@@ -27,7 +27,7 @@ class WalletsErrorResponse
     
 	public function __construct()
 	{
-		$this->errorCode = \formance\stack\Models\Shared\WalletsErrorResponseErrorCode::Validation;
+		$this->errorCode = \formance\stack\Models\Shared\WalletsErrorResponseErrorCode::VALIDATION;
 		$this->errorMessage = "";
 	}
 }

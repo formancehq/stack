@@ -24,9 +24,8 @@ class RetryConfig:
     backoff: BackoffStrategy
     retry_connection_errors: bool
 
-    def __init__(self, strategy: str, backoff: BackoffStrategy, retry_connection_errors: bool):
+    def __init__(self, strategy: str, retry_connection_errors: bool):
         self.strategy = strategy
-        self.backoff = backoff
         self.retry_connection_errors = retry_connection_errors
 
 

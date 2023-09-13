@@ -6,10 +6,3 @@ package shared
 type GetWorkflowInstanceHistoryResponse struct {
 	Data []WorkflowInstanceHistory `json:"data"`
 }
-
-func (o *GetWorkflowInstanceHistoryResponse) GetData() []WorkflowInstanceHistory {
-	if o == nil {
-		return []WorkflowInstanceHistory{}
-	}
-	return o.Data
-}

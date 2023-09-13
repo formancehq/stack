@@ -12,24 +12,3 @@ type CreateBalanceRequest struct {
 	Name      string     `json:"name"`
 	Priority  *big.Int   `json:"priority,omitempty"`
 }
-
-func (o *CreateBalanceRequest) GetExpiresAt() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.ExpiresAt
-}
-
-func (o *CreateBalanceRequest) GetName() string {
-	if o == nil {
-		return ""
-	}
-	return o.Name
-}
-
-func (o *CreateBalanceRequest) GetPriority() *big.Int {
-	if o == nil {
-		return nil
-	}
-	return o.Priority
-}

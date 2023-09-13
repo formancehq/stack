@@ -16,10 +16,10 @@ namespace formance\stack\Models\Operations;
  */
 enum ListAccountsBalanceOperator: string
 {
-    case Gte = 'gte';
-    case Lte = 'lte';
-    case Gt = 'gt';
-    case Lt = 'lt';
+    case GTE = 'gte';
+    case LTE = 'lte';
+    case GT = 'gt';
+    case LT = 'lt';
     case E = 'e';
-    case Ne = 'ne';
+    case NE = 'ne';
 }

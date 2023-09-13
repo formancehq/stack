@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-// ListTransactionsMetadata - Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-type ListTransactionsMetadata struct {
-}
-
 type ListTransactionsRequest struct {
 	// Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
 	Account *string `queryParam:"style=form,explode=true,name=account"`
@@ -32,7 +28,7 @@ type ListTransactionsRequest struct {
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-	Metadata *ListTransactionsMetadata `queryParam:"style=deepObject,explode=true,name=metadata"`
+	Metadata map[string]interface{} `queryParam:"style=deepObject,explode=true,name=metadata"`
 	// The maximum number of results to return per page.
 	//
 	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
@@ -46,83 +42,6 @@ type ListTransactionsRequest struct {
 	StartTime *time.Time `queryParam:"style=form,explode=true,name=startTime"`
 }
 
-func (o *ListTransactionsRequest) GetAccount() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Account
-}
-
-func (o *ListTransactionsRequest) GetAfter() *string {
-	if o == nil {
-		return nil
-	}
-	return o.After
-}
-
-func (o *ListTransactionsRequest) GetCursor() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Cursor
-}
-
-func (o *ListTransactionsRequest) GetDestination() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Destination
-}
-
-func (o *ListTransactionsRequest) GetEndTime() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.EndTime
-}
-
-func (o *ListTransactionsRequest) GetLedger() string {
-	if o == nil {
-		return ""
-	}
-	return o.Ledger
-}
-
-func (o *ListTransactionsRequest) GetMetadata() *ListTransactionsMetadata {
-	if o == nil {
-		return nil
-	}
-	return o.Metadata
-}
-
-func (o *ListTransactionsRequest) GetPageSize() *int64 {
-	if o == nil {
-		return nil
-	}
-	return o.PageSize
-}
-
-func (o *ListTransactionsRequest) GetReference() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Reference
-}
-
-func (o *ListTransactionsRequest) GetSource() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Source
-}
-
-func (o *ListTransactionsRequest) GetStartTime() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.StartTime
-}
-
 type ListTransactionsResponse struct {
 	ContentType string
 	// Error
@@ -131,39 +50,4 @@ type ListTransactionsResponse struct {
 	RawResponse   *http.Response
 	// OK
 	TransactionsCursorResponse *shared.TransactionsCursorResponse
-}
-
-func (o *ListTransactionsResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *ListTransactionsResponse) GetErrorResponse() *shared.ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ErrorResponse
-}
-
-func (o *ListTransactionsResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *ListTransactionsResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *ListTransactionsResponse) GetTransactionsCursorResponse() *shared.TransactionsCursorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.TransactionsCursorResponse
 }

@@ -25,12 +25,12 @@ class Response
     /**
      * The payload
      * 
-     * @var ?\formance\stack\Models\Shared\ResponseData $data
+     * @var ?array<string, mixed> $data
      */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\ResponseData')]
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?ResponseData $data = null;
+    public ?array $data = null;
     
 	public function __construct()
 	{

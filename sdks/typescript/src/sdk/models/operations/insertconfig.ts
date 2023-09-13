@@ -7,24 +7,24 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class InsertConfigResponse extends SpeakeasyBase {
-    /**
-     * Config created successfully.
-     */
-    @SpeakeasyMetadata()
-    configResponse?: shared.ConfigResponse;
+  /**
+   * Config created successfully.
+   */
+  @SpeakeasyMetadata()
+  configResponse?: shared.ConfigResponse;
 
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    webhooksErrorResponse?: shared.WebhooksErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  webhooksErrorResponse?: shared.WebhooksErrorResponse;
 }

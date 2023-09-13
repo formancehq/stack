@@ -8,14 +8,13 @@ from sdk import utils
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
-
 @dataclasses.dataclass
 class GetWalletSummaryResponse:
     r"""Wallet summary"""
+    
     available_funds: dict[str, int] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('availableFunds') }})
     balances: list[shared_balancewithassets.BalanceWithAssets] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('balances') }})
     expirable_funds: dict[str, int] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('expirableFunds') }})
     expired_funds: dict[str, int] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('expiredFunds') }})
     hold_funds: dict[str, int] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('holdFunds') }})
     
-

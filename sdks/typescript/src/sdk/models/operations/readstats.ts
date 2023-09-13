@@ -7,32 +7,34 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ReadStatsRequest extends SpeakeasyBase {
-    /**
-     * name of the ledger
-     */
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
-    ledger: string;
+  /**
+   * name of the ledger
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=ledger",
+  })
+  ledger: string;
 }
 
 export class ReadStatsResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    errorResponse?: shared.ErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  errorResponse?: shared.ErrorResponse;
 
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    statsResponse?: shared.StatsResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  statsResponse?: shared.StatsResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

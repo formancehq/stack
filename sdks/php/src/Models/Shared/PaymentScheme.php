@@ -11,22 +11,22 @@ namespace formance\stack\Models\Shared;
 
 enum PaymentScheme: string
 {
-    case Visa = 'visa';
-    case Mastercard = 'mastercard';
-    case Amex = 'amex';
-    case Diners = 'diners';
-    case Discover = 'discover';
-    case Jcb = 'jcb';
-    case Unionpay = 'unionpay';
-    case SepaDebit = 'sepa debit';
-    case SepaCredit = 'sepa credit';
-    case Sepa = 'sepa';
-    case ApplePay = 'apple pay';
-    case GooglePay = 'google pay';
-    case A2a = 'a2a';
-    case AchDebit = 'ach debit';
-    case Ach = 'ach';
-    case Rtp = 'rtp';
-    case Unknown = 'unknown';
-    case Other = 'other';
+    case VISA = 'visa';
+    case MASTERCARD = 'mastercard';
+    case AMEX = 'amex';
+    case DINERS = 'diners';
+    case DISCOVER = 'discover';
+    case JCB = 'jcb';
+    case UNIONPAY = 'unionpay';
+    case SEPA_DEBIT = 'sepa debit';
+    case SEPA_CREDIT = 'sepa credit';
+    case SEPA = 'sepa';
+    case APPLE_PAY = 'apple pay';
+    case GOOGLE_PAY = 'google pay';
+    case A2A = 'a2a';
+    case ACH_DEBIT = 'ach debit';
+    case ACH = 'ach';
+    case RTP = 'rtp';
+    case UNKNOWN = 'unknown';
+    case OTHER = 'other';
 }

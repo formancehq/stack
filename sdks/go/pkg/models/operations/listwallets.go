@@ -22,66 +22,10 @@ type ListWalletsRequest struct {
 	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
 }
 
-func (o *ListWalletsRequest) GetCursor() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Cursor
-}
-
-func (o *ListWalletsRequest) GetMetadata() map[string]string {
-	if o == nil {
-		return nil
-	}
-	return o.Metadata
-}
-
-func (o *ListWalletsRequest) GetName() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Name
-}
-
-func (o *ListWalletsRequest) GetPageSize() *int64 {
-	if o == nil {
-		return nil
-	}
-	return o.PageSize
-}
-
 type ListWalletsResponse struct {
 	ContentType string
 	// OK
 	ListWalletsResponse *shared.ListWalletsResponse
 	StatusCode          int
 	RawResponse         *http.Response
-}
-
-func (o *ListWalletsResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *ListWalletsResponse) GetListWalletsResponse() *shared.ListWalletsResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ListWalletsResponse
-}
-
-func (o *ListWalletsResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *ListWalletsResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
 }

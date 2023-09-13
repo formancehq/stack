@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * ListUsersResponse - List of users
  */
-
 public class ListUsersResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")

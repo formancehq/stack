@@ -9,7 +9,7 @@ import { Expose } from "class-transformer";
  * OK
  */
 export class AggregateBalancesResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "data" })
-    data: Record<string, number>;
+  @SpeakeasyMetadata()
+  @Expose({ name: "data" })
+  data: Record<string, number>;
 }

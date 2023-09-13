@@ -32,12 +32,12 @@ class StripeTransferRequest
      * It can be useful for storing additional information about the transfer in a structured format.
      * 
      * 
-     * @var ?\formance\stack\Models\Shared\StripeTransferRequestMetadata $metadata
+     * @var ?array<string, mixed> $metadata
      */
 	#[\JMS\Serializer\Annotation\SerializedName('metadata')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\StripeTransferRequestMetadata')]
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?StripeTransferRequestMetadata $metadata = null;
+    public ?array $metadata = null;
     
 	public function __construct()
 	{

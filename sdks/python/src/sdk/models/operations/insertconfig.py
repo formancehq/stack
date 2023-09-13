@@ -8,9 +8,9 @@ from ..shared import webhookserrorresponse as shared_webhookserrorresponse
 from typing import Optional
 
 
-
 @dataclasses.dataclass
 class InsertConfigResponse:
+    
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
     config_response: Optional[shared_configresponse.ConfigResponse] = dataclasses.field(default=None)
@@ -19,4 +19,3 @@ class InsertConfigResponse:
     webhooks_error_response: Optional[shared_webhookserrorresponse.WebhooksErrorResponse] = dataclasses.field(default=None)
     r"""Error"""
     
-

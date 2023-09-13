@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * PaymentsAccountResponse - OK
  */
-
 public class PaymentsAccountResponse {
     @JsonProperty("data")
     public PaymentsAccount data;

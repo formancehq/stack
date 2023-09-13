@@ -5,10 +5,3 @@ package shared
 type Transactions struct {
 	Transactions []TransactionData `json:"transactions"`
 }
-
-func (o *Transactions) GetTransactions() []TransactionData {
-	if o == nil {
-		return []TransactionData{}
-	}
-	return o.Transactions
-}

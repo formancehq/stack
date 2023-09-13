@@ -32,9 +32,14 @@ class TaskCurrencyCloud
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $id;
     
+    /**
+     * $state
+     * 
+     * @var array<string, mixed> $state
+     */
 	#[\JMS\Serializer\Annotation\SerializedName('state')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\TaskCurrencyCloudState')]
-    public TaskCurrencyCloudState $state;
+    #[\JMS\Serializer\Annotation\Type('array<string, mixed>')]
+    public array $state;
     
 	#[\JMS\Serializer\Annotation\SerializedName('status')]
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\PaymentStatus>')]
@@ -51,8 +56,8 @@ class TaskCurrencyCloud
 		$this->descriptor = new \formance\stack\Models\Shared\TaskCurrencyCloudDescriptor();
 		$this->error = null;
 		$this->id = "";
-		$this->state = new \formance\stack\Models\Shared\TaskCurrencyCloudState();
-		$this->status = \formance\stack\Models\Shared\PaymentStatus::Pending;
+		$this->state = [];
+		$this->status = \formance\stack\Models\Shared\PaymentStatus::PENDING;
 		$this->updatedAt = new \DateTime();
 	}
 }

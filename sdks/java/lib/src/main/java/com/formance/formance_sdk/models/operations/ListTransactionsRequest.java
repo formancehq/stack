@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 import java.time.OffsetDateTime;
 
-
 public class ListTransactionsRequest {
     /**
      * Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
@@ -86,9 +85,9 @@ public class ListTransactionsRequest {
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
     @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
-    public ListTransactionsMetadata metadata;
+    public java.util.Map<String, Object> metadata;
 
-    public ListTransactionsRequest withMetadata(ListTransactionsMetadata metadata) {
+    public ListTransactionsRequest withMetadata(java.util.Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
     }

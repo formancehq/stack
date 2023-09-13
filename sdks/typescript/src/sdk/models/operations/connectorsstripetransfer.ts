@@ -7,24 +7,24 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ConnectorsStripeTransferResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Error
-     */
-    @SpeakeasyMetadata()
-    errorResponse?: shared.ErrorResponse;
+  /**
+   * Error
+   */
+  @SpeakeasyMetadata()
+  errorResponse?: shared.ErrorResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    stripeTransferResponse?: shared.StripeTransferResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  stripeTransferResponse?: Record<string, any>;
 }

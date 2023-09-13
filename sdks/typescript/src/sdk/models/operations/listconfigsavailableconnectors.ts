@@ -7,18 +7,18 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ListConfigsAvailableConnectorsResponse extends SpeakeasyBase {
-    /**
-     * OK
-     */
-    @SpeakeasyMetadata()
-    connectorsConfigsResponse?: shared.ConnectorsConfigsResponse;
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  connectorsConfigsResponse?: shared.ConnectorsConfigsResponse;
 
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

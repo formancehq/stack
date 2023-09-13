@@ -60,6 +60,7 @@ func (u *Subject) UnmarshalJSON(data []byte) error {
 	switch dis.Type {
 	case "ACCOUNT":
 		d = json.NewDecoder(bytes.NewReader(data))
+		d.DisallowUnknownFields()
 		ledgerAccountSubject := new(LedgerAccountSubject)
 		if err := d.Decode(&ledgerAccountSubject); err != nil {
 			return fmt.Errorf("could not unmarshal expected type: %w", err)
@@ -70,6 +71,7 @@ func (u *Subject) UnmarshalJSON(data []byte) error {
 		return nil
 	case "WALLET":
 		d = json.NewDecoder(bytes.NewReader(data))
+		d.DisallowUnknownFields()
 		walletSubject := new(WalletSubject)
 		if err := d.Decode(&walletSubject); err != nil {
 			return fmt.Errorf("could not unmarshal expected type: %w", err)

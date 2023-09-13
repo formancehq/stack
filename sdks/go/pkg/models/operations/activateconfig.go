@@ -12,13 +12,6 @@ type ActivateConfigRequest struct {
 	ID string `pathParam:"style=simple,explode=false,name=id"`
 }
 
-func (o *ActivateConfigRequest) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}
-
 type ActivateConfigResponse struct {
 	// Config successfully activated.
 	ConfigResponse *shared.ConfigResponse
@@ -27,39 +20,4 @@ type ActivateConfigResponse struct {
 	RawResponse    *http.Response
 	// Error
 	WebhooksErrorResponse *shared.WebhooksErrorResponse
-}
-
-func (o *ActivateConfigResponse) GetConfigResponse() *shared.ConfigResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ConfigResponse
-}
-
-func (o *ActivateConfigResponse) GetContentType() string {
-	if o == nil {
-		return ""
-	}
-	return o.ContentType
-}
-
-func (o *ActivateConfigResponse) GetStatusCode() int {
-	if o == nil {
-		return 0
-	}
-	return o.StatusCode
-}
-
-func (o *ActivateConfigResponse) GetRawResponse() *http.Response {
-	if o == nil {
-		return nil
-	}
-	return o.RawResponse
-}
-
-func (o *ActivateConfigResponse) GetWebhooksErrorResponse() *shared.WebhooksErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.WebhooksErrorResponse
 }

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * UpdateClientResponse - Updated client
  */
-
 public class UpdateClientResponse {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")

@@ -10,15 +10,15 @@ import { Expose } from "class-transformer";
  * Error
  */
 export class WebhooksErrorResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "details" })
-    details?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "details" })
+  details?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "errorCode" })
-    errorCode: WebhooksErrorsEnum;
+  @SpeakeasyMetadata()
+  @Expose({ name: "errorCode" })
+  errorCode: WebhooksErrorsEnum;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "errorMessage" })
-    errorMessage: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "errorMessage" })
+  errorMessage: string;
 }

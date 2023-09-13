@@ -8,9 +8,9 @@ from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
-
 @dataclasses.dataclass
 class CurrencyCloudConfig:
+    
     api_key: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('apiKey') }})
     login_id: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('loginID') }})
     r"""Username of the API Key holder"""
@@ -19,4 +19,3 @@ class CurrencyCloudConfig:
     polling_period: Optional[str] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('pollingPeriod'), 'exclude': lambda f: f is None }})
     r"""The frequency at which the connector will fetch transactions"""
     
-

@@ -7,23 +7,23 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class ListBalancesRequest extends SpeakeasyBase {
-    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
-    id: string;
+  @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=id" })
+  id: string;
 }
 
 export class ListBalancesResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    contentType: string;
+  @SpeakeasyMetadata()
+  contentType: string;
 
-    /**
-     * Balances list
-     */
-    @SpeakeasyMetadata()
-    listBalancesResponse?: shared.ListBalancesResponse;
+  /**
+   * Balances list
+   */
+  @SpeakeasyMetadata()
+  listBalancesResponse?: shared.ListBalancesResponse;
 
-    @SpeakeasyMetadata()
-    statusCode: number;
+  @SpeakeasyMetadata()
+  statusCode: number;
 
-    @SpeakeasyMetadata()
-    rawResponse?: AxiosResponse;
+  @SpeakeasyMetadata()
+  rawResponse?: AxiosResponse;
 }

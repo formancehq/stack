@@ -11,14 +11,30 @@ namespace formance\stack;
 class Payments 
 {
 
-	private SDKConfiguration $sdkConfiguration;
+	// SDK private variables namespaced with _ to avoid conflicts with API models
+	private \GuzzleHttp\ClientInterface $_defaultClient;
+	private \GuzzleHttp\ClientInterface $_securityClient;
+	private string $_serverUrl;
+	private string $_language;
+	private string $_sdkVersion;
+	private string $_genVersion;	
 
 	/**
-	 * @param SDKConfiguration $sdkConfig
+	 * @param \GuzzleHttp\ClientInterface $defaultClient
+	 * @param \GuzzleHttp\ClientInterface $securityClient
+	 * @param string $serverUrl
+	 * @param string $language
+	 * @param string $sdkVersion
+	 * @param string $genVersion
 	 */
-	public function __construct(SDKConfiguration $sdkConfig)
+	public function __construct(\GuzzleHttp\ClientInterface $defaultClient, \GuzzleHttp\ClientInterface $securityClient, string $serverUrl, string $language, string $sdkVersion, string $genVersion)
 	{
-		$this->sdkConfiguration = $sdkConfig;
+		$this->_defaultClient = $defaultClient;
+		$this->_securityClient = $securityClient;
+		$this->_serverUrl = $serverUrl;
+		$this->_language = $language;
+		$this->_sdkVersion = $sdkVersion;
+		$this->_genVersion = $genVersion;
 	}
 	
     /**
@@ -33,7 +49,7 @@ class Payments
         \formance\stack\Models\Shared\StripeTransferRequest $request,
     ): \formance\stack\Models\Operations\ConnectorsStripeTransferResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/stripe/transfers');
         
         $options = ['http_errors' => false];
@@ -42,10 +58,10 @@ class Payments
             throw new \Exception('Request body is required');
         }
         $options = array_merge_recursive($options, $body);
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('POST', $url, $options);
+        $httpResponse = $this->_securityClient->request('POST', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -57,7 +73,7 @@ class Payments
         if ($httpResponse->getStatusCode() === 200) {
             if (Utils\Utils::matchContentType($contentType, 'application/json')) {
                 $serializer = Utils\JSON::createSerializer();
-                $response->stripeTransferResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\StripeTransferResponse', 'json');
+                $response->stripeTransferResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'array<string, mixed>', 'json');
             }
         }
         else if (($httpResponse->getStatusCode() >= 500 && $httpResponse->getStatusCode() < 600)) {
@@ -82,7 +98,7 @@ class Payments
         \formance\stack\Models\Operations\ConnectorsTransferRequest $request,
     ): \formance\stack\Models\Operations\ConnectorsTransferResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/transfers', \formance\stack\Models\Operations\ConnectorsTransferRequest::class, $request);
         
         $options = ['http_errors' => false];
@@ -91,10 +107,10 @@ class Payments
             throw new \Exception('Request body is required');
         }
         $options = array_merge_recursive($options, $body);
-        $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['Accept'] = 'application/json;q=1, application/json;q=0';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('POST', $url, $options);
+        $httpResponse = $this->_securityClient->request('POST', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -129,15 +145,15 @@ class Payments
         \formance\stack\Models\Operations\GetAccountBalancesRequest $request,
     ): \formance\stack\Models\Operations\GetAccountBalancesResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/accounts/{accountId}/balances', \formance\stack\Models\Operations\GetAccountBalancesRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\GetAccountBalancesRequest::class, $request, null));
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -168,14 +184,14 @@ class Payments
         \formance\stack\Models\Operations\GetConnectorTaskRequest $request,
     ): \formance\stack\Models\Operations\GetConnectorTaskResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/tasks/{taskId}', \formance\stack\Models\Operations\GetConnectorTaskRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -204,14 +220,14 @@ class Payments
         \formance\stack\Models\Operations\GetPaymentRequest $request,
     ): \formance\stack\Models\Operations\GetPaymentResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/payments/{paymentId}', \formance\stack\Models\Operations\GetPaymentRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -242,7 +258,7 @@ class Payments
         \formance\stack\Models\Operations\InstallConnectorRequest $request,
     ): \formance\stack\Models\Operations\InstallConnectorResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}', \formance\stack\Models\Operations\InstallConnectorRequest::class, $request);
         
         $options = ['http_errors' => false];
@@ -252,9 +268,9 @@ class Payments
         }
         $options = array_merge_recursive($options, $body);
         $options['headers']['Accept'] = '*/*';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('POST', $url, $options);
+        $httpResponse = $this->_securityClient->request('POST', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -279,14 +295,14 @@ class Payments
 	public function listAllConnectors(
     ): \formance\stack\Models\Operations\ListAllConnectorsResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors');
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -315,14 +331,14 @@ class Payments
 	public function listConfigsAvailableConnectors(
     ): \formance\stack\Models\Operations\ListConfigsAvailableConnectorsResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/configs');
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -353,15 +369,15 @@ class Payments
         \formance\stack\Models\Operations\ListConnectorTasksRequest $request,
     ): \formance\stack\Models\Operations\ListConnectorTasksResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/tasks', \formance\stack\Models\Operations\ListConnectorTasksRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\ListConnectorTasksRequest::class, $request, null));
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -392,14 +408,14 @@ class Payments
         \formance\stack\Models\Operations\ListConnectorsTransfersRequest $request,
     ): \formance\stack\Models\Operations\ListConnectorsTransfersResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/transfers', \formance\stack\Models\Operations\ListConnectorsTransfersRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -428,15 +444,15 @@ class Payments
         \formance\stack\Models\Operations\ListPaymentsRequest $request,
     ): \formance\stack\Models\Operations\ListPaymentsResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/payments');
         
         $options = ['http_errors' => false];
         $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\ListPaymentsRequest::class, $request, null));
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -465,14 +481,14 @@ class Payments
         \formance\stack\Models\Operations\PaymentsgetAccountRequest $request,
     ): \formance\stack\Models\Operations\PaymentsgetAccountResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/accounts/{accountId}', \formance\stack\Models\Operations\PaymentsgetAccountRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -499,14 +515,14 @@ class Payments
 	public function paymentsgetServerInfo(
     ): \formance\stack\Models\Operations\PaymentsgetServerInfoResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/_info');
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -535,15 +551,15 @@ class Payments
         \formance\stack\Models\Operations\PaymentslistAccountsRequest $request,
     ): \formance\stack\Models\Operations\PaymentslistAccountsResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/accounts');
         
         $options = ['http_errors' => false];
         $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\PaymentslistAccountsRequest::class, $request, null));
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -574,14 +590,14 @@ class Payments
         \formance\stack\Models\Operations\ReadConnectorConfigRequest $request,
     ): \formance\stack\Models\Operations\ReadConnectorConfigResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/config', \formance\stack\Models\Operations\ReadConnectorConfigRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = 'application/json';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('GET', $url, $options);
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -614,14 +630,14 @@ class Payments
         \formance\stack\Models\Operations\ResetConnectorRequest $request,
     ): \formance\stack\Models\Operations\ResetConnectorResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/reset', \formance\stack\Models\Operations\ResetConnectorRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = '*/*';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('POST', $url, $options);
+        $httpResponse = $this->_securityClient->request('POST', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -648,14 +664,14 @@ class Payments
         \formance\stack\Models\Operations\UninstallConnectorRequest $request,
     ): \formance\stack\Models\Operations\UninstallConnectorResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}', \formance\stack\Models\Operations\UninstallConnectorRequest::class, $request);
         
         $options = ['http_errors' => false];
         $options['headers']['Accept'] = '*/*';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('DELETE', $url, $options);
+        $httpResponse = $this->_securityClient->request('DELETE', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
@@ -680,7 +696,7 @@ class Payments
         \formance\stack\Models\Operations\UpdateMetadataRequest $request,
     ): \formance\stack\Models\Operations\UpdateMetadataResponse
     {
-        $baseUrl = Utils\Utils::templateUrl($this->sdkConfiguration->getServerUrl(), $this->sdkConfiguration->getServerDefaults());
+        $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/payments/{paymentId}/metadata', \formance\stack\Models\Operations\UpdateMetadataRequest::class, $request);
         
         $options = ['http_errors' => false];
@@ -690,9 +706,9 @@ class Payments
         }
         $options = array_merge_recursive($options, $body);
         $options['headers']['Accept'] = '*/*';
-        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s %s', $this->sdkConfiguration->language, $this->sdkConfiguration->sdkVersion, $this->sdkConfiguration->genVersion, $this->sdkConfiguration->openapiDocVersion);
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
-        $httpResponse = $this->sdkConfiguration->securityClient->request('PATCH', $url, $options);
+        $httpResponse = $this->_securityClient->request('PATCH', $url, $options);
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 

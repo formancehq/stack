@@ -7,7 +7,6 @@ package com.formance.formance_sdk.models.operations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
-
 public class DeactivateConfigRequest {
     /**
      * Config ID

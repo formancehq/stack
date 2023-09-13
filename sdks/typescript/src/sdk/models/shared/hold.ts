@@ -6,32 +6,32 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { Expose } from "class-transformer";
 
 export class Hold extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "description" })
-    description: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "description" })
+  description: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "destination" })
-    destination?: any;
+  @SpeakeasyMetadata()
+  @Expose({ name: "destination" })
+  destination?: any;
 
-    /**
-     * The unique ID of the hold.
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "id" })
-    id: string;
+  /**
+   * The unique ID of the hold.
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "id" })
+  id: string;
 
-    /**
-     * Metadata associated with the hold.
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "metadata" })
-    metadata: Record<string, string>;
+  /**
+   * Metadata associated with the hold.
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "metadata" })
+  metadata: Record<string, string>;
 
-    /**
-     * The ID of the wallet the hold is associated with.
-     */
-    @SpeakeasyMetadata()
-    @Expose({ name: "walletID" })
-    walletID: string;
+  /**
+   * The ID of the wallet the hold is associated with.
+   */
+  @SpeakeasyMetadata()
+  @Expose({ name: "walletID" })
+  walletID: string;
 }

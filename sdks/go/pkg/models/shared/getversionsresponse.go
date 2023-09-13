@@ -8,24 +8,3 @@ type GetVersionsResponse struct {
 	Region   string    `json:"region"`
 	Versions []Version `json:"versions"`
 }
-
-func (o *GetVersionsResponse) GetEnv() string {
-	if o == nil {
-		return ""
-	}
-	return o.Env
-}
-
-func (o *GetVersionsResponse) GetRegion() string {
-	if o == nil {
-		return ""
-	}
-	return o.Region
-}
-
-func (o *GetVersionsResponse) GetVersions() []Version {
-	if o == nil {
-		return []Version{}
-	}
-	return o.Versions
-}

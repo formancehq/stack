@@ -19,20 +19,20 @@ import { Expose, Type } from "class-transformer";
  *
  */
 export class ScriptResponse extends SpeakeasyBase {
-    @SpeakeasyMetadata()
-    @Expose({ name: "details" })
-    details?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "details" })
+  details?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "errorCode" })
-    errorCode?: ErrorsEnum;
+  @SpeakeasyMetadata()
+  @Expose({ name: "errorCode" })
+  errorCode?: ErrorsEnum;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "errorMessage" })
-    errorMessage?: string;
+  @SpeakeasyMetadata()
+  @Expose({ name: "errorMessage" })
+  errorMessage?: string;
 
-    @SpeakeasyMetadata()
-    @Expose({ name: "transaction" })
-    @Type(() => Transaction)
-    transaction?: Transaction;
+  @SpeakeasyMetadata()
+  @Expose({ name: "transaction" })
+  @Type(() => Transaction)
+  transaction?: Transaction;
 }

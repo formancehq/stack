@@ -6,7 +6,6 @@ package com.formance.formance_sdk.models.operations;
 
 import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
-
 public class GetTransactionsRequest {
     /**
      * Parameter used in pagination requests.

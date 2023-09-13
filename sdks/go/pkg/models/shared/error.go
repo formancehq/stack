@@ -39,17 +39,3 @@ type Error struct {
 	ErrorCode    ErrorErrorCode `json:"errorCode"`
 	ErrorMessage string         `json:"errorMessage"`
 }
-
-func (o *Error) GetErrorCode() ErrorErrorCode {
-	if o == nil {
-		return ErrorErrorCode("")
-	}
-	return o.ErrorCode
-}
-
-func (o *Error) GetErrorMessage() string {
-	if o == nil {
-		return ""
-	}
-	return o.ErrorMessage
-}
