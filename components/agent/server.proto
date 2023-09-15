@@ -47,11 +47,14 @@ message Stack {
   AuthConfig authConfig = 3;
   repeated AuthClient staticClients = 4;
   StargateConfig stargateConfig = 5;
+  bool disabled = 6;
 }
 
 enum StackStatus {
   Progressing = 0;
   Ready = 1;
+  Deleted = 2;
+  Disabled = 3;
 }
 
 message StatusChanged {
