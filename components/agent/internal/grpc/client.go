@@ -147,6 +147,7 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 					StargateServerURL: stack.StargateConfig.Url,
 				}
 			}(),
+			Disabled: stack.Disabled,
 		},
 	}
 }
@@ -165,11 +166,13 @@ func (client *client) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	watcher, err := client.k8sClient.Watch(ctx, metav1.ListOptions{})
+	w, err := client.k8sClient.Watch(ctx, metav1.ListOptions{
+		Watch: true,
+	})
 	if err != nil {
 		return err
 	}
-	defer watcher.Stop()
+	defer w.Stop()
 
 	var (
 		closed = false
@@ -221,19 +224,30 @@ func (client *client) Start(ctx context.Context) error {
 		case err := <-errCh:
 			sharedlogging.FromContext(ctx).Errorf("Stream closed with error: %s", err)
 			return err
-		case k8sUpdate := <-watcher.ResultChan():
+		case k8sUpdate := <-w.ResultChan():
 			stack := k8sUpdate.Object.(*v1beta3.Stack)
-			sharedlogging.FromContext(ctx).Infof("Got update for stack '%s'", stack.Name)
+			var status generated.StackStatus
+			switch k8sUpdate.Type {
+			case watch.Deleted:
+				status = generated.StackStatus_Deleted
+			default:
+				switch {
+				case stack.Spec.Disabled:
+					status = generated.StackStatus_Disabled
+				case stack.IsReady():
+					status = generated.StackStatus_Ready
+				default:
+					status = generated.StackStatus_Progressing
+				}
+			}
+
+			sharedlogging.FromContext(ctx).Infof("Got update for stack '%s': %s", stack.Name, status)
+
 			if err := client.connectClient.SendMsg(&generated.Message{
 				Message: &generated.Message_StatusChanged{
 					StatusChanged: &generated.StatusChanged{
 						StackId: stack.Name,
-						Status: func() generated.StackStatus {
-							if stack.IsReady() {
-								return generated.StackStatus_Ready
-							}
-							return generated.StackStatus_Progressing
-						}(),
+						Status:  status,
 					},
 				},
 			}); err != nil {
@@ -267,7 +281,20 @@ func (client *client) Start(ctx context.Context) error {
 
 			case *generated.Order_DeletedStack:
 				if err := client.k8sClient.Delete(ctx, msg.DeletedStack.ClusterName); err != nil {
-					sharedlogging.FromContext(ctx).Errorf("Creating deleting cluster side: %s", err)
+					sharedlogging.FromContext(ctx).Errorf("Deleting cluster side: %s", err)
+					if controllererrors.IsNotFound(err) {
+						if err := client.connectClient.SendMsg(&generated.Message{
+							Message: &generated.Message_StatusChanged{
+								StatusChanged: &generated.StatusChanged{
+									StackId: msg.DeletedStack.ClusterName,
+									Status:  generated.StackStatus_Deleted,
+								},
+							},
+						}); err != nil {
+							sharedlogging.FromContext(ctx).Errorf("Unable to send stack status to server: %s", err)
+							continue
+						}
+					}
 				}
 				sharedlogging.FromContext(ctx).Infof("Stack %s deleted", msg.DeletedStack.ClusterName)
 			case *generated.Order_DisabledStack:
