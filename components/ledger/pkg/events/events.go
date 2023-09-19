@@ -1,7 +1,7 @@
 package events
 
 const (
-	EventVersion = "v1"
+	EventVersion = "v2"
 	EventApp     = "ledger"
 
 	EventTypeCommittedTransactions = "COMMITTED_TRANSACTIONS"
