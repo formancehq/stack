@@ -72,7 +72,7 @@ var _ = Given("some empty environment", func() {
 			It("should trigger a new event", func() {
 				// Wait for created transaction event
 				msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-				Expect(events.Check(msg.Data, "ledger", ledgerevents.TypeRevertedTransaction)).Should(Succeed())
+				Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeRevertedTransaction)).Should(Succeed())
 			})
 			It("should revert the original transaction", func() {
 				response, err := Client().Ledger.GetTransaction(

@@ -328,5 +328,7 @@ func (commander *Commander) DeleteMetadata(ctx context.Context, parameters Param
 		return err
 	}
 
+	commander.monitor.DeletedMetadata(ctx, targetType, targetID, key)
+
 	return nil
 }

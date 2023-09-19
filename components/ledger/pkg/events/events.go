@@ -6,5 +6,6 @@ const (
 
 	EventTypeCommittedTransactions = "COMMITTED_TRANSACTIONS"
 	EventTypeSavedMetadata         = "SAVED_METADATA"
-	TypeRevertedTransaction        = "REVERTED_TRANSACTION"
+	EventTypeRevertedTransaction   = "REVERTED_TRANSACTION"
+	EventTypeDeletedMetadata       = "DELETED_METADATA"
 )

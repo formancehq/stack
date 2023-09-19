@@ -15,9 +15,13 @@ type Monitor interface {
 	CommittedTransactions(ctx context.Context, res ...ledger.Transaction)
 	SavedMetadata(ctx context.Context, targetType, id string, metadata metadata.Metadata)
 	RevertedTransaction(ctx context.Context, reverted, revert *ledger.Transaction)
+	DeletedMetadata(ctx context.Context, targetType string, targetID any, key string)
 }
 
 type noOpMonitor struct{}
+
+func (n noOpMonitor) DeletedMetadata(ctx context.Context, targetType string, targetID any, key string) {
+}
 
 func (n noOpMonitor) CommittedTransactions(ctx context.Context, res ...ledger.Transaction) {
 }
@@ -66,11 +70,21 @@ func (l *ledgerMonitor) SavedMetadata(ctx context.Context, targetType, targetID 
 }
 
 func (l *ledgerMonitor) RevertedTransaction(ctx context.Context, reverted, revert *ledger.Transaction) {
-	l.publish(ctx, events.TypeRevertedTransaction,
+	l.publish(ctx, events.EventTypeRevertedTransaction,
 		newEventRevertedTransaction(RevertedTransaction{
 			Ledger:              l.ledgerName,
 			RevertedTransaction: *reverted,
 			RevertTransaction:   *revert,
+		}))
+}
+
+func (l *ledgerMonitor) DeletedMetadata(ctx context.Context, targetType string, targetID any, key string) {
+	l.publish(ctx, events.EventTypeDeletedMetadata,
+		newEventDeletedMetadata(DeletedMetadata{
+			Ledger:     l.ledgerName,
+			TargetType: targetType,
+			TargetID:   targetID,
+			Key:        key,
 		}))
 }
 

@@ -57,7 +57,24 @@ func newEventRevertedTransaction(tx RevertedTransaction) EventMessage {
 		Date:    ledger.Now(),
 		App:     events.EventApp,
 		Version: events.EventVersion,
-		Type:    events.TypeRevertedTransaction,
+		Type:    events.EventTypeRevertedTransaction,
+		Payload: tx,
+	}
+}
+
+type DeletedMetadata struct {
+	Ledger     string `json:"ledger"`
+	TargetType string `json:"targetType"`
+	TargetID   any    `json:"targetID"`
+	Key        string `json:"key"`
+}
+
+func newEventDeletedMetadata(tx DeletedMetadata) EventMessage {
+	return EventMessage{
+		Date:    ledger.Now(),
+		App:     events.EventApp,
+		Version: events.EventVersion,
+		Type:    events.EventTypeDeletedMetadata,
 		Payload: tx,
 	}
 }
