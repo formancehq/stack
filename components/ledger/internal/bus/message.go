@@ -15,8 +15,9 @@ type EventMessage struct {
 }
 
 type CommittedTransactions struct {
-	Ledger       string               `json:"ledger"`
-	Transactions []ledger.Transaction `json:"transactions"`
+	Ledger          string                       `json:"ledger"`
+	Transaction     ledger.Transaction           `json:"transaction"`
+	AccountMetadata map[string]metadata.Metadata `json:"accountMetadata"`
 }
 
 func newEventCommittedTransactions(txs CommittedTransactions) EventMessage {

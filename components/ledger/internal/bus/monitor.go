@@ -12,7 +12,7 @@ import (
 )
 
 type Monitor interface {
-	CommittedTransactions(ctx context.Context, res ...ledger.Transaction)
+	CommittedTransactions(ctx context.Context, res ledger.Transaction, accountMetadata map[string]metadata.Metadata)
 	SavedMetadata(ctx context.Context, targetType, id string, metadata metadata.Metadata)
 	RevertedTransaction(ctx context.Context, reverted, revert *ledger.Transaction)
 	DeletedMetadata(ctx context.Context, targetType string, targetID any, key string)
@@ -23,7 +23,7 @@ type noOpMonitor struct{}
 func (n noOpMonitor) DeletedMetadata(ctx context.Context, targetType string, targetID any, key string) {
 }
 
-func (n noOpMonitor) CommittedTransactions(ctx context.Context, res ...ledger.Transaction) {
+func (n noOpMonitor) CommittedTransactions(ctx context.Context, res ledger.Transaction, accountMetadata map[string]metadata.Metadata) {
 }
 func (n noOpMonitor) SavedMetadata(ctx context.Context, targetType string, id string, metadata metadata.Metadata) {
 }
@@ -51,11 +51,12 @@ func NewLedgerMonitor(publisher message.Publisher, ledgerName string) *ledgerMon
 	return m
 }
 
-func (l *ledgerMonitor) CommittedTransactions(ctx context.Context, txs ...ledger.Transaction) {
+func (l *ledgerMonitor) CommittedTransactions(ctx context.Context, txs ledger.Transaction, accountMetadata map[string]metadata.Metadata) {
 	l.publish(ctx, events.EventTypeCommittedTransactions,
 		newEventCommittedTransactions(CommittedTransactions{
-			Ledger:       l.ledgerName,
-			Transactions: txs,
+			Ledger:          l.ledgerName,
+			Transaction:     txs,
+			AccountMetadata: accountMetadata,
 		}))
 }
 

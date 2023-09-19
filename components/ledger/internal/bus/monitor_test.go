@@ -2,6 +2,7 @@ package bus
 
 import (
 	"context"
+	ledger "github.com/formancehq/ledger/internal"
 	"testing"
 	"time"
 
@@ -26,7 +27,7 @@ func TestMonitor(t *testing.T) {
 		"*": "testing",
 	})
 	m := NewLedgerMonitor(p, uuid.New())
-	go m.CommittedTransactions(context.Background())
+	go m.CommittedTransactions(context.Background(), ledger.Transaction{}, nil)
 
 	select {
 	case m := <-messages:

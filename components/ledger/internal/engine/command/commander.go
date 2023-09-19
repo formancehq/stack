@@ -164,7 +164,7 @@ func (commander *Commander) CreateTransaction(ctx context.Context, parameters Pa
 		return nil, err
 	}
 
-	commander.monitor.CommittedTransactions(ctx, *log.Data.(ledger.NewTransactionLogPayload).Transaction)
+	commander.monitor.CommittedTransactions(ctx, *log.Data.(ledger.NewTransactionLogPayload).Transaction, log.Data.(ledger.NewTransactionLogPayload).AccountMetadata)
 
 	return log.Data.(ledger.NewTransactionLogPayload).Transaction, nil
 }
