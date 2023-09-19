@@ -1,0 +1,15 @@
+type: object
+properties:
+  ledger:
+    type: string
+  targetType:
+    type: string
+  targetId:
+    type: string
+  key:
+    type: string
+required:
+  - ledger
+  - targetType
+  - targetId
+  - key
