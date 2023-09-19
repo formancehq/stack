@@ -1,0 +1,11 @@
+# _config.yml
+
+title: "JSON Schema Static Docs"
+description: Quickly generate human friendly documentation from your JSON schema
+
+remote_theme: pages-themes/cayman@v0.2.0
+baseurl: /json-schema-static-docs
+plugins:
+  - jekyll-remote-theme
+
+google_analytics_ga4: G-1J9F0RFJN0

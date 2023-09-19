@@ -1,0 +1,41 @@
+"$id": https://example.com/arrays.schema.json
+"$schema": https://json-schema.org/draft/2019-09/schema
+title: Draft 2019-09 - Array Example
+description: A schema describing fruits and vegetables
+examples:
+  - fruits:
+      - Apple
+    vegetables:
+      - name: Tomato
+        hasARoundShape: true
+      - name: Carrot
+        hasARoundShape: false
+type: object
+properties:
+  fruits:
+    title: Fruits
+    description: An array of fruit names
+    type: array
+    contains:
+      type: string
+  vegetables:
+    title: Vegetables
+    description: An array vegetable objects
+    type: array
+    items:
+      "$ref": "#/$defs/vegetable"
+"$defs":
+  vegetable:
+    type: object
+    required:
+      - name
+      - hasARoundShape
+    properties:
+      name:
+        type: string
+        title: Name
+        description: The name of the vegetable.
+      hasARoundShape:
+        type: boolean
+        title: Is round
+        description: Does this vegetable have a round shape?

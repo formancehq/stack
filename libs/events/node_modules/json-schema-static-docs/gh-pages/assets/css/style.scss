@@ -1,0 +1,48 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+th {
+  background-color: #f8f8f8;
+  text-align: left;
+}
+
+nav {
+  position: absolute;
+  left: 0px;
+  height: 180px;
+  width: 100%;
+}
+nav ol {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  height: 180px;
+}
+nav li {
+  background-color: rgba(255, 255, 255, 0.2);
+  float: left;
+  padding: 0.2em 0.5em;
+  margin-right: 0.2em;
+}
+nav li:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+nav a {
+  color: #fff;
+}
+
+h1 {
+  clear: both;
+  margin-top: 50px !important;
+}
+
+
+div.jssd-deprecated {
+  background: #d94c4c;
+  color: white;
+  width: 100%;
+  padding: 10px;
+}

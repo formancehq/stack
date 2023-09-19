@@ -3,6 +3,7 @@ package events
 import (
 	"embed"
 	"fmt"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
@@ -13,7 +14,7 @@ import (
 //go:embed base.yaml
 var baseEvent string
 
-//go:embed ledger payments
+//go:embed services
 var services embed.FS
 
 func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) {
@@ -22,7 +23,7 @@ func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) 
 		return nil, err
 	}
 
-	ls, err := services.ReadDir(serviceName)
+	ls, err := services.ReadDir(filepath.Join("services", serviceName))
 	if err != nil {
 		return nil, errors.Wrapf(err, "reading events directory for service '%s'", serviceName)
 	}
@@ -38,7 +39,7 @@ func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) 
 		return nil, fmt.Errorf("error retrieving more recent version directory for service '%s'", serviceName)
 	}
 
-	eventData, err := services.ReadFile(fmt.Sprintf("%s/%s/%s.yaml", serviceName, moreRecent, eventName))
+	eventData, err := services.ReadFile(fmt.Sprintf("services/%s/%s/%s.yaml", serviceName, moreRecent, eventName))
 	if err != nil {
 		return nil, err
 	}
