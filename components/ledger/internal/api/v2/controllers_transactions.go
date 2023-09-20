@@ -169,6 +169,13 @@ func getTransaction(w http.ResponseWriter, r *http.Request) {
 		query = query.WithExpandEffectiveVolumes()
 	}
 
+	pitFilter, err := getPITFilter(r)
+	if err != nil {
+		sharedapi.BadRequest(w, ErrValidation, err)
+		return
+	}
+	query.PITFilter = *pitFilter
+
 	tx, err := l.GetTransactionWithVolumes(r.Context(), query)
 	if err != nil {
 		ResponseError(w, r, err)

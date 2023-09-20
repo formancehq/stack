@@ -76,6 +76,12 @@ func getAccount(w http.ResponseWriter, r *http.Request) {
 	if collectionutils.Contains(r.URL.Query()["expand"], "effectiveVolumes") {
 		query = query.WithExpandEffectiveVolumes()
 	}
+	pitFilter, err := getPITFilter(r)
+	if err != nil {
+		sharedapi.BadRequest(w, ErrValidation, err)
+		return
+	}
+	query.PITFilter = *pitFilter
 
 	acc, err := l.GetAccountWithVolumes(r.Context(), query)
 	if err != nil {
