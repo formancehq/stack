@@ -108,7 +108,7 @@ func main() {
             Destination: "acct_1Gqj58KZcSIg2N2q",
             Source: formance.String("acct_1Gqj58KZcSIg2N2q"),
         },
-        Connector: shared.ConnectorModulr,
+        Connector: shared.ConnectorBankingCircle,
     })
     if err != nil {
         log.Fatal(err)
@@ -160,16 +160,17 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetAccountBalances(ctx, operations.GetAccountBalancesRequest{
-        AccountID: "cupiditate",
-        Asset: formance.String("quos"),
+        AccountID: "labore",
+        Asset: formance.String("delectus"),
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        From: types.MustTimeFromString("2022-11-01T19:07:16.800Z"),
-        Limit: formance.Int64(828940),
-        PageSize: formance.Int64(369808),
+        From: types.MustTimeFromString("2022-10-02T04:55:20.234Z"),
+        Limit: formance.Int64(756107),
+        PageSize: formance.Int64(576157),
         Sort: []string{
-            "fugit",
+            "provident",
+            "necessitatibus",
         },
-        To: types.MustTimeFromString("2021-11-11T04:17:07.569Z"),
+        To: types.MustTimeFromString("2021-09-21T14:06:09.271Z"),
     })
     if err != nil {
         log.Fatal(err)
@@ -220,8 +221,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetConnectorTask(ctx, operations.GetConnectorTaskRequest{
-        Connector: shared.ConnectorWise,
-        TaskID: "facilis",
+        Connector: shared.ConnectorDummyPay,
+        TaskID: "debitis",
     })
     if err != nil {
         log.Fatal(err)
@@ -272,7 +273,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetPayment(ctx, operations.GetPaymentRequest{
-        PaymentID: "tempore",
+        PaymentID: "a",
     })
     if err != nil {
         log.Fatal(err)
@@ -323,11 +324,16 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.InstallConnector(ctx, operations.InstallConnectorRequest{
-        RequestBody: shared.WiseConfig{
-            APIKey: "XXX",
+        RequestBody: shared.BankingCircleConfig{
+            AuthorizationEndpoint: "XXX",
+            Endpoint: "XXX",
+            Password: "XXX",
             PollingPeriod: formance.String("60s"),
+            UserCertificate: "XXX",
+            UserCertificateKey: "XXX",
+            Username: "XXX",
         },
-        Connector: shared.ConnectorMoneycorp,
+        Connector: shared.ConnectorModulr,
     })
     if err != nil {
         log.Fatal(err)
@@ -474,7 +480,7 @@ func main() {
     res, err := s.Payments.ListConnectorTasks(ctx, operations.ListConnectorTasksRequest{
         Connector: shared.ConnectorModulr,
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(248753),
+        PageSize: formance.Int64(846409),
     })
     if err != nil {
         log.Fatal(err)
@@ -525,7 +531,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.ListConnectorsTransfers(ctx, operations.ListConnectorsTransfersRequest{
-        Connector: shared.ConnectorMangopay,
+        Connector: shared.ConnectorMoneycorp,
     })
     if err != nil {
         log.Fatal(err)
@@ -577,10 +583,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.ListPayments(ctx, operations.ListPaymentsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(576157),
+        PageSize: formance.Int64(699479),
         Sort: []string{
-            "provident",
-            "necessitatibus",
+            "magnam",
         },
     })
     if err != nil {
@@ -632,7 +637,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.PaymentsgetAccount(ctx, operations.PaymentsgetAccountRequest{
-        AccountID: "sint",
+        AccountID: "cumque",
     })
     if err != nil {
         log.Fatal(err)
@@ -731,9 +736,10 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.PaymentslistAccounts(ctx, operations.PaymentslistAccountsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(638921),
+        PageSize: formance.Int64(813798),
         Sort: []string{
-            "debitis",
+            "aliquid",
+            "laborum",
         },
     })
     if err != nil {
@@ -838,7 +844,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.ResetConnector(ctx, operations.ResetConnectorRequest{
-        Connector: shared.ConnectorBankingCircle,
+        Connector: shared.ConnectorDummyPay,
     })
     if err != nil {
         log.Fatal(err)
@@ -889,7 +895,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.UninstallConnector(ctx, operations.UninstallConnectorRequest{
-        Connector: shared.ConnectorModulr,
+        Connector: shared.ConnectorCurrencyCloud,
     })
     if err != nil {
         log.Fatal(err)
@@ -941,9 +947,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.UpdateMetadata(ctx, operations.UpdateMetadataRequest{
         PaymentMetadata: shared.PaymentMetadata{
-            Key: formance.String("in"),
+            Key: formance.String("enim"),
         },
-        PaymentID: "illum",
+        PaymentID: "accusamus",
     })
     if err != nil {
         log.Fatal(err)

@@ -1,0 +1,23 @@
+$id: draft-07-user.yml
+$schema: http://json-schema.org/draft-07/schema#
+title: Draft 07 - User Example
+description: A schema demonstrating some draft 07 features
+examples:
+  - username: seymour_butz
+    password: M0zT4v3rn
+required:
+  - username
+type: object
+properties:
+  username:
+    type: string
+    title: Username
+    const: seymour_butz
+    readOnly: true
+    description: This is a description
+    $comment: This is a comment
+  password:
+    type: string
+    title: Password
+    writeOnly: true
+    description: A write only password property

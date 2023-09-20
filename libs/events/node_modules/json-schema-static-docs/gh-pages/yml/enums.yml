@@ -1,0 +1,23 @@
+$id: enum-documentation.yml
+$schema: http://json-schema.org/draft-07/schema#
+title: Enum Documentation
+description: JSON schema example demonstrating documentation of enum values using the custom meta:enum keyword. This must be enabled using the enableMetaEnum config option.
+type: object
+examples:
+  - status: Active
+properties:
+  status:
+    title: Status
+    description: The status of something
+    type: string
+    enum:
+      - Active
+      - Suspended
+      - Terminated
+    meta:enum:
+      Active: The thing is currently active and in use
+      Suspended: The thing is currently suspended and may later become Active or Terminated
+      Deleted: The thing has been permanently terminated
+additionalProperties: false
+required:
+  - status

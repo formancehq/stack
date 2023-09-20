@@ -10,17 +10,6 @@ import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
 public class GetBalancesAggregatedRequest {
     /**
-     * Filter balances involving given account, either as source or destination.
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=address")
-    public String address;
-
-    public GetBalancesAggregatedRequest withAddress(String address) {
-        this.address = address;
-        return this;
-    }
-    
-    /**
      * Name of the ledger.
      */
     @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=ledger")

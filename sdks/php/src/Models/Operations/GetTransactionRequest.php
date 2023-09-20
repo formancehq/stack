@@ -11,6 +11,17 @@ namespace formance\stack\Models\Operations;
 use \formance\stack\Utils\SpeakeasyMetadata;
 class GetTransactionRequest
 {
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=expand')]
+    public ?string $expand = null;
+    
+    /**
+     * Transaction ID.
+     * 
+     * @var int $id
+     */
+	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=id')]
+    public int $id;
+    
     /**
      * Name of the ledger.
      * 
@@ -19,17 +30,10 @@ class GetTransactionRequest
 	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=ledger')]
     public string $ledger;
     
-    /**
-     * Transaction ID.
-     * 
-     * @var int $txid
-     */
-	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=txid')]
-    public int $txid;
-    
 	public function __construct()
 	{
+		$this->expand = null;
+		$this->id = 0;
 		$this->ledger = "";
-		$this->txid = 0;
 	}
 }

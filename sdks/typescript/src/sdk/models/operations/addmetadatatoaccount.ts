@@ -32,12 +32,6 @@ export class AddMetadataToAccountRequest extends SpeakeasyBase {
     address: string;
 
     /**
-     * Set async mode.
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=async" })
-    async?: boolean;
-
-    /**
      * Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
      */
     @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=dryRun" })

@@ -9,6 +9,25 @@ import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
 
 public class GetTransactionRequest {
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=expand")
+    public String expand;
+
+    public GetTransactionRequest withExpand(String expand) {
+        this.expand = expand;
+        return this;
+    }
+    
+    /**
+     * Transaction ID.
+     */
+    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=id")
+    public Long id;
+
+    public GetTransactionRequest withId(Long id) {
+        this.id = id;
+        return this;
+    }
+    
     /**
      * Name of the ledger.
      */
@@ -20,19 +39,8 @@ public class GetTransactionRequest {
         return this;
     }
     
-    /**
-     * Transaction ID.
-     */
-    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=txid")
-    public Long txid;
-
-    public GetTransactionRequest withTxid(Long txid) {
-        this.txid = txid;
-        return this;
-    }
-    
-    public GetTransactionRequest(@JsonProperty("ledger") String ledger, @JsonProperty("txid") Long txid) {
+    public GetTransactionRequest(@JsonProperty("id") Long id, @JsonProperty("ledger") String ledger) {
+        this.id = id;
         this.ledger = ledger;
-        this.txid = txid;
   }
 }

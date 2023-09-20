@@ -8,7 +8,6 @@
 * [countTransactions](#counttransactions) - Count the transactions from a ledger
 * [createTransaction](#createtransaction) - Create a new transaction to a ledger
 * [getAccount](#getaccount) - Get account by its address
-* [getBalances](#getbalances) - Get the balances from a ledger's account
 * [getBalancesAggregated](#getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [getInfo](#getinfo) - Show server information
 * [getLedgerInfo](#getledgerinfo) - Get information about a ledger
@@ -45,10 +44,9 @@ try {
         'explicabo' => 'nobis',
         'enim' => 'omnis',
     ];
-    $request->async = true;
     $request->dryRun = true;
+    $request->id = 1234;
     $request->ledger = 'ledger001';
-    $request->txid = 1234;
 
     $response = $sdk->ledger->addMetadataOnTransaction($request);
 
@@ -99,7 +97,6 @@ try {
         'iure' => 'culpa',
     ];
     $request->address = 'users:001';
-    $request->async = true;
     $request->dryRun = true;
     $request->ledger = 'ledger001';
 
@@ -140,16 +137,19 @@ require_once 'vendor/autoload.php';
 use \formance\stack\SDK;
 use \formance\stack\Models\Shared\Security;
 use \formance\stack\Models\Operations\CountAccountsRequest;
-use \formance\stack\Models\Operations\CountAccountsMetadata;
 
 $sdk = SDK::builder()
     ->build();
 
 try {
     $request = new CountAccountsRequest();
-    $request->address = 'users:.+';
+    $request->requestBody = [
+        'sapiente' => 'architecto',
+        'mollitia' => 'dolorem',
+        'culpa' => 'consequuntur',
+        'repellat' => 'mollitia',
+    ];
     $request->ledger = 'ledger001';
-    $request->metadata = new CountAccountsMetadata();
 
     $response = $sdk->ledger->countAccounts($request);
 
@@ -194,16 +194,13 @@ $sdk = SDK::builder()
 
 try {
     $request = new CountTransactionsRequest();
-    $request->account = 'users:001';
-    $request->destination = 'users:001';
-    $request->endTime = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2020-02-15T22:48:47.492Z');
-    $request->ledger = 'ledger001';
-    $request->metadata = [
-        'mollitia' => 'dolorem',
+    $request->requestBody = [
+        'numquam' => 'commodi',
+        'quam' => 'molestiae',
+        'velit' => 'error',
     ];
-    $request->reference = 'ref:001';
-    $request->source = 'users:001';
-    $request->startTime = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-09-05T05:51:25.673Z');
+    $request->ledger = 'ledger001';
+    $request->pit = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-08-30T15:03:11.112Z');
 
     $response = $sdk->ledger->countTransactions($request);
 
@@ -251,15 +248,14 @@ $sdk = SDK::builder()
 
 try {
     $request = new CreateTransactionRequest();
-    $request->idempotencyKey = 'repellat';
+    $request->idempotencyKey = 'vitae';
     $request->postTransaction = new PostTransaction();
     $request->postTransaction->metadata = [
-        'occaecati' => 'numquam',
-        'commodi' => 'quam',
-        'molestiae' => 'velit',
+        'animi' => 'enim',
+        'odit' => 'quo',
+        'sequi' => 'tenetur',
     ];
     $request->postTransaction->postings = [
-        new Posting(),
         new Posting(),
         new Posting(),
     ];
@@ -274,10 +270,11 @@ try {
     )
     ';
     $request->postTransaction->script->vars = [
-        'quis' => 'vitae',
+        'possimus' => 'aut',
+        'quasi' => 'error',
+        'temporibus' => 'laborum',
     ];
-    $request->postTransaction->timestamp = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-09-08T21:06:19.630Z');
-    $request->async = true;
+    $request->postTransaction->timestamp = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-01-11T05:45:42.485Z');
     $request->dryRun = true;
     $request->ledger = 'ledger001';
 
@@ -325,6 +322,7 @@ $sdk = SDK::builder()
 try {
     $request = new GetAccountRequest();
     $request->address = 'users:001';
+    $request->expand = 'voluptatibus';
     $request->ledger = 'ledger001';
 
     $response = $sdk->ledger->getAccount($request);
@@ -349,54 +347,6 @@ try {
 **[?\formance\stack\Models\Operations\GetAccountResponse](../../models/operations/GetAccountResponse.md)**
 
 
-## getBalances
-
-Get the balances from a ledger's account
-
-### Example Usage
-
-```php
-<?php
-
-declare(strict_types=1);
-require_once 'vendor/autoload.php';
-
-use \formance\stack\SDK;
-use \formance\stack\Models\Shared\Security;
-use \formance\stack\Models\Operations\GetBalancesRequest;
-
-$sdk = SDK::builder()
-    ->build();
-
-try {
-    $request = new GetBalancesRequest();
-    $request->address = 'users:001';
-    $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->ledger = 'ledger001';
-    $request->pageSize = 317202;
-
-    $response = $sdk->ledger->getBalances($request);
-
-    if ($response->balancesCursorResponse !== null) {
-        // handle response
-    }
-} catch (Exception $e) {
-    // handle exception
-}
-```
-
-### Parameters
-
-| Parameter                                                                                             | Type                                                                                                  | Required                                                                                              | Description                                                                                           |
-| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `$request`                                                                                            | [\formance\stack\Models\Operations\GetBalancesRequest](../../models/operations/GetBalancesRequest.md) | :heavy_check_mark:                                                                                    | The request object to use for the request.                                                            |
-
-
-### Response
-
-**[?\formance\stack\Models\Operations\GetBalancesResponse](../../models/operations/GetBalancesResponse.md)**
-
-
 ## getBalancesAggregated
 
 Get the aggregated balances from selected accounts
@@ -418,7 +368,6 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetBalancesAggregatedRequest();
-    $request->address = 'users:001';
     $request->ledger = 'ledger001';
 
     $response = $sdk->ledger->getBalancesAggregated($request);
@@ -544,8 +493,9 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetTransactionRequest();
+    $request->expand = 'vero';
+    $request->id = 1234;
     $request->ledger = 'ledger001';
-    $request->txid = 1234;
 
     $response = $sdk->ledger->getTransaction($request);
 
@@ -590,13 +540,15 @@ $sdk = SDK::builder()
 
 try {
     $request = new ListAccountsRequest();
-    $request->address = 'users:.+';
-    $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->ledger = 'ledger001';
-    $request->metadata = [
-        'quo' => 'sequi',
+    $request->requestBody = [
+        'praesentium' => 'voluptatibus',
+        'ipsa' => 'omnis',
     ];
-    $request->pageSize = 949572;
+    $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
+    $request->expand = 'voluptate';
+    $request->ledger = 'ledger001';
+    $request->pageSize = 739264;
+    $request->pit = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-12-17T16:42:52.927Z');
 
     $response = $sdk->ledger->listAccounts($request);
 
@@ -641,11 +593,14 @@ $sdk = SDK::builder()
 
 try {
     $request = new ListLogsRequest();
+    $request->requestBody = [
+        'ut' => 'maiores',
+        'dicta' => 'corporis',
+    ];
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->endTime = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-05-04T04:15:52.352Z');
     $request->ledger = 'ledger001';
-    $request->pageSize = 820994;
-    $request->startTime = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-11-26T13:23:33.410Z');
+    $request->pageSize = 296140;
+    $request->pit = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-11-18T15:56:41.921Z');
 
     $response = $sdk->ledger->listLogs($request);
 
@@ -671,7 +626,7 @@ try {
 
 ## listTransactions
 
-List transactions from a ledger, sorted by txid in descending order.
+List transactions from a ledger, sorted by id in descending order.
 
 ### Example Usage
 
@@ -690,20 +645,16 @@ $sdk = SDK::builder()
 
 try {
     $request = new ListTransactionsRequest();
-    $request->account = 'users:001';
-    $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->destination = 'users:001';
-    $request->endTime = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-04-29T07:12:18.684Z');
-    $request->ledger = 'ledger001';
-    $request->metadata = [
-        'quasi' => 'reiciendis',
-        'voluptatibus' => 'vero',
-        'nihil' => 'praesentium',
+    $request->requestBody = [
+        'enim' => 'accusamus',
+        'commodi' => 'repudiandae',
+        'quae' => 'ipsum',
     ];
-    $request->pageSize = 976762;
-    $request->reference = 'ref:001';
-    $request->source = 'users:001';
-    $request->startTime = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-05-25T05:33:11.349Z');
+    $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
+    $request->expand = 'quidem';
+    $request->ledger = 'ledger001';
+    $request->pageSize = 565189;
+    $request->pit = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-04-09T11:24:10.949Z');
 
     $response = $sdk->ledger->listTransactions($request);
 
@@ -794,8 +745,8 @@ $sdk = SDK::builder()
 
 try {
     $request = new RevertTransactionRequest();
+    $request->id = 1234;
     $request->ledger = 'ledger001';
-    $request->txid = 1234;
 
     $response = $sdk->ledger->revertTransaction($request);
 

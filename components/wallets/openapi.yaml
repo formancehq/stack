@@ -694,7 +694,7 @@ components:
           additionalProperties:
             type: string
           description: Metadata associated with the wallet.
-        txid:
+        id:
           type: integer
           format: int64
           minimum: 0
@@ -705,7 +705,7 @@ components:
       required:
       - postings
       - timestamp
-      - txid
+      - ix
       - metadata
     Cursor:
       type: object

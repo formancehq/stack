@@ -5,31 +5,31 @@ package operations
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"net/http"
+	"time"
 )
 
 type ListAccountsRequest struct {
-	// Filter accounts by address pattern (regular expression placed between ^ and $).
-	Address *string `queryParam:"style=form,explode=true,name=address"`
+	RequestBody map[string]interface{} `request:"mediaType=application/json"`
 	// Parameter used in pagination requests. Maximum page size is set to 15.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.
 	// No other parameters can be set when this parameter is set.
 	//
 	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
+	Expand *string `queryParam:"style=form,explode=true,name=expand"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-	// Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-	Metadata map[string]string `queryParam:"style=deepObject,explode=true,name=metadata"`
 	// The maximum number of results to return per page.
 	//
-	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
+	PageSize *int64     `queryParam:"style=form,explode=true,name=pageSize"`
+	Pit      *time.Time `queryParam:"style=form,explode=true,name=pit"`
 }
 
-func (o *ListAccountsRequest) GetAddress() *string {
+func (o *ListAccountsRequest) GetRequestBody() map[string]interface{} {
 	if o == nil {
 		return nil
 	}
-	return o.Address
+	return o.RequestBody
 }
 
 func (o *ListAccountsRequest) GetCursor() *string {
@@ -39,6 +39,13 @@ func (o *ListAccountsRequest) GetCursor() *string {
 	return o.Cursor
 }
 
+func (o *ListAccountsRequest) GetExpand() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Expand
+}
+
 func (o *ListAccountsRequest) GetLedger() string {
 	if o == nil {
 		return ""
@@ -46,18 +53,18 @@ func (o *ListAccountsRequest) GetLedger() string {
 	return o.Ledger
 }
 
-func (o *ListAccountsRequest) GetMetadata() map[string]string {
-	if o == nil {
-		return nil
-	}
-	return o.Metadata
-}
-
 func (o *ListAccountsRequest) GetPageSize() *int64 {
 	if o == nil {
 		return nil
 	}
 	return o.PageSize
+}
+
+func (o *ListAccountsRequest) GetPit() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.Pit
 }
 
 type ListAccountsResponse struct {

@@ -13,7 +13,8 @@ type GetAccountRequest struct {
 	// ^\w+(:\w+)*$
 	// ```
 	//
-	Address string `pathParam:"style=simple,explode=false,name=address"`
+	Address string  `pathParam:"style=simple,explode=false,name=address"`
+	Expand  *string `queryParam:"style=form,explode=true,name=expand"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
@@ -23,6 +24,13 @@ func (o *GetAccountRequest) GetAddress() string {
 		return ""
 	}
 	return o.Address
+}
+
+func (o *GetAccountRequest) GetExpand() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Expand
 }
 
 func (o *GetAccountRequest) GetLedger() string {

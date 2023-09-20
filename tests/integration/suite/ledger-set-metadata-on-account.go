@@ -1,13 +1,12 @@
 package suite
 
 import (
-	"math/big"
 	"reflect"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/ledger/pkg/bus"
+	ledgerevents "github.com/formancehq/ledger/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
@@ -56,15 +55,13 @@ var _ = Given("some empty environment", func() {
 			Expect(response.AccountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
 				Address:  "foo",
 				Metadata: metadata,
-				Volumes:  map[string]map[string]*big.Int{},
-				Balances: map[string]*big.Int{},
 			}))
 		})
 		It("should trigger a new event", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(Succeed())
+			Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeSavedMetadata)).Should(Succeed())
 		})
-		It("should pop an account with the correct metadata on search service", func() {
+		FIt("should pop an account with the correct metadata on search service", func() {
 			Eventually(func() bool {
 				response, err := Client().Search.Search(
 					TestContext(),

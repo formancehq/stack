@@ -24,6 +24,9 @@ class GetAccountRequest
 	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=address')]
     public string $address;
     
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=expand')]
+    public ?string $expand = null;
+    
     /**
      * Name of the ledger.
      * 
@@ -35,6 +38,7 @@ class GetAccountRequest
 	public function __construct()
 	{
 		$this->address = "";
+		$this->expand = null;
 		$this->ledger = "";
 	}
 }

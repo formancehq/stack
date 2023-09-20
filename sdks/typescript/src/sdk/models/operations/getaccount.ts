@@ -19,6 +19,9 @@ export class GetAccountRequest extends SpeakeasyBase {
     @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=address" })
     address: string;
 
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=expand" })
+    expand?: string;
+
     /**
      * Name of the ledger.
      */

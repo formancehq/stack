@@ -26,7 +26,7 @@ type ExpandedTransaction struct {
 	Postings          []Posting                    `json:"postings"`
 	Reference         *string                      `json:"reference,omitempty"`
 	Metadata          metadata.Metadata            `json:"metadata"`
-	Txid              int64                        `json:"txid"`
+	ID                int64                        `json:"id"`
 	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes"`
 	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes"`
 }

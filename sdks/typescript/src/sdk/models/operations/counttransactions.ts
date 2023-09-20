@@ -7,27 +7,8 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class CountTransactionsRequest extends SpeakeasyBase {
-    /**
-     * Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=account" })
-    account?: string;
-
-    /**
-     * Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=destination" })
-    destination?: string;
-
-    /**
-     * Filter transactions that occurred before this timestamp.
-     *
-     * @remarks
-     * The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-     *
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=endTime" })
-    endTime?: Date;
+    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+    requestBody?: Record<string, any>;
 
     /**
      * Name of the ledger.
@@ -35,33 +16,8 @@ export class CountTransactionsRequest extends SpeakeasyBase {
     @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
     ledger: string;
 
-    /**
-     * Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=deepObject;explode=true;name=metadata" })
-    metadata?: Record<string, string>;
-
-    /**
-     * Filter transactions by reference field.
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=reference" })
-    reference?: string;
-
-    /**
-     * Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=source" })
-    source?: string;
-
-    /**
-     * Filter transactions that occurred after this timestamp.
-     *
-     * @remarks
-     * The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-     *
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=startTime" })
-    startTime?: Date;
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=pit" })
+    pit?: Date;
 }
 
 export class CountTransactionsResponse extends SpeakeasyBase {

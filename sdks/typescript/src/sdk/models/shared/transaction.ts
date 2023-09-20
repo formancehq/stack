@@ -8,6 +8,10 @@ import { Expose, Transform, Type } from "class-transformer";
 
 export class Transaction extends SpeakeasyBase {
     @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: number;
+
+    @SpeakeasyMetadata()
     @Expose({ name: "metadata" })
     metadata: Record<string, string>;
 
@@ -21,11 +25,11 @@ export class Transaction extends SpeakeasyBase {
     reference?: string;
 
     @SpeakeasyMetadata()
+    @Expose({ name: "reverted" })
+    reverted: boolean;
+
+    @SpeakeasyMetadata()
     @Expose({ name: "timestamp" })
     @Transform(({ value }) => new Date(value), { toClassOnly: true })
     timestamp: Date;
-
-    @SpeakeasyMetadata()
-    @Expose({ name: "txid" })
-    txid: number;
 }

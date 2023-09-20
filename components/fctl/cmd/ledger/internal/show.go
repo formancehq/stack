@@ -15,7 +15,7 @@ import (
 
 // GetTransactionResponse - OK
 type GetTransactionResponseData struct {
-	Data ExpandedTransaction `json:"data"`
+	Data shared.ExpandedTransaction `json:"data"`
 }
 
 type GetTransactionResponse struct {
@@ -34,7 +34,7 @@ func GetTransaction(client *formance.Formance, ctx context.Context, baseURL stri
 	field := reflect.ValueOf(client).Elem().FieldByName("_securityClient")
 	httpClient := reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().Interface().(formance.HTTPClient)
 
-	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/{txid}", request, nil)
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/{id}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

@@ -1,0 +1,15 @@
+{
+  "name": "formancehq-events",
+  "version": "1.0.0",
+  "description": "This repository centralizes event schemas across the Formance Stack. For each stack version, a repository named \"vX\" contains all related events.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-schema-static-docs": "^0.24.1",
+    "yaml": "^2.3.2"
+  }
+}

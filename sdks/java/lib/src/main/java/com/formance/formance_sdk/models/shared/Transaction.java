@@ -15,6 +15,14 @@ import java.time.OffsetDateTime;
 
 
 public class Transaction {
+    @JsonProperty("id")
+    public Long id;
+
+    public Transaction withId(Long id) {
+        this.id = id;
+        return this;
+    }
+    
     @JsonProperty("metadata")
     public java.util.Map<String, String> metadata;
 
@@ -40,6 +48,14 @@ public class Transaction {
         return this;
     }
     
+    @JsonProperty("reverted")
+    public Boolean reverted;
+
+    public Transaction withReverted(Boolean reverted) {
+        this.reverted = reverted;
+        return this;
+    }
+    
     @JsonSerialize(using = DateTimeSerializer.class)
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonProperty("timestamp")
@@ -50,18 +66,11 @@ public class Transaction {
         return this;
     }
     
-    @JsonProperty("txid")
-    public Long txid;
-
-    public Transaction withTxid(Long txid) {
-        this.txid = txid;
-        return this;
-    }
-    
-    public Transaction(@JsonProperty("metadata") java.util.Map<String, String> metadata, @JsonProperty("postings") Posting[] postings, @JsonProperty("timestamp") OffsetDateTime timestamp, @JsonProperty("txid") Long txid) {
+    public Transaction(@JsonProperty("id") Long id, @JsonProperty("metadata") java.util.Map<String, String> metadata, @JsonProperty("postings") Posting[] postings, @JsonProperty("reverted") Boolean reverted, @JsonProperty("timestamp") OffsetDateTime timestamp) {
+        this.id = id;
         this.metadata = metadata;
         this.postings = postings;
+        this.reverted = reverted;
         this.timestamp = timestamp;
-        this.txid = txid;
   }
 }

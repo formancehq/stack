@@ -46,7 +46,6 @@ pkg/models/operations/countaccounts.go
 pkg/models/operations/counttransactions.go
 pkg/models/operations/createtransaction.go
 pkg/models/operations/getaccount.go
-pkg/models/operations/getbalances.go
 pkg/models/operations/getbalancesaggregated.go
 pkg/models/operations/getinfo.go
 pkg/models/operations/getledgerinfo.go
@@ -142,7 +141,6 @@ pkg/models/shared/posting.go
 pkg/models/shared/posttransaction.go
 pkg/models/shared/accountresponse.go
 pkg/models/shared/accountwithvolumesandbalances.go
-pkg/models/shared/balancescursorresponse.go
 pkg/models/shared/aggregatebalancesresponse.go
 pkg/models/shared/configinforesponse.go
 pkg/models/shared/configinfo.go
@@ -332,7 +330,6 @@ docs/models/operations/addmetadataontransactionrequest.md
 docs/models/operations/addmetadataontransactionresponse.md
 docs/models/operations/addmetadatatoaccountrequest.md
 docs/models/operations/addmetadatatoaccountresponse.md
-docs/models/operations/countaccountsmetadata.md
 docs/models/operations/countaccountsrequest.md
 docs/models/operations/countaccountsresponse.md
 docs/models/operations/counttransactionsrequest.md
@@ -341,8 +338,6 @@ docs/models/operations/createtransactionrequest.md
 docs/models/operations/createtransactionresponse.md
 docs/models/operations/getaccountrequest.md
 docs/models/operations/getaccountresponse.md
-docs/models/operations/getbalancesrequest.md
-docs/models/operations/getbalancesresponse.md
 docs/models/operations/getbalancesaggregatedrequest.md
 docs/models/operations/getbalancesaggregatedresponse.md
 docs/models/operations/getinforesponse.md
@@ -492,8 +487,6 @@ docs/models/shared/posttransactionscript.md
 docs/models/shared/posttransaction.md
 docs/models/shared/accountresponse.md
 docs/models/shared/accountwithvolumesandbalances.md
-docs/models/shared/balancescursorresponsecursor.md
-docs/models/shared/balancescursorresponse.md
 docs/models/shared/aggregatebalancesresponse.md
 docs/models/shared/configinforesponse.md
 docs/models/shared/configinfo.md

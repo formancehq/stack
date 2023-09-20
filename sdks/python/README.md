@@ -78,7 +78,6 @@ if res.get_versions_response is not None:
 * [count_transactions](docs/sdks/ledger/README.md#count_transactions) - Count the transactions from a ledger
 * [create_transaction](docs/sdks/ledger/README.md#create_transaction) - Create a new transaction to a ledger
 * [get_account](docs/sdks/ledger/README.md#get_account) - Get account by its address
-* [get_balances](docs/sdks/ledger/README.md#get_balances) - Get the balances from a ledger's account
 * [get_balances_aggregated](docs/sdks/ledger/README.md#get_balances_aggregated) - Get the aggregated balances from selected accounts
 * [get_info](docs/sdks/ledger/README.md#get_info) - Show server information
 * [get_ledger_info](docs/sdks/ledger/README.md#get_ledger_info) - Get information about a ledger

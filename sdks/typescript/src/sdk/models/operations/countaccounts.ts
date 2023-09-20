@@ -6,29 +6,15 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
-/**
- * Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
- */
-export class CountAccountsMetadata extends SpeakeasyBase {}
-
 export class CountAccountsRequest extends SpeakeasyBase {
-    /**
-     * Filter accounts by address pattern (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=address" })
-    address?: string;
+    @SpeakeasyMetadata({ data: "request, media_type=application/json" })
+    requestBody?: Record<string, any>;
 
     /**
      * Name of the ledger.
      */
     @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=ledger" })
     ledger: string;
-
-    /**
-     * Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=deepObject;explode=true;name=metadata" })
-    metadata?: CountAccountsMetadata;
 }
 
 export class CountAccountsResponse extends SpeakeasyBase {

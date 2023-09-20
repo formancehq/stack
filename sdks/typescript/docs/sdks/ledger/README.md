@@ -8,14 +8,10 @@
 * [countTransactions](#counttransactions) - Count the transactions from a ledger
 * [createTransaction](#createtransaction) - Create a new transaction to a ledger
 * [getAccount](#getaccount) - Get account by its address
-* [getBalances](#getbalances) - Get the balances from a ledger's account
 * [getBalancesAggregated](#getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [getInfo](#getinfo) - Show server information
 * [getLedgerInfo](#getledgerinfo) - Get information about a ledger
 * [getTransaction](#gettransaction) - Get transaction from a ledger by its ID
-* [listAccounts](#listaccounts) - List accounts from a ledger
-* [listLogs](#listlogs) - List the logs from a ledger
-* [listTransactions](#listtransactions) - List transactions from a ledger
 * [readStats](#readstats) - Get statistics from a ledger
 * [revertTransaction](#reverttransaction) - Revert a ledger transaction by its ID
 
@@ -41,10 +37,9 @@ sdk.ledger.addMetadataOnTransaction({
     "explicabo": "nobis",
     "enim": "omnis",
   },
-  async: true,
   dryRun: true,
+  id: 1234,
   ledger: "ledger001",
-  txid: 1234,
 }).then((res: AddMetadataOnTransactionResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -88,7 +83,6 @@ sdk.ledger.addMetadataToAccount({
     "iure": "culpa",
   },
   address: "users:001",
-  async: true,
   dryRun: true,
   ledger: "ledger001",
 }).then((res: AddMetadataToAccountResponse) => {
@@ -128,9 +122,13 @@ const sdk = new SDK({
 });
 
 sdk.ledger.countAccounts({
-  address: "users:.+",
+  requestBody: {
+    "sapiente": "architecto",
+    "mollitia": "dolorem",
+    "culpa": "consequuntur",
+    "repellat": "mollitia",
+  },
   ledger: "ledger001",
-  metadata: {},
 }).then((res: CountAccountsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -168,16 +166,13 @@ const sdk = new SDK({
 });
 
 sdk.ledger.countTransactions({
-  account: "users:001",
-  destination: "users:001",
-  endTime: new Date("2020-02-15T22:48:47.492Z"),
-  ledger: "ledger001",
-  metadata: {
-    "mollitia": "dolorem",
+  requestBody: {
+    "numquam": "commodi",
+    "quam": "molestiae",
+    "velit": "error",
   },
-  reference: "ref:001",
-  source: "users:001",
-  startTime: new Date("2022-09-05T05:51:25.673Z"),
+  ledger: "ledger001",
+  pit: new Date("2022-08-30T15:03:11.112Z"),
 }).then((res: CountTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -215,20 +210,14 @@ const sdk = new SDK({
 });
 
 sdk.ledger.createTransaction({
-  idempotencyKey: "repellat",
+  idempotencyKey: "vitae",
   postTransaction: {
     metadata: {
-      "occaecati": "numquam",
-      "commodi": "quam",
-      "molestiae": "velit",
+      "animi": "enim",
+      "odit": "quo",
+      "sequi": "tenetur",
     },
     postings: [
-      {
-        amount: 100,
-        asset: "COIN",
-        destination: "users:002",
-        source: "users:001",
-      },
       {
         amount: 100,
         asset: "COIN",
@@ -253,12 +242,13 @@ sdk.ledger.createTransaction({
     )
     ",
       vars: {
-        "quis": "vitae",
+        "possimus": "aut",
+        "quasi": "error",
+        "temporibus": "laborum",
       },
     },
-    timestamp: new Date("2021-09-08T21:06:19.630Z"),
+    timestamp: new Date("2022-01-11T05:45:42.485Z"),
   },
-  async: true,
   dryRun: true,
   ledger: "ledger001",
 }).then((res: CreateTransactionResponse) => {
@@ -299,6 +289,7 @@ const sdk = new SDK({
 
 sdk.ledger.getAccount({
   address: "users:001",
+  expand: "voluptatibus",
   ledger: "ledger001",
 }).then((res: GetAccountResponse) => {
   if (res.statusCode == 200) {
@@ -320,47 +311,6 @@ sdk.ledger.getAccount({
 **Promise<[operations.GetAccountResponse](../../models/operations/getaccountresponse.md)>**
 
 
-## getBalances
-
-Get the balances from a ledger's account
-
-### Example Usage
-
-```typescript
-import { SDK } from "@formance/formance-sdk";
-import { GetBalancesResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-
-const sdk = new SDK({
-  security: {
-    authorization: "",
-  },
-});
-
-sdk.ledger.getBalances({
-  address: "users:001",
-  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  ledger: "ledger001",
-  pageSize: 317202,
-}).then((res: GetBalancesResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-### Parameters
-
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `request`                                                                      | [operations.GetBalancesRequest](../../models/operations/getbalancesrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
-| `config`                                                                       | [AxiosRequestConfig](https://axios-http.com/docs/req_config)                   | :heavy_minus_sign:                                                             | Available config options for making requests.                                  |
-
-
-### Response
-
-**Promise<[operations.GetBalancesResponse](../../models/operations/getbalancesresponse.md)>**
-
-
 ## getBalancesAggregated
 
 Get the aggregated balances from selected accounts
@@ -378,7 +328,6 @@ const sdk = new SDK({
 });
 
 sdk.ledger.getBalancesAggregated({
-  address: "users:001",
   ledger: "ledger001",
 }).then((res: GetBalancesAggregatedResponse) => {
   if (res.statusCode == 200) {
@@ -490,8 +439,9 @@ const sdk = new SDK({
 });
 
 sdk.ledger.getTransaction({
+  expand: "vero",
+  id: 1234,
   ledger: "ledger001",
-  txid: 1234,
 }).then((res: GetTransactionResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -510,143 +460,6 @@ sdk.ledger.getTransaction({
 ### Response
 
 **Promise<[operations.GetTransactionResponse](../../models/operations/gettransactionresponse.md)>**
-
-
-## listAccounts
-
-List accounts from a ledger, sorted by address in descending order.
-
-### Example Usage
-
-```typescript
-import { SDK } from "@formance/formance-sdk";
-import { ListAccountsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-
-const sdk = new SDK({
-  security: {
-    authorization: "",
-  },
-});
-
-sdk.ledger.listAccounts({
-  address: "users:.+",
-  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  ledger: "ledger001",
-  metadata: {
-    "quo": "sequi",
-  },
-  pageSize: 949572,
-}).then((res: ListAccountsResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-### Parameters
-
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `request`                                                                        | [operations.ListAccountsRequest](../../models/operations/listaccountsrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
-| `config`                                                                         | [AxiosRequestConfig](https://axios-http.com/docs/req_config)                     | :heavy_minus_sign:                                                               | Available config options for making requests.                                    |
-
-
-### Response
-
-**Promise<[operations.ListAccountsResponse](../../models/operations/listaccountsresponse.md)>**
-
-
-## listLogs
-
-List the logs from a ledger, sorted by ID in descending order.
-
-### Example Usage
-
-```typescript
-import { SDK } from "@formance/formance-sdk";
-import { ListLogsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-
-const sdk = new SDK({
-  security: {
-    authorization: "",
-  },
-});
-
-sdk.ledger.listLogs({
-  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  endTime: new Date("2022-05-04T04:15:52.352Z"),
-  ledger: "ledger001",
-  pageSize: 820994,
-  startTime: new Date("2022-11-26T13:23:33.410Z"),
-}).then((res: ListLogsResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-### Parameters
-
-| Parameter                                                                | Type                                                                     | Required                                                                 | Description                                                              |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `request`                                                                | [operations.ListLogsRequest](../../models/operations/listlogsrequest.md) | :heavy_check_mark:                                                       | The request object to use for the request.                               |
-| `config`                                                                 | [AxiosRequestConfig](https://axios-http.com/docs/req_config)             | :heavy_minus_sign:                                                       | Available config options for making requests.                            |
-
-
-### Response
-
-**Promise<[operations.ListLogsResponse](../../models/operations/listlogsresponse.md)>**
-
-
-## listTransactions
-
-List transactions from a ledger, sorted by txid in descending order.
-
-### Example Usage
-
-```typescript
-import { SDK } from "@formance/formance-sdk";
-import { ListTransactionsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-
-const sdk = new SDK({
-  security: {
-    authorization: "",
-  },
-});
-
-sdk.ledger.listTransactions({
-  account: "users:001",
-  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  destination: "users:001",
-  endTime: new Date("2021-04-29T07:12:18.684Z"),
-  ledger: "ledger001",
-  metadata: {
-    "quasi": "reiciendis",
-    "voluptatibus": "vero",
-    "nihil": "praesentium",
-  },
-  pageSize: 976762,
-  reference: "ref:001",
-  source: "users:001",
-  startTime: new Date("2022-05-25T05:33:11.349Z"),
-}).then((res: ListTransactionsResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-### Parameters
-
-| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
-| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `request`                                                                                | [operations.ListTransactionsRequest](../../models/operations/listtransactionsrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
-| `config`                                                                                 | [AxiosRequestConfig](https://axios-http.com/docs/req_config)                             | :heavy_minus_sign:                                                                       | Available config options for making requests.                                            |
-
-
-### Response
-
-**Promise<[operations.ListTransactionsResponse](../../models/operations/listtransactionsresponse.md)>**
 
 
 ## readStats
@@ -705,8 +518,8 @@ const sdk = new SDK({
 });
 
 sdk.ledger.revertTransaction({
+  id: 1234,
   ledger: "ledger001",
-  txid: 1234,
 }).then((res: RevertTransactionResponse) => {
   if (res.statusCode == 200) {
     // handle response

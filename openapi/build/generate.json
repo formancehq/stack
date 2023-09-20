@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230907"
+    "version": "v1.0.20230908"
   },
   "servers": [
     {
@@ -648,7 +648,7 @@
         }
       }
     },
-    "/api/ledger/_info": {
+    "/api/ledger/v2/_info": {
       "get": {
         "tags": [
           "Ledger",
@@ -680,7 +680,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/_info": {
+    "/api/ledger/v2/{ledger}/_info": {
       "get": {
         "summary": "Get information about a ledger",
         "operationId": "getLedgerInfo",
@@ -723,7 +723,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/accounts": {
+    "/api/ledger/v2/{ledger}/accounts": {
       "head": {
         "summary": "Count the accounts from a ledger",
         "operationId": "countAccounts",
@@ -741,31 +741,18 @@
               "type": "string",
               "example": "ledger001"
             }
-          },
-          {
-            "name": "address",
-            "in": "query",
-            "description": "Filter accounts by address pattern (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:.+"
-            }
-          },
-          {
-            "name": "metadata",
-            "in": "query",
-            "description": "Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
-            "style": "deepObject",
-            "explode": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            },
-            "example": {
-              "admin": "true"
-            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
         "responses": {
           "204": {
             "description": "OK",
@@ -823,31 +810,6 @@
             }
           },
           {
-            "name": "address",
-            "in": "query",
-            "description": "Filter accounts by address pattern (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:.+"
-            }
-          },
-          {
-            "name": "metadata",
-            "in": "query",
-            "description": "Filter accounts by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
-            "style": "deepObject",
-            "schema": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "example": {
-              "admin": "true"
-            }
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -855,8 +817,37 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "pit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -881,7 +872,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/accounts/{address}": {
+    "/api/ledger/v2/{ledger}/accounts/{address}": {
       "get": {
         "summary": "Get account by its address",
         "operationId": "getAccount",
@@ -909,6 +900,16 @@
               "type": "string",
               "example": "users:001"
             }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         ],
         "responses": {
@@ -935,7 +936,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/accounts/{address}/metadata": {
+    "/api/ledger/v2/{ledger}/accounts/{address}/metadata": {
       "post": {
         "summary": "Add metadata to an account",
         "operationId": "addMetadataToAccount",
@@ -968,15 +969,6 @@
             "name": "dryRun",
             "in": "query",
             "description": "Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
-            "name": "async",
-            "in": "query",
-            "description": "Set async mode.",
             "schema": {
               "type": "boolean",
               "example": true
@@ -1020,7 +1012,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/stats": {
+    "/api/ledger/v2/{ledger}/stats": {
       "get": {
         "tags": [
           "Ledger",
@@ -1065,7 +1057,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/transactions": {
+    "/api/ledger/v2/{ledger}/transactions": {
       "head": {
         "tags": [
           "Ledger",
@@ -1085,76 +1077,25 @@
             }
           },
           {
-            "name": "reference",
+            "name": "pit",
             "in": "query",
-            "description": "Filter transactions by reference field.",
-            "schema": {
-              "type": "string",
-              "example": "ref:001"
-            }
-          },
-          {
-            "name": "account",
-            "in": "query",
-            "description": "Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
-            }
-          },
-          {
-            "name": "source",
-            "in": "query",
-            "description": "Filter transactions with postings involving given account at source (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
-            }
-          },
-          {
-            "name": "destination",
-            "in": "query",
-            "description": "Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
-            }
-          },
-          {
-            "name": "startTime",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\n",
+            "required": false,
             "schema": {
               "type": "string",
               "format": "date-time"
-            }
-          },
-          {
-            "name": "endTime",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
-            "name": "metadata",
-            "in": "query",
-            "description": "Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2",
-            "style": "deepObject",
-            "schema": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "example": {
-              "admin": "true"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
         "responses": {
           "204": {
             "description": "OK",
@@ -1186,7 +1127,7 @@
           "Transactions"
         ],
         "summary": "List transactions from a ledger",
-        "description": "List transactions from a ledger, sorted by txid in descending order.",
+        "description": "List transactions from a ledger, sorted by id in descending order.",
         "operationId": "listTransactions",
         "parameters": [
           {
@@ -1212,60 +1153,6 @@
             }
           },
           {
-            "name": "reference",
-            "in": "query",
-            "description": "Find transactions by reference field.",
-            "schema": {
-              "type": "string",
-              "example": "ref:001"
-            }
-          },
-          {
-            "name": "account",
-            "in": "query",
-            "description": "Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
-            }
-          },
-          {
-            "name": "source",
-            "in": "query",
-            "description": "Filter transactions with postings involving given account at source (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
-            }
-          },
-          {
-            "name": "destination",
-            "in": "query",
-            "description": "Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
-            }
-          },
-          {
-            "name": "startTime",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
-            "name": "endTime",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -1275,22 +1162,35 @@
             }
           },
           {
-            "name": "metadata",
+            "name": "expand",
             "in": "query",
-            "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
-            "style": "deepObject",
             "schema": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": {
+              "type": "string",
+              "items": {
                 "type": "string"
               }
-            },
-            "example": {
-              "admin": "true"
+            }
+          },
+          {
+            "name": "pit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -1342,15 +1242,6 @@
             }
           },
           {
-            "name": "async",
-            "in": "query",
-            "description": "Set async mode.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
             "name": "Idempotency-Key",
             "in": "header",
             "description": "Use an idempotency key",
@@ -1394,7 +1285,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/transactions/{txid}": {
+    "/api/ledger/v2/{ledger}/transactions/{id}": {
       "get": {
         "tags": [
           "Ledger",
@@ -1414,7 +1305,7 @@
             }
           },
           {
-            "name": "txid",
+            "name": "id",
             "in": "path",
             "description": "Transaction ID.",
             "required": true,
@@ -1423,6 +1314,16 @@
               "format": "int64",
               "minimum": 0,
               "example": 1234
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -1450,7 +1351,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/transactions/{txid}/metadata": {
+    "/api/ledger/v2/{ledger}/transactions/{id}/metadata": {
       "post": {
         "tags": [
           "Ledger",
@@ -1470,7 +1371,7 @@
             }
           },
           {
-            "name": "txid",
+            "name": "id",
             "in": "path",
             "description": "Transaction ID.",
             "required": true,
@@ -1485,15 +1386,6 @@
             "name": "dryRun",
             "in": "query",
             "description": "Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          },
-          {
-            "name": "async",
-            "in": "query",
-            "description": "Set async mode.",
             "schema": {
               "type": "boolean",
               "example": true
@@ -1536,7 +1428,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/transactions/{txid}/revert": {
+    "/api/ledger/v2/{ledger}/transactions/{id}/revert": {
       "post": {
         "tags": [
           "Ledger",
@@ -1556,7 +1448,7 @@
             }
           },
           {
-            "name": "txid",
+            "name": "id",
             "in": "path",
             "description": "Transaction ID.",
             "required": true,
@@ -1592,81 +1484,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/balances": {
-      "get": {
-        "tags": [
-          "Ledger",
-          "Balances"
-        ],
-        "summary": "Get the balances from a ledger's account",
-        "operationId": "getBalances",
-        "parameters": [
-          {
-            "name": "ledger",
-            "in": "path",
-            "description": "Name of the ledger.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ledger001"
-            }
-          },
-          {
-            "name": "address",
-            "in": "query",
-            "description": "Filter balances involving given account, either as source or destination.",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000
-            }
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BalancesCursorResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/ledger/{ledger}/aggregate/balances": {
+    "/api/ledger/v2/{ledger}/aggregate/balances": {
       "get": {
         "tags": [
           "Ledger",
@@ -1683,15 +1501,6 @@
             "schema": {
               "type": "string",
               "example": "ledger001"
-            }
-          },
-          {
-            "name": "address",
-            "in": "query",
-            "description": "Filter balances involving given account, either as source or destination.",
-            "schema": {
-              "type": "string",
-              "example": "users:001"
             }
           }
         ],
@@ -1719,7 +1528,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/logs": {
+    "/api/ledger/v2/{ledger}/logs": {
       "get": {
         "tags": [
           "Ledger",
@@ -1752,24 +1561,6 @@
             }
           },
           {
-            "name": "startTime",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
-            "name": "endTime",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -1777,8 +1568,27 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
+          },
+          {
+            "name": "pit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -4382,9 +4192,7 @@
         "type": "object",
         "required": [
           "address",
-          "metadata",
-          "volumes",
-          "balances"
+          "metadata"
         ],
         "properties": {
           "address": {
@@ -4420,16 +4228,6 @@
                 "input": 100,
                 "output": 0
               }
-            }
-          },
-          "balances": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer",
-              "format": "bigint"
-            },
-            "example": {
-              "COIN": 100
             }
           }
         }
@@ -4538,17 +4336,21 @@
           "metadata": {
             "$ref": "#/components/schemas/ledgerMetadata"
           },
-          "txid": {
+          "id": {
             "type": "integer",
             "format": "int64",
             "minimum": 0
+          },
+          "reverted": {
+            "type": "boolean"
           }
         },
         "required": [
           "postings",
           "timestamp",
-          "txid",
-          "metadata"
+          "id",
+          "metadata",
+          "reverted"
         ]
       },
       "ExpandedTransaction": {
@@ -4565,11 +4367,7 @@
               "postCommitVolumes": {
                 "$ref": "#/components/schemas/AggregatedVolumes"
               }
-            },
-            "required": [
-              "preCommitVolumes",
-              "postCommitVolumes"
-            ]
+            }
           }
         ]
       },
@@ -6073,7 +5871,7 @@
           },
           "sort": {
             "type": "string",
-            "example": "txid:asc"
+            "example": "id:asc"
           },
           "policy": {
             "type": "string",
@@ -6624,7 +6422,7 @@
             },
             "description": "Metadata associated with the wallet."
           },
-          "txid": {
+          "id": {
             "type": "integer",
             "format": "int64",
             "minimum": 0
@@ -6639,7 +6437,7 @@
         "required": [
           "postings",
           "timestamp",
-          "txid",
+          "ix",
           "metadata"
         ]
       },

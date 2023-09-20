@@ -7,13 +7,21 @@ import (
 )
 
 type ExpandedTransaction struct {
+	ID                int64                        `json:"id"`
 	Metadata          map[string]string            `json:"metadata"`
-	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes"`
+	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes,omitempty"`
 	Postings          []Posting                    `json:"postings"`
-	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes"`
+	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
 	Reference         *string                      `json:"reference,omitempty"`
+	Reverted          bool                         `json:"reverted"`
 	Timestamp         time.Time                    `json:"timestamp"`
-	Txid              int64                        `json:"txid"`
+}
+
+func (o *ExpandedTransaction) GetID() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.ID
 }
 
 func (o *ExpandedTransaction) GetMetadata() map[string]string {
@@ -25,7 +33,7 @@ func (o *ExpandedTransaction) GetMetadata() map[string]string {
 
 func (o *ExpandedTransaction) GetPostCommitVolumes() map[string]map[string]Volume {
 	if o == nil {
-		return map[string]map[string]Volume{}
+		return nil
 	}
 	return o.PostCommitVolumes
 }
@@ -39,7 +47,7 @@ func (o *ExpandedTransaction) GetPostings() []Posting {
 
 func (o *ExpandedTransaction) GetPreCommitVolumes() map[string]map[string]Volume {
 	if o == nil {
-		return map[string]map[string]Volume{}
+		return nil
 	}
 	return o.PreCommitVolumes
 }
@@ -51,16 +59,16 @@ func (o *ExpandedTransaction) GetReference() *string {
 	return o.Reference
 }
 
+func (o *ExpandedTransaction) GetReverted() bool {
+	if o == nil {
+		return false
+	}
+	return o.Reverted
+}
+
 func (o *ExpandedTransaction) GetTimestamp() time.Time {
 	if o == nil {
 		return time.Time{}
 	}
 	return o.Timestamp
-}
-
-func (o *ExpandedTransaction) GetTxid() int64 {
-	if o == nil {
-		return 0
-	}
-	return o.Txid
 }

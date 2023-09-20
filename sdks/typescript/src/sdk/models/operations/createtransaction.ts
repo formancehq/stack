@@ -25,12 +25,6 @@ export class CreateTransactionRequest extends SpeakeasyBase {
     postTransaction: shared.PostTransaction;
 
     /**
-     * Set async mode.
-     */
-    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=async" })
-    async?: boolean;
-
-    /**
      * Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
      */
     @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=dryRun" })

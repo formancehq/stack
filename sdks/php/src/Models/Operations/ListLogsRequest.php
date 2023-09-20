@@ -12,6 +12,14 @@ use \formance\stack\Utils\SpeakeasyMetadata;
 class ListLogsRequest
 {
     /**
+     * $requestBody
+     * 
+     * @var ?array<string, mixed> $requestBody
+     */
+	#[SpeakeasyMetadata('request:mediaType=application/json')]
+    public ?array $requestBody = null;
+    
+    /**
      * Parameter used in pagination requests. Maximum page size is set to 15.
      * 
      * Set to the value of next for the next page of results.
@@ -23,17 +31,6 @@ class ListLogsRequest
      */
 	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=cursor')]
     public ?string $cursor = null;
-    
-    /**
-     * Filter transactions that occurred before this timestamp.
-     * 
-     * The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-     * 
-     * 
-     * @var ?\DateTime $endTime
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=endTime,dateTimeFormat=Y-m-d\TH:i:s.up')]
-    public ?\DateTime $endTime = null;
     
     /**
      * Name of the ledger.
@@ -53,23 +50,15 @@ class ListLogsRequest
 	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=pageSize')]
     public ?int $pageSize = null;
     
-    /**
-     * Filter transactions that occurred after this timestamp.
-     * 
-     * The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-     * 
-     * 
-     * @var ?\DateTime $startTime
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=startTime,dateTimeFormat=Y-m-d\TH:i:s.up')]
-    public ?\DateTime $startTime = null;
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=pit,dateTimeFormat=Y-m-d\TH:i:s.up')]
+    public ?\DateTime $pit = null;
     
 	public function __construct()
 	{
+		$this->requestBody = null;
 		$this->cursor = null;
-		$this->endTime = null;
 		$this->ledger = "";
 		$this->pageSize = null;
-		$this->startTime = null;
+		$this->pit = null;
 	}
 }

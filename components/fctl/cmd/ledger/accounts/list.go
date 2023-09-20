@@ -3,7 +3,7 @@ package accounts
 import (
 	"fmt"
 
-	internal "github.com/formancehq/fctl/cmd/ledger/internal"
+	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -74,9 +74,20 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
+	body := make([]map[string]map[string]any, 0)
+	for key, value := range metadata {
+		body = append(body, map[string]map[string]any{
+			"$match": {
+				"metadata[" + key + "]": value,
+			},
+		})
+	}
+
 	request := operations.ListAccountsRequest{
-		Ledger:   fctl.GetString(cmd, internal.LedgerFlag),
-		Metadata: metadata,
+		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
+		RequestBody: map[string]interface{}{
+			"$and": body,
+		},
 	}
 	rsp, err := ledgerClient.Ledger.ListAccounts(cmd.Context(), request)
 	if err != nil {

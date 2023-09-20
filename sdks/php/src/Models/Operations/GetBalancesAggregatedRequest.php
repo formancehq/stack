@@ -12,14 +12,6 @@ use \formance\stack\Utils\SpeakeasyMetadata;
 class GetBalancesAggregatedRequest
 {
     /**
-     * Filter balances involving given account, either as source or destination.
-     * 
-     * @var ?string $address
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=address')]
-    public ?string $address = null;
-    
-    /**
      * Name of the ledger.
      * 
      * @var string $ledger
@@ -29,7 +21,6 @@ class GetBalancesAggregatedRequest
     
 	public function __construct()
 	{
-		$this->address = null;
 		$this->ledger = "";
 	}
 }

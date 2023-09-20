@@ -7,11 +7,19 @@ import (
 )
 
 type Transaction struct {
+	ID        int64             `json:"id"`
 	Metadata  map[string]string `json:"metadata"`
 	Postings  []Posting         `json:"postings"`
 	Reference *string           `json:"reference,omitempty"`
+	Reverted  bool              `json:"reverted"`
 	Timestamp time.Time         `json:"timestamp"`
-	Txid      int64             `json:"txid"`
+}
+
+func (o *Transaction) GetID() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.ID
 }
 
 func (o *Transaction) GetMetadata() map[string]string {
@@ -35,16 +43,16 @@ func (o *Transaction) GetReference() *string {
 	return o.Reference
 }
 
+func (o *Transaction) GetReverted() bool {
+	if o == nil {
+		return false
+	}
+	return o.Reverted
+}
+
 func (o *Transaction) GetTimestamp() time.Time {
 	if o == nil {
 		return time.Time{}
 	}
 	return o.Timestamp
-}
-
-func (o *Transaction) GetTxid() int64 {
-	if o == nil {
-		return 0
-	}
-	return o.Txid
 }

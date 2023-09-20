@@ -22,7 +22,7 @@ class SDKConfiguration:
     server_idx: int = 0
     server_defaults: list[dict[str, str]] = field(default_factory=list)
     language: str = 'python'
-    openapi_doc_version: str = 'v1.0.20230907'
+    openapi_doc_version: str = 'v1.0.20230908'
     sdk_version: str = 'v0.1.0'
     gen_version: str = '2.96.3'
 

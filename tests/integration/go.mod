@@ -172,7 +172,6 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.14 // indirect
 	github.com/uptrace/bun/driver/sqliteshim v1.1.14 // indirect
-	github.com/uptrace/bun/extra/bunbig v1.1.14 // indirect
 	github.com/uptrace/bun/extra/bundebug v1.1.14 // indirect
 	github.com/uptrace/bun/extra/bunotel v1.1.14 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
@@ -223,7 +222,7 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/mod v0.10.0 // indirect
+	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sync v0.2.0 // indirect

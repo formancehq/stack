@@ -12,31 +12,12 @@ use \formance\stack\Utils\SpeakeasyMetadata;
 class CountTransactionsRequest
 {
     /**
-     * Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
+     * $requestBody
      * 
-     * @var ?string $account
+     * @var ?array<string, mixed> $requestBody
      */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=account')]
-    public ?string $account = null;
-    
-    /**
-     * Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
-     * 
-     * @var ?string $destination
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=destination')]
-    public ?string $destination = null;
-    
-    /**
-     * Filter transactions that occurred before this timestamp.
-     * 
-     * The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-     * 
-     * 
-     * @var ?\DateTime $endTime
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=endTime,dateTimeFormat=Y-m-d\TH:i:s.up')]
-    public ?\DateTime $endTime = null;
+	#[SpeakeasyMetadata('request:mediaType=application/json')]
+    public ?array $requestBody = null;
     
     /**
      * Name of the ledger.
@@ -46,50 +27,13 @@ class CountTransactionsRequest
 	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=ledger')]
     public string $ledger;
     
-    /**
-     * Filter transactions by metadata key value pairs. Nested objects can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-     * 
-     * @var ?array<string, string> $metadata
-     */
-	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
-    public ?array $metadata = null;
-    
-    /**
-     * Filter transactions by reference field.
-     * 
-     * @var ?string $reference
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=reference')]
-    public ?string $reference = null;
-    
-    /**
-     * Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
-     * 
-     * @var ?string $source
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=source')]
-    public ?string $source = null;
-    
-    /**
-     * Filter transactions that occurred after this timestamp.
-     * 
-     * The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-     * 
-     * 
-     * @var ?\DateTime $startTime
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=startTime,dateTimeFormat=Y-m-d\TH:i:s.up')]
-    public ?\DateTime $startTime = null;
+	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=pit,dateTimeFormat=Y-m-d\TH:i:s.up')]
+    public ?\DateTime $pit = null;
     
 	public function __construct()
 	{
-		$this->account = null;
-		$this->destination = null;
-		$this->endTime = null;
+		$this->requestBody = null;
 		$this->ledger = "";
-		$this->metadata = null;
-		$this->reference = null;
-		$this->source = null;
-		$this->startTime = null;
+		$this->pit = null;
 	}
 }

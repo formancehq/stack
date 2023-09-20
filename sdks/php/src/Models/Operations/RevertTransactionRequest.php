@@ -12,6 +12,14 @@ use \formance\stack\Utils\SpeakeasyMetadata;
 class RevertTransactionRequest
 {
     /**
+     * Transaction ID.
+     * 
+     * @var int $id
+     */
+	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=id')]
+    public int $id;
+    
+    /**
      * Name of the ledger.
      * 
      * @var string $ledger
@@ -19,17 +27,9 @@ class RevertTransactionRequest
 	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=ledger')]
     public string $ledger;
     
-    /**
-     * Transaction ID.
-     * 
-     * @var int $txid
-     */
-	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=txid')]
-    public int $txid;
-    
 	public function __construct()
 	{
+		$this->id = 0;
 		$this->ledger = "";
-		$this->txid = 0;
 	}
 }

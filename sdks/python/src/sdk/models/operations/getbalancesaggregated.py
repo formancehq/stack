@@ -13,8 +13,6 @@ from typing import Optional
 class GetBalancesAggregatedRequest:
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
-    address: Optional[str] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'address', 'style': 'form', 'explode': True }})
-    r"""Filter balances involving given account, either as source or destination."""
     
 
 
