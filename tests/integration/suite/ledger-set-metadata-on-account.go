@@ -61,7 +61,7 @@ var _ = Given("some empty environment", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
 			Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeSavedMetadata)).Should(Succeed())
 		})
-		FIt("should pop an account with the correct metadata on search service", func() {
+		It("should pop an account with the correct metadata on search service", func() {
 			Eventually(func() bool {
 				response, err := Client().Search.Search(
 					TestContext(),
