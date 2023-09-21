@@ -16,7 +16,17 @@ tasks:
   sdk:generate:
     internal: true
     cmds:
+      - rm -rf ./../sdks/{{.TARGET}}
+      - mkdir -p ./../sdks/{{.TARGET}}
+      - cp -r ./templates/{{.TARGET}} ./../sdks/{{.TARGET}}
+      - yq -y -i '.{{.TARGET}}.version = "{{.VERSION}}"' gen.yaml
       - speakeasy generate sdk -s ./build/generate.json -o ./../sdks/{{.TARGET}} -l {{.TARGET}}
+
+  sdk:generate:go:
+    desc: Generate all client code
+    deps:
+      - task: sdk:generate
+        vars: {TARGET: "go", VERSION: "{{.VERSION}}"}
 
   sdk:generate:all:
     desc: Generate all client code

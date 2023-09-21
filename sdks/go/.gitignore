@@ -1,7 +1,0 @@
-docs
-pkg
-*.go
-files.gen
-*.md
-go.mod
-go.sum
