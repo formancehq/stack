@@ -70,18 +70,10 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	baseUrl := profile.ServicesBaseUrl(stack).String()
-
-	response, err := internal.GetTransaction(
-		ledgerClient,
-		cmd.Context(),
-		baseUrl,
-		operations.GetTransactionRequest{
-			Ledger: ledger,
-			ID:     txId,
-		},
-	)
+	response, err := ledgerClient.Ledger.GetTransaction(cmd.Context(), operations.GetTransactionRequest{
+		Ledger: ledger,
+		ID:     txId,
+	})
 	if err != nil {
 		return nil, err
 	}
