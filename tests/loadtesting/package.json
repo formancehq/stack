@@ -23,7 +23,7 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-jsdoc": "^39.8.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "semver": "^7.3.7",
+    "semver": "^7.5.2",
     "typescript": "4.9.5",
     "uniqid": "^5.4.0",
     "webpack": "5.75.0",
