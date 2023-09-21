@@ -12,11 +12,11 @@
       "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#go-task",
       "version": "3.24.0"
     },
-    "go@1.20.6": {
-      "last_modified": "2023-07-25T23:32:12Z",
-      "resolved": "github:NixOS/nixpkgs/a9b47d85504bdd199e90846622c76aa0bfeabfac#go",
+    "go@1.20.7": {
+      "last_modified": "2023-09-13T08:26:01Z",
+      "resolved": "github:NixOS/nixpkgs/1697b7d480449b01111e352021f46e5879e47643#go",
       "source": "devbox-search",
-      "version": "1.20.6"
+      "version": "1.20.7"
     },
     "golangci-lint@1.53.3": {
       "last_modified": "2023-06-29T16:20:38Z",
