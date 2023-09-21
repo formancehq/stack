@@ -18,8 +18,8 @@ tasks:
     cmds:
       - rm -rf ./../sdks/{{.TARGET}}
       - mkdir -p ./../sdks/{{.TARGET}}
-      - cp -r ./templates/{{.TARGET}} ./../sdks/{{.TARGET}}
-      - yq -y -i '.{{.TARGET}}.version = "{{.VERSION}}"' gen.yaml
+      - cp -r ./templates/{{.TARGET}} ./../sdks/
+      - yq -y -i '.{{.TARGET}}.version = "{{.VERSION}}"' ./../sdks/{{.TARGET}}/gen.yaml
       - speakeasy generate sdk -s ./build/generate.json -o ./../sdks/{{.TARGET}} -l {{.TARGET}}
 
   sdk:generate:go:
