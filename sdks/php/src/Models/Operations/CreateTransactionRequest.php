@@ -32,14 +32,6 @@ class CreateTransactionRequest
     public \formance\stack\Models\Shared\PostTransaction $postTransaction;
     
     /**
-     * Set async mode.
-     * 
-     * @var ?bool $async
-     */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=async')]
-    public ?bool $async = null;
-    
-    /**
      * Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
      * 
      * @var ?bool $dryRun
@@ -59,7 +51,6 @@ class CreateTransactionRequest
 	{
 		$this->idempotencyKey = null;
 		$this->postTransaction = new \formance\stack\Models\Shared\PostTransaction();
-		$this->async = null;
 		$this->dryRun = null;
 		$this->ledger = "";
 	}

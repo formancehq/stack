@@ -13,6 +13,8 @@ data:
               events:
               - label: COMMITTED_TRANSACTIONS
                 processors:
+                - log:
+                    message: "receive message: ${! this }"
                 - bloblang: |
                     map account {
                       root = this.map_each(v -> v.value.map_each(v2 -> {
@@ -33,18 +35,18 @@ data:
                     map tx {
                       root = {
                         "action": "index",
-                        "id": "%s".format(this.txid),
+                        "id": if this.exists("txid") { "%s".format(this.txid) } else { "%s".format(this.id) },
                         "document": {
                           "data": {
                             "postings": this.postings,
                             "reference": this.reference,
-                            "txid": this.txid,
+                            "txid": if this.exists("txid") { this.txid } else { this.id },
                             "timestamp": this.timestamp,
                             "metadata": if this.metadata { this.metadata } else {{}}
                           },
                           "indexed": {
                             "reference": this.reference,
-                            "txid": this.txid,
+                            "txid": if this.exists("txid") { this.txid } else { this.id },
                             "timestamp": this.timestamp,
                             "asset": this.postings.map_each(p -> p.asset),
                             "source": this.postings.map_each(p -> p.source),
@@ -241,7 +243,7 @@ data:
           - postgres_query:
               service: ledger
               query: |
-                select id, timestamp, reference, metadata, postings
+                select id::varchar as id, timestamp, reference, metadata, postings
                 from "${! meta("ledger") }".transactions;
           - unarchive:
               format: json_array
@@ -252,7 +254,7 @@ data:
               })
           - bloblang: |
                 meta action = "upsert"
-                meta id = "TRANSACTION-%s-%d".format(meta("ledger"), this.id)
+                meta id = "TRANSACTION-%s-%s".format(meta("ledger"), this.id)
                 root = {
                   "data": {
                     "postings": this.postings,

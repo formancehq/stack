@@ -15,6 +15,14 @@ import java.time.OffsetDateTime;
 
 
 public class ExpandedTransaction {
+    @JsonProperty("id")
+    public Long id;
+
+    public ExpandedTransaction withId(Long id) {
+        this.id = id;
+        return this;
+    }
+    
     @JsonProperty("metadata")
     public java.util.Map<String, String> metadata;
 
@@ -23,6 +31,7 @@ public class ExpandedTransaction {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("postCommitVolumes")
     public java.util.Map<String, java.util.Map<String, Volume>> postCommitVolumes;
 
@@ -39,6 +48,7 @@ public class ExpandedTransaction {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("preCommitVolumes")
     public java.util.Map<String, java.util.Map<String, Volume>> preCommitVolumes;
 
@@ -56,6 +66,14 @@ public class ExpandedTransaction {
         return this;
     }
     
+    @JsonProperty("reverted")
+    public Boolean reverted;
+
+    public ExpandedTransaction withReverted(Boolean reverted) {
+        this.reverted = reverted;
+        return this;
+    }
+    
     @JsonSerialize(using = DateTimeSerializer.class)
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonProperty("timestamp")
@@ -66,20 +84,11 @@ public class ExpandedTransaction {
         return this;
     }
     
-    @JsonProperty("txid")
-    public Long txid;
-
-    public ExpandedTransaction withTxid(Long txid) {
-        this.txid = txid;
-        return this;
-    }
-    
-    public ExpandedTransaction(@JsonProperty("metadata") java.util.Map<String, String> metadata, @JsonProperty("postCommitVolumes") java.util.Map<String, java.util.Map<String, Volume>> postCommitVolumes, @JsonProperty("postings") Posting[] postings, @JsonProperty("preCommitVolumes") java.util.Map<String, java.util.Map<String, Volume>> preCommitVolumes, @JsonProperty("timestamp") OffsetDateTime timestamp, @JsonProperty("txid") Long txid) {
+    public ExpandedTransaction(@JsonProperty("id") Long id, @JsonProperty("metadata") java.util.Map<String, String> metadata, @JsonProperty("postings") Posting[] postings, @JsonProperty("reverted") Boolean reverted, @JsonProperty("timestamp") OffsetDateTime timestamp) {
+        this.id = id;
         this.metadata = metadata;
-        this.postCommitVolumes = postCommitVolumes;
         this.postings = postings;
-        this.preCommitVolumes = preCommitVolumes;
+        this.reverted = reverted;
         this.timestamp = timestamp;
-        this.txid = txid;
   }
 }

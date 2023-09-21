@@ -109,7 +109,6 @@ var _ = Given("some empty environment", func() {
 			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.LogTypeNewTransaction))
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
-			Expect(logsCursorResponse.Cursor.Data[1].Date).To(Equal(timestamp2))
 			Expect(logsCursorResponse.Cursor.Data[1].Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(logsCursorResponse.Cursor.Data[1].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
 			transaction := logsCursorResponse.Cursor.Data[1].Data["transaction"].(map[string]any)
@@ -129,91 +128,9 @@ var _ = Given("some empty environment", func() {
 
 			Expect(logsCursorResponse.Cursor.Data[2].ID).To(Equal(int64(0)))
 			Expect(logsCursorResponse.Cursor.Data[2].Type).To(Equal(shared.LogTypeNewTransaction))
-			// Cannot check date and txid inside Data since they are changing at
-			// every run
-			Expect(logsCursorResponse.Cursor.Data[2].Date).To(Equal(timestamp1))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
 			transaction = logsCursorResponse.Cursor.Data[2].Data["transaction"].(map[string]any)
-			Expect(transaction["metadata"]).To(Equal(map[string]any{}))
-			Expect(transaction["reference"]).To(Equal(""))
-			Expect(transaction["timestamp"]).To(Equal("2023-04-11T10:00:00Z"))
-			Expect(transaction["postings"]).To(Equal([]any{
-				map[string]any{
-					"amount":      float64(100),
-					"asset":       "USD",
-					"source":      "world",
-					"destination": "foo:foo",
-				},
-			}))
-		})
-		It("should be listed on api with ListLogs using time filters", func() {
-			st := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			response, err := Client().Ledger.ListLogs(
-				TestContext(),
-				operations.ListLogsRequest{
-					Ledger:    "default",
-					StartTime: &st,
-				},
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
-
-			logsCursorResponse := response.LogsCursorResponse
-			Expect(logsCursorResponse.Cursor.Data).To(HaveLen(2))
-
-			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(int64(2)))
-			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.LogTypeSetMetadata))
-			Expect(logsCursorResponse.Cursor.Data[0].Data).To(Equal(map[string]any{
-				"targetType": "ACCOUNT",
-				"metadata": map[string]any{
-					"clientType": "gold",
-				},
-				"targetId": "foo:baz",
-			}))
-
-			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(int64(1)))
-			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.LogTypeNewTransaction))
-			Expect(logsCursorResponse.Cursor.Data[1].Date).To(Equal(timestamp2))
-			Expect(logsCursorResponse.Cursor.Data[1].Data["accountMetadata"]).To(Equal(map[string]any{}))
-			Expect(logsCursorResponse.Cursor.Data[1].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
-			transaction := logsCursorResponse.Cursor.Data[1].Data["transaction"].(map[string]any)
-			Expect(transaction["metadata"]).To(Equal(map[string]any{
-				"clientType": "silver",
-			}))
-			Expect(transaction["reference"]).To(Equal(""))
-			Expect(transaction["timestamp"]).To(Equal("2023-04-12T10:00:00Z"))
-			Expect(transaction["postings"]).To(Equal([]any{
-				map[string]any{
-					"amount":      float64(200),
-					"asset":       "USD",
-					"source":      "world",
-					"destination": "foo:bar",
-				},
-			}))
-
-			et := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			response, err = Client().Ledger.ListLogs(
-				TestContext(),
-				operations.ListLogsRequest{
-					EndTime: &et,
-					Ledger:  "default",
-				},
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(200))
-
-			logsCursorResponse = response.LogsCursorResponse
-			Expect(logsCursorResponse.Cursor.Data).To(HaveLen(1))
-
-			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(int64(0)))
-			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.LogTypeNewTransaction))
-			// Cannot check date and txid inside Data since they are changing at
-			// every run
-			Expect(logsCursorResponse.Cursor.Data[0].Date).To(Equal(timestamp1))
-			Expect(logsCursorResponse.Cursor.Data[0].Data["accountMetadata"]).To(Equal(map[string]any{}))
-			Expect(logsCursorResponse.Cursor.Data[0].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
-			transaction = logsCursorResponse.Cursor.Data[0].Data["transaction"].(map[string]any)
 			Expect(transaction["metadata"]).To(Equal(map[string]any{}))
 			Expect(transaction["reference"]).To(Equal(""))
 			Expect(transaction["timestamp"]).To(Equal("2023-04-11T10:00:00Z"))

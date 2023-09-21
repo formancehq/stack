@@ -1,0 +1,38 @@
+$id: oneof.yml
+$schema: http://json-schema.org/draft-07/schema#
+title: One-of
+description: Example schema to demonstrate the use of the oneOf keyword
+type: object
+examples:
+  - justOne:
+      propertyA: With a string value
+  - justOne:
+      propertyB: 123
+      propertyC: 456
+properties:
+  justOne:
+    title: Just One
+    description: Property that demonstrates oneOf
+    type: object
+    oneOf:
+      - title: justOne option 0 with a single property
+        properties:
+          propertyA:
+            type: string
+            title: Property A
+        required:
+          - propertyA
+      - title: justOne option 1 with two properties
+        properties:
+          propertyB:
+            type: integer
+            title: Property B
+          propertyC:
+            type: integer
+            title: Property C
+        required:
+          - propertyB
+          - propertyC
+additionalProperties: false
+required:
+  - justOne

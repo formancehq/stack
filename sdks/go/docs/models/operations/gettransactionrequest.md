@@ -5,5 +5,6 @@
 
 | Field               | Type                | Required            | Description         | Example             |
 | ------------------- | ------------------- | ------------------- | ------------------- | ------------------- |
+| `Expand`            | **string*           | :heavy_minus_sign:  | N/A                 |                     |
+| `ID`                | *int64*             | :heavy_check_mark:  | Transaction ID.     | 1234                |
 | `Ledger`            | *string*            | :heavy_check_mark:  | Name of the ledger. | ledger001           |
-| `Txid`              | *int64*             | :heavy_check_mark:  | Transaction ID.     | 1234                |

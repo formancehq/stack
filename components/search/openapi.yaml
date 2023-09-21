@@ -75,7 +75,7 @@ components:
             example: "destination=central_bank1"
         sort:
           type: string
-          example: "txid:asc"
+          example: "id:asc"
         policy:
           type: string
           example: "OR"

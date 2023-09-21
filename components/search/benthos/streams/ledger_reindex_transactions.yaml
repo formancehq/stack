@@ -9,7 +9,7 @@ pipeline:
   - postgres_query:
       service: ledger
       query: |
-        select id, timestamp, reference, metadata, postings
+        select id::varchar as id, timestamp, reference, metadata, postings
         from "${! meta("ledger") }".transactions;
   - unarchive:
       format: json_array
@@ -20,7 +20,7 @@ pipeline:
       })
   - bloblang: |
         meta action = "upsert"
-        meta id = "TRANSACTION-%s-%d".format(meta("ledger"), this.id)
+        meta id = "TRANSACTION-%s-%s".format(meta("ledger"), this.id)
         root = {
           "data": {
             "postings": this.postings,

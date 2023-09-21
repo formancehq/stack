@@ -221,7 +221,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 					*historyStage.Input.CreateTransaction.Ledger,
 				))
 				if historyStage.Error == nil && historyStage.LastFailure == nil && historyStage.Terminated {
-					listItems = append(listItems, historyItemDetails("Created transaction: %d", historyStage.Output.CreateTransaction.Data.Txid))
+					listItems = append(listItems, historyItemDetails("Created transaction: %d", historyStage.Output.CreateTransaction.Data.ID))
 					if historyStage.Input.CreateTransaction.Data.Reference != nil {
 						listItems = append(listItems, historyItemDetails("Reference: %s", *historyStage.Output.CreateTransaction.Data.Reference))
 					}
@@ -275,7 +275,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 			case historyStage.Input.RevertTransaction != nil:
 				listItems = append(listItems, historyItemTitle("Revert transaction %s", historyStage.Input.RevertTransaction.ID))
 				if historyStage.Error == nil {
-					listItems = append(listItems, historyItemTitle("Created transaction: %d", historyStage.Output.RevertTransaction.Data.Txid))
+					listItems = append(listItems, historyItemTitle("Created transaction: %d", historyStage.Output.RevertTransaction.Data.ID))
 				}
 			case historyStage.Input.VoidHold != nil:
 				listItems = append(listItems, historyItemTitle("Cancel debit hold %s", historyStage.Input.VoidHold.ID))

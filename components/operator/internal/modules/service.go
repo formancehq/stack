@@ -3,7 +3,9 @@ package modules
 import (
 	"context"
 	"fmt"
+	"golang.org/x/mod/semver"
 	"sort"
+	"strings"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/collectionutils"
@@ -513,6 +515,11 @@ func (service Service) install(ctx ServiceInstallContext, deployer *ResourceDepl
 }
 
 func (service Service) createContainer(ctx ContainerResolutionContext, container Container, serviceName string, init bool) corev1.Container {
+	imageVersion := strings.Split(container.Image, ":")[1]
+	pullPolicy := corev1.PullIfNotPresent
+	if !semver.IsValid(imageVersion) {
+		pullPolicy = corev1.PullAlways
+	}
 	c := corev1.Container{
 		Name: func() string {
 			if container.Name != "" {
@@ -520,10 +527,11 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			}
 			return serviceName
 		}(),
-		Image:     container.Image,
-		Command:   container.Command,
-		Args:      container.Args,
-		Resources: container.Resources,
+		Image:           container.Image,
+		ImagePullPolicy: pullPolicy,
+		Command:         container.Command,
+		Args:            container.Args,
+		Resources:       container.Resources,
 	}
 	env := NewEnv()
 	if service.InjectPostgresVariables {

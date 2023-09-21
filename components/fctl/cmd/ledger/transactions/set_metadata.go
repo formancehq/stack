@@ -83,7 +83,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	request := operations.AddMetadataOnTransactionRequest{
 		Ledger:      fctl.GetString(cmd, internal.LedgerFlag),
-		Txid:        transactionID,
+		ID:          transactionID,
 		RequestBody: metadata,
 	}
 	response, err := ledgerClient.Ledger.AddMetadataOnTransaction(cmd.Context(), request)

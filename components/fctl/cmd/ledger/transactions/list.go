@@ -96,36 +96,54 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	var (
-		endTime   time.Time
-		startTime time.Time
-	)
-	if startTimeStr := fctl.GetString(cmd, c.startTimeFlag); startTimeStr != "" {
-		startTime, err = time.Parse(time.RFC3339Nano, startTimeStr)
-		if err != nil {
-			return nil, err
-		}
+	options := make([]map[string]map[string]any, 0)
+	if account := fctl.GetString(cmd, c.accountFlag); account != "" {
+		options = append(options, map[string]map[string]any{
+			"$match": {"account": account},
+		})
 	}
-	if endTimeStr := fctl.GetString(cmd, c.endTimeFlag); endTimeStr != "" {
-		endTime, err = time.Parse(time.RFC3339Nano, endTimeStr)
-		if err != nil {
-			return nil, err
-		}
+	if source := fctl.GetString(cmd, c.sourceFlag); source != "" {
+		options = append(options, map[string]map[string]any{
+			"$match": {"source": source},
+		})
+	}
+	if destination := fctl.GetString(cmd, c.destinationFlag); destination != "" {
+		options = append(options, map[string]map[string]any{
+			"$match": {"destination": destination},
+		})
+	}
+	if reference := fctl.GetString(cmd, c.referenceFlag); reference != "" {
+		options = append(options, map[string]map[string]any{
+			"$match": {"reference": reference},
+		})
+	}
+	if startTime := fctl.GetString(cmd, c.startTimeFlag); startTime != "" {
+		options = append(options, map[string]map[string]any{
+			"$gte": {"date": startTime},
+		})
+	}
+	if endTime := fctl.GetString(cmd, c.endTimeFlag); endTime != "" {
+		options = append(options, map[string]map[string]any{
+			"$lt": {"date": endTime},
+		})
+	}
+	for key, value := range metadata {
+		options = append(options, map[string]map[string]any{
+			"$match": {
+				"metadata[" + key + "]": value,
+			},
+		})
 	}
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
 	response, err := ledgerClient.Ledger.ListTransactions(
 		cmd.Context(),
 		operations.ListTransactionsRequest{
-			Account:     fctl.Ptr(fctl.GetString(cmd, c.accountFlag)),
-			Destination: fctl.Ptr(fctl.GetString(cmd, c.destinationFlag)),
-			EndTime:     &endTime,
-			Ledger:      ledger,
-			Metadata:    metadata,
-			PageSize:    fctl.Ptr(int64(fctl.GetInt(cmd, c.pageSizeFlag))),
-			Reference:   fctl.Ptr(fctl.GetString(cmd, c.referenceFlag)),
-			Source:      fctl.Ptr(fctl.GetString(cmd, c.sourceFlag)),
-			StartTime:   &startTime,
+			RequestBody: map[string]interface{}{
+				"$and": options,
+			},
+			Ledger:   ledger,
+			PageSize: fctl.Ptr(int64(fctl.GetInt(cmd, c.pageSizeFlag))),
 		},
 	)
 	if err != nil {
@@ -153,7 +171,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 
 	tableData := fctl.Map(c.store.Transaction.Data, func(tx shared.ExpandedTransaction) []string {
 		return []string{
-			fmt.Sprintf("%d", tx.Txid),
+			fmt.Sprintf("%d", tx.ID),
 			func() string {
 				if tx.Reference == nil {
 					return ""

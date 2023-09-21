@@ -6,7 +6,7 @@ import requests as requests_http
 from ..shared import errorresponse as shared_errorresponse
 from ..shared import logscursorresponse as shared_logscursorresponse
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 
 
@@ -20,16 +20,10 @@ class ListLogsRequest:
     Set to the value of previous for the previous page of results.
     No other parameters can be set when this parameter is set.
     """
-    end_time: Optional[datetime] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'endTime', 'style': 'form', 'explode': True }})
-    r"""Filter transactions that occurred before this timestamp.
-    The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).
-    """
     page_size: Optional[int] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'pageSize', 'style': 'form', 'explode': True }})
     r"""The maximum number of results to return per page."""
-    start_time: Optional[datetime] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'startTime', 'style': 'form', 'explode': True }})
-    r"""Filter transactions that occurred after this timestamp.
-    The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).
-    """
+    pit: Optional[datetime] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'pit', 'style': 'form', 'explode': True }})
+    request_body: Optional[dict[str, Any]] = dataclasses.field(default=None, metadata={'request': { 'media_type': 'application/json' }})
     
 
 

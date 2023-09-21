@@ -10,12 +10,10 @@ from typing import Optional
 
 @dataclasses.dataclass
 class AddMetadataOnTransactionRequest:
+    id: int = dataclasses.field(metadata={'path_param': { 'field_name': 'id', 'style': 'simple', 'explode': False }})
+    r"""Transaction ID."""
     ledger: str = dataclasses.field(metadata={'path_param': { 'field_name': 'ledger', 'style': 'simple', 'explode': False }})
     r"""Name of the ledger."""
-    txid: int = dataclasses.field(metadata={'path_param': { 'field_name': 'txid', 'style': 'simple', 'explode': False }})
-    r"""Transaction ID."""
-    async_: Optional[bool] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'async', 'style': 'form', 'explode': True }})
-    r"""Set async mode."""
     dry_run: Optional[bool] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'dryRun', 'style': 'form', 'explode': True }})
     r"""Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker."""
     idempotency_key: Optional[str] = dataclasses.field(default=None, metadata={'header': { 'field_name': 'Idempotency-Key', 'style': 'simple', 'explode': False }})

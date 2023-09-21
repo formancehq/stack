@@ -13,7 +13,7 @@ func DisplayTransactions(out io.Writer, txs []map[string]interface{}) error {
 	for _, tx := range txs {
 		tableData = append(tableData, []string{
 			tx["ledger"].(string),
-			fmt.Sprint(tx["txid"].(float64)),
+			fmt.Sprint(tx["id"].(float64)),
 			tx["reference"].(string),
 			tx["timestamp"].(string),
 		})

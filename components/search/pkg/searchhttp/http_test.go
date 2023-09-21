@@ -14,7 +14,6 @@ import (
 	"github.com/formancehq/search/pkg/es"
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/numary/ledger/pkg/core"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,33 +58,30 @@ func TestMultiSearch(t *testing.T) {
 			name: "nominal",
 			results: map[string][]interface{}{
 				"ACCOUNT": {
-					core.Account{
-						Address: "user:001",
+					map[string]any{
+						"address":  "user:001",
+						"metadata": nil,
 					},
-					core.Account{
-						Address: "user:002",
-						Metadata: core.Metadata{
-							"foo": json.RawMessage(`"bar"`),
+					map[string]any{
+						"address": "user:002",
+						"metadata": map[string]any{
+							"foo": "bar",
 						},
 					},
 				},
 				"TRANSACTION": {
-					core.Transaction{
-						ID: 1,
-						TransactionData: core.TransactionData{
-							Postings: []core.Posting{
-								{
-									Source:      "world",
-									Destination: "central_bank",
-									Amount:      core.NewMonetaryInt(100),
-									Asset:       "USD",
-								},
-							},
-							Reference: "tx1",
-							Timestamp: now,
-							Metadata: core.Metadata{
-								"foo": json.RawMessage(`"bar"`),
-							},
+					map[string]any{
+						"txid": 1,
+						"postings": []map[string]any{{
+							"source":      "world",
+							"destination": "central_bank",
+							"amount":      100,
+							"asset":       "USD",
+						}},
+						"reference": "tx1",
+						"timestamp": now,
+						"metadata": map[string]any{
+							"foo": "bar",
 						},
 					},
 				},
@@ -213,13 +209,14 @@ func TestSingleDocTypeSearch(t *testing.T) {
 			kind:  "ACCOUNT",
 			query: map[string]interface{}{},
 			results: []interface{}{
-				core.Account{
-					Address: "user:001",
+				map[string]any{
+					"address":  "user:001",
+					"metadata": nil,
 				},
-				core.Account{
-					Address: "user:002",
-					Metadata: core.Metadata{
-						"foo": json.RawMessage(`"bar"`),
+				map[string]any{
+					"address": "user:002",
+					"metadata": map[string]any{
+						"foo": "bar",
 					},
 				},
 			},
@@ -261,10 +258,10 @@ func TestSingleDocTypeSearch(t *testing.T) {
 				}),
 			},
 			results: []interface{}{
-				core.Account{
-					Address: "user:002",
-					Metadata: core.Metadata{
-						"foo": json.RawMessage(`"bar"`),
+				map[string]any{
+					"address": "user:002",
+					"metadata": map[string]any{
+						"foo": "bar",
 					},
 				},
 			},
@@ -305,8 +302,9 @@ func TestSingleDocTypeSearch(t *testing.T) {
 				hasSearchAfter("user:002"),
 			},
 			results: []interface{}{
-				core.Account{
-					Address: "user:001",
+				map[string]any{
+					"address":  "user:001",
+					"metadata": nil,
 				},
 			},
 			expected: BaseResponse[map[string]interface{}]{
@@ -355,8 +353,9 @@ func TestSingleDocTypeSearch(t *testing.T) {
 				hasSearchAfter("user:002"),
 			},
 			results: []interface{}{
-				core.Account{
-					Address: "user:001",
+				map[string]any{
+					"address":  "user:001",
+					"metadata": nil,
 				},
 			},
 			expected: BaseResponse[map[string]interface{}]{

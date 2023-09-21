@@ -10,6 +10,17 @@ import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
 public class RevertTransactionRequest {
     /**
+     * Transaction ID.
+     */
+    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=id")
+    public Long id;
+
+    public RevertTransactionRequest withId(Long id) {
+        this.id = id;
+        return this;
+    }
+    
+    /**
      * Name of the ledger.
      */
     @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=ledger")
@@ -20,19 +31,8 @@ public class RevertTransactionRequest {
         return this;
     }
     
-    /**
-     * Transaction ID.
-     */
-    @SpeakeasyMetadata("pathParam:style=simple,explode=false,name=txid")
-    public Long txid;
-
-    public RevertTransactionRequest withTxid(Long txid) {
-        this.txid = txid;
-        return this;
-    }
-    
-    public RevertTransactionRequest(@JsonProperty("ledger") String ledger, @JsonProperty("txid") Long txid) {
+    public RevertTransactionRequest(@JsonProperty("id") Long id, @JsonProperty("ledger") String ledger) {
+        this.id = id;
         this.ledger = ledger;
-        this.txid = txid;
   }
 }

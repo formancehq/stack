@@ -6,3 +6,4 @@ linters:
   enable:
     - gofmt
     - goimports
+    - unused

@@ -12,12 +12,12 @@ use \formance\stack\Utils\SpeakeasyMetadata;
 class CountAccountsRequest
 {
     /**
-     * Filter accounts by address pattern (regular expression placed between ^ and $).
+     * $requestBody
      * 
-     * @var ?string $address
+     * @var ?array<string, mixed> $requestBody
      */
-	#[SpeakeasyMetadata('queryParam:style=form,explode=true,name=address')]
-    public ?string $address = null;
+	#[SpeakeasyMetadata('request:mediaType=application/json')]
+    public ?array $requestBody = null;
     
     /**
      * Name of the ledger.
@@ -27,18 +27,9 @@ class CountAccountsRequest
 	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=ledger')]
     public string $ledger;
     
-    /**
-     * Filter accounts by metadata key value pairs. The filter can be used like this -> metadata[key]=value1&metadata[a.nested.key]=value2
-     * 
-     * @var ?\formance\stack\Models\Operations\CountAccountsMetadata $metadata
-     */
-	#[SpeakeasyMetadata('queryParam:style=deepObject,explode=true,name=metadata')]
-    public ?CountAccountsMetadata $metadata = null;
-    
 	public function __construct()
 	{
-		$this->address = null;
+		$this->requestBody = null;
 		$this->ledger = "";
-		$this->metadata = null;
 	}
 }

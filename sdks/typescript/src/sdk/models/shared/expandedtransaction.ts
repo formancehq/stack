@@ -9,6 +9,10 @@ import { Expose, Transform, Type } from "class-transformer";
 
 export class ExpandedTransaction extends SpeakeasyBase {
     @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: number;
+
+    @SpeakeasyMetadata()
     @Expose({ name: "metadata" })
     metadata: Record<string, string>;
 
@@ -24,7 +28,7 @@ export class ExpandedTransaction extends SpeakeasyBase {
         },
         { toClassOnly: true }
     )
-    postCommitVolumes: Record<string, Record<string, Volume>>;
+    postCommitVolumes?: Record<string, Record<string, Volume>>;
 
     @SpeakeasyMetadata({ elemType: Posting })
     @Expose({ name: "postings" })
@@ -43,18 +47,18 @@ export class ExpandedTransaction extends SpeakeasyBase {
         },
         { toClassOnly: true }
     )
-    preCommitVolumes: Record<string, Record<string, Volume>>;
+    preCommitVolumes?: Record<string, Record<string, Volume>>;
 
     @SpeakeasyMetadata()
     @Expose({ name: "reference" })
     reference?: string;
 
     @SpeakeasyMetadata()
+    @Expose({ name: "reverted" })
+    reverted: boolean;
+
+    @SpeakeasyMetadata()
     @Expose({ name: "timestamp" })
     @Transform(({ value }) => new Date(value), { toClassOnly: true })
     timestamp: Date;
-
-    @SpeakeasyMetadata()
-    @Expose({ name: "txid" })
-    txid: number;
 }

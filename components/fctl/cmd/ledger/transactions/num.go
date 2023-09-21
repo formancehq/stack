@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	internal "github.com/formancehq/fctl/cmd/ledger/internal"
+	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -14,7 +14,7 @@ import (
 )
 
 type NumStore struct {
-	Transaction *internal.Transaction `json:"transaction"`
+	Transaction *shared.Transaction `json:"transaction"`
 }
 type NumController struct {
 	store          *NumStore
@@ -154,7 +154,7 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
 
-	tx, err := internal.CreateTransaction(client, cmd.Context(), operations.CreateTransactionRequest{
+	response, err := client.Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata:  metadata,
 			Reference: &reference,
@@ -175,7 +175,15 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 		return nil, err
 	}
 
-	c.store.Transaction = tx
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	}
+
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code %d when creating transaction", response.StatusCode)
+	}
+
+	c.store.Transaction = &response.CreateTransactionResponse.Data
 
 	return c, nil
 }

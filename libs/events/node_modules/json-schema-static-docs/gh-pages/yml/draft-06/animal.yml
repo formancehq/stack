@@ -1,0 +1,20 @@
+$id: draft-06-animal.yml
+$schema: http://json-schema.org/draft-06/schema#
+title: Draft 06 - User Example
+description: A schema demonstrating some draft 06 features
+examples:
+  - animalType: Bear
+    canFly: false
+  - animalType: Bat
+    canFly: true
+required:
+  - animalType
+  - canFly
+type: object
+properties:
+  animalType:
+    type: string
+    title: Animal Type
+  canFly:
+    type: boolean
+    title: Can Fly

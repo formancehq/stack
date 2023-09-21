@@ -47,7 +47,7 @@ var _ = Given("some empty environment", func() {
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
-					Txid:   rsp.Data.Txid,
+					ID:     rsp.Data.ID,
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -63,7 +63,7 @@ var _ = Given("some empty environment", func() {
 				operations.AddMetadataOnTransactionRequest{
 					RequestBody: metadata,
 					Ledger:      "default",
-					Txid:        666,
+					ID:          666,
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -79,19 +79,19 @@ var _ = Given("some empty environment", func() {
 					operations.AddMetadataOnTransactionRequest{
 						RequestBody: metadata,
 						Ledger:      "default",
-						Txid:        rsp.Data.Txid,
+						ID:          rsp.Data.ID,
 					},
 				)
 				Expect(err).To(Succeed())
 				Expect(response.StatusCode).To(Equal(204))
 			})
-			It("should eventually be available on api", func() {
+			It("should be available on api", func() {
 				// Check existence on api
 				response, err := Client().Ledger.GetTransaction(
 					TestContext(),
 					operations.GetTransactionRequest{
 						Ledger: "default",
-						Txid:   rsp.Data.Txid,
+						ID:     rsp.Data.ID,
 					},
 				)
 				Expect(err).ToNot(HaveOccurred())

@@ -8,10 +8,25 @@ import (
 )
 
 type GetTransactionRequest struct {
+	Expand *string `queryParam:"style=form,explode=true,name=expand"`
+	// Transaction ID.
+	ID int64 `pathParam:"style=simple,explode=false,name=id"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-	// Transaction ID.
-	Txid int64 `pathParam:"style=simple,explode=false,name=txid"`
+}
+
+func (o *GetTransactionRequest) GetExpand() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Expand
+}
+
+func (o *GetTransactionRequest) GetID() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.ID
 }
 
 func (o *GetTransactionRequest) GetLedger() string {
@@ -19,13 +34,6 @@ func (o *GetTransactionRequest) GetLedger() string {
 		return ""
 	}
 	return o.Ledger
-}
-
-func (o *GetTransactionRequest) GetTxid() int64 {
-	if o == nil {
-		return 0
-	}
-	return o.Txid
 }
 
 type GetTransactionResponse struct {

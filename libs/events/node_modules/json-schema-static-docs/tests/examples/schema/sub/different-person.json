@@ -1,0 +1,41 @@
+{
+  "$id": "http://example.com/schemas/sub/different-person.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Person",
+  "description": "A person.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "../name.json"
+    },
+    "dateOfBirth": {
+      "$ref": "#/definitions/dateOfBirth"
+    },
+    "friendsNames": {
+      "type": "array",
+      "title": "Friends names",
+      "description": "Set of friends names.",
+      "items": {
+        "$ref": "../name.json"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": ["name"],
+  "definitions": {
+    "dateOfBirth": {
+      "description": "The date on which a person was born. Does not include time.",
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "examples": [
+    {
+      "name": {
+        "firstNames": "Seymour",
+        "lastName": "Butts"
+      },
+      "dateOfBirth": "1982-04-30"
+    }
+  ]
+}

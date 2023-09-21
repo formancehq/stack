@@ -19,8 +19,6 @@ class CreateTransactionRequest:
       - `postings`: suitable for simple transactions
       - `script`: enabling more complex transactions with Numscript
     """
-    async_: Optional[bool] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'async', 'style': 'form', 'explode': True }})
-    r"""Set async mode."""
     dry_run: Optional[bool] = dataclasses.field(default=None, metadata={'query_param': { 'field_name': 'dryRun', 'style': 'form', 'explode': True }})
     r"""Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker."""
     idempotency_key: Optional[str] = dataclasses.field(default=None, metadata={'header': { 'field_name': 'Idempotency-Key', 'style': 'simple', 'explode': False }})

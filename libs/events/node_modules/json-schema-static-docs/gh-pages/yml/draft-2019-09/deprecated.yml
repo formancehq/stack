@@ -1,0 +1,20 @@
+"$id": https://example.com/deprecated.schema.json
+"$schema": https://json-schema.org/draft/2019-09/schema
+title: Draft 2019-09 - Deprecated Example
+description: A schema demonstrating use of deprecated
+examples:
+  - firstName: Neil
+    lastName: Williams
+deprecated: true
+type: object
+properties:
+  firstName:
+    deprecated: false
+    type: string
+    title: First Name
+    description: A persons first name
+  lastName:
+    deprecated: true
+    type: string
+    title: Last Name
+    description: A persons last name

@@ -25,24 +25,20 @@ sdk.search.search({
   after: [
     "users:002",
     "users:002",
-    "users:002",
-    "users:002",
   ],
   cursor: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=",
   ledgers: [
     "quickstart",
     "quickstart",
     "quickstart",
+    "quickstart",
   ],
-  pageSize: 116202,
+  pageSize: 978571,
   policy: "OR",
   raw: {},
-  sort: "txid:asc",
-  target: "magnam",
+  sort: "id:asc",
+  target: "rerum",
   terms: [
-    "destination=central_bank1",
-    "destination=central_bank1",
-    "destination=central_bank1",
     "destination=central_bank1",
   ],
 }).then((res: SearchResponse) => {

@@ -8,7 +8,6 @@
 * [CountTransactions](#counttransactions) - Count the transactions from a ledger
 * [CreateTransaction](#createtransaction) - Create a new transaction to a ledger
 * [GetAccount](#getaccount) - Get account by its address
-* [GetBalances](#getbalances) - Get the balances from a ledger's account
 * [GetBalancesAggregated](#getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [GetInfo](#getinfo) - Show server information
 * [GetLedgerInfo](#getledgerinfo) - Get information about a ledger
@@ -50,10 +49,9 @@ func main() {
             "explicabo": "nobis",
             "enim": "omnis",
         },
-        Async: formance.Bool(true),
         DryRun: formance.Bool(true),
+        ID: 1234,
         Ledger: "ledger001",
-        Txid: 1234,
     })
     if err != nil {
         log.Fatal(err)
@@ -110,7 +108,6 @@ func main() {
             "iure": "culpa",
         },
         Address: "users:001",
-        Async: formance.Bool(true),
         DryRun: formance.Bool(true),
         Ledger: "ledger001",
     })
@@ -163,9 +160,13 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.CountAccounts(ctx, operations.CountAccountsRequest{
-        Address: formance.String("users:.+"),
+        RequestBody: map[string]interface{}{
+            "sapiente": "architecto",
+            "mollitia": "dolorem",
+            "culpa": "consequuntur",
+            "repellat": "mollitia",
+        },
         Ledger: "ledger001",
-        Metadata: &operations.CountAccountsMetadata{},
     })
     if err != nil {
         log.Fatal(err)
@@ -217,16 +218,13 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.CountTransactions(ctx, operations.CountTransactionsRequest{
-        Account: formance.String("users:001"),
-        Destination: formance.String("users:001"),
-        EndTime: types.MustTimeFromString("2020-02-15T22:48:47.492Z"),
-        Ledger: "ledger001",
-        Metadata: map[string]string{
-            "mollitia": "dolorem",
+        RequestBody: map[string]interface{}{
+            "numquam": "commodi",
+            "quam": "molestiae",
+            "velit": "error",
         },
-        Reference: formance.String("ref:001"),
-        Source: formance.String("users:001"),
-        StartTime: types.MustTimeFromString("2022-09-05T05:51:25.673Z"),
+        Ledger: "ledger001",
+        Pit: types.MustTimeFromString("2022-08-30T15:03:11.112Z"),
     })
     if err != nil {
         log.Fatal(err)
@@ -279,20 +277,14 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.CreateTransaction(ctx, operations.CreateTransactionRequest{
-        IdempotencyKey: formance.String("repellat"),
+        IdempotencyKey: formance.String("vitae"),
         PostTransaction: shared.PostTransaction{
             Metadata: map[string]string{
-                "occaecati": "numquam",
-                "commodi": "quam",
-                "molestiae": "velit",
+                "animi": "enim",
+                "odit": "quo",
+                "sequi": "tenetur",
             },
             Postings: []shared.Posting{
-                shared.Posting{
-                    Amount: big.NewInt(100),
-                    Asset: "COIN",
-                    Destination: "users:002",
-                    Source: "users:001",
-                },
                 shared.Posting{
                     Amount: big.NewInt(100),
                     Asset: "COIN",
@@ -317,12 +309,13 @@ func main() {
             )
             ",
                 Vars: map[string]interface{}{
-                    "quis": "vitae",
+                    "possimus": "aut",
+                    "quasi": "error",
+                    "temporibus": "laborum",
                 },
             },
-            Timestamp: types.MustTimeFromString("2021-09-08T21:06:19.630Z"),
+            Timestamp: types.MustTimeFromString("2022-01-11T05:45:42.485Z"),
         },
-        Async: formance.Bool(true),
         DryRun: formance.Bool(true),
         Ledger: "ledger001",
     })
@@ -376,6 +369,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Ledger.GetAccount(ctx, operations.GetAccountRequest{
         Address: "users:001",
+        Expand: formance.String("voluptatibus"),
         Ledger: "ledger001",
     })
     if err != nil {
@@ -399,60 +393,6 @@ func main() {
 ### Response
 
 **[*operations.GetAccountResponse](../../models/operations/getaccountresponse.md), error**
-
-
-## GetBalances
-
-Get the balances from a ledger's account
-
-### Example Usage
-
-```go
-package main
-
-import(
-	"context"
-	"log"
-	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-)
-
-func main() {
-    s := formance.New(
-        formance.WithSecurity(shared.Security{
-            Authorization: "",
-        }),
-    )
-
-    ctx := context.Background()
-    res, err := s.Ledger.GetBalances(ctx, operations.GetBalancesRequest{
-        Address: formance.String("users:001"),
-        Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        Ledger: "ledger001",
-        PageSize: formance.Int64(317202),
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    if res.BalancesCursorResponse != nil {
-        // handle response
-    }
-}
-```
-
-### Parameters
-
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
-| `request`                                                                      | [operations.GetBalancesRequest](../../models/operations/getbalancesrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
-
-
-### Response
-
-**[*operations.GetBalancesResponse](../../models/operations/getbalancesresponse.md), error**
 
 
 ## GetBalancesAggregated
@@ -481,7 +421,6 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.GetBalancesAggregated(ctx, operations.GetBalancesAggregatedRequest{
-        Address: formance.String("users:001"),
         Ledger: "ledger001",
     })
     if err != nil {
@@ -631,8 +570,9 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.GetTransaction(ctx, operations.GetTransactionRequest{
+        Expand: formance.String("vero"),
+        ID: 1234,
         Ledger: "ledger001",
-        Txid: 1234,
     })
     if err != nil {
         log.Fatal(err)
@@ -672,6 +612,7 @@ import(
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/types"
 )
 
 func main() {
@@ -683,13 +624,15 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.ListAccounts(ctx, operations.ListAccountsRequest{
-        Address: formance.String("users:.+"),
-        Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        Ledger: "ledger001",
-        Metadata: map[string]string{
-            "quo": "sequi",
+        RequestBody: map[string]interface{}{
+            "praesentium": "voluptatibus",
+            "ipsa": "omnis",
         },
-        PageSize: formance.Int64(949572),
+        Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Expand: formance.String("voluptate"),
+        Ledger: "ledger001",
+        PageSize: formance.Int64(739264),
+        Pit: types.MustTimeFromString("2022-12-17T16:42:52.927Z"),
     })
     if err != nil {
         log.Fatal(err)
@@ -741,11 +684,14 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.ListLogs(ctx, operations.ListLogsRequest{
+        RequestBody: map[string]interface{}{
+            "ut": "maiores",
+            "dicta": "corporis",
+        },
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        EndTime: types.MustTimeFromString("2022-05-04T04:15:52.352Z"),
         Ledger: "ledger001",
-        PageSize: formance.Int64(820994),
-        StartTime: types.MustTimeFromString("2022-11-26T13:23:33.410Z"),
+        PageSize: formance.Int64(296140),
+        Pit: types.MustTimeFromString("2022-11-18T15:56:41.921Z"),
     })
     if err != nil {
         log.Fatal(err)
@@ -772,7 +718,7 @@ func main() {
 
 ## ListTransactions
 
-List transactions from a ledger, sorted by txid in descending order.
+List transactions from a ledger, sorted by id in descending order.
 
 ### Example Usage
 
@@ -797,20 +743,16 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.ListTransactions(ctx, operations.ListTransactionsRequest{
-        Account: formance.String("users:001"),
-        Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        Destination: formance.String("users:001"),
-        EndTime: types.MustTimeFromString("2021-04-29T07:12:18.684Z"),
-        Ledger: "ledger001",
-        Metadata: map[string]string{
-            "quasi": "reiciendis",
-            "voluptatibus": "vero",
-            "nihil": "praesentium",
+        RequestBody: map[string]interface{}{
+            "enim": "accusamus",
+            "commodi": "repudiandae",
+            "quae": "ipsum",
         },
-        PageSize: formance.Int64(976762),
-        Reference: formance.String("ref:001"),
-        Source: formance.String("users:001"),
-        StartTime: types.MustTimeFromString("2022-05-25T05:33:11.349Z"),
+        Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Expand: formance.String("quidem"),
+        Ledger: "ledger001",
+        PageSize: formance.Int64(565189),
+        Pit: types.MustTimeFromString("2021-04-09T11:24:10.949Z"),
     })
     if err != nil {
         log.Fatal(err)
@@ -913,8 +855,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.RevertTransaction(ctx, operations.RevertTransactionRequest{
+        ID: 1234,
         Ledger: "ledger001",
-        Txid: 1234,
     })
     if err != nil {
         log.Fatal(err)

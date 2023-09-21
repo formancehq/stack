@@ -10,14 +10,11 @@ import java.time.OffsetDateTime;
 
 
 public class ListTransactionsRequest {
-    /**
-     * Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=account")
-    public String account;
+    @SpeakeasyMetadata("request:mediaType=application/json")
+    public java.util.Map<String, Object> requestBody;
 
-    public ListTransactionsRequest withAccount(String account) {
-        this.account = account;
+    public ListTransactionsRequest withRequestBody(java.util.Map<String, Object> requestBody) {
+        this.requestBody = requestBody;
         return this;
     }
     
@@ -36,27 +33,11 @@ public class ListTransactionsRequest {
         return this;
     }
     
-    /**
-     * Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=destination")
-    public String destination;
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=expand")
+    public String expand;
 
-    public ListTransactionsRequest withDestination(String destination) {
-        this.destination = destination;
-        return this;
-    }
-    
-    /**
-     * Filter transactions that occurred before this timestamp.
-     * The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-     * 
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=endTime")
-    public OffsetDateTime endTime;
-
-    public ListTransactionsRequest withEndTime(OffsetDateTime endTime) {
-        this.endTime = endTime;
+    public ListTransactionsRequest withExpand(String expand) {
+        this.expand = expand;
         return this;
     }
     
@@ -72,17 +53,6 @@ public class ListTransactionsRequest {
     }
     
     /**
-     * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-     */
-    @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
-    public java.util.Map<String, String> metadata;
-
-    public ListTransactionsRequest withMetadata(java.util.Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-    
-    /**
      * The maximum number of results to return per page.
      * 
      */
@@ -94,38 +64,11 @@ public class ListTransactionsRequest {
         return this;
     }
     
-    /**
-     * Find transactions by reference field.
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=reference")
-    public String reference;
+    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=pit")
+    public OffsetDateTime pit;
 
-    public ListTransactionsRequest withReference(String reference) {
-        this.reference = reference;
-        return this;
-    }
-    
-    /**
-     * Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=source")
-    public String source;
-
-    public ListTransactionsRequest withSource(String source) {
-        this.source = source;
-        return this;
-    }
-    
-    /**
-     * Filter transactions that occurred after this timestamp.
-     * The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-     * 
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=startTime")
-    public OffsetDateTime startTime;
-
-    public ListTransactionsRequest withStartTime(OffsetDateTime startTime) {
-        this.startTime = startTime;
+    public ListTransactionsRequest withPit(OffsetDateTime pit) {
+        this.pit = pit;
         return this;
     }
     

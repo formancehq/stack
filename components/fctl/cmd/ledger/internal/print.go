@@ -16,7 +16,7 @@ func printCommonInformation(
 	out io.Writer,
 	txID int64,
 	reference string,
-	postings []*shared.Posting,
+	postings []shared.Posting,
 	timestamp time.Time,
 ) error {
 	fctl.Section.WithWriter(out).Println("Information")
@@ -53,11 +53,11 @@ func printCommonInformation(
 	return nil
 }
 
-func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) error {
+func PrintExpandedTransaction(out io.Writer, transaction shared.ExpandedTransaction) error {
 
 	if err := printCommonInformation(
 		out,
-		transaction.Txid,
+		transaction.ID,
 		*transaction.Reference,
 		transaction.Postings,
 		transaction.Timestamp,
@@ -96,11 +96,11 @@ func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) er
 	return nil
 }
 
-func PrintTransaction(out io.Writer, transaction Transaction) error {
+func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
 
 	if err := printCommonInformation(
 		out,
-		transaction.Txid,
+		transaction.ID,
 		*transaction.Reference,
 		transaction.Postings,
 		transaction.Timestamp,
@@ -113,7 +113,7 @@ func PrintTransaction(out io.Writer, transaction Transaction) error {
 	}
 	return nil
 }
-func PrintMetadata(out io.Writer, metadata Metadata) error {
+func PrintMetadata(out io.Writer, metadata map[string]string) error {
 	fctl.Section.WithWriter(out).Println("Metadata")
 	if len(metadata) == 0 {
 		fmt.Println("No metadata.")

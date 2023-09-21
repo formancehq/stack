@@ -9,14 +9,11 @@ import com.formance.formance_sdk.utils.SpeakeasyMetadata;
 
 
 public class CountAccountsRequest {
-    /**
-     * Filter accounts by address pattern (regular expression placed between ^ and $).
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=address")
-    public String address;
+    @SpeakeasyMetadata("request:mediaType=application/json")
+    public java.util.Map<String, Object> requestBody;
 
-    public CountAccountsRequest withAddress(String address) {
-        this.address = address;
+    public CountAccountsRequest withRequestBody(java.util.Map<String, Object> requestBody) {
+        this.requestBody = requestBody;
         return this;
     }
     
@@ -28,17 +25,6 @@ public class CountAccountsRequest {
 
     public CountAccountsRequest withLedger(String ledger) {
         this.ledger = ledger;
-        return this;
-    }
-    
-    /**
-     * Filter accounts by metadata key value pairs. The filter can be used like this -&gt; metadata[key]=value1&amp;metadata[a.nested.key]=value2
-     */
-    @SpeakeasyMetadata("queryParam:style=deepObject,explode=true,name=metadata")
-    public CountAccountsMetadata metadata;
-
-    public CountAccountsRequest withMetadata(CountAccountsMetadata metadata) {
-        this.metadata = metadata;
         return this;
     }
     

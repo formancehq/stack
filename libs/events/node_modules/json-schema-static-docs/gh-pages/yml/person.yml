@@ -1,0 +1,100 @@
+$id: person.yml
+$schema: http://json-schema.org/draft-07/schema#
+title: Person
+description: JSON schema example for a person entity
+type: object
+examples:
+  - name:
+      title: Mr
+      firstName: "Seymour"
+      lastName: "Butts"
+    dateOfBirth: 1980-01-01
+    address:
+      houseNumber: 41
+      street: Some street
+      city: Swansea
+      timeAtAddress:
+        years: 1
+        months: 3
+  - name:
+      title: Mr
+      firstName: "Jane"
+      lastName: "Smith"
+    dateOfBirth: 1980-01-01
+    address:
+      houseNumber: 310
+      street: Any street
+      city: London
+    friends:
+      - title: Mr
+        firstName: "Seymour"
+        lastName: "Butts"
+      - title: Mrs
+        firstName: "Marge"
+        lastName: "Simpson"
+properties:
+  name:
+    $ref: ./name.yml
+  dateOfBirth:
+    title: Date of birth
+    description: The date at which a person was born.
+    type: string
+    format: date
+    examples:
+      - 1992-10-23
+  address:
+    title: Address
+    description: The address at which a person lives.
+    type: object
+    properties:
+      houseNumber:
+        title: House Number
+        description: The house number at which an address is located.
+        type: string
+        minLength: 1
+        maxLength: 10
+      street:
+        title: Street
+        description: The street in which an address is located.
+        type: string
+        minLength: 1
+        maxLength: 250
+      city:
+        title: City
+        description: The city in which an address is located.
+        type: string
+        minLength: 1
+        maxLength: 250
+      timeAtAddress:
+        title: Time at address
+        description: How long the person has lived at this address.
+        type: object
+        properties:
+          years:
+            title: Years
+            description: The number of years lived at this address.
+            type: number
+            minimum: 1
+            maximum: 100
+          months:
+            title: Months
+            description: The number of months lived at this address.
+            type: integer
+            minimum: 1
+            maximum: 12
+    required:
+      - houseNumber
+      - street
+      - city
+    additionalProperties: false
+  friends:
+    title: Friends
+    description: An array containing the names of a person's friends.
+    type: array
+    items:
+      $ref: ./name.yml
+additionalProperties: false
+required:
+  - name
+  - dateOfBirth
+  - address

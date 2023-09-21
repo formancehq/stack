@@ -27,13 +27,13 @@
     },
     {
       "set": {
-        "field": "indexed.txid",
-        "value": "{{data.txid}}"
+        "field": "indexed.id",
+        "value": "{{data.id}}"
       }
     },
     {
       "convert": {
-        "field": "indexed.txid",
+        "field": "indexed.id",
         "type": "long"
       }
     },

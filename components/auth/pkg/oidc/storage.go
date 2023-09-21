@@ -191,6 +191,7 @@ func (s *storageFacade) SetIntrospectionFromToken(ctx context.Context, introspec
 
 	introspection.Scope = oidc.SpaceDelimitedArray(token.Scopes)
 	introspection.ClientID = token.ApplicationID
+	introspection.Active = time.Now().After(token.Expiration)
 	return nil
 }
 

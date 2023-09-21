@@ -14,7 +14,7 @@ import (
 )
 
 type RevertTransactionResponseData struct {
-	Data Transaction `json:"data"`
+	Data shared.Transaction `json:"data"`
 }
 type RevertTransactionResponse struct {
 	ContentType string
@@ -31,7 +31,7 @@ func RevertTransaction(client *formance.Formance, ctx context.Context, baseURL s
 	field := reflect.ValueOf(client).Elem().FieldByName("_securityClient")
 	httpClient := reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().Interface().(formance.HTTPClient)
 
-	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/{txid}/revert", request, nil)
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/{id}/revert", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

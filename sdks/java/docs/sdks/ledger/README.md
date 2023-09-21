@@ -8,7 +8,6 @@
 * [countTransactions](#counttransactions) - Count the transactions from a ledger
 * [createTransaction](#createtransaction) - Create a new transaction to a ledger
 * [getAccount](#getaccount) - Get account by its address
-* [getBalances](#getbalances) - Get the balances from a ledger's account
 * [getBalancesAggregated](#getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [getInfo](#getinfo) - Show server information
 * [getLedgerInfo](#getledgerinfo) - Get information about a ledger
@@ -42,14 +41,13 @@ public class Application {
                 }})
                 .build();
 
-            AddMetadataOnTransactionRequest req = new AddMetadataOnTransactionRequest("ledger001", 1234L) {{
+            AddMetadataOnTransactionRequest req = new AddMetadataOnTransactionRequest(1234L, "ledger001") {{
                 idempotencyKey = "enim";
                 requestBody = new java.util.HashMap<String, String>() {{
                     put("nemo", "minima");
                     put("excepturi", "accusantium");
                     put("iure", "culpa");
                 }};
-                async = true;
                 dryRun = true;
             }};            
 
@@ -107,7 +105,6 @@ public class Application {
                                 put("mollitia", "occaecati");
                             }}, "users:001", "ledger001") {{
                 idempotencyKey = "numquam";
-                async = true;
                 dryRun = true;
             }};            
 
@@ -145,7 +142,6 @@ Count the accounts from a ledger
 package hello.world;
 
 import com.formance.formance_sdk.SDK;
-import com.formance.formance_sdk.models.operations.CountAccountsMetadata;
 import com.formance.formance_sdk.models.operations.CountAccountsRequest;
 import com.formance.formance_sdk.models.operations.CountAccountsResponse;
 import com.formance.formance_sdk.models.shared.Security;
@@ -160,8 +156,10 @@ public class Application {
                 .build();
 
             CountAccountsRequest req = new CountAccountsRequest("ledger001") {{
-                address = "users:.+";
-                metadata = new CountAccountsMetadata();;
+                requestBody = new java.util.HashMap<String, Object>() {{
+                    put("molestiae", "velit");
+                    put("error", "quia");
+                }};
             }};            
 
             CountAccountsResponse res = sdk.ledger.countAccounts(req);
@@ -207,23 +205,16 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("quam") {{
+                .setSecurity(new Security("quis") {{
                     authorization = "";
                 }})
                 .build();
 
             CountTransactionsRequest req = new CountTransactionsRequest("ledger001") {{
-                account = "users:001";
-                destination = "users:001";
-                endTime = OffsetDateTime.parse("2022-10-03T18:49:53.900Z");
-                metadata = new java.util.HashMap<String, String>() {{
-                    put("quia", "quis");
-                    put("vitae", "laborum");
-                    put("animi", "enim");
+                requestBody = new java.util.HashMap<String, Object>() {{
+                    put("laborum", "animi");
                 }};
-                reference = "ref:001";
-                source = "users:001";
-                startTime = OffsetDateTime.parse("2022-03-22T21:41:36.666Z");
+                pit = OffsetDateTime.parse("2022-11-11T13:31:01.643Z");
             }};            
 
             CountTransactionsResponse res = sdk.ledger.countTransactions(req);
@@ -272,18 +263,27 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("sequi") {{
+                .setSecurity(new Security("quo") {{
                     authorization = "";
                 }})
                 .build();
 
             CreateTransactionRequest req = new CreateTransactionRequest(                new PostTransaction(                new java.util.HashMap<String, String>() {{
-                                                put("ipsam", "id");
-                                                put("possimus", "aut");
-                                                put("quasi", "error");
-                                                put("temporibus", "laborum");
+                                                put("tenetur", "ipsam");
                                             }}) {{
                                 postings = new com.formance.formance_sdk.models.shared.Posting[]{{
+                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                        amount = 100L;
+                                        asset = "COIN";
+                                        destination = "users:002";
+                                        source = "users:001";
+                                    }}),
+                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                        amount = 100L;
+                                        asset = "COIN";
+                                        destination = "users:002";
+                                        source = "users:001";
+                                    }}),
                                     add(new Posting(100L, "COIN", "users:002", "users:001") {{
                                         amount = 100L;
                                         asset = "COIN";
@@ -301,16 +301,15 @@ public class Application {
                                 )
                                 ") {{
                                     vars = new java.util.HashMap<String, Object>() {{
-                                        put("voluptatibus", "vero");
-                                        put("nihil", "praesentium");
-                                        put("voluptatibus", "ipsa");
-                                        put("omnis", "voluptate");
+                                        put("aut", "quasi");
+                                        put("error", "temporibus");
+                                        put("laborum", "quasi");
+                                        put("reiciendis", "voluptatibus");
                                     }};
                                 }};;
-                                timestamp = OffsetDateTime.parse("2022-12-17T09:48:56.551Z");
+                                timestamp = OffsetDateTime.parse("2021-08-05T19:50:46.898Z");
                             }};, "ledger001") {{
-                idempotencyKey = "doloremque";
-                async = true;
+                idempotencyKey = "praesentium";
                 dryRun = true;
             }};            
 
@@ -356,12 +355,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("reprehenderit") {{
+                .setSecurity(new Security("voluptatibus") {{
                     authorization = "";
                 }})
                 .build();
 
-            GetAccountRequest req = new GetAccountRequest("users:001", "ledger001");            
+            GetAccountRequest req = new GetAccountRequest("users:001", "ledger001") {{
+                expand = "ipsa";
+            }};            
 
             GetAccountResponse res = sdk.ledger.getAccount(req);
 
@@ -387,59 +388,6 @@ public class Application {
 **[com.formance.formance_sdk.models.operations.GetAccountResponse](../../models/operations/GetAccountResponse.md)**
 
 
-## getBalances
-
-Get the balances from a ledger's account
-
-### Example Usage
-
-```java
-package hello.world;
-
-import com.formance.formance_sdk.SDK;
-import com.formance.formance_sdk.models.operations.GetBalancesRequest;
-import com.formance.formance_sdk.models.operations.GetBalancesResponse;
-import com.formance.formance_sdk.models.shared.Security;
-
-public class Application {
-    public static void main(String[] args) {
-        try {
-            SDK sdk = SDK.builder()
-                .setSecurity(new Security("ut") {{
-                    authorization = "";
-                }})
-                .build();
-
-            GetBalancesRequest req = new GetBalancesRequest("ledger001") {{
-                address = "users:001";
-                cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
-                pageSize = 979587L;
-            }};            
-
-            GetBalancesResponse res = sdk.ledger.getBalances(req);
-
-            if (res.balancesCursorResponse != null) {
-                // handle response
-            }
-        } catch (Exception e) {
-            // handle exception
-        }
-    }
-}
-```
-
-### Parameters
-
-| Parameter                                                                                                       | Type                                                                                                            | Required                                                                                                        | Description                                                                                                     |
-| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `request`                                                                                                       | [com.formance.formance_sdk.models.operations.GetBalancesRequest](../../models/operations/GetBalancesRequest.md) | :heavy_check_mark:                                                                                              | The request object to use for the request.                                                                      |
-
-
-### Response
-
-**[com.formance.formance_sdk.models.operations.GetBalancesResponse](../../models/operations/GetBalancesResponse.md)**
-
-
 ## getBalancesAggregated
 
 Get the aggregated balances from selected accounts
@@ -458,14 +406,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dicta") {{
+                .setSecurity(new Security("omnis") {{
                     authorization = "";
                 }})
                 .build();
 
-            GetBalancesAggregatedRequest req = new GetBalancesAggregatedRequest("ledger001") {{
-                address = "users:001";
-            }};            
+            GetBalancesAggregatedRequest req = new GetBalancesAggregatedRequest("ledger001");            
 
             GetBalancesAggregatedResponse res = sdk.ledger.getBalancesAggregated(req);
 
@@ -508,7 +454,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("corporis") {{
+                .setSecurity(new Security("voluptate") {{
                     authorization = "";
                 }})
                 .build();
@@ -549,7 +495,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolore") {{
+                .setSecurity(new Security("cum") {{
                     authorization = "";
                 }})
                 .build();
@@ -598,12 +544,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("iusto") {{
+                .setSecurity(new Security("perferendis") {{
                     authorization = "";
                 }})
                 .build();
 
-            GetTransactionRequest req = new GetTransactionRequest("ledger001", 1234L);            
+            GetTransactionRequest req = new GetTransactionRequest(1234L, "ledger001") {{
+                expand = "doloremque";
+            }};            
 
             GetTransactionResponse res = sdk.ledger.getTransaction(req);
 
@@ -642,25 +590,26 @@ import com.formance.formance_sdk.SDK;
 import com.formance.formance_sdk.models.operations.ListAccountsRequest;
 import com.formance.formance_sdk.models.operations.ListAccountsResponse;
 import com.formance.formance_sdk.models.shared.Security;
+import java.time.OffsetDateTime;
 
 public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dicta") {{
+                .setSecurity(new Security("reprehenderit") {{
                     authorization = "";
                 }})
                 .build();
 
             ListAccountsRequest req = new ListAccountsRequest("ledger001") {{
-                address = "users:.+";
-                cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
-                metadata = new java.util.HashMap<String, String>() {{
-                    put("enim", "accusamus");
-                    put("commodi", "repudiandae");
-                    put("quae", "ipsum");
+                requestBody = new java.util.HashMap<String, Object>() {{
+                    put("maiores", "dicta");
+                    put("corporis", "dolore");
                 }};
-                pageSize = 692472L;
+                cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
+                expand = "iusto";
+                pageSize = 118727L;
+                pit = OffsetDateTime.parse("2022-05-13T20:56:04.612Z");
             }};            
 
             ListAccountsResponse res = sdk.ledger.listAccounts(req);
@@ -706,16 +655,19 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("molestias") {{
+                .setSecurity(new Security("accusamus") {{
                     authorization = "";
                 }})
                 .build();
 
             ListLogsRequest req = new ListLogsRequest("ledger001") {{
+                requestBody = new java.util.HashMap<String, Object>() {{
+                    put("repudiandae", "quae");
+                    put("ipsum", "quidem");
+                }};
                 cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
-                endTime = OffsetDateTime.parse("2021-04-09T11:24:10.949Z");
-                pageSize = 265389L;
-                startTime = OffsetDateTime.parse("2021-12-15T00:41:38.329Z");
+                pageSize = 565189L;
+                pit = OffsetDateTime.parse("2021-04-09T11:24:10.949Z");
             }};            
 
             ListLogsResponse res = sdk.ledger.listLogs(req);
@@ -744,7 +696,7 @@ public class Application {
 
 ## listTransactions
 
-List transactions from a ledger, sorted by txid in descending order.
+List transactions from a ledger, sorted by id in descending order.
 
 ### Example Usage
 
@@ -761,25 +713,21 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("voluptates") {{
+                .setSecurity(new Security("modi") {{
                     authorization = "";
                 }})
                 .build();
 
             ListTransactionsRequest req = new ListTransactionsRequest("ledger001") {{
-                account = "users:001";
-                cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
-                destination = "users:001";
-                endTime = OffsetDateTime.parse("2022-01-29T18:39:33.469Z");
-                metadata = new java.util.HashMap<String, String>() {{
-                    put("veritatis", "itaque");
-                    put("incidunt", "enim");
-                    put("consequatur", "est");
+                requestBody = new java.util.HashMap<String, Object>() {{
+                    put("rem", "voluptates");
+                    put("quasi", "repudiandae");
+                    put("sint", "veritatis");
                 }};
-                pageSize = 842342L;
-                reference = "ref:001";
-                source = "users:001";
-                startTime = OffsetDateTime.parse("2022-05-09T18:45:16.013Z");
+                cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
+                expand = "itaque";
+                pageSize = 277718L;
+                pit = OffsetDateTime.parse("2022-12-28T14:02:06.064Z");
             }};            
 
             ListTransactionsResponse res = sdk.ledger.listTransactions(req);
@@ -825,7 +773,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("distinctio") {{
+                .setSecurity(new Security("est") {{
                     authorization = "";
                 }})
                 .build();
@@ -879,7 +827,7 @@ public class Application {
                 }})
                 .build();
 
-            RevertTransactionRequest req = new RevertTransactionRequest("ledger001", 1234L);            
+            RevertTransactionRequest req = new RevertTransactionRequest(1234L, "ledger001");            
 
             RevertTransactionResponse res = sdk.ledger.revertTransaction(req);
 

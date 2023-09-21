@@ -12,14 +12,12 @@ type AddMetadataOnTransactionRequest struct {
 	IdempotencyKey *string `header:"style=simple,explode=false,name=Idempotency-Key"`
 	// metadata
 	RequestBody map[string]string `request:"mediaType=application/json"`
-	// Set async mode.
-	Async *bool `queryParam:"style=form,explode=true,name=async"`
 	// Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
 	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
+	// Transaction ID.
+	ID int64 `pathParam:"style=simple,explode=false,name=id"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-	// Transaction ID.
-	Txid int64 `pathParam:"style=simple,explode=false,name=txid"`
 }
 
 func (o *AddMetadataOnTransactionRequest) GetIdempotencyKey() *string {
@@ -36,13 +34,6 @@ func (o *AddMetadataOnTransactionRequest) GetRequestBody() map[string]string {
 	return o.RequestBody
 }
 
-func (o *AddMetadataOnTransactionRequest) GetAsync() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.Async
-}
-
 func (o *AddMetadataOnTransactionRequest) GetDryRun() *bool {
 	if o == nil {
 		return nil
@@ -50,18 +41,18 @@ func (o *AddMetadataOnTransactionRequest) GetDryRun() *bool {
 	return o.DryRun
 }
 
+func (o *AddMetadataOnTransactionRequest) GetID() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.ID
+}
+
 func (o *AddMetadataOnTransactionRequest) GetLedger() string {
 	if o == nil {
 		return ""
 	}
 	return o.Ledger
-}
-
-func (o *AddMetadataOnTransactionRequest) GetTxid() int64 {
-	if o == nil {
-		return 0
-	}
-	return o.Txid
 }
 
 type AddMetadataOnTransactionResponse struct {

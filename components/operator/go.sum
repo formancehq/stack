@@ -388,7 +388,6 @@ github.com/nats-io/nuid v1.0.1 h1:5iA8DT8V7q8WK2EScv2padNa/rTESc1KdnPw4TC2paw=
 github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OSON2c=
 github.com/numary/auth/authclient v0.0.0-20220811153653-6335dd9658f2 h1:mBe5Xrlwtkmc/RkyLedf2LPFsFRZzpZNMgORW7rFmxs=
 github.com/numary/auth/authclient v0.0.0-20220811153653-6335dd9658f2/go.mod h1:T9ZJ+ndCyM0UDKLyiAYobE9/now0KdqHBW+pGpthNGU=
-github.com/numary/ledger v1.8.1 h1:XoFOw74R5w7SwOTVrT4omBpuGo5uQSuvhfhPPcGdAuo=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
 github.com/onsi/ginkgo/v2 v2.6.0 h1:9t9b9vRUbFq3C4qKFCGkVuq/fIHji802N1nrtkh1mNc=

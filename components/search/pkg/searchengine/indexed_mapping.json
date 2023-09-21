@@ -17,8 +17,8 @@
   "destination" : {
     "type": "keyword"
   },
-  "id" : {
-    "type": "keyword"
+  "txid" : {
+    "type": "long"
   },
   "initialAmount" : {
     "type" : "long"
@@ -47,8 +47,8 @@
   "timestamp" : {
     "type" : "date"
   },
-  "txid" : {
-    "type" : "long"
+  "id" : {
+    "type" : "keyword"
   },
   "type" : {
     "type": "keyword"

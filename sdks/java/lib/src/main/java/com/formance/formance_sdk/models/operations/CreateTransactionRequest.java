@@ -35,17 +35,6 @@ public class CreateTransactionRequest {
     }
     
     /**
-     * Set async mode.
-     */
-    @SpeakeasyMetadata("queryParam:style=form,explode=true,name=async")
-    public Boolean async;
-
-    public CreateTransactionRequest withAsync(Boolean async) {
-        this.async = async;
-        return this;
-    }
-    
-    /**
      * Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
      */
     @SpeakeasyMetadata("queryParam:style=form,explode=true,name=dryRun")

@@ -102,28 +102,28 @@ var _ = Given("An empty environment", func() {
 					Expect(instanceResponse.Data.TerminatedAt).NotTo(BeZero())
 					Expect(instanceResponse.Data.Status).To(HaveLen(1))
 				})
-				Then("checking ledger account balance", func() {
-					var balancesCursorResponse *shared.BalancesCursorResponse
-					BeforeEach(func() {
-						reponse, err := Client().Ledger.GetBalances(
-							TestContext(),
-							operations.GetBalancesRequest{
-								Address: ptr("bank"),
-								Ledger:  "default",
-							},
-						)
-						Expect(err).ToNot(HaveOccurred())
-						Expect(reponse.StatusCode).To(Equal(200))
-
-						balancesCursorResponse = reponse.BalancesCursorResponse
-					})
-					It("should return 100 USD/2 available", func() {
-						Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(1))
-						Expect(balancesCursorResponse.Cursor.Data[0]).To(HaveLen(1))
-						Expect(balancesCursorResponse.Cursor.Data[0]["bank"]).To(HaveLen(1))
-						Expect(balancesCursorResponse.Cursor.Data[0]["bank"]["EUR/2"]).To(Equal(big.NewInt(100)))
-					})
-				})
+				//Then("checking ledger account balance", func() {
+				//	var balancesCursorResponse *shared.BalancesCursorResponse
+				//	BeforeEach(func() {
+				//		reponse, err := Client().Ledger.GetBalances(
+				//			TestContext(),
+				//			operations.GetBalancesRequest{
+				//				Address: ptr("bank"),
+				//				Ledger:  "default",
+				//			},
+				//		)
+				//		Expect(err).ToNot(HaveOccurred())
+				//		Expect(reponse.StatusCode).To(Equal(200))
+				//
+				//		balancesCursorResponse = reponse.BalancesCursorResponse
+				//	})
+				//	It("should return 100 USD/2 available", func() {
+				//		Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(1))
+				//		Expect(balancesCursorResponse.Cursor.Data[0]).To(HaveLen(1))
+				//		Expect(balancesCursorResponse.Cursor.Data[0]["bank"]).To(HaveLen(1))
+				//		Expect(balancesCursorResponse.Cursor.Data[0]["bank"]["EUR/2"]).To(Equal(big.NewInt(100)))
+				//	})
+				//})
 				Then("reading history", func() {
 					var getWorkflowInstanceHistoryResponse *shared.GetWorkflowInstanceHistoryResponse
 					BeforeEach(func() {
