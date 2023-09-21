@@ -163,9 +163,12 @@ func searchService(ctx modules.ModuleContext) *modules.Service {
 				env = env.Append(modules.Env("ES_INDICES", stackv1beta3.DefaultESIndex))
 			}
 			return modules.Container{
-				Env:       env,
-				Image:     modules.GetImage("search", resolveContext.Versions.Spec.Search),
-				Resources: modules.ResourceSizeSmall(),
+				Env:   env,
+				Image: modules.GetImage("search", resolveContext.Versions.Spec.Search),
+				Resources: getResourcesWithDefault(
+					resolveContext.Configuration.Spec.Services.Search.SearchResourceProperties,
+					modules.ResourceSizeSmall(),
+				),
 			}
 		},
 	}
@@ -250,7 +253,10 @@ func benthosService(ctx modules.ModuleContext) *modules.Service {
 				Image:                benthosImage,
 				Command:              cmd,
 				DisableRollingUpdate: true,
-				Resources:            modules.ResourceSizeSmall(),
+				Resources: getResourcesWithDefault(
+					resolveContext.Configuration.Spec.Services.Search.BenthosResourceProperties,
+					modules.ResourceSizeSmall(),
+				),
 			}
 		},
 	}

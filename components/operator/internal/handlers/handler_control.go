@@ -39,10 +39,13 @@ func init() {
 								modules.EnvFromBool("UNSECURE_COOKIES", resolveContext.Stack.Spec.Dev),
 							}
 							return modules.Container{
-								Name:      "control",
-								Image:     modules.GetImage("control", resolveContext.Versions.Spec.Control),
-								Env:       env,
-								Resources: modules.ResourceSizeMedium(),
+								Name:  "control",
+								Image: modules.GetImage("control", resolveContext.Versions.Spec.Control),
+								Env:   env,
+								Resources: getResourcesWithDefault(
+									resolveContext.Configuration.Spec.Services.Control.ResourceProperties,
+									modules.ResourceSizeMedium(),
+								),
 							}
 						},
 					}}

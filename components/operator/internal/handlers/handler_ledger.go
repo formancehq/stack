@@ -57,8 +57,11 @@ func init() {
 							}
 
 							return modules.Container{
-								Resources: modules.ResourceSizeSmall(),
-								Image:     modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
+								Resources: getResourcesWithDefault(
+									resolveContext.Configuration.Spec.Services.Ledger.ResourceProperties,
+									modules.ResourceSizeSmall(),
+								),
+								Image: modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
 								Env: env.Append(
 									modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(NUMARY_POSTGRES_URI)"),
 								),
@@ -82,6 +85,10 @@ func init() {
 							).Append(modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...)
 
 							return modules.Container{
+								Resources: getResourcesWithDefault(
+									resolveContext.Configuration.Spec.Services.Ledger.ResourceProperties,
+									modules.ResourceSizeSmall(),
+								),
 								Image: modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
 								Env: env.Append(
 									modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),

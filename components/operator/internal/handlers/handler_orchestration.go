@@ -37,9 +37,12 @@ func init() {
 							Annotations:             ctx.Configuration.Spec.Services.Orchestration.Annotations.Service,
 							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 								return modules.Container{
-									Env:       orchestrationEnvVars(resolveContext),
-									Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-									Resources: modules.ResourceSizeSmall(),
+									Env:   orchestrationEnvVars(resolveContext),
+									Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+									Resources: getResourcesWithDefault(
+										resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
+										modules.ResourceSizeSmall(),
+									),
 								}
 							},
 						},
@@ -49,10 +52,13 @@ func init() {
 							Liveness:                modules.LivenessDisable,
 							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 								return modules.Container{
-									Env:       orchestrationEnvVars(resolveContext),
-									Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-									Args:      []string{"worker"},
-									Resources: modules.ResourceSizeSmall(),
+									Env:   orchestrationEnvVars(resolveContext),
+									Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+									Args:  []string{"worker"},
+									Resources: getResourcesWithDefault(
+										resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
+										modules.ResourceSizeSmall(),
+									),
 								}
 							},
 						},

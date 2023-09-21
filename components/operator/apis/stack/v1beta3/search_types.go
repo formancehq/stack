@@ -51,7 +51,11 @@ type SearchSpec struct {
 
 	// +optional
 	DevProperties `json:",inline"`
-	Annotations   AnnotationsServicesSpec `json:"annotations,omitempty"`
+	// +optional
+	SearchResourceProperties *ResourceProperties `json:"searchResourceProperties,omitempty"`
+	// +optional
+	BenthosResourceProperties *ResourceProperties     `json:"benthosResourceProperties,omitempty"`
+	Annotations               AnnotationsServicesSpec `json:"annotations,omitempty"`
 }
 
 const DefaultESIndex = "stacks"
