@@ -10,7 +10,7 @@ tasks:
     build:
         command: 'task sdk:generate:all'
         platform: 'system'
-        deps:
-            - 'openapi:deps'
+#        deps:
+#            - 'openapi:deps'
         inputs:
             - '/components/**/openapi.yaml'

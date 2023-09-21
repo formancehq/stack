@@ -1,9 +1,0 @@
-# UpdateMetadataRequest
-
-
-## Fields
-
-| Field                                                                                             | Type                                                                                              | Required                                                                                          | Description                                                                                       |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `paymentMetadata`                                                                                 | [com.formance.formance_sdk.models.shared.PaymentMetadata](../../models/shared/PaymentMetadata.md) | :heavy_check_mark:                                                                                | N/A                                                                                               |
-| `paymentId`                                                                                       | *String*                                                                                          | :heavy_check_mark:                                                                                | The payment ID.                                                                                   |

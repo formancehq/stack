@@ -4,3 +4,13 @@
 build
 bin/
 .DS_Store
+
+docs
+gradle
+lib
+src
+files.gen
+gradlew
+gradlew.bat
+*.md
+*.gradle

@@ -4,3 +4,13 @@ __pycache__/
 .pytest_cache/
 .python-version
 .DS_Store
+
+
+files.gen
+*.md
+docs
+Formance
+src
+test
+pylintrc
+*.py

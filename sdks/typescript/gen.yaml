@@ -4,6 +4,7 @@ generation:
   singleTagPerOp: true
   telemetryEnabled: false
 features:
+  version: ""
   typescript:
     core: 2.87.0
     deprecations: 2.81.1
