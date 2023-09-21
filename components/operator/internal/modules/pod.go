@@ -55,6 +55,7 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 				productLabel: pod.moduleName,
 			}
 			t.Spec = appsv1.DeploymentSpec{
+				Replicas: t.Spec.Replicas,
 				Selector: &metav1.LabelSelector{
 					MatchLabels: matchLabels,
 				},
