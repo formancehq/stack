@@ -93,7 +93,7 @@ spec:
                       value: $(LEDGER_POSTGRES_NO_DATABASE_URI)/$(LEDGER_POSTGRES_DATABASE)?sslmode=disable
                     - name: BROKER
                       value: kafka
-                  image: public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1
+                  image: ghcr.io/formancehq/benthos:local
                   imagePullPolicy: Always
                   name: search-benthos
                   ports:

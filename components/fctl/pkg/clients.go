@@ -2,7 +2,6 @@ package fctl
 
 import (
 	"fmt"
-
 	"github.com/formancehq/fctl/membershipclient"
 	formance "github.com/formancehq/formance-sdk-go"
 	"github.com/spf13/cobra"
