@@ -37,6 +37,10 @@ const sidebars = {
         {
           type: 'doc',
           id: 'guides/newSandbox',
+        },
+        {
+          type: 'doc',
+          id: 'getting-started/invite',
         }
       ],
     },
