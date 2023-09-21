@@ -15,6 +15,7 @@ func NewLedgerTransactionsCommand() *cobra.Command {
 			NewRevertCommand(),
 			NewShowCommand(),
 			NewSetMetadataCommand(),
+			NewDeleteMetadataCommand(),
 		),
 	)
 }

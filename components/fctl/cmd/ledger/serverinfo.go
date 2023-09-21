@@ -82,10 +82,10 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Server = response.ConfigInfoResponse.Data.Server
-	c.store.Version = response.ConfigInfoResponse.Data.Version
-	c.store.StorageDriver = response.ConfigInfoResponse.Data.Config.Storage.Driver
-	c.store.Ledgers = response.ConfigInfoResponse.Data.Config.Storage.Ledgers
+	c.store.Server = response.ConfigInfoResponse.Server
+	c.store.Version = response.ConfigInfoResponse.Version
+	c.store.StorageDriver = response.ConfigInfoResponse.Config.Storage.Driver
+	c.store.Ledgers = response.ConfigInfoResponse.Config.Storage.Ledgers
 
 	return c, nil
 }

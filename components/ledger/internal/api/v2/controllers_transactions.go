@@ -3,10 +3,6 @@ package v2
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
-	"net/http"
-	"strconv"
-
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/engine/command"
 	"github.com/formancehq/ledger/internal/storage/ledgerstore"
@@ -17,6 +13,8 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"
+	"math/big"
+	"net/http"
 )
 
 func countTransactions(w http.ResponseWriter, r *http.Request) {
@@ -230,8 +228,8 @@ func postTransactionMetadata(w http.ResponseWriter, r *http.Request) {
 func deleteTransactionMetadata(w http.ResponseWriter, r *http.Request) {
 	l := LedgerFromContext(r.Context())
 
-	transactionID, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
+	transactionID, ok := big.NewInt(0).SetString(chi.URLParam(r, "id"), 10)
+	if !ok {
 		ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
 			errors.New("invalid transaction ID")))
 		return

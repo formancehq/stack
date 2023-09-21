@@ -2,7 +2,6 @@ package ledger
 
 import (
 	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -77,7 +76,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Ledgers = response.ConfigInfoResponse.Data.Config.Storage.Ledgers
+	c.store.Ledgers = response.ConfigInfoResponse.Config.Storage.Ledgers
 
 	return c, nil
 }
