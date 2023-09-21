@@ -16,6 +16,10 @@ func getResourcesWithDefault(
 
 	resources := defaultResources
 	if resourceProperties.Request != nil {
+		if resources.Requests == nil {
+			resources.Requests = make(v1.ResourceList)
+		}
+
 		if resourceProperties.Request.Cpu != "" {
 			resources.Requests[v1.ResourceCPU] = resource.MustParse(resourceProperties.Request.Cpu)
 		}
@@ -26,6 +30,10 @@ func getResourcesWithDefault(
 	}
 
 	if resourceProperties.Limits != nil {
+		if resources.Limits == nil {
+			resources.Limits = make(v1.ResourceList)
+		}
+
 		if resourceProperties.Limits.Cpu != "" {
 			resources.Limits[v1.ResourceCPU] = resource.MustParse(resourceProperties.Limits.Cpu)
 		}
