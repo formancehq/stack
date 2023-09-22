@@ -8,6 +8,13 @@ tasks:
         options:
             runInCI: false
     build:
+        command: 'task sdk:generate:go'
+        platform: 'system'
+        deps:
+            - 'openapi:deps'
+        inputs:
+            - '/components/**/openapi.yaml'
+    build/all:
         command: 'task sdk:generate:all'
         platform: 'system'
         deps:

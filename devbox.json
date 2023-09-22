@@ -1,6 +1,6 @@
 {
   "packages": [
-    "go@1.20.6",
+    "go@1.20.7",
     "golangci-lint@1.53.3",
     "ginkgo@2.8.3",
     "nodejs@18.16.0",
@@ -10,7 +10,8 @@
     "path:nix/speakeasy#speakeasy",
     "moon@1.10.1",
     "process-compose@0.43.1",
-    "helm-docs@1.11.0"
+    "helm-docs@1.11.0",
+    "yq@3.2.3"
   ],
   "shell": {},
   "nixpkgs": {

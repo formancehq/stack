@@ -23,3 +23,6 @@ worktrees
 .moon/go
 
 .devbox
+
+# Ignore SDKS
+sdks
