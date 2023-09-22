@@ -1,6 +1,6 @@
 # operator
 
-![Version: 0.2.5](https://img.shields.io/badge/Version-0.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.16.12](https://img.shields.io/badge/AppVersion-v0.16.12-informational?style=flat-square)
+![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.16.15](https://img.shields.io/badge/AppVersion-v0.16.15-informational?style=flat-square)
 
 Formance Operator Helm Chart
 
@@ -24,7 +24,7 @@ Formance Operator Helm Chart
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/formancehq/operator"` |  |
-| image.tag | string | `"v0.16.12"` |  |
+| image.tag | string | `"v0.16.15"` |  |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
