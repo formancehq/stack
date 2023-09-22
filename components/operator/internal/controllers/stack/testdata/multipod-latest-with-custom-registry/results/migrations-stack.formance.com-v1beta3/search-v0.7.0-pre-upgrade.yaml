@@ -1,0 +1,16 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: search-v0.7.0-pre-upgrade
+    namespace: multipod-latest-with-custom-registry
+spec:
+    configuration: multipod-latest-with-custom-registry
+    module: search
+    postUpgrade: false
+    targetedVersion: v0.7.0
+    version: multipod-latest-with-custom-registry
+status:
+    terminated: true

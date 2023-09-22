@@ -254,7 +254,7 @@ func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (b
 									RestartPolicy: corev1.RestartPolicyNever,
 									Containers: []corev1.Container{{
 										Name:    cron.Container.Name,
-										Image:   cron.Container.Image,
+										Image:   r.Configuration.ResolveImage(cron.Container.Image),
 										Command: cron.Container.Command,
 										Args:    cron.Container.Args,
 										Env:     cron.Container.Env.ToCoreEnv(),
@@ -359,7 +359,7 @@ func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version str
 						RestartPolicy: corev1.RestartPolicyOnFailure,
 						Containers: []corev1.Container{{
 							Name:  "migrate",
-							Image: GetImage(r.module.Name(), r.Versions.GetVersion(r.module.Name())),
+							Image: r.Configuration.ResolveImage(GetImage(r.module.Name(), r.Versions.GetVersion(r.module.Name()))),
 							Args:  args,
 							// There is only one service which use prefixed env var : ledger v1
 							// Since the ledger v1 auto handle migrations, we don't care about passing a prefix

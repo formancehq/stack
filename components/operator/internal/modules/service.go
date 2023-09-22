@@ -505,7 +505,7 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 			}
 			return serviceName
 		}(),
-		Image:           container.Image,
+		Image:           ctx.Configuration.ResolveImage(container.Image),
 		ImagePullPolicy: GetPullPolicy(container.Image),
 		Command:         container.Command,
 		Args:            container.Args,
