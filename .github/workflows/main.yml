@@ -35,6 +35,7 @@ jobs:
       - run: 'devbox run -- moon run integration:tests'
         env:
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY_FOR_TEST }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
           DOCKER_HOSTNAME: 172.17.0.1
       - uses: 'moonrepo/run-report-action@v1'
         if: success() || failure()
