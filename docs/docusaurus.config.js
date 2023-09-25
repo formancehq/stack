@@ -1,28 +1,111 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github')
-const darkCodeTheme = require('prism-react-renderer/themes/palenight')
-const math = require('remark-math')
-const katex = require('rehype-katex')
+const lightCodeTheme = require('prism-react-renderer/themes/github');
+const darkCodeTheme = require('prism-react-renderer/themes/palenight');
+const math = require('remark-math');
+const katex = require('rehype-katex');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-	title: 'Formance Developer Docs',
-	tagline: 'The open source foundation you need to build and scale money-movements within your app',
-	url: 'https://docs.formance.com/',
-	baseUrl: '/',
-	onBrokenLinks: 'warn',
-	onBrokenMarkdownLinks: 'warn',
-	favicon: 'img/f-shape.ico',
-	organizationName: 'formancehq', // Usually your GitHub org/user name.
-	projectName: 'docs', // Usually your repo name.
+  title: 'Formance Developer Docs',
+  tagline: 'The open source foundation you need to build and scale money-movements within your app',
+  url: 'https://docs.formance.com/',
+  baseUrl: '/',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
+  favicon: 'img/f-shape.ico',
+  organizationName: 'formancehq', // Usually your GitHub org/user name.
+  projectName: 'docs', // Usually your repo name.
 
-	stylesheets: [],
+  stylesheets: [
+    'https://fonts.googleapis.com/icon?family=Material+Icons',
+    'https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400;500;600&display=swap',
+    'https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap',
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+      crossorigin: 'anonymous',
+    },
+  ],
 
-	plugins: [
-		// 'posthog-docusaurus',
-	],
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: "flows",
+        path: './product/flows/',
+        routeBasePath: '/flows',
+        sidebarPath: require.resolve('./product/flows/sidebars.js'),
+        remarkPlugins: [math],
+        rehypePlugins: [katex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: "ledger",
+        path: './product/ledger/',
+        routeBasePath: '/ledger',
+        sidebarPath: require.resolve('./product/ledger/sidebars.js'),
+        remarkPlugins: [math],
+        rehypePlugins: [katex],
+        lastVersion: 'current',
+        versions: {
+          current: {
+            label: 'v2',
+            path: 'v2',
+          },
+        },
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: "operator",
+        path: './product/operator/',
+        routeBasePath: '/operator',
+        sidebarPath: require.resolve('./product/operator/sidebars.js'),
+        remarkPlugins: [math],
+        rehypePlugins: [katex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: "payments",
+        path: './product/payments/',
+        routeBasePath: '/payments',
+        sidebarPath: require.resolve('./product/payments/sidebars.js'),
+        remarkPlugins: [math],
+        rehypePlugins: [katex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: "wallets",
+        path: './product/wallets/',
+        routeBasePath: '/wallets',
+        sidebarPath: require.resolve('./product/wallets/sidebars.js'),
+        remarkPlugins: [math],
+        rehypePlugins: [katex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: "webhooks",
+        path: './product/webhooks/',
+        routeBasePath: '/webhooks',
+        sidebarPath: require.resolve('./product/webhooks/sidebars.js'),
+        remarkPlugins: [math],
+        rehypePlugins: [katex],
+      },
+    ],
+  ],
 
   presets: [
     [
@@ -87,8 +170,12 @@ const config = {
             position: "left",
             items: [
                 {
-                    label: 'Ledger',
-                    to: '/ledger',
+                  label: 'Ledger v1',
+                  to: '/ledger/v1',
+                },
+                {
+                  label: 'Ledger v2',
+                  to: '/ledger/v2',
                 },
                 {
                     label: 'Payments',
@@ -147,7 +234,7 @@ const config = {
             items: [
               {
                 label: 'Ledger',
-                to: '/ledger',
+                to: '/ledger/v2',
               },
               {
                 label: 'Payments',
@@ -201,21 +288,21 @@ const config = {
         apiKey: '7864304f16ea5f9d27b7a553c83ad17a',
         indexName: 'numary',
 
-				// Optional: see doc section below
-				contextualSearch: true,
+        // Optional: see doc section below
+        contextualSearch: true,
 
-				// Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
-				externalUrlRegex: 'docs\\.formance\\.com',
+        // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
+        externalUrlRegex: 'docs\\.formance\\.com',
 
-				// Optional: Algolia search parameters
-				searchParameters: {},
+        // Optional: Algolia search parameters
+        searchParameters: {},
 
-				// Optional: path for search page that enabled by default (`false` to disable it)
-				searchPagePath: 'search',
+        // Optional: path for search page that enabled by default (`false` to disable it)
+        searchPagePath: 'search',
 
-				//... other Algolia params
-			},
-		}),
-}
+        //... other Algolia params
+      },
+    })
+};
 
-module.exports = config
+module.exports = config;

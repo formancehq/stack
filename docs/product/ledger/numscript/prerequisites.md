@@ -52,4 +52,4 @@ Do you use VSCode? Would you like to have Numscript syntax highlighting? We have
 
 ## Resetting the Dunshire ledger
 
-If you find that you want a clean slate to start from, you can reset the Dunshire ledger in its entirety. If you followed the [Hello World tutorial](/ledger/get-started/hello-world/), then Formance Ledger is using the default SQLite storage method. Thus you can delete the Dunshire ledger by deleting the corresponding SQLite file, which is stored in `~/.numary/data/numary_dunshire.db`.
+If you find that you want a clean slate to start from, you can reset the Dunshire ledger in its entirety. If you followed the [Hello World tutorial](/ledger/v2/get-started/hello-world/), then Formance Ledger is using the default SQLite storage method. Thus you can delete the Dunshire ledger by deleting the corresponding SQLite file, which is stored in `~/.numary/data/numary_dunshire.db`.

@@ -16,7 +16,7 @@ Transactions commited to the ledger are fully atomic and serialized, supported b
 
 Due to the sequential nature of the ledger, multiple instances deployments should be carefully configured.
 
-We recommended to use the Redis-based shared pre-commit lock using the [redis flags](/ledger/operations/env-vars). While the optimistic lock will ultimately be there to prevent race-conditions on commit, using the shared lock will reduce such commit attempts in the first place, yielding better performance for write heavy workloads.
+We recommended to use the Redis-based shared pre-commit lock using the [redis flags](/ledger/v2/operations/env-vars). While the optimistic lock will ultimately be there to prevent race-conditions on commit, using the shared lock will reduce such commit attempts in the first place, yielding better performance for write heavy workloads.
 
 Also, you can find a complete docker-compose example using 3 instances of the ledger, and a simple reverse proxy to handle traffic [there](https://github.com/formancehq/ledger/blob/main/examples/multi-node/docker-compose.yml).
 

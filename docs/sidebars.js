@@ -51,9 +51,22 @@ const sidebars = {
       collapsed: false,
       items: [
         {
-          type: 'link',
           label: 'Ledger',
-          href: "/ledger",
+          type: 'category',
+          collapsible: false,
+          collapsed: false,
+          items: [
+            {
+              type: 'link',
+              label: 'v1',
+              href: "/ledger/v1",
+            },
+            {
+              type: 'link',
+              label: 'v2',
+              href: "/ledger/v2",
+            },
+          ],
         },
         {
           type: 'link',
