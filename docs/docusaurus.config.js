@@ -5,6 +5,8 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/palenight');
 const math = require('remark-math');
 const katex = require('rehype-katex');
+const  path = require('path');
+
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -133,10 +135,10 @@ const config = {
       'redocusaurus',
       {
         debug: Boolean(process.env.DEBUG || process.env.CI),
+        config: path.join(__dirname, 'redocly.yaml'),
         specs: [
           {
             spec: './openapi/v1.json',
-//            spec: './../openapi/build/generate.json',
             route: '/api/stack/v1.0',
             id: 'stack',
           }
