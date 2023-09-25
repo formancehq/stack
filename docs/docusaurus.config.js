@@ -24,155 +24,182 @@ const config = {
 		// 'posthog-docusaurus',
 	],
 
-	presets: [
-		[
-			'@docusaurus/preset-classic',
-			/** @type {import('@docusaurus/preset-classic').Options} */
-			({
-				sitemap: {
-					filename: 'sitemap.xml',
-				},
-				docs: {
-					routeBasePath: '/',
-					sidebarPath: require.resolve('./sidebars.js'),
-					remarkPlugins: [math],
-					rehypePlugins: [katex],
-				},
-				theme: {
-					customCss: require.resolve('./src/css/custom.css'),
-				},
-				blog: false,
-				pages: false,
-			}),
-		],
-		[
-			'redocusaurus',
-			{
-				debug: Boolean(process.env.DEBUG || process.env.CI),
-				specs: [
-					{
-						spec: './openapi/v1.json',
-						//            spec: './../openapi/build/generate.json',
-						route: '/api/stack/v1.0',
-						id: 'stack',
-					},
-				],
-			},
-		],
-	],
+  presets: [
+    [
+      '@docusaurus/preset-classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
+        sitemap: {
+          filename: 'sitemap.xml',
+        },
+        docs: {
+          path: './docs',
+          routeBasePath: '/',
+          sidebarPath: require.resolve('./sidebars.js'),
+          remarkPlugins: [math],
+          rehypePlugins: [katex],
+        },
+        theme: {
+          customCss: require.resolve('./src/css/custom.css'),
+        },
+        blog: false,
+        pages: false,
+      }),
+    ],
+    [
+      'redocusaurus',
+      {
+        debug: Boolean(process.env.DEBUG || process.env.CI),
+        specs: [
+          {
+            spec: './openapi/v1.json',
+//            spec: './../openapi/build/generate.json',
+            route: '/api/stack/v1.0',
+            id: 'stack',
+          }
+      ],
+      }
+    ],
+  ],
 
-	themeConfig:
-		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-		({
-			docs: {
-				sidebar: {
-					autoCollapseCategories: true,
-				},
-			},
-			colorMode: {
-				defaultMode: 'light',
-				disableSwitch: true,
-			},
-			navbar: {
-				// style: 'light',
-				logo: {
-					alt: 'Formance Logo',
-					src: 'img/logo.svg',
-					href: '/',
-				},
-				items: [
-					{
-						label: '⚡️ API Reference',
-						position: 'right',
-						items: [
-							{
-								label: 'v1.0',
-								to: '/api/stack/v1.0',
-							},
-						],
-					},
-					{
-						label: 'Use-cases Library',
-						position: 'right',
-						href: 'https://www.formance.com/use-cases',
-					},
-					{
-						href: 'https://github.com/formancehq/stack',
-						label: 'GitHub',
-						position: 'right',
-					},
-					{
-						label: 'Go to Website',
-						position: 'right',
-						href: 'https://www.formance.com/',
-					},
-				],
-			},
-			footer: {
-				style: 'light',
-				links: [
-					{
-						title: 'Documentation',
-						items: [
-							{
-								label: 'Ledger',
-								to: '/ledger',
-							},
-							{
-								label: 'Payments',
-								to: '/payments',
-							},
-							{
-								label: 'Wallets (beta)',
-								to: '/wallets',
-							},
-							{
-								label: 'Flows (beta)',
-								to: '/flows',
-							},
-						],
-					},
-					{
-						title: 'Community',
-						items: [
-							{
-								label: 'Slack',
-								href: 'https://www.formance.com/slack',
-							},
-							{
-								label: 'Twitter',
-								href: 'https://www.formance.com/twitter',
-							},
-						],
-					},
-					{
-						title: 'More',
-						items: [
-							{
-								label: 'GitHub',
-								href: 'https://www.formance.com/stack',
-							},
-							{
-								label: 'Cloud Status',
-								href: 'https://status.formance.com',
-							},
-						],
-					},
-				],
-				copyright: `Copyright © 2021-2023 Formance, Inc`,
-			},
-			prism: {
-				theme: darkCodeTheme,
-			},
-			posthog: {
-				apiKey: 'phc_hRDv01yOHJNUM7l5SmXPUtSQUuNw4r5am9FtV83Z9om',
-				appUrl: 'https://app.posthog.com', // optional
-				enableInDevelopment: false, // optional
-			},
-			algolia: {
-				appId: 'IHGRMFJIIG',
-				apiKey: '7864304f16ea5f9d27b7a553c83ad17a',
-				indexName: 'numary',
+  themeConfig:
+    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    ({
+      docs: {
+        sidebar: {
+          autoCollapseCategories: true,
+        }
+      },
+      colorMode: {
+        defaultMode: 'light',
+        disableSwitch: true,
+      },
+      navbar: {
+        // style: 'light',
+        logo: {
+          alt: 'Formance Logo',
+          src: 'img/logo.svg',
+          href: '/',
+        },
+        items: [
+          {
+            label: "Product",
+            position: "left",
+            items: [
+                {
+                    label: 'Ledger',
+                    to: '/ledger',
+                },
+                {
+                    label: 'Payments',
+                    to: '/payments',
+                },
+                {
+                    label: 'Operator',
+                    to: '/operator',
+                },
+                {
+                    label: 'Webhooks',
+                    to: '/webhooks',
+                },
+                {
+                  label: 'Wallets (beta)',
+                  to: '/wallets',
+                },
+                {
+                  label: 'Flows (beta)',
+                  to: '/flows',
+                },
+            ]
+          },
+          {
+            label: '⚡️ API Reference',
+            position: 'right',
+            items: [
+              {
+                label: 'v1.0',
+                to: '/api/stack/v1.0',
+              }
+            ],
+          },
+          {
+            label: 'Use-cases Library',
+            position: 'right',
+            href: 'https://www.formance.com/use-cases',
+          },
+          {
+            href: 'https://github.com/formancehq/stack',
+            label: 'GitHub',
+            position: 'right',
+          },
+          {
+            label: 'Go to Website',
+            position: 'right',
+            href: 'https://www.formance.com/',
+          },
+        ],
+      },
+      footer: {
+        style: 'light',
+        links: [
+          {
+            title: 'Documentation',
+            items: [
+              {
+                label: 'Ledger',
+                to: '/ledger',
+              },
+              {
+                label: 'Payments',
+                to: '/payments',
+              },
+              {
+                label: 'Wallets',
+                to: '/wallets',
+              },
+            ],
+          },
+          {
+            title: 'Community',
+            items: [
+              {
+                label: 'Slack',
+                href: 'https://bit.ly/formance-slack',
+              },
+              {
+                label: 'Twitter',
+                href: 'https://twitter.com/formancehq',
+              },
+            ],
+          },
+          {
+            title: 'More',
+            items: [
+              {
+                label: 'GitHub',
+                href: 'https://github.com/formancehq/stack',
+              },
+              {
+                label: 'Cloud Status',
+                href: 'https://status.formance.com',
+              },
+            ],
+          },
+        ],
+        copyright: `Copyright © 2021-2023 Formance, Inc`,
+      },
+      prism: {
+        theme: darkCodeTheme,
+      },
+      posthog: {
+        apiKey: 'phc_hRDv01yOHJNUM7l5SmXPUtSQUuNw4r5am9FtV83Z9om',
+        appUrl: 'https://app.posthog.com',  // optional
+        enableInDevelopment: false,  // optional
+      },
+      algolia: {
+        appId: 'IHGRMFJIIG',
+        apiKey: '7864304f16ea5f9d27b7a553c83ad17a',
+        indexName: 'numary',
 
 				// Optional: see doc section below
 				contextualSearch: true,

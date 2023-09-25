@@ -1,0 +1,37 @@
+---
+title: Introduction to Formance Wallets
+pagination_next: null
+pagination_prev: null
+# hide_table_of_contents: true
+# the above sets the doc column width to 100% when set to true,
+# landing a less-than-ideal look
+toc_min_heading_level: 3
+---
+import GettingHelp from '@site/docs/partials/_getting_help.mdx';
+import WIP from '@site/docs/partials/_wip.mdx';
+
+# Formance Wallets
+
+Wallets is a fully managed, white-label wallet service to materialize and spend users funds. It comes with built-in support for multi-currency balances and temporary holds capabilities (and upcoming support for reserved funds and expirable fungibles). It is built on top of the Formance Ledger service and is designed to provide an easy way to add wallets capabilities to your application without having to worry about the underlying transactions structure, providing an opinionated model implementation.
+
+:::info
+Wallets is currently in beta and available as a technical preview. As a result, its documentation is still a work in progress, and the service itself is subject to change.
+:::
+
+## Use-cases
+
+Wallets can be a great fit you are building:
+
+* A closed-loop economy on top of you marketplace, where funds paid out can be used at checkout
+* You want to save on processing fees, by keeping some transactions internal to your system
+* You want to improve your repeat purchase rate by implementing flows like refund to wallet
+
+## Using Wallets vs Ledger
+
+A honest question that might come to mind can be: what's the difference between using Wallets and using Ledger directly? The answer is that the Ledger is a low-level service that provides a generic way to store and retrieve transactions, while Wallets is a higher-level service that provides out-of-the-box capabilities that would require otherwise non-trivial effort to implement on top of the Ledger.
+
+:::tip
+Note that you can start using Wallets now, and eject at any time to use the Ledger directly if you start growing out of it, at the cost of having to implement some of the Wallets features yourself.
+:::
+
+<GettingHelp />
