@@ -13,6 +13,7 @@ func NewLedgerAccountsCommand() *cobra.Command {
 			NewListCommand(),
 			NewShowCommand(),
 			NewSetMetadataCommand(),
+			NewDeleteMetadataCommand(),
 		),
 	)
 }

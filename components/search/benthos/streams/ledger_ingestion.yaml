@@ -6,12 +6,12 @@ input:
 
 pipeline:
   processors:
+  - log:
+      message: "receive message: ${! this }"
   - switch_event_type:
       events:
       - label: COMMITTED_TRANSACTIONS
         processors:
-        - log:
-            message: "receive message: ${! this }"
         - bloblang: |
             map account {
               root = this.map_each(v -> v.value.map_each(v2 -> {
@@ -151,6 +151,20 @@ pipeline:
               "ledger": this.payload.ledger,
               "when": this.date
             })
+      - label: DELETED_METADATA
+        processors:
+        - bloblang: |
+            meta targetType = this.payload.targetType
+            meta targetId = this.payload.targetId
+            meta ledger = this.payload.ledger
+            meta id = "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId)
+            meta action = "update"
+            root = {
+              "script": {
+                "source": "ctx._doc.metadata.remove('" + this.payload.key + "')",
+                "lang": "painless"
+              }
+            }
 
 output:
   resource: elasticsearch
