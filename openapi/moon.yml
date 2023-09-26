@@ -17,6 +17,8 @@ tasks:
     build/all:
         command: 'task sdk:generate:all'
         platform: 'system'
+        options:
+            runInCI: false
         deps:
             - 'openapi:deps'
         inputs:
