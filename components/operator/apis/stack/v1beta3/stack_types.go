@@ -105,6 +105,7 @@ type StackServicesSpec struct {
 	Payments      StackServicePropertiesSpec `json:"payments,omitempty"`
 	Wallets       StackServicePropertiesSpec `json:"wallets,omitempty"`
 	Webhooks      StackServicePropertiesSpec `json:"webhooks,omitempty"`
+	Control       StackServicePropertiesSpec `json:"control,omitempty"`
 }
 
 type StackServicePropertiesSpec struct {
@@ -148,6 +149,8 @@ func (in *StackServicesSpec) IsDisabled(service string) bool {
 type ControlAuthentication struct {
 	ClientID string
 }
+
+/* todo: group statuses by module */
 
 type StackStatus struct {
 	Status `json:",inline"`

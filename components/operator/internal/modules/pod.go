@@ -2,6 +2,11 @@ package modules
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"sort"
 
 	"github.com/formancehq/operator/internal/collectionutils"
@@ -13,9 +18,10 @@ import (
 )
 
 const (
-	monopodLabel = "formance.com/monopod"
-	stackLabel   = "stack"
-	productLabel = "app.kubernetes.io/name"
+	monopodLabel  = "formance.com/monopod"
+	stackLabel    = "stack"
+	productLabel  = "app.kubernetes.io/name"
+	stackReplicas = "stack-replicas"
 )
 
 type pod struct {
@@ -31,6 +37,7 @@ type pod struct {
 
 type PodDeployer interface {
 	deploy(ctx context.Context, pod pod) error
+	shutdown(ctx context.Context, podName string) (bool, error)
 }
 
 type PodDeployerFinalizer interface {
@@ -40,6 +47,8 @@ type PodDeployerFinalizer interface {
 type defaultPodDeployer struct {
 	deployer *ResourceDeployer
 }
+
+var _ PodDeployer = (*defaultPodDeployer)(nil)
 
 func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 	return controllerutils.JustError(d.deployer.
@@ -62,7 +71,16 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 			}
 			replicas := pod.replicas
 			if replicas == nil {
-				replicas = t.Spec.Replicas
+				if t.Annotations[stackReplicas] != "" {
+					savedReplicas, err := strconv.ParseInt(t.Annotations[stackReplicas], 10, 32)
+					if err != nil {
+						panic(err)
+					}
+					replicas = pointer.For(int32(savedReplicas))
+					delete(t.Annotations, stackReplicas)
+				} else {
+					replicas = t.Spec.Replicas
+				}
 			}
 			t.Spec = appsv1.DeploymentSpec{
 				Replicas: replicas,
@@ -85,6 +103,10 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 	)
 }
 
+func (d *defaultPodDeployer) shutdown(ctx context.Context, podName string) (bool, error) {
+	return scaleDownToZero(ctx, d.deployer, podName)
+}
+
 func NewDefaultPodDeployer(deployer *ResourceDeployer) *defaultPodDeployer {
 	return &defaultPodDeployer{
 		deployer: deployer,
@@ -95,6 +117,8 @@ type monoPodDeployer struct {
 	deployer *ResourceDeployer
 	pod
 }
+
+var _ PodDeployer = (*monoPodDeployer)(nil)
 
 func (d *monoPodDeployer) deploy(ctx context.Context, pod pod) error {
 	if pod.disableRollingUpdate {
@@ -120,6 +144,10 @@ func (d *monoPodDeployer) deploy(ctx context.Context, pod pod) error {
 	return nil
 }
 
+func (d *monoPodDeployer) shutdown(ctx context.Context, _ string) (bool, error) {
+	return scaleDownToZero(ctx, d.deployer, d.name)
+}
+
 func (d *monoPodDeployer) finalize(ctx context.Context) error {
 	sort.SliceStable(d.pod.containers, func(i, j int) bool {
 		return d.pod.containers[i].Name < d.pod.containers[j].Name
@@ -138,4 +166,27 @@ func NewMonoPodDeployer(deployer *ResourceDeployer, stackName string) *monoPodDe
 			mono: true,
 		},
 	}
+}
+
+func scaleDownToZero(ctx context.Context, deployer *ResourceDeployer, name string) (bool, error) {
+	deployment, err := deployer.Deployments().Get(ctx, name)
+	if apierrors.IsNotFound(err) {
+		return true, nil
+	}
+	if err != nil {
+		return false, err
+	}
+
+	ok, err := ensureDeploymentSync(ctx, *deployment)
+	if err != nil {
+		return false, err
+	}
+	if ok {
+		return true, nil
+	}
+	_, err = deployer.Deployments().Update(ctx, deployment, func(t *appsv1.Deployment) {
+		t.Annotations[stackReplicas] = fmt.Sprint(*t.Spec.Replicas)
+		t.Spec.Replicas = pointer.For(int32(0))
+	})
+	return false, err
 }

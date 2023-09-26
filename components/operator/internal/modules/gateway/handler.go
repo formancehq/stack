@@ -162,7 +162,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		services = append(services, servicesMap[key])
 	}
 
-	if err := caddyfileTemplate.Execute(buf, map[string]any{
+	data := map[string]any{
 		"Region":   context.Platform.Region,
 		"Env":      context.Platform.Environment,
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
@@ -170,7 +170,13 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		"Debug":    context.Stack.Spec.Debug,
 		"Fallback": fmt.Sprintf("control:%d", servicesMap["control"].Port),
 		"Port":     gatewayPort,
-	}); err != nil {
+	}
+	control, ok := context.RegisteredModules["control"]
+	if ok {
+		data["Fallback"] = fmt.Sprintf("control:%d", control.Services["control"].Port)
+	}
+
+	if err := caddyfileTemplate.Execute(buf, data); err != nil {
 		panic(err)
 	}
 	return buf.String()

@@ -2,9 +2,11 @@ package stack_test
 
 import (
 	"context"
+	batchv1 "k8s.io/api/batch/v1"
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"testing"
 	"time"
 
@@ -15,7 +17,7 @@ import (
 	"github.com/formancehq/operator/internal/modules"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
-	v1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -24,7 +26,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -104,8 +105,8 @@ var _ = ginkgo.BeforeEach(func() {
 	err = ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta3.Migration{}).
 		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
-			log := log.FromContext(ctx, "migration", request.NamespacedName)
-			log.Info("Starting reconciliation")
+			//log := log.FromContext(ctx, "migration", request.NamespacedName)
+			//log.Info("Starting reconciliation")
 
 			migration := &v1beta3.Migration{}
 			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
@@ -119,18 +120,21 @@ var _ = ginkgo.BeforeEach(func() {
 				return reconcile.Result{}, err
 			}
 
-			log.Info("Terminated")
+			//log.Info("Terminated")
 			return reconcile.Result{}, nil
 		}))
 	gomega.Expect(err)
 
 	err = ctrl.NewControllerManagedBy(mgr).
-		For(&v1.Deployment{}).
+		For(&appsv1.Deployment{}).
+		WithOptions(controller.Options{
+			MaxConcurrentReconciles: 10,
+		}).
 		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
-			log := log.FromContext(ctx, "deployment", request.NamespacedName)
-			log.Info("Starting reconciliation")
+			//log := log.FromContext(ctx, "deployment", request.NamespacedName)
+			//log.Info("Starting reconciliation")
 
-			deployment := &v1.Deployment{}
+			deployment := &appsv1.Deployment{}
 			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
 				Namespace: request.Namespace,
 				Name:      request.Name,
@@ -139,15 +143,41 @@ var _ = ginkgo.BeforeEach(func() {
 			}
 			deployment.Status.ObservedGeneration = deployment.Generation
 			if len(deployment.Status.Conditions) == 0 {
-				deployment.Status.Conditions = append(deployment.Status.Conditions, v1.DeploymentCondition{})
+				deployment.Status.Conditions = append(deployment.Status.Conditions, appsv1.DeploymentCondition{})
 			}
-			deployment.Status.Conditions[0] = v1.DeploymentCondition{
-				Type:               v1.DeploymentAvailable,
+			deployment.Status.Conditions[0] = appsv1.DeploymentCondition{
+				Type:               appsv1.DeploymentAvailable,
 				Status:             "True",
 				LastUpdateTime:     metav1.Time{Time: time.Now()},
 				LastTransitionTime: metav1.Time{Time: time.Now()},
 			}
 			if err := mgr.GetClient().Status().Update(ctx, deployment); err != nil {
+				return reconcile.Result{}, err
+			}
+
+			return reconcile.Result{}, nil
+		}))
+	gomega.Expect(err)
+
+	err = ctrl.NewControllerManagedBy(mgr).
+		For(&batchv1.Job{}).
+		WithOptions(controller.Options{
+			MaxConcurrentReconciles: 10,
+		}).
+		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+			//log := log.FromContext(ctx, "job", request.NamespacedName)
+			//log.Info("Starting reconciliation")
+
+			job := &batchv1.Job{}
+			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
+				Namespace: request.Namespace,
+				Name:      request.Name,
+			}, job); err != nil {
+				return reconcile.Result{}, err
+			}
+			job.Status.Succeeded = 1
+
+			if err := mgr.GetClient().Status().Update(ctx, job); err != nil {
 				return reconcile.Result{}, err
 			}
 
