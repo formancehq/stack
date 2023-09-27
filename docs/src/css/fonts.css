@@ -1,27 +1,9 @@
 @font-face {
-  font-family: 'Machina';
-  src: url('../../static/fonts/machina-plain-semibold.woff2');
-  font-weight: 600;
-  font-style: normal;
+	font-family: 'Object Sans';
+	src: url('../../static/fonts/Object-Sans/PPObjectSans-Variable.woff2');
 }
 
 @font-face {
-  font-family: 'Machina';
-  src: url('../../static/fonts/machina-plain-medium.woff2');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Machina';
-  src: url('../../static/fonts/machina-plain-regular.woff2');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Machina';
-  src: url('../../static/fonts/machina-plain-light.woff2');
-  font-weight: 300;
-  font-style: normal;
+	font-family: 'Machina';
+	src: url('../../static/fonts/Machina/PPNeueMachina-PlainVariable.woff2');
 }

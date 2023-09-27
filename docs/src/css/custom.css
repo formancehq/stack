@@ -9,55 +9,73 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-font-color-base: hsla(220, 22%, 26%, 1);
-  --ifm-font-family-base: 'Inter', sans-serif;
-  --ifm-heading-font-family: 'Machina';
-  --ifm-breadcrumb-font-family: 'Machina';
-  --ifm-heading-font-weight: 500;
-  /* --ifm-color-primary: hsla(160, 40%, 50%, 1); */
-  /* --ifm-color-primary: #6FE385;
+	--ifm-font-color-base: hsla(220, 22%, 26%, 1);
+	--ifm-font-family-base: 'Object Sans', sans-serif;
+	--ifm-heading-font-family: var(--ifm-font-family-base);
+	--ifm-breadcrumb-font-family: var(--ifm-font-family-base);
+	--ifm-heading-font-weight: var(--ifm-font-weight-normal);
+	--ifm-heading-font-weight: var(--ifm-font-weight-normal);
+	--ifm-menu-font-weight: var(--ifm-font-weight-normal);
+	--ifm-navbar-font-weight: var(--ifm-font-weight-normal);
+	--ifm-table-head-font-weight: var(--ifm-font-weight-semibold);
+
+	--ifm-font-weight-base: var(--ifm-font-weight-normal);
+
+	--yellow-darker: #92400e;
+	--yellow-normal: #ffe353;
+	--yellow-bright: #fff1a8;
+	--yellow-light: #fffbe4;
+
+	--pink-darker: #c087ca;
+	--pink-normal: #f5d0fe;
+	--pink-bright: #f8e2ff;
+	--pink-light: #fdf4ff;
+
+	--ifm-box-border-color: var(--ifm-color-gray-300);
+
+	--ifm-button-font-weight: 400;
+
+	/* --ifm-color-primary: hsla(160, 40%, 50%, 1); */
+	/* --ifm-color-primary: #6FE385;
   --ifm-color-primary-dark: rgb(33, 175, 144);
   --ifm-color-primary-darker: rgb(31, 165, 136);
   --ifm-color-primary-darkest: rgb(26, 136, 112);
   --ifm-color-primary-light: rgb(70, 203, 174);
   --ifm-color-primary-lighter: rgb(102, 212, 189);
   --ifm-color-primary-lightest: rgb(146, 224, 208); */
-  --ifm-code-font-size: 95%;
-  --ifm-h1-font-size: 1rem;
+	--ifm-code-font-size: 95%;
+	--ifm-h1-font-size: 1rem;
+}
+
+* {
+	font-weight: var(--ifm-font-weight-light);
 }
 
 .markdown h1:first-child {
-  font-size: 2rem;
+	font-size: 2rem;
 }
 
 .markdown h2 {
-  font-size: 1.75rem;
+	font-size: 1.75rem;
 }
 
 .markdown h3 {
-  font-size: 1.4rem;
+	font-size: 1.4rem;
 }
 
-html:not([data-theme="dark"])
-  .redocusaurus
-  .redoc-wrap
-  .api-content
-  > div
-  > div:nth-child(1)
-  > div:nth-child(2)
-  h3 {
-  color: var(--ifm-font-color-base-inverse);
+html:not([data-theme='dark']) .redocusaurus .redoc-wrap .api-content > div > div:nth-child(1) > div:nth-child(2) h3 {
+	color: var(--ifm-font-color-base-inverse);
 }
 
 .docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.1);
-  display: block;
-  margin: 0 calc(-1 * var(--ifm-pre-padding));
-  padding: 0 var(--ifm-pre-padding);
+	background-color: rgba(0, 0, 0, 0.1);
+	display: block;
+	margin: 0 calc(-1 * var(--ifm-pre-padding));
+	padding: 0 var(--ifm-pre-padding);
 }
 
 html[data-theme='dark'] .docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* html[data-theme='light'] footer {
@@ -65,17 +83,17 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 } */
 
 .header-github-logo:before {
-  content: '';
-  width: 24px;
-  height: 24px;
-  display: flex;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
-    no-repeat;
+	content: '';
+	width: 24px;
+	height: 24px;
+	display: flex;
+	background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
+		no-repeat;
 }
 
 html[data-theme='dark'] .header-github-logo:before {
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='white' d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
-    no-repeat;
+	background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='white' d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
+		no-repeat;
 }
 
 /* Graph */
@@ -107,4 +125,41 @@ html[data-theme='dark'] .header-github-logo:before {
 .Graph .node text {
 	font-size: 12px;
 	fill: hsl(218deg 13% 82%);
+}
+
+.menu__link {
+	font-weight: var(--ifm-menu-font-weight);
+}
+
+.navbar__link {
+	font-weight: var(--ifm-navbar-font-weight);
+}
+
+.button--yellow {
+	background-color: var(--yellow-bright);
+	color: var(--ifm-font-color-base);
+}
+
+.button--yellow:hover {
+	background-color: var(--yellow-normal);
+	color: var(--ifm-font-color-base);
+}
+
+.card__title {
+	font-weight: var(--ifm-font-weight-normal);
+	color: var(--ifm-font-color-base);
+	margin: 0;
+}
+
+.card__title:hover {
+	color: var(--ifm-font-color-base);
+	text-decoration: none;
+}
+
+.card__title h3 {
+	margin: 0;
+}
+
+.footer__title {
+	font-weight: var(--ifm-font-weight-semibold);
 }
