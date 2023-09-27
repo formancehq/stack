@@ -49,7 +49,7 @@ You should be able to see, as in the image above, that `donnameagle` paid 38 coi
 First, we're telling Formance Ledger to take half of the 75 coin payment from `donnameagle`. Notice that 75, being an odd number, doesn't split evenly in half. Numscript is smart about this, and rounds amounts in a way that avoids rounding errors. Because `donnameagle` is listed first, they will pay the coin that remains after evenly subdividing: They will pay 38 coin.
 
 :::info
-[Floating point numbers are too imprecise for finance](https://www.youtube.com/watch?v=yZjCQ3T5yXo). Numscript avoids this problem by only using integer math for dividing payments up. The reference docs have [more detail on about Numscript's rounding algorithm](/ledger/v2/reference/numscript/rounding/).
+[Floating point numbers are too imprecise for finance](https://www.youtube.com/watch?v=yZjCQ3T5yXo). Numscript avoids this problem by only using integer math for dividing payments up. The reference docs have [more detail on about Numscript's rounding algorithm](/ledger/reference/numscript/rounding/).
 :::
 
 Second, we're avoiding mistakes in our own calculations by telling Formance Ledger to pay whatever remains from `tomhaverford`, after `donnameagle` pays their share, by using the `remaining` keyword. Since `donnameagle` paid 38 coin, that leaves 37 coin for `tomhaverford` to pay.
@@ -144,5 +144,5 @@ Just like in the original pony purchase, we are asking Formance Ledger to split 
 Numscript offers several different mechanisms for indicating how a transaction should be split amfrom different sources. This guide has just been a small taste of what's possible.
 
 :::tip Dig deeper
-Want to learn more about all the different ways to transact from multiple sources? [The reference docs](/ledger/v2/reference/numscript/sources) have you covered!
+Want to learn more about all the different ways to transact from multiple sources? [The reference docs](/ledger/reference/numscript/sources) have you covered!
 :::

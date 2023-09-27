@@ -28,5 +28,5 @@ sales:001:contract
 Accounts can bear metadata, which in a key-value format. This metadata can be used to store any information that is relevant to the account, like a reference to an external system, or a description of the account.
 
 :::tip
-Accounts metadata can also be used in Numscript transactions, see [metadata in Numscript](/ledger/v2/reference/numscript/metadata) for more information.
+Accounts metadata can also be used in Numscript transactions, see [metadata in Numscript](/ledger/reference/numscript/metadata) for more information.
 :::

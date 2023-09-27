@@ -50,7 +50,7 @@ You should be able to see, as in the image above, that `leslieknope` received 38
 First, we're sending half of the 75 coin payment to `leslieknope`. Notice that 75, being an odd number, doesn't split evenly in half. Numscript is smart about this, and rounds amounts in a way that avoids rounding errors. Because `leslieknope` is listed first, they will get the coin that remains after evenly subdividing: They will receive 38 coin.
 
 :::info Formance Ledger uses integer math
-[Floating point numbers are too imprecise for finance](https://www.youtube.com/watch?v=yZjCQ3T5yXo). Numscript avoids this problem by only using integer math for dividing payments up. The reference docs have [more detail on about Numscript's rounding algorithm](/ledger/v2/reference/numscript/rounding/).
+[Floating point numbers are too imprecise for finance](https://www.youtube.com/watch?v=yZjCQ3T5yXo). Numscript avoids this problem by only using integer math for dividing payments up. The reference docs have [more detail on about Numscript's rounding algorithm](/ledger/reference/numscript/rounding/).
 :::
 
 Second, we're avoiding mistakes in our own calculations by telling Numscript to send whatever remains to `annperkins`, after `leslieknope` gets their share, by using the `remaining` keyword. Since `leslieknope` received 38 coin, that leaves 37 coin to distribute to `annperkins`.
@@ -96,5 +96,5 @@ You can see that Numscript has worked out all of necessary calculations so that 
 Numscript offers several different mechanisms for indicating how a transaction should be split among different destinations, this guide has just been a small taste of what's possible.
 
 :::tip Dig deeper
-Want to learn more about all the different ways to split a transaction? [The reference docs](/ledger/v2/reference/numscript/destinations) have you covered!
+Want to learn more about all the different ways to split a transaction? [The reference docs](/ledger/reference/numscript/destinations) have you covered!
 :::

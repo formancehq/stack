@@ -59,7 +59,7 @@ Second, there is a `send` block that should look largely familiar. It will send 
 
 :::info Variable types
 
-Numscript supports several variable types. Details on the different types and how they are used [are available in the Numscript reference docs](/ledger/v2/reference/numscript/variables).
+Numscript supports several variable types. Details on the different types and how they are used [are available in the Numscript reference docs](/ledger/reference/numscript/variables).
 
 :::
 
@@ -96,7 +96,7 @@ A complete transaction consists of a template in Numscript and a specification o
 
 **You cannot use the command line to execute Numscript templates.**
 
-At least, not at this time. That feature is coming though! In the meantime you _can_ execute Numscript templates using Formance Ledger's built-in API server. If you've never done that before, take a moment to [read up on how to use the API server to execute Numscript](/ledger/v2/numscript/http).
+At least, not at this time. That feature is coming though! In the meantime you _can_ execute Numscript templates using Formance Ledger's built-in API server. If you've never done that before, take a moment to [read up on how to use the API server to execute Numscript](/ledger/numscript/http).
 
 :::
 
@@ -192,7 +192,7 @@ There is also a `details` field with a URL. When there is an error parsing Numsc
 
 ## Templates and Metadata
 
-In addition to specifying the value of variables directly, we can pull those values from [metadata](/ledger/v2/numscript/metadata/) associated with accounts.
+In addition to specifying the value of variables directly, we can pull those values from [metadata](/ledger/numscript/metadata/) associated with accounts.
 
 Let's suppose that we want to take a commission whenever one player transfers coin to another player. We can store the current commission rate as metadata on the `@centralbank` account, and then pull that rate in dynamically when we execute that kind of transaction with Numscript:
 
@@ -231,5 +231,5 @@ The advantage is that you can record the variables like your commission rate in 
 This guide has just been a small taste of what's possible using Numscript templates. Nearly any Numscript transaction can be templatized.
 
 :::tip Dig deeper
-Want to learn more about creating Numscript templates? [The Numscript reference docs](/ledger/v2/reference/numscript/variables) have you covered!
+Want to learn more about creating Numscript templates? [The Numscript reference docs](/ledger/reference/numscript/variables) have you covered!
 :::

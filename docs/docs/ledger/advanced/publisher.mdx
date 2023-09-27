@@ -13,7 +13,7 @@ The following events types are available:
 
 ## Publishing to HTTP
 
-An HTTP publisher is available out of the box since 1.3.x. It allows you to push ledger events to an http server of your choice, in a webhook-like fashion. It can be enabled by setting the [configuration variables](/ledger/v2/operations/env-vars) PUBLISHER_HTTP_ENABLED and PUBLISHER_TOPIC_MAPPING.
+An HTTP publisher is available out of the box since 1.3.x. It allows you to push ledger events to an http server of your choice, in a webhook-like fashion. It can be enabled by setting the [configuration variables](/ledger/operations/env-vars) PUBLISHER_HTTP_ENABLED and PUBLISHER_TOPIC_MAPPING.
 
 :::info
 For HTTP publishing on Formance Cloud, please refer instead to the [webhooks section](/webhooks/) of The Formance Platform.
@@ -79,9 +79,9 @@ On the receiving hand, the http body sent will be formatted as per [these struct
 
 ## Publishing to Kafka
 
-An integration with Kafka is available out of the box since 1.3.x. It allows you to push ledger events to a kafka broker of your choice, bringing easy and reliable extensibility. It can be enabled by setting the [configuration variables](/ledger/v2/operations/env-vars) PUBLISHER_KAFKA_ENABLED, PUBLISHER_KAFKA_BROKER and PUBLISHER_TOPIC_MAPPING.
+An integration with Kafka is available out of the box since 1.3.x. It allows you to push ledger events to a kafka broker of your choice, bringing easy and reliable extensibility. It can be enabled by setting the [configuration variables](/ledger/operations/env-vars) PUBLISHER_KAFKA_ENABLED, PUBLISHER_KAFKA_BROKER and PUBLISHER_TOPIC_MAPPING.
 
-Other [variables](/ledger/v2/operations/env-vars) are available for further authentication and configuration.
+Other [variables](/ledger/operations/env-vars) are available for further authentication and configuration.
 
 :::info
 Access to Kafka publishing is not yet available in Formance Cloud.
