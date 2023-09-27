@@ -81,7 +81,7 @@ func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.T
 	case err := <-s.schedule(ctx, descriptor, options):
 		return err
 	case <-ctx.Done():
-		return ctx.Err()
+		return nil
 	}
 }
 

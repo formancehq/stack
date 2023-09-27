@@ -21,7 +21,7 @@ func (me *wiseError) Error() error {
 		return fmt.Errorf("unexpected status code: %d", me.StatusCode)
 	}
 
-	return fmt.Errorf("%d: %s", me.Code, me.Message)
+	return fmt.Errorf("%s: %s", me.Code, me.Message)
 }
 
 func unmarshalError(statusCode int, body io.ReadCloser) *wiseError {
