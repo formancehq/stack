@@ -67,6 +67,7 @@ const config = {
           remarkPlugins: [math],
           rehypePlugins: [katex],
           disableVersioning: false,
+          lastVersion: 'current',
           versions: {
             current: {
               label: 'v1.x',
@@ -88,8 +89,13 @@ const config = {
         specs: [
           {
             spec: './openapi/v1.json',
-            route: '/api/stack/v1.0',
-            id: 'stack',
+            route: '/api/v1.x',
+            id: 'api-v1',
+          },
+          {
+            spec: './openapi/v2.json',
+            route: '/api/v2.x',
+            id: 'api-v2',
           }
       ],
       }
@@ -117,18 +123,20 @@ const config = {
         },
         items: [
           {
-            label: 'Product',
             type: 'docsVersionDropdown',
             position: 'left',
-            docsPluginId: 'default',
           },
           {
             label: '⚡️ API Reference',
             position: 'right',
             items: [
               {
-                label: 'v1.0',
-                to: '/api/stack/v1.0',
+                label: 'v1.x',
+                to: '/api/v1.x',
+              },
+              {
+                label: 'v2.x',
+                to: '/api/v2.x',
               }
             ],
           },

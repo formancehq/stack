@@ -12,6 +12,7 @@ tasks:
       - npm install
       - npm run build
       - cat <<< $(jq '.info.version = "{{.VERSION}}"' build/generate.json) > build/generate.json
+      - cp -R ./build/generate.json ./../docs/openapi/v2.json
 
   sdk:generate:
     internal: true

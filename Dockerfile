@@ -33,8 +33,8 @@ COPY --from=wallets /usr/bin/wallets /usr/bin/wallets
 COPY --from=webhooks /usr/bin/webhooks /usr/bin/webhooks
 COPY --from=benthos /benthos /usr/bin/benthos
 COPY --from=control /app /app
-COPY ./config /etc/formance
+COPY .local /etc/formance
 COPY ./components/search/benthos /benthos
 WORKDIR /app
-COPY process-compose.yaml /running/process-compose.yaml
+COPY .local/process-compose.yaml /running/process-compose.yaml
 CMD ["process-compose", "up", "--config", "/running/process-compose.yaml", "--tui=false", "-p", "9090"]
