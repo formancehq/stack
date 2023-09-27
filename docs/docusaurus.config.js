@@ -33,81 +33,24 @@ const config = {
     },
   ],
 
-  plugins: [
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: "flows",
-        path: './product/flows/',
-        routeBasePath: '/flows',
-        sidebarPath: require.resolve('./product/flows/sidebars.js'),
-        remarkPlugins: [math],
-        rehypePlugins: [katex],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: "ledger",
-        path: './product/ledger/',
-        routeBasePath: '/ledger',
-        sidebarPath: require.resolve('./product/ledger/sidebars.js'),
-        remarkPlugins: [math],
-        rehypePlugins: [katex],
-        lastVersion: 'current',
-        versions: {
-          current: {
-            label: 'v2',
-            path: 'v2',
-          },
-        },
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: "operator",
-        path: './product/operator/',
-        routeBasePath: '/operator',
-        sidebarPath: require.resolve('./product/operator/sidebars.js'),
-        remarkPlugins: [math],
-        rehypePlugins: [katex],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: "payments",
-        path: './product/payments/',
-        routeBasePath: '/payments',
-        sidebarPath: require.resolve('./product/payments/sidebars.js'),
-        remarkPlugins: [math],
-        rehypePlugins: [katex],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: "wallets",
-        path: './product/wallets/',
-        routeBasePath: '/wallets',
-        sidebarPath: require.resolve('./product/wallets/sidebars.js'),
-        remarkPlugins: [math],
-        rehypePlugins: [katex],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: "webhooks",
-        path: './product/webhooks/',
-        routeBasePath: '/webhooks',
-        sidebarPath: require.resolve('./product/webhooks/sidebars.js'),
-        remarkPlugins: [math],
-        rehypePlugins: [katex],
-      },
-    ],
-  ],
+  // plugins: [
+  //   [
+  //     '@docusaurus/plugin-content-docs',
+  //     {
+  //       id: "product",
+  //       path: './product',
+  //       routeBasePath: '/product',
+  //       // sidebarPath: require.resolve('./product/flows/sidebars.js'),
+  //       remarkPlugins: [math],
+  //       rehypePlugins: [katex],
+  //       versions: {
+  //           current: {
+  //               label: 'v1.x',
+  //           }
+  //       }
+  //     },
+  //   ],
+  // ],
 
   presets: [
     [
@@ -123,6 +66,12 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [math],
           rehypePlugins: [katex],
+          disableVersioning: false,
+          versions: {
+            current: {
+              label: 'v1.x',
+            }
+          }
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -168,38 +117,10 @@ const config = {
         },
         items: [
           {
-            label: "Product",
-            position: "left",
-            items: [
-                {
-                  label: 'Ledger v1',
-                  to: '/ledger/v1',
-                },
-                {
-                  label: 'Ledger v2',
-                  to: '/ledger/v2',
-                },
-                {
-                    label: 'Payments',
-                    to: '/payments',
-                },
-                {
-                    label: 'Operator',
-                    to: '/operator',
-                },
-                {
-                    label: 'Webhooks',
-                    to: '/webhooks',
-                },
-                {
-                  label: 'Wallets (beta)',
-                  to: '/wallets',
-                },
-                {
-                  label: 'Flows (beta)',
-                  to: '/flows',
-                },
-            ]
+            label: 'Product',
+            type: 'docsVersionDropdown',
+            position: 'left',
+            docsPluginId: 'default',
           },
           {
             label: '⚡️ API Reference',
@@ -236,7 +157,7 @@ const config = {
             items: [
               {
                 label: 'Ledger',
-                to: '/ledger/v2',
+                to: '/ledger',
               },
               {
                 label: 'Payments',
