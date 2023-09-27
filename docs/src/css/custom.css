@@ -138,11 +138,11 @@ html[data-theme='dark'] .header-github-logo:before {
 .button--yellow {
 	background-color: var(--yellow-bright);
 	color: var(--ifm-font-color-base);
+}
 
-	&:hover {
-		color: var(--ifm-font-color-base);
-		background-color: var(--yellow-normal);
-	}
+.button--yellow:hover {
+	background-color: var(--yellow-normal);
+	color: var(--ifm-font-color-base);
 }
 
 .card__title {
