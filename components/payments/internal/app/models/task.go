@@ -17,6 +17,7 @@ const (
 	OPTIONS_RUN_NOW ScheduleOption = iota
 	OPTIONS_RUN_IN_DURATION
 	OPTIONS_RUN_INDEFINITELY
+	OPTIONS_RUN_NOW_SYNC
 )
 
 type Task struct {

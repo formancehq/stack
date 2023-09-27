@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/stripe/stripe-go/v72"
 )
 
@@ -18,11 +19,11 @@ type ExternalAccountsListResponse struct {
 func (tl *Timeline) doExternalAccountsRequest(ctx context.Context, queryParams url.Values,
 	to *[]*stripe.ExternalAccount,
 ) (bool, error) {
-	options := make([]ClientOption, 0)
-	options = append(options, QueryParam("limit", fmt.Sprintf("%d", tl.config.PageSize)))
+	options := make([]client.ClientOption, 0)
+	options = append(options, client.QueryParam("limit", fmt.Sprintf("%d", tl.config.PageSize)))
 
 	for k, v := range queryParams {
-		options = append(options, QueryParam(k, v[0]))
+		options = append(options, client.QueryParam(k, v[0]))
 	}
 
 	txs, hasMore, err := tl.client.ExternalAccounts(ctx, options...)

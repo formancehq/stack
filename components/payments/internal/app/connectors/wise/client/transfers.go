@@ -83,16 +83,15 @@ func (w *Client) GetTransfers(ctx context.Context, profile *Profile) ([]Transfer
 		if err != nil {
 			return transfers, err
 		}
+		defer res.Body.Close()
+
+		if res.StatusCode != http.StatusOK {
+			return nil, unmarshalError(res.StatusCode, res.Body).Error()
+		}
 
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
-			res.Body.Close()
-
 			return nil, fmt.Errorf("failed to read response body: %w", err)
-		}
-
-		if err = res.Body.Close(); err != nil {
-			return nil, fmt.Errorf("failed to close response body: %w", err)
 		}
 
 		var transferList []Transfer
@@ -184,26 +183,64 @@ func (w *Client) GetTransfers(ctx context.Context, profile *Profile) ([]Transfer
 	return transfers, nil
 }
 
-func (w *Client) CreateTransfer(quote Quote, targetAccount uint64, transactionID string) error {
+func (w *Client) GetTransfer(ctx context.Context, transferID string) (*Transfer, error) {
+	req, err := http.NewRequestWithContext(ctx,
+		http.MethodGet, w.endpoint("v1/transfers/"+transferID), http.NoBody)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := w.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		res.Body.Close()
+
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	if err = res.Body.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close response body: %w", err)
+	}
+
+	var transfer Transfer
+	err = json.Unmarshal(body, &transfer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal transfer: %w", err)
+	}
+
+	return &transfer, nil
+}
+
+func (w *Client) CreateTransfer(quote Quote, targetAccount uint64, transactionID string) (*Transfer, error) {
 	req, err := json.Marshal(map[string]interface{}{
 		"targetAccount":         targetAccount,
 		"quoteUuid":             quote.ID.String(),
 		"customerTransactionId": transactionID,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	res, err := w.httpClient.Post(w.endpoint("v1/transfers"), "application/json", bytes.NewBuffer(req))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
-	return nil
+	var response Transfer
+	err = json.NewDecoder(res.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get response from transfer: %w", err)
+	}
+
+	return &response, nil
 }

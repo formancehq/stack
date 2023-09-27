@@ -4,18 +4,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/google/uuid"
-
-	"go.uber.org/dig"
-
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/models"
-
 	"github.com/formancehq/payments/internal/app/task"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/dig"
 )
 
 func ChanClosed[T any](ch chan T) bool {

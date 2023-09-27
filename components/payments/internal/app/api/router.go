@@ -13,7 +13,12 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 )
 
-func httpRouter(logger logging.Logger, store *storage.Storage, serviceInfo api.ServiceInfo, connectorHandlers []connectorHandler) (*mux.Router, error) {
+func httpRouter(
+	logger logging.Logger,
+	store *storage.Storage,
+	serviceInfo api.ServiceInfo,
+	connectorHandlers []connectorHandler,
+) (*mux.Router, error) {
 	rootMux := mux.NewRouter()
 
 	// We have to keep this recovery handler here to ensure that the health
@@ -49,17 +54,25 @@ func httpRouter(logger logging.Logger, store *storage.Storage, serviceInfo api.S
 	authGroup.Path("/accounts/{accountID}").Methods(http.MethodGet).Handler(readAccountHandler(store))
 	authGroup.Path("/accounts/{accountID}/balances").Methods(http.MethodGet).Handler(listBalancesForAccount(store))
 
+	authGroup.Path("/bank-accounts").Methods(http.MethodPost).Handler(createBankAccountHandler(store))
+	authGroup.Path("/bank-accounts").Methods(http.MethodGet).Handler(listBankAccountsHandler(store))
+	authGroup.Path("/bank-accounts/{bankAccountID}").Methods(http.MethodGet).Handler(readBankAccountHandler(store))
+
+	paymentsHandlers := make(map[models.ConnectorProvider]paymentHandler)
+	for _, h := range connectorHandlers {
+		paymentsHandlers[h.Provider] = h.initiatePayment
+	}
+	authGroup.Path("/transfer-initiation").Methods(http.MethodPost).Handler(createTransferInitiationHandler(store, paymentsHandlers))
+	authGroup.Path("/transfer-initiation").Methods(http.MethodGet).Handler(listTransferInitiationsHandler(store))
+	authGroup.Path("/transfer-initiation/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(store, paymentsHandlers))
+	authGroup.Path("/transfer-initiation/{transferID}").Methods(http.MethodGet).Handler(readTransferInitiationHandler(store))
+	authGroup.Path("/transfer-initiation/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(store))
+
 	authGroup.HandleFunc("/connectors", readConnectorsHandler(store))
 
 	connectorGroup := authGroup.PathPrefix("/connectors").Subrouter()
 
 	connectorGroup.Path("/configs").Handler(connectorConfigsHandler())
-
-	// Deprecated
-	// TODO: Remove this endpoint
-	// Use /connectors/stripe/transfers instead
-	connectorGroup.Path("/stripe/transfers").Methods(http.MethodPost).
-		Handler(handleStripeTransfers(store))
 
 	for _, h := range connectorHandlers {
 		connectorGroup.PathPrefix("/" + h.Provider.String()).Handler(
@@ -84,8 +97,6 @@ func connectorRouter[Config models.ConnectorConfigObject](
 	addRoute(r, provider, "/reset", http.MethodPost, reset(manager))
 	addRoute(r, provider, "/tasks", http.MethodGet, listTasks(manager))
 	addRoute(r, provider, "/tasks/{taskID}", http.MethodGet, readTask(manager))
-	addRoute(r, provider, "/transfers", http.MethodPost, initiateTransfer(manager))
-	addRoute(r, provider, "/transfers", http.MethodGet, listTransfers(manager))
 
 	return r
 }

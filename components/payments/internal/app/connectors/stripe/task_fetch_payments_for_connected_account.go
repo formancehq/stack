@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/metrics"
 	"github.com/formancehq/payments/internal/app/task"
@@ -50,7 +51,7 @@ func ingestBatch(ctx context.Context, account string, logger logging.Logger, ing
 	return nil
 }
 
-func ConnectedAccountTask(config Config, account string, client *DefaultClient) func(ctx context.Context, logger logging.Logger,
+func ConnectedAccountTask(config Config, account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger,
 	ingester ingestion.Ingester, resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry) error {
 	return func(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
 		resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry,

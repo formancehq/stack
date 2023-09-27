@@ -59,6 +59,10 @@ func (c *Client) GetTransactions(ctx context.Context, walletsID string, page int
 		}
 	}()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+	}
+
 	var payments []*Payment
 	if err := json.NewDecoder(resp.Body).Decode(&payments); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal transactions response body: %w", err)

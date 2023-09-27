@@ -2,13 +2,13 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/uptrace/bun"
-
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 )
 
 type Connector struct {
@@ -57,6 +57,37 @@ func (p ConnectorProvider) String() string {
 
 func (p ConnectorProvider) StringLower() string {
 	return strings.ToLower(string(p))
+}
+
+func ConnectorProviderFromString(s string) (ConnectorProvider, error) {
+	switch s {
+	case "BANKING-CIRCLE":
+		return ConnectorProviderBankingCircle, nil
+	case "CURRENCY-CLOUD":
+		return ConnectorProviderCurrencyCloud, nil
+	case "DUMMY-PAY":
+		return ConnectorProviderDummyPay, nil
+	case "MODULR":
+		return ConnectorProviderModulr, nil
+	case "STRIPE":
+		return ConnectorProviderStripe, nil
+	case "WISE":
+		return ConnectorProviderWise, nil
+	case "MANGOPAY":
+		return ConnectorProviderMangopay, nil
+	case "MONEYCORP":
+		return ConnectorProviderMoneycorp, nil
+	default:
+		return "", errors.New("unknown connector provider")
+	}
+}
+
+func MustConnectorProviderFromString(s string) ConnectorProvider {
+	p, err := ConnectorProviderFromString(s)
+	if err != nil {
+		panic(err)
+	}
+	return p
 }
 
 func (c Connector) ParseConfig(to interface{}) error {

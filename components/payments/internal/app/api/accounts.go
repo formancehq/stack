@@ -87,6 +87,11 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 		data := make([]*accountResponse, len(ret))
 
 		for i := range ret {
+			accountType := ret[i].Type
+			if accountType == models.AccountTypeExternalFormance {
+				accountType = models.AccountTypeExternal
+			}
+
 			data[i] = &accountResponse{
 				ID:              ret[i].ID.String(),
 				Reference:       ret[i].Reference,
@@ -95,7 +100,7 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 				DefaultCurrency: ret[i].DefaultAsset.String(),
 				DefaultAsset:    ret[i].DefaultAsset.String(),
 				AccountName:     ret[i].AccountName,
-				Type:            ret[i].Type.String(),
+				Type:            accountType.String(),
 				Raw:             ret[i].RawData,
 			}
 		}
@@ -134,6 +139,11 @@ func readAccountHandler(repo readAccountRepository) http.HandlerFunc {
 			return
 		}
 
+		accountType := account.Type
+		if accountType == models.AccountTypeExternalFormance {
+			accountType = models.AccountTypeExternal
+		}
+
 		data := &accountResponse{
 			ID:              account.ID.String(),
 			Reference:       account.Reference,
@@ -142,7 +152,7 @@ func readAccountHandler(repo readAccountRepository) http.HandlerFunc {
 			DefaultCurrency: account.DefaultAsset.String(),
 			DefaultAsset:    account.DefaultAsset.String(),
 			AccountName:     account.AccountName,
-			Type:            account.Type.String(),
+			Type:            accountType.String(),
 			Raw:             account.RawData,
 		}
 

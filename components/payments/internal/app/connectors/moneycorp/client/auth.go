@@ -90,7 +90,7 @@ func (t *apiTransport) login(ctx context.Context) error {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to get login: %s", resp.Status)
+		return unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
 	var res loginResponse

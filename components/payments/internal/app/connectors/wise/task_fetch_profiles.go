@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/wise/client"
@@ -50,7 +51,7 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 				return err
 			}
 
-			if err := ingestAccountsBatch(ctx, metricsRegistry, ingester, balances); err != nil {
+			if err := ingestAccountsBatch(ctx, metricsRegistry, ingester, profile.ID, balances); err != nil {
 				return err
 			}
 
@@ -95,6 +96,7 @@ func ingestAccountsBatch(
 	ctx context.Context,
 	metricsRegistry metrics.MetricsRegistry,
 	ingester ingestion.Ingester,
+	profileID uint64,
 	balances []*client.Balance,
 ) error {
 	if len(balances) == 0 {
@@ -120,7 +122,10 @@ func ingestAccountsBatch(
 			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)),
 			AccountName:  balance.Name,
 			Type:         models.AccountTypeInternal,
-			RawData:      raw,
+			Metadata: map[string]string{
+				"profile_id": strconv.FormatUint(profileID, 10),
+			},
+			RawData: raw,
 		})
 
 		var amount big.Float

@@ -3,7 +3,6 @@ package integration
 import (
 	"context"
 	"encoding/json"
-	"math/big"
 
 	"github.com/formancehq/payments/internal/app/models"
 )
@@ -18,7 +17,4 @@ type Repository interface {
 	Disable(ctx context.Context, name models.ConnectorProvider) error
 	IsEnabled(ctx context.Context, name models.ConnectorProvider) (bool, error)
 	GetConnector(ctx context.Context, name models.ConnectorProvider) (*models.Connector, error)
-	CreateNewTransfer(ctx context.Context, name models.ConnectorProvider,
-		source, destination, currency string, amount *big.Int) (models.Transfer, error)
-	ListTransfers(ctx context.Context, name models.ConnectorProvider) ([]models.Transfer, error)
 }

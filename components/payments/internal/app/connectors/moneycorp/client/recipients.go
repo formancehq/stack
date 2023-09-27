@@ -48,7 +48,7 @@ func (c *Client) GetRecipients(ctx context.Context, accountID string, page int, 
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get recipient accounts: %s", resp.Status)
+		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
 	var recipients recipientsResponse

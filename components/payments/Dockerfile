@@ -14,7 +14,7 @@ WORKDIR /src
 # get deps first so it's cached
 COPY . .
 WORKDIR /src/components/payments
-RUN go mod vendor
+RUN --mount=type=cache,mode=0755,target=/go/pkg/mod go mod vendor
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH \
     CC=$TARGETARCH-linux-gnu-gcc \

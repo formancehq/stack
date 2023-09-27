@@ -92,7 +92,7 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         204:
           description: No content
-  
+
   /workflows/{workflowID}/instances:
     parameters:
     - in: path
@@ -614,6 +614,27 @@ components:
       - $ref: '#/components/schemas/StageSend'
       - $ref: '#/components/schemas/StageDelay'
       - $ref: '#/components/schemas/StageWaitEvent'
+    StripeTransferRequest:
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        asset:
+          type: string
+          example: USD
+        destination:
+          type: string
+          example: acct_1Gqj58KZcSIg2N2q
+        metadata:
+          type: object
+          description: |
+            A set of key/value pairs that you can attach to a transfer object.
+            It can be useful for storing additional information about the transfer in a structured format.
+          example:
+            order_id: '6735'
     ActivityStripeTransfer:
       $ref: '#/components/schemas/StripeTransferRequest'
     ActivityGetAccount:

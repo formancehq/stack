@@ -24,6 +24,7 @@ type Account struct {
 	DefaultAsset Asset  `bun:"default_currency"` // Is optional and default to ''
 	AccountName  string // Is optional and default to ''
 	Type         AccountType
+	Metadata     map[string]string
 
 	RawData json.RawMessage
 }
@@ -37,6 +38,10 @@ const (
 	AccountTypeInternal AccountType = "INTERNAL"
 	// Refers to an external accounts such as user's bank accounts.
 	AccountTypeExternal AccountType = "EXTERNAL"
+	// Refers to an external accounts created inside formance database.
+	// This is used only internally and will be transformed to EXTERNAL when
+	// returned to the user.
+	AccountTypeExternalFormance AccountType = "EXTERNAL_FORMANCE"
 )
 
 func (at AccountType) String() string {
@@ -49,6 +54,10 @@ type AccountID struct {
 }
 
 func (aid AccountID) String() string {
+	if aid.Reference == "" {
+		return ""
+	}
+
 	data, err := canonicaljson.Marshal(aid)
 	if err != nil {
 		panic(err)
@@ -69,6 +78,14 @@ func AccountIDFromString(value string) (*AccountID, error) {
 	}
 
 	return &ret, nil
+}
+
+func MustAccountIDFromString(value string) AccountID {
+	id, err := AccountIDFromString(value)
+	if err != nil {
+		panic(err)
+	}
+	return *id
 }
 
 func (aid AccountID) Value() (driver.Value, error) {

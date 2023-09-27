@@ -95,8 +95,13 @@ func ingestBatch(
 			return fmt.Errorf("failed to parse amount %s", transaction.Attributes.Amount.String())
 		}
 
+		c, err := currency.GetPrecision(transaction.Attributes.Currency)
+		if err != nil {
+			return err
+		}
+
 		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(currency.GetPrecision(transaction.Attributes.Currency))))).Int(&amountInt)
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(c)))).Int(&amountInt)
 
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{

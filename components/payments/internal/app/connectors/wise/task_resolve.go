@@ -16,15 +16,17 @@ const (
 	taskNameFetchTransfers         = "fetch-transfers"
 	taskNameFetchProfiles          = "fetch-profiles"
 	taskNameFetchRecipientAccounts = "fetch-recipient-accounts"
-	taskNameTransfer               = "transfer"
+	taskNameInitiatePayment        = "initiate-payment"
+	taskNameUpdatePaymentStatus    = "update-payment-status"
 )
 
 // TaskDescriptor is the definition of a task.
 type TaskDescriptor struct {
-	Name      string   `json:"name" yaml:"name" bson:"name"`
-	Key       string   `json:"key" yaml:"key" bson:"key"`
-	ProfileID uint64   `json:"profileID" yaml:"profileID" bson:"profileID"`
-	Transfer  Transfer `json:"transfer" yaml:"transfer" bson:"transfer"`
+	Name       string `json:"name" yaml:"name" bson:"name"`
+	Key        string `json:"key" yaml:"key" bson:"key"`
+	ProfileID  uint64 `json:"profileID" yaml:"profileID" bson:"profileID"`
+	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
+	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
 type Transfer struct {
@@ -48,8 +50,10 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskFetchRecipientAccounts(logger, client, taskDefinition.ProfileID)
 		case taskNameFetchTransfers:
 			return taskFetchTransfers(logger, client, taskDefinition.ProfileID)
-		case taskNameTransfer:
-			return taskTransfer(logger, client, taskDefinition.Transfer)
+		case taskNameInitiatePayment:
+			return taskInitiatePayment(logger, client, taskDefinition.TransferID)
+		case taskNameUpdatePaymentStatus:
+			return taskUpdatePaymentStatus(logger, client, taskDefinition.TransferID, taskDefinition.Attempt)
 		}
 
 		// This should never happen.

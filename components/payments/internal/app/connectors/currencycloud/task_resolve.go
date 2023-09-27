@@ -9,17 +9,21 @@ import (
 )
 
 const (
-	taskNameMain               = "main"
-	taskNameFetchTransactions  = "fetch-transactions"
-	taskNameFetchAccounts      = "fetch-accounts"
-	taskNameFetchBeneficiaries = "fetch-beneficiaries"
-	taskNameFetchBalances      = "fetch-balances"
+	taskNameMain                = "main"
+	taskNameFetchTransactions   = "fetch-transactions"
+	taskNameFetchAccounts       = "fetch-accounts"
+	taskNameFetchBeneficiaries  = "fetch-beneficiaries"
+	taskNameFetchBalances       = "fetch-balances"
+	taskNameInitiatePayment     = "initiate-payment"
+	taskNameUpdatePaymentStatus = "update-payment-status"
 )
 
 // TaskDescriptor is the definition of a task.
 type TaskDescriptor struct {
-	Name string `json:"name" yaml:"name" bson:"name"`
-	Key  string `json:"key" yaml:"key" bson:"key"`
+	Name       string `json:"name" yaml:"name" bson:"name"`
+	Key        string `json:"key" yaml:"key" bson:"key"`
+	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
+	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
@@ -50,6 +54,10 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskFetchTransactions(logger, currencyCloudClient, config)
 		case taskNameFetchBalances:
 			return taskFetchBalances(logger, currencyCloudClient)
+		case taskNameInitiatePayment:
+			return taskInitiatePayment(logger, currencyCloudClient, taskDescriptor.TransferID)
+		case taskNameUpdatePaymentStatus:
+			return taskUpdatePaymentStatus(logger, currencyCloudClient, taskDescriptor.TransferID, taskDescriptor.Attempt)
 		}
 
 		// This should never happen.

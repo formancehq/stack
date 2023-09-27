@@ -17,15 +17,15 @@ type Connector interface {
 	// Resolve is used to recover state of a failed or restarted task
 	Resolve(descriptor models.TaskDescriptor) task.Task
 	// InitiateTransfer is used to initiate a transfer from the connector to a bank account.
-	InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error
+	InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
 }
 
 type ConnectorBuilder struct {
-	name             string
-	uninstall        func(ctx context.Context) error
-	resolve          func(descriptor models.TaskDescriptor) task.Task
-	install          func(ctx task.ConnectorContext) error
-	initiateTransfer func(ctx task.ConnectorContext, transfer models.Transfer) error
+	name            string
+	uninstall       func(ctx context.Context) error
+	resolve         func(descriptor models.TaskDescriptor) task.Task
+	install         func(ctx task.ConnectorContext) error
+	initiatePayment func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
 }
 
 func (b *ConnectorBuilder) WithUninstall(
@@ -50,11 +50,11 @@ func (b *ConnectorBuilder) WithInstall(installFunction func(ctx task.ConnectorCo
 
 func (b *ConnectorBuilder) Build() Connector {
 	return &BuiltConnector{
-		name:             b.name,
-		uninstall:        b.uninstall,
-		resolve:          b.resolve,
-		install:          b.install,
-		initiateTransfer: b.initiateTransfer,
+		name:            b.name,
+		uninstall:       b.uninstall,
+		resolve:         b.resolve,
+		install:         b.install,
+		initiatePayment: b.initiatePayment,
 	}
 }
 
@@ -63,16 +63,16 @@ func NewConnectorBuilder() *ConnectorBuilder {
 }
 
 type BuiltConnector struct {
-	name             string
-	uninstall        func(ctx context.Context) error
-	resolve          func(name models.TaskDescriptor) task.Task
-	install          func(ctx task.ConnectorContext) error
-	initiateTransfer func(ctx task.ConnectorContext, transfer models.Transfer) error
+	name            string
+	uninstall       func(ctx context.Context) error
+	resolve         func(name models.TaskDescriptor) task.Task
+	install         func(ctx task.ConnectorContext) error
+	initiatePayment func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
 }
 
-func (b *BuiltConnector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
-	if b.initiateTransfer != nil {
-		return b.initiateTransfer(ctx, transfer)
+func (b *BuiltConnector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
+	if b.initiatePayment != nil {
+		return b.initiatePayment(ctx, transfer)
 	}
 
 	return nil

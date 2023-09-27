@@ -23,6 +23,9 @@ import (
 type connectorHandler struct {
 	Handler  http.Handler
 	Provider models.ConnectorProvider
+
+	// TODO(polo): refactor to remove this ugly hack to access the connector manager
+	initiatePayment paymentHandler
 }
 
 func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integration.Loader[ConnectorConfig],
@@ -47,18 +50,25 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 						return nil, err
 					}
 
+					if err := container.Provide(func() storage.Reader {
+						return store
+					}); err != nil {
+						return nil, err
+					}
+
 					return container, nil
 				}, resolver, metricsRegistry, maxTasks)
 			})
 
-			return integration.NewConnectorManager[ConnectorConfig](
+			return integration.NewConnectorManager(
 				store, loader, schedulerFactory, publisher)
 		}),
 		fx.Provide(fx.Annotate(func(cm *integration.ConnectorManager[ConnectorConfig],
 		) connectorHandler {
 			return connectorHandler{
-				Handler:  connectorRouter(loader.Name(), cm),
-				Provider: loader.Name(),
+				Handler:         connectorRouter(loader.Name(), cm),
+				Provider:        loader.Name(),
+				initiatePayment: cm.InitiatePayment,
 			}
 		}, fx.ResultTags(`group:"connectorHandlers"`))),
 		fx.Invoke(func(lc fx.Lifecycle, cm *integration.ConnectorManager[ConnectorConfig]) {

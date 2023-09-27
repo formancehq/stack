@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -29,7 +28,7 @@ func (m *Client) GetTransactions(accountID string) ([]Transaction, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
 	var res responseWrapper[[]Transaction]

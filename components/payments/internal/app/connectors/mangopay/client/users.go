@@ -54,6 +54,10 @@ func (c *Client) getUsers(ctx context.Context, page int) ([]*user, error) {
 		}
 	}()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+	}
+
 	var users []*user
 	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal users response body: %w", err)

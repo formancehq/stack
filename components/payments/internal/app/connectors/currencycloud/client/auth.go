@@ -31,7 +31,7 @@ func (c *Client) authenticate() (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return "", unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
 	//nolint:tagliatelle // allow for client code

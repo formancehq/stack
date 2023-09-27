@@ -6,24 +6,19 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
 	"github.com/stripe/stripe-go/v72"
 )
-
-//nolint:tagliatelle // allow different styled tags in client
-type TransactionsListResponse struct {
-	HasMore bool                         `json:"has_more"`
-	Data    []*stripe.BalanceTransaction `json:"data"`
-}
 
 func (tl *Timeline) doTransactionsRequest(ctx context.Context, queryParams url.Values,
 	to *[]*stripe.BalanceTransaction,
 ) (bool, error) {
-	options := make([]ClientOption, 0)
-	options = append(options, QueryParam("limit", fmt.Sprintf("%d", tl.config.PageSize)))
-	options = append(options, QueryParam("expand[]", "data.source"))
+	options := make([]client.ClientOption, 0)
+	options = append(options, client.QueryParam("limit", fmt.Sprintf("%d", tl.config.PageSize)))
+	options = append(options, client.QueryParam("expand[]", "data.source"))
 
 	for k, v := range queryParams {
-		options = append(options, QueryParam(k, v[0]))
+		options = append(options, client.QueryParam(k, v[0]))
 	}
 
 	txs, hasMore, err := tl.client.BalanceTransactions(ctx, options...)

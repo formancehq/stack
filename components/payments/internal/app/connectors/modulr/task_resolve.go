@@ -10,17 +10,21 @@ import (
 )
 
 const (
-	taskNameMain               = "main"
-	taskNameFetchTransactions  = "fetch-transactions"
-	taskNameFetchAccounts      = "fetch-accounts"
-	taskNameFetchBeneficiaries = "fetch-beneficiaries"
+	taskNameMain                = "main"
+	taskNameFetchTransactions   = "fetch-transactions"
+	taskNameFetchAccounts       = "fetch-accounts"
+	taskNameFetchBeneficiaries  = "fetch-beneficiaries"
+	taskNameInitiatePayment     = "initiate-payment"
+	taskNameUpdatePaymentStatus = "update-payment-status"
 )
 
 // TaskDescriptor is the definition of a task.
 type TaskDescriptor struct {
-	Name      string `json:"name" yaml:"name" bson:"name"`
-	Key       string `json:"key" yaml:"key" bson:"key"`
-	AccountID string `json:"accountID" yaml:"accountID" bson:"accountID"`
+	Name       string `json:"name" yaml:"name" bson:"name"`
+	Key        string `json:"key" yaml:"key" bson:"key"`
+	AccountID  string `json:"accountID" yaml:"accountID" bson:"accountID"`
+	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
+	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
@@ -41,6 +45,10 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskFetchAccounts(logger, modulrClient)
 		case taskNameFetchBeneficiaries:
 			return taskFetchBeneficiaries(logger, modulrClient)
+		case taskNameInitiatePayment:
+			return taskInitiatePayment(logger, modulrClient, taskDefinition.TransferID)
+		case taskNameUpdatePaymentStatus:
+			return taskUpdatePaymentStatus(logger, modulrClient, taskDefinition.TransferID, taskDefinition.Attempt)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, modulrClient, taskDefinition.AccountID)
 		}

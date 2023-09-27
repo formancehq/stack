@@ -29,7 +29,6 @@ func (c *Client) GetAccountBalances(ctx context.Context, accountID string) ([]*B
 	if err != nil {
 		return nil, fmt.Errorf("failed to create login request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.httpClient.Do(req)
@@ -45,7 +44,7 @@ func (c *Client) GetAccountBalances(ctx context.Context, accountID string) ([]*B
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get balances: %s", resp.Status)
+		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
 	var balances balancesResponse

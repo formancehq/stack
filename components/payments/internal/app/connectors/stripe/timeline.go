@@ -1,16 +1,20 @@
 package stripe
 
-import "time"
+import (
+	"time"
+
+	"github.com/formancehq/payments/internal/app/connectors/stripe/client"
+)
 
 type Timeline struct {
 	state                  TimelineState
 	firstIDAfterStartingAt string
 	startingAt             time.Time
 	config                 TimelineConfig
-	client                 Client
+	client                 client.Client
 }
 
-func NewTimeline(client Client, cfg TimelineConfig, state TimelineState, options ...TimelineOption) *Timeline {
+func NewTimeline(client client.Client, cfg TimelineConfig, state TimelineState, options ...TimelineOption) *Timeline {
 	defaultOptions := make([]TimelineOption, 0)
 
 	c := &Timeline{

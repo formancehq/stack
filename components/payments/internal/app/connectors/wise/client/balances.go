@@ -48,7 +48,7 @@ func (w *Client) GetBalances(ctx context.Context, profileID uint64) ([]*Balance,
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+		return nil, unmarshalError(res.StatusCode, res.Body).Error()
 	}
 
 	var balances []*Balance
