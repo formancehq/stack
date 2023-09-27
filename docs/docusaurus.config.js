@@ -127,20 +127,6 @@ const config = {
             position: 'left',
           },
           {
-            label: '⚡️ API Reference',
-            position: 'right',
-            items: [
-              {
-                label: 'v1.x',
-                to: '/api/v1.x',
-              },
-              {
-                label: 'v2.x',
-                to: '/api/v2.x',
-              }
-            ],
-          },
-          {
             label: 'Use-cases Library',
             position: 'right',
             href: 'https://www.formance.com/use-cases',

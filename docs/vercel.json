@@ -59,6 +59,6 @@
     { "source": "/stack/reference/operator", "destination": "/deployment/introduction" },
     { "source": "/stack/reference/helm", "destination": "/deployment/introduction" },
     { "source": "/stack/reference/docker", "destination": "/deployment/introduction" },
-    { "source": "/api/stack/v1.0", "destination": "/api/v1.x" }
+    { "source": "/api/stack/v1.0", "destination": "/api" }
   ]
 }

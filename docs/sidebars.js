@@ -548,6 +548,11 @@ const sidebars = {
       id: 'help',
       label: 'Getting Help',
     },
+    {
+      type: 'doc',
+      id: 'api',
+      label: 'API Reference',
+    },
   ],
 };
 
