@@ -21,7 +21,6 @@ func (s module) Versions() map[string]modules.Version {
 					{
 						ListenEnvVar:       "BIND",
 						HasVersionEndpoint: true,
-						ExposeHTTP:         true,
 						Liveness:           modules.LivenessDefault,
 						Annotations:        ctx.Configuration.Spec.Services.Stargate.Annotations.Service,
 						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {

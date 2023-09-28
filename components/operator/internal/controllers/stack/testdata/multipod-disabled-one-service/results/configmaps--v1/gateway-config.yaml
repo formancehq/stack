@@ -70,7 +70,6 @@ data:
         	import handle_path_route_with_auth /api/payments payments:8080
         	import handle_path_route_with_auth /api/search search:8080
         	import handle_path_route_with_auth /api/search-benthos search-benthos:4195
-        	import handle_path_route_with_auth /api/stargate stargate:8080
         	import handle_path_route_with_auth /api/wallets wallets:8080
         	import handle_path_route_with_auth /api/webhooks webhooks:8080
 
@@ -83,7 +82,6 @@ data:
         				ledger http://ledger:8080/_info http://ledger:8080/_healthcheck
         				payments http://payments:8080/_info http://payments:8080/_health
         				search http://search:8080/_info http://search:8080/_healthcheck
-        				stargate http://stargate:8080/_info http://stargate:8080/_healthcheck
         				wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
         				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
         			}
