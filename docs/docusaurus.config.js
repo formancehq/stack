@@ -90,10 +90,10 @@ const config = {
             href: '/',
           },
           items: [
-            {
-              type: 'docsVersionDropdown',
-              position: 'left',
-            },
+            // {
+            //   type: 'docsVersionDropdown',
+            //   position: 'left',
+            // },
             {
               label: 'Use-cases Library',
               position: 'right',
