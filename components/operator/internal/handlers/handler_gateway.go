@@ -13,48 +13,54 @@ const (
 	gatewayPort = 8000
 )
 
-func init() {
-	modules.Register("gateway", modules.Module{
-		Versions: map[string]modules.Version{
-			"v0.0.0": {
-				Services: func(ctx modules.ModuleContext) modules.Services {
-					return modules.Services{{
-						Port:        gatewayPort,
-						Path:        "/",
-						ExposeHTTP:  true,
-						Liveness:    modules.LivenessDisable,
-						Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
-						Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
-							return modules.Configs{
-								"config": modules.Config{
-									Data: map[string]string{
-										"Caddyfile": createCaddyfile(resolveContext),
-									},
-									Mount: true,
+type gatewayModule struct{}
+
+func (g gatewayModule) Versions() map[string]modules.Version {
+	return map[string]modules.Version{
+		"v0.0.0": {
+			Services: func(ctx modules.ModuleContext) modules.Services {
+				return modules.Services{{
+					Port:        gatewayPort,
+					Path:        "/",
+					ExposeHTTP:  true,
+					Liveness:    modules.LivenessDisable,
+					Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
+					Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
+						return modules.Configs{
+							"config": modules.Config{
+								Data: map[string]string{
+									"Caddyfile": createCaddyfile(resolveContext),
 								},
-							}
-						},
-						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-							return modules.Container{
-								Command: []string{"/usr/bin/caddy"},
-								Args: []string{
-									"run",
-									"--config", resolveContext.GetConfig("config").GetMountPath() + "/Caddyfile",
-									"--adapter", "caddyfile",
-								},
-								Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
-								Env:   modules.NewEnv(),
-								Resources: getResourcesWithDefault(
-									resolveContext.Configuration.Spec.Services.Gateway.ResourceProperties,
-									modules.ResourceSizeSmall(),
-								),
-							}
-						},
-					}}
-				},
+								Mount: true,
+							},
+						}
+					},
+					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						return modules.Container{
+							Command: []string{"/usr/bin/caddy"},
+							Args: []string{
+								"run",
+								"--config", resolveContext.GetConfig("config").GetMountPath() + "/Caddyfile",
+								"--adapter", "caddyfile",
+							},
+							Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
+							Env:   modules.NewEnv(),
+							Resources: getResourcesWithDefault(
+								resolveContext.Configuration.Spec.Services.Gateway.ResourceProperties,
+								modules.ResourceSizeSmall(),
+							),
+						}
+					},
+				}}
 			},
 		},
-	})
+	}
+}
+
+var _ modules.Module = (*gatewayModule)(nil)
+
+func init() {
+	modules.Register("gateway", &gatewayModule{})
 }
 
 func createCaddyfile(context modules.ServiceInstallContext) string {

@@ -92,7 +92,7 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	for _, moduleName := range moduleNames {
 		logger.Info(fmt.Sprintf("Pre install module '%s'", moduleName))
 		module := modules[moduleName]
-		prepareContext, services, ready, err := module.preInstall(ctx, deployer, portAllocator, moduleName)
+		prepareContext, services, ready, err := preInstallModule(ctx, module, deployer, portAllocator, moduleName)
 		if err != nil {
 			return false, err
 		}
@@ -197,7 +197,7 @@ func (sd *StackDeployer) HandleStack(ctx Context, deployer *ResourceDeployer) (b
 	for _, moduleName := range moduleNames {
 		logger.Info(fmt.Sprintf("Post install module '%s'", moduleName))
 		module := modules[moduleName]
-		ready, err := module.postInstall(ctx, deployer, moduleName)
+		ready, err := postInstall(ctx, module, deployer, moduleName)
 		if err != nil {
 			return false, err
 		}
@@ -284,34 +284,39 @@ type Version struct {
 	Cron        func(ctx Context) []Cron
 }
 
-type Module struct {
-	Postgres func(ctx Context) v1beta3.PostgresConfig
-	Versions map[string]Version
+type Module interface {
+	Versions() map[string]Version
 }
 
-func (module Module) preInstall(ctx Context, deployer *ResourceDeployer, portAllocator PortAllocator, moduleName string) (*ModuleContext, Services, bool, error) {
+type PostgresAwareModule interface {
+	Postgres(ctx Context) v1beta3.PostgresConfig
+}
+
+func preInstallModule(ctx Context, module Module, deployer *ResourceDeployer, portAllocator PortAllocator, moduleName string) (*ModuleContext, Services, bool, error) {
 	moduleContext := ModuleContext{
 		Module:        moduleName,
 		Context:       ctx,
 		PortAllocator: portAllocator,
 	}
-	if module.Postgres != nil {
-		postgresConfig := module.Postgres(ctx)
+	if postgresAwareModule, ok := module.(PostgresAwareModule); ok {
+		postgresConfig := postgresAwareModule.Postgres(ctx)
 		if err := CreatePostgresDatabase(ctx, postgresConfig.DSN(), ctx.Stack.GetServiceName(moduleName)); err != nil {
 			return nil, nil, false, err
 		}
 		moduleContext.Postgres = &postgresConfig
 	}
 
-	versions := collectionutils.Keys(module.Versions)
-	sort.Strings(versions)
+	versions := module.Versions()
+
+	versionsKeys := collectionutils.Keys(versions)
+	sort.Strings(versionsKeys)
 
 	var chosenVersion Version
-	for _, version := range versions {
+	for _, version := range versionsKeys {
 		if !moduleContext.HasVersionHigherOrEqual(version) {
 			break
 		}
-		chosenVersion = module.Versions[version]
+		chosenVersion = versions[version]
 		if chosenVersion.PreUpgrade == nil {
 			continue
 		}
@@ -350,17 +355,19 @@ func (module Module) preInstall(ctx Context, deployer *ResourceDeployer, portAll
 	return &moduleContext, services, true, nil
 }
 
-func (module Module) postInstall(ctx Context, deployer *ResourceDeployer, moduleName string) (bool, error) {
+func postInstall(ctx Context, module Module, deployer *ResourceDeployer, moduleName string) (bool, error) {
 
-	versions := collectionutils.Keys(module.Versions)
-	sort.Strings(versions)
+	versions := module.Versions()
+
+	versionsKeys := collectionutils.Keys(versions)
+	sort.Strings(versionsKeys)
 
 	var selectedVersion Version
-	for _, version := range versions {
+	for _, version := range versionsKeys {
 		if !ctx.Versions.IsHigherOrEqual(moduleName, version) {
 			break
 		}
-		selectedVersion = module.Versions[version]
+		selectedVersion = versions[version]
 		if selectedVersion.PostUpgrade == nil {
 			continue
 		}

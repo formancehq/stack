@@ -88,7 +88,7 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	}
 
 	module := modules.Get(migration.Spec.Module)
-	version, ok := module.Versions[migration.Spec.TargetedVersion]
+	version, ok := module.Versions()[migration.Spec.TargetedVersion]
 	if !ok {
 		return ctrl.Result{}, pkgError.New("migration not found")
 	}

@@ -22,60 +22,66 @@ const (
 	benthosImage = "public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1"
 )
 
+type searchModule struct{}
+
+func (s searchModule) Versions() map[string]modules.Version {
+	return map[string]modules.Version{
+		"v0.0.0": {
+			Services: func(ctx modules.ModuleContext) modules.Services {
+				return modules.Services{searchService(ctx), benthosService(ctx)}
+			},
+			Cron: reindexCron,
+		},
+		"v0.7.0": {
+			PreUpgrade: func(ctx modules.Context) error {
+				esClient, err := getOpenSearchClient(ctx)
+				if err != nil {
+					return err
+				}
+				if err := searchengine.CreateIndex(ctx, esClient, stackv1beta3.DefaultESIndex); err != nil {
+					return err
+				}
+				if err := reindexData(ctx, esClient); err != nil {
+					return err
+				}
+
+				return nil
+			},
+			PostUpgrade: func(ctx modules.PostInstallContext) error {
+				esClient, err := getOpenSearchClient(ctx.Context)
+				if err != nil {
+					return err
+				}
+				if err := reindexData(ctx.Context, esClient); err != nil {
+					return err
+				}
+
+				response, err := esClient.Indices.Delete([]string{ctx.Stack.Name}, esClient.Indices.Delete.WithContext(ctx))
+				if err != nil {
+					return err
+				}
+
+				if response.StatusCode != http.StatusOK && response.StatusCode != http.StatusNotFound {
+					return fmt.Errorf("unexpected status code %d when deleting index: %s", response.StatusCode, ctx.Stack.Name)
+				}
+				return nil
+			},
+			Services: func(ctx modules.ModuleContext) modules.Services {
+				return modules.Services{searchService(ctx), benthosService(ctx)}
+			},
+			Cron: reindexCron,
+		},
+	}
+}
+
+var _ modules.Module = (*searchModule)(nil)
+
 var CreateOpenSearchClient = func(cfg opensearch.Config) (*opensearch.Client, error) {
 	return opensearch.NewClient(cfg)
 }
 
 func init() {
-	modules.Register("search", modules.Module{
-		Versions: map[string]modules.Version{
-			"v0.0.0": {
-				Services: func(ctx modules.ModuleContext) modules.Services {
-					return modules.Services{searchService(ctx), benthosService(ctx)}
-				},
-				Cron: reindexCron,
-			},
-			"v0.7.0": {
-				PreUpgrade: func(ctx modules.Context) error {
-					esClient, err := getOpenSearchClient(ctx)
-					if err != nil {
-						return err
-					}
-					if err := searchengine.CreateIndex(ctx, esClient, stackv1beta3.DefaultESIndex); err != nil {
-						return err
-					}
-					if err := reindexData(ctx, esClient); err != nil {
-						return err
-					}
-
-					return nil
-				},
-				PostUpgrade: func(ctx modules.PostInstallContext) error {
-					esClient, err := getOpenSearchClient(ctx.Context)
-					if err != nil {
-						return err
-					}
-					if err := reindexData(ctx.Context, esClient); err != nil {
-						return err
-					}
-
-					response, err := esClient.Indices.Delete([]string{ctx.Stack.Name}, esClient.Indices.Delete.WithContext(ctx))
-					if err != nil {
-						return err
-					}
-
-					if response.StatusCode != http.StatusOK && response.StatusCode != http.StatusNotFound {
-						return fmt.Errorf("unexpected status code %d when deleting index: %s", response.StatusCode, ctx.Stack.Name)
-					}
-					return nil
-				},
-				Services: func(ctx modules.ModuleContext) modules.Services {
-					return modules.Services{searchService(ctx), benthosService(ctx)}
-				},
-				Cron: reindexCron,
-			},
-		},
-	})
+	modules.Register("search", &searchModule{})
 }
 
 func reindexCron(ctx modules.Context) []modules.Cron {
