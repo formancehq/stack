@@ -1,4 +1,4 @@
-package handlers
+package stargate
 
 import (
 	"strconv"
@@ -8,9 +8,9 @@ import (
 	"github.com/formancehq/operator/internal/modules"
 )
 
-type stargateModule struct{}
+type module struct{}
 
-func (s stargateModule) Versions() map[string]modules.Version {
+func (s module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -32,7 +32,7 @@ func (s stargateModule) Versions() map[string]modules.Version {
 							return modules.Container{
 								Env:   stargateClientEnvVars(resolveContext),
 								Image: modules.GetImage("stargate", resolveContext.Versions.Spec.Stargate),
-								Resources: getResourcesWithDefault(
+								Resources: modules.GetResourcesWithDefault(
 									resolveContext.Configuration.Spec.Services.Stargate.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
@@ -45,7 +45,7 @@ func (s stargateModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*stargateModule)(nil)
+var _ modules.Module = (*module)(nil)
 
 func stargateClientEnvVars(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv {
 	l := strings.Split(resolveContext.Stack.ObjectMeta.Name, "-")
@@ -65,5 +65,5 @@ func stargateClientEnvVars(resolveContext modules.ContainerResolutionContext) mo
 }
 
 func init() {
-	modules.Register("stargate", &stargateModule{})
+	modules.Register("stargate", &module{})
 }

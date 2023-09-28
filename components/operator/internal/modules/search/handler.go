@@ -1,4 +1,4 @@
-package handlers
+package search
 
 import (
 	"bytes"
@@ -11,8 +11,8 @@ import (
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/controllerutils"
-	benthosOperator "github.com/formancehq/operator/internal/handlers/benthos"
 	"github.com/formancehq/operator/internal/modules"
+	benthosOperator "github.com/formancehq/operator/internal/modules/search/benthos"
 	"github.com/formancehq/search/benthos"
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/opensearch-project/opensearch-go"
@@ -22,9 +22,9 @@ const (
 	benthosImage = "public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1"
 )
 
-type searchModule struct{}
+type module struct{}
 
-func (s searchModule) Versions() map[string]modules.Version {
+func (s module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -74,14 +74,14 @@ func (s searchModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*searchModule)(nil)
+var _ modules.Module = (*module)(nil)
 
 var CreateOpenSearchClient = func(cfg opensearch.Config) (*opensearch.Client, error) {
 	return opensearch.NewClient(cfg)
 }
 
 func init() {
-	modules.Register("search", &searchModule{})
+	modules.Register("search", &module{})
 }
 
 func reindexCron(ctx modules.Context) []modules.Cron {
@@ -171,7 +171,7 @@ func searchService(ctx modules.ModuleContext) *modules.Service {
 			return modules.Container{
 				Env:   env,
 				Image: modules.GetImage("search", resolveContext.Versions.Spec.Search),
-				Resources: getResourcesWithDefault(
+				Resources: modules.GetResourcesWithDefault(
 					resolveContext.Configuration.Spec.Services.Search.SearchResourceProperties,
 					modules.ResourceSizeSmall(),
 				),
@@ -259,7 +259,7 @@ func benthosService(ctx modules.ModuleContext) *modules.Service {
 				Image:                benthosImage,
 				Command:              cmd,
 				DisableRollingUpdate: true,
-				Resources: getResourcesWithDefault(
+				Resources: modules.GetResourcesWithDefault(
 					resolveContext.Configuration.Spec.Services.Search.BenthosResourceProperties,
 					modules.ResourceSizeSmall(),
 				),

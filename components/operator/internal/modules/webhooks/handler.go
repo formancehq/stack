@@ -1,4 +1,4 @@
-package handlers
+package webhooks
 
 import (
 	"strings"
@@ -7,13 +7,13 @@ import (
 	"github.com/formancehq/operator/internal/modules"
 )
 
-type webhooksModule struct{}
+type module struct{}
 
-func (w webhooksModule) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
+func (w module) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Webhooks.Postgres
 }
 
-func (w webhooksModule) Versions() map[string]modules.Version {
+func (w module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -28,7 +28,7 @@ func (w webhooksModule) Versions() map[string]modules.Version {
 							return modules.Container{
 								Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
 								Env:   webhooksEnvVars(resolveContext.Configuration),
-								Resources: getResourcesWithDefault(
+								Resources: modules.GetResourcesWithDefault(
 									resolveContext.Configuration.Spec.Services.Webhooks.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
@@ -51,7 +51,7 @@ func (w webhooksModule) Versions() map[string]modules.Version {
 									}, " ")),
 								),
 								Args: []string{"worker"},
-								Resources: getResourcesWithDefault(
+								Resources: modules.GetResourcesWithDefault(
 									resolveContext.Configuration.Spec.Services.Webhooks.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
@@ -64,11 +64,11 @@ func (w webhooksModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*webhooksModule)(nil)
-var _ modules.PostgresAwareModule = (*webhooksModule)(nil)
+var _ modules.Module = (*module)(nil)
+var _ modules.PostgresAwareModule = (*module)(nil)
 
 func init() {
-	modules.Register("webhooks", &webhooksModule{})
+	modules.Register("webhooks", &module{})
 }
 
 func webhooksEnvVars(configuration *stackv1beta3.Configuration) modules.ContainerEnv {

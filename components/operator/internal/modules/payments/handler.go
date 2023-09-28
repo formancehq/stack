@@ -1,4 +1,4 @@
-package handlers
+package payments
 
 import (
 	"database/sql"
@@ -13,13 +13,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-type paymentsModule struct{}
+type module struct{}
 
-func (p paymentsModule) Postgres(ctx modules.Context) v1beta3.PostgresConfig {
+func (p module) Postgres(ctx modules.Context) v1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Payments.Postgres
 }
 
-func (p paymentsModule) Versions() map[string]modules.Version {
+func (p module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -39,7 +39,7 @@ func (p paymentsModule) Versions() map[string]modules.Version {
 						return modules.Container{
 							Env:   paymentsEnvVars(resolveContext),
 							Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-							Resources: getResourcesWithDefault(
+							Resources: modules.GetResourcesWithDefault(
 								resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
 								modules.ResourceSizeSmall(),
 							),
@@ -153,11 +153,11 @@ func (p paymentsModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*paymentsModule)(nil)
-var _ modules.PostgresAwareModule = (*paymentsModule)(nil)
+var _ modules.Module = (*module)(nil)
+var _ modules.PostgresAwareModule = (*module)(nil)
 
 func init() {
-	modules.Register("payments", &paymentsModule{})
+	modules.Register("payments", &module{})
 }
 
 func paymentsEnvVars(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv {
@@ -205,7 +205,7 @@ func paymentsServices(
 			return modules.Container{
 				Env:   env(resolveContext),
 				Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-				Resources: getResourcesWithDefault(
+				Resources: modules.GetResourcesWithDefault(
 					resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
 					modules.ResourceSizeSmall(),
 				),

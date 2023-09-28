@@ -1,4 +1,4 @@
-package handlers
+package ledger
 
 import (
 	"strconv"
@@ -7,13 +7,13 @@ import (
 	"github.com/formancehq/operator/internal/modules"
 )
 
-type ledgerModule struct{}
+type module struct{}
 
-func (l ledgerModule) Postgres(ctx modules.Context) v1beta3.PostgresConfig {
+func (l module) Postgres(ctx modules.Context) v1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Ledger.Postgres
 }
 
-func (l ledgerModule) Versions() map[string]modules.Version {
+func (l module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -59,7 +59,7 @@ func (l ledgerModule) Versions() map[string]modules.Version {
 						}
 
 						return modules.Container{
-							Resources: getResourcesWithDefault(
+							Resources: modules.GetResourcesWithDefault(
 								resolveContext.Configuration.Spec.Services.Ledger.ResourceProperties,
 								modules.ResourceSizeSmall(),
 							),
@@ -87,7 +87,7 @@ func (l ledgerModule) Versions() map[string]modules.Version {
 						).Append(modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...)
 
 						return modules.Container{
-							Resources: getResourcesWithDefault(
+							Resources: modules.GetResourcesWithDefault(
 								resolveContext.Configuration.Spec.Services.Ledger.ResourceProperties,
 								modules.ResourceSizeSmall(),
 							),
@@ -103,9 +103,9 @@ func (l ledgerModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*ledgerModule)(nil)
-var _ modules.PostgresAwareModule = (*ledgerModule)(nil)
+var _ modules.Module = (*module)(nil)
+var _ modules.PostgresAwareModule = (*module)(nil)
 
 func init() {
-	modules.Register("ledger", &ledgerModule{})
+	modules.Register("ledger", &module{})
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/operator/internal/modules/auth"
 	"os"
 	"path/filepath"
 	"runtime/debug"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
-	"github.com/formancehq/operator/internal/handlers"
 	"github.com/formancehq/operator/internal/modules"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
@@ -31,7 +31,7 @@ func init() {
 	stackv1beta3.ClientSecretGenerator = func() string {
 		return "mocked-secret"
 	}
-	handlers.RSAKeyGenerator = func() string {
+	auth.RSAKeyGenerator = func() string {
 		return "fake-rsa-key"
 	}
 	modules.CreatePostgresDatabase = func(ctx context.Context, dsn, dbName string) error {

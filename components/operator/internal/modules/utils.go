@@ -1,4 +1,4 @@
-package handlers
+package modules
 
 import (
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
@@ -6,7 +6,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 )
 
-func getResourcesWithDefault(
+func GetResourcesWithDefault(
 	resourceProperties *stackv1beta3.ResourceProperties,
 	defaultResources v1.ResourceRequirements,
 ) v1.ResourceRequirements {

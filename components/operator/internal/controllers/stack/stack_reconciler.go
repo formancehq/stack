@@ -28,7 +28,16 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
-	_ "github.com/formancehq/operator/internal/handlers"
+	_ "github.com/formancehq/operator/internal/modules/auth"
+	_ "github.com/formancehq/operator/internal/modules/control"
+	_ "github.com/formancehq/operator/internal/modules/gateway"
+	_ "github.com/formancehq/operator/internal/modules/ledger"
+	_ "github.com/formancehq/operator/internal/modules/orchestration"
+	_ "github.com/formancehq/operator/internal/modules/payments"
+	_ "github.com/formancehq/operator/internal/modules/search"
+	_ "github.com/formancehq/operator/internal/modules/stargate"
+	_ "github.com/formancehq/operator/internal/modules/wallets"
+	_ "github.com/formancehq/operator/internal/modules/webhooks"
 )
 
 const (
