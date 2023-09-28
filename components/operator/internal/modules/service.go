@@ -317,7 +317,7 @@ func (service *Service) Prepare(ctx ModuleContext, serviceName string) {
 	if service.AuthConfiguration != nil {
 		_ = ctx.Stack.GetOrCreateClient(serviceName, service.AuthConfiguration(ctx))
 	}
-	if service.ExposeHTTP {
+	if service.ExposeHTTP || service.Liveness != LivenessDisable {
 		service.usedPort = service.Port
 		if service.usedPort == 0 {
 			service.usedPort = ctx.PortAllocator.NextPort()

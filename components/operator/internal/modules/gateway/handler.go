@@ -82,6 +82,9 @@ func createCaddyfile(context modules.ServiceInstallContext) string {
 			continue
 		}
 		for _, s := range module.Services {
+			if !s.ExposeHTTP {
+				continue
+			}
 			usedPort := s.GetUsedPort()
 			if usedPort == 0 {
 				continue
