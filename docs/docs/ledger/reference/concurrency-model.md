@@ -20,4 +20,4 @@ We recommended to use the Redis-based shared pre-commit lock using the [redis fl
 
 Also, you can find a complete docker-compose example using 3 instances of the ledger, and a simple reverse proxy to handle traffic [there](https://github.com/formancehq/ledger/blob/main/examples/multi-node/docker-compose.yml).
 
-Should the optimistic locking prevent a conflict on commit, it will surface it to the API consumer with a ([Response 409](/api/stack/v1.0#tag/transactions/operation/createTransaction)) - it is the responsibility of the client to retry the transaction in this case.
+Should the optimistic locking prevent a conflict on commit, it will surface it to the API consumer with a ([Response 409](/api#tag/transactions/operation/createTransaction)) - it is the responsibility of the client to retry the transaction in this case.

@@ -4,8 +4,8 @@ description: To better represent your flows, it can be useful to allow overdraft
 ---
 
 import { NumscriptBlock } from 'react-numscript-codeblock';
-import Prerequisites from '/docs/ledger/partials/numscript/_prerequisites.mdx';
-import Prereqwarn from '/docs/ledger/partials/numscript/_prereq_warning.mdx';
+import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
+import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
 
 Sometimes we need a transaction to put an account in deficit, i.e. overdraft. For example if you have $100 in your bank account and you buy a $200 item, you will have a negative balance of $100 until you get your next paycheck. This is where overdrafts in Numscript come in.
 Another situation likely to happen is linked to refunds, penalties or even coupons. The way you can represent some of these flows is by allowing some accounts to have negative balances, to represent your loss.

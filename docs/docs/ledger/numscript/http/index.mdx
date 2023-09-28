@@ -6,14 +6,14 @@ description: You can also execute Numscript with the Formance API.
 import { NumscriptBlock } from 'react-numscript-codeblock';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import Prerequisites from '/docs/ledger/partials/numscript/_prerequisites.mdx';
-import Prereqwarn from '/docs/ledger/partials/numscript/_prereq_warning.mdx';
-import CloudToken from '../../../fctl/partials/_cloud_token.mdx';
+import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
+import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
+import CloudToken from '@site/docs/partials/_cloud_token.mdx';
 
 
 The `fctl` command line is not the only way to execute Numscript. Formance Platform also exposes an HTTP API that accepts Numscript. This makes it much easier to integrate Numscript into your existing codebase.
 
-Indeed, Formance's HTTP API is very powerful, and lets you accomplish more than just executing Numscript. You can check account balances, verify transactions, and more. For now, let's focus on executing transactions using Numscript. If you want to learn more about the full range of functionality, consult the [Formance Ledger API reference documentation](/api/stack/v1.0).
+Indeed, Formance's HTTP API is very powerful, and lets you accomplish more than just executing Numscript. You can check account balances, verify transactions, and more. For now, let's focus on executing transactions using Numscript. If you want to learn more about the full range of functionality, consult the [Formance Ledger API reference documentation](/api).
 
 <Prerequisites />
 
@@ -122,7 +122,7 @@ We're using the `default` ledger, and we're executing a bit of Numscript with th
 https://randomstuff-wxyz.sandbox.formance.cloud/api/ledger/default/script
 ```
 
-You can learn more about the available endpoints in the [guide to the Formance Ledger API](/api/stack/v1.0) in the reference docs.
+You can learn more about the available endpoints in the [guide to the Formance Ledger API](/api) in the reference docs.
 
 ### The API request
 
@@ -166,5 +166,5 @@ There is also a `details` field with a URL. When there is an error parsing Numsc
 This guide has just been a small taste of what's possible using the Formance Ledger API to execute Numscript. And of course the API lets you do so much more.
 
 :::tip Dig deeper
-Want to learn more about the Formance Ledger API? The [guide to the Formance Ledger API](/api/stack/v1.0) has you covered!
+Want to learn more about the Formance Ledger API? The [guide to the Formance Ledger API](/api) has you covered!
 :::

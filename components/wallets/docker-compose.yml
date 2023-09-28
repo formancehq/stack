@@ -69,7 +69,7 @@ services:
     - "8082:8080"
     volumes:
     - ./deploy/proxy:/config
-    working_dir: /config
+    working_dir: /.local
     command: caddy run
 
   app:

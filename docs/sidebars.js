@@ -51,6 +51,73 @@ const sidebars = {
       collapsed: false,
       items: [
         {
+          label: 'Flows (beta)',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'flows/index',
+              label: 'Introduction',
+            },
+            {
+              type: 'doc',
+              id: 'flows/definition',
+              label: 'Workflows definition',
+            },
+            {
+              type: 'doc',
+              id: 'flows/execution',
+              label: 'Workflows execution',
+            },
+            {
+              type: 'category',
+              label: 'Stages reference',
+              collapsible: true,
+              collapsed: false,
+              items: [
+                {
+                  type: 'doc',
+                  id: 'flows/stages/send',
+                  label: 'Send',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/stages/wait-event',
+                  label: 'Waiting for events',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/stages/wait-delay',
+                  label: 'Waiting for a delay',
+                }
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Examples',
+              items: [
+                {
+                  type: 'doc',
+                  id: 'flows/examples/ledger-to-ledger',
+                  label: 'Ledger to Ledger',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/examples/payment-to-wallet',
+                  label: 'Payment to Wallet',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/examples/stripe-payout',
+                  label: 'Ledger to Payout',
+                }
+              ],
+            }
+          ],
+        },
+        {
           label: 'Ledger',
           type: 'category',
           collapsible: true,
@@ -59,7 +126,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'ledger/index',
-              label: 'Introduction'
+              label: 'Introduction',
             },
             {
               label: 'Tutorials',
@@ -86,7 +153,7 @@ const sidebars = {
                   },
                   link: { type: 'doc', id: 'ledger/get-started/hello-world/index' },
                   items: [
-                    // 'ledger/get-started/hello-world/start-the-server',
+                    // 'get-started/hello-world/start-the-server',
                     'ledger/get-started/hello-world/introducing-money',
                     'ledger/get-started/hello-world/checking-balances',
                     'ledger/get-started/hello-world/your-first-transaction'
@@ -104,60 +171,60 @@ const sidebars = {
                   },
                   items: [
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/prerequisites',
-                        customProps: {
-                            // icon: '1️⃣',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/prerequisites',
+                      customProps: {
+                        // icon: '1️⃣',
+                      },
                     },
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/multi-destination/index',
-                        customProps: {
-                            // icon: '➗',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/multi-destination/index',
+                      customProps: {
+                        // icon: '➗',
+                      },
                     },
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/multi-source/index',
-                        customProps: {
-                          // icon: '✖️',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/multi-source/index',
+                      customProps: {
+                        // icon: '✖️',
+                      },
                     },
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/http/index',
-                        customProps: {
-                          // icon: '🕸',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/http/index',
+                      customProps: {
+                        // icon: '🕸',
+                      },
                     },
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/templates/index',
-                        customProps: {
-                          // icon: '📝',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/templates/index',
+                      customProps: {
+                        // icon: '📝',
+                      },
                     },
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/currencies/index',
-                        customProps: {
-                          // icon: '💴',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/currencies/index',
+                      customProps: {
+                        // icon: '💴',
+                      },
                     },
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/metadata/index',
-                        customProps: {
-                          // icon: '📌',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/metadata/index',
+                      customProps: {
+                        // icon: '📌',
+                      },
                     },
                     {
-                        type:'doc',
-                        id: 'ledger/numscript/kept/index',
-                        customProps: {
-                          // icon: '🍕',
-                        },
+                      type:'doc',
+                      id: 'ledger/numscript/kept/index',
+                      customProps: {
+                        // icon: '🍕',
+                      },
                     },
                     {
                       type:'doc',
@@ -165,7 +232,7 @@ const sidebars = {
                       customProps: {
                         // icon: '📌',
                       },
-                  },
+                    },
                   ],
                 }
               ],
@@ -201,7 +268,6 @@ const sidebars = {
                 'ledger/operations/upgrade',
                 'ledger/operations/authentication',
                 'ledger/operations/using-the-control-dashboard',
-                // 'operations/running-in-production',
                 'ledger/api/sdks'
               ],
             },
@@ -233,16 +299,37 @@ const sidebars = {
                 },
               ],
             },
-            // {
-            //   label: 'Examples',
-            //   type: 'category',
-            //   collapsible: true,
-            //   collapsed: true,
-            //   items: [
-            //     'ledger/examples/in-app-currency',
-            //     'ledger/examples/marketplace-sales-routing',
-            //   ],
-            // },
+          ],
+        },
+        {
+          label: 'Operator',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'operator/index',
+              label: 'Introduction',
+            },
+            {
+              type: 'category',
+              label: 'Configuration',
+              items: [
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/debug',
+                },
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/disable-service',
+                },
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/disable-stack',
+                },
+              ],
+            },
           ],
         },
         {
@@ -322,10 +409,6 @@ const sidebars = {
               id: 'wallets/index',
               label: 'Introduction'
             },
-            // {
-            //   type: 'doc',
-            //   id: 'wallets/model',
-            // },
             {
               type: 'doc',
               id: 'wallets/creation',
@@ -364,112 +447,22 @@ const sidebars = {
                 // }
               ],
             },
-            {
-              type: 'doc',
-              id: 'wallets/configuration',
-              label: 'Configuration',
-            }
           ]
         },
         {
-          label: 'Flows (beta)',
+          label: 'Webhooks',
           type: 'category',
           collapsible: true,
           collapsed: true,
           items: [
             {
               type: 'doc',
-              id: 'flows/index',
+              id: 'webhooks/index',
               label: 'Introduction',
-            },
-            {
-              type: 'doc',
-              id: 'flows/definition',
-              label: 'Workflows definition',
-            },
-            {
-              type: 'doc',
-              id: 'flows/execution',
-              label: 'Workflows execution',
-            },
-            {
-              type: 'category',
-              label: 'Stages reference',
-              collapsible: true,
-              collapsed: false,
-              items: [
-                {
-                  type: 'doc',
-                  id: 'flows/stages/send',
-                  label: 'Send',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/stages/wait-event',
-                  label: 'Waiting for events',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/stages/wait-delay',
-                  label: 'Waiting for a delay',
-                }
-              ],
-            },
-            {
-              type: 'category',
-              label: 'Examples',
-              items: [
-                {
-                  type: 'doc',
-                  id: 'flows/examples/ledger-to-ledger',
-                  label: 'Ledger to Ledger',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/examples/payment-to-wallet',
-                  label: 'Payment to Wallet',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/examples/stripe-payout',
-                  label: 'Ledger to Payout',
-                }
-              ],
-            }
-          ],
-        },
-        {
-          label: 'Operator',
-          type: 'category',
-          collapsible: true,
-          collapsed: true,
-          items: [
-            {
-              type: 'doc',
-              id: 'operator/index',
-              label: 'Introduction',
-            },
-            {
-              type: 'category',
-              label: 'Configuration',
-              items: [
-                {
-                    type: 'doc',
-                    id: 'operator/configuration/debug',
-                },
-                {
-                  type: 'doc',
-                  id: 'operator/configuration/disable-service',
-                },
-                {
-                  type: 'doc',
-                  id: 'operator/configuration/disable-stack',
-                },
-              ],
             },
           ],
         }
-      ]
+      ],
     },
     {
       type: 'category',
@@ -479,21 +472,6 @@ const sidebars = {
         id: 'deployment/introduction',
       },
       items: [
-        // {
-        //   type: 'category',
-        //   label: 'Formance Cloud',
-        //   link: {
-        //     type: 'doc',
-        //     id: 'deployment/cloud/intro',
-        //   },
-        //   items: [
-        //     {
-        //       type: 'doc',
-        //       id: 'deployment/cloud/regions',
-        //       label: 'Regions',
-        //     }
-        //   ],
-        // },
         {
           type: 'category',
           label: 'CloudPrem',
@@ -525,11 +503,6 @@ const sidebars = {
             id: 'deployment/elements/intro',
           },
           items: [
-            // {
-            //   type: 'doc',
-            //   id: 'deployment/elements/docker',
-            //   label: 'Docker',
-            // },
             {
               type: 'doc',
               id: 'deployment/elements/kubernetes',
@@ -568,11 +541,6 @@ const sidebars = {
           id: 'stack/unambiguous-monetary-notation',
           label: 'Monetary Notation (UMN)',
         }
-//        // {
-        //   type: 'doc',
-        //   id: 'stack/telemetry/index',
-        //   label: 'Telemetry',
-        // },
       ],
     },
     {
@@ -580,15 +548,11 @@ const sidebars = {
       id: 'help',
       label: 'Getting Help',
     },
-    // {
-    //   label: 'Guides',
-    //   type: 'category',
-    //   collapsible: true,
-    //   collapsed: false,
-    //   items: [
-
-    //   ]
-    // },
+    {
+      type: 'doc',
+      id: 'api',
+      label: 'API Reference',
+    },
   ],
 };
 
