@@ -31,15 +31,6 @@ data:
               PostLogoutRedirectUris: []
               scopes:
                 - openid
-              id: stargate
-              secrets:
-                - mocked-secret
-            - public: false
-              description: null
-              redirectUris: []
-              PostLogoutRedirectUris: []
-              scopes:
-                - openid
               id: wallets
               secrets:
                 - mocked-secret

@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )
 
@@ -25,9 +24,6 @@ func (s module) Versions() map[string]modules.Version {
 						ExposeHTTP:         true,
 						Liveness:           modules.LivenessDefault,
 						Annotations:        ctx.Configuration.Spec.Services.Stargate.Annotations.Service,
-						AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
-							return stackv1beta3.NewClientConfiguration()
-						},
 						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 							return modules.Container{
 								Env:   stargateClientEnvVars(resolveContext),
