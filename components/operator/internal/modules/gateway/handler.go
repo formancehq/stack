@@ -1,4 +1,4 @@
-package handlers
+package gateway
 
 import (
 	"bytes"
@@ -13,9 +13,9 @@ const (
 	gatewayPort = 8000
 )
 
-type gatewayModule struct{}
+type module struct{}
 
-func (g gatewayModule) Versions() map[string]modules.Version {
+func (g module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -45,7 +45,7 @@ func (g gatewayModule) Versions() map[string]modules.Version {
 							},
 							Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
 							Env:   modules.NewEnv(),
-							Resources: getResourcesWithDefault(
+							Resources: modules.GetResourcesWithDefault(
 								resolveContext.Configuration.Spec.Services.Gateway.ResourceProperties,
 								modules.ResourceSizeSmall(),
 							),
@@ -57,10 +57,10 @@ func (g gatewayModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*gatewayModule)(nil)
+var _ modules.Module = (*module)(nil)
 
 func init() {
-	modules.Register("gateway", &gatewayModule{})
+	modules.Register("gateway", &module{})
 }
 
 func createCaddyfile(context modules.ServiceInstallContext) string {

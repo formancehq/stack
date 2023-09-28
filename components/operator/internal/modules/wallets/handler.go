@@ -1,4 +1,4 @@
-package handlers
+package wallets
 
 import (
 	"bytes"
@@ -15,9 +15,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-type walletsModule struct{}
+type module struct{}
 
-func (w walletsModule) Versions() map[string]modules.Version {
+func (w module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: service,
@@ -108,10 +108,10 @@ func (w walletsModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*walletsModule)(nil)
+var _ modules.Module = (*module)(nil)
 
 func init() {
-	modules.Register("wallets", &walletsModule{})
+	modules.Register("wallets", &module{})
 }
 
 func service(ctx modules.ModuleContext) modules.Services {
@@ -131,7 +131,7 @@ func service(ctx modules.ModuleContext) modules.Services {
 					modules.Env("STACK_CLIENT_SECRET", resolveContext.Stack.Status.StaticAuthClients["wallets"].Secrets[0]),
 				},
 				Image: modules.GetImage("wallets", resolveContext.Versions.Spec.Wallets),
-				Resources: getResourcesWithDefault(
+				Resources: modules.GetResourcesWithDefault(
 					resolveContext.Configuration.Spec.Services.Wallets.ResourceProperties,
 					modules.ResourceSizeSmall(),
 				),

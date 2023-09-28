@@ -1,4 +1,4 @@
-package handlers
+package auth
 
 import (
 	"bytes"
@@ -14,13 +14,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type authModule struct{}
+type module struct{}
 
-func (a authModule) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
+func (a module) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Auth.Postgres
 }
 
-func (a authModule) Versions() map[string]modules.Version {
+func (a module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -40,11 +40,11 @@ func (a authModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*authModule)(nil)
-var _ modules.PostgresAwareModule = (*authModule)(nil)
+var _ modules.Module = (*module)(nil)
+var _ modules.PostgresAwareModule = (*module)(nil)
 
 func init() {
-	modules.Register("auth", &authModule{})
+	modules.Register("auth", &module{})
 }
 
 func resolveAuthContainer(resolveContext modules.ContainerResolutionContext) modules.Container {
@@ -63,7 +63,7 @@ func resolveAuthContainer(resolveContext modules.ContainerResolutionContext) mod
 		Args:  []string{"serve"},
 		Env:   env,
 		Image: modules.GetImage("auth", resolveContext.Versions.Spec.Auth),
-		Resources: getResourcesWithDefault(
+		Resources: modules.GetResourcesWithDefault(
 			resolveContext.Configuration.Spec.Services.Auth.ResourceProperties,
 			modules.ResourceSizeSmall(),
 		),

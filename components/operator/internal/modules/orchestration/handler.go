@@ -1,17 +1,17 @@
-package handlers
+package orchestration
 
 import (
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )
 
-type orchestrationModule struct{}
+type module struct{}
 
-func (o orchestrationModule) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
+func (o module) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Orchestration.Postgres
 }
 
-func (o orchestrationModule) Versions() map[string]modules.Version {
+func (o module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -29,7 +29,7 @@ func (o orchestrationModule) Versions() map[string]modules.Version {
 							return modules.Container{
 								Env:   orchestrationEnvVars(resolveContext),
 								Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-								Resources: getResourcesWithDefault(
+								Resources: modules.GetResourcesWithDefault(
 									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
@@ -45,7 +45,7 @@ func (o orchestrationModule) Versions() map[string]modules.Version {
 								Env:   orchestrationEnvVars(resolveContext),
 								Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
 								Args:  []string{"worker"},
-								Resources: getResourcesWithDefault(
+								Resources: modules.GetResourcesWithDefault(
 									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
@@ -58,11 +58,11 @@ func (o orchestrationModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*orchestrationModule)(nil)
-var _ modules.PostgresAwareModule = (*orchestrationModule)(nil)
+var _ modules.Module = (*module)(nil)
+var _ modules.PostgresAwareModule = (*module)(nil)
 
 func init() {
-	modules.Register("orchestration", &orchestrationModule{})
+	modules.Register("orchestration", &module{})
 }
 
 func orchestrationEnvVars(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv {

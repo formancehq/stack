@@ -1,15 +1,14 @@
-package handlers
+package control
 
 import (
 	"fmt"
-
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )
 
-type controlModule struct{}
+type module struct{}
 
-func (c controlModule) Versions() map[string]modules.Version {
+func (c module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ModuleContext) modules.Services {
@@ -43,7 +42,7 @@ func (c controlModule) Versions() map[string]modules.Version {
 							Name:  "control",
 							Image: modules.GetImage("control", resolveContext.Versions.Spec.Control),
 							Env:   env,
-							Resources: getResourcesWithDefault(
+							Resources: modules.GetResourcesWithDefault(
 								resolveContext.Configuration.Spec.Services.Control.ResourceProperties,
 								modules.ResourceSizeMedium(),
 							),
@@ -55,8 +54,8 @@ func (c controlModule) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*controlModule)(nil)
+var _ modules.Module = (*module)(nil)
 
 func init() {
-	modules.Register("control", &controlModule{})
+	modules.Register("control", &module{})
 }
