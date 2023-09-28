@@ -14,29 +14,37 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func init() {
-	modules.Register("auth", modules.Module{
-		Postgres: func(ctx modules.Context) stackv1beta3.PostgresConfig {
-			return ctx.Configuration.Spec.Services.Auth.Postgres
-		},
-		Versions: map[string]modules.Version{
-			"v0.0.0": {
-				Services: func(ctx modules.ModuleContext) modules.Services {
-					return modules.Services{{
-						Secured:                 true,
-						ListenEnvVar:            "LISTEN",
-						ExposeHTTP:              true,
-						Configs:                 resolveAuthConfigs,
-						Secrets:                 resolveAuthSecrets,
-						Container:               resolveAuthContainer,
-						InjectPostgresVariables: true,
-						HasVersionEndpoint:      true,
-						Annotations:             ctx.Configuration.Spec.Services.Auth.Annotations.Service,
-					}}
-				},
+type authModule struct{}
+
+func (a authModule) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
+	return ctx.Configuration.Spec.Services.Auth.Postgres
+}
+
+func (a authModule) Versions() map[string]modules.Version {
+	return map[string]modules.Version{
+		"v0.0.0": {
+			Services: func(ctx modules.ModuleContext) modules.Services {
+				return modules.Services{{
+					Secured:                 true,
+					ListenEnvVar:            "LISTEN",
+					ExposeHTTP:              true,
+					Configs:                 resolveAuthConfigs,
+					Secrets:                 resolveAuthSecrets,
+					Container:               resolveAuthContainer,
+					InjectPostgresVariables: true,
+					HasVersionEndpoint:      true,
+					Annotations:             ctx.Configuration.Spec.Services.Auth.Annotations.Service,
+				}}
 			},
 		},
-	})
+	}
+}
+
+var _ modules.Module = (*authModule)(nil)
+var _ modules.PostgresAwareModule = (*authModule)(nil)
+
+func init() {
+	modules.Register("auth", &authModule{})
 }
 
 func resolveAuthContainer(resolveContext modules.ContainerResolutionContext) modules.Container {
