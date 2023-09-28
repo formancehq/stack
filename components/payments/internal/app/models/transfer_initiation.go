@@ -154,9 +154,6 @@ type TransferInitiation struct {
 	// Filled when created in DB
 	ID TransferInitiationID `bun:",pk,nullzero"`
 
-	// Filled when created on the connector's API
-	PaymentID PaymentID
-
 	CreatedAt   time.Time `bun:",nullzero"`
 	UpdatedAt   time.Time `bun:",nullzero"`
 	Description string
@@ -170,9 +167,26 @@ type TransferInitiation struct {
 	Amount *big.Int `bun:"type:numeric"`
 	Asset  Asset
 
+	Attempts int
+
+	// We still have to keep the status and error here in case the transfer
+	// failed before creating a payment (i.e. the transfer was rejected)
 	Status TransferInitiationStatus
 	Error  string
 
 	SourceAccount      *Account `bun:"-"`
 	DestinationAccount *Account `bun:"-"`
+
+	RelatedPayments []*TransferInitiationPayments `bun:"-"`
+}
+
+type TransferInitiationPayments struct {
+	bun.BaseModel `bun:"transfers.transfer_initiation_payments"`
+
+	TransferInitiationID TransferInitiationID `bun:",pk"`
+	PaymentID            PaymentID            `bun:",pk"`
+
+	CreatedAt time.Time `bun:",nullzero"`
+	Status    TransferInitiationStatus
+	Error     string
 }

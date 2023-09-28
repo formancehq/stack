@@ -26,6 +26,7 @@ type TaskDescriptor struct {
 	UserID        string              `json:"userID" yaml:"userID" bson:"userID"`
 	WalletID      string              `json:"walletID" yaml:"walletID" bson:"walletID"`
 	TransferID    string              `json:"transferID" yaml:"transferID" bson:"transferID"`
+	PaymentID     string              `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
 	Attempt       int                 `json:"attempt" yaml:"attempt" bson:"attempt"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
@@ -57,7 +58,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameInitiatePayment:
 			return taskInitiatePayment(logger, mangopayClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, mangopayClient, taskDescriptor.TransferID, taskDescriptor.Attempt)
+			return taskUpdatePaymentStatus(logger, mangopayClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		case taskNameFetchWallets:
 			return taskFetchWallets(logger, mangopayClient, taskDescriptor.UserID)
 		}

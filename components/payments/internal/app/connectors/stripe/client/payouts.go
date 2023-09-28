@@ -9,17 +9,20 @@ import (
 )
 
 type CreatePayoutRequest struct {
-	Amount      int64
-	Currency    string
-	Destination string
-	Description string
+	IdempotencyKey string
+	Amount         int64
+	Currency       string
+	Destination    string
+	Description    string
 }
 
 func (d *DefaultClient) CreatePayout(ctx context.Context, createPayoutRequest *CreatePayoutRequest, options ...ClientOption) (*stripe.Payout, error) {
 	stripe.Key = d.apiKey
 
 	params := &stripe.PayoutParams{
-		Params:      stripe.Params{Context: ctx},
+		Params: stripe.Params{
+			Context: ctx,
+		},
 		Amount:      stripe.Int64(createPayoutRequest.Amount),
 		Currency:    stripe.String(createPayoutRequest.Currency),
 		Destination: stripe.String(createPayoutRequest.Destination),
@@ -28,6 +31,10 @@ func (d *DefaultClient) CreatePayout(ctx context.Context, createPayoutRequest *C
 
 	if d.stripeAccount != "" {
 		params.SetStripeAccount(d.stripeAccount)
+	}
+
+	if createPayoutRequest.IdempotencyKey != "" {
+		params.IdempotencyKey = stripe.String(createPayoutRequest.IdempotencyKey)
 	}
 
 	if createPayoutRequest.Description != "" {

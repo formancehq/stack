@@ -2,6 +2,7 @@ package wise
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"strconv"
 	"time"
@@ -40,18 +41,19 @@ func taskInitiatePayment(logger logging.Logger, wiseClient *client.Client, trans
 
 		attrs := metric.WithAttributes(connectorAttrs...)
 		var err error
+		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-				if err := ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, err.Error(), 0, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusProcessing, "", time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessing, "", 0, time.Now())
 		if err != nil {
 			return err
 		}
@@ -117,7 +119,7 @@ func taskInitiatePayment(logger logging.Logger, wiseClient *client.Client, trans
 			}
 
 			var resp *client.Transfer
-			resp, err = wiseClient.CreateTransfer(quote, destinationAccount, transfer.ID.Reference)
+			resp, err = wiseClient.CreateTransfer(quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
 			if err != nil {
 				return err
 			}
@@ -133,7 +135,7 @@ func taskInitiatePayment(logger logging.Logger, wiseClient *client.Client, trans
 			}
 
 			var resp *client.Payout
-			resp, err = wiseClient.CreatePayout(quote, destinationAccount, transfer.ID.Reference)
+			resp, err = wiseClient.CreatePayout(quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
 			if err != nil {
 				return err
 			}
@@ -143,13 +145,14 @@ func taskInitiatePayment(logger logging.Logger, wiseClient *client.Client, trans
 		}
 		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
 
-		err = ingester.UpdateTransferInitiationPaymentID(ctx, transferInitiationID, models.PaymentID{
+		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
 				Reference: strconv.FormatUint(connectorPaymentID, 10),
 				Type:      paymentType,
 			},
 			Provider: models.ConnectorProviderWise,
-		}, time.Now())
+		}
+		err = ingester.AddTransferInitiationPaymentID(ctx, transferInitiationID, paymentID, time.Now())
 		if err != nil {
 			return err
 		}
@@ -158,6 +161,7 @@ func taskInitiatePayment(logger logging.Logger, wiseClient *client.Client, trans
 			Name:       "Update transfer initiation status",
 			Key:        taskNameUpdatePaymentStatus,
 			TransferID: transfer.ID.String(),
+			PaymentID:  paymentID.String(),
 			Attempt:    1,
 		})
 		if err != nil {
@@ -190,6 +194,7 @@ func taskUpdatePaymentStatus(
 	logger logging.Logger,
 	wiseClient *client.Client,
 	transferID string,
+	pID string,
 	attempt int,
 ) task.Task {
 	return func(
@@ -199,12 +204,13 @@ func taskUpdatePaymentStatus(
 		storageReader storage.Reader,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, false)
 		if err != nil {
 			return err
 		}
-		logger.Info("attempt: ", attempt, " fetching status of ", transfer.PaymentID)
+		logger.Info("attempt: ", attempt, " fetching status of ", paymentID)
 
 		attrs := updateTransferAttrs
 		if transfer.Type == models.TransferInitiationTypePayout {
@@ -226,7 +232,7 @@ func taskUpdatePaymentStatus(
 		switch transfer.Type {
 		case models.TransferInitiationTypeTransfer:
 			var resp *client.Transfer
-			resp, err = wiseClient.GetTransfer(ctx, transfer.PaymentID.Reference)
+			resp, err = wiseClient.GetTransfer(ctx, paymentID.Reference)
 			if err != nil {
 				return err
 			}
@@ -234,7 +240,7 @@ func taskUpdatePaymentStatus(
 			status = resp.Status
 		case models.TransferInitiationTypePayout:
 			var resp *client.Payout
-			resp, err = wiseClient.GetPayout(ctx, transfer.PaymentID.Reference)
+			resp, err = wiseClient.GetPayout(ctx, paymentID.Reference)
 			if err != nil {
 				return err
 			}
@@ -268,14 +274,14 @@ func taskUpdatePaymentStatus(
 				return err
 			}
 		case "outgoing_payment_sent", "funds_refunded":
-			err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusProcessed, "", time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessed, "", 0, time.Now())
 			if err != nil {
 				return err
 			}
 
 			return nil
 		case "charged_back", "cancelled":
-			err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusFailed, "", time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, "", 0, time.Now())
 			if err != nil {
 				return err
 			}

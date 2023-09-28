@@ -20,7 +20,6 @@ type paymentHandler func(ctx context.Context, transfer *models.TransferInitiatio
 
 type transferInitiationResponse struct {
 	ID                   string    `json:"id"`
-	PaymentID            string    `json:"paymentID"`
 	CreatedAt            time.Time `json:"createdAt"`
 	UpdatedAt            time.Time `json:"updatedAt"`
 	Description          string    `json:"description"`
@@ -32,6 +31,13 @@ type transferInitiationResponse struct {
 	Asset                string    `json:"asset"`
 	Status               string    `json:"status"`
 	Error                string    `json:"error"`
+}
+
+type transferInitiationPaymentsResponse struct {
+	PaymentID string    `json:"paymentID"`
+	CreatedAt time.Time `json:"createdAt"`
+	Status    string    `json:"status"`
+	Error     string    `json:"error"`
 }
 
 type createTransferInitiationRequest struct {
@@ -124,6 +130,13 @@ func createTransferInitiationHandler(
 			status = models.TransferInitiationStatusValidated
 		}
 
+		isInstalled, _ := repo.IsInstalled(r.Context(), models.MustConnectorProviderFromString(payload.Provider))
+		if !isInstalled {
+			handleValidationError(w, r, fmt.Errorf("provider %s is not installed", payload.Provider))
+
+			return
+		}
+
 		if payload.SourceAccountID != "" {
 			_, err := repo.GetAccount(r.Context(), payload.SourceAccountID)
 			if err != nil {
@@ -136,13 +149,6 @@ func createTransferInitiationHandler(
 		_, err := repo.GetAccount(r.Context(), payload.DestinationAccountID)
 		if err != nil {
 			handleStorageErrors(w, r, fmt.Errorf("failed to get destination account: %w", err))
-
-			return
-		}
-
-		isInstalled, _ := repo.IsInstalled(r.Context(), models.MustConnectorProviderFromString(payload.Provider))
-		if !isInstalled {
-			handleValidationError(w, r, fmt.Errorf("provider %s is not installed", payload.Provider))
 
 			return
 		}
@@ -193,7 +199,6 @@ func createTransferInitiationHandler(
 		data := &transferInitiationResponse{
 			ID:                   tf.ID.String(),
 			CreatedAt:            tf.CreatedAt,
-			PaymentID:            tf.PaymentID.String(),
 			UpdatedAt:            tf.UpdatedAt,
 			Description:          tf.Description,
 			SourceAccountID:      tf.SourceAccountID.String(),
@@ -219,7 +224,7 @@ func createTransferInitiationHandler(
 
 type udateTransferInitiationStatusRepository interface {
 	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
-	UpdateTransferInitiationStatus(ctx context.Context, id models.TransferInitiationID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error
+	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 }
 
@@ -272,8 +277,9 @@ func updateTransferInitiationStatusHandler(
 			return
 		}
 		previousTransferInitiation.Status = status
+		previousTransferInitiation.Attempts++
 
-		err = repo.UpdateTransferInitiationStatus(r.Context(), transferID, status, "", time.Now())
+		err = repo.UpdateTransferInitiationPaymentsStatus(r.Context(), transferID, nil, status, "", previousTransferInitiation.Attempts, time.Now())
 		if err != nil {
 			handleStorageErrors(w, r, err)
 
@@ -294,6 +300,63 @@ func updateTransferInitiationStatusHandler(
 
 				return
 			}
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+type retryTransferInitiationRepository interface {
+	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
+	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
+}
+
+func retryTransferInitiationHandler(
+	repo retryTransferInitiationRepository,
+	paymentHandlers map[models.ConnectorProvider]paymentHandler,
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		transferID, err := models.TransferInitiationIDFromString((mux.Vars(r)["transferID"]))
+		if err != nil {
+			handleValidationError(w, r, err)
+
+			return
+		}
+
+		previousTransferInitiation, err := repo.ReadTransferInitiation(r.Context(), transferID)
+		if err != nil {
+			handleStorageErrors(w, r, err)
+
+			return
+		}
+
+		if previousTransferInitiation.Status != models.TransferInitiationStatusFailed {
+			handleValidationError(w, r, errors.New("only failed transfer initiation can be updated"))
+
+			return
+		}
+		previousTransferInitiation.Status = models.TransferInitiationStatusProcessing
+		previousTransferInitiation.Attempts++
+
+		err = repo.UpdateTransferInitiationPaymentsStatus(r.Context(), transferID, nil, models.TransferInitiationStatusProcessing, "", previousTransferInitiation.Attempts, time.Now())
+		if err != nil {
+			handleStorageErrors(w, r, err)
+
+			return
+		}
+
+		f, ok := paymentHandlers[previousTransferInitiation.Provider]
+		if !ok {
+			handleServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
+
+			return
+		}
+
+		err = f(r.Context(), previousTransferInitiation)
+		if err != nil {
+			handleServerError(w, r, err)
+
+			return
 		}
 
 		w.WriteHeader(http.StatusNoContent)
@@ -322,23 +385,38 @@ func readTransferInitiationHandler(repo readTransferInitiationRepository) http.H
 			return
 		}
 
-		data := &transferInitiationResponse{
-			ID:                   ret.ID.String(),
-			CreatedAt:            ret.CreatedAt,
-			PaymentID:            ret.PaymentID.String(),
-			UpdatedAt:            ret.UpdatedAt,
-			Description:          ret.Description,
-			SourceAccountID:      ret.SourceAccountID.String(),
-			DestinationAccountID: ret.DestinationAccountID.String(),
-			Provider:             ret.Provider.String(),
-			Type:                 ret.Type.String(),
-			Amount:               ret.Amount,
-			Asset:                ret.Asset.String(),
-			Status:               ret.Status.String(),
-			Error:                ret.Error,
+		type readTransferInitiationResponse struct {
+			transferInitiationResponse
+			RelatedPayments []*transferInitiationPaymentsResponse `json:"relatedPayments"`
 		}
 
-		err = json.NewEncoder(w).Encode(api.BaseResponse[transferInitiationResponse]{
+		data := &readTransferInitiationResponse{
+			transferInitiationResponse: transferInitiationResponse{
+				ID:                   ret.ID.String(),
+				CreatedAt:            ret.CreatedAt,
+				UpdatedAt:            ret.UpdatedAt,
+				Description:          ret.Description,
+				SourceAccountID:      ret.SourceAccountID.String(),
+				DestinationAccountID: ret.DestinationAccountID.String(),
+				Provider:             ret.Provider.String(),
+				Type:                 ret.Type.String(),
+				Amount:               ret.Amount,
+				Asset:                ret.Asset.String(),
+				Status:               ret.Status.String(),
+				Error:                ret.Error,
+			},
+		}
+
+		for _, payments := range ret.RelatedPayments {
+			data.RelatedPayments = append(data.RelatedPayments, &transferInitiationPaymentsResponse{
+				PaymentID: payments.PaymentID.String(),
+				CreatedAt: payments.CreatedAt,
+				Status:    payments.Status.String(),
+				Error:     payments.Error,
+			})
+		}
+
+		err = json.NewEncoder(w).Encode(api.BaseResponse[readTransferInitiationResponse]{
 			Data: data,
 		})
 		if err != nil {
@@ -411,7 +489,6 @@ func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http
 			data[i] = &transferInitiationResponse{
 				ID:                   ret[i].ID.String(),
 				CreatedAt:            ret[i].CreatedAt,
-				PaymentID:            ret[i].PaymentID.String(),
 				UpdatedAt:            ret[i].UpdatedAt,
 				Description:          ret[i].Description,
 				SourceAccountID:      ret[i].SourceAccountID.String(),

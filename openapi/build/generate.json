@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230927"
+    "version": "v1.0.20230928"
   },
   "servers": [
     {
@@ -1917,6 +1917,26 @@
         "requestBody": {
           "$ref": "#/components/requestBodies/UpdateTransferInitiationStatus"
         },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          }
+        }
+      }
+    },
+    "/api/payments/transfer-initiation/{transferId}/retry": {
+      "post": {
+        "summary": "Retry a failed transfer initiation",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "retryTransferInitiation",
+        "description": "Retry a failed transfer initiation",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TransferId"
+          }
+        ],
         "responses": {
           "204": {
             "$ref": "#/components/responses/NoContent"
@@ -5354,6 +5374,17 @@
           "MONEYCORP"
         ]
       },
+      "TransferInitiationStatus": {
+        "type": "string",
+        "enum": [
+          "WAITING_FOR_VALIDATION",
+          "PROCESSING",
+          "PROCESSED",
+          "FAILED",
+          "REJECTED",
+          "VALIDATED"
+        ]
+      },
       "ConnectorConfig": {
         "anyOf": [
           {
@@ -5662,15 +5693,37 @@
             "example": "USD"
           },
           "status": {
+            "$ref": "#/components/schemas/TransferInitiationStatus"
+          },
+          "error": {
+            "type": "string"
+          },
+          "relatedPayments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransferInitiationPayments"
+            }
+          }
+        }
+      },
+      "TransferInitiationPayments": {
+        "type": "object",
+        "required": [
+          "paymentID",
+          "createdAt",
+          "status",
+          "error"
+        ],
+        "properties": {
+          "paymentID": {
+            "type": "string"
+          },
+          "createdAt": {
             "type": "string",
-            "enum": [
-              "WAITING_FOR_VALIDATION",
-              "PROCESSING",
-              "PROCESSED",
-              "FAILED",
-              "REJECTED",
-              "VALIDATED"
-            ]
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PaymentStatus"
           },
           "error": {
             "type": "string"

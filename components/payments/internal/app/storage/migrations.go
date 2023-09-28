@@ -532,8 +532,9 @@ func registerMigrations(migrator *migrations.Migrator) {
 				ALTER TABLE transfers.transfer_initiation ALTER COLUMN source_account_id DROP NOT NULL;
 				ALTER TABLE transfers.transfer_initiation RENAME COLUMN reference TO payment_id;
 				ALTER TYPE "public".account_type ADD VALUE IF NOT EXISTS 'EXTERNAL_FORMANCE';
+				ALTER TABLE transfers.transfer_initiation ADD COLUMN attempts int NOT NULL DEFAULT 0;
 
-				CREATE TABLE accounts.bank_account (
+				CREATE TABLE IF NOT EXISTS accounts.bank_account (
 					id uuid  NOT NULL DEFAULT gen_random_uuid(),
 					created_at timestamp with time zone  NOT NULL DEFAULT NOW() CHECK (created_at<=NOW()),
 					name text  NOT NULL,
@@ -544,6 +545,35 @@ func registerMigrations(migrator *migrations.Migrator) {
 					country text,
 					CONSTRAINT bank_account_pk PRIMARY KEY (id)
 				);
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				ALTER TABLE transfers.transfer_initiation DROP COLUMN payment_id;
+
+				CREATE TABLE IF NOT EXISTS transfers.transfer_initiation_payments (
+					transfer_initiation_id CHARACTER VARYING NOT NULL,
+					payment_id CHARACTER VARYING NOT NULL,
+					created_at timestamp with time zone  NOT NULL DEFAULT NOW() CHECK (created_at<=NOW()),
+					status int NOT NULL,
+					error text,
+					PRIMARY KEY (transfer_initiation_id, payment_id)
+				);
+
+				ALTER TABLE transfers.transfer_initiation_payments ADD CONSTRAINT transfer_initiation_id_constraint
+				FOREIGN KEY (transfer_initiation_id)
+				REFERENCES transfers.transfer_initiation (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
 				`)
 				if err != nil {
 					return err

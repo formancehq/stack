@@ -3,6 +3,7 @@ package stripe
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/currency"
@@ -38,18 +39,19 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 
 		attrs := metric.WithAttributes(connectorAttrs...)
 		var err error
+		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-				if err := ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, err.Error(), 0, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusProcessing, "", time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessing, "", 0, time.Now())
 		if err != nil {
 			return err
 		}
@@ -99,10 +101,11 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 			// Transfer between internal accounts
 			var resp *stripe.Transfer
 			resp, err = c.CreateTransfer(ctx, &client.CreateTransferRequest{
-				Amount:      transfer.Amount.Int64(),
-				Currency:    curr,
-				Destination: transfer.DestinationAccountID.Reference,
-				Description: transfer.Description,
+				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
+				Amount:         transfer.Amount.Int64(),
+				Currency:       curr,
+				Destination:    transfer.DestinationAccountID.Reference,
+				Description:    transfer.Description,
 			})
 			if err != nil {
 				return err
@@ -114,10 +117,11 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 			// Payout to an external account
 			var resp *stripe.Payout
 			resp, err = c.CreatePayout(ctx, &client.CreatePayoutRequest{
-				Amount:      transfer.Amount.Int64(),
-				Currency:    curr,
-				Destination: transfer.DestinationAccountID.Reference,
-				Description: transfer.Description,
+				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
+				Amount:         transfer.Amount.Int64(),
+				Currency:       curr,
+				Destination:    transfer.DestinationAccountID.Reference,
+				Description:    transfer.Description,
 			})
 			if err != nil {
 				return err
@@ -128,13 +132,14 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 		}
 		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
 
-		err = ingester.UpdateTransferInitiationPaymentID(ctx, transferInitiationID, models.PaymentID{
+		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
 				Reference: connectorPaymentID,
 				Type:      paymentType,
 			},
 			Provider: models.ConnectorProviderStripe,
-		}, time.Now())
+		}
+		err = ingester.AddTransferInitiationPaymentID(ctx, transferInitiationID, paymentID, time.Now())
 		if err != nil {
 			return err
 		}
@@ -143,6 +148,7 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 			Name:       "Update transfer initiation status",
 			Key:        taskNameUpdatePaymentStatus,
 			TransferID: transfer.ID.String(),
+			PaymentID:  paymentID.String(),
 			Attempt:    1,
 		})
 		if err != nil {
@@ -174,6 +180,7 @@ var (
 func UpdatePaymentStatusTask(
 	logger logging.Logger,
 	transferID string,
+	pID string,
 	attempt int,
 	stripeClient *client.DefaultClient,
 ) task.Task {
@@ -184,12 +191,13 @@ func UpdatePaymentStatusTask(
 		storageReader storage.Reader,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, false)
 		if err != nil {
 			return err
 		}
-		logger.Info("attempt: ", attempt, " fetching status of ", transfer.PaymentID)
+		logger.Info("attempt: ", attempt, " fetching status of ", paymentID)
 
 		attrs := updateTransferAttrs
 		if transfer.Type == models.TransferInitiationTypePayout {
@@ -216,7 +224,7 @@ func UpdatePaymentStatusTask(
 
 		case models.TransferInitiationTypePayout:
 			var resp *stripe.Payout
-			resp, err = stripeClient.GetPayout(ctx, transfer.PaymentID.Reference)
+			resp, err = stripeClient.GetPayout(ctx, paymentID.Reference)
 			if err != nil {
 				return err
 			}
@@ -226,7 +234,7 @@ func UpdatePaymentStatusTask(
 		}
 
 		if status == "" {
-			err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusProcessed, "", time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessed, "", 0, time.Now())
 			if err != nil {
 				return err
 			}
@@ -234,7 +242,7 @@ func UpdatePaymentStatusTask(
 			return nil
 		}
 
-		err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusFailed, resultMessage, time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, resultMessage, 0, time.Now())
 		if err != nil {
 			return err
 		}
