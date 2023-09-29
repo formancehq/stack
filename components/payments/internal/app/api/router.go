@@ -65,6 +65,7 @@ func httpRouter(
 	authGroup.Path("/transfer-initiation").Methods(http.MethodPost).Handler(createTransferInitiationHandler(store, paymentsHandlers))
 	authGroup.Path("/transfer-initiation").Methods(http.MethodGet).Handler(listTransferInitiationsHandler(store))
 	authGroup.Path("/transfer-initiation/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(store, paymentsHandlers))
+	authGroup.Path("/transfer-initiation/{transferID}/retry").Methods(http.MethodPost).Handler(retryTransferInitiationHandler(store, paymentsHandlers))
 	authGroup.Path("/transfer-initiation/{transferID}").Methods(http.MethodGet).Handler(readTransferInitiationHandler(store))
 	authGroup.Path("/transfer-initiation/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(store))
 

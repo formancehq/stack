@@ -47,6 +47,20 @@ func PaymentIDFromString(value string) (*PaymentID, error) {
 	return &ret, nil
 }
 
+func MustPaymentIDFromString(value string) *PaymentID {
+	data, err := base64.URLEncoding.DecodeString(value)
+	if err != nil {
+		panic(err)
+	}
+	ret := PaymentID{}
+	err = canonicaljson.Unmarshal(data, &ret)
+	if err != nil {
+		panic(err)
+	}
+
+	return &ret
+}
+
 func (pid PaymentID) Value() (driver.Value, error) {
 	return pid.String(), nil
 }

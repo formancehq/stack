@@ -24,6 +24,7 @@ type TaskDescriptor struct {
 	Key        string `json:"key" yaml:"key" bson:"key"`
 	AccountID  string `json:"accountID" yaml:"accountID" bson:"accountID"`
 	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
+	PaymentID  string `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
 	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
@@ -48,7 +49,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameInitiatePayment:
 			return taskInitiatePayment(logger, modulrClient, taskDefinition.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, modulrClient, taskDefinition.TransferID, taskDefinition.Attempt)
+			return taskUpdatePaymentStatus(logger, modulrClient, taskDefinition.TransferID, taskDefinition.PaymentID, taskDefinition.Attempt)
 		case taskNameFetchTransactions:
 			return taskFetchTransactions(logger, modulrClient, taskDefinition.AccountID)
 		}

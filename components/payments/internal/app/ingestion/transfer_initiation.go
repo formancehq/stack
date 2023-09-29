@@ -7,10 +7,10 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 )
 
-func (i *DefaultIngester) UpdateTransferInitiationStatus(ctx context.Context, id models.TransferInitiationID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error {
-	return i.repo.UpdateTransferInitiationStatus(ctx, id, status, errorMessage, updatedAt)
+func (i *DefaultIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error {
+	return i.repo.UpdateTransferInitiationPaymentsStatus(ctx, id, paymentID, status, errorMessage, attempts, updatedAt)
 }
 
-func (i *DefaultIngester) UpdateTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID models.PaymentID, updatedAt time.Time) error {
-	return i.repo.UpdateTransferInitiationPaymentID(ctx, id, paymentID, updatedAt)
+func (i *DefaultIngester) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time) error {
+	return i.repo.AddTransferInitiationPaymentID(ctx, id, paymentID, updatedAt)
 }

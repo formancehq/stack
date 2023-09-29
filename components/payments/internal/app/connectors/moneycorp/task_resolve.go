@@ -24,6 +24,7 @@ type TaskDescriptor struct {
 	Key        string `json:"key" yaml:"key" bson:"key"`
 	AccountID  string `json:"accountID" yaml:"accountID" bson:"accountID"`
 	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
+	PaymentID  string `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
 	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
@@ -56,7 +57,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameInitiatePayment:
 			return taskInitiatePayment(logger, moneycorpClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, moneycorpClient, taskDescriptor.TransferID, taskDescriptor.Attempt)
+			return taskUpdatePaymentStatus(logger, moneycorpClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		}
 
 		// This should never happen.

@@ -111,6 +111,18 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  /transfer-initiation/{transferId}/retry:
+    post:
+      summary: Retry a failed transfer initiation
+      tags:
+        - Payments
+      operationId: retryTransferInitiation
+      description: Retry a failed transfer initiation
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
   /accounts:
       get:
         summary: List accounts
@@ -824,6 +836,15 @@ components:
         - BANKING-CIRCLE
         - MANGOPAY
         - MONEYCORP
+    TransferInitiationStatus:
+      type: string
+      enum:
+        - WAITING_FOR_VALIDATION
+        - PROCESSING
+        - PROCESSED
+        - FAILED
+        - REJECTED
+        - VALIDATED
     ConnectorConfig:
       anyOf:
         - $ref: '#/components/schemas/StripeConfig'
@@ -1054,14 +1075,28 @@ components:
           type: string
           example: USD
         status:
+          $ref: '#/components/schemas/TransferInitiationStatus'
+        error:
           type: string
-          enum:
-            - WAITING_FOR_VALIDATION
-            - PROCESSING
-            - PROCESSED
-            - FAILED
-            - REJECTED
-            - VALIDATED
+        relatedPayments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferInitiationPayments'
+    TransferInitiationPayments:
+      type: object
+      required:
+        - paymentID
+        - createdAt
+        - status
+        - error
+      properties:
+        paymentID:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
         error:
           type: string
     BankAccount:

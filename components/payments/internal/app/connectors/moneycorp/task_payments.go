@@ -3,6 +3,7 @@ package moneycorp
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"time"
@@ -39,18 +40,19 @@ func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, 
 
 		attrs := metric.WithAttributes(connectorAttrs...)
 		var err error
+		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-				if err := ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, err.Error(), 0, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusProcessing, "", time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessing, "", 0, time.Now())
 		if err != nil {
 			return err
 		}
@@ -105,7 +107,7 @@ func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, 
 			var resp *client.TransferResponse
 			resp, err = moneycorpClient.InitiateTransfer(ctx, &client.TransferRequest{
 				SourceAccountID:    transfer.SourceAccountID.Reference,
-				IdempotencyKey:     transfer.ID.Reference,
+				IdempotencyKey:     fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
 				ReceivingAccountID: transfer.DestinationAccountID.Reference,
 				TransferAmount:     amount,
 				TransferCurrency:   curr,
@@ -123,7 +125,7 @@ func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, 
 			var resp *client.PayoutResponse
 			resp, err = moneycorpClient.InitiatePayout(ctx, &client.PayoutRequest{
 				SourceAccountID:  transfer.SourceAccountID.Reference,
-				IdempotencyKey:   transfer.ID.Reference,
+				IdempotencyKey:   fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
 				RecipientID:      transfer.DestinationAccountID.Reference,
 				PaymentAmount:    amount,
 				PaymentCurrency:  curr,
@@ -140,13 +142,14 @@ func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, 
 		}
 		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
 
-		err = ingester.UpdateTransferInitiationPaymentID(ctx, transferInitiationID, models.PaymentID{
+		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
 				Reference: connectorPaymentID,
 				Type:      paymentType,
 			},
 			Provider: models.ConnectorProviderMoneycorp,
-		}, time.Now())
+		}
+		err = ingester.AddTransferInitiationPaymentID(ctx, transferInitiationID, paymentID, time.Now())
 		if err != nil {
 			return err
 		}
@@ -155,6 +158,7 @@ func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, 
 			Name:       "Update transfer initiation status",
 			Key:        taskNameUpdatePaymentStatus,
 			TransferID: transfer.ID.String(),
+			PaymentID:  paymentID.String(),
 			Attempt:    1,
 		})
 		if err != nil {
@@ -187,6 +191,7 @@ func taskUpdatePaymentStatus(
 	logger logging.Logger,
 	moneycorpClient *client.Client,
 	transferID string,
+	pID string,
 	attempt int,
 ) task.Task {
 	return func(
@@ -196,12 +201,13 @@ func taskUpdatePaymentStatus(
 		storageReader storage.Reader,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
 			return err
 		}
-		logger.Info("attempt: ", attempt, " fetching status of ", transfer.PaymentID)
+		logger.Info("attempt: ", attempt, " fetching status of ", pID)
 
 		attrs := updateTransferAttrs
 		if transfer.Type == models.TransferInitiationTypePayout {
@@ -224,7 +230,7 @@ func taskUpdatePaymentStatus(
 		switch transfer.Type {
 		case models.TransferInitiationTypeTransfer:
 			var resp *client.TransferResponse
-			resp, err = moneycorpClient.GetTransfer(ctx, transfer.SourceAccount.Reference, transfer.PaymentID.Reference)
+			resp, err = moneycorpClient.GetTransfer(ctx, transfer.SourceAccount.Reference, paymentID.Reference)
 			if err != nil {
 				return err
 			}
@@ -232,7 +238,7 @@ func taskUpdatePaymentStatus(
 			status = resp.Attributes.TransferStatus
 		case models.TransferInitiationTypePayout:
 			var resp *client.PayoutResponse
-			resp, err = moneycorpClient.GetPayout(ctx, transfer.SourceAccount.Reference, transfer.PaymentID.Reference)
+			resp, err = moneycorpClient.GetPayout(ctx, transfer.SourceAccount.Reference, paymentID.Reference)
 			if err != nil {
 				return err
 			}
@@ -261,14 +267,14 @@ func taskUpdatePaymentStatus(
 				return err
 			}
 		case "Cleared", "Sent":
-			err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusProcessed, "", time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessed, "", 0, time.Now())
 			if err != nil {
 				return err
 			}
 
 			return nil
 		case "Unauthorised", "Failed", "Cancelled":
-			err = ingester.UpdateTransferInitiationStatus(ctx, transferInitiationID, models.TransferInitiationStatusFailed, resultMessage, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, resultMessage, 0, time.Now())
 			if err != nil {
 				return err
 			}

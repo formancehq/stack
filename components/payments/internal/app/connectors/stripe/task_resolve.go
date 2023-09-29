@@ -23,6 +23,7 @@ type TaskDescriptor struct {
 	Main       bool   `json:"main,omitempty" yaml:"main" bson:"main"`
 	Account    string `json:"account,omitempty" yaml:"account" bson:"account"`
 	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
+	PaymentID  string `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
 	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
@@ -49,7 +50,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameInitiatePayment:
 			return InitiatePaymentTask(logger, taskDescriptor.TransferID, client)
 		case taskNameUpdatePaymentStatus:
-			return UpdatePaymentStatusTask(logger, taskDescriptor.TransferID, taskDescriptor.Attempt, client)
+			return UpdatePaymentStatusTask(logger, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt, client)
 		default:
 			// For compatibility with old tasks
 			return ConnectedAccountTask(config, taskDescriptor.Account, client)

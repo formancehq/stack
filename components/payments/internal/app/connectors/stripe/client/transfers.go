@@ -9,10 +9,11 @@ import (
 )
 
 type CreateTransferRequest struct {
-	Amount      int64
-	Currency    string
-	Destination string
-	Description string
+	IdempotencyKey string
+	Amount         int64
+	Currency       string
+	Destination    string
+	Description    string
 }
 
 func (d *DefaultClient) CreateTransfer(ctx context.Context, createTransferRequest *CreateTransferRequest, options ...ClientOption) (*stripe.Transfer, error) {
@@ -29,6 +30,10 @@ func (d *DefaultClient) CreateTransfer(ctx context.Context, createTransferReques
 
 	if d.stripeAccount != "" {
 		params.SetStripeAccount(d.stripeAccount)
+	}
+
+	if createTransferRequest.IdempotencyKey != "" {
+		params.IdempotencyKey = stripe.String(createTransferRequest.IdempotencyKey)
 	}
 
 	transferResponse, err := transfer.New(params)
