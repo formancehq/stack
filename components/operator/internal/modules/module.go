@@ -98,10 +98,7 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		}
 	}
 
-	var (
-		isReady       = true
-		chosenVersion Version
-	)
+	var chosenVersion Version
 	for _, version := range sortedVersions(r.module) {
 		if !r.Versions.IsHigherOrEqual(r.module.Name(), version) {
 			break
@@ -115,13 +112,9 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		if err != nil {
 			return false, err
 		}
-		isReady = isReady && ready
-	}
-
-	// Stop install if we are not in light mode and all migrations are not passed
-	if !isReady && !r.Configuration.Spec.LightMode {
-		log.FromContext(ctx).Info(fmt.Sprintf("Stop install as module '%s' is not ready and stack is not in light mode", r.module.Name()))
-		return false, nil
+		if !ready {
+			return false, nil
+		}
 	}
 
 	services := chosenVersion.Services(r.ReconciliationConfig)

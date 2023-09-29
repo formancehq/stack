@@ -32,6 +32,10 @@ type PodDeployer interface {
 	deploy(ctx context.Context, pod pod) error
 }
 
+type PodDeployerFinalizer interface {
+	finalize(ctx context.Context) error
+}
+
 type defaultPodDeployer struct {
 	deployer *ResourceDeployer
 }
