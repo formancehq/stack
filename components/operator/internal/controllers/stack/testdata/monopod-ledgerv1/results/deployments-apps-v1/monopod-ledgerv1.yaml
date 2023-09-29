@@ -276,7 +276,7 @@ spec:
                       value: "true"
                     - name: NUMARY_PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
-                    - name: NUMARY_LOCKING_STRATEGY
+                    - name: NUMARY_LOCK_STRATEGY
                       value: memory
                     - name: NUMARY_STORAGE_POSTGRES_CONN_STRING
                       value: $(NUMARY_POSTGRES_URI)
