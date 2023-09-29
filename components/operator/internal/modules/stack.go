@@ -101,11 +101,18 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 		return false, err
 	}
 
-	if finalizer, ok := r.podDeployer.(interface {
-		finalize(context.Context) error
-	}); ok {
-		logger.Info("Finalize modules deployment")
-		if err := finalizer.finalize(ctx); err != nil {
+	if r.Configuration.Spec.LightMode {
+		for _, module := range modules {
+			if r.Stack.IsDisabled(module.Name()) {
+				continue
+			}
+			if !r.ready.Contains(module) {
+				logger.Info("Stop reconciliation because we're in light mode and module is not ready", "module", module.Name())
+				return false, nil
+			}
+		}
+
+		if err := r.podDeployer.(PodDeployerFinalizer).finalize(ctx); err != nil {
 			return false, err
 		}
 	}
