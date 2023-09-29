@@ -2,6 +2,7 @@ package wallets
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,6 +18,10 @@ import (
 
 type module struct{}
 
+func (w module) Name() string {
+	return "wallets"
+}
+
 func (w module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
@@ -24,18 +29,18 @@ func (w module) Versions() map[string]modules.Version {
 		},
 		"v0.4.3": {
 			Services: service,
-			PostUpgrade: func(ctx modules.PostInstallContext) error {
+			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 
-				_, ok := ctx.Stack.Status.Ports["ledger"]
+				_, ok := config.Stack.Status.Ports["ledger"]
 				if !ok {
 					return errors.New("not ready, missing ledger port")
 				}
-				_, ok = ctx.Stack.Status.Ports["ledger"]["ledger"]
+				_, ok = config.Stack.Status.Ports["ledger"]["ledger"]
 				if !ok {
 					return errors.New("not ready, missing ledger port")
 				}
 
-				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(ctx)+"/accounts", url.Values{})
+				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(config)+"/accounts", url.Values{})
 				if err != nil {
 					return errors.Wrap(err, "fetching accounts")
 				}
@@ -43,7 +48,7 @@ func (w module) Versions() map[string]modules.Version {
 				for _, account := range accounts {
 					walletCustomMetadata, ok := account.Metadata["wallets/custom_data"]
 					if ok && walletCustomMetadata != "" {
-						if err := updateAccountMetadataForLedgerV2(ctx, account); err != nil {
+						if err := updateAccountMetadataForLedgerV2(ctx, config, account); err != nil {
 							return errors.Wrapf(err, "updating account metadata of account: %s", account.Address)
 						}
 					}
@@ -54,18 +59,19 @@ func (w module) Versions() map[string]modules.Version {
 		},
 		"v0.4.4": {
 			Services: service,
-			PostUpgrade: func(ctx modules.PostInstallContext) error {
+			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 
-				_, ok := ctx.Stack.Status.Ports["ledger"]
-				if !ok {
-					return errors.New("not ready, missing ledger port")
-				}
-				_, ok = ctx.Stack.Status.Ports["ledger"]["ledger"]
+				_, ok := config.Stack.Status.Ports["ledger"]
 				if !ok {
 					return errors.New("not ready, missing ledger port")
 				}
 
-				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(ctx)+"/accounts", url.Values{})
+				_, ok = config.Stack.Status.Ports["ledger"]["ledger"]
+				if !ok {
+					return errors.New("not ready, missing ledger port")
+				}
+
+				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(config)+"/accounts", url.Values{})
 				if err != nil {
 					return errors.Wrap(err, "fetching accounts")
 				}
@@ -97,7 +103,7 @@ func (w module) Versions() map[string]modules.Version {
 
 					account.Metadata["wallets/custom_data"] = customData
 
-					if err := updateMetadata(ctx, account); err != nil {
+					if err := updateMetadata(ctx, config, account); err != nil {
 						return err
 					}
 				}
@@ -108,22 +114,24 @@ func (w module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
 
 func init() {
-	modules.Register("wallets", &module{})
+	modules.Register(Module)
 }
 
-func service(ctx modules.ModuleContext) modules.Services {
+func service(ctx modules.ReconciliationConfig) modules.Services {
 	return modules.Services{{
 		HasVersionEndpoint: true,
 		ExposeHTTP:         true,
 		ListenEnvVar:       "LISTEN",
 		Annotations:        ctx.Configuration.Spec.Services.Wallets.Annotations.Service,
-		AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
+		AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {
 			return stackv1beta3.NewClientConfiguration()
 		},
-		Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 			return modules.Container{
 				Env: modules.ContainerEnv{
 					modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
@@ -145,19 +153,19 @@ type account struct {
 	Metadata map[string]any `json:"metadata"`
 }
 
-func ledgerUrl(ctx modules.PostInstallContext) string {
+func ledgerUrl(ctx modules.ReconciliationConfig) string {
 	return fmt.Sprintf("http://ledger.%s.svc.cluster.local:%d/wallets-002",
 		ctx.Stack.Name,
 		ctx.Stack.Status.Ports["ledger"]["ledger"])
 }
 
-func updateMetadata(ctx modules.PostInstallContext, account account) error {
+func updateMetadata(ctx context.Context, config modules.ReconciliationConfig, account account) error {
 	data, err := json.Marshal(account.Metadata)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ledgerUrl(ctx)+"/accounts/"+account.Address+"/metadata", bytes.NewBuffer(data))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ledgerUrl(config)+"/accounts/"+account.Address+"/metadata", bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -173,7 +181,7 @@ func updateMetadata(ctx modules.PostInstallContext, account account) error {
 	return nil
 }
 
-func updateAccountMetadataForLedgerV2(ctx modules.PostInstallContext, account account) error {
+func updateAccountMetadataForLedgerV2(ctx context.Context, config modules.ReconciliationConfig, account account) error {
 
 	customMetadataRaw := account.Metadata["wallets/custom_data"]
 	newMetadata := account.Metadata
@@ -197,5 +205,5 @@ func updateAccountMetadataForLedgerV2(ctx modules.PostInstallContext, account ac
 	}
 	account.Metadata = newMetadata
 
-	return updateMetadata(ctx, account)
+	return updateMetadata(ctx, config, account)
 }

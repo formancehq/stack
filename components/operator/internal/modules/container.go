@@ -32,12 +32,3 @@ func ResourceSizeMedium() corev1.ResourceRequirements {
 		},
 	}
 }
-
-func ResourceSizeLarge() corev1.ResourceRequirements {
-	return corev1.ResourceRequirements{
-		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("1000m"),
-			corev1.ResourceMemory: resource.MustParse("1024Mi"),
-		},
-	}
-}

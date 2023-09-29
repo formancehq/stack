@@ -4,15 +4,28 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/formancehq/operator/internal/modules/gateway"
+
 	"github.com/formancehq/operator/internal/modules"
 )
 
 type module struct{}
 
+func (s module) DependsOn() []modules.Module {
+	// todo: need a strict requirement
+	return []modules.Module{
+		gateway.Module,
+	}
+}
+
+func (s module) Name() string {
+	return "stargate"
+}
+
 func (s module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				if ctx.Stack.Spec.Stargate == nil {
 					return modules.Services{}
 				}
@@ -23,7 +36,7 @@ func (s module) Versions() map[string]modules.Version {
 						HasVersionEndpoint: true,
 						Liveness:           modules.LivenessDefault,
 						Annotations:        ctx.Configuration.Spec.Services.Stargate.Annotations.Service,
-						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Env:   stargateClientEnvVars(resolveContext),
 								Image: modules.GetImage("stargate", resolveContext.Versions.Spec.Stargate),
@@ -40,9 +53,12 @@ func (s module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
+var Module = &module{}
 
-func stargateClientEnvVars(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv {
+var _ modules.Module = Module
+var _ modules.DependsOnAwareModule = Module
+
+func stargateClientEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
 	l := strings.Split(resolveContext.Stack.ObjectMeta.Name, "-")
 	organizationID := l[0]
 	stackID := l[1]
@@ -52,7 +68,7 @@ func stargateClientEnvVars(resolveContext modules.ContainerResolutionContext) mo
 		modules.Env("STACK_ID", stackID),
 		modules.Env("STARGATE_SERVER_URL", resolveContext.Stack.Spec.Stargate.StargateServerURL),
 		// TODO: The ports of the service must be made available to this part of the code
-		modules.Env("GATEWAY_URL", "http://gateway:"+strconv.Itoa(int(resolveContext.RegisteredModules["gateway"].Module.Versions()["v0.0.0"].Services(resolveContext.ModuleContext)[0].Port))),
+		modules.Env("GATEWAY_URL", "http://gateway:"+strconv.Itoa(int(resolveContext.RegisteredModules["gateway"].Services["gateway"].Port))),
 		modules.Env("STARGATE_AUTH_CLIENT_ID", resolveContext.Stack.Spec.Auth.DelegatedOIDCServer.ClientID),
 		modules.Env("STARGATE_AUTH_CLIENT_SECRET", resolveContext.Stack.Spec.Auth.DelegatedOIDCServer.ClientSecret),
 		modules.Env("STARGATE_AUTH_ISSUER_URL", resolveContext.Stack.Spec.Auth.DelegatedOIDCServer.Issuer),
@@ -60,5 +76,5 @@ func stargateClientEnvVars(resolveContext modules.ContainerResolutionContext) mo
 }
 
 func init() {
-	modules.Register("stargate", &module{})
+	modules.Register(Module)
 }
