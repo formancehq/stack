@@ -9,14 +9,18 @@ import (
 
 type module struct{}
 
-func (w module) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
+func (w module) Name() string {
+	return "webhooks"
+}
+
+func (w module) Postgres(ctx modules.ReconciliationConfig) stackv1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Webhooks.Postgres
 }
 
 func (w module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{
 					{
 						HasVersionEndpoint:      true,
@@ -24,7 +28,7 @@ func (w module) Versions() map[string]modules.Version {
 						InjectPostgresVariables: true,
 						ListenEnvVar:            "LISTEN",
 						Annotations:             ctx.Configuration.Spec.Services.Webhooks.Annotations.Service,
-						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
 								Env:   webhooksEnvVars(resolveContext.Configuration),
@@ -41,7 +45,7 @@ func (w module) Versions() map[string]modules.Version {
 						ListenEnvVar:            "LISTEN",
 						Liveness:                modules.LivenessDisable,
 						Annotations:             ctx.Configuration.Spec.Services.Webhooks.Annotations.Service,
-						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
 								Env: webhooksEnvVars(resolveContext.Configuration).Append(
@@ -64,11 +68,13 @@ func (w module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
-var _ modules.PostgresAwareModule = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
+var _ modules.PostgresAwareModule = Module
 
 func init() {
-	modules.Register("webhooks", &module{})
+	modules.Register(Module)
 }
 
 func webhooksEnvVars(configuration *stackv1beta3.Configuration) modules.ContainerEnv {

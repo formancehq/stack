@@ -17,9 +17,7 @@ limitations under the License.
 package main
 
 import (
-	"crypto/tls"
 	"flag"
-	"net/http"
 	"os"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -43,7 +41,10 @@ import (
 	stackv1beta1 "github.com/formancehq/operator/apis/stack/v1beta1"
 	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
+
 	//+kubebuilder:scaffold:imports
+
+	_ "github.com/formancehq/operator/internal/modules/all"
 )
 
 var (
@@ -134,12 +135,7 @@ func main() {
 		}
 	}
 
-	httpTransport := http.DefaultTransport
-	httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
-		InsecureSkipVerify: true,
-	}
-
-	configuration := stack.Configuration{
+	platform := modules.Platform{
 		Region:      region,
 		Environment: env,
 	}
@@ -147,15 +143,14 @@ func main() {
 	stackReconciler := stack.NewReconciler(
 		mgr.GetClient(),
 		mgr.GetScheme(),
-		modules.NewStackDeployer(httpTransport),
-		configuration,
+		modules.NewsStackReconcilerFactory(mgr.GetClient(), mgr.GetScheme(), platform),
 	)
 	if err = stackReconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Stack")
 		os.Exit(1)
 	}
 
-	migrationReconciler := stack.NewMigrationReconciler(mgr.GetClient(), mgr.GetScheme(), configuration)
+	migrationReconciler := stack.NewMigrationReconciler(mgr.GetClient(), mgr.GetScheme(), platform)
 	if err := migrationReconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Migration")
 		os.Exit(1)

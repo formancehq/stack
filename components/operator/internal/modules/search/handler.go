@@ -2,6 +2,7 @@ package search
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"fmt"
 	"io/fs"
@@ -24,49 +25,53 @@ const (
 
 type module struct{}
 
+func (s module) Name() string {
+	return "search"
+}
+
 func (s module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{searchService(ctx), benthosService(ctx)}
 			},
 			Cron: reindexCron,
 		},
 		"v0.7.0": {
-			PreUpgrade: func(ctx modules.Context) error {
-				esClient, err := getOpenSearchClient(ctx)
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				esClient, err := getOpenSearchClient(config)
 				if err != nil {
 					return err
 				}
 				if err := searchengine.CreateIndex(ctx, esClient, stackv1beta3.DefaultESIndex); err != nil {
 					return err
 				}
-				if err := reindexData(ctx, esClient); err != nil {
+				if err := reindexData(ctx, config, esClient); err != nil {
 					return err
 				}
 
 				return nil
 			},
-			PostUpgrade: func(ctx modules.PostInstallContext) error {
-				esClient, err := getOpenSearchClient(ctx.Context)
+			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				esClient, err := getOpenSearchClient(config)
 				if err != nil {
 					return err
 				}
-				if err := reindexData(ctx.Context, esClient); err != nil {
+				if err := reindexData(ctx, config, esClient); err != nil {
 					return err
 				}
 
-				response, err := esClient.Indices.Delete([]string{ctx.Stack.Name}, esClient.Indices.Delete.WithContext(ctx))
+				response, err := esClient.Indices.Delete([]string{config.Stack.Name}, esClient.Indices.Delete.WithContext(ctx))
 				if err != nil {
 					return err
 				}
 
 				if response.StatusCode != http.StatusOK && response.StatusCode != http.StatusNotFound {
-					return fmt.Errorf("unexpected status code %d when deleting index: %s", response.StatusCode, ctx.Stack.Name)
+					return fmt.Errorf("unexpected status code %d when deleting index: %s", response.StatusCode, config.Stack.Name)
 				}
 				return nil
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{searchService(ctx), benthosService(ctx)}
 			},
 			Cron: reindexCron,
@@ -74,17 +79,19 @@ func (s module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
+
+func init() {
+	modules.Register(Module)
+}
 
 var CreateOpenSearchClient = func(cfg opensearch.Config) (*opensearch.Client, error) {
 	return opensearch.NewClient(cfg)
 }
 
-func init() {
-	modules.Register("search", &module{})
-}
-
-func reindexCron(ctx modules.Context) []modules.Cron {
+func reindexCron(ctx modules.ReconciliationConfig) []modules.Cron {
 	return []modules.Cron{
 		{
 			Container: modules.Container{
@@ -101,7 +108,7 @@ func reindexCron(ctx modules.Context) []modules.Cron {
 	}
 }
 
-func getOpenSearchClient(ctx modules.Context) (*opensearch.Client, error) {
+func getOpenSearchClient(ctx modules.ReconciliationConfig) (*opensearch.Client, error) {
 	opensearchConfig := opensearch.Config{
 		Addresses:            []string{ctx.Configuration.Spec.Services.Search.ElasticSearchConfig.Endpoint()},
 		UseResponseCheckOnly: true,
@@ -115,7 +122,7 @@ func getOpenSearchClient(ctx modules.Context) (*opensearch.Client, error) {
 	return CreateOpenSearchClient(opensearchConfig)
 }
 
-func reindexData(ctx modules.Context, esClient *opensearch.Client) error {
+func reindexData(ctx context.Context, config modules.ReconciliationConfig, esClient *opensearch.Client) error {
 	res, err := esClient.Reindex(bytes.NewBufferString(fmt.Sprintf(`{
 	  "source": {
 		"index": "%s"
@@ -127,7 +134,7 @@ func reindexData(ctx modules.Context, esClient *opensearch.Client) error {
 		"source": "ctx._source.stack = ctx._index; ctx._id = ctx._index + '-' + ctx._id",
 		"lang": "painless"
 	  }
-	}`, ctx.Stack.Name, stackv1beta3.DefaultESIndex)),
+	}`, config.Stack.Name, stackv1beta3.DefaultESIndex)),
 		esClient.Reindex.WithContext(ctx),
 		esClient.Reindex.WithRefresh(true),
 	)
@@ -141,13 +148,13 @@ func reindexData(ctx modules.Context, esClient *opensearch.Client) error {
 	return nil
 }
 
-func searchService(ctx modules.ModuleContext) *modules.Service {
+func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 	return &modules.Service{
 		ListenEnvVar:       "BIND",
 		ExposeHTTP:         true,
 		HasVersionEndpoint: true,
 		Annotations:        ctx.Configuration.Spec.Services.Search.Annotations.Service,
-		Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 			env := elasticSearchEnvVars(resolveContext.Stack, resolveContext.Configuration, resolveContext.Versions).
 				Append(
 					modules.Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d%s",
@@ -180,14 +187,14 @@ func searchService(ctx modules.ModuleContext) *modules.Service {
 	}
 }
 
-func benthosService(ctx modules.ModuleContext) *modules.Service {
+func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 	ret := &modules.Service{
 		Name:        "benthos",
 		Port:        4195,
 		ExposeHTTP:  true,
 		Liveness:    modules.LivenessDisable,
 		Annotations: ctx.Configuration.Spec.Services.Search.Annotations.Service,
-		Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
+		Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {
 			ret := modules.Configs{}
 
 			type directory struct {
@@ -226,7 +233,7 @@ func benthosService(ctx modules.ModuleContext) *modules.Service {
 			}
 			return ret
 		},
-		Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 			env := elasticSearchEnvVars(resolveContext.Stack, resolveContext.Configuration, resolveContext.Versions).
 				// Postgres config of the publishers (ledger and payments)
 				// To be able to reindex data
@@ -267,15 +274,15 @@ func benthosService(ctx modules.ModuleContext) *modules.Service {
 		},
 	}
 
-	if ctx.HasVersionLower("v0.7.0") {
+	if ctx.Versions.IsLower("search", "v0.7.0") {
 		ret.InitContainer = initContainerCreateIndex()
 	}
 
 	return ret
 }
 
-func initContainerCreateIndex() func(resolveContext modules.ContainerResolutionContext) []modules.Container {
-	return func(resolveContext modules.ContainerResolutionContext) []modules.Container {
+func initContainerCreateIndex() func(resolveContext modules.ContainerResolutionConfiguration) []modules.Container {
+	return func(resolveContext modules.ContainerResolutionConfiguration) []modules.Container {
 		env := modules.ContainerEnv{
 			modules.Env("OPEN_SEARCH_HOST", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Host),
 			modules.Env("OPEN_SEARCH_PORT", fmt.Sprint(resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Port)),

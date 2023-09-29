@@ -2,31 +2,36 @@ package control
 
 import (
 	"fmt"
+
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )
 
 type module struct{}
 
+func (c module) Name() string {
+	return "control"
+}
+
 func (c module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{{
 					Secured:     true,
 					Port:        3000,
 					ExposeHTTP:  true,
 					Liveness:    modules.LivenessDisable,
 					Annotations: ctx.Configuration.Spec.Services.Control.Annotations.Service,
-					AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
+					AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {
 						return stackv1beta3.NewClientConfiguration().
 							WithAdditionalScopes("profile", "email", "offline").
-							WithRedirectUris(fmt.Sprintf("%s/auth/login", resolveContext.Stack.URL())).
-							WithPostLogoutRedirectUris(fmt.Sprintf("%s/auth/destroy", resolveContext.Stack.URL()))
+							WithRedirectUris(fmt.Sprintf("%s/auth/login", config.Stack.URL())).
+							WithPostLogoutRedirectUris(fmt.Sprintf("%s/auth/destroy", config.Stack.URL()))
 					},
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						url := resolveContext.Stack.URL()
-						if !resolveContext.HasVersionHigherOrEqual("v1.8.0") {
+						if !resolveContext.Versions.IsHigherOrEqual("control", "v1.8.0") {
 							url = fmt.Sprintf("%s/api", resolveContext.Stack.URL())
 						}
 						env := modules.ContainerEnv{
@@ -54,8 +59,10 @@ func (c module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
 
 func init() {
-	modules.Register("control", &module{})
+	modules.Register(Module)
 }

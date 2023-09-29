@@ -100,22 +100,22 @@ func (v *Versions) Compare(module, version string) VersionDiff {
 	return Undefined
 }
 
-func (v *Versions) IsLower(service, version string) bool {
-	return v.Compare(service, version) == Lower
+func (v *Versions) IsLower(module, version string) bool {
+	return v.Compare(module, version) == Lower
 }
 
-func (v *Versions) IsHigher(service, version string) bool {
-	return v.Compare(service, version) >= Higher
+func (v *Versions) IsHigher(module, version string) bool {
+	return v.Compare(module, version) >= Higher
 }
 
-func (v *Versions) IsHigherOrEqual(service, version string) bool {
-	cmp := v.Compare(service, version)
+func (v *Versions) IsHigherOrEqual(module, version string) bool {
+	cmp := v.Compare(module, version)
 	return cmp >= Equals
 }
 
 func (*Versions) Hub() {}
 
-func (in *Versions) GetFromServiceName(s string) string {
+func (in *Versions) GetFromModuleName(s string) string {
 	fieldByName := reflect.ValueOf(in.Spec).FieldByName(strcase.ToCamel(s))
 	if fieldByName.String() == "" {
 		return "latest"

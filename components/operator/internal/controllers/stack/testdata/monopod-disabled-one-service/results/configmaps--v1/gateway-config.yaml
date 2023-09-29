@@ -65,23 +65,23 @@ data:
         	log {
         		output stdout
         	}
-        	import handle_path_route_without_auth /api/auth 127.0.0.1:10001
-        	import handle_path_route_with_auth /api/payments 127.0.0.1:10002
-        	import handle_path_route_with_auth /api/search 127.0.0.1:10003
+        	import handle_path_route_without_auth /api/auth 127.0.0.1:10002
+        	import handle_path_route_with_auth /api/payments 127.0.0.1:10003
+        	import handle_path_route_with_auth /api/search 127.0.0.1:10004
         	import handle_path_route_with_auth /api/search-benthos 127.0.0.1:4195
-        	import handle_path_route_with_auth /api/wallets 127.0.0.1:10005
-        	import handle_path_route_with_auth /api/webhooks 127.0.0.1:10006
+        	import handle_path_route_with_auth /api/wallets 127.0.0.1:10001
+        	import handle_path_route_with_auth /api/webhooks 127.0.0.1:10005
 
         	handle /versions {
         		versions {
         			region "us-west-1"
         			env "staging"
         			endpoints {
-        				auth http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
-        				payments http://127.0.0.1:10002/_info http://127.0.0.1:10002/_health
-        				search http://127.0.0.1:10003/_info http://127.0.0.1:10003/_healthcheck
-        				wallets http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
-        				webhooks http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
+        				auth http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
+        				payments http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
+        				search http://127.0.0.1:10004/_info http://127.0.0.1:10004/_healthcheck
+        				wallets http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
+        				webhooks http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
         			}
         		}
         	}
