@@ -40,7 +40,7 @@ func (l module) Versions() map[string]modules.Version {
 						if resolveContext.Configuration.Spec.Services.Ledger.Locking.Strategy != "" {
 							strategy = resolveContext.Configuration.Spec.Services.Ledger.Locking.Strategy
 						}
-						env = env.Append(modules.Env("LOCKING_STRATEGY", strategy))
+						env = env.Append(modules.Env("LOCK_STRATEGY", strategy))
 						if strategy == "redis" {
 							redisConfiguration := resolveContext.Configuration.Spec.Services.Ledger.Locking.Redis
 							env = env.Append(
