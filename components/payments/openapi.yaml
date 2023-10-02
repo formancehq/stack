@@ -211,6 +211,10 @@ paths:
       operationId: listBankAccounts
       tags:
         - Payments
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Sort'
       description: List all bank accounts created by user on Formance.
       responses:
         '200':
@@ -499,7 +503,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/BankAccountsResponse'
+            $ref: '#/components/schemas/BankAccountsCursor'
     BankAccount:
       description: OK
       content:
@@ -638,6 +642,22 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/TransferInitiation'
+    BankAccountsCursor:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/CursorBase'
+            - type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BankAccount'
     AccountsCursor:
       type: object
       required:
@@ -739,13 +759,6 @@ components:
               enabled:
                 type: boolean
                 example: true
-    BankAccountsResponse:
-      type: object
-      required:
-        - data
-      properties:
-        data:
-          $ref: '#/components/schemas/BankAccount'
     BankAccountResponse:
       type: object
       required:
