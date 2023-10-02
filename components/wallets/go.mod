@@ -1,6 +1,6 @@
 module github.com/formancehq/wallets
 
-go 1.19
+go 1.20
 
 require (
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230213140938-3b8735cf0168

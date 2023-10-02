@@ -1,6 +1,6 @@
 module github.com/formancehq/stack/components/agent
 
-go 1.19
+go 1.20
 
 require (
 	github.com/formancehq/operator v0.0.0-00010101000000-000000000000

@@ -1,6 +1,6 @@
 module github.com/formancehq/auth
 
-go 1.19
+go 1.20
 
 require (
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e

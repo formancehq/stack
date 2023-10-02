@@ -1,4 +1,4 @@
-FROM golang:1.19.3-bullseye AS builder
+FROM golang:1.20-bullseye AS builder
 
 RUN apt-get update && \
     apt-get install -y gcc-aarch64-linux-gnu gcc-x86-64-linux-gnu && \
