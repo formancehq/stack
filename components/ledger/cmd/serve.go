@@ -69,7 +69,7 @@ func Log() func(h http.Handler) http.Handler {
 				"latency":    latency,
 				"user_agent": r.UserAgent(),
 				"params":     r.URL.Query().Encode(),
-			}).Debug("Request")
+			}).Info("HTTP request")
 		})
 	}
 }
