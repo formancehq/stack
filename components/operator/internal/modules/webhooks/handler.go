@@ -24,7 +24,7 @@ func (w module) Versions() map[string]modules.Version {
 				return modules.Services{
 					{
 						HasVersionEndpoint:      true,
-						ExposeHTTP:              true,
+						ExposeHTTP:              modules.DefaultExposeHTTP,
 						InjectPostgresVariables: true,
 						ListenEnvVar:            "LISTEN",
 						Annotations:             ctx.Configuration.Spec.Services.Webhooks.Annotations.Service,

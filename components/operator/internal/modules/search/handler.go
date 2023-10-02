@@ -151,7 +151,7 @@ func reindexData(ctx context.Context, config modules.ReconciliationConfig, esCli
 func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 	return &modules.Service{
 		ListenEnvVar:       "BIND",
-		ExposeHTTP:         true,
+		ExposeHTTP:         modules.DefaultExposeHTTP,
 		HasVersionEndpoint: true,
 		Annotations:        ctx.Configuration.Spec.Services.Search.Annotations.Service,
 		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
@@ -189,9 +189,11 @@ func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 
 func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 	ret := &modules.Service{
-		Name:        "benthos",
-		Port:        4195,
-		ExposeHTTP:  true,
+		Name: "benthos",
+		Port: 4195,
+		ExposeHTTP: &modules.ExposeHTTP{
+			Name: "benthos",
+		},
 		Liveness:    modules.LivenessDisable,
 		Annotations: ctx.Configuration.Spec.Services.Search.Annotations.Service,
 		Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {

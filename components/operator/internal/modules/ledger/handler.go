@@ -26,7 +26,7 @@ func (l module) Versions() map[string]modules.Version {
 					ListenEnvVar:            "SERVER_HTTP_BIND_ADDRESS",
 					InjectPostgresVariables: true,
 					HasVersionEndpoint:      true,
-					ExposeHTTP:              true,
+					ExposeHTTP:              modules.DefaultExposeHTTP,
 					NeedTopic:               true,
 					Annotations:             ctx.Configuration.Spec.Services.Ledger.Annotations.Service,
 					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
@@ -82,7 +82,7 @@ func (l module) Versions() map[string]modules.Version {
 					ListenEnvVar:            "BIND",
 					InjectPostgresVariables: true,
 					HasVersionEndpoint:      true,
-					ExposeHTTP:              true,
+					ExposeHTTP:              modules.DefaultExposeHTTP,
 					NeedTopic:               true,
 					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						env := modules.NewEnv().Append(

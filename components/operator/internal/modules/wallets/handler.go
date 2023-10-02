@@ -125,7 +125,7 @@ func init() {
 func service(ctx modules.ReconciliationConfig) modules.Services {
 	return modules.Services{{
 		HasVersionEndpoint: true,
-		ExposeHTTP:         true,
+		ExposeHTTP:         modules.DefaultExposeHTTP,
 		ListenEnvVar:       "LISTEN",
 		Annotations:        ctx.Configuration.Spec.Services.Wallets.Annotations.Service,
 		AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {

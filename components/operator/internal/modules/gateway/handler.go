@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"sort"
+	"strings"
 	"text/template"
 
 	"github.com/formancehq/operator/internal/modules/auth"
@@ -46,9 +47,10 @@ func (g module) Versions() map[string]modules.Version {
 		"v0.0.0": {
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{{
-					Port:        gatewayPort,
-					Path:        "/",
-					ExposeHTTP:  true,
+					Port: gatewayPort,
+					ExposeHTTP: &modules.ExposeHTTP{
+						Path: "/",
+					},
 					Liveness:    modules.LivenessDisable,
 					Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
 					Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {
@@ -88,20 +90,25 @@ var Module = &module{}
 var _ modules.Module = Module
 var _ modules.DependsOnAwareModule = Module
 
+var caddyfileTemplate = template.Must(template.New("caddyfile").Funcs(map[string]any{
+	"join": strings.Join,
+}).Parse(caddyfile))
+
 func init() {
 	modules.Register(Module)
 }
 
 func createCaddyfile(context modules.ServiceInstallConfiguration) string {
-	tpl := template.Must(template.New("caddyfile").Parse(caddyfile))
 	buf := bytes.NewBufferString("")
 
 	type service struct {
 		modules.RegisteredService
-		Name       string
-		Port       int32
-		Hostname   string
-		HealthPath string
+		Name        string
+		Port        int32
+		Hostname    string
+		HealthPath  string
+		Methods     []string
+		RoutingPath string
 	}
 
 	servicesMap := make(map[string]service, 0)
@@ -111,7 +118,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			continue
 		}
 		for _, s := range registeredModule.Services {
-			if !s.ExposeHTTP {
+			if s.ExposeHTTP == nil {
 				continue
 			}
 			usedPort := s.Port
@@ -122,6 +129,11 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			if s.Name != "" {
 				serviceName += "-" + s.Name
 			}
+			serviceRoutingPath := registeredModule.Module.Name()
+			if s.ExposeHTTP.Name != "" {
+				serviceRoutingPath = serviceRoutingPath + "-" + s.ExposeHTTP.Name
+			}
+
 			healthPath := "_healthcheck"
 			if s.Liveness == modules.LivenessLegacy {
 				healthPath = "_health"
@@ -130,12 +142,15 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			if context.Configuration.Spec.LightMode {
 				hostname = "127.0.0.1"
 			}
+
 			servicesMap[serviceName] = service{
 				Name:              serviceName,
 				RegisteredService: s,
 				Port:              usedPort,
 				Hostname:          hostname,
 				HealthPath:        healthPath,
+				Methods:           s.ExposeHTTP.Methods,
+				RoutingPath:       serviceRoutingPath,
 			}
 			keys = append(keys, serviceName)
 		}
@@ -147,7 +162,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		services = append(services, servicesMap[key])
 	}
 
-	if err := tpl.Execute(buf, map[string]any{
+	if err := caddyfileTemplate.Execute(buf, map[string]any{
 		"Region":   context.Platform.Region,
 		"Env":      context.Platform.Environment,
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
@@ -167,35 +182,6 @@ const caddyfile = `(cors) {
 		Access-Control-Allow-Headers content-type
 		Access-Control-Max-Age 100
 		Access-Control-Allow-Origin *
-	}
-}
-
-(handle_route_without_auth) {
-	# handle does not strips the prefix from the request path
-	handle {args.0}/* {
-		reverse_proxy {args.1}
-
-		import cors
-	}
-}
-
-(handle_path_route_with_auth) {
-	# handle_path automatically strips the prefix from the request path
-	handle_path {args.0}* {
-		reverse_proxy {args.1}
-
-		import cors
-
-		import auth
-	}
-}
-
-(handle_path_route_without_auth) {
-	# handle_path automatically strips the prefix from the request path
-	handle_path {args.0}* {
-		reverse_proxy {args.1}
-
-		import cors
 	}
 }
 
@@ -231,11 +217,21 @@ const caddyfile = `(cors) {
 
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}
-			{{- if not $service.Secured }}
-	import handle_path_route_with_auth /api/{{ $service.Name }} {{ $service.Hostname }}:{{ $service.Port }}
-			{{- else }}
-	import handle_path_route_without_auth /api/{{ $service.Name }} {{ $service.Hostname }}:{{ $service.Port }}
-			{{- end }}
+			@{{ $service.Name }}matcher {
+				path /api/{{ $service.RoutingPath }}*
+				{{- if gt ($service.Methods | len) 0 }}
+				method {{ join $service.Methods " " }}
+				{{- end }}
+			}
+			handle @{{ $service.Name }}matcher {
+				uri strip_prefix /api/{{ $service.RoutingPath }}
+				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
+		
+				import cors
+				{{- if not $service.Secured }}
+				import auth
+				{{- end }}
+			}
 		{{- end }}
 	{{- end }}
 

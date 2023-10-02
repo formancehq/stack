@@ -43,7 +43,7 @@ func (a module) Versions() map[string]modules.Version {
 				return modules.Services{{
 					Secured:                 true,
 					ListenEnvVar:            "LISTEN",
-					ExposeHTTP:              true,
+					ExposeHTTP:              modules.DefaultExposeHTTP,
 					Configs:                 resolveAuthConfigs,
 					Secrets:                 resolveAuthSecrets,
 					Container:               resolveAuthContainer,

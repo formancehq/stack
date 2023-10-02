@@ -36,7 +36,7 @@ func (p module) Versions() map[string]modules.Version {
 					InjectPostgresVariables: true,
 					HasVersionEndpoint:      true,
 					ListenEnvVar:            "LISTEN",
-					ExposeHTTP:              true,
+					ExposeHTTP:              modules.DefaultExposeHTTP,
 					NeedTopic:               true,
 					Liveness:                modules.LivenessLegacy,
 					Annotations:             ctx.Configuration.Spec.Services.Payments.Annotations.Service,
@@ -204,7 +204,7 @@ func paymentsServices(
 		InjectPostgresVariables: true,
 		HasVersionEndpoint:      true,
 		ListenEnvVar:            "LISTEN",
-		ExposeHTTP:              true,
+		ExposeHTTP:              modules.DefaultExposeHTTP,
 		NeedTopic:               true,
 		Liveness:                modules.LivenessLegacy,
 		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
