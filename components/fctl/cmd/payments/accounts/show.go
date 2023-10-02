@@ -1,4 +1,4 @@
-package bankaccounts
+package accounts
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 type ShowStore struct {
-	BankAccount *shared.BankAccount `json:"bankAccount"`
+	Account *shared.PaymentsAccount `json:"account"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -31,8 +31,8 @@ func NewShowController() *ShowController {
 }
 
 func NewShowCommand() *cobra.Command {
-	return fctl.NewCommand("get <bankAccountID>",
-		fctl.WithShortDescription("Get bank account"),
+	return fctl.NewCommand("get <accountID>",
+		fctl.WithShortDescription("Get account"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithAliases("sh", "s"),
 		fctl.WithController[*ShowStore](NewShowController()),
@@ -64,8 +64,8 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := ledgerClient.Payments.GetBankAccount(cmd.Context(), operations.GetBankAccountRequest{
-		BankAccountID: args[0],
+	response, err := ledgerClient.Payments.PaymentsgetAccount(cmd.Context(), operations.PaymentsgetAccountRequest{
+		AccountID: args[0],
 	})
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.BankAccount = &response.BankAccountResponse.Data
+	c.store.Account = &response.PaymentsAccountResponse.Data
 
 	return c, nil
 }
@@ -83,10 +83,14 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.BankAccount.ID})
-	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.BankAccount.CreatedAt.Format(time.RFC3339)})
-	tableData = append(tableData, []string{pterm.LightCyan("Country"), c.store.BankAccount.Country})
-	tableData = append(tableData, []string{pterm.LightCyan("Provider"), string(c.store.BankAccount.Provider)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Account.ID})
+	tableData = append(tableData, []string{pterm.LightCyan("AccountName"), c.store.Account.AccountName})
+	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.Account.CreatedAt.Format(time.RFC3339)})
+	tableData = append(tableData, []string{pterm.LightCyan("Provider"), string(c.store.Account.Provider)})
+	tableData = append(tableData, []string{pterm.LightCyan("DefaultAsset"), c.store.Account.DefaultAsset})
+	tableData = append(tableData, []string{pterm.LightCyan("DefaultCurrency"), c.store.Account.DefaultCurrency})
+	tableData = append(tableData, []string{pterm.LightCyan("Reference"), c.store.Account.Reference})
+	tableData = append(tableData, []string{pterm.LightCyan("Type"), c.store.Account.Type})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).

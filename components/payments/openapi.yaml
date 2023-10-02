@@ -124,18 +124,18 @@ paths:
         '204':
           $ref: '#/components/responses/NoContent'
   /accounts:
-      get:
-        summary: List accounts
-        operationId: listAccounts
-        tags:
-          - Payments
-        parameters:
-          - $ref: '#/components/parameters/PageSize'
-          - $ref: '#/components/parameters/Cursor'
-          - $ref: '#/components/parameters/Sort'
-        responses:
-          '200':
-            $ref: '#/components/responses/Accounts'
+    get:
+      summary: List accounts
+      operationId: listAccounts
+      tags:
+        - Payments
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          $ref: '#/components/responses/Accounts'
   /accounts/{accountId}:
     get:
       summary: Get an account
