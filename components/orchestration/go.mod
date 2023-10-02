@@ -1,6 +1,6 @@
 module github.com/formancehq/orchestration
 
-go 1.19
+go 1.20
 
 require (
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1

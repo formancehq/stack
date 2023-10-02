@@ -1,6 +1,6 @@
 module github.com/formancehq/fctl
 
-go 1.19
+go 1.20
 
 require (
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
