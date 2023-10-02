@@ -1,4 +1,4 @@
-package payments
+package bankaccounts
 
 import (
 	"fmt"
@@ -12,8 +12,9 @@ import (
 )
 
 type ListStore struct {
-	Cursor *shared.PaymentsCursorCursor `json:"cursor"`
+	Cursor *shared.BankAccountsCursorCursor `json:"cursor"`
 }
+
 type ListController struct {
 	store *ListStore
 }
@@ -22,7 +23,7 @@ var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
 func NewListStore() *ListStore {
 	return &ListStore{
-		Cursor: &shared.PaymentsCursorCursor{},
+		Cursor: &shared.BankAccountsCursorCursor{},
 	}
 }
 
@@ -37,7 +38,6 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -58,9 +58,9 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := client.Payments.ListPayments(
+	response, err := client.Payments.ListBankAccounts(
 		cmd.Context(),
-		operations.ListPaymentsRequest{},
+		operations.ListBankAccountsRequest{},
 	)
 	if err != nil {
 		return nil, err
@@ -70,29 +70,21 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Cursor = &response.PaymentsCursor.Cursor
+	c.store.Cursor = &response.BankAccountsCursor.Cursor
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.Cursor.Data, func(payment shared.Payment) []string {
+	tableData := fctl.Map(c.store.Cursor.Data, func(bc shared.BankAccount) []string {
 		return []string{
-			payment.ID,
-			string(payment.Type),
-			fmt.Sprint(payment.InitialAmount),
-			payment.Asset,
-			string(payment.Status),
-			string(payment.Scheme),
-			payment.Reference,
-			payment.SourceAccountID,
-			payment.DestinationAccountID,
-			string(payment.Provider),
-			payment.CreatedAt.Format(time.RFC3339),
+			bc.ID,
+			bc.CreatedAt.Format(time.RFC3339),
+			bc.Country,
+			string(bc.Provider),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "Type", "Amount", "Asset", "Status",
-		"Scheme", "Reference", "Source Account ID", "Destination Account ID", "Provider", "Created at"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "Country", "Provider"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
@@ -102,9 +94,9 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 
 func NewListCommand() *cobra.Command {
 	return fctl.NewCommand("list",
-		fctl.WithAliases("ls"),
+		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithShortDescription("List payments"),
+		fctl.WithShortDescription("List bank accounts"),
 		fctl.WithController[*ListStore](NewListController()),
 	)
 }

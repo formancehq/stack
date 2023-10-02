@@ -11,41 +11,41 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type UpdateTransferInitiationStatusStore struct {
+type UpdateStatusStore struct {
 	TransferID string `json:"transferId"`
 	Status     string `json:"status"`
 	Success    bool   `json:"success"`
 }
-type UpdateTransferInitiationStatusController struct {
-	store *UpdateTransferInitiationStatusStore
+type UpdateStatusController struct {
+	store *UpdateStatusStore
 }
 
-var _ fctl.Controller[*UpdateTransferInitiationStatusStore] = (*UpdateTransferInitiationStatusController)(nil)
+var _ fctl.Controller[*UpdateStatusStore] = (*UpdateStatusController)(nil)
 
-func NewDefaultUpdateTransferInitiationStatusStore() *UpdateTransferInitiationStatusStore {
-	return &UpdateTransferInitiationStatusStore{}
+func NewUpdateStatusStore() *UpdateStatusStore {
+	return &UpdateStatusStore{}
 }
 
-func NewUpdateTransferInitiationStatusController() *UpdateTransferInitiationStatusController {
-	return &UpdateTransferInitiationStatusController{
-		store: NewDefaultUpdateTransferInitiationStatusStore(),
+func NewUpdateStatusController() *UpdateStatusController {
+	return &UpdateStatusController{
+		store: NewUpdateStatusStore(),
 	}
 }
 
 func NewUpdateStatusCommand() *cobra.Command {
 	return fctl.NewCommand("update_status <transferID> <status>",
 		fctl.WithShortDescription("Update the status of a transfer initiation"),
-		fctl.WithAliases("cr", "c"),
+		fctl.WithAliases("u"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithController[*UpdateTransferInitiationStatusStore](NewUpdateTransferInitiationStatusController()),
+		fctl.WithController[*UpdateStatusStore](NewUpdateStatusController()),
 	)
 }
 
-func (c *UpdateTransferInitiationStatusController) GetStore() *UpdateTransferInitiationStatusStore {
+func (c *UpdateStatusController) GetStore() *UpdateStatusStore {
 	return c.store
 }
 
-func (c *UpdateTransferInitiationStatusController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *UpdateStatusController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -77,8 +77,8 @@ func (c *UpdateTransferInitiationStatusController) Run(cmd *cobra.Command, args 
 	return c, nil
 }
 
-func (c *UpdateTransferInitiationStatusController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Update Transfer Initiation staus with ID: %s and status %s", c.store.TransferID, c.store.Status)
+func (c *UpdateStatusController) Render(cmd *cobra.Command, args []string) error {
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Update Transfer Initiation status with ID: %s and status %s", c.store.TransferID, c.store.Status)
 
 	return nil
 }

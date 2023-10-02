@@ -12,27 +12,12 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230927"
+    "version": "v1.0.20231002"
   },
   "servers": [
     {
       "url": "http://localhost",
       "description": "local server"
-    },
-    {
-      "url": "https://{organization}.sandbox.formance.cloud",
-      "description": "sandbox server",
-      "variables": {
-        "organization": {
-          "description": "The organization on which the ledger is located",
-          "default": ""
-        }
-      }
-    }
-  ],
-  "security": [
-    {
-      "Authorization": []
     }
   ],
   "paths": {
@@ -1030,6 +1015,54 @@
         }
       }
     },
+    "/api/ledger/v2/{ledger}/accounts/{address}/metadata/{key}": {
+      "delete": {
+        "description": "Delete metadata by key",
+        "operationId": "deleteAccountMetadata",
+        "tags": [
+          "Ledger",
+          "Transactions"
+        ],
+        "summary": "Delete metadata by key",
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          },
+          {
+            "name": "address",
+            "in": "path",
+            "description": "Account address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "The key to remove.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "foo"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Key deleted",
+            "content": {}
+          }
+        }
+      }
+    },
     "/api/ledger/v2/{ledger}/stats": {
       "get": {
         "tags": [
@@ -1455,6 +1488,57 @@
         }
       }
     },
+    "/api/ledger/v2/{ledger}/transactions/{id}/metadata/{key}": {
+      "delete": {
+        "description": "Delete metadata by key",
+        "operationId": "deleteTransactionMetadata",
+        "summary": "Delete metadata by key",
+        "tags": [
+          "Ledger",
+          "Transactions"
+        ],
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Transaction ID.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0,
+              "example": 1234
+            }
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "description": "The key to remove.",
+            "schema": {
+              "type": "string",
+              "example": "foo"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Key deleted",
+            "content": {}
+          }
+        }
+      }
+    },
     "/api/ledger/v2/{ledger}/transactions/{id}/revert": {
       "post": {
         "tags": [
@@ -1739,6 +1823,127 @@
         }
       }
     },
+    "/api/payments/transfer-initiation": {
+      "get": {
+        "summary": "List Transfer Initiations",
+        "operationId": "listTransferInitiations",
+        "tags": [
+          "Payments"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TransferInitiations"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a TransferInitiation",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "createTransferInitiation",
+        "description": "Create a transfer initiation",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/TransferInitiation"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TransferInitiation"
+          }
+        }
+      }
+    },
+    "/api/payments/transfer-initiation/{transferId}": {
+      "get": {
+        "summary": "Get a transfer initiation",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "getTransferInitiation",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TransferId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TransferInitiation"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a transfer initiation",
+        "operationId": "deleteTransferInitiation",
+        "tags": [
+          "Payments"
+        ],
+        "description": "Delete a transfer initiation by its id.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TransferId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          }
+        }
+      }
+    },
+    "/api/payments/transfer-initiation/{transferId}/status": {
+      "post": {
+        "summary": "Update the status of a transfer initiation",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "udpateTransferInitiationStatus",
+        "description": "Update a transfer initiation status",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TransferId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateTransferInitiationStatus"
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          }
+        }
+      }
+    },
+    "/api/payments/transfer-initiation/{transferId}/retry": {
+      "post": {
+        "summary": "Retry a failed transfer initiation",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "retryTransferInitiation",
+        "description": "Retry a failed transfer initiation",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TransferId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          }
+        }
+      }
+    },
     "/api/payments/accounts": {
       "get": {
         "summary": "List accounts",
@@ -1846,6 +2051,67 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/AccountBalances"
+          }
+        }
+      }
+    },
+    "/api/payments/bank-accounts": {
+      "post": {
+        "summary": "Create a BankAccount in Payments and on the PSP",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "createBankAccount",
+        "description": "Create a bank account in Payments and on the PSP.",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/BankAccount"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BankAccount"
+          }
+        }
+      },
+      "get": {
+        "summary": "List bank accounts created by user on Formance",
+        "operationId": "listBankAccounts",
+        "tags": [
+          "Payments"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          }
+        ],
+        "description": "List all bank accounts created by user on Formance.",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BankAccounts"
+          }
+        }
+      }
+    },
+    "/api/payments/bank-accounts/{bankAccountId}": {
+      "get": {
+        "summary": "Get a bank account created by user on Formance",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "getBankAccount",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/BankAccountId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BankAccount"
           }
         }
       }
@@ -2047,24 +2313,6 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/Transfers"
-          }
-        }
-      }
-    },
-    "/api/payments/connectors/stripe/transfers": {
-      "post": {
-        "summary": "Transfer funds between Stripe accounts",
-        "tags": [
-          "Payments"
-        ],
-        "operationId": "connectorsStripeTransfer",
-        "description": "Execute a transfer between two Stripe accounts.",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/StripeTransfer"
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/StripeTransfer"
           }
         }
       }
@@ -4557,11 +4805,7 @@
         ]
       },
       "ConfigInfoResponse": {
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/ConfigInfo"
-          }
-        }
+        "$ref": "#/components/schemas/ConfigInfo"
       },
       "Volume": {
         "type": "object",
@@ -4776,6 +5020,64 @@
           }
         }
       },
+      "TransferInitiationsCursor": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/TransferInitiation"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "BankAccountsCursor": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/BankAccount"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
       "AccountsCursor": {
         "type": "object",
         "required": [
@@ -4910,6 +5212,17 @@
           }
         }
       },
+      "TransferInitiationResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TransferInitiation"
+          }
+        }
+      },
       "paymentsAccountResponse": {
         "type": "object",
         "required": [
@@ -4941,6 +5254,17 @@
                 }
               }
             }
+          }
+        }
+      },
+      "BankAccountResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/BankAccount"
           }
         }
       },
@@ -5079,6 +5403,17 @@
           "MONEYCORP"
         ]
       },
+      "TransferInitiationStatus": {
+        "type": "string",
+        "enum": [
+          "WAITING_FOR_VALIDATION",
+          "PROCESSING",
+          "PROCESSED",
+          "FAILED",
+          "REJECTED",
+          "VALIDATED"
+        ]
+      },
       "ConnectorConfig": {
         "anyOf": [
           {
@@ -5170,7 +5505,7 @@
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
-            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.\n",
             "default": "120s"
           }
         }
@@ -5197,7 +5532,7 @@
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
-            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.\n",
             "default": "120s"
           }
         }
@@ -5240,7 +5575,7 @@
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
-            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Banking Circle API.\n",
             "default": "120s"
           }
         }
@@ -5256,7 +5591,7 @@
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
-            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from MangoPay API.\n",
             "default": "120s"
           },
           "clientID": {
@@ -5296,7 +5631,7 @@
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
-            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.\n",
+            "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.\n",
             "default": "120s"
           }
         }
@@ -5327,6 +5662,124 @@
             "type": "string",
             "example": "XXX",
             "description": "The endpoint to use for the API. Defaults to https://devapi.currencycloud.com"
+          }
+        }
+      },
+      "TransferInitiation": {
+        "type": "object",
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "description",
+          "sourceAccountID",
+          "destinationAccountID",
+          "provider",
+          "type",
+          "amount",
+          "asset",
+          "status",
+          "error"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string"
+          },
+          "sourceAccountID": {
+            "type": "string"
+          },
+          "destinationAccountID": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Connector"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TRANSFER",
+              "PAYOUT"
+            ]
+          },
+          "amount": {
+            "type": "integer",
+            "format": "bigint"
+          },
+          "asset": {
+            "type": "string",
+            "example": "USD"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TransferInitiationStatus"
+          },
+          "error": {
+            "type": "string"
+          },
+          "relatedPayments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransferInitiationPayments"
+            }
+          }
+        }
+      },
+      "TransferInitiationPayments": {
+        "type": "object",
+        "required": [
+          "paymentID",
+          "createdAt",
+          "status",
+          "error"
+        ],
+        "properties": {
+          "paymentID": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PaymentStatus"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "BankAccount": {
+        "type": "object",
+        "required": [
+          "id",
+          "createdAt",
+          "country",
+          "provider"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "country": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Connector"
           }
         }
       },
@@ -5846,34 +6299,109 @@
           }
         }
       },
-      "StripeTransferRequest": {
+      "BankAccountRequest": {
         "type": "object",
+        "required": [
+          "country",
+          "provider",
+          "name"
+        ],
         "properties": {
+          "country": {
+            "type": "string",
+            "example": "GB"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Connector"
+          },
+          "name": {
+            "type": "string",
+            "example": "My account"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "iban": {
+            "type": "string"
+          },
+          "swiftBicCode": {
+            "type": "string"
+          }
+        }
+      },
+      "TransferInitiationRequest": {
+        "type": "object",
+        "required": [
+          "uniqueRequestID",
+          "createdAt",
+          "description",
+          "sourceAccountID",
+          "destinationAccountID",
+          "provider",
+          "type",
+          "amount",
+          "asset",
+          "validated"
+        ],
+        "properties": {
+          "uniqueRequestID": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string"
+          },
+          "sourceAccountID": {
+            "type": "string"
+          },
+          "destinationAccountID": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Connector"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TRANSFER",
+              "PAYOUT"
+            ]
+          },
           "amount": {
             "type": "integer",
-            "format": "bigint",
-            "minimum": 0,
-            "example": 100
+            "format": "bigint"
           },
           "asset": {
             "type": "string",
             "example": "USD"
           },
-          "destination": {
-            "type": "string",
-            "example": "acct_1Gqj58KZcSIg2N2q"
-          },
-          "metadata": {
-            "type": "object",
-            "description": "A set of key/value pairs that you can attach to a transfer object.\nIt can be useful for storing additional information about the transfer in a structured format.\n",
-            "example": {
-              "order_id": "6735"
-            }
+          "validated": {
+            "type": "boolean"
           }
         }
       },
-      "StripeTransferResponse": {
-        "type": "object"
+      "UpdateTransferInitiationStatusRequest": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "WAITING_FOR_VALIDATION",
+              "PROCESSING",
+              "PROCESSED",
+              "FAILED",
+              "REJECTED",
+              "VALIDATED"
+            ]
+          }
+        }
       },
       "PaymentStatus": {
         "type": "string",
@@ -7433,6 +7961,32 @@
           }
         ]
       },
+      "StripeTransferRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "format": "bigint",
+            "minimum": 0,
+            "example": 100
+          },
+          "asset": {
+            "type": "string",
+            "example": "USD"
+          },
+          "destination": {
+            "type": "string",
+            "example": "acct_1Gqj58KZcSIg2N2q"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "A set of key/value pairs that you can attach to a transfer object.\nIt can be useful for storing additional information about the transfer in a structured format.\n",
+            "example": {
+              "order_id": "6735"
+            }
+          }
+        }
+      },
       "ActivityStripeTransfer": {
         "$ref": "#/components/schemas/StripeTransferRequest"
       },
@@ -7625,8 +8179,8 @@
         "type": "oauth2",
         "flows": {
           "clientCredentials": {
-            "tokenUrl": "",
-            "refreshUrl": "",
+            "tokenUrl": "https://localhost/api/auth/oauth/token",
+            "refreshUrl": "https://localhost/api/auth/oauth/token",
             "scopes": {}
           }
         }
@@ -7662,6 +8216,26 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/PaymentResponse"
+            }
+          }
+        }
+      },
+      "TransferInitiations": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TransferInitiationsCursor"
+            }
+          }
+        }
+      },
+      "TransferInitiation": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TransferInitiationResponse"
             }
           }
         }
@@ -7706,6 +8280,26 @@
           }
         }
       },
+      "BankAccounts": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BankAccountsCursor"
+            }
+          }
+        }
+      },
+      "BankAccount": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BankAccountResponse"
+            }
+          }
+        }
+      },
       "ConnectorsConfigs": {
         "description": "OK",
         "content": {
@@ -7742,16 +8336,6 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/TaskResponse"
-            }
-          }
-        }
-      },
-      "StripeTransfer": {
-        "description": "OK",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/StripeTransferResponse"
             }
           }
         }
@@ -7845,6 +8429,26 @@
         "example": "XXX",
         "required": true
       },
+      "TransferId": {
+        "name": "transferId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The transfer ID.",
+        "example": "XXX",
+        "required": true
+      },
+      "BankAccountId": {
+        "name": "bankAccountId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The bank account ID.",
+        "example": "XXX",
+        "required": true
+      },
       "Connector": {
         "name": "connector",
         "description": "The name of the connector.",
@@ -7876,22 +8480,42 @@
           }
         }
       },
-      "StripeTransfer": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/StripeTransferRequest"
-            }
-          }
-        }
-      },
       "UpdateMetadata": {
         "required": true,
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/PaymentMetadata"
+            }
+          }
+        }
+      },
+      "TransferInitiation": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TransferInitiationRequest"
+            }
+          }
+        }
+      },
+      "BankAccount": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BankAccountRequest"
+            }
+          }
+        }
+      },
+      "UpdateTransferInitiationStatus": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateTransferInitiationStatusRequest"
             }
           }
         }

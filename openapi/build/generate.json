@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20230928"
+    "version": "v1.0.20231002"
   },
   "servers": [
     {
@@ -2077,6 +2077,17 @@
         "operationId": "listBankAccounts",
         "tags": [
           "Payments"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          }
         ],
         "description": "List all bank accounts created by user on Formance.",
         "responses": {
@@ -5038,6 +5049,35 @@
           }
         }
       },
+      "BankAccountsCursor": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/BankAccount"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
       "AccountsCursor": {
         "type": "object",
         "required": [
@@ -5214,17 +5254,6 @@
                 }
               }
             }
-          }
-        }
-      },
-      "BankAccountsResponse": {
-        "type": "object",
-        "required": [
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/BankAccount"
           }
         }
       },
@@ -8256,7 +8285,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/BankAccountsResponse"
+              "$ref": "#/components/schemas/BankAccountsCursor"
             }
           }
         }
