@@ -26,6 +26,13 @@ type LockingStrategy struct {
 	Redis LockingStrategyRedisConfig `json:"redis"`
 }
 
+type DeploymentStrategy string
+
+const (
+	DeploymentStrategySingle                   = "single"
+	DeploymentStrategyMonoWriterMultipleReader = "single-writer"
+)
+
 // +kubebuilder:object:generate=true
 type LedgerSpec struct {
 	Postgres PostgresConfig `json:"postgres"`
@@ -38,6 +45,8 @@ type LedgerSpec struct {
 	// +optional
 	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
 	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
+	// +optional
+	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 }
 
 type ServiceSpec struct {
