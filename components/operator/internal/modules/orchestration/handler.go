@@ -7,25 +7,29 @@ import (
 
 type module struct{}
 
-func (o module) Postgres(ctx modules.Context) stackv1beta3.PostgresConfig {
+func (o module) Name() string {
+	return "orchestration"
+}
+
+func (o module) Postgres(ctx modules.ReconciliationConfig) stackv1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Orchestration.Postgres
 }
 
 func (o module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{
 					{
 						Port: 8080,
-						AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
+						AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {
 							return stackv1beta3.NewClientConfiguration()
 						},
 						ExposeHTTP:              true,
 						HasVersionEndpoint:      true,
 						InjectPostgresVariables: true,
 						Annotations:             ctx.Configuration.Spec.Services.Orchestration.Annotations.Service,
-						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Env:   orchestrationEnvVars(resolveContext),
 								Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
@@ -40,7 +44,7 @@ func (o module) Versions() map[string]modules.Version {
 						Name:                    "worker",
 						InjectPostgresVariables: true,
 						Liveness:                modules.LivenessDisable,
-						Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Env:   orchestrationEnvVars(resolveContext),
 								Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
@@ -58,14 +62,16 @@ func (o module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
-var _ modules.PostgresAwareModule = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
+var _ modules.PostgresAwareModule = Module
 
 func init() {
-	modules.Register("orchestration", &module{})
+	modules.Register(Module)
 }
 
-func orchestrationEnvVars(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv {
+func orchestrationEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
 	return modules.NewEnv().Append(
 		modules.Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		modules.Env("TEMPORAL_TASK_QUEUE", resolveContext.Stack.Name),

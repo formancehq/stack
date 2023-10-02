@@ -58,20 +58,11 @@ const (
 // +kubebuilder:rbac:groups=stack.formance.com,resources=configurations,verbs=get;list;watch
 // +kubebuilder:rbac:groups=stack.formance.com,resources=versions,verbs=get;list;watch
 
-type Configuration struct {
-	// Cloud region where the stack is deployed
-	Region string
-	// Cloud environment where the stack is deployed: staging, production,
-	// sandbox, etc.
-	Environment string
-}
-
 // Reconciler reconciles a Stack object
 type Reconciler struct {
-	configuration Configuration
-	client        client.Client
-	scheme        *runtime.Scheme
-	stackDeployer *modules.StackDeployer
+	client                 client.Client
+	scheme                 *runtime.Scheme
+	stackReconcilerFactory *modules.StackReconcilerFactory
 }
 
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -199,25 +190,16 @@ func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Sta
 		return false, err
 	}
 
-	deployer := modules.NewDeployer(r.client, r.scheme, stack, configuration)
-	resolveContext := modules.Context{
-		Context:       ctx,
-		Region:        r.configuration.Region,
-		Environment:   r.configuration.Environment,
-		Stack:         stack,
-		Configuration: configuration,
-		Versions:      versions,
-	}
-
-	return r.stackDeployer.HandleStack(resolveContext, deployer)
+	return r.stackReconcilerFactory.
+		NewDeployer(stack, configuration, versions).
+		Reconcile(ctx)
 }
 
-func NewReconciler(client client.Client, scheme *runtime.Scheme, stackDeployer *modules.StackDeployer, configuration Configuration) *Reconciler {
+func NewReconciler(client client.Client, scheme *runtime.Scheme, stackReconcilerFactory *modules.StackReconcilerFactory) *Reconciler {
 	return &Reconciler{
-		configuration: configuration,
-		client:        client,
-		scheme:        scheme,
-		stackDeployer: stackDeployer,
+		client:                 client,
+		scheme:                 scheme,
+		stackReconcilerFactory: stackReconcilerFactory,
 	}
 }
 

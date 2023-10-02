@@ -1,6 +1,7 @@
 package payments
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -15,16 +16,20 @@ import (
 
 type module struct{}
 
-func (p module) Postgres(ctx modules.Context) v1beta3.PostgresConfig {
+func (p module) Name() string {
+	return "payments"
+}
+
+func (p module) Postgres(ctx modules.ReconciliationConfig) v1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Payments.Postgres
 }
 
 func (p module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				migrateCommand := []string{"payments", "migrate"}
-				if ctx.HasVersionLower("v0.7.0") {
+				if ctx.Versions.IsHigherOrEqual("payments", "v0.7.0") {
 					migrateCommand = append(migrateCommand, "up")
 				}
 				return modules.Services{{
@@ -35,7 +40,7 @@ func (p module) Versions() map[string]modules.Version {
 					NeedTopic:               true,
 					Liveness:                modules.LivenessLegacy,
 					Annotations:             ctx.Configuration.Spec.Services.Payments.Annotations.Service,
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						return modules.Container{
 							Env:   paymentsEnvVars(resolveContext),
 							Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
@@ -45,7 +50,7 @@ func (p module) Versions() map[string]modules.Version {
 							),
 						}
 					},
-					InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {
+					InitContainer: func(resolveContext modules.ContainerResolutionConfiguration) []modules.Container {
 						return []modules.Container{{
 							Name:    "migrate",
 							Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
@@ -57,110 +62,112 @@ func (p module) Versions() map[string]modules.Version {
 			},
 		},
 		"v0.6.5": {
-			PreUpgrade: func(ctx modules.Context) error {
-				return paymentsPreUpgradeMigration(ctx)
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			PostUpgrade: func(ctx modules.PostInstallContext) error {
-				return resetConnectors(ctx)
+			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return resetConnectors(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.6.7": {
-			PreUpgrade: func(ctx modules.Context) error {
-				return paymentsPreUpgradeMigration(ctx)
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.6.8": {
-			PreUpgrade: func(ctx modules.Context) error {
-				return paymentsPreUpgradeMigration(ctx)
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.7.0": {
-			PreUpgrade: func(ctx modules.Context) error {
-				return paymentsPreUpgradeMigration(ctx)
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			PostUpgrade: func(ctx modules.PostInstallContext) error {
-				return resetConnectors(ctx)
+			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return resetConnectors(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.8.0": {
-			PreUpgrade: func(ctx modules.Context) error {
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx)
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			PostUpgrade: func(ctx modules.PostInstallContext) error {
-				return resetConnectors(ctx)
+			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return resetConnectors(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.8.1": {
-			PostUpgrade: func(ctx modules.PostInstallContext) error {
-				return resetConnectors(ctx)
+			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+				return resetConnectors(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.9.0": {
-			PreUpgrade: func(ctx modules.Context) error {
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx)
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.9.1": {
-			PreUpgrade: func(ctx modules.Context) error {
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx)
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.9.4": {
-			PreUpgrade: func(ctx modules.Context) error {
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx)
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.10.0": {
-			PreUpgrade: func(ctx modules.Context) error {
+			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx)
+				return paymentsPreUpgradeMigration(ctx, config)
 			},
-			Services: func(ctx modules.ModuleContext) modules.Services {
-				return paymentsServices(ctx, paymentsEnvVars)
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
 			},
 		},
 	}
 }
 
-var _ modules.Module = (*module)(nil)
-var _ modules.PostgresAwareModule = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
+var _ modules.PostgresAwareModule = Module
 
 func init() {
-	modules.Register("payments", &module{})
+	modules.Register(Module)
 }
 
-func paymentsEnvVars(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv {
+func paymentsEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
 	return modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "payments").
 		Append(
 			modules.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
@@ -169,14 +176,14 @@ func paymentsEnvVars(resolveContext modules.ContainerResolutionContext) modules.
 		)
 }
 
-func paymentsPreUpgradeMigration(ctx modules.Context) error {
+func paymentsPreUpgradeMigration(ctx context.Context, config modules.ReconciliationConfig) error {
 	postgresUri := fmt.Sprintf(
 		"postgresql://%s:%s@%s:%d/%s?sslmode=disable",
-		ctx.Configuration.Spec.Services.Payments.Postgres.Username,
-		ctx.Configuration.Spec.Services.Payments.Postgres.Password,
-		ctx.Configuration.Spec.Services.Payments.Postgres.Host,
-		ctx.Configuration.Spec.Services.Payments.Postgres.Port,
-		ctx.Stack.GetServiceName("payments"),
+		config.Configuration.Spec.Services.Payments.Postgres.Username,
+		config.Configuration.Spec.Services.Payments.Postgres.Password,
+		config.Configuration.Spec.Services.Payments.Postgres.Host,
+		config.Configuration.Spec.Services.Payments.Postgres.Port,
+		config.Stack.GetServiceName("payments"),
 	)
 
 	db, err := sql.Open("postgres", postgresUri)
@@ -187,12 +194,11 @@ func paymentsPreUpgradeMigration(ctx modules.Context) error {
 	bunDB := bun.NewDB(db, pgdialect.New())
 	defer bunDB.Close()
 
-	return cmd.Migrate(ctx.Context, bunDB)
+	return cmd.Migrate(ctx, bunDB)
 }
 
 func paymentsServices(
-	ctx modules.ModuleContext,
-	env func(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv,
+	env func(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv,
 ) modules.Services {
 	return modules.Services{{
 		InjectPostgresVariables: true,
@@ -201,7 +207,7 @@ func paymentsServices(
 		ExposeHTTP:              true,
 		NeedTopic:               true,
 		Liveness:                modules.LivenessLegacy,
-		Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 			return modules.Container{
 				Env:   env(resolveContext),
 				Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
@@ -214,40 +220,40 @@ func paymentsServices(
 	}}
 }
 
-func resetConnectors(ctx modules.PostInstallContext) error {
-	if err := resetConnector(ctx, "stripe"); err != nil {
+func resetConnectors(ctx context.Context, config modules.ReconciliationConfig) error {
+	if err := resetConnector(ctx, config, "stripe"); err != nil {
 		return err
 	}
-	if err := resetConnector(ctx, "wise"); err != nil {
+	if err := resetConnector(ctx, config, "wise"); err != nil {
 		return err
 	}
-	if err := resetConnector(ctx, "modulr"); err != nil {
+	if err := resetConnector(ctx, config, "modulr"); err != nil {
 		return err
 	}
-	if err := resetConnector(ctx, "banking-circle"); err != nil {
+	if err := resetConnector(ctx, config, "banking-circle"); err != nil {
 		return err
 	}
-	if err := resetConnector(ctx, "currency-cloud"); err != nil {
+	if err := resetConnector(ctx, config, "currency-cloud"); err != nil {
 		return err
 	}
-	if err := resetConnector(ctx, "dummy-pay"); err != nil {
+	if err := resetConnector(ctx, config, "dummy-pay"); err != nil {
 		return err
 	}
-	if err := resetConnector(ctx, "mangopay"); err != nil {
+	if err := resetConnector(ctx, config, "mangopay"); err != nil {
 		return err
 	}
-	if err := resetConnector(ctx, "moneycorp"); err != nil {
+	if err := resetConnector(ctx, config, "moneycorp"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func resetConnector(ctx modules.PostInstallContext, connector string) error {
+func resetConnector(ctx context.Context, config modules.ReconciliationConfig, connector string) error {
 	endpoint := fmt.Sprintf(
 		"http://payments.%s.svc:%d/connectors/%s/reset",
-		ctx.Stack.Name,
-		ctx.Stack.Status.Ports[ctx.ModuleName]["payments"],
+		config.Stack.Name,
+		config.Stack.Status.Ports["payments"]["payments"],
 		connector,
 	)
 	res, err := http.Post(endpoint, "", nil)

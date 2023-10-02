@@ -34,8 +34,8 @@ import (
 // MigrationReconciler reconciles a Migration object
 type MigrationReconciler struct {
 	client.Client
-	Scheme        *runtime.Scheme
-	configuration Configuration
+	Scheme   *runtime.Scheme
+	platform modules.Platform
 }
 
 //+kubebuilder:rbac:groups=stack.formance.com,resources=migrations,verbs=get;list;watch;create;update;patch;delete
@@ -93,32 +93,24 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, pkgError.New("migration not found")
 	}
 
-	var returnedError error
+	rc := modules.ReconciliationConfig{
+		Stack:         stack,
+		Configuration: configuration,
+		Versions:      versions,
+		Platform:      r.platform,
+	}
+
+	var fn func(ctx context.Context, config modules.ReconciliationConfig) error
+
 	if migration.Spec.PostUpgrade {
-		if err := version.PostUpgrade(modules.PostInstallContext{
-			ModuleName: migration.Spec.Module,
-			Context: modules.Context{
-				Context:       ctx,
-				Region:        r.configuration.Region,
-				Environment:   r.configuration.Environment,
-				Stack:         stack,
-				Configuration: configuration,
-				Versions:      versions,
-			},
-		}); err != nil {
-			returnedError = err
-		}
+		fn = version.PostUpgrade
 	} else {
-		if err := version.PreUpgrade(modules.Context{
-			Context:       ctx,
-			Region:        r.configuration.Region,
-			Environment:   r.configuration.Environment,
-			Stack:         stack,
-			Configuration: configuration,
-			Versions:      versions,
-		}); err != nil {
-			returnedError = err
-		}
+		fn = version.PreUpgrade
+	}
+
+	var returnedError error
+	if err := fn(ctx, rc); err != nil {
+		returnedError = err
 	}
 
 	if returnedError != nil {
@@ -143,10 +135,10 @@ func (r *MigrationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func NewMigrationReconciler(client client.Client, scheme *runtime.Scheme, configuration Configuration) *MigrationReconciler {
+func NewMigrationReconciler(client client.Client, scheme *runtime.Scheme, platform modules.Platform) *MigrationReconciler {
 	return &MigrationReconciler{
-		configuration: configuration,
-		Client:        client,
-		Scheme:        scheme,
+		platform: platform,
+		Client:   client,
+		Scheme:   scheme,
 	}
 }

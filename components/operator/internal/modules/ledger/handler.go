@@ -9,14 +9,18 @@ import (
 
 type module struct{}
 
-func (l module) Postgres(ctx modules.Context) v1beta3.PostgresConfig {
+func (l module) Name() string {
+	return "ledger"
+}
+
+func (l module) Postgres(ctx modules.ReconciliationConfig) v1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Ledger.Postgres
 }
 
 func (l module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{{
 					EnvPrefix:               "NUMARY_",
 					ListenEnvVar:            "SERVER_HTTP_BIND_ADDRESS",
@@ -25,7 +29,7 @@ func (l module) Versions() map[string]modules.Version {
 					ExposeHTTP:              true,
 					NeedTopic:               true,
 					Annotations:             ctx.Configuration.Spec.Services.Ledger.Annotations.Service,
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						env := modules.NewEnv().Append(
 							modules.Env("STORAGE_DRIVER", "postgres"),
 							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
@@ -73,14 +77,14 @@ func (l module) Versions() map[string]modules.Version {
 			},
 		},
 		"v2.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{{
 					ListenEnvVar:            "BIND",
 					InjectPostgresVariables: true,
 					HasVersionEndpoint:      true,
 					ExposeHTTP:              true,
 					NeedTopic:               true,
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						env := modules.NewEnv().Append(
 							modules.Env("STORAGE_DRIVER", "postgres"),
 							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
@@ -103,9 +107,11 @@ func (l module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
-var _ modules.PostgresAwareModule = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
+var _ modules.PostgresAwareModule = Module
 
 func init() {
-	modules.Register("ledger", &module{})
+	modules.Register(Module)
 }

@@ -179,15 +179,6 @@ type Stack struct {
 	Status StackStatus `json:"status,omitempty"`
 }
 
-func NewStack(name string, spec StackSpec) Stack {
-	return Stack{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
-		},
-		Spec: spec,
-	}
-}
-
 func (*Stack) Hub() {}
 
 func (s *Stack) GetScheme() string {
@@ -262,6 +253,14 @@ func (s *Stack) GetStaticClients(configuration *Configuration) []StaticClient {
 	staticClients := append(configuration.Spec.Services.Auth.StaticClients, stackStaticClients...)
 	staticClients = append(staticClients, s.Spec.Auth.StaticClients...)
 	return staticClients
+}
+
+func (s *Stack) ModeChanged(configuration *Configuration) bool {
+	return s.Status.LightMode != configuration.Spec.LightMode
+}
+
+func (s *Stack) IsDisabled(module string) bool {
+	return s.Spec.Services.IsDisabled(module)
 }
 
 //+kubebuilder:object:root=true

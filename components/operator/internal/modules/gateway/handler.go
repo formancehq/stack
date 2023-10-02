@@ -6,6 +6,15 @@ import (
 	"sort"
 	"text/template"
 
+	"github.com/formancehq/operator/internal/modules/auth"
+	"github.com/formancehq/operator/internal/modules/control"
+	"github.com/formancehq/operator/internal/modules/ledger"
+	"github.com/formancehq/operator/internal/modules/orchestration"
+	"github.com/formancehq/operator/internal/modules/payments"
+	"github.com/formancehq/operator/internal/modules/search"
+	"github.com/formancehq/operator/internal/modules/wallets"
+	"github.com/formancehq/operator/internal/modules/webhooks"
+
 	"github.com/formancehq/operator/internal/modules"
 )
 
@@ -15,17 +24,34 @@ const (
 
 type module struct{}
 
+func (g module) Name() string {
+	return "gateway"
+}
+
+func (g module) DependsOn() []modules.Module {
+	return []modules.Module{
+		auth.Module,
+		control.Module,
+		ledger.Module,
+		orchestration.Module,
+		payments.Module,
+		search.Module,
+		wallets.Module,
+		webhooks.Module,
+	}
+}
+
 func (g module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			Services: func(ctx modules.ModuleContext) modules.Services {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{{
 					Port:        gatewayPort,
 					Path:        "/",
 					ExposeHTTP:  true,
 					Liveness:    modules.LivenessDisable,
 					Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
-					Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
+					Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {
 						return modules.Configs{
 							"config": modules.Config{
 								Data: map[string]string{
@@ -35,7 +61,7 @@ func (g module) Versions() map[string]modules.Version {
 							},
 						}
 					},
-					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						return modules.Container{
 							Command: []string{"/usr/bin/caddy"},
 							Args: []string{
@@ -57,19 +83,22 @@ func (g module) Versions() map[string]modules.Version {
 	}
 }
 
-var _ modules.Module = (*module)(nil)
+var Module = &module{}
+
+var _ modules.Module = Module
+var _ modules.DependsOnAwareModule = Module
 
 func init() {
-	modules.Register("gateway", &module{})
+	modules.Register(Module)
 }
 
-func createCaddyfile(context modules.ServiceInstallContext) string {
+func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 	tpl := template.Must(template.New("caddyfile").Parse(caddyfile))
 	buf := bytes.NewBufferString("")
 
 	type service struct {
-		Name string
-		*modules.Service
+		modules.RegisteredService
+		Name       string
 		Port       int32
 		Hostname   string
 		HealthPath string
@@ -77,19 +106,19 @@ func createCaddyfile(context modules.ServiceInstallContext) string {
 
 	servicesMap := make(map[string]service, 0)
 	keys := make([]string, 0)
-	for moduleName, module := range context.RegisteredModules {
-		if moduleName == "gateway" {
+	for _, registeredModule := range context.RegisteredModules {
+		if registeredModule.Module.Name() == "gateway" {
 			continue
 		}
-		for _, s := range module.Services {
+		for _, s := range registeredModule.Services {
 			if !s.ExposeHTTP {
 				continue
 			}
-			usedPort := s.GetUsedPort()
+			usedPort := s.Port
 			if usedPort == 0 {
 				continue
 			}
-			serviceName := moduleName
+			serviceName := registeredModule.Module.Name()
 			if s.Name != "" {
 				serviceName += "-" + s.Name
 			}
@@ -102,11 +131,11 @@ func createCaddyfile(context modules.ServiceInstallContext) string {
 				hostname = "127.0.0.1"
 			}
 			servicesMap[serviceName] = service{
-				Name:       serviceName,
-				Service:    s,
-				Port:       usedPort,
-				Hostname:   hostname,
-				HealthPath: healthPath,
+				Name:              serviceName,
+				RegisteredService: s,
+				Port:              usedPort,
+				Hostname:          hostname,
+				HealthPath:        healthPath,
 			}
 			keys = append(keys, serviceName)
 		}
@@ -119,12 +148,12 @@ func createCaddyfile(context modules.ServiceInstallContext) string {
 	}
 
 	if err := tpl.Execute(buf, map[string]any{
-		"Region":   context.Region,
-		"Env":      context.Environment,
+		"Region":   context.Platform.Region,
+		"Env":      context.Platform.Environment,
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
 		"Services": services,
 		"Debug":    context.Stack.Spec.Debug,
-		"Fallback": fmt.Sprintf("control:%d", context.RegisteredModules["control"].Services[0].Port),
+		"Fallback": fmt.Sprintf("control:%d", servicesMap["control"].Port),
 		"Port":     gatewayPort,
 	}); err != nil {
 		panic(err)

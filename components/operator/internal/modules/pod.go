@@ -2,6 +2,7 @@ package modules
 
 import (
 	"context"
+	"sort"
 
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/controllerutils"
@@ -29,6 +30,10 @@ type pod struct {
 
 type PodDeployer interface {
 	deploy(ctx context.Context, pod pod) error
+}
+
+type PodDeployerFinalizer interface {
+	finalize(ctx context.Context) error
 }
 
 type defaultPodDeployer struct {
@@ -111,6 +116,12 @@ func (d *monoPodDeployer) deploy(ctx context.Context, pod pod) error {
 }
 
 func (d *monoPodDeployer) finalize(ctx context.Context) error {
+	sort.SliceStable(d.pod.containers, func(i, j int) bool {
+		return d.pod.containers[i].Name < d.pod.containers[j].Name
+	})
+	sort.SliceStable(d.pod.volumes, func(i, j int) bool {
+		return d.pod.volumes[i].Name < d.pod.volumes[j].Name
+	})
 	return NewDefaultPodDeployer(d.deployer).deploy(ctx, d.pod)
 }
 

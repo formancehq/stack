@@ -2,12 +2,13 @@ package stack_test
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
 	"testing"
 	"time"
+
+	_ "github.com/formancehq/operator/internal/modules/all"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/controllers/stack"
@@ -89,11 +90,15 @@ var _ = ginkgo.BeforeEach(func() {
 	})
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
 
-	config := stack.Configuration{
+	platform := modules.Platform{
 		Region:      "us-west-1",
 		Environment: "staging",
 	}
-	err = stack.NewReconciler(mgr.GetClient(), mgr.GetScheme(), modules.NewStackDeployer(http.DefaultTransport), config).SetupWithManager(mgr)
+	err = stack.NewReconciler(
+		mgr.GetClient(),
+		mgr.GetScheme(),
+		modules.NewsStackReconcilerFactory(mgr.GetClient(), mgr.GetScheme(), platform),
+	).SetupWithManager(mgr)
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
 
 	err = ctrl.NewControllerManagedBy(mgr).

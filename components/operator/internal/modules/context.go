@@ -5,21 +5,21 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-type ContainerResolutionContext struct {
-	ServiceInstallContext
+type ContainerResolutionConfiguration struct {
+	ServiceInstallConfiguration
 	Configs ConfigHandles
 	Secrets SecretHandles
 }
 
-func (ctx ContainerResolutionContext) GetConfig(name string) ConfigHandle {
+func (ctx ContainerResolutionConfiguration) GetConfig(name string) ConfigHandle {
 	return ctx.Configs[name]
 }
 
-func (ctx ContainerResolutionContext) GetSecret(name string) SecretHandle {
+func (ctx ContainerResolutionConfiguration) GetSecret(name string) SecretHandle {
 	return ctx.Secrets[name]
 }
 
-func (ctx ContainerResolutionContext) volumes(serviceName string) []corev1.Volume {
+func (ctx ContainerResolutionConfiguration) volumes(serviceName string) []corev1.Volume {
 	ret := make([]corev1.Volume, 0)
 	for _, configName := range ctx.Configs.sort() {
 		config := ctx.Configs[configName]
@@ -55,34 +55,20 @@ func (ctx ContainerResolutionContext) volumes(serviceName string) []corev1.Volum
 	return ret
 }
 
-type ModuleContext struct {
-	Context
-	PortAllocator PortAllocator
-	Postgres      *stackv1beta3.PostgresConfig
-	Module        string
-}
-
-func (ctx ModuleContext) HasVersionHigherOrEqual(version string) bool {
-	return ctx.Versions.IsHigherOrEqual(ctx.Module, version)
-}
-
-func (ctx ModuleContext) HasVersionHigher(version string) bool {
-	return ctx.Versions.IsHigher(ctx.Module, version)
-}
-
-func (ctx ModuleContext) HasVersionLower(version string) bool {
-	return ctx.Versions.IsLower(ctx.Module, version)
+type RegisteredService struct {
+	Port int32
+	Service
 }
 
 type RegisteredModule struct {
 	Module   Module
-	Services Services
+	Services map[string]RegisteredService
 }
 
 type RegisteredModules map[string]RegisteredModule
 
-type ServiceInstallContext struct {
-	ModuleContext
+type ServiceInstallConfiguration struct {
+	ReconciliationConfig
 	RegisteredModules RegisteredModules
-	PodDeployer       PodDeployer
+	PostgresConfig    *stackv1beta3.PostgresConfig
 }
