@@ -103,11 +103,12 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 
 	type service struct {
 		modules.RegisteredService
-		Name       string
-		Port       int32
-		Hostname   string
-		HealthPath string
-		Methods    []string
+		Name        string
+		Port        int32
+		Hostname    string
+		HealthPath  string
+		Methods     []string
+		RoutingPath string
 	}
 
 	servicesMap := make(map[string]service, 0)
@@ -125,8 +126,12 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 				continue
 			}
 			serviceName := registeredModule.Module.Name()
-			if s.ExposeHTTP.Name != "" {
+			if s.Name != "" {
 				serviceName += "-" + s.ExposeHTTP.Name
+			}
+			serviceRoutingPath := registeredModule.Module.Name()
+			if s.ExposeHTTP.Name != "" {
+				serviceRoutingPath = serviceRoutingPath + "-" + s.ExposeHTTP.Name
 			}
 
 			healthPath := "_healthcheck"
@@ -145,6 +150,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 				Hostname:          hostname,
 				HealthPath:        healthPath,
 				Methods:           s.ExposeHTTP.Methods,
+				RoutingPath:       serviceRoutingPath,
 			}
 			keys = append(keys, serviceName)
 		}
@@ -212,13 +218,13 @@ const caddyfile = `(cors) {
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}
 			@{{ $service.Name }}matcher {
-				path /api/{{ $service.Name }}*
+				path /api/{{ $service.RoutingPath }}*
 				{{- if gt ($service.Methods | len) 0 }}
 				method {{ join $service.Methods " " }}
 				{{- end }}
 			}
 			handle @{{ $service.Name }}matcher {
-				uri strip_prefix /api/{{ $service.Name }}
+				uri strip_prefix /api/{{ $service.RoutingPath }}
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
 		
 				import cors
