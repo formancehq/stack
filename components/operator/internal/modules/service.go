@@ -269,6 +269,7 @@ type ExposeHTTP struct {
 	// Path indicates the path used to expose the service using an ingress
 	Path    string
 	Methods []string
+	Name    string
 }
 
 var DefaultExposeHTTP = &ExposeHTTP{}

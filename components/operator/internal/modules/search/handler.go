@@ -189,9 +189,11 @@ func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 
 func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 	ret := &modules.Service{
-		Name:        "benthos",
-		Port:        4195,
-		ExposeHTTP:  modules.DefaultExposeHTTP,
+		Name: "benthos",
+		Port: 4195,
+		ExposeHTTP: &modules.ExposeHTTP{
+			Name: "benthos",
+		},
 		Liveness:    modules.LivenessDisable,
 		Annotations: ctx.Configuration.Spec.Services.Search.Annotations.Service,
 		Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {

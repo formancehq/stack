@@ -125,9 +125,10 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 				continue
 			}
 			serviceName := registeredModule.Module.Name()
-			if s.Name != "" {
-				serviceName += "-" + s.Name
+			if s.ExposeHTTP.Name != "" {
+				serviceName += "-" + s.ExposeHTTP.Name
 			}
+
 			healthPath := "_healthcheck"
 			if s.Liveness == modules.LivenessLegacy {
 				healthPath = "_health"
