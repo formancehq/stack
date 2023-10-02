@@ -11,33 +11,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type TransferInitiationListStore struct {
+type ListStore struct {
 	Cursor *shared.TransferInitiationsCursorCursor `json:"cursor"`
 }
 
-type TransferInitiationListController struct {
-	store *TransferInitiationListStore
+type ListController struct {
+	store *ListStore
 }
 
-var _ fctl.Controller[*TransferInitiationListStore] = (*TransferInitiationListController)(nil)
+var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
-func NewDefaultTransferInitiationListStore() *TransferInitiationListStore {
-	return &TransferInitiationListStore{
+func NewListStore() *ListStore {
+	return &ListStore{
 		Cursor: &shared.TransferInitiationsCursorCursor{},
 	}
 }
 
-func NewTransferInitiationListController() *TransferInitiationListController {
-	return &TransferInitiationListController{
-		store: NewDefaultTransferInitiationListStore(),
+func NewListController() *ListController {
+	return &ListController{
+		store: NewListStore(),
 	}
 }
 
-func (c *TransferInitiationListController) GetStore() *TransferInitiationListStore {
+func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *TransferInitiationListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -76,7 +76,7 @@ func (c *TransferInitiationListController) Run(cmd *cobra.Command, args []string
 	return c, nil
 }
 
-func (c *TransferInitiationListController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	tableData := fctl.Map(c.store.Cursor.Data, func(tf shared.TransferInitiation) []string {
 		return []string{
 			tf.ID,
@@ -102,11 +102,11 @@ func (c *TransferInitiationListController) Render(cmd *cobra.Command, args []str
 		Render()
 }
 
-func NewListTransferInitiationCommand() *cobra.Command {
-	return fctl.NewCommand("list_transfer_initiations",
-		fctl.WithAliases("ls"),
+func NewListCommand() *cobra.Command {
+	return fctl.NewCommand("list",
+		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithShortDescription("List transfer initiation"),
-		fctl.WithController[*TransferInitiationListStore](NewTransferInitiationListController()),
+		fctl.WithController[*ListStore](NewListController()),
 	)
 }

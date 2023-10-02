@@ -1,4 +1,4 @@
-package transferinitiation
+package bankaccounts
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 )
 
 type CreateStore struct {
-	TransferInitiationId string `json:"transferInitiationId"`
+	BankAccountID string `json:"bankAccountId"`
 }
 type CreateController struct {
 	store *CreateStore
@@ -32,7 +32,7 @@ func NewCreateController() *CreateController {
 
 func NewCreateCommand() *cobra.Command {
 	return fctl.NewCommand("create <file>|-",
-		fctl.WithShortDescription("Create a transfer initiation"),
+		fctl.WithShortDescription("Create a bank account"),
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*CreateStore](NewCreateController()),
@@ -44,7 +44,6 @@ func (c *CreateController) GetStore() *CreateStore {
 }
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -59,13 +58,13 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	request := shared.TransferInitiationRequest{}
+	request := shared.BankAccountRequest{}
 	if err := json.Unmarshal([]byte(script), &request); err != nil {
 		return nil, err
 	}
 
 	//nolint:gosimple
-	response, err := client.Payments.CreateTransferInitiation(cmd.Context(), request)
+	response, err := client.Payments.CreateBankAccount(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
@@ -74,13 +73,13 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.TransferInitiationId = response.TransferInitiationResponse.Data.ID
+	c.store.BankAccountID = response.BankAccountResponse.Data.ID
 
 	return c, nil
 }
 
 func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Transfer Initiation created with ID: %s", c.store.TransferInitiationId)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Bank Accounts created with ID: %s", c.store.BankAccountID)
 
 	return nil
 }

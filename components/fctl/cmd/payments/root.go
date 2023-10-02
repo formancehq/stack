@@ -1,6 +1,8 @@
 package payments
 
 import (
+	"github.com/formancehq/fctl/cmd/payments/accounts"
+	"github.com/formancehq/fctl/cmd/payments/bankaccounts"
 	"github.com/formancehq/fctl/cmd/payments/connectors"
 	"github.com/formancehq/fctl/cmd/payments/payments"
 	"github.com/formancehq/fctl/cmd/payments/transferinitiation"
@@ -13,12 +15,10 @@ func NewCommand() *cobra.Command {
 		fctl.WithShortDescription("Payments management"),
 		fctl.WithChildCommands(
 			connectors.NewConnectorsCommand(),
-			payments.NewListPaymentsCommand(),
-			transferinitiation.NewShowCommand(),
-			transferinitiation.NewListTransferInitiationCommand(),
-			transferinitiation.NewCreateCommand(),
-			transferinitiation.NewUpdateStatusCommand(),
-			transferinitiation.NewDeleteCommand(),
+			payments.NewPaymentsCommand(),
+			transferinitiation.NewTransferInitiationCommand(),
+			bankaccounts.NewBankAccountsCommand(),
+			accounts.NewAccountsCommand(),
 		),
 	)
 }

@@ -10,40 +10,40 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type TransferInitiationDeleteStore struct {
+type DeleteStore struct {
 	TransferID string `json:"transferId"`
 	Success    bool   `json:"success"`
 }
 
-type TransferInitiationDeleteController struct {
-	store *TransferInitiationDeleteStore
+type DeleteController struct {
+	store *DeleteStore
 }
 
-var _ fctl.Controller[*TransferInitiationDeleteStore] = (*TransferInitiationDeleteController)(nil)
+var _ fctl.Controller[*DeleteStore] = (*DeleteController)(nil)
 
-func NewDefaultTransferInitiationDeleteStore() *TransferInitiationDeleteStore {
-	return &TransferInitiationDeleteStore{}
+func NewDeleteStore() *DeleteStore {
+	return &DeleteStore{}
 }
 
-func NewTransferInitiationDeleteController() *TransferInitiationDeleteController {
-	return &TransferInitiationDeleteController{
-		store: NewDefaultTransferInitiationDeleteStore(),
+func NewDeleteController() *DeleteController {
+	return &DeleteController{
+		store: NewDeleteStore(),
 	}
 }
 func NewDeleteCommand() *cobra.Command {
 	return fctl.NewCommand("delete <transferID>",
-		fctl.WithAliases("del", "d"),
+		fctl.WithAliases("d"),
 		fctl.WithShortDescription("Delete a transfer Initiation"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*TransferInitiationDeleteStore](NewTransferInitiationDeleteController()),
+		fctl.WithController[*DeleteStore](NewDeleteController()),
 	)
 }
 
-func (c *TransferInitiationDeleteController) GetStore() *TransferInitiationDeleteStore {
+func (c *DeleteController) GetStore() *DeleteStore {
 	return c.store
 }
 
-func (c *TransferInitiationDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving config")
@@ -85,7 +85,7 @@ func (c *TransferInitiationDeleteController) Run(cmd *cobra.Command, args []stri
 	return c, nil
 }
 
-func (c *TransferInitiationDeleteController) Render(cmd *cobra.Command, args []string) error {
+func (c *DeleteController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithShowLineNumber().Printfln("Transfer Initiation %s Deleted!", c.store.TransferID)
 	return nil
 }
