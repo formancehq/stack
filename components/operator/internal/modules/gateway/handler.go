@@ -127,7 +127,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			}
 			serviceName := registeredModule.Module.Name()
 			if s.Name != "" {
-				serviceName += "-" + s.ExposeHTTP.Name
+				serviceName += "-" + s.Name
 			}
 			serviceRoutingPath := registeredModule.Module.Name()
 			if s.ExposeHTTP.Name != "" {
