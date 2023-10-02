@@ -265,12 +265,20 @@ func (h SecretHandles) sort() []string {
 	return ret
 }
 
+type ExposeHTTP struct {
+	// Path indicates the path used to expose the service using an ingress
+	Path    string
+	Methods []string
+}
+
+var DefaultExposeHTTP = &ExposeHTTP{}
+
 type Service struct {
 	Name string
 	// Secured indicate if the service is able to handle security
 	Secured bool
 	// ExposeHTTP indicate the service expose a http endpoint
-	ExposeHTTP bool
+	ExposeHTTP *ExposeHTTP
 	// ListenEnvVar indicate the flag used to configure the http service address
 	// TODO(gfyrag): Remove this in a future version when all services implements --listen
 	ListenEnvVar string
@@ -278,8 +286,6 @@ type Service struct {
 	// Deprecated
 	// All services should have the --listen flag to allow the operator to specify the port
 	Port int32
-	// Path indicates the path used to expose the service using an ingress
-	Path string
 	// Annotations indicates the annotations apply to the Service
 	Annotations             map[string]string
 	InjectPostgresVariables bool
@@ -321,7 +327,7 @@ func (r *serviceReconciler) reconcile(ctx context.Context, config ServiceInstall
 	if r.service.AuthConfiguration != nil {
 		_ = r.Stack.GetOrCreateClient(r.name, r.service.AuthConfiguration(config))
 	}
-	if r.service.ExposeHTTP || r.service.Liveness != LivenessDisable {
+	if r.service.ExposeHTTP != nil || r.service.Liveness != LivenessDisable {
 		r.allocatePort()
 	}
 
@@ -339,11 +345,11 @@ func (r *serviceReconciler) reconcile(ctx context.Context, config ServiceInstall
 		return err
 	}
 
-	if r.service.ExposeHTTP {
+	if r.service.ExposeHTTP != nil {
 		if err := r.install(ctx); err != nil {
 			return err
 		}
-		if r.service.Path != "" {
+		if r.service.ExposeHTTP.Path != "" {
 			if err := r.createIngress(ctx); err != nil {
 				return err
 			}
@@ -607,7 +613,7 @@ func (r *serviceReconciler) createIngress(ctx context.Context) error {
 						HTTP: &networkingv1.HTTPIngressRuleValue{
 							Paths: []networkingv1.HTTPIngressPath{
 								{
-									Path:     r.service.Path,
+									Path:     r.service.ExposeHTTP.Path,
 									PathType: &pathType,
 									Backend: networkingv1.IngressBackend{
 										Service: &networkingv1.IngressServiceBackend{

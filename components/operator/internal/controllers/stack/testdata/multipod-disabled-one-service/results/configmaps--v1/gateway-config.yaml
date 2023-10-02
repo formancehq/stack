@@ -10,35 +10,6 @@ data:
         	}
         }
 
-        (handle_route_without_auth) {
-        	# handle does not strips the prefix from the request path
-        	handle {args.0}/* {
-        		reverse_proxy {args.1}
-
-        		import cors
-        	}
-        }
-
-        (handle_path_route_with_auth) {
-        	# handle_path automatically strips the prefix from the request path
-        	handle_path {args.0}* {
-        		reverse_proxy {args.1}
-
-        		import cors
-
-        		import auth
-        	}
-        }
-
-        (handle_path_route_without_auth) {
-        	# handle_path automatically strips the prefix from the request path
-        	handle_path {args.0}* {
-        		reverse_proxy {args.1}
-
-        		import cors
-        	}
-        }
-
         (auth) {
         	auth {
         		issuer http://example.net/api/auth
@@ -65,13 +36,75 @@ data:
         	log {
         		output stdout
         	}
-        	import handle_path_route_without_auth /api/auth auth:8080
-        	import handle_path_route_with_auth /api/ledger ledger:8080
-        	import handle_path_route_with_auth /api/payments payments:8080
-        	import handle_path_route_with_auth /api/search search:8080
-        	import handle_path_route_with_auth /api/search-benthos search-benthos:4195
-        	import handle_path_route_with_auth /api/wallets wallets:8080
-        	import handle_path_route_with_auth /api/webhooks webhooks:8080
+        			@authmatcher {
+        				path /api/auth*
+        			}
+        			handle @authmatcher {
+        				uri strip_prefix /api/auth
+        				reverse_proxy auth:8080
+        		
+        				import cors
+        			}
+        			@ledgermatcher {
+        				path /api/ledger*
+        			}
+        			handle @ledgermatcher {
+        				uri strip_prefix /api/ledger
+        				reverse_proxy ledger:8080
+        		
+        				import cors
+        				import auth
+        			}
+        			@paymentsmatcher {
+        				path /api/payments*
+        			}
+        			handle @paymentsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments:8080
+        		
+        				import cors
+        				import auth
+        			}
+        			@searchmatcher {
+        				path /api/search*
+        			}
+        			handle @searchmatcher {
+        				uri strip_prefix /api/search
+        				reverse_proxy search:8080
+        		
+        				import cors
+        				import auth
+        			}
+        			@search-benthosmatcher {
+        				path /api/search-benthos*
+        			}
+        			handle @search-benthosmatcher {
+        				uri strip_prefix /api/search-benthos
+        				reverse_proxy search-benthos:4195
+        		
+        				import cors
+        				import auth
+        			}
+        			@walletsmatcher {
+        				path /api/wallets*
+        			}
+        			handle @walletsmatcher {
+        				uri strip_prefix /api/wallets
+        				reverse_proxy wallets:8080
+        		
+        				import cors
+        				import auth
+        			}
+        			@webhooksmatcher {
+        				path /api/webhooks*
+        			}
+        			handle @webhooksmatcher {
+        				uri strip_prefix /api/webhooks
+        				reverse_proxy webhooks:8080
+        		
+        				import cors
+        				import auth
+        			}
 
         	handle /versions {
         		versions {

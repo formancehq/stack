@@ -20,7 +20,7 @@ func (c module) Versions() map[string]modules.Version {
 				return modules.Services{{
 					Secured:     true,
 					Port:        3000,
-					ExposeHTTP:  true,
+					ExposeHTTP:  modules.DefaultExposeHTTP,
 					Liveness:    modules.LivenessDisable,
 					Annotations: ctx.Configuration.Spec.Services.Control.Annotations.Service,
 					AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {

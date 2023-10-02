@@ -25,7 +25,7 @@ func (o module) Versions() map[string]modules.Version {
 						AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {
 							return stackv1beta3.NewClientConfiguration()
 						},
-						ExposeHTTP:              true,
+						ExposeHTTP:              modules.DefaultExposeHTTP,
 						HasVersionEndpoint:      true,
 						InjectPostgresVariables: true,
 						Annotations:             ctx.Configuration.Spec.Services.Orchestration.Annotations.Service,
