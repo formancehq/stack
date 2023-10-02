@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"net/http"
 	"strconv"
 
@@ -113,14 +114,16 @@ func (l module) Versions() map[string]modules.Version {
 				if ctx.Configuration.Spec.Services.Ledger.DeploymentStrategy == v1beta3.DeploymentStrategyMonoWriterMultipleReader {
 					cp := main
 					cp.Name = "read"
-					main.ExposeHTTP = &modules.ExposeHTTP{
-						Methods: []string{http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
-					}
 					cp.ExposeHTTP = &modules.ExposeHTTP{
 						Methods: []string{http.MethodGet, http.MethodOptions, http.MethodHead},
 					}
 					cp.Container = createContainer(modules.NewEnv().Append(modules.Env("READ_ONLY", "true")))
 					ret = append(ret, &cp)
+
+					main.ExposeHTTP = &modules.ExposeHTTP{
+						Methods: []string{http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+					}
+					main.Replicas = pointer.For(int32(1))
 				}
 
 				return ret

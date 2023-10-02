@@ -26,6 +26,7 @@ type pod struct {
 	containers           []corev1.Container
 	disableRollingUpdate bool
 	mono                 bool
+	replicas             *int32
 }
 
 type PodDeployer interface {
@@ -59,8 +60,12 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 				stackLabel:   "true",
 				productLabel: pod.moduleName,
 			}
+			replicas := pod.replicas
+			if replicas == nil {
+				replicas = t.Spec.Replicas
+			}
 			t.Spec = appsv1.DeploymentSpec{
-				Replicas: t.Spec.Replicas,
+				Replicas: replicas,
 				Selector: &metav1.LabelSelector{
 					MatchLabels: matchLabels,
 				},
