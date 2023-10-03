@@ -59,7 +59,7 @@ func (f *StackFinalizer) retrieveModuleTopic() []string {
 
 	subjects := []string{}
 	for k := range subjectSet {
-		subjects = append(subjects, k)
+		subjects = append(subjects, fmt.Sprintf("%s-%s", f.reconcileConf.Stack.Name, k))
 	}
 
 	return subjects
