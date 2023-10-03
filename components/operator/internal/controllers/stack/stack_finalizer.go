@@ -40,7 +40,11 @@ func (f *StackFinalizer) retrieveModuleTopic() []string {
 	// TODO: iterate over registered modules ?
 	for i := 0; i < values.NumField(); i++ {
 		serviceName := strings.ToLower(values.Field(i).Type().Name())
-		mod := modules.Get(serviceName)
+		mod := modules.Get(strings.ToLower(serviceName))
+		if mod == nil {
+			continue
+		}
+
 		for _, v := range mod.Versions() {
 			services := v.Services(f.reconcileConf)
 			for _, service := range services {
