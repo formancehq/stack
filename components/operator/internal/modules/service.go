@@ -254,45 +254,6 @@ type Context struct {
 	Configuration *stackv1beta3.Configuration
 	Versions      *stackv1beta3.Versions
 }
-type ContextFn func(*Context) *Context
-
-func NewContext(
-	ctx context.Context,
-	region string,
-	environment string,
-	opts ...ContextFn,
-) *Context {
-	context := &Context{
-		Context:     ctx,
-		Region:      region,
-		Environment: environment,
-	}
-
-	for _, opt := range opts {
-		opt(context)
-	}
-
-	return context
-}
-
-func WithVersions(vers *stackv1beta3.Versions) ContextFn {
-	return func(c *Context) *Context {
-		c.Versions = vers
-		return c
-	}
-}
-func WithConfiguration(conf *stackv1beta3.Configuration) ContextFn {
-	return func(c *Context) *Context {
-		c.Configuration = conf
-		return c
-	}
-}
-func WithStack(stack *stackv1beta3.Stack) ContextFn {
-	return func(c *Context) *Context {
-		c.Stack = stack
-		return c
-	}
-}
 
 type ConfigHandles map[string]ConfigHandle
 

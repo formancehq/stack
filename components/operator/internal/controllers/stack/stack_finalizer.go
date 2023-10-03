@@ -11,10 +11,11 @@ import (
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/nats-io/nats.go"
 
 	"github.com/formancehq/operator/internal/modules"
 	"github.com/formancehq/operator/internal/storage/es"
-	"github.com/formancehq/operator/internal/storage/nats"
+	natsStore "github.com/formancehq/operator/internal/storage/nats"
 	"github.com/formancehq/operator/internal/storage/pg"
 	"github.com/go-logr/logr"
 
@@ -168,7 +169,7 @@ func (f *StackFinalizer) DeleteByBrokers(c *v1beta3.Configuration, stackName str
 }
 
 func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackName string, subjectService []string, logger logr.Logger) error {
-	client, err := nats.NewClient(config, natsClientId)
+	client, err := natsStore.NewClient(config, natsClientId)
 	if err != nil {
 		logger.Error(err, "NATS: client")
 		return err
@@ -182,7 +183,7 @@ func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackNam
 
 	for _, service := range subjectService {
 		stackServiceSubject := fmt.Sprintf("%s-%s", stackName, service)
-		exist, err := nats.ExistSubject(jsCtx, stackServiceSubject, logger)
+		exist, err := natsStore.ExistSubject(jsCtx, stackServiceSubject, logger, f.ctx)
 		if err != nil {
 			return err
 		}
@@ -192,7 +193,7 @@ func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackNam
 			continue
 		}
 
-		err = jsCtx.DeleteStream(stackServiceSubject)
+		err = jsCtx.DeleteStream(stackServiceSubject, nats.Context(f.ctx))
 		if err != nil {
 			return err
 		}
@@ -221,7 +222,7 @@ func (f *StackFinalizer) DeleteByService(c *v1beta3.Configuration, stackName str
 					return err
 				}
 
-				if err := es.DropESIndex(client, logger, stackName); err != nil {
+				if err := es.DropESIndex(client, logger, stackName, f.ctx); err != nil {
 					return err
 				}
 			}
@@ -245,7 +246,7 @@ func (f *StackFinalizer) deletePostgresDb(
 	}
 	defer client.Close()
 
-	if err := pg.DropDB(client, stackName, serviceName); err != nil {
+	if err := pg.DropDB(client, stackName, serviceName, f.ctx); err != nil {
 		logger.Error(err, "PG: Error during drop")
 		return err
 	}

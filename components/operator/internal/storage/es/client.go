@@ -2,6 +2,7 @@ package es
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -36,7 +37,7 @@ const (
 	stacksIndex = "stacks"
 )
 
-func DropESIndex(client *opensearch.Client, logger logr.Logger, stackName string) error {
+func DropESIndex(client *opensearch.Client, logger logr.Logger, stackName string, ctx context.Context) error {
 	var (
 		buf bytes.Buffer
 	)
@@ -55,7 +56,7 @@ func DropESIndex(client *opensearch.Client, logger logr.Logger, stackName string
 		return err
 	}
 	body := bytes.NewReader(buf.Bytes())
-	response, err := client.DeleteByQuery([]string{stacksIndex}, body)
+	response, err := client.DeleteByQuery([]string{stacksIndex}, body, client.DeleteByQuery.WithContext(ctx))
 	if err != nil {
 		return err
 	}

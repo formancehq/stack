@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -48,8 +49,8 @@ var (
 	ErrNotExisting = errors.New("not existing")
 )
 
-func DropDB(db *sql.DB, stackName string, serviceName string) error {
-	_, err := db.Exec("DROP DATABASE IF EXISTS " + fmt.Sprintf("\"%s-%s\"", stackName, serviceName))
+func DropDB(db *sql.DB, stackName string, serviceName string, ctx context.Context) error {
+	_, err := db.ExecContext(ctx, "DROP DATABASE IF EXISTS "+fmt.Sprintf("\"%s-%s\"", stackName, serviceName))
 	if err != nil {
 		return err
 	}
