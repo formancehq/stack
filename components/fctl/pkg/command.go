@@ -117,7 +117,7 @@ func ResolveStack(cmd *cobra.Command, cfg *Config, organizationID string) (*memb
 		return nil, err
 	}
 	if id := GetSelectedStackID(cmd); id != "" {
-		response, _, err := client.DefaultApi.ReadStack(cmd.Context(), organizationID, id).Execute()
+		response, _, err := client.DefaultApi.GetStack(cmd.Context(), organizationID, id).Execute()
 		if err != nil {
 			return nil, err
 		}

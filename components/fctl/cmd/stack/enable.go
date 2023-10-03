@@ -8,47 +8,46 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type DeletedStackStore struct {
+type EnableStore struct {
 	Stack  *membershipclient.Stack `json:"stack"`
 	Status string                  `json:"status"`
 }
-type StackDeleteController struct {
-	store *DeletedStackStore
+type EnableController struct {
+	store *EnableStore
 }
 
-var _ fctl.Controller[*DeletedStackStore] = (*StackDeleteController)(nil)
+var _ fctl.Controller[*EnableStore] = (*EnableController)(nil)
 
-func NewDefaultDeletedStackStore() *DeletedStackStore {
-	return &DeletedStackStore{
+func NewEnableStore() *EnableStore {
+	return &EnableStore{
 		Stack:  &membershipclient.Stack{},
 		Status: "",
 	}
 }
 
-func NewStackDeleteController() *StackDeleteController {
-	return &StackDeleteController{
-		store: NewDefaultDeletedStackStore(),
+func NewEnableController() *EnableController {
+	return &EnableController{
+		store: NewEnableStore(),
 	}
 }
 
-func NewDeleteCommand() *cobra.Command {
+func NewEnableCommand() *cobra.Command {
 	const (
 		stackNameFlag = "name"
 	)
-	return fctl.NewMembershipCommand("delete (<stack-id> | --name=<stack-name>)",
+	return fctl.NewMembershipCommand("enable (<stack-id> | --name=<stack-name>)",
 		fctl.WithConfirmFlag(),
-		fctl.WithShortDescription("Delete a stack"),
-		fctl.WithAliases("del", "d"),
+		fctl.WithShortDescription("Enable a stack"),
 		fctl.WithArgs(cobra.MaximumNArgs(1)),
-		fctl.WithStringFlag(stackNameFlag, "", "Stack to delete"),
-		fctl.WithController[*DeletedStackStore](NewStackDeleteController()),
+		fctl.WithStringFlag(stackNameFlag, "", "Stack to enable"),
+		fctl.WithController[*EnableStore](NewEnableController()),
 	)
 }
-func (c *StackDeleteController) GetStore() *DeletedStackStore {
+func (c *EnableController) GetStore() *EnableStore {
 	return c.store
 }
 
-func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *EnableController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	const (
 		stackNameFlag = "name"
 	)
@@ -97,12 +96,12 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, errors.New("Stack not found")
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete stack '%s'", stack.Name) {
+	if !fctl.CheckStackApprobation(cmd, stack, "You are about to enable stack '%s'", stack.Name) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	if _, err := apiClient.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id).Execute(); err != nil {
-		return nil, errors.Wrap(err, "deleting stack")
+	if _, err := apiClient.DefaultApi.EnableStack(cmd.Context(), organization, stack.Id).Execute(); err != nil {
+		return nil, errors.Wrap(err, "stack enable")
 	}
 
 	c.store.Stack = stack
@@ -111,7 +110,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	return c, nil
 }
 
-func (c *StackDeleteController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Stack deleted.")
+func (c *EnableController) Render(cmd *cobra.Command, args []string) error {
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Stack enabled.")
 	return nil
 }

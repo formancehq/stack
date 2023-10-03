@@ -11,13 +11,16 @@ Name | Type | Description | Notes
 **Uri** | **string** | Base stack uri | 
 **RegionID** | **string** | The region where the stack is installed | 
 **StargateEnabled** | **bool** |  | 
+**CreatedAt** | Pointer to **time.Time** |  | [optional] 
 **DeletedAt** | Pointer to **time.Time** |  | [optional] 
+**DisabledAt** | Pointer to **time.Time** |  | [optional] 
+**Status** | **string** |  | 
 
 ## Methods
 
 ### NewStack
 
-`func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
+`func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, stargateEnabled bool, status string, ) *Stack`
 
 NewStack instantiates a new Stack object
 This constructor will assign default values to properties that have it defined,
@@ -172,6 +175,31 @@ and a boolean to check if the value has been set.
 SetStargateEnabled sets StargateEnabled field to given value.
 
 
+### GetCreatedAt
+
+`func (o *Stack) GetCreatedAt() time.Time`
+
+GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
+
+### GetCreatedAtOk
+
+`func (o *Stack) GetCreatedAtOk() (*time.Time, bool)`
+
+GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCreatedAt
+
+`func (o *Stack) SetCreatedAt(v time.Time)`
+
+SetCreatedAt sets CreatedAt field to given value.
+
+### HasCreatedAt
+
+`func (o *Stack) HasCreatedAt() bool`
+
+HasCreatedAt returns a boolean if a field has been set.
+
 ### GetDeletedAt
 
 `func (o *Stack) GetDeletedAt() time.Time`
@@ -196,6 +224,51 @@ SetDeletedAt sets DeletedAt field to given value.
 `func (o *Stack) HasDeletedAt() bool`
 
 HasDeletedAt returns a boolean if a field has been set.
+
+### GetDisabledAt
+
+`func (o *Stack) GetDisabledAt() time.Time`
+
+GetDisabledAt returns the DisabledAt field if non-nil, zero value otherwise.
+
+### GetDisabledAtOk
+
+`func (o *Stack) GetDisabledAtOk() (*time.Time, bool)`
+
+GetDisabledAtOk returns a tuple with the DisabledAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDisabledAt
+
+`func (o *Stack) SetDisabledAt(v time.Time)`
+
+SetDisabledAt sets DisabledAt field to given value.
+
+### HasDisabledAt
+
+`func (o *Stack) HasDisabledAt() bool`
+
+HasDisabledAt returns a boolean if a field has been set.
+
+### GetStatus
+
+`func (o *Stack) GetStatus() string`
+
+GetStatus returns the Status field if non-nil, zero value otherwise.
+
+### GetStatusOk
+
+`func (o *Stack) GetStatusOk() (*string, bool)`
+
+GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStatus
+
+`func (o *Stack) SetStatus(v string)`
+
+SetStatus sets Status field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
