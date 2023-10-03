@@ -73,7 +73,6 @@ spec:
   services:
     auth:
       postgres:
-        disableSSLMode: true
         host: host.k3d.internal
         port: 30000
         username: formance
@@ -140,7 +139,7 @@ spec:
 apiVersion: stack.formance.com/v1beta3
 kind: Stack
 metadata:
-  name: stack8
+  name: stack1
 spec:
   debug: true
   dev: true
@@ -150,16 +149,15 @@ spec:
   versions: default
   services:
     ledger:
-      disabled: false
+      disabled: true
     orchestration:
-      disabled: false
+      disabled: true
   auth:
-    delegatedOIDCServer:
-      issuer: http://host.k3d.internal/api/dex
-      clientID: dexclient
-      clientSecret: dexclient
-    staticClients:
-    - id: foo2
-      secrets:
-      - bar2
----
+      delegatedOIDCServer:
+        issuer: http://host.k3d.internal/api/dex
+        clientID: dexclient
+        clientSecret: dexclient
+      staticClients:
+      - id: foo2
+        secrets:
+        - bar2
