@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	"github.com/google/uuid"
@@ -91,10 +93,17 @@ func TestModule(t *testing.T) {
 	baseUrl, err := url.Parse("http://example.net")
 	require.NoError(t, err)
 
+	clientID := uuid.NewString()
+	version := "v1.0.0"
 	app := fx.New(
 		fx.NopLogger,
 		fx.Supply(fx.Annotate(k8sClient, fx.As(new(K8SClient)))),
-		NewModule(uuid.NewString(), lis.Addr().String(), baseUrl, false, TokenAuthenticator(""),
+		NewModule(lis.Addr().String(), TokenAuthenticator(""), ClientInfo{
+			ID:         clientID,
+			BaseUrl:    baseUrl,
+			Production: false,
+			Version:    version,
+		},
 			grpc.WithTransportCredentials(insecure.NewCredentials())),
 	)
 	require.NoError(t, app.Start(context.Background()))
@@ -129,4 +138,11 @@ func TestModule(t *testing.T) {
 	}, time.Second, 100*time.Millisecond)
 	require.NotEmpty(t, k8sClient.stacks[createdStack.ClusterName])
 	require.Equal(t, createdStack.ClusterName, k8sClient.stacks[createdStack.ClusterName].Name)
+
+	md, ok := metadata.FromIncomingContext(mockServer.connectServer.Context())
+	require.True(t, ok)
+	require.Equal(t, []string{clientID}, md.Get(metadataID))
+	require.Equal(t, []string{baseUrl.String()}, md.Get(metadataBaseUrl))
+	require.Equal(t, []string{"false"}, md.Get(metadataProduction))
+	require.Equal(t, []string{version}, md.Get(metadataVersion))
 }

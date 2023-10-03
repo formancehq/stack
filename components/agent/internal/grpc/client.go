@@ -69,22 +69,34 @@ func BearerAuthenticator(issuer, clientID, clientSecret string) AuthenticatorFn 
 	}
 }
 
+type ClientInfo struct {
+	ID         string
+	BaseUrl    *url.URL
+	Production bool
+	Version    string
+}
+
+const (
+	metadataID         = "id"
+	metadataBaseUrl    = "baseUrl"
+	metadataProduction = "production"
+	metadataVersion    = "version"
+)
+
 type client struct {
+	clientInfo     ClientInfo
 	stopChan       chan chan error
 	grpcClient     generated.ServerClient
 	k8sClient      K8SClient
-	id             string
 	connectClient  generated.Server_ConnectClient
 	connectContext context.Context
 	connectCancel  func()
 	authenticator  Authenticator
-	baseUrl        *url.URL
-	production     bool
 }
 
 func (client *client) Connect(ctx context.Context) error {
 	sharedlogging.FromContext(ctx).WithFields(map[string]any{
-		"id": client.id,
+		"id": client.clientInfo.ID,
 	}).Infof("Establish connection to server")
 	client.connectContext, client.connectCancel = context.WithCancel(ctx)
 
@@ -93,14 +105,15 @@ func (client *client) Connect(ctx context.Context) error {
 		return errors.Wrap(err, "authenticating client")
 	}
 
-	md.Append("id", client.id)
-	md.Append("baseUrl", client.baseUrl.String())
+	md.Append("id", client.clientInfo.ID)
+	md.Append("baseUrl", client.clientInfo.BaseUrl.String())
 	md.Append("production", func() string {
-		if client.production {
+		if client.clientInfo.Production {
 			return "true"
 		}
 		return "false"
 	}())
+	md.Append("version", client.clientInfo.Version)
 
 	connectContext := metadata.NewOutgoingContext(client.connectContext, md)
 	connectClient, err := client.grpcClient.Join(connectContext)
@@ -137,8 +150,8 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 					Secrets: []string{},
 				}},
 			},
-			Host:   fmt.Sprintf("%s.%s", stack.ClusterName, client.baseUrl.Host),
-			Scheme: client.baseUrl.Scheme,
+			Host:   fmt.Sprintf("%s.%s", stack.ClusterName, client.clientInfo.BaseUrl.Host),
+			Scheme: client.clientInfo.BaseUrl.Scheme,
 			Stargate: func() *v1beta3.StackStargateConfig {
 				if stack.StargateConfig == nil || !stack.StargateConfig.Enabled {
 					return nil
@@ -358,15 +371,12 @@ func (client *client) Stop(ctx context.Context) error {
 	}
 }
 
-func newClient(id string, grpcClient generated.ServerClient, k8sClient K8SClient,
-	baseUrl *url.URL, authenticator Authenticator, production bool) *client {
+func newClient(grpcClient generated.ServerClient, k8sClient K8SClient, authenticator Authenticator, clientInfo ClientInfo) *client {
 	return &client{
 		stopChan:      make(chan chan error),
 		grpcClient:    grpcClient,
-		id:            id,
 		k8sClient:     k8sClient,
 		authenticator: authenticator,
-		baseUrl:       baseUrl,
-		production:    production,
+		clientInfo:    clientInfo,
 	}
 }
