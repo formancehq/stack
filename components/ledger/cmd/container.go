@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/formancehq/ledger/internal/api"
 	"io"
 
 	"github.com/formancehq/ledger/cmd/internal"
@@ -31,9 +30,6 @@ func resolveOptions(output io.Writer, userOptions ...fx.Option) []fx.Option {
 		publish.CLIPublisherModule(v, ServiceName),
 		otlptraces.CLITracesModule(v),
 		otlpmetrics.CLIMetricsModule(v),
-		api.Module(api.Config{
-			Version: Version,
-		}),
 		driver.CLIModule(v, output, debug),
 		internal.NewAnalyticsModule(v, Version),
 		engine.Module(engine.Configuration{
