@@ -4,8 +4,8 @@ metadata:
     generation: 1
     labels:
         stack: "true"
-    name: payments-v0.9.4-database-migration
-    namespace: multipod-latest-no-monitoring
+    name: payments-v1.0.0-alpha.1-database-migration
+    namespace: monopod-disabled-one-service
 spec:
     backoffLimit: 6
     completionMode: NonIndexed
@@ -18,7 +18,7 @@ spec:
         metadata:
             creationTimestamp: null
             labels:
-                job-name: payments-v0.9.4-database-migration
+                job-name: payments-v1.0.0-alpha.1-database-migration
         spec:
             containers:
                 - args:
@@ -29,7 +29,7 @@ spec:
                     - name: POSTGRES_PORT
                       value: "5432"
                     - name: POSTGRES_DATABASE
-                      value: multipod-latest-no-monitoring-payments
+                      value: monopod-disabled-one-service-payments
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
