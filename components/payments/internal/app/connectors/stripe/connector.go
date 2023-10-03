@@ -72,12 +72,8 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	}
 
 	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
-		// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
-		// and their transactions.
 		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
-		// No need to restart this task, since the connector is not existing or
-		// was uninstalled previously, the task does not exists in the database
-		RestartOption: models.OPTIONS_RESTART_ALWAYS,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 	})
 	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 		return err
