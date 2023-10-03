@@ -3,31 +3,20 @@ package stack
 import (
 	"context"
 	"fmt"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
+	networkingv1 "k8s.io/api/networking/v1"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 	"time"
 
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/operator/internal/modules"
-	appsv1 "k8s.io/api/apps/v1"
-	batchv1 "k8s.io/api/batch/v1"
-	networkingv1 "k8s.io/api/networking/v1"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
-	pkgError "github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/fields"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"sigs.k8s.io/controller-runtime/pkg/source"
-
 	_ "github.com/formancehq/operator/internal/modules/auth"
 	_ "github.com/formancehq/operator/internal/modules/control"
 	_ "github.com/formancehq/operator/internal/modules/gateway"
@@ -38,6 +27,16 @@ import (
 	_ "github.com/formancehq/operator/internal/modules/stargate"
 	_ "github.com/formancehq/operator/internal/modules/wallets"
 	_ "github.com/formancehq/operator/internal/modules/webhooks"
+	pkgError "github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 const (
@@ -51,6 +50,7 @@ const (
 // +kubebuilder:rbac:groups=core,resources=secrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=namespaces,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=batch,resources=cronjobs,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks/status,verbs=get;update;patch
@@ -116,44 +116,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 	return ctrl.Result{}, nil
 }
 
-// SetupWithManager sets up the controller with the Manager.
-func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
-	if err := mgr.GetFieldIndexer().
-		IndexField(context.Background(), &stackv1beta3.Stack{}, ".spec.seed", func(rawObj client.Object) []string {
-			return []string{rawObj.(*stackv1beta3.Stack).Spec.Seed}
-		}); err != nil {
-		return err
-	}
-	if err := mgr.GetFieldIndexer().
-		IndexField(context.Background(), &stackv1beta3.Stack{}, ".spec.versions", func(rawObj client.Object) []string {
-			return []string{rawObj.(*stackv1beta3.Stack).Spec.Versions}
-		}); err != nil {
-		return err
-	}
-
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&stackv1beta3.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&corev1.Service{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&networkingv1.Ingress{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&corev1.Secret{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&corev1.ConfigMap{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&appsv1.Deployment{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&batchv1.CronJob{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&stackv1beta3.Migration{}).
-		Watches(
-			&source.Kind{Type: &stackv1beta3.Configuration{}},
-			watch(mgr, ".spec.seed"),
-			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
-		).
-		Watches(
-			&source.Kind{Type: &stackv1beta3.Versions{}},
-			watch(mgr, ".spec.versions"),
-			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
-		).
-		Complete(r)
-}
-
 func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Stack) (bool, error) {
 
 	configuration := &stackv1beta3.Configuration{}
@@ -195,14 +157,6 @@ func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Sta
 		Reconcile(ctx)
 }
 
-func NewReconciler(client client.Client, scheme *runtime.Scheme, stackReconcilerFactory *modules.StackReconcilerFactory) *Reconciler {
-	return &Reconciler{
-		client:                 client,
-		scheme:                 scheme,
-		stackReconcilerFactory: stackReconcilerFactory,
-	}
-}
-
 func watch(mgr ctrl.Manager, field string) handler.EventHandler {
 	return handler.EnqueueRequestsFromMapFunc(func(object client.Object) []reconcile.Request {
 		stacks := &stackv1beta3.StackList{}
@@ -224,4 +178,51 @@ func watch(mgr ctrl.Manager, field string) handler.EventHandler {
 			}
 		})
 	})
+}
+
+// SetupWithManager sets up the controller with the Manager.
+func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
+	if err := mgr.GetFieldIndexer().
+		IndexField(context.Background(), &stackv1beta3.Stack{}, ".spec.seed", func(rawObj client.Object) []string {
+			return []string{rawObj.(*stackv1beta3.Stack).Spec.Seed}
+		}); err != nil {
+		return err
+	}
+	if err := mgr.GetFieldIndexer().
+		IndexField(context.Background(), &stackv1beta3.Stack{}, ".spec.versions", func(rawObj client.Object) []string {
+			return []string{rawObj.(*stackv1beta3.Stack).Spec.Versions}
+		}); err != nil {
+		return err
+	}
+
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&stackv1beta3.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.Service{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&networkingv1.Ingress{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.Secret{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.ConfigMap{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&batchv1.CronJob{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&batchv1.Job{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&stackv1beta3.Migration{}).
+		Owns(&appsv1.Deployment{}).
+		Watches(
+			&source.Kind{Type: &stackv1beta3.Configuration{}},
+			watch(mgr, ".spec.seed"),
+			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
+		).
+		Watches(
+			&source.Kind{Type: &stackv1beta3.Versions{}},
+			watch(mgr, ".spec.versions"),
+			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
+		).
+		Complete(r)
+}
+
+func NewReconciler(client client.Client, scheme *runtime.Scheme, stackReconcilerFactory *modules.StackReconcilerFactory) *Reconciler {
+	return &Reconciler{
+		client:                 client,
+		scheme:                 scheme,
+		stackReconcilerFactory: stackReconcilerFactory,
+	}
 }

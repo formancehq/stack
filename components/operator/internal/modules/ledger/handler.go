@@ -79,6 +79,16 @@ func (l module) Versions() map[string]modules.Version {
 			},
 		},
 		"v2.0.0": {
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				Command:  []string{"storage", "upgrade-all"},
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						// todo: make ledger v2 use same env vars as other services
+						modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
+					}
+				},
+			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 
 				createContainer := func(env modules.ContainerEnv) func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {

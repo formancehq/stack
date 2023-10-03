@@ -4,6 +4,8 @@ import (
 	"context"
 	"reflect"
 
+	"k8s.io/apimachinery/pkg/api/equality"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -27,6 +29,27 @@ func (f *ObjectFactory[T]) CreateOrUpdate(ctx context.Context, name string, opti
 		return ret, err
 	}
 	return ret, nil
+}
+
+func (f *ObjectFactory[T]) Update(ctx context.Context, t T, options ...ObjectMutator[T]) (T, error) {
+	ret, _, err := Update[T](ctx, f.client, t, append(options, f.options...)...)
+	if err != nil {
+		var ret T
+		return ret, err
+	}
+	return ret, nil
+}
+
+func (f *ObjectFactory[T]) Get(ctx context.Context, name string) (T, error) {
+	var t T
+	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+	if err := f.client.Get(ctx, types.NamespacedName{
+		Namespace: f.namespace,
+		Name:      name,
+	}, t); err != nil {
+		return t, err
+	}
+	return t, nil
 }
 
 func NewObjectFactory[T client.Object](client client.Client, ns string, options ...ObjectMutator[T]) *ObjectFactory[T] {
@@ -82,4 +105,23 @@ func CreateOrUpdate[T client.Object](ctx context.Context, client client.Client,
 		return nil
 	})
 	return ret, operationResult, err
+}
+
+func Update[T client.Object](ctx context.Context, client client.Client,
+	t T, mutators ...ObjectMutator[T]) (T, controllerutil.OperationResult, error) {
+
+	var ret T
+	existing := t.DeepCopyObject().(T)
+	for _, mutate := range mutators {
+		mutate(existing)
+	}
+
+	if equality.Semantic.DeepEqual(existing, t) {
+		return t, controllerutil.OperationResultNone, nil
+	}
+
+	if err := client.Update(ctx, existing); err != nil {
+		return ret, controllerutil.OperationResultNone, err
+	}
+	return ret, controllerutil.OperationResultUpdated, nil
 }

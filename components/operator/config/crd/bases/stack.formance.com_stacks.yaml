@@ -1929,6 +1929,11 @@ spec:
                 type: string
               services:
                 properties:
+                  control:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
                   ledger:
                     properties:
                       disabled:

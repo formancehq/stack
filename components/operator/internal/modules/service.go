@@ -303,20 +303,6 @@ type Service struct {
 	EnvPrefix string
 }
 
-type Services []*Service
-
-func (services Services) Len() int {
-	return len(services)
-}
-
-func (services Services) Less(i, j int) bool {
-	return strings.Compare(services[i].Name, services[j].Name) < 0
-}
-
-func (services Services) Swap(i, j int) {
-	services[i], services[j] = services[j], services[i]
-}
-
 type serviceReconciler struct {
 	*moduleReconciler
 	name     string
@@ -370,6 +356,7 @@ func (r *serviceReconciler) reconcile(ctx context.Context, config ServiceInstall
 	return nil
 }
 
+// TODO: Properly handle errors
 func (r *serviceReconciler) configureNats() {
 	topicName := r.Stack.GetServiceNamespacedName(r.name).Name
 	streamConfig := nats.StreamConfig{

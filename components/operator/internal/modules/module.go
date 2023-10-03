@@ -3,7 +3,11 @@ package modules
 import (
 	"context"
 	"fmt"
+	appsv1 "k8s.io/api/apps/v1"
 	"sort"
+	"strings"
+
+	"github.com/pkg/errors"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -14,17 +18,38 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
+type Services []*Service
+
+func (services Services) Len() int {
+	return len(services)
+}
+
+func (services Services) Less(i, j int) bool {
+	return strings.Compare(services[i].Name, services[j].Name) < 0
+}
+
+func (services Services) Swap(i, j int) {
+	services[i], services[j] = services[j], services[i]
+}
+
 type Cron struct {
 	Container Container
 	Schedule  string
 	Suspend   bool
 }
 
+type DatabaseMigration struct {
+	Shutdown      bool
+	Command       []string
+	AdditionalEnv func(config ReconciliationConfig) []EnvVar
+}
+
 type Version struct {
-	Services    func(cfg ReconciliationConfig) Services
-	Cron        func(cfg ReconciliationConfig) []Cron
-	PreUpgrade  func(ctx context.Context, cfg ReconciliationConfig) error
-	PostUpgrade func(ctx context.Context, cfg ReconciliationConfig) error
+	DatabaseMigration *DatabaseMigration
+	Services          func(cfg ReconciliationConfig) Services
+	Cron              func(cfg ReconciliationConfig) []Cron
+	PreUpgrade        func(ctx context.Context, cfg ReconciliationConfig) error
+	PostUpgrade       func(ctx context.Context, cfg ReconciliationConfig) error
 }
 
 type Module interface {
@@ -78,7 +103,8 @@ type moduleReconciler struct {
 
 func (r *moduleReconciler) installModule(ctx context.Context, registeredModules RegisteredModules) (bool, error) {
 
-	log.FromContext(ctx).Info(fmt.Sprintf("Installing module %s", r.module.Name()))
+	logger := log.FromContext(ctx)
+	logger.Info(fmt.Sprintf("Installing module %s", r.module.Name()))
 
 	registeredModule := RegisteredModule{
 		Module:   r.module,
@@ -98,12 +124,16 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		}
 	}
 
-	var chosenVersion Version
+	var (
+		chosenVersion      Version
+		chosenVersionLabel string
+	)
 	for _, version := range sortedVersions(r.module) {
 		if !r.Versions.IsHigherOrEqual(r.module.Name(), version) {
 			break
 		}
 		chosenVersion = r.module.Versions()[version]
+		chosenVersionLabel = version
 		if chosenVersion.PreUpgrade == nil {
 			continue
 		}
@@ -113,6 +143,19 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 			return false, err
 		}
 		if !ready {
+			return false, nil
+		}
+	}
+
+	if chosenVersion.DatabaseMigration != nil {
+		logger.Info("Start database migration process", "pod", r.module.Name())
+		databaseMigrated, err := r.runDatabaseMigration(ctx, r.ReconciliationConfig,
+			chosenVersionLabel, *chosenVersion.DatabaseMigration, postgresConfig)
+		if err != nil {
+			return false, err
+		}
+		if !databaseMigrated {
+			logger.Info("Mark module as not ready since the database is not up to date")
 			return false, nil
 		}
 	}
@@ -183,9 +226,13 @@ func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (b
 			if err != nil {
 				return false, err
 			}
+			log.FromContext(ctx).Info("Mark module as not not completed as we have just created the object",
+				"module", r.module.Name(), "migration", migrationName)
 			return false, nil
 		}
 		if !migration.Status.Terminated {
+			log.FromContext(ctx).Info("Mark module as not not completed since migration is not terminated",
+				"module", r.module.Name(), "migration", migrationName)
 			return false, nil
 		}
 	}
@@ -256,9 +303,94 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 	return migration.Status.Terminated, nil
 }
 
+func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, config ReconciliationConfig, version string, migration DatabaseMigration, postgresConfig *v1beta3.PostgresConfig) (bool, error) {
+
+	logger := log.FromContext(ctx)
+	job := &batchv1.Job{}
+	jobName := fmt.Sprintf("%s-%s-database-migration", r.module.Name(), version)
+	if err := r.namespacedResourceDeployer.client.Get(ctx, types.NamespacedName{
+		Namespace: config.Stack.Name,
+		Name:      jobName,
+	}, job); err != nil {
+		if !apierrors.IsNotFound(err) {
+			return false, err
+		}
+
+		logger.Info("Job not found", "pod", r.module.Name())
+		if migration.Shutdown {
+			logger.Info("Stop module reconciliation as required by upgrade", "module", r.module.Name())
+			// todo: store old replicas value
+			if scaledDown, err := r.podDeployer.shutdown(ctx, r.module.Name()); err != nil {
+				return false, errors.Wrap(err, "stopping pod")
+			} else if !scaledDown {
+				logger.Info("Stop reconciliation as pod needs to be scaled down", "pod", r.module.Name())
+				return false, nil
+			}
+		}
+
+		_, err := r.namespacedResourceDeployer.Jobs().CreateOrUpdate(ctx, jobName, func(t *batchv1.Job) {
+			args := migration.Command
+			if len(args) == 0 {
+				args = []string{"migrate"}
+			}
+			env := DefaultPostgresEnvVarsWithPrefix(*postgresConfig, config.Stack.GetServiceName(r.module.Name()), "")
+			if migration.AdditionalEnv != nil {
+				env = env.Append(migration.AdditionalEnv(r.ReconciliationConfig)...)
+			}
+			t.Spec = batchv1.JobSpec{
+				Template: corev1.PodTemplateSpec{
+					Spec: corev1.PodSpec{
+						RestartPolicy: corev1.RestartPolicyOnFailure,
+						Containers: []corev1.Container{{
+							Name:  "migrate",
+							Image: GetImage(r.module.Name(), config.Versions.GetVersion(r.module.Name())),
+							Args:  args,
+							// There is only one service which use prefixed env var : ledger v1
+							// Since the ledger v1 auto handle migrations, we don't care about passing a prefix
+							Env: env.ToCoreEnv(),
+						}},
+					},
+				},
+			}
+		})
+		if err != nil {
+			return false, err
+		}
+		return false, nil
+	}
+
+	logger.Info(fmt.Sprintf("Job found, succeded: %d", job.Status.Succeeded))
+
+	return job.Status.Succeeded > 0, nil
+}
+
 func newModuleReconciler(stackReconciler *StackReconciler, module Module) *moduleReconciler {
 	return &moduleReconciler{
 		StackReconciler: stackReconciler,
 		module:          module,
 	}
+}
+
+func ensureDeploymentSync(ctx context.Context, deployment appsv1.Deployment) (bool, error) {
+	logger := log.FromContext(ctx)
+	if deployment.Status.ObservedGeneration != deployment.Generation {
+		logger.Info(fmt.Sprintf("Stop reconciliation as deployment '%s' is not ready (generation not matching, generation: %d, observed: %d)",
+			deployment.Name, deployment.Generation, deployment.Status.ObservedGeneration))
+		return false, nil
+	}
+	var moreRecentCondition appsv1.DeploymentCondition
+	for _, condition := range deployment.Status.Conditions {
+		if moreRecentCondition.Type == "" || condition.LastTransitionTime.After(moreRecentCondition.LastTransitionTime.Time) {
+			moreRecentCondition = condition
+		}
+	}
+	if moreRecentCondition.Type != appsv1.DeploymentAvailable {
+		logger.Info(fmt.Sprintf("Stop reconciliation as deployment '%s' is not ready (last condition must be '%s', found '%s')", deployment.Name, appsv1.DeploymentAvailable, moreRecentCondition.Type))
+		return false, nil
+	}
+	if moreRecentCondition.Status != "True" {
+		logger.Info(fmt.Sprintf("Stop reconciliation as deployment '%s' is not ready ('%s' condition should be 'true')", deployment.Name, appsv1.DeploymentAvailable))
+		return false, nil
+	}
+	return true, nil
 }

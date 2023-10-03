@@ -144,7 +144,7 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 		}
 		allReady = allReady && completed
 		if !completed {
-			logger.Info(fmt.Sprintf("Module '%s' marked as not ready", module.Name()))
+			logger.Info(fmt.Sprintf("Module '%s' marked as not completed", module.Name()))
 		}
 	}
 
@@ -190,10 +190,11 @@ func (r *StackReconciler) prepareModule(ctx context.Context, module Module,
 		return err
 	}
 	if isReady {
+		log.FromContext(ctx).Info("Mark module as ready", "module", module.Name())
 		r.ready.Put(module)
 	}
 
-	return err
+	return nil
 }
 
 func (r *StackReconciler) deleteAllStackDeployments(ctx context.Context) error {
@@ -206,7 +207,6 @@ func (r *StackReconciler) deleteAllStackDeployments(ctx context.Context) error {
 }
 
 func (r *StackReconciler) checkDeployments(ctx context.Context) (bool, error) {
-	logger := log.FromContext(ctx)
 	deploymentsList := appsv1.DeploymentList{}
 	if err := r.namespacedResourceDeployer.client.List(ctx, &deploymentsList,
 		client.InNamespace(r.Stack.Name),
@@ -217,22 +217,11 @@ func (r *StackReconciler) checkDeployments(ctx context.Context) (bool, error) {
 	}
 
 	for _, deployment := range deploymentsList.Items {
-		if deployment.Status.ObservedGeneration != deployment.Generation {
-			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready (generation not matching)", deployment.Name))
-			return false, nil
+		ok, err := ensureDeploymentSync(ctx, deployment)
+		if err != nil {
+			return false, err
 		}
-		var moreRecentCondition appsv1.DeploymentCondition
-		for _, condition := range deployment.Status.Conditions {
-			if moreRecentCondition.Type == "" || condition.LastTransitionTime.After(moreRecentCondition.LastTransitionTime.Time) {
-				moreRecentCondition = condition
-			}
-		}
-		if moreRecentCondition.Type != appsv1.DeploymentAvailable {
-			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready (last condition must be '%s', found '%s')", deployment.Name, appsv1.DeploymentAvailable, moreRecentCondition.Type))
-			return false, nil
-		}
-		if moreRecentCondition.Status != "True" {
-			logger.Info(fmt.Sprintf("Stop deployment as deployment '%s' is not ready ('%s' condition should be 'true')", deployment.Name, appsv1.DeploymentAvailable))
+		if !ok {
 			return false, nil
 		}
 	}

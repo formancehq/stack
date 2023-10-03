@@ -4,13 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/operator/internal/modules/auth"
 	"os"
 	"path/filepath"
 	"runtime/debug"
 	"strings"
 	"time"
-
-	"github.com/formancehq/operator/internal/modules/auth"
 
 	"github.com/davecgh/go-spew/spew"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
@@ -53,95 +52,99 @@ var _ = Describe("Check stack deployment", func() {
 		panic(err)
 	}
 	for _, dirEntry := range ls {
+		dirEntry := dirEntry
 		if !dirEntry.IsDir() {
 			continue
 		}
 
-		name := strings.ReplaceAll(dirEntry.Name(), ".", "-")
-		dirName := dirEntry.Name()
+		Context(dirEntry.Name(), func() {
+			dirName := dirEntry.Name()
+			name := strings.ReplaceAll(dirName, ".", "-")
 
-		tmp := make(map[string]any)
+			tmp := make(map[string]any)
 
-		// Get Version
-		versionsFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "versions.yaml"))
-		if err != nil {
-			panic(err)
-		}
-		if err := yaml.Unmarshal(versionsFile, &tmp); err != nil {
-			panic(err)
-		}
-		data, err := json.Marshal(tmp)
-		if err != nil {
-			panic(err)
-		}
-		versions := &stackv1beta3.Versions{}
-		if err := json.Unmarshal(data, versions); err != nil {
-			panic(err)
-		}
-		versions.Name = name
+			// Get Version
+			// todo: factorize 3 occurences of the same code
+			versionsFile, err := os.ReadFile(filepath.Join("testdata", dirName, "versions.yaml"))
+			if err != nil {
+				panic(err)
+			}
+			if err := yaml.Unmarshal(versionsFile, &tmp); err != nil {
+				panic(err)
+			}
+			data, err := json.Marshal(tmp)
+			if err != nil {
+				panic(err)
+			}
+			versions := &stackv1beta3.Versions{}
+			if err := json.Unmarshal(data, versions); err != nil {
+				panic(err)
+			}
+			versions.Name = name
 
-		// Get Configuration
-		configurationFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "configuration.yaml"))
-		if err != nil {
-			panic(err)
-		}
-		if err := yaml.Unmarshal(configurationFile, &tmp); err != nil {
-			panic(err)
-		}
-		data, err = json.Marshal(tmp)
-		if err != nil {
-			panic(err)
-		}
-		configuration := &stackv1beta3.Configuration{}
-		if err := json.Unmarshal(data, configuration); err != nil {
-			panic(err)
-		}
-		configuration.Name = name
+			// Get Configuration
+			configurationFile, err := os.ReadFile(filepath.Join("testdata", dirName, "configuration.yaml"))
+			if err != nil {
+				panic(err)
+			}
+			if err := yaml.Unmarshal(configurationFile, &tmp); err != nil {
+				panic(err)
+			}
+			data, err = json.Marshal(tmp)
+			if err != nil {
+				panic(err)
+			}
+			configuration := &stackv1beta3.Configuration{}
+			if err := json.Unmarshal(data, configuration); err != nil {
+				panic(err)
+			}
+			configuration.Name = name
 
-		// Get Stack
-		stackFile, err := os.ReadFile(filepath.Join("testdata", dirEntry.Name(), "stack.yaml"))
-		if err != nil {
-			panic(err)
-		}
-		if err := yaml.Unmarshal(stackFile, &tmp); err != nil {
-			panic(err)
-		}
-		data, err = json.Marshal(tmp)
-		if err != nil {
-			panic(err)
-		}
-		stack := &stackv1beta3.Stack{}
-		if err := json.Unmarshal(data, stack); err != nil {
-			panic(err)
-		}
-		stack.Name = name
+			// Get Stack
+			stackFile, err := os.ReadFile(filepath.Join("testdata", dirName, "stack.yaml"))
+			if err != nil {
+				panic(err)
+			}
+			if err := yaml.Unmarshal(stackFile, &tmp); err != nil {
+				panic(err)
+			}
+			data, err = json.Marshal(tmp)
+			if err != nil {
+				panic(err)
+			}
+			stack := &stackv1beta3.Stack{}
+			if err := json.Unmarshal(data, stack); err != nil {
+				panic(err)
+			}
+			stack.Name = name
 
-		// Launch test
-		Context(fmt.Sprintf("with config from dir '%s'", dirEntry.Name()), func() {
-			BeforeEach(func() {
-				stack.Spec.Seed = configuration.Name
-				stack.Spec.Versions = versions.Name
-				stack.Spec.Stargate = &stackv1beta3.StackStargateConfig{}
-			})
-			JustBeforeEach(func() {
-				Expect(Create(configuration)).To(Succeed())
-				Expect(Create(versions)).To(Succeed())
-				Expect(Create(stack)).To(Succeed())
-				Eventually(func() bool {
-					Expect(Get(types.NamespacedName{
-						Namespace: stack.GetNamespace(),
-						Name:      stack.GetName(),
-					}, stack)).To(BeNil())
-					return stack.IsReady()
-				}).WithTimeout(10 * time.Second).Should(BeTrue())
-			})
-			JustAfterEach(func() {
-				Expect(Delete(stack)).To(Succeed())
-				Expect(Delete(configuration)).To(Succeed())
-				Expect(Delete(versions)).To(Succeed())
-			})
-			It("should be ok", func() {
-				verifyResources(stack, filepath.Join(dirName, "results"))
+			// Launch test
+			Context(fmt.Sprintf("with config from dir '%s'", dirEntry.Name()), func() {
+				BeforeEach(func() {
+					stack.Spec.Seed = configuration.Name
+					stack.Spec.Versions = versions.Name
+					stack.Spec.Stargate = &stackv1beta3.StackStargateConfig{}
+				})
+				JustBeforeEach(func() {
+					Expect(Create(configuration)).To(Succeed())
+					Expect(Create(versions)).To(Succeed())
+					Expect(Create(stack)).To(Succeed())
+					Eventually(func() bool {
+						Expect(Get(types.NamespacedName{
+							Namespace: stack.GetNamespace(),
+							Name:      stack.GetName(),
+						}, stack)).To(BeNil())
+						return stack.IsReady()
+					}).WithTimeout(10 * time.Second).Should(BeTrue())
+				})
+				JustAfterEach(func() {
+					Expect(Delete(stack)).To(Succeed())
+					Expect(Delete(configuration)).To(Succeed())
+					Expect(Delete(versions)).To(Succeed())
+				})
+				It("should be ok", func() {
+					verifyResources(stack, filepath.Join(dirName, "results"))
+				})
 			})
 		})
 	}
@@ -212,6 +215,7 @@ func verifyResources(stack *stackv1beta3.Stack, directory string) {
 				`["generation"]`,
 				`["lastTransitionTime"]`,
 				`["lastUpdateTime"]`,
+				`["controller-uid"]`,
 			}
 
 			if diff := cmp.Diff(expectedResourceSpec, actualResourceSpec,
@@ -281,6 +285,11 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 			Resource: "cronjobs",
 		},
 		{
+			Group:    batchv1.GroupName,
+			Version:  batchv1.SchemeGroupVersion.Version,
+			Resource: "jobs",
+		},
+		{
 			Group:    "",
 			Version:  "v1",
 			Resource: "configmaps",
@@ -310,11 +319,13 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 		list, err := dynamic.Resource(gvk).Namespace(stack.Name).List(ctx, v1.ListOptions{})
 		Expect(err).ToNot(HaveOccurred())
 
-		for _, item := range list.Items {
-			groupDir := filepath.Join("testdata", directory, fmt.Sprintf("%s-%s-%s",
-				gvk.Resource, gvk.Group, gvk.Version))
+		groupDir := filepath.Join("testdata", directory, fmt.Sprintf("%s-%s-%s",
+			gvk.Resource, gvk.Group, gvk.Version))
+		Expect(os.RemoveAll(groupDir)).To(Succeed())
+		Expect(os.MkdirAll(groupDir, os.ModePerm)).To(BeNil())
 
-			Expect(os.MkdirAll(groupDir, os.ModePerm)).To(BeNil())
+		for _, item := range list.Items {
+
 			sampleFile, err := os.Create(fmt.Sprintf("%s/%s.yaml", groupDir, item.GetName()))
 			Expect(err).ToNot(HaveOccurred())
 
@@ -332,27 +343,47 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 }
 
 func clearUnstructuredContent(v map[string]any) {
-	metadata := v["metadata"].(map[string]any)
-	delete(metadata, "managedFields")
-	delete(metadata, "uid")
-	delete(metadata, "resourceVersion")
-	delete(metadata, "creationTimestamp")
-	delete(metadata, "ownerReferences")
+	deleteFromSpec(v, "metadata.managedFields")
+	deleteFromSpec(v, "metadata.uid")
+	deleteFromSpec(v, "metadata.resourceVersion")
+	deleteFromSpec(v, "metadata.creationTimestamp")
+	deleteFromSpec(v, "metadata.ownerReferences")
+	deleteFromSpec(v, "metadata.labels.controller-uid")
+	deleteFromSpec(v, "spec.clusterIP")
+	deleteFromSpec(v, "spec.clusterIPs")
+	deleteFromSpec(v, "spec.selector.matchLabels.controller-uid")
+	deleteFromSpec(v, "status.conditions[].lastTransitionTime")
+	deleteFromSpec(v, "status.conditions[].lastUpdateTime")
+	deleteFromSpec(v, "spec.template.metadata.labels.controller-uid")
+}
 
-	spec, ok := v["spec"]
-	if ok {
-		delete(spec.(map[string]any), "clusterIP")
-		delete(spec.(map[string]any), "clusterIPs")
-	}
+func deleteFromSpec(m map[string]any, key string) {
+	deleteFromMap(m, strings.Split(key, "."))
+}
 
-	status, ok := v["status"]
-	if ok {
-		conditions, ok := status.(map[string]any)["conditions"]
-		if ok {
-			for _, condition := range conditions.([]any) {
-				delete(condition.(map[string]any), "lastTransitionTime")
-				delete(condition.(map[string]any), "lastUpdateTime")
-			}
+func deleteFromMap(m map[string]any, keys []string) {
+	if strings.HasSuffix(keys[0], "[]") {
+		key := keys[0][:len(keys[0])-2]
+		v, ok := m[key]
+		if !ok {
+			return
 		}
+		deleteFromArray(v.([]any), keys[1:])
+		return
+	}
+	if len(keys) == 1 {
+		delete(m, keys[0])
+		return
+	}
+	v, ok := m[keys[0]]
+	if !ok {
+		return
+	}
+	deleteFromMap(v.(map[string]any), keys[1:])
+}
+
+func deleteFromArray(items []any, keys []string) {
+	for _, item := range items {
+		deleteFromMap(item.(map[string]any), keys)
 	}
 }

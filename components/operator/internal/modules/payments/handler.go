@@ -2,15 +2,11 @@ package payments
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
-	"github.com/formancehq/payments/cmd"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -27,6 +23,15 @@ func (p module) Postgres(ctx modules.ReconciliationConfig) v1beta3.PostgresConfi
 func (p module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				Command:  []string{"migrate", "up"},
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
+			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				migrateCommand := []string{"payments", "migrate"}
 				if ctx.Versions.IsHigherOrEqual("payments", "v0.7.0") {
@@ -62,8 +67,14 @@ func (p module) Versions() map[string]modules.Version {
 			},
 		},
 		"v0.6.5": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				Command:  []string{"migrate", "up"},
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				return resetConnectors(ctx, config)
@@ -73,24 +84,41 @@ func (p module) Versions() map[string]modules.Version {
 			},
 		},
 		"v0.6.7": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				Command:  []string{"migrate", "up"},
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.6.8": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				Command:  []string{"migrate", "up"},
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.7.0": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				return resetConnectors(ctx, config)
@@ -100,9 +128,13 @@ func (p module) Versions() map[string]modules.Version {
 			},
 		},
 		"v0.8.0": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				return resetConnectors(ctx, config)
@@ -112,6 +144,14 @@ func (p module) Versions() map[string]modules.Version {
 			},
 		},
 		"v0.8.1": {
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
+			},
 			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
 				return resetConnectors(ctx, config)
 			},
@@ -120,36 +160,52 @@ func (p module) Versions() map[string]modules.Version {
 			},
 		},
 		"v0.9.0": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.9.1": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.9.4": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
 		},
 		"v0.10.0": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				// Add payment accounts
-				return paymentsPreUpgradeMigration(ctx, config)
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
@@ -174,27 +230,6 @@ func paymentsEnvVars(resolveContext modules.ContainerResolutionConfiguration) mo
 			modules.Env("CONFIG_ENCRYPTION_KEY", resolveContext.Configuration.Spec.Services.Payments.EncryptionKey),
 			modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("payments")),
 		)
-}
-
-func paymentsPreUpgradeMigration(ctx context.Context, config modules.ReconciliationConfig) error {
-	postgresUri := fmt.Sprintf(
-		"postgresql://%s:%s@%s:%d/%s?sslmode=disable",
-		config.Configuration.Spec.Services.Payments.Postgres.Username,
-		config.Configuration.Spec.Services.Payments.Postgres.Password,
-		config.Configuration.Spec.Services.Payments.Postgres.Host,
-		config.Configuration.Spec.Services.Payments.Postgres.Port,
-		config.Stack.GetServiceName("payments"),
-	)
-
-	db, err := sql.Open("postgres", postgresUri)
-	if err != nil {
-		return err
-	}
-
-	bunDB := bun.NewDB(db, pgdialect.New())
-	defer bunDB.Close()
-
-	return cmd.Migrate(ctx, bunDB)
 }
 
 func paymentsServices(
