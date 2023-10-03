@@ -45,7 +45,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		ScheduleOption: models.OPTIONS_RUN_NOW,
 		// No need to restart this task, since the connector is not existing or
 		// was uninstalled previously, the task does not exists in the database
-		Restart: false,
+		RestartOption: models.OPTIONS_RESTART_NEVER,
 	}); err != nil {
 		return fmt.Errorf("failed to schedule task to read files: %w", err)
 	}
@@ -57,7 +57,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 
 	if err = ctx.Scheduler().Schedule(ctx.Context(), generateFilesDescriptor, models.TaskSchedulerOptions{
 		ScheduleOption: models.OPTIONS_RUN_NOW,
-		Restart:        false,
+		RestartOption:  models.OPTIONS_RESTART_NEVER,
 	}); err != nil {
 		return fmt.Errorf("failed to schedule task to generate files: %w", err)
 	}

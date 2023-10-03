@@ -111,11 +111,19 @@ func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.T
 		return returnErrorFunc(ErrAlreadyScheduled)
 	}
 
-	if !options.Restart {
+	switch options.RestartOption {
+	case models.OPTIONS_RESTART_NEVER:
 		_, err := s.ReadTaskByDescriptor(ctx, descriptor)
 		if err == nil {
 			return returnErrorFunc(nil)
 		}
+	case models.OPTIONS_RESTART_IF_NOT_ACTIVE:
+		task, err := s.ReadTaskByDescriptor(ctx, descriptor)
+		if err == nil && task.Status == models.TaskStatusActive {
+			return nil
+		}
+	case models.OPTIONS_RESTART_ALWAYS:
+		// Do nothing
 	}
 
 	if s.maxTasks != 0 && len(s.tasks) >= s.maxTasks || s.stopped {
@@ -168,6 +176,10 @@ func (s *DefaultTaskScheduler) Restore(ctx context.Context) error {
 	}
 
 	for _, task := range tasks {
+		if task.SchedulerOptions.Restart {
+			task.SchedulerOptions.RestartOption = models.OPTIONS_RESTART_ALWAYS
+		}
+
 		errChan := s.startTask(ctx, task.GetDescriptor(), task.SchedulerOptions)
 		select {
 		case err := <-errChan:

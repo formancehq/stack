@@ -123,7 +123,7 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 			for _, transactionTask := range transactionTasks {
 				err = scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{
 					ScheduleOption: models.OPTIONS_RUN_NOW,
-					Restart:        true,
+					RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 				})
 				if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 					return err

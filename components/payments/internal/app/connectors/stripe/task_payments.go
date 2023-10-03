@@ -157,12 +157,8 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 
 		ctx, _ = contextutil.DetachedWithTimeout(ctx, 10*time.Second)
 		err = scheduler.Schedule(ctx, taskDescriptor, models.TaskSchedulerOptions{
-			// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
-			// and their transactions.
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			// No need to restart this task, since the connector is not existing or
-			// was uninstalled previously, the task does not exists in the database
-			Restart: true,
+			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			return err
