@@ -298,6 +298,7 @@ type Service struct {
 	Container               func(resolveContext ContainerResolutionConfiguration) Container
 	InitContainer           func(resolveContext ContainerResolutionConfiguration) []Container
 	NeedTopic               bool
+	Replicas                *int32
 
 	EnvPrefix string
 }
@@ -438,6 +439,7 @@ func (r *serviceReconciler) createDeployment(ctx context.Context, config Contain
 		initContainers:       r.initContainers(config, r.name),
 		containers:           r.containers(config, container, r.name),
 		disableRollingUpdate: container.DisableRollingUpdate,
+		replicas:             r.service.Replicas,
 	})
 }
 

@@ -1,6 +1,8 @@
 package ledger
 
 import (
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"net/http"
 	"strconv"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
@@ -78,14 +80,10 @@ func (l module) Versions() map[string]modules.Version {
 		},
 		"v2.0.0": {
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return modules.Services{{
-					ListenEnvVar:            "BIND",
-					InjectPostgresVariables: true,
-					HasVersionEndpoint:      true,
-					ExposeHTTP:              modules.DefaultExposeHTTP,
-					NeedTopic:               true,
-					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
-						env := modules.NewEnv().Append(
+
+				createContainer := func(env modules.ContainerEnv) func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
+					return func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
+						env := env.Append(
 							modules.Env("STORAGE_DRIVER", "postgres"),
 							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
 						).Append(modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...)
@@ -100,8 +98,35 @@ func (l module) Versions() map[string]modules.Version {
 								modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
 							),
 						}
-					},
-				}}
+					}
+				}
+
+				main := modules.Service{
+					ListenEnvVar:            "BIND",
+					InjectPostgresVariables: true,
+					HasVersionEndpoint:      true,
+					ExposeHTTP:              modules.DefaultExposeHTTP,
+					NeedTopic:               true,
+					Container:               createContainer(modules.NewEnv()),
+				}
+				ret := modules.Services{&main}
+
+				if ctx.Configuration.Spec.Services.Ledger.DeploymentStrategy == v1beta3.DeploymentStrategyMonoWriterMultipleReader {
+					cp := main
+					cp.Name = "read"
+					cp.ExposeHTTP = &modules.ExposeHTTP{
+						Methods: []string{http.MethodGet, http.MethodOptions, http.MethodHead},
+					}
+					cp.Container = createContainer(modules.NewEnv().Append(modules.Env("READ_ONLY", "true")))
+					ret = append(ret, &cp)
+
+					main.ExposeHTTP = &modules.ExposeHTTP{
+						Methods: []string{http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+					}
+					main.Replicas = pointer.For(int32(1))
+				}
+
+				return ret
 			},
 		},
 	}

@@ -4365,6 +4365,8 @@ spec:
                         type: object
                       debug:
                         type: boolean
+                      deploymentStrategy:
+                        type: string
                       dev:
                         type: boolean
                       locking:
