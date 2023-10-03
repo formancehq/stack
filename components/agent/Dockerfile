@@ -13,9 +13,9 @@ ARG CGO_ENABLED=0
 RUN --mount=type=cache,id=gobuild,target=/root/.cache/go-build --mount=type=cache,id=gomodcache,target=/go/pkg/mod \
     CGO_ENABLED=$CGO_ENABLED GOOS=linux \
     go build -o agent -v \
-    -ldflags="-X github.com/formancehq/agent/cmd.Version=${VERSION} \
-    -X github.com/formancehq/agent/cmd.BuildDate=$(date +%s) \
-    -X github.com/formancehq/agent/cmd.Commit=${APP_SHA}" ./
+    -ldflags="-X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Version=${VERSION} \
+        -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
+        -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
 FROM alpine:3.16
 RUN apk update && apk add ca-certificates curl

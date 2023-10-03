@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"net/url"
 
 	membershipgrpc "github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -10,13 +9,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewModule(id, serverAddress string, baseUrl *url.URL, production bool, authenticator Authenticator, opts ...grpc.DialOption) fx.Option {
+func NewModule(serverAddress string, authenticator Authenticator, clientInfo ClientInfo, opts ...grpc.DialOption) fx.Option {
 	return fx.Options(
 		fx.Provide(func() (membershipgrpc.ServerClient, error) {
 			return Connect(context.Background(), serverAddress, opts...)
 		}),
 		fx.Provide(func(grpcClient membershipgrpc.ServerClient, k8sClient K8SClient) *client {
-			return newClient(id, grpcClient, k8sClient, baseUrl, authenticator, production)
+			return newClient(grpcClient, k8sClient, authenticator, clientInfo)
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, l *client) {
 			lc.Append(fx.Hook{

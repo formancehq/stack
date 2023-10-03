@@ -137,8 +137,12 @@ var rootCmd = &cobra.Command{
 			fx.Provide(newK8SConfig),
 			fx.NopLogger,
 			k8s.NewModule(),
-			innerGrpc.NewModule(id, serverAddress, baseUrl, viper.GetBool(productionFlag),
-				authenticator, dialOptions...),
+			innerGrpc.NewModule(serverAddress, authenticator, innerGrpc.ClientInfo{
+				ID:         id,
+				BaseUrl:    baseUrl,
+				Production: viper.GetBool(productionFlag),
+				Version:    Version,
+			}, dialOptions...),
 			sharedotlptraces.CLITracesModule(viper.GetViper()),
 		}
 
