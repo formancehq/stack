@@ -24,7 +24,7 @@ services:
       opensearch:
         condition: service_healthy
     volumes:
-      - ./process-compose.yaml:/running/process-compose.yaml
+      - ./.local/process-compose.yaml:/running/process-compose.yaml
       - ./config:/etc/formance
       - ./components/search/benthos:/benthos
       - ./components/auth/pkg/web:/app/web
