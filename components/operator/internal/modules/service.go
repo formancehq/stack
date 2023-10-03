@@ -243,18 +243,6 @@ func (h ConfigHandle) GetMountPath() string {
 	return h.MountPath
 }
 
-type Context struct {
-	context.Context
-	// Region is the cloud region the stack is deployed to
-	Region string
-	// Environment is the environment the stack is deployed to: staging,
-	// production, sandbox, etc.
-	Environment   string
-	Stack         *stackv1beta3.Stack
-	Configuration *stackv1beta3.Configuration
-	Versions      *stackv1beta3.Versions
-}
-
 type ConfigHandles map[string]ConfigHandle
 
 func (h ConfigHandles) sort() []string {
