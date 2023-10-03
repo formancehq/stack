@@ -165,7 +165,7 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 	}
 }
 
-func (client *client) stackFusion(currentStack *v1beta3.Stack, createStack *v1beta3.Stack) *v1beta3.Stack {
+func (client *client) mergeStack(currentStack *v1beta3.Stack, createStack *v1beta3.Stack) *v1beta3.Stack {
 	createStack.SetResourceVersion(currentStack.GetResourceVersion())
 	createStack.Spec.Services = currentStack.Spec.Services
 	createStack.Spec.Seed = currentStack.Spec.Seed
@@ -259,13 +259,14 @@ func (client *client) Start(ctx context.Context) error {
 			if err := client.connectClient.SendMsg(&generated.Message{
 				Message: &generated.Message_StatusChanged{
 					StatusChanged: &generated.StatusChanged{
-						StackId: stack.Name,
-						Status:  status,
+						ClusterName: stack.Name,
+						Status:      status,
 					},
 				},
 			}); err != nil {
 				sharedlogging.FromContext(ctx).Errorf("Unable to send stack status to server: %s", err)
 			}
+
 		case msg := <-msgs:
 			switch msg := msg.Message.(type) {
 			// TODO: Implement UpdateOrCreate
@@ -285,32 +286,28 @@ func (client *client) Start(ctx context.Context) error {
 					continue
 				}
 
-				newStack := client.stackFusion(existingStack, createStack)
+				newStack := client.mergeStack(existingStack, createStack)
 				if _, err := client.k8sClient.Update(ctx, newStack); err != nil {
 					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}
-				sharedlogging.FromContext(ctx).Infof("Stack %s updated", newStack.Name)
+
+				sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", newStack.Name)
 
 			case *generated.Order_DeletedStack:
 				if err := client.k8sClient.Delete(ctx, msg.DeletedStack.ClusterName); err != nil {
-					sharedlogging.FromContext(ctx).Errorf("Deleting cluster side: %s", err)
 					if controllererrors.IsNotFound(err) {
-						if err := client.connectClient.SendMsg(&generated.Message{
-							Message: &generated.Message_StatusChanged{
-								StatusChanged: &generated.StatusChanged{
-									StackId: msg.DeletedStack.ClusterName,
-									Status:  generated.StackStatus_Deleted,
-								},
-							},
-						}); err != nil {
-							sharedlogging.FromContext(ctx).Errorf("Unable to send stack status to server: %s", err)
-							continue
-						}
+						sharedlogging.FromContext(ctx).Infof("Cannot delete not existing stack: %s", msg.DeletedStack.ClusterName)
+
+						continue
 					}
+					sharedlogging.FromContext(ctx).Errorf("Deleting cluster side: %s", err)
+					continue
 				}
 				sharedlogging.FromContext(ctx).Infof("Stack %s deleted", msg.DeletedStack.ClusterName)
 			case *generated.Order_DisabledStack:
+				sharedlogging.FromContext(ctx).Infof("Incomming DISABLING: %s", msg.DisabledStack.ClusterName)
+
 				existingStack, err := client.k8sClient.Get(ctx, msg.DisabledStack.ClusterName, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
@@ -327,6 +324,7 @@ func (client *client) Start(ctx context.Context) error {
 				}
 				sharedlogging.FromContext(ctx).Infof("Stack %s disabled", msg.DisabledStack.ClusterName)
 			case *generated.Order_EnabledStack:
+				sharedlogging.FromContext(ctx).Infof("Incomming ENABLING: %s", msg.EnabledStack.ClusterName)
 				existingStack, err := client.k8sClient.Get(ctx, msg.EnabledStack.ClusterName, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {

@@ -12,6 +12,9 @@ type PostgresConfig struct {
 	Username string `json:"username"`
 	// +optional
 	Password string `json:"password"`
+
+	// +optional
+	Debug bool `json:"debug"`
 	// +optional
 	CredentialsFromSecret string `json:"credentialsFromSecret"`
 	// +optional

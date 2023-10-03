@@ -71,23 +71,20 @@ build: generate fmt vet ## Build manager binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
-.PHONY: docker-build-local-prod
-docker-build-local-prod: ## Build docker image with the manager.
-	go build -o operator main.go
+.PHONY: docker-build-prod
+docker-build-prod: ## Build docker image with go releaser
+	goreleaser build --skip-validate --clean
+	mv ./dist/operator_linux_amd64_v1/operator ./
 	docker build -t ${IMG} -f ./build.Dockerfile ./  --no-cache
 
 .PHONY: docker-build
-docker-build: ## Build docker image with the manager.
+docker-build: ## Build docker image for development.
 	docker build -t ${IMG} -f ./Dockerfile ../../  --no-cache
-
-.PHONY: docker-push-local-prod
-docker-push-local-prod: ## Build docker image with the manager.
-	docker tag ${IMG} k3d-registry.host.k3d.internal:12345/${IMG}:dev-latest
-	docker push k3d-registry.host.k3d.internal:12345/${IMG}:dev-latest
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
-	docker push ${IMG}
+	docker tag ${IMG} k3d-registry.host.k3d.internal:12345/${IMG}:dev-latest
+	docker push k3d-registry.host.k3d.internal:12345/${IMG}:dev-latest
 
 ##@ Deployment
 
@@ -105,7 +102,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/manager && $(KUSTOMIZE) edit set image controller=k3d-registry.host.k3d.internal:12345/${IMG}:dev-latest
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: undeploy
@@ -125,27 +122,27 @@ helm-update: manifests generate
 .PHONY: helm-debug
 helm-debug: helm-update
 	helm template ./helm --debug
-	helm install --create-namespace --namespace formance-operator -f ./helm/values.yaml formance-operator ./helm --dry-run
+	helm install --create-namespace --namespace formance-system -f ./helm/values.yaml formance-operator ./helm --dry-run
 
 .PHONY: helm-install
 helm-install: helm-update
-	helm install --create-namespace --namespace formance-operator -f ./helm/values.yaml formance-operator ./helm
+	helm install --create-namespace --namespace formance-system -f ./helm/values.yaml formance-operator ./helm
 
 .PHONY: helm-local-install
 helm-local-install: helm-update
-	helm install --create-namespace --namespace formance-operator -f ./helm/values.yaml --set image.repository="${IMG}" formance-operator ./helm
+	helm install --create-namespace --namespace formance-system -f ./helm/values.yaml --set image.repository="k3d-registry.host.k3d.internal:12345/${IMG}" --set image.tag="dev-latest" formance-operator ./helm
 
 .PHONY: helm-uninstall
 helm-uninstall:
-	helm uninstall formance-operator --namespace formance-operator
+	helm uninstall formance-operator --namespace formance-system
 
 .PHONY: helm-upgrade
 helm-upgrade: helm-update
-	helm upgrade --namespace formance-operator -f ./helm/values.yaml formance-operator ./helm
+	helm upgrade --namespace formance-system -f ./helm/values.yaml formance-operator ./helm
 
 .PHONY: helm-local-upgrade
 helm-local-upgrade: helm-update
-	helm upgrade --namespace formance-operator -f ./helm/values.yaml --set image.repository="${IMG}" formance-operator ./helm
+	helm upgrade --namespace formance-system -f ./helm/values.yaml --set image.repository="k3d-registry.host.k3d.internal:12345/${IMG}" --set image.tag="dev-latest" formance-operator ./helm
 
 
 ##@ Build Dependencies
