@@ -3,20 +3,12 @@ package stack
 import (
 	"context"
 	"fmt"
-	appsv1 "k8s.io/api/apps/v1"
-	batchv1 "k8s.io/api/batch/v1"
-	networkingv1 "k8s.io/api/networking/v1"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"sigs.k8s.io/controller-runtime/pkg/source"
 	"time"
 
+	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/operator/internal/modules"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	_ "github.com/formancehq/operator/internal/modules/auth"
 	_ "github.com/formancehq/operator/internal/modules/control"
 	_ "github.com/formancehq/operator/internal/modules/gateway"
@@ -28,15 +20,22 @@ import (
 	_ "github.com/formancehq/operator/internal/modules/wallets"
 	_ "github.com/formancehq/operator/internal/modules/webhooks"
 	pkgError "github.com/pkg/errors"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 const (
@@ -203,7 +202,7 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&corev1.Secret{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.ConfigMap{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&batchv1.CronJob{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&batchv1.Job{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&batchv1.Job{}).
 		Owns(&stackv1beta3.Migration{}).
 		Owns(&appsv1.Deployment{}).
 		Watches(

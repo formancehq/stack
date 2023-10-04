@@ -3,14 +3,13 @@ package modules
 import (
 	"context"
 	"fmt"
-	appsv1 "k8s.io/api/apps/v1"
 	"sort"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
+	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
