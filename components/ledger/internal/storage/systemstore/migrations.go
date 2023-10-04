@@ -2,7 +2,6 @@ package systemstore
 
 import (
 	"context"
-
 	"github.com/formancehq/ledger/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/uptrace/bun"

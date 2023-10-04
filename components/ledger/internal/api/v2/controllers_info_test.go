@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
 	"net/http/httptest"
 	"net/url"

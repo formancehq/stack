@@ -3,6 +3,7 @@ package v2
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/ledger/internal/api/shared"
 	"math/big"
 	"net/http"
 

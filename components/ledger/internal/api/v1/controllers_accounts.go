@@ -3,6 +3,7 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
 	"strconv"
 	"strings"

@@ -2,10 +2,9 @@ package driver_test
 
 import (
 	"context"
-	"testing"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
+	"testing"
 
 	"github.com/formancehq/ledger/internal/storage"
 	"github.com/formancehq/ledger/internal/storage/storagetesting"
