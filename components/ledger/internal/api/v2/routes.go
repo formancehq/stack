@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
 
 	"github.com/formancehq/ledger/internal/api/backend"
@@ -37,7 +38,7 @@ func NewRouter(
 		router.Get("/_info", getInfo(backend))
 
 		router.Route("/{ledger}", func(router chi.Router) {
-			router.Use(LedgerMiddleware(backend))
+			router.Use(shared.LedgerMiddleware(backend, []string{"/_info"}))
 
 			// LedgerController
 			router.Get("/_info", getLedgerInfo)

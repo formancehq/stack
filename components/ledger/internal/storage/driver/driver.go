@@ -77,14 +77,9 @@ func (d *Driver) GetSystemStore() *systemstore.Store {
 }
 
 func (d *Driver) newStore(name string) (*ledgerstore.Store, error) {
-	store, err := ledgerstore.New(d.db, name, func(ctx context.Context) error {
+	return ledgerstore.New(d.db, name, func(ctx context.Context) error {
 		return d.GetSystemStore().DeleteLedger(ctx, name)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return store, nil
 }
 
 func (d *Driver) CreateLedgerStore(ctx context.Context, name string) (*ledgerstore.Store, error) {
@@ -123,13 +118,20 @@ func (d *Driver) GetLedgerStore(ctx context.Context, name string) (*ledgerstore.
 
 	exists, err := d.systemStore.Exists(ctx, name)
 	if err != nil {
-		return nil, errors.Wrap(err, "checking ledger existence")
-	}
-	if !exists {
-		return nil, storage.ErrStoreNotFound
+		return nil, err
 	}
 
-	return d.newStore(name)
+	var store *ledgerstore.Store
+	if !exists {
+		store, err = d.CreateLedgerStore(ctx, name)
+	} else {
+		store, err = d.newStore(name)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return store, nil
 }
 
 func (d *Driver) Initialize(ctx context.Context) error {

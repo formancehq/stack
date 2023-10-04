@@ -3,6 +3,7 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
 	"strconv"
 	"strings"
@@ -69,7 +70,7 @@ func buildAccountsFilterQuery(r *http.Request) (query.Builder, error) {
 }
 
 func countAccounts(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	options, err := getPaginatedQueryOptionsOfPITFilterWithVolumes(r)
 	if err != nil {
@@ -88,7 +89,7 @@ func countAccounts(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAccounts(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	q := &ledgerstore.GetAccountsQuery{}
 
@@ -119,7 +120,7 @@ func getAccounts(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAccount(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	query := ledgerstore.NewGetAccountQuery(chi.URLParam(r, "address"))
 	if collectionutils.Contains(r.URL.Query()["expand"], "volumes") {
@@ -139,7 +140,7 @@ func getAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func postAccountMetadata(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	if !ledger.ValidateAddress(chi.URLParam(r, "address")) {
 		ResponseError(w, r, errorsutil.NewError(command.ErrValidation,
@@ -164,7 +165,7 @@ func postAccountMetadata(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteAccountMetadata(w http.ResponseWriter, r *http.Request) {
-	if err := LedgerFromContext(r.Context()).
+	if err := shared.LedgerFromContext(r.Context()).
 		DeleteMetadata(
 			r.Context(),
 			getCommandParameters(r),

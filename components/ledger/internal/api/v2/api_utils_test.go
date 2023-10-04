@@ -1,13 +1,13 @@
 package v2_test
 
 import (
+	"go.uber.org/mock/gomock"
 	"testing"
 
 	"github.com/formancehq/ledger/internal/api/backend"
-	"github.com/golang/mock/gomock"
 )
 
-func newTestingBackend(t *testing.T) (*backend.MockBackend, *backend.MockLedger) {
+func newTestingBackend(t *testing.T, expectedSchemaCheck bool) (*backend.MockBackend, *backend.MockLedger) {
 	ctrl := gomock.NewController(t)
 	mockLedger := backend.NewMockLedger(ctrl)
 	backend := backend.NewMockBackend(ctrl)
@@ -19,5 +19,10 @@ func newTestingBackend(t *testing.T) (*backend.MockBackend, *backend.MockLedger)
 	t.Cleanup(func() {
 		ctrl.Finish()
 	})
+	if expectedSchemaCheck {
+		mockLedger.EXPECT().
+			IsDatabaseUpToDate(gomock.Any()).
+			Return(true, nil)
+	}
 	return backend, mockLedger
 }

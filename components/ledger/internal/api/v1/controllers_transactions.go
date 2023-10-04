@@ -3,6 +3,7 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/ledger/internal/api/shared"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -97,7 +98,7 @@ func countTransactions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count, err := LedgerFromContext(r.Context()).
+	count, err := shared.LedgerFromContext(r.Context()).
 		CountTransactions(r.Context(), ledgerstore.NewGetTransactionsQuery(*options))
 	if err != nil {
 		ResponseError(w, r, err)
@@ -109,7 +110,7 @@ func countTransactions(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTransactions(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	query := &ledgerstore.GetTransactionsQuery{}
 
@@ -172,7 +173,7 @@ type PostTransactionRequest struct {
 }
 
 func postTransaction(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	payload := PostTransactionRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -227,7 +228,7 @@ func postTransaction(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTransaction(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	txId, ok := big.NewInt(0).SetString(chi.URLParam(r, "id"), 10)
 	if !ok {
@@ -254,7 +255,7 @@ func getTransaction(w http.ResponseWriter, r *http.Request) {
 }
 
 func revertTransaction(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	transactionID, ok := big.NewInt(0).SetString(chi.URLParam(r, "id"), 10)
 	if !ok {
@@ -272,7 +273,7 @@ func revertTransaction(w http.ResponseWriter, r *http.Request) {
 }
 
 func postTransactionMetadata(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	var m metadata.Metadata
 	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
@@ -296,7 +297,7 @@ func postTransactionMetadata(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteTransactionMetadata(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	transactionID, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

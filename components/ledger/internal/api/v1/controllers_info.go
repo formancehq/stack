@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
 
 	"github.com/formancehq/ledger/internal/engine/command"
@@ -24,7 +25,7 @@ type StorageInfo struct {
 }
 
 func getLedgerInfo(w http.ResponseWriter, r *http.Request) {
-	ledger := LedgerFromContext(r.Context())
+	ledger := shared.LedgerFromContext(r.Context())
 
 	var err error
 	res := Info{
@@ -41,7 +42,7 @@ func getLedgerInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func getStats(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	stats, err := l.Stats(r.Context())
 	if err != nil {
@@ -76,7 +77,7 @@ func buildGetLogsQuery(r *http.Request) (query.Builder, error) {
 }
 
 func getLogs(w http.ResponseWriter, r *http.Request) {
-	l := LedgerFromContext(r.Context())
+	l := shared.LedgerFromContext(r.Context())
 
 	query := &ledgerstore.GetLogsQuery{}
 

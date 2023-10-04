@@ -1,8 +1,10 @@
-package v1
+package shared
 
 import (
+	"github.com/pkg/errors"
 	"math/rand"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -36,6 +38,7 @@ func randomTraceID(n int) string {
 
 func LedgerMiddleware(
 	resolver backend.Backend,
+	excludePathFromSchemaCheck []string,
 ) func(handler http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -66,14 +69,28 @@ func LedgerMiddleware(
 				ResponseError(w, r, err)
 				return
 			}
-			// TODO(polo/gfyrag): close ledger if not used for x minutes
-			// defer l.Close(context.Background())
-			// When close, we have to decrease the active ledgers counter:
-			// globalMetricsRegistry.ActiveLedgers.Add(r.Context(), -1)
 
-			r = r.WithContext(ContextWithLedger(r.Context(), l))
+			excluded := false
+			for _, path := range excludePathFromSchemaCheck {
+				if strings.HasSuffix(r.URL.Path, path) {
+					excluded = true
+					break
+				}
+			}
 
-			handler.ServeHTTP(w, r)
+			if !excluded {
+				isUpToDate, err := l.IsDatabaseUpToDate(ctx)
+				if err != nil {
+					ResponseError(w, r, err)
+					return
+				}
+				if !isUpToDate {
+					ResponseError(w, r, errors.New("outdated schema"))
+					return
+				}
+			}
+
+			handler.ServeHTTP(w, r.WithContext(ContextWithLedger(r.Context(), l)))
 		})
 	}
 }

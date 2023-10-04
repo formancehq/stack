@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
 
 	"github.com/formancehq/ledger/internal/storage/ledgerstore"
@@ -10,14 +11,14 @@ import (
 func getBalancesAggregated(w http.ResponseWriter, r *http.Request) {
 	options, err := getPaginatedQueryOptionsOfPITFilter(r)
 	if err != nil {
-		sharedapi.BadRequest(w, ErrValidation, err)
+		sharedapi.BadRequest(w, shared.ErrValidation, err)
 		return
 	}
 
-	balances, err := LedgerFromContext(r.Context()).
+	balances, err := shared.LedgerFromContext(r.Context()).
 		GetAggregatedBalances(r.Context(), ledgerstore.NewGetAggregatedBalancesQuery(*options))
 	if err != nil {
-		ResponseError(w, r, err)
+		shared.ResponseError(w, r, err)
 		return
 	}
 
