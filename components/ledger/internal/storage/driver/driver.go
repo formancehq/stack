@@ -82,12 +82,10 @@ func (d *Driver) newStore(name string) (*ledgerstore.Store, error) {
 	})
 }
 
-func (d *Driver) CreateLedgerStore(ctx context.Context, name string) (*ledgerstore.Store, error) {
+func (d *Driver) createLedgerStore(ctx context.Context, name string) (*ledgerstore.Store, error) {
 	if name == SystemSchema {
 		return nil, errors.New("reserved name")
 	}
-	d.lock.Lock()
-	defer d.lock.Unlock()
 
 	exists, err := d.systemStore.Exists(ctx, name)
 	if err != nil {
@@ -112,6 +110,13 @@ func (d *Driver) CreateLedgerStore(ctx context.Context, name string) (*ledgersto
 	return store, err
 }
 
+func (d *Driver) CreateLedgerStore(ctx context.Context, name string) (*ledgerstore.Store, error) {
+	d.lock.Lock()
+	defer d.lock.Unlock()
+
+	return d.createLedgerStore(ctx, name)
+}
+
 func (d *Driver) GetLedgerStore(ctx context.Context, name string) (*ledgerstore.Store, error) {
 	d.lock.Lock()
 	defer d.lock.Unlock()
@@ -123,7 +128,7 @@ func (d *Driver) GetLedgerStore(ctx context.Context, name string) (*ledgerstore.
 
 	var store *ledgerstore.Store
 	if !exists {
-		store, err = d.CreateLedgerStore(ctx, name)
+		store, err = d.createLedgerStore(ctx, name)
 	} else {
 		store, err = d.newStore(name)
 	}
