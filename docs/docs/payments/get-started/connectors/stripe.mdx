@@ -26,11 +26,11 @@ read STRIPE_API_KEY && \
 echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/stripe" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $TOKEN" \
--d "{ \
-  \"pollingPeriod\": \"300s\", \
-  \"apiKey\": "$STRIPE_API_KEY", \
-  \"pageSize\": 50 \
-}"
+-d '{
+  "pollingPeriod": "300s",
+  "apiKey": "$STRIPE_API_KEY",
+  "pageSize": 50
+}'
 ```
 
 </StackCmd>

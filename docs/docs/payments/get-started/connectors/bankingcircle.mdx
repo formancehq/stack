@@ -54,17 +54,18 @@ read "BC_ENDPOINT" && \
 read "BC_AUTH_ENDPOINT" && \
 read "BC_USER_CERTIFICATE" && \
 read "BC_USER_CERTIFICATE_KEY"
-echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/bankingcircle" \
+echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/banking-circle" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $TOKEN" \
--d "{ \
-  \"username\": \"$BC_USERNAME\", \
-  \"password\": \"$BC_PASSWORD\", \
-  \"endpoint\": \"$BC_ENDPOINT\", \
-  \"authEndpoint\": \"$BC_AUTH_ENDPOINT\" \
-  \"userCertificate\": \"$BC_USER_CERTIFICATE\" \
-  \"userCertificateKey\": \"$BC_USER_CERTIFICATE_KEY\" \
-}"
+-d '{
+  "pollingPeriod": "300s",
+  "username": "$BC_USERNAME",
+  "password": "$BC_PASSWORD",
+  "endpoint": "$BC_ENDPOINT",
+  "authEndpoint": "$BC_AUTH_ENDPOINT",
+  "userCertificate": "$BC_USER_CERTIFICATE",
+  "userCertificateKey": "$BC_USER_CERTIFICATE_KEY"
+}'
 ```
 
 </StackCmd>

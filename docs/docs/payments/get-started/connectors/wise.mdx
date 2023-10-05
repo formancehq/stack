@@ -26,9 +26,10 @@ read WISE_API_KEY && \
 echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/wise" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $TOKEN" \
--d "{ \
-  \"apiKey\": "$MODULR_API_KEY" \
-}"
+-d '{
+  "pollingPeriod": "300s",
+  "apiKey": "$WISE_API_KEY"
+}'
 ```
 
 </StackCmd>
