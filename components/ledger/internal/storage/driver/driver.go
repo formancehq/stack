@@ -161,6 +161,28 @@ func (d *Driver) Initialize(ctx context.Context) error {
 	return nil
 }
 
+func (d *Driver) UpgradeAllLedgersSchemas(ctx context.Context) error {
+	systemStore := d.GetSystemStore()
+	ledgers, err := systemStore.ListLedgers(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, ledger := range ledgers {
+		store, err := d.GetLedgerStore(ctx, ledger)
+		if err != nil {
+			return err
+		}
+
+		logging.FromContext(ctx).Infof("Upgrading storage '%s'", ledger)
+		if _, err := store.Migrate(ctx); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func New(db *bun.DB) *Driver {
 	return &Driver{
 		db: db,
