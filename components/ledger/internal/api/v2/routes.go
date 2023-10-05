@@ -1,8 +1,9 @@
 package v2
 
 import (
-	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
+
+	"github.com/formancehq/ledger/internal/api/shared"
 
 	"github.com/formancehq/ledger/internal/api/backend"
 	"github.com/formancehq/ledger/internal/opentelemetry/metrics"

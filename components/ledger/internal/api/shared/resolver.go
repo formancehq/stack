@@ -1,12 +1,13 @@
 package shared
 
 import (
-	"github.com/pkg/errors"
 	"math/rand"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/formancehq/ledger/internal/api/backend"
 	"github.com/formancehq/ledger/internal/opentelemetry/tracer"

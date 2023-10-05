@@ -1,10 +1,11 @@
 package driver
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"os"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 )
 
 func TestMain(t *testing.M) {

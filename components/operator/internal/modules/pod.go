@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strconv"
 
+	"sort"
+
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"sort"
 
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/controllerutils"
