@@ -58,61 +58,19 @@ var _ = Describe("Check stack deployment", func() {
 			dirName := dirEntry.Name()
 			name := strings.ReplaceAll(dirName, ".", "-")
 
-			tmp := make(map[string]any)
-
 			// Get Version
-			// todo: factorize 3 occurences of the same code
-			versionsFile, err := os.ReadFile(filepath.Join("testdata", dirName, "versions.yaml"))
-			if err != nil {
-				panic(err)
-			}
-			if err := yaml.Unmarshal(versionsFile, &tmp); err != nil {
-				panic(err)
-			}
-			data, err := json.Marshal(tmp)
-			if err != nil {
-				panic(err)
-			}
 			versions := &stackv1beta3.Versions{}
-			if err := json.Unmarshal(data, versions); err != nil {
-				panic(err)
-			}
+			readResourceFile(filepath.Join("testdata", dirName, "versions.yaml"), versions)
 			versions.Name = name
 
 			// Get Configuration
-			configurationFile, err := os.ReadFile(filepath.Join("testdata", dirName, "configuration.yaml"))
-			if err != nil {
-				panic(err)
-			}
-			if err := yaml.Unmarshal(configurationFile, &tmp); err != nil {
-				panic(err)
-			}
-			data, err = json.Marshal(tmp)
-			if err != nil {
-				panic(err)
-			}
 			configuration := &stackv1beta3.Configuration{}
-			if err := json.Unmarshal(data, configuration); err != nil {
-				panic(err)
-			}
+			readResourceFile(filepath.Join("testdata", dirName, "configuration.yaml"), configuration)
 			configuration.Name = name
 
 			// Get Stack
-			stackFile, err := os.ReadFile(filepath.Join("testdata", dirName, "stack.yaml"))
-			if err != nil {
-				panic(err)
-			}
-			if err := yaml.Unmarshal(stackFile, &tmp); err != nil {
-				panic(err)
-			}
-			data, err = json.Marshal(tmp)
-			if err != nil {
-				panic(err)
-			}
 			stack := &stackv1beta3.Stack{}
-			if err := json.Unmarshal(data, stack); err != nil {
-				panic(err)
-			}
+			readResourceFile(filepath.Join("testdata", dirName, "stack.yaml"), stack)
 			stack.Name = name
 
 			// Launch test
@@ -126,6 +84,16 @@ var _ = Describe("Check stack deployment", func() {
 					Expect(Create(configuration)).To(Succeed())
 					Expect(Create(versions)).To(Succeed())
 					Expect(Create(stack)).To(Succeed())
+
+					additionalResources, err := os.ReadDir(filepath.Join("testdata", dirName, "additional-resources"))
+					if err == nil {
+						for _, resource := range additionalResources {
+							object := &unstructured.Unstructured{}
+							readResourceFile(filepath.Join("testdata", dirName, "additional-resources", resource.Name()), object)
+							Expect(Create(object)).To(Succeed())
+						}
+					}
+
 					Eventually(func() bool {
 						Expect(Get(types.NamespacedName{
 							Namespace: stack.GetNamespace(),
@@ -270,6 +238,8 @@ func verifyResources(stack *stackv1beta3.Stack, directory string) {
 func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 	dynamic := dynamic.NewForConfigOrDie(restConfig)
 
+	Expect(os.MkdirAll(filepath.Join("testdata", directory, "results"), 0744)).To(Succeed())
+
 	gvks := []schema.GroupVersionResource{
 		{
 			Group:    "apps",
@@ -336,6 +306,24 @@ func updateTestingData(stack *stackv1beta3.Stack, directory string) {
 
 			Expect(yaml.NewEncoder(sampleFile).Encode(itemAsMap)).To(BeNil())
 		}
+	}
+}
+
+func readResourceFile(where string, to any) {
+	versionsFile, err := os.ReadFile(where)
+	if err != nil {
+		panic(err)
+	}
+	tmp := make(map[string]any)
+	if err := yaml.Unmarshal(versionsFile, &tmp); err != nil {
+		panic(err)
+	}
+	data, err := json.Marshal(tmp)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, to); err != nil {
+		panic(err)
 	}
 }
 

@@ -3,20 +3,30 @@ package modules
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"strings"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
+const (
+	PartOfConfigurationLabel = "stacks.formance.cloud/partof-configuration"
+	PartOfConfigurationAny   = "any"
+
+	secretNameOnConfigurationAnnotation = "stacks.formance.cloud/referenced-by-name"
+)
+
 type StackReconcilerFactory struct {
 	platform Platform
-	client   client.Client
-	scheme   *runtime.Scheme
+	manager  manager.Manager
 }
 
 func (sm *StackReconcilerFactory) Platform() Platform {
@@ -24,7 +34,7 @@ func (sm *StackReconcilerFactory) Platform() Platform {
 }
 
 func (sm *StackReconcilerFactory) NewDeployer(stack *v1beta3.Stack, configuration *v1beta3.Configuration, versions *v1beta3.Versions) *StackReconciler {
-	return newStackReconciler(sm.client, sm.scheme, ReconciliationConfig{
+	return newStackReconciler(sm.manager, ReconciliationConfig{
 		Stack:         stack,
 		Configuration: configuration,
 		Versions:      versions,
@@ -32,11 +42,10 @@ func (sm *StackReconcilerFactory) NewDeployer(stack *v1beta3.Stack, configuratio
 	})
 }
 
-func NewsStackReconcilerFactory(client client.Client, scheme *runtime.Scheme, platform Platform) *StackReconcilerFactory {
+func NewsStackReconcilerFactory(mgr manager.Manager, platform Platform) *StackReconcilerFactory {
 	return &StackReconcilerFactory{
 		platform: platform,
-		client:   client,
-		scheme:   scheme,
+		manager:  mgr,
 	}
 }
 
@@ -53,13 +62,14 @@ type StackReconciler struct {
 	podDeployer                PodDeployer
 	portAllocator              PortAllocator
 	namespacedResourceDeployer *scopedResourceDeployer
+	manager                    manager.Manager
 
 	ready collectionutils.Set[Module]
 }
 
-func newStackReconciler(client client.Client, scheme *runtime.Scheme, cfg ReconciliationConfig) *StackReconciler {
+func newStackReconciler(mgr manager.Manager, cfg ReconciliationConfig) *StackReconciler {
 
-	resourceDeployer := NewScopedDeployer(client, scheme, cfg.Stack, cfg.Stack)
+	resourceDeployer := NewScopedDeployer(mgr.GetClient(), mgr.GetScheme(), cfg.Stack, cfg.Stack)
 
 	var (
 		portAllocator PortAllocator = StaticPortAllocator(8080)
@@ -76,7 +86,8 @@ func newStackReconciler(client client.Client, scheme *runtime.Scheme, cfg Reconc
 		podDeployer:                podDeployer,
 		portAllocator:              portAllocator,
 		ready:                      collectionutils.NewSet[Module](),
-		JobRunner:                  NewJobRunner(client, scheme, cfg.Stack, cfg.Stack, ""),
+		JobRunner:                  NewJobRunner(mgr.GetClient(), mgr.GetScheme(), cfg.Stack, cfg.Stack, ""),
+		manager:                    mgr,
 	}
 }
 
@@ -97,6 +108,10 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 			return false, err
 		}
 		r.Stack.Status.LightMode = r.Configuration.Spec.LightMode
+	}
+
+	if err := r.prepareSecrets(ctx); err != nil {
+		return false, err
 	}
 
 	registeredModules := RegisteredModules{}
@@ -155,6 +170,42 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 	}
 
 	return allReady, nil
+}
+
+func (r *StackReconciler) prepareSecrets(ctx context.Context) error {
+	logger := logging.FromContext(ctx)
+	logger.Info("Prepare secrets")
+	requirement, err := labels.NewRequirement(PartOfConfigurationLabel, selection.In, []string{r.Configuration.Name, PartOfConfigurationAny})
+	if err != nil {
+		return err
+	}
+
+	k8sSecrets := &corev1.SecretList{}
+	if err := r.manager.GetClient().List(ctx, k8sSecrets, &client.ListOptions{
+		LabelSelector: labels.NewSelector().Add(*requirement),
+	}); err != nil {
+		return err
+	}
+
+	secretsEventRecorder := r.manager.GetEventRecorderFor("operator")
+	for _, secret := range k8sSecrets.Items {
+		secretName, ok := secret.Annotations[secretNameOnConfigurationAnnotation]
+		if !ok {
+			logger.Info("Secret name annotation not found, use secret name", "secret", secret.Name)
+			secretName = secret.Name
+		}
+
+		secretsEventRecorder.Eventf(r.Stack, "Normal", "Created secret", "Secret created from secret %s/%s with name '%s'", secret.Namespace, secret.Name, secretName)
+		_, err := r.namespacedResourceDeployer.Secrets().CreateOrUpdate(ctx, secretName, func(t *corev1.Secret) {
+			t.Data = secret.Data
+			t.StringData = secret.StringData
+			t.Type = secret.Type
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (r *StackReconciler) prepareModules(ctx context.Context, registeredModules RegisteredModules) error {

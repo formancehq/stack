@@ -51,15 +51,20 @@ func (in *ConfigurationServicesSpec) List() []string {
 	return ret
 }
 
+// TODO: Handle validation
 type TemporalTLSConfig struct {
+	// +optional
 	CRT string `json:"crt"`
+	// +optional
 	Key string `json:"key"`
+	// +optional
+	SecretName string `json:"secretName"`
 }
 
 type TemporalConfig struct {
 	Address   string            `json:"address"`
 	Namespace string            `json:"namespace"`
-	TLS       TemporalTLSConfig `json:"tls"`
+	TLS       TemporalTLSConfig `json:"tls,omitempty"`
 }
 
 type CollectorConfig struct {

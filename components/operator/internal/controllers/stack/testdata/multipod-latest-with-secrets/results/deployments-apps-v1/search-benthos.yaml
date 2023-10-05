@@ -1,0 +1,154 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+        reloader.stakater.com/auto: "true"
+    generation: 1
+    labels:
+        app.kubernetes.io/name: search
+        formance.com/monopod: "false"
+        stack: "true"
+    name: search-benthos
+    namespace: multipod-latest-with-secrets
+spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: search-benthos
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            creationTimestamp: null
+            labels:
+                app.kubernetes.io/name: search-benthos
+        spec:
+            containers:
+                - command:
+                    - /benthos
+                    - -r
+                    - /config/resources/*.yaml
+                    - -t
+                    - /config/templates/*.yaml
+                    - -c
+                    - /config/global/config.yaml
+                    - --log.level
+                    - trace
+                    - streams
+                    - /config/streams/*.yaml
+                  env:
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: search-benthos
+                    - name: STACK
+                      value: multipod-latest-with-secrets
+                    - name: OPENSEARCH_URL
+                      value: http://elasticsearch:9200
+                    - name: OPENSEARCH_BATCHING_COUNT
+                      value: "0"
+                    - name: OPENSEARCH_BATCHING_PERIOD
+                    - name: TOPIC_PREFIX
+                      value: multipod-latest-with-secrets-
+                    - name: OPENSEARCH_INDEX
+                      value: stacks
+                    - name: KAFKA_ADDRESS
+                      value: kafka1:1234,kafka2:1234
+                    - name: LEDGER_POSTGRES_HOST
+                      value: localhost
+                    - name: LEDGER_POSTGRES_PORT
+                      value: "5432"
+                    - name: LEDGER_POSTGRES_DATABASE
+                      value: multipod-latest-with-secrets-ledger
+                    - name: LEDGER_POSTGRES_USERNAME
+                      valueFrom:
+                        secretKeyRef:
+                            key: username
+                            name: postgres
+                    - name: LEDGER_POSTGRES_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                            key: password
+                            name: postgres
+                    - name: LEDGER_POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(LEDGER_POSTGRES_USERNAME):$(LEDGER_POSTGRES_PASSWORD)@$(LEDGER_POSTGRES_HOST):$(LEDGER_POSTGRES_PORT)
+                    - name: LEDGER_POSTGRES_URI
+                      value: $(LEDGER_POSTGRES_NO_DATABASE_URI)/$(LEDGER_POSTGRES_DATABASE)?sslmode=disable
+                    - name: BROKER
+                      value: kafka
+                  image: public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1
+                  imagePullPolicy: Always
+                  name: search-benthos
+                  ports:
+                    - containerPort: 4195
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                  volumeMounts:
+                    - mountPath: /config/global
+                      name: global
+                      readOnly: true
+                    - mountPath: /config/resources
+                      name: resources
+                      readOnly: true
+                    - mountPath: /config/streams
+                      name: streams
+                      readOnly: true
+                    - mountPath: /config/templates
+                      name: templates
+                      readOnly: true
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+            volumes:
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-global
+                  name: global
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-resources
+                  name: resources
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-streams
+                  name: streams
+                - configMap:
+                    defaultMode: 420
+                    name: search-benthos-templates
+                  name: templates
+status:
+    conditions:
+        - status: "True"
+          type: Available
+    observedGeneration: 1

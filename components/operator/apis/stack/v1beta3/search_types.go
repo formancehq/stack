@@ -17,8 +17,12 @@ type ElasticSearchTLSConfig struct {
 }
 
 type ElasticSearchBasicAuthConfig struct {
+	// +optional
 	Username string `json:"username"`
+	// +optional
 	Password string `json:"password"`
+	// +optional
+	SecretName string `json:"secretName"`
 }
 
 type ElasticSearchConfig struct {

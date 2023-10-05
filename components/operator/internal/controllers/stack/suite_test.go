@@ -99,7 +99,7 @@ var _ = ginkgo.BeforeEach(func() {
 	err = stack.NewReconciler(
 		mgr.GetClient(),
 		mgr.GetScheme(),
-		modules.NewsStackReconcilerFactory(mgr.GetClient(), mgr.GetScheme(), platform),
+		modules.NewsStackReconcilerFactory(mgr, platform),
 	).SetupWithManager(mgr)
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
 

@@ -142,10 +142,12 @@ func main() {
 		Environment: env,
 	}
 
+	stackReconcilerFactory := modules.NewsStackReconcilerFactory(mgr, platform)
+
 	stackReconciler := stack.NewReconciler(
 		mgr.GetClient(),
 		mgr.GetScheme(),
-		modules.NewsStackReconcilerFactory(mgr.GetClient(), mgr.GetScheme(), platform),
+		stackReconcilerFactory,
 		stack.WithEnableStackFinalizer(enableStackFinalizer),
 	)
 	if err = stackReconciler.SetupWithManager(mgr); err != nil {

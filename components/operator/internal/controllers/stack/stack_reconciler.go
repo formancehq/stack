@@ -50,6 +50,7 @@ const (
 // +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=secrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=namespaces,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=core,resources=events,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=batch,resources=cronjobs,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update;patch;delete
@@ -196,25 +197,28 @@ func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Sta
 		Reconcile(ctx)
 }
 
+func listStacksAndReconcile(mgr ctrl.Manager, opts ...client.ListOption) []reconcile.Request {
+	stacks := &stackv1beta3.StackList{}
+	err := mgr.GetClient().List(context.TODO(), stacks, opts...)
+	if err != nil {
+		panic(err)
+	}
+
+	return collectionutils.Map(stacks.Items, func(s stackv1beta3.Stack) reconcile.Request {
+		return reconcile.Request{
+			NamespacedName: types.NamespacedName{
+				Name:      s.GetName(),
+				Namespace: s.GetNamespace(),
+			},
+		}
+	})
+}
+
 func watch(mgr ctrl.Manager, field string) handler.EventHandler {
 	return handler.EnqueueRequestsFromMapFunc(func(object client.Object) []reconcile.Request {
-		stacks := &stackv1beta3.StackList{}
-		listOps := &client.ListOptions{
+		return listStacksAndReconcile(mgr, &client.ListOptions{
 			FieldSelector: fields.OneTermEqualSelector(field, object.GetName()),
 			Namespace:     object.GetNamespace(),
-		}
-		err := mgr.GetClient().List(context.TODO(), stacks, listOps)
-		if err != nil {
-			return []reconcile.Request{}
-		}
-
-		return collectionutils.Map(stacks.Items, func(s stackv1beta3.Stack) reconcile.Request {
-			return reconcile.Request{
-				NamespacedName: types.NamespacedName{
-					Name:      s.GetName(),
-					Namespace: s.GetNamespace(),
-				},
-			}
 		})
 	})
 }
@@ -253,6 +257,26 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Watches(
 			&source.Kind{Type: &stackv1beta3.Versions{}},
 			watch(mgr, ".spec.versions"),
+			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
+		).
+		Watches(
+			&source.Kind{Type: &corev1.Secret{}},
+			handler.EnqueueRequestsFromMapFunc(func(object client.Object) []reconcile.Request {
+				labels := object.GetLabels()
+				partOfConfiguration, ok := labels[modules.PartOfConfigurationLabel]
+				if !ok {
+					return nil
+				}
+
+				var listOptions []client.ListOption
+				if partOfConfiguration != modules.PartOfConfigurationAny {
+					listOptions = append(listOptions, &client.ListOptions{
+						FieldSelector: fields.OneTermEqualSelector(".spec.seed", partOfConfiguration),
+					})
+				}
+
+				return listStacksAndReconcile(mgr, listOptions...)
+			}),
 			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
 		).
 		Complete(r)

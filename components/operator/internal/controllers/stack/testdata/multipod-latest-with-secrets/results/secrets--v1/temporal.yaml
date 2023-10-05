@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+    tls.crt: WFhY
+    tls.key: WFhY
+kind: Secret
+metadata:
+    labels:
+        stack: "true"
+    name: temporal
+    namespace: multipod-latest-with-secrets
+type: kubernetes.io/tls

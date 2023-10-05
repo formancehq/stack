@@ -72,14 +72,26 @@ func init() {
 }
 
 func orchestrationEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
-	return modules.NewEnv().Append(
+	env := modules.NewEnv().Append(
 		modules.Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		modules.Env("TEMPORAL_TASK_QUEUE", resolveContext.Stack.Name),
 		modules.Env("TEMPORAL_ADDRESS", resolveContext.Configuration.Spec.Temporal.Address),
 		modules.Env("TEMPORAL_NAMESPACE", resolveContext.Configuration.Spec.Temporal.Namespace),
-		modules.Env("TEMPORAL_SSL_CLIENT_KEY", resolveContext.Configuration.Spec.Temporal.TLS.Key),
-		modules.Env("TEMPORAL_SSL_CLIENT_CERT", resolveContext.Configuration.Spec.Temporal.TLS.CRT),
 		modules.Env("STACK_CLIENT_ID", resolveContext.Stack.Status.StaticAuthClients["orchestration"].ID),
 		modules.Env("STACK_CLIENT_SECRET", resolveContext.Stack.Status.StaticAuthClients["orchestration"].Secrets[0]),
 	)
+
+	if resolveContext.Configuration.Spec.Temporal.TLS.SecretName == "" {
+		env = env.Append(
+			modules.Env("TEMPORAL_SSL_CLIENT_KEY", resolveContext.Configuration.Spec.Temporal.TLS.Key),
+			modules.Env("TEMPORAL_SSL_CLIENT_CERT", resolveContext.Configuration.Spec.Temporal.TLS.CRT),
+		)
+	} else {
+		env = env.Append(
+			modules.EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", resolveContext.Configuration.Spec.Temporal.TLS.SecretName, "tls.key"),
+			modules.EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", resolveContext.Configuration.Spec.Temporal.TLS.SecretName, "tls.crt"),
+		)
+	}
+
+	return env
 }
