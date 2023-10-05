@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"github.com/formancehq/ledger/internal/api/shared"
 	"math/big"
 	"net/http"
 

@@ -1,7 +1,6 @@
 package shared
 
 import (
-	"github.com/pkg/errors"
 	"math/rand"
 	"net/http"
 	"strings"

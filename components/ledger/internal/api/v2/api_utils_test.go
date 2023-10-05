@@ -1,7 +1,6 @@
 package v2_test
 
 import (
-	"go.uber.org/mock/gomock"
 	"testing"
 
 	"go.uber.org/mock/gomock"

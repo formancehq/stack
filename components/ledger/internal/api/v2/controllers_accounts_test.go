@@ -2,7 +2,6 @@ package v2_test
 
 import (
 	"bytes"
-	"github.com/formancehq/ledger/internal/api/shared"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
