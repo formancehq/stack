@@ -1,0 +1,221 @@
+---
+title: Transfer Initiation
+---
+
+Using the Performance API, you have the ability to conveniently transfer funds
+between your accounts or bank accounts on the associated payment service
+provider using transfer initiations. This feature allows you to easily manage
+your finances and ensure that your funds are where you need them to be.
+
+Currently, our system supports two types of fund transfers. The first type is an
+INTERNAL transfer, which allows you to move funds between your accounts within
+our platform. This is useful if you have multiple accounts and want to
+consolidate your funds or allocate them to different purposes. The second type
+is a PAYOUT, which enables you to transfer funds from your internal account to
+an external account. This is beneficial if you need to pay external vendors or
+suppliers or simply want to withdraw funds to your personal bank account.
+
+A transfer initiation consists of several stages:
+
+- Creation: In this stage, you create a transfer initiation that will be held
+in a pending state until it is approved.
+- Approval: During this stage, you have the option to change the status of the
+transfer initiation to either "APPROVED" or "REJECTED". If the transfer
+initiation is approved, it will be executed immediately. On the other hand,
+if it is rejected, it will not be executed.
+- Execution: In the execution stage, the transfer initiation is carried out,
+and the designated payments service provider is contacted to facilitate the
+movement of funds between accounts or bank accounts, depending on the type of
+transfer initiation.
+
+It is important to follow these stages to ensure a smooth and efficient transfer
+process.
+
+## Listing Transfer Initiations
+
+You can list all transfer initiations by using FCTL and the following command:
+
+```shell
+fctl payments transfer_initiation list
+```
+
+If there are some transfer initiations, you will see the following:
+
+```
+ID                                         | CreatedAt            | UpdatedAt            | Description | Source Account ID     | Destination Account ID | Provider       | Type     | Amount | Asset | Status                 | Error
+<Formance Internal Transfer Initiation ID> | 2019-05-15T14:00:00Z | 2019-05-15T14:00:00Z | description | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | TRANSFER | 300    | EUR/2 | WAITING_FOR_VALIDATION |
+```
+
+## Viewing a Transfer Initiation details
+
+You can view a transfer initiation details by using FCTL and the following command:
+
+```shell
+fctl payments transfer_initiation get <Formance Internal Transfer Initiation ID>
+```
+
+If the transfer initiation exists, you will see the following:
+
+```
+# Information
+ID                   | <Formance Internal Transfer Initiation ID>
+CreatedAt            | 2019-05-15T14:00:00Z
+UpdatedAt            | 2019-05-15T14:00:00Z
+Description          | description
+SourceAccountID      | <Formance Account ID>
+DestinationAccountID | <Formance Account ID>
+Provider             | <ProviderName>
+Type                 | TRANSFER
+Amount               | 300
+Asset                | EUR/2
+Status               | WAITING_FOR_VALIDATION
+Error                |
+```
+
+## Creating a Transfer Initiation
+
+You can create a transfer initiation by using FCTL and the following command:
+
+```shell
+fctl payments transfer_initiation create transfer_initiation.json
+```
+
+With transfer_initiation.json being:
+
+```json
+{
+    "reference": "ref1",
+    "sourceAccountID": "<Internal Account ID>",
+    "destinationAccountID": "<Internal Account ID>" ,
+    "description": "description",
+    "provider": "ProviderName",
+    "type": "TRANSFER",
+    "amount": 300,
+    "asset": "EUR/2",
+    "validated": false
+}
+```
+
+The transfer initiation request must contain the following fields:
+
+- `reference`: A unique reference for the transfer initiation. This reference is
+essential to ensure that the transfer initiation is not duplicated.
+- `sourceAccountID`: The ID of the account from which the funds will be taken.
+It is crucial to provide the correct ID, which can be found in the account
+details. This ID is in the internal formance account format.
+- `destinationAccountID`: The ID of the account to which the funds will be sent.
+Similar to the `sourceAccountID`, the correct internal formance account ID
+should be provided. It can be found in the account details.
+- `description`: A description of the transfer initiation. This field allows you
+to provide additional information about the purpose or nature of the transfer.
+- `provider`: The name of the payment service provider that will be used to move
+funds. It is important to specify the exact name of the provider to ensure a
+smooth transfer process.
+- `type`: The type of transfer initiation. This field determines whether the
+transfer is a "TRANSFER" or a "PAYOUT". If it is a "TRANSFER" type, the funds
+will be moved between INTERNAL accounts. Both the source and destination
+accounts must be INTERNAL accounts. If it is a "PAYOUT" type, the funds will be
+moved from an INTERNAL account to an EXTERNAL account. In this case, the source
+account should be an INTERNAL account, and the destination account should be an
+EXTERNAL account.
+- `amount`: The amount of funds to be transferred. Please specify the exact
+amount to ensure accurate and successful transfer.
+- `asset`: The asset of the funds to be transferred.
+- `validated`: A boolean value. If set to true, the transfer initiation will be
+created in a VALIDATED state, indicating that it is ready for execution. If set
+to false, the transfer initiation will be in a pending state and will require
+approval before it can be executed.
+
+Please ensure that all the required fields are accurately filled out in the
+transfer initiation request.
+
+If the transfer initiation is successfully created, you will see the following:
+
+```
+SUCCESS  Transfer Initiation created with ID: < Formance Internal Transfer Initiation ID>
+```
+
+## Deleting a Transfer Initiation
+
+You can delete a transfer initiation by using FCTL and the following command:
+
+```shell
+fctl payments transfer_initiation delete <Formance Internal Transfer Initiation ID>
+```
+
+If the transfer initiation is successfully deleted, you will see the following:
+
+```
+SUCCESS  Transfer Initiation <Formance Internal Transfer Initiation ID> Deleted!
+```
+
+Please take note that it is only possible to delete transfer requests that are
+currently in a pending state. This means that transfer requests that have
+already been processed or are in any other state cannot be deleted.
+
+
+## Approving a Transfer Initiation
+
+If the `validated` field is set to false, the transfer initiation will be in a
+pending state and will require approval before it can be executed. You can
+approve a transfer initiation by using FCTL and the following command:
+
+```shell
+go run ./ payments transfer_initiation update_status <Formance Internal Transfer Initiation ID> <Status>
+```
+
+With `<Status>` being either `VALIDATED` or `REJECTED`.
+
+If the transfer initiation is successfully approved or rejected, you will see
+the following:
+
+```
+SUCCESS Update Transfer Initiation status with ID: <Formance Internal Transfer Initiation ID> and status <Status>
+```
+
+When you approve the transfer initiation, the payment service provider that is
+associated with it is contacted and the TRANSFER or PAYOUT is initiated. This is
+an important step in the process as it ensures that the funds are properly
+transferred to the intended recipient.
+
+In case there is an error during the creation process, you will receive a direct
+notification with the specific error when you approve it. This helps to quickly
+identify and resolve any issues that may arise. On the other hand, if there are
+no errors, the transfer initiation will be marked as PROCESSING. This means that
+the transfer is currently being processed and the payment service provider is
+working on completing the transaction. It is important to note that this process
+may take some time depending on various factors such as the payment service
+provider's internal procedures.
+
+Once the transfer is successfully processed, it will be updated to PROCESSED.
+This indicates that the transfer has been completed successfully and the funds
+have been successfully transferred to the recipient.
+
+However, there may be cases where the transfer fails to process successfully.
+In such cases, the transfer initiation will be marked as FAILED. This means that
+the transfer was not successfully completed and further actions may be required
+to address the issue. It is important to closely monitor the status of the
+transfer initiation to ensure that any issues are promptly addressed and
+resolved. Note that if the transfer initiation is in a FAILED state, you will
+be able to see the error message that was returned by the payment service
+provider by fetching the details of the transfer initiation.
+
+You will be able to retry a FAILED transfer initiation (c.f. below).
+
+## Retrying a Transfer Initiation
+
+If the transfer initiation is in a FAILED state, you can retry it by using FCTL
+and the following command:
+
+```shell
+fctl payments transfer_initiation retry <Formance Internal Transfer Initiation ID>
+```
+
+If the transfer initiation is successfully retried, you will see the following:
+
+```
+SUCCESS  Retry Transfer Initiation with ID: <Formance Internal Transfer Initiation ID>
+```
+
+Please take note that it is only possible to retry transfer initiation that are
+currently in a FAILED state.

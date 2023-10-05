@@ -19,7 +19,7 @@ Before you begin, you need to have a Moneycorp account. If you don't have one, y
 read "CLIENT_ID"
 read "API_KEY"
 read "ENDPOINT"
-fctl payments connectors install moneycorp $CLIENT_ID $API_KEY
+fctl payments connectors install moneycorp $CLIENT_ID $API_KEY --endpoint $ENDPOINT
 ```
 
 ```shell
@@ -30,11 +30,12 @@ read "ENDPOINT" && \
 echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/moneycorp" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $TOKEN" \
--d "{ \
-  \"clientID\": \"$CLIENT_ID\",
-  \"apiKey\": \"$API_KEY\", \
-  \"endpoint\": \"$ENDPOINT\" \
-}"
+-d '{
+  "pollingPeriod": "300s",
+  "clientID": "$CLIENT_ID",
+  "apiKey": "$API_KEY",
+  "endpoint": "$ENDPOINT"
+}'
 ```
 
 </StackCmd>

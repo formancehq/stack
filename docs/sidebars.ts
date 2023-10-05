@@ -250,6 +250,7 @@ const sidebars = {
           type: 'category',
           collapsible: true,
           collapsed: true,
+          link: { type: 'doc', id: 'payments/index' },
           items: [
             {
               type: 'doc',
@@ -258,56 +259,92 @@ const sidebars = {
             },
             {
               type: 'category',
-              label: 'Available Connectors',
+              label: 'Tutorials',
               collapsible: true,
               collapsed: true,
               link: {
                 type: 'doc',
-                id: 'payments/connectors/index',
-                // label: 'Connectors'
+                id: 'payments/get-started/index',
               },
               items: [
                 {
                   type: 'doc',
-                  id: 'payments/connectors/stripe',
-                  label: 'Stripe',
+                  id: 'payments/get-started/installation',
+                },
+                {
+                  type: 'category',
+                  label: 'Available Connectors',
+                  collapsible: true,
+                  collapsed: true,
+                  link: { type: 'doc', id: 'payments/get-started/connectors/index' },
+                  items: [
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/connectors/stripe',
+                      label: 'Stripe',
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/connectors/modulr',
+                      label: 'Modulr',
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/connectors/wise',
+                      label: 'Wise',
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/connectors/currencycloud',
+                      label: 'CurrencyCloud',
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/connectors/bankingcircle',
+                      label: 'BankingCircle',
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/connectors/mangopay',
+                      label: 'Mangopay',
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/connectors/moneycorp',
+                      label: 'Moneycorp',
+                    }
+                  ]
                 },
                 {
                   type: 'doc',
-                  id: 'payments/connectors/modulr',
-                  label: 'Modulr',
+                  id: 'payments/get-started/connectors/framework',
+                  label: 'Framework',
                 },
                 {
-                  type: 'doc',
-                  id: 'payments/connectors/wise',
-                  label: 'Wise',
-                },
-                {
-                  type: 'doc',
-                  id: 'payments/connectors/currencycloud',
-                  label: 'CurrencyCloud',
-                },
-                {
-                  type: 'doc',
-                  id: 'payments/connectors/bankingcircle',
-                  label: 'BankingCircle',
-                },
-                {
-                  type: 'doc',
-                  id: 'payments/connectors/mangopay',
-                  label: 'Mangopay',
-                },
-                {
-                  type: 'doc',
-                  id: 'payments/connectors/moneycorp',
-                  label: 'Moneycorp',
+                  type: 'category',
+                  label: 'Guides',
+                  collapsible: true,
+                  collapsed: true,
+                  link: { type: 'doc', id: 'payments/get-started/basic-guides/index' },
+                  items: [
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/basic-guides/accounts',
+                      label: 'Accounts'
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/basic-guides/payments',
+                      label: 'Payments'
+                    },
+                    {
+                      type: 'doc',
+                      id: 'payments/get-started/basic-guides/transfer-initiation',
+                      label: 'Transfer Initiation'
+                    }
+                  ]
                 }
               ],
-            },
-            {
-              type: 'doc',
-              id: 'payments/connectors/framework',
-              label: 'Framework',
             },
           ]
         },

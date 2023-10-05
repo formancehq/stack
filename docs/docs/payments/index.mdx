@@ -9,6 +9,7 @@ toc_min_heading_level: 3
 ---
 import GettingHelp from '@site/docs/partials/_getting_help.mdx';
 import WIP from '@site/docs/partials/_wip.mdx';
+import {DocCardGrid,DocCard} from '@site/src/components/DocCard';
 
 # Formance Payments
 
@@ -16,4 +17,22 @@ Formance Payments is a unified API that abstracts over multiple different paymen
 
 <WIP />
 
+## Getting started
+
+<DocCardGrid>
+
+<DocCard headline="Get-started" cta="Get-started" link="/payments/get-started/" highlight="true">
+    Read how the payments service works and how to get started using connectors and listing your payments and accounts.
+</DocCard>
+
+<DocCard headline="Connectors" cta="Connectors" link="/payments/get-started/connectors/" highlight="true">
+    Read how formance connectors works and install the connector for your payment provider.
+</DocCard>
+
+</DocCardGrid>
+
 <GettingHelp />
+
+## I found a bug!
+
+Did you find a bug in Formance Payments? Well, thanks! We need your help to make it better. You can [file a bug report](https://github.com/formancehq/stack/issues/new) and tell us all about it.
