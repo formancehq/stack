@@ -110,6 +110,10 @@ data:
         		}
         	}
 
+        	handle /api/* {
+                respond "Bad Gateway" 502
+            }
+
         	# handle all other requests
         	handle {
         		reverse_proxy control:3000
