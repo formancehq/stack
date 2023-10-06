@@ -7,7 +7,7 @@ on:
 jobs:
   Sdk:
     name: 'Publish sdks'
-    runs-on: formance-runner
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         sdk: [ go, php, python, typescript, java ]
