@@ -204,7 +204,7 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&corev1.Secret{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.ConfigMap{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&batchv1.CronJob{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&batchv1.Job{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&batchv1.Job{}).
 		Owns(&stackv1beta3.Migration{}).
 		Owns(&appsv1.Deployment{}).
 		Watches(
