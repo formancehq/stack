@@ -277,6 +277,11 @@ func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (b
 
 func (r *moduleReconciler) createDatabase(ctx context.Context, postgresConfig v1beta3.PostgresConfig) (bool, error) {
 	dbName := r.Stack.GetServiceName(r.module.Name())
+	// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
+	createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
+	if postgresConfig.DisableSSLMode {
+		createDBCommand += ` "sslmode=disable"`
+	}
 	return r.jobMustSucceed(ctx, fmt.Sprintf("%s-create-database", r.module.Name()), nil,
 		func(t *batchv1.Job) {
 			t.Spec = batchv1.JobSpec{
@@ -286,10 +291,7 @@ func (r *moduleReconciler) createDatabase(ctx context.Context, postgresConfig v1
 						Containers: []corev1.Container{{
 							Name:  "create-database",
 							Image: "postgres:15-alpine",
-							Args: []string{
-								// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
-								"sh", "-c", `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`,
-							},
+							Args:  []string{"sh", "-c", createDBCommand},
 							// There is only one service which use prefixed env var : ledger v1
 							// Since the ledger v1 auto handle migrations, we don't care about passing a prefix
 							Env: DefaultPostgresEnvVarsWithPrefix(postgresConfig, dbName, "").
