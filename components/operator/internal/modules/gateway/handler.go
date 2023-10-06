@@ -255,9 +255,10 @@ const caddyfile = `(cors) {
 		}
 	}
 
+	# Respond 502 if service does not exists
 	handle /api/* {
-        respond "Bad Gateway" 502
-    }
+		respond "Bad Gateway" 502
+	}
 
 	# handle all other requests
 	handle {
