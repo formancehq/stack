@@ -31,10 +31,7 @@ func NewRootCommand() *cobra.Command {
 		DisableAutoGenTag: true,
 	}
 
-	version := NewVersion()
-	root.AddCommand(version)
-	server := NewServer()
-	root.AddCommand(server)
+	root.AddCommand(NewVersion(), NewServer(), NewInitMapping())
 
 	root.Flags().Bool(service.DebugFlag, false, "debug mode")
 	err := viper.BindPFlags(root.Flags())
