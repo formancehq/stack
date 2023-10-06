@@ -114,14 +114,19 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 	registeredModules[r.module.Name()] = registeredModule
 
 	var (
-		postgresConfig *v1beta3.PostgresConfig
+		postgresConfig v1beta3.PostgresConfig
 		err            error
 	)
 	pam, ok := r.module.(PostgresAwareModule)
 	if ok {
-		postgresConfig, err = r.createDatabase(ctx, pam)
+		postgresConfig = pam.Postgres(r.ReconciliationConfig)
+		ok, err = r.createDatabase(ctx, postgresConfig)
 		if err != nil {
 			return false, err
+		}
+		if !ok {
+			logger.Info("Waiting for database to be created", "module", pam.Name())
+			return false, nil
 		}
 	}
 
@@ -150,8 +155,7 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 
 	if chosenVersion.DatabaseMigration != nil {
 		logger.Info("Start database migration process", "pod", r.module.Name())
-		databaseMigrated, err := r.runDatabaseMigration(ctx, r.ReconciliationConfig,
-			chosenVersionLabel, *chosenVersion.DatabaseMigration, postgresConfig)
+		databaseMigrated, err := r.runDatabaseMigration(ctx, chosenVersionLabel, *chosenVersion.DatabaseMigration, postgresConfig)
 		if err != nil {
 			return false, err
 		}
@@ -175,7 +179,7 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		err := serviceReconciler.reconcile(ctx, ServiceInstallConfiguration{
 			ReconciliationConfig: r.ReconciliationConfig,
 			RegisteredModules:    registeredModules,
-			PostgresConfig:       postgresConfig,
+			PostgresConfig:       &postgresConfig,
 		})
 		if err != nil {
 			me.setError(serviceName, err)
@@ -271,13 +275,34 @@ func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (b
 	return true, nil
 }
 
-func (r *moduleReconciler) createDatabase(ctx context.Context, module PostgresAwareModule) (*v1beta3.PostgresConfig, error) {
-	postgresConfig := module.Postgres(r.ReconciliationConfig)
-	if err := CreatePostgresDatabase(ctx, postgresConfig.DSN(), r.Stack.GetServiceName(module.Name())); err != nil {
-		return nil, err
+func (r *moduleReconciler) createDatabase(ctx context.Context, postgresConfig v1beta3.PostgresConfig) (bool, error) {
+	dbName := r.Stack.GetServiceName(r.module.Name())
+	// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
+	createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
+	if postgresConfig.DisableSSLMode {
+		createDBCommand += ` "sslmode=disable"`
 	}
-
-	return &postgresConfig, nil
+	return r.jobMustSucceed(ctx, fmt.Sprintf("%s-create-database", r.module.Name()), nil,
+		func(t *batchv1.Job) {
+			t.Spec = batchv1.JobSpec{
+				Template: corev1.PodTemplateSpec{
+					Spec: corev1.PodSpec{
+						RestartPolicy: corev1.RestartPolicyOnFailure,
+						Containers: []corev1.Container{{
+							Name:  "create-database",
+							Image: "postgres:15-alpine",
+							Args:  []string{"sh", "-c", createDBCommand},
+							// There is only one service which use prefixed env var : ledger v1
+							// Since the ledger v1 auto handle migrations, we don't care about passing a prefix
+							Env: DefaultPostgresEnvVarsWithPrefix(postgresConfig, dbName, "").
+								// psql use PGPASSWORD env var
+								Append(Env("PGPASSWORD", "$(POSTGRES_PASSWORD)")).
+								ToCoreEnv(),
+						}},
+					},
+				},
+			}
+		})
 }
 
 func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Module, version string) (bool, error) {
@@ -304,13 +329,12 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 	return migration.Status.Terminated, nil
 }
 
-func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, config ReconciliationConfig, version string, migration DatabaseMigration, postgresConfig *v1beta3.PostgresConfig) (bool, error) {
+func (r *moduleReconciler) jobMustSucceed(ctx context.Context, jobName string, preRun func() error, modifier func(t *batchv1.Job)) (bool, error) {
 
 	logger := log.FromContext(ctx)
 	job := &batchv1.Job{}
-	jobName := fmt.Sprintf("%s-%s-database-migration", r.module.Name(), version)
 	if err := r.namespacedResourceDeployer.client.Get(ctx, types.NamespacedName{
-		Namespace: config.Stack.Name,
+		Namespace: r.Stack.Name,
 		Name:      jobName,
 	}, job); err != nil {
 		if !apierrors.IsNotFound(err) {
@@ -318,42 +342,13 @@ func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, config Reco
 		}
 
 		logger.Info("Job not found", "pod", r.module.Name())
-		if migration.Shutdown {
-			logger.Info("Stop module reconciliation as required by upgrade", "module", r.module.Name())
-			// todo: store old replicas value
-			if scaledDown, err := r.podDeployer.shutdown(ctx, r.module.Name()); err != nil {
-				return false, errors.Wrap(err, "stopping pod")
-			} else if !scaledDown {
-				logger.Info("Stop reconciliation as pod needs to be scaled down", "pod", r.module.Name())
-				return false, nil
+		if preRun != nil {
+			if err := preRun(); err != nil {
+				return false, err
 			}
 		}
 
-		_, err := r.namespacedResourceDeployer.Jobs().CreateOrUpdate(ctx, jobName, func(t *batchv1.Job) {
-			args := migration.Command
-			if len(args) == 0 {
-				args = []string{"migrate"}
-			}
-			env := DefaultPostgresEnvVarsWithPrefix(*postgresConfig, config.Stack.GetServiceName(r.module.Name()), "")
-			if migration.AdditionalEnv != nil {
-				env = env.Append(migration.AdditionalEnv(r.ReconciliationConfig)...)
-			}
-			t.Spec = batchv1.JobSpec{
-				Template: corev1.PodTemplateSpec{
-					Spec: corev1.PodSpec{
-						RestartPolicy: corev1.RestartPolicyOnFailure,
-						Containers: []corev1.Container{{
-							Name:  "migrate",
-							Image: GetImage(r.module.Name(), config.Versions.GetVersion(r.module.Name())),
-							Args:  args,
-							// There is only one service which use prefixed env var : ledger v1
-							// Since the ledger v1 auto handle migrations, we don't care about passing a prefix
-							Env: env.ToCoreEnv(),
-						}},
-					},
-				},
-			}
-		})
+		_, err := r.namespacedResourceDeployer.Jobs().CreateOrUpdate(ctx, jobName, modifier)
 		if err != nil {
 			return false, err
 		}
@@ -363,6 +358,49 @@ func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, config Reco
 	logger.Info(fmt.Sprintf("Job found, succeded: %d", job.Status.Succeeded))
 
 	return job.Status.Succeeded > 0, nil
+}
+
+func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version string, migration DatabaseMigration, postgresConfig v1beta3.PostgresConfig) (bool, error) {
+	logger := log.FromContext(ctx)
+	return r.jobMustSucceed(ctx, fmt.Sprintf("%s-%s-database-migration", r.module.Name(), version),
+		func() error {
+			if migration.Shutdown {
+				logger.Info("Stop module reconciliation as required by upgrade", "module", r.module.Name())
+				// todo: store old replicas value
+				if scaledDown, err := r.podDeployer.shutdown(ctx, r.module.Name()); err != nil {
+					return errors.Wrap(err, "stopping pod")
+				} else if !scaledDown {
+					logger.Info("Stop reconciliation as pod needs to be scaled down", "pod", r.module.Name())
+					return nil
+				}
+			}
+			return nil
+		},
+		func(t *batchv1.Job) {
+			args := migration.Command
+			if len(args) == 0 {
+				args = []string{"migrate"}
+			}
+			env := DefaultPostgresEnvVarsWithPrefix(postgresConfig, r.Stack.GetServiceName(r.module.Name()), "")
+			if migration.AdditionalEnv != nil {
+				env = env.Append(migration.AdditionalEnv(r.ReconciliationConfig)...)
+			}
+			t.Spec = batchv1.JobSpec{
+				Template: corev1.PodTemplateSpec{
+					Spec: corev1.PodSpec{
+						RestartPolicy: corev1.RestartPolicyOnFailure,
+						Containers: []corev1.Container{{
+							Name:  "migrate",
+							Image: GetImage(r.module.Name(), r.Versions.GetVersion(r.module.Name())),
+							Args:  args,
+							// There is only one service which use prefixed env var : ledger v1
+							// Since the ledger v1 auto handle migrations, we don't care about passing a prefix
+							Env: env.ToCoreEnv(),
+						}},
+					},
+				},
+			}
+		})
 }
 
 func newModuleReconciler(stackReconciler *StackReconciler, module Module) *moduleReconciler {

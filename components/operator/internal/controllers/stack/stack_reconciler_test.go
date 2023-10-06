@@ -1,7 +1,6 @@
 package stack_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -14,7 +13,6 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
-	"github.com/formancehq/operator/internal/modules"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -34,9 +32,6 @@ func init() {
 	}
 	auth.RSAKeyGenerator = func() string {
 		return "fake-rsa-key"
-	}
-	modules.CreatePostgresDatabase = func(ctx context.Context, dsn, dbName string) error {
-		return nil
 	}
 }
 
@@ -59,6 +54,7 @@ var _ = Describe("Check stack deployment", func() {
 		}
 
 		Context(dirEntry.Name(), func() {
+
 			dirName := dirEntry.Name()
 			name := strings.ReplaceAll(dirName, ".", "-")
 
