@@ -49,6 +49,13 @@ type Migration struct {
 	Status MigrationStatus `json:"status,omitempty"`
 }
 
+func (in *Migration) Discriminator() string {
+	if in.Spec.PostUpgrade {
+		return "post"
+	}
+	return "pre"
+}
+
 //+kubebuilder:object:root=true
 
 // MigrationList contains a list of Migration

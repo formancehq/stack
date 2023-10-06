@@ -3,10 +3,8 @@ package modules
 import (
 	"context"
 	"fmt"
-	"sort"
-	"strings"
-
 	appsv1 "k8s.io/api/apps/v1"
+	"sort"
 
 	"github.com/pkg/errors"
 
@@ -18,20 +16,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
-
-type Services []*Service
-
-func (services Services) Len() int {
-	return len(services)
-}
-
-func (services Services) Less(i, j int) bool {
-	return strings.Compare(services[i].Name, services[j].Name) < 0
-}
-
-func (services Services) Swap(i, j int) {
-	services[i], services[j] = services[j], services[i]
-}
 
 type Cron struct {
 	Container Container
@@ -49,8 +33,8 @@ type Version struct {
 	DatabaseMigration *DatabaseMigration
 	Services          func(cfg ReconciliationConfig) Services
 	Cron              func(cfg ReconciliationConfig) []Cron
-	PreUpgrade        func(ctx context.Context, cfg ReconciliationConfig) error
-	PostUpgrade       func(ctx context.Context, cfg ReconciliationConfig) error
+	PreUpgrade        func(ctx context.Context, jobRunner JobRunner, cfg ReconciliationConfig) (bool, error)
+	PostUpgrade       func(ctx context.Context, jobRunner JobRunner, cfg ReconciliationConfig) (bool, error)
 }
 
 type Module interface {
@@ -282,7 +266,7 @@ func (r *moduleReconciler) createDatabase(ctx context.Context, postgresConfig v1
 	if postgresConfig.DisableSSLMode {
 		createDBCommand += ` "sslmode=disable"`
 	}
-	return r.jobMustSucceed(ctx, fmt.Sprintf("%s-create-database", r.module.Name()), nil,
+	return r.RunJob(ctx, fmt.Sprintf("%s-create-database", r.module.Name()), nil,
 		func(t *batchv1.Job) {
 			t.Spec = batchv1.JobSpec{
 				Template: corev1.PodTemplateSpec{
@@ -329,40 +313,9 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 	return migration.Status.Terminated, nil
 }
 
-func (r *moduleReconciler) jobMustSucceed(ctx context.Context, jobName string, preRun func() error, modifier func(t *batchv1.Job)) (bool, error) {
-
-	logger := log.FromContext(ctx)
-	job := &batchv1.Job{}
-	if err := r.namespacedResourceDeployer.client.Get(ctx, types.NamespacedName{
-		Namespace: r.Stack.Name,
-		Name:      jobName,
-	}, job); err != nil {
-		if !apierrors.IsNotFound(err) {
-			return false, err
-		}
-
-		logger.Info("Job not found", "pod", r.module.Name())
-		if preRun != nil {
-			if err := preRun(); err != nil {
-				return false, err
-			}
-		}
-
-		_, err := r.namespacedResourceDeployer.Jobs().CreateOrUpdate(ctx, jobName, modifier)
-		if err != nil {
-			return false, err
-		}
-		return false, nil
-	}
-
-	logger.Info(fmt.Sprintf("Job found, succeded: %d", job.Status.Succeeded))
-
-	return job.Status.Succeeded > 0, nil
-}
-
 func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version string, migration DatabaseMigration, postgresConfig v1beta3.PostgresConfig) (bool, error) {
 	logger := log.FromContext(ctx)
-	return r.jobMustSucceed(ctx, fmt.Sprintf("%s-%s-database-migration", r.module.Name(), version),
+	return r.RunJob(ctx, fmt.Sprintf("%s-%s-database-migration", r.module.Name(), version),
 		func() error {
 			if migration.Shutdown {
 				logger.Info("Stop module reconciliation as required by upgrade", "module", r.module.Name())

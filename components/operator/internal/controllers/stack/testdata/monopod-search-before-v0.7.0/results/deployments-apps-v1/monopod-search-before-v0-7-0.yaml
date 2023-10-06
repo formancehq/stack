@@ -949,45 +949,6 @@ spec:
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst
-            initContainers:
-                - args:
-                    - -c
-                    - 'curl -H ''Content-Type: application/json'' -X PUT -v -d ''{"mappings":{"properties":{"data":{"type":"object","enabled":false},"indexed":{"properties":{"account":{"type":"keyword"},"address":{"type":"keyword"},"amount":{"type":"float"},"asset":{"type":"keyword"},"createdAt":{"type":"date"},"destination":{"type":"keyword"},"id":{"type":"keyword"},"initialAmount":{"type":"long"},"ledger":{"type":"keyword"},"name":{"type":"keyword"},"provider":{"type":"keyword"},"reference":{"type":"keyword"},"scheme":{"type":"keyword"},"source":{"type":"keyword"},"status":{"type":"keyword"},"timestamp":{"type":"date"},"txid":{"type":"long"},"type":{"type":"keyword"}},"type":"object"},"kind":{"type":"keyword"},"ledger":{"type":"keyword"},"stack":{"type":"keyword"},"when":{"type":"date"}}}}'' ${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/monopod-search-before-v0-7-0'
-                  command:
-                    - sh
-                  env:
-                    - name: OTEL_TRACES
-                      value: "true"
-                    - name: OTEL_TRACES_EXPORTER
-                      value: otlp
-                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
-                      value: "true"
-                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
-                      value: grpc
-                    - name: OTEL_TRACES_PORT
-                      value: "4317"
-                    - name: OTEL_TRACES_ENDPOINT
-                      value: localhost
-                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
-                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
-                    - name: OTEL_RESOURCE_ATTRIBUTES
-                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
-                    - name: OPEN_SEARCH_HOST
-                      value: elasticsearch
-                    - name: OPEN_SEARCH_PORT
-                      value: "9200"
-                    - name: OPEN_SEARCH_PATH_PREFIX
-                    - name: OPEN_SEARCH_SCHEME
-                      value: http
-                    - name: OPEN_SEARCH_SERVICE
-                      value: $(OPEN_SEARCH_HOST):$(OPEN_SEARCH_PORT)$(OPEN_SEARCH_PATH_PREFIX)
-                  image: curlimages/curl:7.86.0
-                  imagePullPolicy: Always
-                  name: init-mapping
-                  resources: {}
-                  terminationMessagePath: /dev/termination-log
-                  terminationMessagePolicy: File
             restartPolicy: Always
             schedulerName: default-scheduler
             securityContext: {}

@@ -3,10 +3,9 @@ package payments
 import (
 	"context"
 	"fmt"
-	"net/http"
-
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -76,7 +75,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
 				return resetConnectors(ctx, config)
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
@@ -120,7 +119,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
 				return resetConnectors(ctx, config)
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
@@ -136,7 +135,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
 				return resetConnectors(ctx, config)
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
@@ -152,7 +151,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
+			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
 				return resetConnectors(ctx, config)
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
@@ -268,33 +267,33 @@ func paymentsServices(
 	}}
 }
 
-func resetConnectors(ctx context.Context, config modules.ReconciliationConfig) error {
+func resetConnectors(ctx context.Context, config modules.ReconciliationConfig) (bool, error) {
 	if err := resetConnector(ctx, config, "stripe"); err != nil {
-		return err
+		return false, err
 	}
 	if err := resetConnector(ctx, config, "wise"); err != nil {
-		return err
+		return false, err
 	}
 	if err := resetConnector(ctx, config, "modulr"); err != nil {
-		return err
+		return false, err
 	}
 	if err := resetConnector(ctx, config, "banking-circle"); err != nil {
-		return err
+		return false, err
 	}
 	if err := resetConnector(ctx, config, "currency-cloud"); err != nil {
-		return err
+		return false, err
 	}
 	if err := resetConnector(ctx, config, "dummy-pay"); err != nil {
-		return err
+		return false, err
 	}
 	if err := resetConnector(ctx, config, "mangopay"); err != nil {
-		return err
+		return false, err
 	}
 	if err := resetConnector(ctx, config, "moneycorp"); err != nil {
-		return err
+		return false, err
 	}
 
-	return nil
+	return true, nil
 }
 
 func resetConnector(ctx context.Context, config modules.ReconciliationConfig, connector string) error {

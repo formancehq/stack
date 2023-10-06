@@ -6,8 +6,6 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/mod/semver"
-
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/common"
@@ -61,7 +59,7 @@ type Secret struct {
 	Mount bool
 }
 
-func (s Secret) create(ctx context.Context, deployer *ResourceDeployer, serviceName, secretName string) (*SecretHandle, error) {
+func (s Secret) create(ctx context.Context, deployer *scopedResourceDeployer, serviceName, secretName string) (*SecretHandle, error) {
 	secret, err := deployer.
 		Secrets().
 		CreateOrUpdate(ctx, serviceName+"-"+secretName, func(t *corev1.Secret) {
@@ -90,7 +88,7 @@ func (s Secret) create(ctx context.Context, deployer *ResourceDeployer, serviceN
 
 type Secrets map[string]Secret
 
-func (s Secrets) create(ctx context.Context, deployer *ResourceDeployer, serviceName string) (SecretHandles, error) {
+func (s Secrets) create(ctx context.Context, deployer *scopedResourceDeployer, serviceName string) (SecretHandles, error) {
 	secretHandles := SecretHandles{}
 	for secretName, secretDefinition := range s {
 		secretHandle, err := secretDefinition.create(ctx, deployer, serviceName, secretName)
@@ -303,6 +301,20 @@ type Service struct {
 	EnvPrefix string
 }
 
+type Services []*Service
+
+func (services Services) Len() int {
+	return len(services)
+}
+
+func (services Services) Less(i, j int) bool {
+	return strings.Compare(services[i].Name, services[j].Name) < 0
+}
+
+func (services Services) Swap(i, j int) {
+	services[i], services[j] = services[j], services[i]
+}
+
 type serviceReconciler struct {
 	*moduleReconciler
 	name     string
@@ -447,11 +459,6 @@ func (r *serviceReconciler) containers(ctx ContainerResolutionConfiguration, con
 }
 
 func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration, container Container, serviceName string, init bool) corev1.Container {
-	imageVersion := strings.Split(container.Image, ":")[1]
-	pullPolicy := corev1.PullIfNotPresent
-	if !semver.IsValid(imageVersion) {
-		pullPolicy = corev1.PullAlways
-	}
 	c := corev1.Container{
 		Name: func() string {
 			if container.Name != "" {
@@ -460,7 +467,7 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 			return serviceName
 		}(),
 		Image:           container.Image,
-		ImagePullPolicy: pullPolicy,
+		ImagePullPolicy: GetPullPolicy(container.Image),
 		Command:         container.Command,
 		Args:            container.Args,
 		Resources:       container.Resources,
