@@ -9,7 +9,7 @@ on:
 
 jobs:
 #  Sync:
-#    runs-on: ubuntu-latest
+#    runs-on: formance-runner
 #    steps:
 #      - uses: 'actions/checkout@v3'
 #        with:
@@ -22,7 +22,7 @@ jobs:
 
 
   TestsIntegration:
-    runs-on: ubuntu-latest
+    runs-on: formance-runner
     steps:
       - uses: 'actions/checkout@v3'
         with:
@@ -43,7 +43,7 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
 
   Moon:
-    runs-on: ubuntu-latest
+    runs-on: formance-runner
     steps:
       - uses: 'actions/checkout@v3'
         with:
