@@ -251,10 +251,18 @@ func updateTransferInitiationStatusHandler(
 			return
 		}
 
-		if status == models.TransferInitiationStatusWaitingForValidation {
+		switch status {
+		case models.TransferInitiationStatusWaitingForValidation:
 			handleValidationError(w, r, errors.New("cannot set back transfer initiation status to waiting for validation"))
 
 			return
+		case models.TransferInitiationStatusFailed,
+			models.TransferInitiationStatusProcessed,
+			models.TransferInitiationStatusProcessing:
+			handleValidationError(w, r, errors.New("Either VALIDATED or REJECTED status can be set"))
+
+			return
+		default:
 		}
 
 		transferID, err := models.TransferInitiationIDFromString((mux.Vars(r)["transferID"]))

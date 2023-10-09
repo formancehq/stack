@@ -1498,7 +1498,7 @@ components:
     TransferInitiationRequest:
       type: object
       required:
-        - uniqueRequestID
+        - reference
         - createdAt
         - description
         - sourceAccountID
@@ -1509,7 +1509,7 @@ components:
         - asset
         - validated
       properties:
-        uniqueRequestID:
+        reference:
           type: string
           example: XXX
         createdAt:
