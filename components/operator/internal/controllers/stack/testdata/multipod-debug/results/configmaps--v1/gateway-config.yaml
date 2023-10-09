@@ -43,7 +43,7 @@ data:
         			handle @authmatcher {
         				uri strip_prefix /api/auth
         				reverse_proxy auth:8080
-        		
+
         				import cors
         			}
         			@ledgermatcher {
@@ -52,7 +52,7 @@ data:
         			handle @ledgermatcher {
         				uri strip_prefix /api/ledger
         				reverse_proxy ledger:8080
-        		
+
         				import cors
         				import auth
         			}
@@ -62,7 +62,7 @@ data:
         			handle @orchestrationmatcher {
         				uri strip_prefix /api/orchestration
         				reverse_proxy orchestration:8080
-        		
+
         				import cors
         				import auth
         			}
@@ -72,7 +72,7 @@ data:
         			handle @paymentsmatcher {
         				uri strip_prefix /api/payments
         				reverse_proxy payments:8080
-        		
+
         				import cors
         				import auth
         			}
@@ -82,7 +82,7 @@ data:
         			handle @searchmatcher {
         				uri strip_prefix /api/search
         				reverse_proxy search:8080
-        		
+
         				import cors
         				import auth
         			}
@@ -92,7 +92,7 @@ data:
         			handle @search-benthosmatcher {
         				uri strip_prefix /api/search-benthos
         				reverse_proxy search-benthos:4195
-        		
+
         				import cors
         				import auth
         			}
@@ -102,7 +102,7 @@ data:
         			handle @walletsmatcher {
         				uri strip_prefix /api/wallets
         				reverse_proxy wallets:8080
-        		
+
         				import cors
         				import auth
         			}
@@ -112,7 +112,7 @@ data:
         			handle @webhooksmatcher {
         				uri strip_prefix /api/webhooks
         				reverse_proxy webhooks:8080
-        		
+
         				import cors
         				import auth
         			}
@@ -131,6 +131,11 @@ data:
         				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
         			}
         		}
+        	}
+
+        	# Respond 502 if service does not exists
+        	handle /api/* {
+        		respond "Bad Gateway" 502
         	}
 
         	# handle all other requests

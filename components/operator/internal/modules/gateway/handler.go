@@ -232,7 +232,7 @@ const caddyfile = `(cors) {
 			handle @{{ $service.Name }}matcher {
 				uri strip_prefix /api/{{ $service.RoutingPath }}
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
-		
+
 				import cors
 				{{- if not $service.Secured }}
 				import auth
@@ -253,6 +253,11 @@ const caddyfile = `(cors) {
 				{{- end }}
 			}
 		}
+	}
+
+	# Respond 502 if service does not exists
+	handle /api/* {
+		respond "Bad Gateway" 502
 	}
 
 	# handle all other requests
