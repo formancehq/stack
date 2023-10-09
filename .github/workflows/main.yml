@@ -41,6 +41,8 @@ jobs:
         if: success() || failure()
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: 'docker-compose -f ./tests/integration/docker-compose.yml stop'
+        if: success() || failure()
 
   Moon:
     runs-on: formance-runner
