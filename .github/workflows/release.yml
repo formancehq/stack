@@ -7,12 +7,12 @@ on:
 jobs:
   Extract:
     name: Extract
-    runs-on: ubuntu-latest
+    runs-on: formance-runner
     outputs:
       service: ${{ steps.extract.outputs.service }}
       version: ${{ steps.extract.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
@@ -26,11 +26,11 @@ jobs:
         run: echo "version=$(node .github/actions/extract-in-tag/version.js ${{ github.ref_name }})" >> $GITHUB_OUTPUT
 
   Release:
-    runs-on: ubuntu-latest
+    runs-on: formance-runner
     needs:
       - Extract
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
         with:
           fetch-depth: 0
       - name: Setup Env

@@ -9,9 +9,9 @@ on:
 
 jobs:
 #  Sync:
-#    runs-on: ubuntu-latest
+#    runs-on: formance-runner
 #    steps:
-#      - uses: 'actions/checkout@v3'
+#      - uses: 'actions/checkout@v4'
 #        with:
 #          fetch-depth: 0
 #      - name: Setup Env
@@ -22,9 +22,9 @@ jobs:
 
 
   TestsIntegration:
-    runs-on: ubuntu-latest
+    runs-on: formance-runner
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
         with:
           fetch-depth: 0
       - name: Setup Env
@@ -41,11 +41,13 @@ jobs:
         if: success() || failure()
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: 'docker compose -f ./tests/integration/docker-compose.yml stop'
+        if: success() || failure()
 
   Moon:
-    runs-on: ubuntu-latest
+    runs-on: formance-runner
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
         with:
           fetch-depth: 0
       - name: Setup Env
