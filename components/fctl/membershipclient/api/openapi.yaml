@@ -427,6 +427,44 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not found
       summary: Enable stack
+  /organizations/{organizationId}/stacks/{stackId}/restore:
+    put:
+      operationId: restoreStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+      summary: Restore stack
   /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
     put:
       operationId: enableStargate
@@ -1121,6 +1159,8 @@ components:
           type: boolean
         public:
           type: boolean
+        version:
+          type: string
       required:
       - public
       type: object
@@ -1193,6 +1233,9 @@ components:
       properties:
         id:
           description: User ID
+          type: string
+        role:
+          description: User role
           type: string
       required:
       - id

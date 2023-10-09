@@ -107,6 +107,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
 *DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+*DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
 *DefaultApi* | [**UpdateConnectedUser**](docs/DefaultApi.md#updateconnecteduser) | **Put** /me | Update user
 *DefaultApi* | [**UpdateUser**](docs/DefaultApi.md#updateuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
