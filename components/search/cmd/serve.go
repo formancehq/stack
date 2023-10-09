@@ -106,25 +106,29 @@ func exitWithError(ctx context.Context, msg string) {
 	os.Exit(1)
 }
 
+func newOpensearchClient(openSearchServiceHost string) (*opensearch.Client, error) {
+	httpTransport := http.DefaultTransport
+	httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: true,
+	}
+
+	if viper.GetBool(app.DebugFlag) {
+		httpTransport = httpclient.NewDebugHTTPTransport(httpTransport)
+	}
+
+	return opensearch.NewClient(opensearch.Config{
+		Addresses:            []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
+		Transport:            otelhttp.NewTransport(httpTransport),
+		Username:             viper.GetString(openSearchUsernameFlag),
+		Password:             viper.GetString(openSearchPasswordFlag),
+		UseResponseCheckOnly: true,
+	})
+}
+
 func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndex string) fx.Option {
 	options := []fx.Option{
 		fx.Provide(func() (*opensearch.Client, error) {
-			httpTransport := http.DefaultTransport
-			httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
-				InsecureSkipVerify: true,
-			}
-
-			if viper.GetBool(app.DebugFlag) {
-				httpTransport = httpclient.NewDebugHTTPTransport(httpTransport)
-			}
-
-			return opensearch.NewClient(opensearch.Config{
-				Addresses:            []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
-				Transport:            otelhttp.NewTransport(httpTransport),
-				Username:             viper.GetString(openSearchUsernameFlag),
-				Password:             viper.GetString(openSearchPasswordFlag),
-				UseResponseCheckOnly: true,
-			})
+			return newOpensearchClient(openSearchServiceHost)
 		}),
 	}
 	if loadMapping {

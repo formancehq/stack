@@ -4240,6 +4240,8 @@ spec:
                         type: boolean
                       postgres:
                         properties:
+                          credentialsFromSecret:
+                            type: string
                           disableSSLMode:
                             type: boolean
                           host:
@@ -4252,9 +4254,7 @@ spec:
                             type: string
                         required:
                         - host
-                        - password
                         - port
-                        - username
                         type: object
                       resourceProperties:
                         properties:
@@ -4411,6 +4411,8 @@ spec:
                         type: object
                       postgres:
                         properties:
+                          credentialsFromSecret:
+                            type: string
                           disableSSLMode:
                             type: boolean
                           host:
@@ -4423,9 +4425,7 @@ spec:
                             type: string
                         required:
                         - host
-                        - password
                         - port
-                        - username
                         type: object
                       resourceProperties:
                         properties:
@@ -4462,6 +4462,8 @@ spec:
                         type: boolean
                       postgres:
                         properties:
+                          credentialsFromSecret:
+                            type: string
                           disableSSLMode:
                             type: boolean
                           host:
@@ -4474,9 +4476,7 @@ spec:
                             type: string
                         required:
                         - host
-                        - password
                         - port
-                        - username
                         type: object
                       resourceProperties:
                         properties:
@@ -4515,6 +4515,8 @@ spec:
                         type: string
                       postgres:
                         properties:
+                          credentialsFromSecret:
+                            type: string
                           disableSSLMode:
                             type: boolean
                           host:
@@ -4527,9 +4529,7 @@ spec:
                             type: string
                         required:
                         - host
-                        - password
                         - port
-                        - username
                         type: object
                       resourceProperties:
                         properties:
@@ -4722,6 +4722,8 @@ spec:
                         type: boolean
                       postgres:
                         properties:
+                          credentialsFromSecret:
+                            type: string
                           disableSSLMode:
                             type: boolean
                           host:
@@ -4734,9 +4736,7 @@ spec:
                             type: string
                         required:
                         - host
-                        - password
                         - port
-                        - username
                         type: object
                       resourceProperties:
                         properties:
