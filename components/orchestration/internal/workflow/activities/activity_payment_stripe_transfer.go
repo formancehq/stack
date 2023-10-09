@@ -20,7 +20,7 @@ func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityS
 		DestinationAccountID: *request.Destination,
 		Provider:             shared.ConnectorStripe,
 		Type:                 shared.TransferInitiationRequestTypeTransfer,
-		UniqueRequestID:      activityInfo.WorkflowExecution.ID + activityInfo.ActivityID,
+		Reference:            activityInfo.WorkflowExecution.ID + activityInfo.ActivityID,
 		Validated:            true, // No need to validate
 	}
 
