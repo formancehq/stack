@@ -20,10 +20,13 @@ type bankAccountsRepository interface {
 }
 
 type bankAccountResponse struct {
-	ID        string    `json:"id"`
-	CreatedAt time.Time `json:"createdAt"`
-	Country   string    `json:"country"`
-	Provider  string    `json:"provider"`
+	ID            string    `json:"id"`
+	CreatedAt     time.Time `json:"createdAt"`
+	Country       string    `json:"country"`
+	Provider      string    `json:"provider"`
+	Iban          string    `json:"iban,omitempty"`
+	AccountNumber string    `json:"accountNumber,omitempty"`
+	SwiftBicCode  string    `json:"swiftBicCode,omitempty"`
 }
 
 func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
@@ -122,18 +125,27 @@ func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
 			return
 		}
 
-		account, err := repo.GetBankAccount(r.Context(), bankAccountID, false)
+		account, err := repo.GetBankAccount(r.Context(), bankAccountID, true)
 		if err != nil {
 			handleStorageErrors(w, r, err)
 
 			return
 		}
 
+		if err := account.Offuscate(); err != nil {
+			handleServerError(w, r, err)
+
+			return
+		}
+
 		data := &bankAccountResponse{
-			ID:        account.ID.String(),
-			CreatedAt: account.CreatedAt,
-			Country:   account.Country,
-			Provider:  account.Provider.String(),
+			ID:            account.ID.String(),
+			CreatedAt:     account.CreatedAt,
+			Country:       account.Country,
+			Provider:      account.Provider.String(),
+			Iban:          account.IBAN,
+			AccountNumber: account.AccountNumber,
+			SwiftBicCode:  account.SwiftBicCode,
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{

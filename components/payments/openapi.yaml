@@ -1129,6 +1129,12 @@ components:
           type: string
         provider:
           $ref: '#/components/schemas/Connector'
+        iban:
+          type: string
+        accountNumber:
+          type: string
+        swiftBicCode:
+          type: string
     Payment:
       type: object
       required:
