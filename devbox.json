@@ -11,7 +11,8 @@
     "moon@1.10.1",
     "process-compose@0.43.1",
     "helm-docs@1.11.0",
-    "yq@3.2.3"
+    "yq@3.2.3",
+    "jq@1.6-bin"
   ],
   "shell": {},
   "nixpkgs": {
