@@ -116,6 +116,7 @@ type ConfigurationSpec struct {
 	Broker   Broker                    `json:"broker"`
 	// +optional
 	Monitoring *MonitoringSpec `json:"monitoring,omitempty"`
+
 	// +optional
 	Ingress  IngressGlobalConfig `json:"ingress,omitempty"`
 	Temporal TemporalConfig      `json:"temporal"`

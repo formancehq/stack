@@ -19,6 +19,10 @@ type StackReconcilerFactory struct {
 	scheme   *runtime.Scheme
 }
 
+func (sm *StackReconcilerFactory) Platform() Platform {
+	return sm.platform
+}
+
 func (sm *StackReconcilerFactory) NewDeployer(stack *v1beta3.Stack, configuration *v1beta3.Configuration, versions *v1beta3.Versions) *StackReconciler {
 	return newStackReconciler(sm.client, sm.scheme, ReconciliationConfig{
 		Stack:         stack,

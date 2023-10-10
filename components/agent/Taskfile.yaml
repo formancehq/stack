@@ -18,3 +18,8 @@ tasks:
   helm:
     cmds:
       - echo "ok"
+      
+  generate-client:
+    cmds:
+    - go generate
+

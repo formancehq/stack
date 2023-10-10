@@ -18,6 +18,9 @@ fullnameOverride: ""
 operator:
   # Disable webhooks
   disableWebhooks: false
+  # Disable finalizers
+  disableStackFinalizer: true
+
   # The region to use for the operator
   region: "eu-west-1"
   # The environment to use for the operator

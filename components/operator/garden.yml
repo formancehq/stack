@@ -8,24 +8,28 @@ spec:
   deployCommand:
     - sh
     - -c
-    - make docker-build-local-prod 
+    - make docker-build-prod
 ---
 apiVersion: garden.io/v0
 kind: Deploy
 description: operator pre-deploy push
 type: exec
 name: operator-push
+dependencies:
+  - deploy.operator-build
 spec:
   deployCommand:
     - sh
     - -c
-    - make docker-push-local-prod
+    - make docker-push
 ---
 apiVersion: garden.io/v0
 kind: Deploy
 description: operator pre-deploy helm update
 type: exec
 name: operator-helm-build
+dependencies:
+  - deploy.operator-push
 spec:
   deployCommand:
     - sh

@@ -53,6 +53,7 @@ spec:
             {{- if .Values.operator.disableWebhooks }}
             - --disable-webhooks
             {{- end }}
+            - --disable-stack-finalizer={{ .Values.operator.disableStackFinalizer }}
           ports:
           - containerPort: 9443
             name: webhook-server

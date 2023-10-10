@@ -91,3 +91,6 @@ ca.crt
 helm/operator/charts
 helm/templates/rbac/kustomization.yaml
 operator
+
+# helm build
+*.tgz

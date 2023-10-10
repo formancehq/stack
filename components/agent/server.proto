@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
 option go_package = "github.com/formancehq/membership/internal/grpc/generated";
 
 package server;
@@ -48,6 +49,7 @@ message Stack {
   repeated AuthClient staticClients = 4;
   StargateConfig stargateConfig = 5;
   bool disabled = 6;
+  google.protobuf.Timestamp deletedAt = 7;
 }
 
 enum StackStatus {
@@ -58,7 +60,7 @@ enum StackStatus {
 }
 
 message StatusChanged {
-  string stackId = 1;
+  string clusterName = 1;
   StackStatus status = 2;
 }
 
