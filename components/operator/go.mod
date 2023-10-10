@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/nats-io/nats.go v1.24.0
-	github.com/numary/auth/authclient v0.0.0-20220811153653-6335dd9658f2
+	github.com/numary/auth/authclient 4d0d7cf197e8
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
 	github.com/opensearch-project/opensearch-go v1.1.0
