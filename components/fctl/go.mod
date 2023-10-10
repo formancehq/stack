@@ -10,15 +10,15 @@ require (
 	github.com/formancehq/formance-sdk-go v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/iancoleman/strcase v0.2.0
+	github.com/iancoleman/strcase v0.3.0
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/pkg/errors v0.9.1
-	github.com/pterm/pterm v0.12.62
+	github.com/pterm/pterm v0.12.69
 	github.com/segmentio/analytics-go/v3 v3.2.1
 	github.com/segmentio/ksuid v1.0.4
-	github.com/spf13/cobra v1.6.1
-	github.com/zitadel/oidc/v2 v2.6.4
-	golang.org/x/oauth2 v0.9.0
+	github.com/spf13/cobra v1.7.0
+	github.com/zitadel/oidc/v2 v2.11.0
+	golang.org/x/oauth2 v0.13.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

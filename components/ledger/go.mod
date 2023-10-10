@@ -3,38 +3,38 @@ module github.com/formancehq/ledger
 go 1.20
 
 require (
-	github.com/Masterminds/semver/v3 v3.2.0
-	github.com/ThreeDotsLabs/watermill v1.2.0
+	github.com/Masterminds/semver/v3 v3.2.1
+	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/alitto/pond v1.8.3
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10
 	github.com/bluele/gcache v0.0.2
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230517212829-71aaaacfd130
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
-	github.com/golang/mock v1.4.4
-	github.com/google/go-cmp v0.5.9
-	github.com/google/uuid v1.3.0
-	github.com/jackc/pgx/v5 v5.3.0
-	github.com/lib/pq v1.10.7
+	github.com/golang/mock v1.6.0
+	github.com/google/go-cmp v0.6.0
+	github.com/google/uuid v1.3.1
+	github.com/jackc/pgx/v5 v5.4.3
+	github.com/lib/pq v1.10.9
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pborman/uuid v1.2.1
 	github.com/pkg/errors v0.9.1
 	github.com/riandyrn/otelchi v0.5.1
-	github.com/sirupsen/logrus v1.9.0
-	github.com/spf13/cobra v1.6.1
-	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
-	github.com/uptrace/bun v1.1.14
-	github.com/uptrace/bun/dialect/pgdialect v1.1.14
-	github.com/uptrace/bun/extra/bunotel v1.1.14
-	go.nhat.io/otelsql v0.11.0
-	go.opentelemetry.io/otel v1.16.0
-	go.opentelemetry.io/otel/metric v1.16.0
-	go.opentelemetry.io/otel/trace v1.16.0
-	go.uber.org/fx v1.19.2
+	github.com/sirupsen/logrus v1.9.3
+	github.com/spf13/cobra v1.7.0
+	github.com/spf13/viper v1.17.0
+	github.com/stretchr/testify v1.8.4
+	github.com/uptrace/bun v1.1.16
+	github.com/uptrace/bun/dialect/pgdialect v1.1.16
+	github.com/uptrace/bun/extra/bunotel v1.1.16
+	go.nhat.io/otelsql v0.12.0
+	go.opentelemetry.io/otel v1.19.0
+	go.opentelemetry.io/otel/metric v1.19.0
+	go.opentelemetry.io/otel/trace v1.19.0
+	go.uber.org/fx v1.20.0
 	go.uber.org/mock v0.3.0
-	gopkg.in/segmentio/analytics-go.v3 v3.1.0
+	gopkg.in/segmentio/analytics-go.v3 v3.2.1
 )
 
 require (

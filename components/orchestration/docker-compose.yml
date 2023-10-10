@@ -26,7 +26,7 @@ services:
       - ./deploy/postgres/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
 
   auth:
-    image: "ghcr.io/formancehq/auth:v0.2.3"
+    image: "ghcr.io/formancehq/auth:v0.4.4"
     restart: always
     command: serve
     depends_on:
@@ -102,7 +102,7 @@ services:
     - temporalite
     environment:
     - TEMPORAL_CLI_ADDRESS=temporalite:7233
-    image: temporalio/admin-tools:1.17.5
+    image: temporalio/admin-tools:1.22.0
     stdin_open: true
     tty: true
     healthcheck:
@@ -112,7 +112,7 @@ services:
       retries: 30
 
   api:
-    image: golang:1.19-alpine
+    image: golang:1.21-alpine
     entrypoint:
     - go
     - run

@@ -3,51 +3,51 @@ module github.com/formancehq/stack/libs/go-libs
 go 1.19
 
 require (
-	github.com/Shopify/sarama v1.38.1
-	github.com/ThreeDotsLabs/watermill v1.2.0
+	github.com/Shopify/sarama v1.41.2
+	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/ThreeDotsLabs/watermill-http v1.1.4
-	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2
-	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0
-	github.com/coreos/go-semver v0.3.0
+	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.4.0
+	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.1
+	github.com/coreos/go-semver v0.3.1
 	github.com/dgraph-io/ristretto v0.1.1
-	github.com/google/uuid v1.3.0
-	github.com/imdario/mergo v0.3.13
-	github.com/jackc/pgx/v5 v5.3.0
-	github.com/lib/pq v1.10.7
-	github.com/nats-io/nats-server/v2 v2.9.8
-	github.com/nats-io/nats.go v1.23.0
-	github.com/ory/dockertest/v3 v3.9.1
+	github.com/google/uuid v1.3.1
+	github.com/imdario/mergo v0.3.16
+	github.com/jackc/pgx/v5 v5.4.3
+	github.com/lib/pq v1.10.9
+	github.com/nats-io/nats-server/v2 v2.10.2
+	github.com/nats-io/nats.go v1.30.2
+	github.com/ory/dockertest/v3 v3.10.0
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pkg/errors v0.9.1
 	github.com/segmentio/analytics-go v3.1.0+incompatible
-	github.com/sirupsen/logrus v1.9.0
-	github.com/spf13/cobra v1.6.1
+	github.com/sirupsen/logrus v1.9.3
+	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
-	github.com/uptrace/bun v1.1.14
-	github.com/uptrace/bun/dialect/pgdialect v1.1.14
-	github.com/uptrace/bun/extra/bundebug v1.1.14
-	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21
+	github.com/spf13/viper v1.17.0
+	github.com/stretchr/testify v1.8.4
+	github.com/uptrace/bun v1.1.16
+	github.com/uptrace/bun/dialect/pgdialect v1.1.16
+	github.com/uptrace/bun/extra/bundebug v1.1.16
+	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.2.3
 	github.com/xdg-go/scram v1.1.2
-	go.opentelemetry.io/contrib/instrumentation/host v0.42.0
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
-	go.opentelemetry.io/contrib/instrumentation/runtime v0.42.0
-	go.opentelemetry.io/contrib/propagators/b3 v1.13.0
-	go.opentelemetry.io/otel v1.16.0
-	go.opentelemetry.io/otel/exporters/jaeger v1.16.0
-	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v0.39.0
-	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v0.39.0
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.16.0
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.16.0
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.16.0
-	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v0.39.0
-	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.16.0
-	go.opentelemetry.io/otel/metric v1.16.0
-	go.opentelemetry.io/otel/sdk v1.16.0
-	go.opentelemetry.io/otel/sdk/metric v0.39.0
-	go.opentelemetry.io/otel/trace v1.16.0
-	go.uber.org/fx v1.19.1
+	go.opentelemetry.io/contrib/instrumentation/host v0.45.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.45.0
+	go.opentelemetry.io/contrib/instrumentation/runtime v0.45.0
+	go.opentelemetry.io/contrib/propagators/b3 v1.20.0
+	go.opentelemetry.io/otel v1.19.0
+	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v0.42.0
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v0.42.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.19.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.19.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.19.0
+	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v0.42.0
+	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.19.0
+	go.opentelemetry.io/otel/metric v1.19.0
+	go.opentelemetry.io/otel/sdk v1.19.0
+	go.opentelemetry.io/otel/sdk/metric v0.41.0
+	go.opentelemetry.io/otel/trace v1.19.0
+	go.uber.org/fx v1.20.0
 )
 
 require (

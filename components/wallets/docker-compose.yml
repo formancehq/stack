@@ -25,7 +25,7 @@ services:
       - ./deploy/postgres/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
 
   auth:
-    image: "ghcr.io/formancehq/auth:v0.2.3"
+    image: "ghcr.io/formancehq/auth:v0.4.4"
     restart: always
     command: serve
     depends_on:
@@ -73,7 +73,7 @@ services:
     command: caddy run
 
   app:
-    image: golang:1.19-alpine
+    image: golang:1.21-alpine
     command: go run main.go serve
     volumes:
     - .:/src

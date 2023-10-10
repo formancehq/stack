@@ -3,37 +3,37 @@ module github.com/formancehq/payments
 go 1.20
 
 require (
-	github.com/ThreeDotsLabs/watermill v1.2.0
+	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/gibson042/canonicaljson-go v1.0.3
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
-	github.com/hashicorp/golang-lru/v2 v2.0.4
-	github.com/jackc/pgx/v5 v5.3.0
-	github.com/lib/pq v1.10.7
+	github.com/hashicorp/golang-lru/v2 v2.0.7
+	github.com/jackc/pgx/v5 v5.4.3
+	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
-	github.com/rs/cors v1.8.3
-	github.com/sirupsen/logrus v1.9.0
-	github.com/spf13/afero v1.9.3
-	github.com/spf13/cobra v1.6.1
-	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
+	github.com/rs/cors v1.10.1
+	github.com/sirupsen/logrus v1.9.3
+	github.com/spf13/afero v1.10.0
+	github.com/spf13/cobra v1.7.0
+	github.com/spf13/viper v1.17.0
+	github.com/stretchr/testify v1.8.4
 	github.com/stripe/stripe-go/v72 v72.122.0
-	github.com/uptrace/bun v1.1.14
-	github.com/uptrace/bun/dialect/pgdialect v1.1.14
-	github.com/uptrace/bun/extra/bundebug v1.1.14
-	github.com/uptrace/bun/extra/bunotel v1.1.14
-	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.39.0
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
-	go.opentelemetry.io/otel v1.16.0
-	go.opentelemetry.io/otel/metric v1.16.0
-	go.opentelemetry.io/otel/trace v1.16.0
-	go.uber.org/dig v1.16.1
-	go.uber.org/fx v1.19.1
-	golang.org/x/oauth2 v0.6.0
-	golang.org/x/sync v0.1.0
+	github.com/uptrace/bun v1.1.16
+	github.com/uptrace/bun/dialect/pgdialect v1.1.16
+	github.com/uptrace/bun/extra/bundebug v1.1.16
+	github.com/uptrace/bun/extra/bunotel v1.1.16
+	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.45.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.45.0
+	go.opentelemetry.io/otel v1.19.0
+	go.opentelemetry.io/otel/metric v1.19.0
+	go.opentelemetry.io/otel/trace v1.19.0
+	go.uber.org/dig v1.17.0
+	go.uber.org/fx v1.20.0
+	golang.org/x/oauth2 v0.13.0
+	golang.org/x/sync v0.4.0
 )
 
 require (

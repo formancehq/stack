@@ -1,17 +1,17 @@
 # syntax=docker/dockerfile:1
 FROM ghcr.io/formancehq/gateway:v0.1.7 as gateway
-FROM ghcr.io/formancehq/ledger:v1.10.3 as ledger
+FROM ghcr.io/formancehq/ledger:v1.10.11 as ledger
 FROM ghcr.io/formancehq/payments:v0.9.7 as payments
-FROM ghcr.io/formancehq/orchestration:v0.1.5 as orchestration
-FROM ghcr.io/formancehq/auth:v0.4.3 as auth
-FROM ghcr.io/formancehq/search:v0.7.0 as search
-FROM ghcr.io/formancehq/wallets:v0.4.3 as wallets
-FROM ghcr.io/formancehq/webhooks:v0.6.6 as webhooks
+FROM ghcr.io/formancehq/orchestration:v0.1.6 as orchestration
+FROM ghcr.io/formancehq/auth:v0.4.4 as auth
+FROM ghcr.io/formancehq/search:v0.8.0 as search
+FROM ghcr.io/formancehq/wallets:v0.4.6 as wallets
+FROM ghcr.io/formancehq/webhooks:v0.7.1 as webhooks
 FROM ghcr.io/formancehq/control:v1.7.0 as control
 FROM ghcr.io/formancehq/auth-dex:latest as dex
-FROM jeffail/benthos:4.12.1 as benthos
+FROM jeffail/benthos:4.22.0 as benthos
 
-FROM golang:1.20 as builder
+FROM golang:1.21 as builder
 WORKDIR /tmp
 RUN apt update && apt install -y wget
 RUN wget https://github.com/F1bonacc1/process-compose/archive/refs/tags/v0.51.4.tar.gz \

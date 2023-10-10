@@ -1,4 +1,4 @@
-FROM golang:1.20-alpine as builder
+FROM golang:1.21-alpine as builder
 ARG APP_SHA
 ARG VERSION
 WORKDIR /src
@@ -11,7 +11,7 @@ RUN --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
-FROM alpine:3.16
+FROM alpine:3.18
 RUN apk update && apk add ca-certificates curl
 COPY components/gateway/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder src/components/gateway/caddy /usr/bin/caddy

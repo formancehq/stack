@@ -1,4 +1,4 @@
-FROM jeffail/benthos:4.10
+FROM jeffail/benthos:4.22
 WORKDIR /config
 COPY benthos /config
 ENV ELASTICSEARCH_BATCHING_COUNT 50

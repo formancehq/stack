@@ -6,14 +6,14 @@ services:
     - "16686:16686/tcp"
 
   opensearch:
-    image: opensearchproject/opensearch:2.4.0
+    image: opensearchproject/opensearch:2.10.0
     environment:
       discovery.type: single-node
     ports:
     - 9200:9200/tcp
 
   benthos:
-    image: jeffail/benthos:4.11
+    image: jeffail/benthos:4.22
     ports:
     - "4195:4195/tcp"
     volumes:
@@ -48,7 +48,7 @@ services:
 
   search:
     command: go run main.go serve
-    image: golang:1.19-alpine
+    image: golang:1.21-alpine
     ports:
     - 8080:8080/tcp
     depends_on:
@@ -67,7 +67,7 @@ services:
     working_dir: /app
 
   redpanda:
-    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
+    image: docker.vectorized.io/vectorized/redpanda:v22.3.24
     volumes:
     - .:/src
     command:
@@ -91,7 +91,7 @@ services:
       retries: 5
 
   redpanda-config:
-    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
+    image: docker.vectorized.io/vectorized/redpanda:v22.3.24
     command:
     - cluster
     - config

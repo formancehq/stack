@@ -3,31 +3,31 @@ module github.com/formancehq/orchestration
 go 1.20
 
 require (
-	github.com/formancehq/formance-sdk-go v1.0.0-rc.1
+	github.com/formancehq/formance-sdk-go v1.0.202307124
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
-	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-playground/validator/v10 v10.11.2
-	github.com/google/uuid v1.3.0
+	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-playground/validator/v10 v10.15.5
+	github.com/google/uuid v1.3.1
 	github.com/pkg/errors v0.9.1
-	github.com/pressly/goose/v3 v3.9.0
+	github.com/pressly/goose/v3 v3.15.1
 	github.com/riandyrn/otelchi v0.5.1
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
-	github.com/uptrace/bun v1.1.14
-	github.com/uptrace/bun/dialect/pgdialect v1.1.14
-	github.com/uptrace/bun/dialect/sqlitedialect v1.1.14
-	github.com/uptrace/bun/driver/pgdriver v1.1.14
-	github.com/uptrace/bun/driver/sqliteshim v1.1.14
-	github.com/uptrace/bun/extra/bundebug v1.1.14
-	go.opentelemetry.io/otel v1.16.0
-	go.temporal.io/api v1.18.1
-	go.temporal.io/sdk v1.21.1
+	github.com/spf13/viper v1.17.0
+	github.com/stretchr/testify v1.8.4
+	github.com/uptrace/bun v1.1.16
+	github.com/uptrace/bun/dialect/pgdialect v1.1.16
+	github.com/uptrace/bun/dialect/sqlitedialect v1.1.16
+	github.com/uptrace/bun/driver/pgdriver v1.1.16
+	github.com/uptrace/bun/driver/sqliteshim v1.1.16
+	github.com/uptrace/bun/extra/bundebug v1.1.16
+	go.opentelemetry.io/otel v1.19.0
+	go.temporal.io/api v1.24.0
+	go.temporal.io/sdk v1.25.0
 	go.temporal.io/sdk/contrib/opentelemetry v0.2.0
-	go.uber.org/fx v1.19.1
-	golang.org/x/mod v0.10.0
-	golang.org/x/oauth2 v0.6.0
+	go.uber.org/fx v1.20.0
+	golang.org/x/mod v0.13.0
+	golang.org/x/oauth2 v0.13.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

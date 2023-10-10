@@ -24,7 +24,7 @@ jobs:
     permissions:
       statuses: write
     steps:
-      - uses: aslafy-z/conventional-pr-title-action@v3.0.0
+      - uses: aslafy-z/conventional-pr-title-action@v3.1.1
         with:
           success-state: Title follows the specification.
           failure-state: Title does not follow the specification.

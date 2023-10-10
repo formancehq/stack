@@ -16,7 +16,7 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     -X github.com/formancehq/ledger/cmd.Commit=${APP_SHA} \
     -X github.com/formancehq/ledger/cmd.DefaultSegmentWriteKey=${SEGMENT_WRITE_KEY}" ./
 
-FROM alpine:3.16 as app
+FROM alpine:3.18 as app
 RUN apk update && apk add ca-certificates
 COPY --from=builder /src/components/ledger/ledger /usr/local/bin/ledger
 RUN chmod +x /usr/local/bin/ledger
