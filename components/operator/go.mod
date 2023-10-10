@@ -3,7 +3,6 @@ module github.com/formancehq/operator
 go 1.20
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/google/go-cmp v0.5.9
@@ -23,6 +22,8 @@ require (
 	k8s.io/utils v0.0.0-20230220204549-a5ecb0141aa5
 	sigs.k8s.io/controller-runtime v0.14.4
 )
+
+require github.com/davecgh/go-spew v1.1.1 // indirect
 
 require (
 	github.com/benbjohnson/clock v1.3.0 // indirect

@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    annotations:
-        reloader.stakater.com/auto: "true"
     generation: 1
     labels:
         app.kubernetes.io/name: ""
@@ -981,7 +979,8 @@ spec:
                     name: search-benthos-templates
                   name: search-benthos-templates
 status:
-    conditions:
-        - status: "True"
-          type: Available
+    availableReplicas: 1
     observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1

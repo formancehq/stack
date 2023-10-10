@@ -2,7 +2,6 @@ package modules
 
 import (
 	"github.com/formancehq/operator/apis/stack/v1beta3"
-	"github.com/formancehq/operator/internal/common"
 	"github.com/formancehq/operator/internal/controllerutils"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -44,7 +43,6 @@ func (d *scopedResourceDeployer) Deployments(options ...controllerutils.ObjectMu
 	options = append(options,
 		CommonOptions[*appsv1.Deployment](d.owner, d.scheme)...,
 	)
-	options = append(options, common.WithReloaderAnnotations[*appsv1.Deployment]())
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, options...)
 }
 
@@ -52,7 +50,6 @@ func (d *scopedResourceDeployer) Migrations(options ...controllerutils.ObjectMut
 	options = append(options,
 		CommonOptions[*v1beta3.Migration](d.owner, d.scheme)...,
 	)
-	options = append(options, common.WithReloaderAnnotations[*v1beta3.Migration]())
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, options...)
 }
 

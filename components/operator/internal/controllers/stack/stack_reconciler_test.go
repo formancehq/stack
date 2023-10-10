@@ -11,7 +11,6 @@ import (
 
 	"github.com/formancehq/operator/internal/modules/auth"
 
-	"github.com/davecgh/go-spew/spew"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
@@ -35,14 +34,17 @@ func init() {
 	}
 }
 
+func catchInitError() {
+	if e := recover(); e != nil {
+		fmt.Println(e)
+		debug.PrintStack()
+		panic(e)
+	}
+}
+
 var _ = Describe("Check stack deployment", func() {
-	defer func() {
-		if e := recover(); e != nil {
-			debug.PrintStack()
-			spew.Dump(e)
-			panic(e)
-		}
-	}()
+	defer catchInitError()
+
 	ls, err := os.ReadDir("testdata")
 	if err != nil {
 		panic(err)
@@ -54,6 +56,8 @@ var _ = Describe("Check stack deployment", func() {
 		}
 
 		Context(dirEntry.Name(), func() {
+
+			defer catchInitError()
 
 			dirName := dirEntry.Name()
 			name := strings.ReplaceAll(dirName, ".", "-")

@@ -2,14 +2,12 @@ package stack_test
 
 import (
 	"context"
+	batchv1 "k8s.io/api/batch/v1"
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
-	"testing"
-	"time"
-
-	batchv1 "k8s.io/api/batch/v1"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
+	"testing"
 
 	_ "github.com/formancehq/operator/internal/modules/all"
 
@@ -19,7 +17,6 @@ import (
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -143,15 +140,10 @@ var _ = ginkgo.BeforeEach(func() {
 				return reconcile.Result{}, err
 			}
 			deployment.Status.ObservedGeneration = deployment.Generation
-			if len(deployment.Status.Conditions) == 0 {
-				deployment.Status.Conditions = append(deployment.Status.Conditions, appsv1.DeploymentCondition{})
-			}
-			deployment.Status.Conditions[0] = appsv1.DeploymentCondition{
-				Type:               appsv1.DeploymentAvailable,
-				Status:             "True",
-				LastUpdateTime:     metav1.Time{Time: time.Now()},
-				LastTransitionTime: metav1.Time{Time: time.Now()},
-			}
+			deployment.Status.UpdatedReplicas = 1
+			deployment.Status.AvailableReplicas = 1
+			deployment.Status.Replicas = 1
+			deployment.Status.ReadyReplicas = 1
 			if err := mgr.GetClient().Status().Update(ctx, deployment); err != nil {
 				return reconcile.Result{}, err
 			}

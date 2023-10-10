@@ -52,25 +52,6 @@ func Equal[T comparable](value T) func(t T) bool {
 	}
 }
 
-func MergeAll[T comparable](arrays ...[]T) []T {
-	ret := make([]T, 0)
-	for _, a := range arrays {
-		ret = append(ret, a...)
-	}
-	return ret
-}
-
-func CreateMap(args ...string) map[string]string {
-	if len(args)%2 != 0 {
-		panic("odd number of args pass to maputil.Create()")
-	}
-	ret := make(map[string]string)
-	for i := 0; i < len(args); i += 2 {
-		ret[args[i]] = args[i+1]
-	}
-	return ret
-}
-
 func Map[T1 any, T2 any](v1 []T1, transformer func(T1) T2) []T2 {
 	ret := make([]T2, 0)
 	for _, v := range v1 {
@@ -83,14 +64,6 @@ func SliceFromMap[K comparable, V any](m map[K]V) []V {
 	ret := make([]V, 0)
 	for _, v := range m {
 		ret = append(ret, v)
-	}
-	return ret
-}
-
-func CopyMap[K comparable, V any](m map[K]V) map[K]V {
-	ret := make(map[K]V)
-	for key, value := range m {
-		ret[key] = value
 	}
 	return ret
 }

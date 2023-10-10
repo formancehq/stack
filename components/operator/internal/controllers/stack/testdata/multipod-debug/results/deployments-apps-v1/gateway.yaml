@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    annotations:
-        reloader.stakater.com/auto: "true"
     generation: 1
     labels:
         app.kubernetes.io/name: gateway
@@ -24,6 +22,8 @@ spec:
         type: RollingUpdate
     template:
         metadata:
+            annotations:
+                stack.formance.cloud/volumes-hash: H6qpNVBIgOegh97ItP-QP9rrqSfb2KvcBb6_6xHQpc8=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: gateway
@@ -93,7 +93,8 @@ spec:
                     name: gateway-config
                   name: config
 status:
-    conditions:
-        - status: "True"
-          type: Available
+    availableReplicas: 1
     observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
