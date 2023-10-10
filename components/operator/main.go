@@ -68,15 +68,15 @@ func init() {
 
 func main() {
 	var (
-		region                string
-		env                   string
-		metricsAddr           string
-		enableLeaderElection  bool
-		probeAddr             string
-		issuerRefName         string
-		issuerRefKind         string
-		disableWebhooks       bool
-		disableStackFinalizer bool
+		region               string
+		env                  string
+		metricsAddr          string
+		enableStackFinalizer bool
+		enableLeaderElection bool
+		probeAddr            string
+		issuerRefName        string
+		issuerRefKind        string
+		disableWebhooks      bool
 	)
 	flag.StringVar(&region, "region", "eu-west-1", "The cloud region in use for the operator")
 	flag.StringVar(&env, "env", "staging", "The current environment in use for the operator")
@@ -88,7 +88,7 @@ func main() {
 	flag.StringVar(&issuerRefName, "issuer-ref-name", "", "")
 	flag.StringVar(&issuerRefKind, "issuer-ref-kind", "ClusterIssuer", "")
 	flag.BoolVar(&disableWebhooks, "disable-webhooks", false, "Disable wehooks")
-	flag.BoolVar(&disableStackFinalizer, "disable-stack-finalizer", true, "Disable stack finalizer")
+	flag.BoolVar(&enableStackFinalizer, "enable-stack-finalizer", false, "Enable stack finalizer")
 
 	opts := zap.Options{
 		Development: true,
@@ -146,7 +146,7 @@ func main() {
 		mgr.GetClient(),
 		mgr.GetScheme(),
 		modules.NewsStackReconcilerFactory(mgr.GetClient(), mgr.GetScheme(), platform),
-		stack.WithDisableStackFinalizer(disableStackFinalizer),
+		stack.WithEnableStackFinalizer(enableStackFinalizer),
 	)
 	if err = stackReconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Stack")

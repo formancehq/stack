@@ -65,7 +65,7 @@ type Reconciler struct {
 	scheme                 *runtime.Scheme
 	stackReconcilerFactory *modules.StackReconcilerFactory
 
-	disableStackFinalizer bool
+	enableStackFinalizer bool
 }
 
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -131,7 +131,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		configuration,
 	)
 
-	if !r.disableStackFinalizer {
+	if r.enableStackFinalizer {
 		deleted, err := stackFinalizer.HandleFinalizer(ctx, log, stack, conf, req)
 		if err != nil {
 			return ctrl.Result{
@@ -274,8 +274,8 @@ func NewReconciler(client client.Client, scheme *runtime.Scheme, stackReconciler
 	return r
 }
 
-func WithDisableStackFinalizer(disable bool) ReconcilerOpts {
+func WithEnableStackFinalizer(enable bool) ReconcilerOpts {
 	return func(r *Reconciler) {
-		r.disableStackFinalizer = disable
+		r.enableStackFinalizer = enable
 	}
 }
