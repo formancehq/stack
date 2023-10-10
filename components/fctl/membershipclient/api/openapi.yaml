@@ -249,6 +249,14 @@ paths:
         schema:
           type: boolean
         style: form
+      - description: Include disabled stacks
+        explode: true
+        in: query
+        name: disabled
+        required: false
+        schema:
+          type: boolean
+        style: form
       responses:
         "200":
           content:
@@ -307,9 +315,21 @@ paths:
       responses:
         "204":
           description: Stack deleted
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
       summary: Delete stack
     get:
-      operationId: readStack
+      operationId: getStack
       parameters:
       - explode: false
         in: path
@@ -332,7 +352,81 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReadStackResponse'
           description: OK
-      summary: Read stack
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: NotFound
+      summary: Find stack
+  /organizations/{organizationId}/stacks/{stackId}/disable:
+    put:
+      operationId: disableStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Stack disabled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+      summary: Disable stack
+  /organizations/{organizationId}/stacks/{stackId}/enable:
+    put:
+      operationId: enableStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Stack enabled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+      summary: Enable stack
   /organizations/{organizationId}/stacks/{stackId}/restore:
     put:
       operationId: restoreStack
@@ -358,6 +452,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReadStackResponse'
           description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
       summary: Restore stack
   /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
     put:
@@ -380,6 +486,12 @@ paths:
       responses:
         "204":
           description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
       summary: Enable stargate on a stack
   /organizations/{organizationId}/stacks/{stackId}/stargate/disable:
     put:
@@ -402,6 +514,12 @@ paths:
       responses:
         "204":
           description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
       summary: Disable stargate on a stack
   /me/invitations:
     get:
@@ -835,8 +953,6 @@ components:
       type: object
     ReadStackResponse:
       $ref: '#/components/schemas/CreateStackResponse'
-    RestoreStackResponse:
-      $ref: '#/components/schemas/CreateStackResponse'
     ReadUserResponse:
       example:
         data: null
@@ -1043,6 +1159,8 @@ components:
           type: boolean
         public:
           type: boolean
+        version:
+          type: string
       required:
       - public
       type: object
@@ -1076,14 +1194,27 @@ components:
           type: string
         stargateEnabled:
           type: boolean
+        createdAt:
+          format: date-time
+          type: string
         deletedAt:
           format: date-time
+          type: string
+        disabledAt:
+          format: date-time
+          type: string
+        status:
+          enum:
+          - UNKNOWN
+          - PROGRESSING
+          - READY
           type: string
       required:
       - id
       - organizationId
       - regionID
       - stargateEnabled
+      - status
       - uri
       type: object
       example: null
@@ -1102,6 +1233,9 @@ components:
       properties:
         id:
           description: User ID
+          type: string
+        role:
+          description: User role
           type: string
       required:
       - id

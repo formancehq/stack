@@ -1,42 +1,41 @@
-# \DefaultApi
+# \DefaultAPI
 
 All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**AcceptInvitation**](DefaultApi.md#AcceptInvitation) | **Post** /me/invitations/{invitationId}/accept | Accept invitation
-[**BillingPortal**](DefaultApi.md#BillingPortal) | **Get** /organizations/{organizationId}/billing/portal | Access to the billing portal
-[**BillingSetup**](DefaultApi.md#BillingSetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
-[**CreateInvitation**](DefaultApi.md#CreateInvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
-[**CreateOrganization**](DefaultApi.md#CreateOrganization) | **Post** /organizations | Create organization
-[**CreatePrivateRegion**](DefaultApi.md#CreatePrivateRegion) | **Post** /organizations/{organizationId}/regions | Create a private region
-[**CreateStack**](DefaultApi.md#CreateStack) | **Post** /organizations/{organizationId}/stacks | Create stack
-[**DeclineInvitation**](DefaultApi.md#DeclineInvitation) | **Post** /me/invitations/{invitationId}/reject | Decline invitation
-[**DeleteInvitation**](DefaultApi.md#DeleteInvitation) | **Delete** /organizations/{organizationId}/invitations/{invitationId} | Delete invitation
-[**DeleteOrganization**](DefaultApi.md#DeleteOrganization) | **Delete** /organizations/{organizationId} | Delete organization
-[**DeleteRegion**](DefaultApi.md#DeleteRegion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
-[**DeleteStack**](DefaultApi.md#DeleteStack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
-[**DisableStack**](DefaultApi.md#DisableStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
-[**DisableStargate**](DefaultApi.md#DisableStargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
-[**EnableStack**](DefaultApi.md#EnableStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/enable | Enable stack
-[**EnableStargate**](DefaultApi.md#EnableStargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
-[**GetRegion**](DefaultApi.md#GetRegion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
-[**GetServerInfo**](DefaultApi.md#GetServerInfo) | **Get** /_info | Get server info
-[**GetStack**](DefaultApi.md#GetStack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
-[**ListInvitations**](DefaultApi.md#ListInvitations) | **Get** /me/invitations | List invitations of the user
-[**ListOrganizationInvitations**](DefaultApi.md#ListOrganizationInvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
-[**ListOrganizations**](DefaultApi.md#ListOrganizations) | **Get** /organizations | List organizations of the connected user
-[**ListOrganizationsExpanded**](DefaultApi.md#ListOrganizationsExpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
-[**ListRegions**](DefaultApi.md#ListRegions) | **Get** /organizations/{organizationId}/regions | List regions
-[**ListStacks**](DefaultApi.md#ListStacks) | **Get** /organizations/{organizationId}/stacks | List stacks
-[**ListUsers**](DefaultApi.md#ListUsers) | **Get** /organizations/{organizationId}/users | List users
-[**ReadConnectedUser**](DefaultApi.md#ReadConnectedUser) | **Get** /me | Read user
-[**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
-[**ReadUser**](DefaultApi.md#ReadUser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
-[**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
-[**UnlinkUserFromOrganization**](DefaultApi.md#UnlinkUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
-[**UpdateConnectedUser**](DefaultApi.md#UpdateConnectedUser) | **Put** /me | Update user
-[**UpdateUser**](DefaultApi.md#UpdateUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
+[**AcceptInvitation**](DefaultAPI.md#AcceptInvitation) | **Post** /me/invitations/{invitationId}/accept | Accept invitation
+[**BillingPortal**](DefaultAPI.md#BillingPortal) | **Get** /organizations/{organizationId}/billing/portal | Access to the billing portal
+[**BillingSetup**](DefaultAPI.md#BillingSetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
+[**CreateInvitation**](DefaultAPI.md#CreateInvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
+[**CreateOrganization**](DefaultAPI.md#CreateOrganization) | **Post** /organizations | Create organization
+[**CreatePrivateRegion**](DefaultAPI.md#CreatePrivateRegion) | **Post** /organizations/{organizationId}/regions | Create a private region
+[**CreateStack**](DefaultAPI.md#CreateStack) | **Post** /organizations/{organizationId}/stacks | Create stack
+[**DeclineInvitation**](DefaultAPI.md#DeclineInvitation) | **Post** /me/invitations/{invitationId}/reject | Decline invitation
+[**DeleteInvitation**](DefaultAPI.md#DeleteInvitation) | **Delete** /organizations/{organizationId}/invitations/{invitationId} | Delete invitation
+[**DeleteOrganization**](DefaultAPI.md#DeleteOrganization) | **Delete** /organizations/{organizationId} | Delete organization
+[**DeleteRegion**](DefaultAPI.md#DeleteRegion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
+[**DeleteStack**](DefaultAPI.md#DeleteStack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+[**DisableStack**](DefaultAPI.md#DisableStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
+[**DisableStargate**](DefaultAPI.md#DisableStargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
+[**EnableStargate**](DefaultAPI.md#EnableStargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
+[**GetRegion**](DefaultAPI.md#GetRegion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
+[**GetServerInfo**](DefaultAPI.md#GetServerInfo) | **Get** /_info | Get server info
+[**ListInvitations**](DefaultAPI.md#ListInvitations) | **Get** /me/invitations | List invitations of the user
+[**ListOrganizationInvitations**](DefaultAPI.md#ListOrganizationInvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
+[**ListOrganizations**](DefaultAPI.md#ListOrganizations) | **Get** /organizations | List organizations of the connected user
+[**ListOrganizationsExpanded**](DefaultAPI.md#ListOrganizationsExpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
+[**ListRegions**](DefaultAPI.md#ListRegions) | **Get** /organizations/{organizationId}/regions | List regions
+[**ListStacks**](DefaultAPI.md#ListStacks) | **Get** /organizations/{organizationId}/stacks | List stacks
+[**ListUsers**](DefaultAPI.md#ListUsers) | **Get** /organizations/{organizationId}/users | List users
+[**ReadConnectedUser**](DefaultAPI.md#ReadConnectedUser) | **Get** /me | Read user
+[**ReadOrganization**](DefaultAPI.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
+[**ReadStack**](DefaultAPI.md#ReadStack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Read stack
+[**ReadUser**](DefaultAPI.md#ReadUser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+[**RestoreStack**](DefaultAPI.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
+[**UnlinkUserFromOrganization**](DefaultAPI.md#UnlinkUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
+[**UpdateConnectedUser**](DefaultAPI.md#UpdateConnectedUser) | **Put** /me | Update user
+[**UpdateUser**](DefaultAPI.md#UpdateUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
 
 
 
@@ -63,9 +62,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.AcceptInvitation(context.Background(), invitationId).Execute()
+    r, err := apiClient.DefaultAPI.AcceptInvitation(context.Background(), invitationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.AcceptInvitation``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.AcceptInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -129,13 +128,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.BillingPortal(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultAPI.BillingPortal(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.BillingPortal``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.BillingPortal``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `BillingPortal`: BillingPortalResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.BillingPortal`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.BillingPortal`: %v\n", resp)
 }
 ```
 
@@ -197,13 +196,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.BillingSetup(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultAPI.BillingSetup(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.BillingSetup``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.BillingSetup``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `BillingSetup`: BillingSetupResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.BillingSetup`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.BillingSetup`: %v\n", resp)
 }
 ```
 
@@ -266,13 +265,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.CreateInvitation(context.Background(), organizationId).Email(email).Execute()
+    resp, r, err := apiClient.DefaultAPI.CreateInvitation(context.Background(), organizationId).Email(email).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.CreateInvitation``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.CreateInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `CreateInvitation`: CreateInvitationResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.CreateInvitation`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.CreateInvitation`: %v\n", resp)
 }
 ```
 
@@ -335,13 +334,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.CreateOrganization(context.Background()).Body(body).Execute()
+    resp, r, err := apiClient.DefaultAPI.CreateOrganization(context.Background()).Body(body).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.CreateOrganization``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.CreateOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `CreateOrganization`: CreateOrganizationResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.CreateOrganization`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.CreateOrganization`: %v\n", resp)
 }
 ```
 
@@ -400,13 +399,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.CreatePrivateRegion(context.Background(), organizationId).CreatePrivateRegionRequest(createPrivateRegionRequest).Execute()
+    resp, r, err := apiClient.DefaultAPI.CreatePrivateRegion(context.Background(), organizationId).CreatePrivateRegionRequest(createPrivateRegionRequest).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.CreatePrivateRegion``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.CreatePrivateRegion``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `CreatePrivateRegion`: CreatedPrivateRegionResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.CreatePrivateRegion`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.CreatePrivateRegion`: %v\n", resp)
 }
 ```
 
@@ -470,13 +469,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.CreateStack(context.Background(), organizationId).CreateStackRequest(createStackRequest).Execute()
+    resp, r, err := apiClient.DefaultAPI.CreateStack(context.Background(), organizationId).CreateStackRequest(createStackRequest).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.CreateStack``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.CreateStack``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `CreateStack`: CreateStackResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.CreateStack`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.CreateStack`: %v\n", resp)
 }
 ```
 
@@ -539,9 +538,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DeclineInvitation(context.Background(), invitationId).Execute()
+    r, err := apiClient.DefaultAPI.DeclineInvitation(context.Background(), invitationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeclineInvitation``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.DeclineInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -606,9 +605,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DeleteInvitation(context.Background(), organizationId, invitationId).Execute()
+    r, err := apiClient.DefaultAPI.DeleteInvitation(context.Background(), organizationId, invitationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteInvitation``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.DeleteInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -674,9 +673,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DeleteOrganization(context.Background(), organizationId).Execute()
+    r, err := apiClient.DefaultAPI.DeleteOrganization(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteOrganization``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.DeleteOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -741,9 +740,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DeleteRegion(context.Background(), organizationId, regionId).Execute()
+    r, err := apiClient.DefaultAPI.DeleteRegion(context.Background(), organizationId, regionId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteRegion``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.DeleteRegion``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -810,9 +809,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DeleteStack(context.Background(), organizationId, stackId).Execute()
+    r, err := apiClient.DefaultAPI.DeleteStack(context.Background(), organizationId, stackId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteStack``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.DeleteStack``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -848,7 +847,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -879,9 +878,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DisableStack(context.Background(), organizationId, stackId).Execute()
+    r, err := apiClient.DefaultAPI.DisableStack(context.Background(), organizationId, stackId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DisableStack``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.DisableStack``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -917,7 +916,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -948,9 +947,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DisableStargate(context.Background(), organizationId, stackId).Execute()
+    r, err := apiClient.DefaultAPI.DisableStargate(context.Background(), organizationId, stackId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DisableStargate``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.DisableStargate``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -986,76 +985,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## EnableStack
-
-> EnableStack(ctx, organizationId, stackId).Execute()
-
-Enable stack
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    organizationId := "organizationId_example" // string | 
-    stackId := "stackId_example" // string | 
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.EnableStack(context.Background(), organizationId, stackId).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.EnableStack``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  | 
-**stackId** | **string** |  | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiEnableStackRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -1086,9 +1016,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.EnableStargate(context.Background(), organizationId, stackId).Execute()
+    r, err := apiClient.DefaultAPI.EnableStargate(context.Background(), organizationId, stackId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.EnableStargate``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.EnableStargate``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -1124,7 +1054,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -1155,13 +1085,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.GetRegion(context.Background(), organizationId, regionId).Execute()
+    resp, r, err := apiClient.DefaultAPI.GetRegion(context.Background(), organizationId, regionId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.GetRegion``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.GetRegion``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `GetRegion`: GetRegionResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.GetRegion`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.GetRegion`: %v\n", resp)
 }
 ```
 
@@ -1224,13 +1154,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.GetServerInfo(context.Background()).Execute()
+    resp, r, err := apiClient.DefaultAPI.GetServerInfo(context.Background()).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.GetServerInfo``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.GetServerInfo``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `GetServerInfo`: ServerInfo
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.GetServerInfo`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.GetServerInfo`: %v\n", resp)
 }
 ```
 
@@ -1246,77 +1176,6 @@ Other parameters are passed through a pointer to a apiGetServerInfoRequest struc
 ### Return type
 
 [**ServerInfo**](ServerInfo.md)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## GetStack
-
-> CreateStackResponse GetStack(ctx, organizationId, stackId).Execute()
-
-Find stack
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    organizationId := "organizationId_example" // string | 
-    stackId := "stackId_example" // string | 
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.GetStack(context.Background(), organizationId, stackId).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.GetStack``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `GetStack`: CreateStackResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.GetStack`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  | 
-**stackId** | **string** |  | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiGetStackRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-
-### Return type
-
-[**CreateStackResponse**](CreateStackResponse.md)
 
 ### Authorization
 
@@ -1356,13 +1215,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListInvitations(context.Background()).Status(status).Organization(organization).Execute()
+    resp, r, err := apiClient.DefaultAPI.ListInvitations(context.Background()).Status(status).Organization(organization).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListInvitations``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ListInvitations``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ListInvitations`: ListInvitationsResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListInvitations`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ListInvitations`: %v\n", resp)
 }
 ```
 
@@ -1422,13 +1281,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListOrganizationInvitations(context.Background(), organizationId).Status(status).Execute()
+    resp, r, err := apiClient.DefaultAPI.ListOrganizationInvitations(context.Background(), organizationId).Status(status).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListOrganizationInvitations``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ListOrganizationInvitations``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ListOrganizationInvitations`: ListInvitationsResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListOrganizationInvitations`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ListOrganizationInvitations`: %v\n", resp)
 }
 ```
 
@@ -1490,13 +1349,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListOrganizations(context.Background()).Execute()
+    resp, r, err := apiClient.DefaultAPI.ListOrganizations(context.Background()).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListOrganizations``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ListOrganizations``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ListOrganizations`: ListOrganizationResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListOrganizations`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ListOrganizations`: %v\n", resp)
 }
 ```
 
@@ -1549,13 +1408,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListOrganizationsExpanded(context.Background()).Execute()
+    resp, r, err := apiClient.DefaultAPI.ListOrganizationsExpanded(context.Background()).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListOrganizationsExpanded``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ListOrganizationsExpanded``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ListOrganizationsExpanded`: ListOrganizationExpandedResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListOrganizationsExpanded`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ListOrganizationsExpanded`: %v\n", resp)
 }
 ```
 
@@ -1609,13 +1468,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListRegions(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultAPI.ListRegions(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListRegions``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ListRegions``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ListRegions`: ListRegionsResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListRegions`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ListRegions`: %v\n", resp)
 }
 ```
 
@@ -1656,7 +1515,7 @@ Name | Type | Description  | Notes
 
 ## ListStacks
 
-> ListStacksResponse ListStacks(ctx, organizationId).Deleted(deleted).Disabled(disabled).Execute()
+> ListStacksResponse ListStacks(ctx, organizationId).Deleted(deleted).Execute()
 
 List stacks
 
@@ -1675,17 +1534,16 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     deleted := true // bool | Include deleted stacks (optional)
-    disabled := true // bool | Include disabled stacks (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListStacks(context.Background(), organizationId).Deleted(deleted).Disabled(disabled).Execute()
+    resp, r, err := apiClient.DefaultAPI.ListStacks(context.Background(), organizationId).Deleted(deleted).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListStacks``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ListStacks``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ListStacks`: ListStacksResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListStacks`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ListStacks`: %v\n", resp)
 }
 ```
 
@@ -1706,7 +1564,6 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **deleted** | **bool** | Include deleted stacks | 
- **disabled** | **bool** | Include disabled stacks | 
 
 ### Return type
 
@@ -1749,13 +1606,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListUsers(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultAPI.ListUsers(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListUsers``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ListUsers``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ListUsers`: ListUsersResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListUsers`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ListUsers`: %v\n", resp)
 }
 ```
 
@@ -1816,13 +1673,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ReadConnectedUser(context.Background()).Execute()
+    resp, r, err := apiClient.DefaultAPI.ReadConnectedUser(context.Background()).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadConnectedUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ReadConnectedUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ReadConnectedUser`: ReadUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadConnectedUser`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ReadConnectedUser`: %v\n", resp)
 }
 ```
 
@@ -1876,13 +1733,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ReadOrganization(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultAPI.ReadOrganization(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadOrganization``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ReadOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ReadOrganization`: CreateOrganizationResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadOrganization`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ReadOrganization`: %v\n", resp)
 }
 ```
 
@@ -1906,6 +1763,77 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**CreateOrganizationResponse**](CreateOrganizationResponse.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ReadStack
+
+> CreateStackResponse ReadStack(ctx, organizationId, stackId).Execute()
+
+Read stack
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultAPI.ReadStack(context.Background(), organizationId, stackId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ReadStack``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ReadStack`: CreateStackResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ReadStack`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiReadStackRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+[**CreateStackResponse**](CreateStackResponse.md)
 
 ### Authorization
 
@@ -1945,13 +1873,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ReadUser(context.Background(), organizationId, userId).Execute()
+    resp, r, err := apiClient.DefaultAPI.ReadUser(context.Background(), organizationId, userId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.ReadUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `ReadUser`: ReadUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadUser`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.ReadUser`: %v\n", resp)
 }
 ```
 
@@ -2016,13 +1944,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.RestoreStack(context.Background(), organizationId, stackId).Execute()
+    resp, r, err := apiClient.DefaultAPI.RestoreStack(context.Background(), organizationId, stackId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.RestoreStack``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.RestoreStack``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `RestoreStack`: CreateStackResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.RestoreStack`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.RestoreStack`: %v\n", resp)
 }
 ```
 
@@ -2089,9 +2017,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UnlinkUserFromOrganization(context.Background(), organizationId, userId).Execute()
+    r, err := apiClient.DefaultAPI.UnlinkUserFromOrganization(context.Background(), organizationId, userId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UnlinkUserFromOrganization``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.UnlinkUserFromOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -2157,13 +2085,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.UpdateConnectedUser(context.Background()).Body(body).Execute()
+    resp, r, err := apiClient.DefaultAPI.UpdateConnectedUser(context.Background()).Body(body).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateConnectedUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.UpdateConnectedUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `UpdateConnectedUser`: UpdateUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateConnectedUser`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.UpdateConnectedUser`: %v\n", resp)
 }
 ```
 
@@ -2223,13 +2151,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.UpdateUser(context.Background(), organizationId, userId).Body(body).Execute()
+    resp, r, err := apiClient.DefaultAPI.UpdateUser(context.Background(), organizationId, userId).Body(body).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.UpdateUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `UpdateUser`: UpdateUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateUser`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.UpdateUser`: %v\n", resp)
 }
 ```
 

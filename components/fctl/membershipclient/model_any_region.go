@@ -31,6 +31,7 @@ type AnyRegion struct {
 	Creator *User `json:"creator,omitempty"`
 	Production *bool `json:"production,omitempty"`
 	Public bool `json:"public"`
+	Version *string `json:"version,omitempty"`
 }
 
 // NewAnyRegion instantiates a new AnyRegion object
@@ -360,6 +361,38 @@ func (o *AnyRegion) SetPublic(v bool) {
 	o.Public = v
 }
 
+// GetVersion returns the Version field value if set, zero value otherwise.
+func (o *AnyRegion) GetVersion() string {
+	if o == nil || IsNil(o.Version) {
+		var ret string
+		return ret
+	}
+	return *o.Version
+}
+
+// GetVersionOk returns a tuple with the Version field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AnyRegion) GetVersionOk() (*string, bool) {
+	if o == nil || IsNil(o.Version) {
+		return nil, false
+	}
+	return o.Version, true
+}
+
+// HasVersion returns a boolean if a field has been set.
+func (o *AnyRegion) HasVersion() bool {
+	if o != nil && !IsNil(o.Version) {
+		return true
+	}
+
+	return false
+}
+
+// SetVersion gets a reference to the given string and assigns it to the Version field.
+func (o *AnyRegion) SetVersion(v string) {
+	o.Version = &v
+}
+
 func (o AnyRegion) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -391,6 +424,9 @@ func (o AnyRegion) ToMap() (map[string]interface{}, error) {
 		toSerialize["production"] = o.Production
 	}
 	toSerialize["public"] = o.Public
+	if !IsNil(o.Version) {
+		toSerialize["version"] = o.Version
+	}
 	return toSerialize, nil
 }
 

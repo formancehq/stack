@@ -21,6 +21,8 @@ var _ MappedNullable = &UserAllOf{}
 type UserAllOf struct {
 	// User ID
 	Id string `json:"id"`
+	// User role
+	Role *string `json:"role,omitempty"`
 }
 
 // NewUserAllOf instantiates a new UserAllOf object
@@ -65,6 +67,38 @@ func (o *UserAllOf) SetId(v string) {
 	o.Id = v
 }
 
+// GetRole returns the Role field value if set, zero value otherwise.
+func (o *UserAllOf) GetRole() string {
+	if o == nil || IsNil(o.Role) {
+		var ret string
+		return ret
+	}
+	return *o.Role
+}
+
+// GetRoleOk returns a tuple with the Role field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *UserAllOf) GetRoleOk() (*string, bool) {
+	if o == nil || IsNil(o.Role) {
+		return nil, false
+	}
+	return o.Role, true
+}
+
+// HasRole returns a boolean if a field has been set.
+func (o *UserAllOf) HasRole() bool {
+	if o != nil && !IsNil(o.Role) {
+		return true
+	}
+
+	return false
+}
+
+// SetRole gets a reference to the given string and assigns it to the Role field.
+func (o *UserAllOf) SetRole(v string) {
+	o.Role = &v
+}
+
 func (o UserAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -76,6 +110,9 @@ func (o UserAllOf) MarshalJSON() ([]byte, error) {
 func (o UserAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
+	if !IsNil(o.Role) {
+		toSerialize["role"] = o.Role
+	}
 	return toSerialize, nil
 }
 

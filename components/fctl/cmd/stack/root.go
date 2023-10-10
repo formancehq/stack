@@ -14,6 +14,8 @@ func NewCommand() *cobra.Command {
 			NewListCommand(),
 			NewDeleteCommand(),
 			NewShowCommand(),
+			NewDisableCommand(),
+			NewEnableCommand(),
 			NewRestoreStackCommand(),
 		),
 	)

@@ -32,14 +32,17 @@ type Stack struct {
 	// The region where the stack is installed
 	RegionID string `json:"regionID"`
 	StargateEnabled bool `json:"stargateEnabled"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
+	DisabledAt *time.Time `json:"disabledAt,omitempty"`
+	Status string `json:"status"`
 }
 
 // NewStack instantiates a new Stack object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, stargateEnabled bool) *Stack {
+func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, stargateEnabled bool, status string) *Stack {
 	this := Stack{}
 	this.Name = name
 	this.Metadata = metadata
@@ -48,6 +51,7 @@ func NewStack(name string, metadata map[string]string, id string, organizationId
 	this.Uri = uri
 	this.RegionID = regionID
 	this.StargateEnabled = stargateEnabled
+	this.Status = status
 	return &this
 }
 
@@ -227,6 +231,38 @@ func (o *Stack) SetStargateEnabled(v bool) {
 	o.StargateEnabled = v
 }
 
+// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+func (o *Stack) GetCreatedAt() time.Time {
+	if o == nil || IsNil(o.CreatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Stack) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.CreatedAt) {
+		return nil, false
+	}
+	return o.CreatedAt, true
+}
+
+// HasCreatedAt returns a boolean if a field has been set.
+func (o *Stack) HasCreatedAt() bool {
+	if o != nil && !IsNil(o.CreatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetCreatedAt gets a reference to the given time.Time and assigns it to the CreatedAt field.
+func (o *Stack) SetCreatedAt(v time.Time) {
+	o.CreatedAt = &v
+}
+
 // GetDeletedAt returns the DeletedAt field value if set, zero value otherwise.
 func (o *Stack) GetDeletedAt() time.Time {
 	if o == nil || IsNil(o.DeletedAt) {
@@ -259,6 +295,62 @@ func (o *Stack) SetDeletedAt(v time.Time) {
 	o.DeletedAt = &v
 }
 
+// GetDisabledAt returns the DisabledAt field value if set, zero value otherwise.
+func (o *Stack) GetDisabledAt() time.Time {
+	if o == nil || IsNil(o.DisabledAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.DisabledAt
+}
+
+// GetDisabledAtOk returns a tuple with the DisabledAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Stack) GetDisabledAtOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.DisabledAt) {
+		return nil, false
+	}
+	return o.DisabledAt, true
+}
+
+// HasDisabledAt returns a boolean if a field has been set.
+func (o *Stack) HasDisabledAt() bool {
+	if o != nil && !IsNil(o.DisabledAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetDisabledAt gets a reference to the given time.Time and assigns it to the DisabledAt field.
+func (o *Stack) SetDisabledAt(v time.Time) {
+	o.DisabledAt = &v
+}
+
+// GetStatus returns the Status field value
+func (o *Stack) GetStatus() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetStatusOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *Stack) SetStatus(v string) {
+	o.Status = v
+}
+
 func (o Stack) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -276,9 +368,16 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	toSerialize["uri"] = o.Uri
 	toSerialize["regionID"] = o.RegionID
 	toSerialize["stargateEnabled"] = o.StargateEnabled
+	if !IsNil(o.CreatedAt) {
+		toSerialize["createdAt"] = o.CreatedAt
+	}
 	if !IsNil(o.DeletedAt) {
 		toSerialize["deletedAt"] = o.DeletedAt
 	}
+	if !IsNil(o.DisabledAt) {
+		toSerialize["disabledAt"] = o.DisabledAt
+	}
+	toSerialize["status"] = o.Status
 	return toSerialize, nil
 }
 
