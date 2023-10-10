@@ -57,6 +57,6 @@
     ]
   },
   "devDependencies": {
-    "@vercel/node": "^2.6.2"
+    "@vercel/node": "^3.0.0"
   }
 }
