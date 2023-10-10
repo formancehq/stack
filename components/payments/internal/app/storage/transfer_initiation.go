@@ -2,10 +2,12 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/pkg/errors"
 )
 
@@ -59,12 +61,21 @@ func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.
 	return payments, nil
 }
 
-func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Paginator) ([]*models.TransferInitiation, PaginationDetails, error) {
+func (s *Storage) ListTransferInitiations(ctx context.Context, pagination PaginatorQuery) ([]*models.TransferInitiation, PaginationDetails, error) {
 	var tfs []*models.TransferInitiation
 
 	query := s.db.NewSelect().
 		Column("id", "created_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
 		Model(&tfs)
+
+	if pagination.queryBuilder != nil {
+		where, args, err := s.transferInitiationQueryContext(pagination.queryBuilder)
+		if err != nil {
+			// TODO: handle error
+			panic(err)
+		}
+		query = query.Where(where, args...)
+	}
 
 	query = pagination.apply(query, "transfer_initiation.created_at")
 
@@ -205,4 +216,24 @@ func (s *Storage) DeleteTransferInitiation(ctx context.Context, id models.Transf
 	}
 
 	return nil
+}
+
+func (s *Storage) transferInitiationQueryContext(qb query.Builder) (string, []any, error) {
+	return qb.Build(query.ContextFn(func(key, operator string, value any) (string, []any, error) {
+		switch {
+		case key == "source_account_id", key == "destination_account_id":
+			if operator != "$match" {
+				return "", nil, fmt.Errorf("'%s' columns can only be used with $match", key)
+			}
+
+			switch accountID := value.(type) {
+			case string:
+				return fmt.Sprintf("%s = ?", key), []any{accountID}, nil
+			default:
+				return "", nil, fmt.Errorf("unexpected type %T for column '%s'", accountID, key)
+			}
+		default:
+			return "", nil, fmt.Errorf("unknown key '%s' when building query", key)
+		}
+	}))
 }

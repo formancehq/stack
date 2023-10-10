@@ -68,7 +68,7 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 			return
 		}
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
 		if err != nil {
 			handleValidationError(w, r, err)
 

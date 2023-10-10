@@ -17,7 +17,7 @@ import (
 )
 
 type listPaymentsRepository interface {
-	ListPayments(ctx context.Context, pagination storage.Paginator) ([]*models.Payment, storage.PaginationDetails, error)
+	ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error)
 }
 
 type paymentResponse struct {
@@ -83,7 +83,7 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 			return
 		}
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
 		if err != nil {
 			handleValidationError(w, r, err)
 

@@ -61,6 +61,7 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Query'
       responses:
         '200':
           $ref: '#/components/responses/TransferInitiations'
@@ -358,6 +359,14 @@ paths:
 components:
   # ---------------------- PARAMETERS ----------------------
   parameters:
+    Query:
+      name: query
+      in: query
+      required: false
+      description: |
+        Filters used to filter resources.
+      schema:
+        type: string
     PageSize:
       name: pageSize
       in: query

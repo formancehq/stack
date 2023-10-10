@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 )
 
-func (s *Storage) ListPayments(ctx context.Context, pagination Paginator) ([]*models.Payment, PaginationDetails, error) {
+func (s *Storage) ListPayments(ctx context.Context, pagination PaginatorQuery) ([]*models.Payment, PaginationDetails, error) {
 	var payments []*models.Payment
 
 	query := s.db.NewSelect().

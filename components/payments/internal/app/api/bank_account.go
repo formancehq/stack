@@ -16,7 +16,7 @@ import (
 )
 
 type bankAccountsRepository interface {
-	ListBankAccounts(ctx context.Context, pagination storage.Paginator) ([]*models.BankAccount, storage.PaginationDetails, error)
+	ListBankAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.BankAccount, storage.PaginationDetails, error)
 }
 
 type bankAccountResponse struct {
@@ -68,7 +68,7 @@ func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
 			return
 		}
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
 		if err != nil {
 			handleValidationError(w, r, err)
 
