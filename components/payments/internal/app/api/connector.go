@@ -94,7 +94,7 @@ func listTasks[Config models.ConnectorConfigObject](connectorManager *integratio
 			return
 		}
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), nil)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), nil, nil)
 		if err != nil {
 			handleValidationError(w, r, err)
 

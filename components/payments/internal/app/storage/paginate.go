@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/uptrace/bun"
 )
 
@@ -36,15 +37,16 @@ func (c baseCursor) Encode() (string, error) {
 	return base64.StdEncoding.EncodeToString(bytes), nil
 }
 
-type Paginator struct {
+type PaginatorQuery struct {
 	pageSize int
 	token    string
 
-	cursor baseCursor
-	sorter Sorter
+	queryBuilder query.Builder
+	cursor       baseCursor
+	sorter       Sorter
 }
 
-func Paginate(pageSize int, token string, sorter Sorter) (Paginator, error) {
+func Paginate(pageSize int, token string, sorter Sorter, queryBuilder query.Builder) (PaginatorQuery, error) {
 	if pageSize == 0 {
 		pageSize = defaultPageSize
 	}
@@ -58,19 +60,19 @@ func Paginate(pageSize int, token string, sorter Sorter) (Paginator, error) {
 	if token != "" {
 		tokenBytes, err := base64.StdEncoding.DecodeString(token)
 		if err != nil {
-			return Paginator{}, fmt.Errorf("error decoding token: %w", err)
+			return PaginatorQuery{}, fmt.Errorf("error decoding token: %w", err)
 		}
 
 		err = json.Unmarshal(tokenBytes, &cursor)
 		if err != nil {
-			return Paginator{}, fmt.Errorf("error unmarshaling baseCursor: %w", err)
+			return PaginatorQuery{}, fmt.Errorf("error unmarshaling baseCursor: %w", err)
 		}
 	}
 
-	return Paginator{pageSize, token, cursor, sorter}, nil
+	return PaginatorQuery{pageSize, token, queryBuilder, cursor, sorter}, nil
 }
 
-func (p Paginator) apply(query *bun.SelectQuery, column string) *bun.SelectQuery {
+func (p PaginatorQuery) apply(query *bun.SelectQuery, column string) *bun.SelectQuery {
 	query = query.Limit(p.pageSize + 1)
 
 	if p.cursor.Reference == "" {
@@ -92,7 +94,7 @@ func (p Paginator) apply(query *bun.SelectQuery, column string) *bun.SelectQuery
 	return query.Where(fmt.Sprintf("%s >= ?", column), p.cursor.Reference).Order(column + " ASC")
 }
 
-func (p Paginator) hasPrevious(ctx context.Context, query *bun.SelectQuery, column, reference string) (bool, error) {
+func (p PaginatorQuery) hasPrevious(ctx context.Context, query *bun.SelectQuery, column, reference string) (bool, error) {
 	query = query.Limit(1).Order(column + " DESC")
 
 	if p.cursor.Reference == "" {
@@ -115,7 +117,7 @@ func (p Paginator) hasPrevious(ctx context.Context, query *bun.SelectQuery, colu
 	return exists, nil
 }
 
-func (p Paginator) paginationDetails(hasMore, hasPrevious bool, firstReference, lastReference string) (PaginationDetails, error) {
+func (p PaginatorQuery) paginationDetails(hasMore, hasPrevious bool, firstReference, lastReference string) (PaginationDetails, error) {
 	var (
 		previousPage string
 		nextPage     string

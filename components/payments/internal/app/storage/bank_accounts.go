@@ -42,7 +42,7 @@ func (s *Storage) updateBankAccountInformation(ctx context.Context, id uuid.UUID
 	return nil
 }
 
-func (s *Storage) ListBankAccounts(ctx context.Context, pagination Paginator) ([]*models.BankAccount, PaginationDetails, error) {
+func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuery) ([]*models.BankAccount, PaginationDetails, error) {
 	var bankAccounts []*models.BankAccount
 
 	query := s.db.NewSelect().

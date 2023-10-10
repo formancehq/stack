@@ -146,10 +146,10 @@ type BalanceQuery struct {
 	From       time.Time
 	To         time.Time
 	Limit      int
-	Pagination Paginator
+	Pagination PaginatorQuery
 }
 
-func NewBalanceQuery(pagination Paginator) BalanceQuery {
+func NewBalanceQuery(pagination PaginatorQuery) BalanceQuery {
 	return BalanceQuery{
 		Pagination: pagination,
 	}

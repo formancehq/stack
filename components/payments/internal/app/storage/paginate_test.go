@@ -28,37 +28,37 @@ func TestPaginate(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    Paginator
+		want    PaginatorQuery
 		wantErr bool
 	}{
 		{
 			name:    "valid",
 			args:    args{pageSize: 10, token: "", sorter: nil},
-			want:    Paginator{pageSize: 10, token: "", cursor: baseCursor{}, sorter: nil},
+			want:    PaginatorQuery{pageSize: 10, token: "", cursor: baseCursor{}, sorter: nil},
 			wantErr: false,
 		},
 		{
 			name:    "invalid page size",
 			args:    args{pageSize: 0, token: "", sorter: nil},
-			want:    Paginator{pageSize: defaultPageSize, token: "", cursor: baseCursor{}, sorter: nil},
+			want:    PaginatorQuery{pageSize: defaultPageSize, token: "", cursor: baseCursor{}, sorter: nil},
 			wantErr: false,
 		},
 		{
 			name:    "exceeding max page size",
 			args:    args{pageSize: maxPageSize + 1, token: "", sorter: nil},
-			want:    Paginator{pageSize: maxPageSize, token: "", cursor: baseCursor{}, sorter: nil},
+			want:    PaginatorQuery{pageSize: maxPageSize, token: "", cursor: baseCursor{}, sorter: nil},
 			wantErr: false,
 		},
 		{
 			name:    "token decode",
 			args:    args{pageSize: 10, token: token, sorter: nil},
-			want:    Paginator{pageSize: 10, token: token, cursor: baseCursor{}, sorter: nil},
+			want:    PaginatorQuery{pageSize: 10, token: token, cursor: baseCursor{}, sorter: nil},
 			wantErr: false,
 		},
 		{
 			name:    "invalid token",
 			args:    args{pageSize: 10, token: "abc", sorter: nil},
-			want:    Paginator{pageSize: 0, token: "", cursor: baseCursor{}, sorter: nil},
+			want:    PaginatorQuery{pageSize: 0, token: "", cursor: baseCursor{}, sorter: nil},
 			wantErr: true,
 		},
 	}
@@ -69,7 +69,7 @@ func TestPaginate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := Paginate(tt.args.pageSize, tt.args.token, tt.args.sorter)
+			got, err := Paginate(tt.args.pageSize, tt.args.token, tt.args.sorter, nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Paginate() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -133,7 +133,7 @@ func TestPaginatorApply(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			p := Paginator{
+			p := PaginatorQuery{
 				pageSize: tt.fields.pageSize,
 				token:    tt.fields.token,
 				cursor:   tt.fields.cursor,
@@ -220,7 +220,7 @@ func TestPaginatorPaginationDetails(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			p := Paginator{
+			p := PaginatorQuery{
 				pageSize: tt.fields.pageSize,
 				token:    tt.fields.token,
 				cursor:   tt.fields.cursor,

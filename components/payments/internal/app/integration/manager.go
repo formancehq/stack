@@ -228,7 +228,7 @@ func (l *ConnectorManager[ConnectorConfig]) IsInstalled(ctx context.Context) (bo
 	return l.store.IsInstalled(ctx, l.loader.Name())
 }
 
-func (l *ConnectorManager[ConnectorConfig]) ListTasksStates(ctx context.Context, pagination storage.Paginator,
+func (l *ConnectorManager[ConnectorConfig]) ListTasksStates(ctx context.Context, pagination storage.PaginatorQuery,
 ) ([]models.Task, storage.PaginationDetails, error) {
 	return l.scheduler.ListTasks(ctx, pagination)
 }

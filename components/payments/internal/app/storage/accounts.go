@@ -47,7 +47,7 @@ func (s *Storage) UpsertAccounts(ctx context.Context, provider models.ConnectorP
 	return nil
 }
 
-func (s *Storage) ListAccounts(ctx context.Context, pagination Paginator) ([]*models.Account, PaginationDetails, error) {
+func (s *Storage) ListAccounts(ctx context.Context, pagination PaginatorQuery) ([]*models.Account, PaginationDetails, error) {
 	var accounts []*models.Account
 
 	query := s.db.NewSelect().

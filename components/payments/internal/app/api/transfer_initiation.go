@@ -436,12 +436,19 @@ func readTransferInitiationHandler(repo readTransferInitiationRepository) http.H
 }
 
 type listTransferInitiationsRepository interface {
-	ListTransferInitiations(ctx context.Context, pagination storage.Paginator) ([]*models.TransferInitiation, storage.PaginationDetails, error)
+	ListTransferInitiations(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.TransferInitiation, storage.PaginationDetails, error)
 }
 
 func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+
+		qb, err := getQueryBuilder(r)
+		if err != nil {
+			handleValidationError(w, r, err)
+
+			return
+		}
 
 		var sorter storage.Sorter
 
@@ -478,7 +485,7 @@ func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http
 			return
 		}
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, qb)
 		if err != nil {
 			handleValidationError(w, r, err)
 

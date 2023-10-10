@@ -16,7 +16,7 @@ import (
 )
 
 type accountsRepository interface {
-	ListAccounts(ctx context.Context, pagination storage.Paginator) ([]*models.Account, storage.PaginationDetails, error)
+	ListAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Account, storage.PaginationDetails, error)
 }
 
 type accountResponse struct {
@@ -70,7 +70,7 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 			return
 		}
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
 		if err != nil {
 			handleValidationError(w, r, err)
 
