@@ -349,12 +349,12 @@ spec:
                       value: monopod-latest
                     - name: TEMPORAL_ADDRESS
                     - name: TEMPORAL_NAMESPACE
-                    - name: TEMPORAL_SSL_CLIENT_KEY
-                    - name: TEMPORAL_SSL_CLIENT_CERT
                     - name: STACK_CLIENT_ID
                       value: orchestration
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: TEMPORAL_SSL_CLIENT_KEY
+                    - name: TEMPORAL_SSL_CLIENT_CERT
                   image: ghcr.io/formancehq/orchestration:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -428,12 +428,12 @@ spec:
                       value: monopod-latest
                     - name: TEMPORAL_ADDRESS
                     - name: TEMPORAL_NAMESPACE
-                    - name: TEMPORAL_SSL_CLIENT_KEY
-                    - name: TEMPORAL_SSL_CLIENT_CERT
                     - name: STACK_CLIENT_ID
                       value: orchestration
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: TEMPORAL_SSL_CLIENT_KEY
+                    - name: TEMPORAL_SSL_CLIENT_CERT
                   image: ghcr.io/formancehq/orchestration:latest
                   imagePullPolicy: Always
                   name: orchestration-worker

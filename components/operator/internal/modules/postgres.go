@@ -18,10 +18,19 @@ func DefaultPostgresEnvVarsWithPrefix(c v1beta3.PostgresConfig, dbName, prefix s
 		Env(withPrefix("POSTGRES_PORT"), fmt.Sprint(c.Port)),
 		Env(withPrefix("POSTGRES_DATABASE"), dbName),
 	}
-	if c.Username != "" {
+	if c.Username != "" || c.CredentialsFromSecret != "" {
+		if c.Username != "" {
+			ret = ret.Append(
+				Env(withPrefix("POSTGRES_USERNAME"), c.Username),
+				Env(withPrefix("POSTGRES_PASSWORD"), c.Password),
+			)
+		} else {
+			ret = ret.Append(
+				EnvFromSecret(withPrefix("POSTGRES_USERNAME"), c.CredentialsFromSecret, "username"),
+				EnvFromSecret(withPrefix("POSTGRES_PASSWORD"), c.CredentialsFromSecret, "password"),
+			)
+		}
 		ret = ret.Append(
-			Env(withPrefix("POSTGRES_USERNAME"), c.Username),
-			Env(withPrefix("POSTGRES_PASSWORD"), c.Password),
 			Env(withPrefix("POSTGRES_NO_DATABASE_URI"), controllerutils.ComputeEnvVar(prefix, "postgresql://%s:%s@%s:%s",
 				"POSTGRES_USERNAME",
 				"POSTGRES_PASSWORD",

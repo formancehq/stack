@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+    password: cGFzc3dvcmQ=
+    username: cm9vdA==
+kind: Secret
+metadata:
+    labels:
+        stack: "true"
+    name: postgres
+    namespace: multipod-latest-with-secrets
+type: Opaque

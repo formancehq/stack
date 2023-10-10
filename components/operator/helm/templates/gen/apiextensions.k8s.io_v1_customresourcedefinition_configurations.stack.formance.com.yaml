@@ -4606,11 +4606,10 @@ spec:
                             properties:
                               password:
                                 type: string
+                              secretName:
+                                type: string
                               username:
                                 type: string
-                            required:
-                            - password
-                            - username
                             type: object
                           host:
                             type: string
@@ -4776,19 +4775,18 @@ spec:
                   namespace:
                     type: string
                   tls:
+                    description: 'TODO: Handle validation'
                     properties:
                       crt:
                         type: string
                       key:
                         type: string
-                    required:
-                    - crt
-                    - key
+                      secretName:
+                        type: string
                     type: object
                 required:
                 - address
                 - namespace
-                - tls
                 type: object
             required:
             - broker

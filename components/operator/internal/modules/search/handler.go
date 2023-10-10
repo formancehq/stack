@@ -387,9 +387,18 @@ func elasticSearchEnvVars(stack *stackv1beta3.Stack, configuration *stackv1beta3
 	if configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
 		ret = ret.Append(
 			modules.Env("BASIC_AUTH_ENABLED", "true"),
-			modules.Env("BASIC_AUTH_USERNAME", configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username),
-			modules.Env("BASIC_AUTH_PASSWORD", configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password),
 		)
+		if configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.SecretName == "" {
+			ret = ret.Append(
+				modules.Env("BASIC_AUTH_USERNAME", configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username),
+				modules.Env("BASIC_AUTH_PASSWORD", configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password),
+			)
+		} else {
+			ret = ret.Append(
+				modules.EnvFromSecret("BASIC_AUTH_USERNAME", configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.SecretName, "username"),
+				modules.EnvFromSecret("BASIC_AUTH_PASSWORD", configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.SecretName, "password"),
+			)
+		}
 	}
 	return ret
 }
