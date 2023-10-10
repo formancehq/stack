@@ -43,6 +43,10 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
       - run: 'docker compose -f ./tests/integration/docker-compose.yml stop'
         if: success() || failure()
+      - run: 'docker compose -f ./tests/integration/docker-compose.yml rm -f'
+        if: success() || failure()
+      - run: 'docker system prune --all --force --volumes'
+        if: success() || failure()
 
   Moon:
     runs-on: formance-runner
