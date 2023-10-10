@@ -18,6 +18,9 @@ package stack
 
 import (
 	"context"
+	"fmt"
+	batchv1 "k8s.io/api/batch/v1"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
@@ -38,9 +41,10 @@ type MigrationReconciler struct {
 	platform modules.Platform
 }
 
-//+kubebuilder:rbac:groups=stack.formance.com,resources=migrations,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=stack.formance.com,resources=migrations/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=stack.formance.com,resources=migrations/finalizers,verbs=update
+// +kubebuilder:rbac:groups=stack.formance.com,resources=migrations,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=stack.formance.com,resources=migrations/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=stack.formance.com,resources=migrations/finalizers,verbs=update
 
 func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
@@ -100,7 +104,7 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		Platform:      r.platform,
 	}
 
-	var fn func(ctx context.Context, config modules.ReconciliationConfig) error
+	var fn func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error)
 
 	if migration.Spec.PostUpgrade {
 		fn = version.PostUpgrade
@@ -108,15 +112,15 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		fn = version.PreUpgrade
 	}
 
-	var returnedError error
-	if err := fn(ctx, rc); err != nil {
-		returnedError = err
-	}
+	jobRunner := modules.NewJobRunner(r.Client, r.Scheme, stack, migration, fmt.Sprintf("%s-%s-%s-upgrade-",
+		module.Name(), migration.Spec.TargetedVersion, migration.Discriminator()))
 
-	if returnedError != nil {
+	var returnedError error
+	if terminated, err := fn(ctx, jobRunner, rc); err != nil {
+		returnedError = err
 		migration.Status.Err = returnedError.Error()
 	} else {
-		migration.Status.Terminated = true
+		migration.Status.Terminated = terminated
 		migration.Status.Err = ""
 	}
 
@@ -130,8 +134,8 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 // SetupWithManager sets up the controller with the Manager.
 func (r *MigrationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&stackv1beta3.Migration{}).
-		WithEventFilter(predicate.GenerationChangedPredicate{}).
+		For(&stackv1beta3.Migration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&batchv1.Job{}).
 		Complete(r)
 }
 

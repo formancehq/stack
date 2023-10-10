@@ -1,22 +1,19 @@
 package search
 
 import (
-	"bytes"
 	"context"
 	"embed"
 	"fmt"
 	"io/fs"
-	"net/http"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	"path/filepath"
 	"strings"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
-	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/operator/internal/modules"
 	benthosOperator "github.com/formancehq/operator/internal/modules/search/benthos"
 	"github.com/formancehq/search/benthos"
-	"github.com/formancehq/search/pkg/searchengine"
-	"github.com/opensearch-project/opensearch-go"
 )
 
 const (
@@ -32,44 +29,53 @@ func (s module) Name() string {
 func (s module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
+			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
+				return jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config))
+			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{searchService(ctx), benthosService(ctx)}
 			},
 			Cron: reindexCron,
 		},
 		"v0.7.0": {
-			PreUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				esClient, err := getOpenSearchClient(config)
+			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
+				ok, err := jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config))
 				if err != nil {
-					return err
+					return false, err
 				}
-				if err := searchengine.CreateIndex(ctx, esClient, stackv1beta3.DefaultESIndex); err != nil {
-					return err
-				}
-				if err := reindexData(ctx, config, esClient); err != nil {
-					return err
+				if !ok {
+					return false, nil
 				}
 
-				return nil
+				ok, err = jobRunner.RunJob(ctx, "reindex-data", nil, reindexDataJob(config))
+				if err != nil {
+					return false, err
+				}
+				if !ok {
+					return false, nil
+				}
+
+				return true, nil
 			},
-			PostUpgrade: func(ctx context.Context, config modules.ReconciliationConfig) error {
-				esClient, err := getOpenSearchClient(config)
+			PostUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
+
+				ok, err := jobRunner.RunJob(ctx, "reindex-data", nil, reindexDataJob(config))
 				if err != nil {
-					return err
+					return false, err
 				}
-				if err := reindexData(ctx, config, esClient); err != nil {
-					return err
+				if !ok {
+					return false, nil
 				}
 
-				response, err := esClient.Indices.Delete([]string{config.Stack.Name}, esClient.Indices.Delete.WithContext(ctx))
+				ok, err = jobRunner.RunJob(ctx, "delete-old-index", nil, deleteIndexJob(config, config.Stack.Name))
 				if err != nil {
-					return err
+					return false, err
+				}
+				if !ok {
+					return false, nil
 				}
 
-				if response.StatusCode != http.StatusOK && response.StatusCode != http.StatusNotFound {
-					return fmt.Errorf("unexpected status code %d when deleting index: %s", response.StatusCode, config.Stack.Name)
-				}
-				return nil
+				return true, nil
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{searchService(ctx), benthosService(ctx)}
@@ -87,18 +93,79 @@ func init() {
 	modules.Register(Module)
 }
 
-var CreateOpenSearchClient = func(cfg opensearch.Config) (*opensearch.Client, error) {
-	return opensearch.NewClient(cfg)
+func initMappingJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
+	return func(t *batchv1.Job) {
+		imageVersion := config.Versions.Spec.Search
+
+		// notes(gfyrag): this is the first version where the command is available
+		// this code will evolved if the mapping change, but it is not planned today
+		if config.Versions.IsLower("search", "v0.8.0") {
+			imageVersion = "v0.8.0"
+		}
+		t.Spec = batchv1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					RestartPolicy: corev1.RestartPolicyOnFailure,
+					Containers: []corev1.Container{{
+						Name:  "init-mapping",
+						Image: "ghcr.io/formancehq/search:" + imageVersion,
+						Args:  []string{"init-mapping"},
+						Env:   searchEnvVars(config).ToCoreEnv(),
+					}},
+				},
+			},
+		}
+	}
+}
+
+func reindexDataJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
+	return func(t *batchv1.Job) {
+		t.Spec = batchv1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					RestartPolicy: corev1.RestartPolicyOnFailure,
+					Containers: []corev1.Container{{
+						Name:  "search-reindex-data",
+						Image: "curlimages/curl",
+						Command: modules.ShellCommand(`
+							set -x
+							curl -X POST \
+								-H 'Content-Type: application/json' \
+								-d '{ "source": { "index": "%s" }, "dest": { "index": "%s" }, "script": { "source": "ctx._source.stack = ctx._index; ctx._id = ctx._index + '"'"'-'"'"' + ctx._id", "lang": "painless" }}' \
+								${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/_reindex?refresh`, config.Stack.Name, stackv1beta3.DefaultESIndex),
+						Env: searchEnvVars(config).ToCoreEnv(),
+					}},
+				},
+			},
+		}
+	}
+}
+
+func deleteIndexJob(config modules.ReconciliationConfig, name string) func(t *batchv1.Job) {
+	return func(t *batchv1.Job) {
+		t.Spec = batchv1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					RestartPolicy: corev1.RestartPolicyOnFailure,
+					Containers: []corev1.Container{{
+						Name:  "delete-index",
+						Image: "curlimages/curl",
+						Command: modules.ShellCommand(`
+							curl -X DELETE -H 'Content-Type: application/json' ${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/%s`, name),
+						Env: searchEnvVars(config).ToCoreEnv(),
+					}},
+				},
+			},
+		}
+	}
 }
 
 func reindexCron(ctx modules.ReconciliationConfig) []modules.Cron {
 	return []modules.Cron{
 		{
 			Container: modules.Container{
-				Command: []string{
-					"/bin/sh", "-c",
-					fmt.Sprintf("curl http://search-benthos.%s.svc.cluster.local:4195/ledger_reindex_all -X POST -H 'Content-Type: application/json' -d '{}'", ctx.Stack.Name),
-				},
+				Command: modules.ShellCommand(`
+					curl http://search-benthos.%s.svc.cluster.local:4195/ledger_reindex_all -X POST -H 'Content-Type: application/json' -d '{}'`, ctx.Stack.Name),
 				Image: "curlimages/curl:8.2.1",
 				Name:  "reindex-ledger",
 			},
@@ -108,44 +175,29 @@ func reindexCron(ctx modules.ReconciliationConfig) []modules.Cron {
 	}
 }
 
-func getOpenSearchClient(ctx modules.ReconciliationConfig) (*opensearch.Client, error) {
-	opensearchConfig := opensearch.Config{
-		Addresses:            []string{ctx.Configuration.Spec.Services.Search.ElasticSearchConfig.Endpoint()},
-		UseResponseCheckOnly: true,
+func searchEnvVars(rc modules.ReconciliationConfig) modules.ContainerEnv {
+	env := elasticSearchEnvVars(rc.Stack, rc.Configuration, rc.Versions).
+		Append(
+			modules.Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d%s",
+				rc.Configuration.Spec.Services.Search.ElasticSearchConfig.Host,
+				rc.Configuration.Spec.Services.Search.ElasticSearchConfig.Port,
+				rc.Configuration.Spec.Services.Search.ElasticSearchConfig.PathPrefix)),
+			modules.Env("OPEN_SEARCH_SCHEME", rc.Configuration.Spec.Services.Search.ElasticSearchConfig.Scheme),
+			modules.Env("MAPPING_INIT_DISABLED", "true"),
+		)
+	if rc.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
+		env = env.Append(
+			modules.Env("OPEN_SEARCH_USERNAME", rc.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username),
+			modules.Env("OPEN_SEARCH_PASSWORD", rc.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password),
+		)
+	}
+	if rc.Versions.IsLower("search", "v0.7.0") {
+		env = env.Append(modules.Env("ES_INDICES", rc.Stack.Name))
+	} else {
+		env = env.Append(modules.Env("ES_INDICES", stackv1beta3.DefaultESIndex))
 	}
 
-	if ctx.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
-		opensearchConfig.Username = ctx.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username
-		opensearchConfig.Password = ctx.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password
-	}
-
-	return CreateOpenSearchClient(opensearchConfig)
-}
-
-func reindexData(ctx context.Context, config modules.ReconciliationConfig, esClient *opensearch.Client) error {
-	res, err := esClient.Reindex(bytes.NewBufferString(fmt.Sprintf(`{
-	  "source": {
-		"index": "%s"
-	  },
-	  "dest": {
-		"index": "%s"
-	  },
-	  "script": {
-		"source": "ctx._source.stack = ctx._index; ctx._id = ctx._index + '-' + ctx._id",
-		"lang": "painless"
-	  }
-	}`, config.Stack.Name, stackv1beta3.DefaultESIndex)),
-		esClient.Reindex.WithContext(ctx),
-		esClient.Reindex.WithRefresh(true),
-	)
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusNotFound {
-		return fmt.Errorf("unexpected status code %d when reindexing data", res.StatusCode)
-	}
-	return nil
+	return env
 }
 
 func searchService(ctx modules.ReconciliationConfig) *modules.Service {
@@ -188,7 +240,7 @@ func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 }
 
 func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
-	ret := &modules.Service{
+	return &modules.Service{
 		Name: "benthos",
 		Port: 4195,
 		ExposeHTTP: &modules.ExposeHTTP{
@@ -274,72 +326,6 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 				),
 			}
 		},
-	}
-
-	if ctx.Versions.IsLower("search", "v0.7.0") {
-		ret.InitContainer = initContainerCreateIndex()
-	}
-
-	return ret
-}
-
-func initContainerCreateIndex() func(resolveContext modules.ContainerResolutionConfiguration) []modules.Container {
-	return func(resolveContext modules.ContainerResolutionConfiguration) []modules.Container {
-		env := modules.ContainerEnv{
-			modules.Env("OPEN_SEARCH_HOST", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Host),
-			modules.Env("OPEN_SEARCH_PORT", fmt.Sprint(resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Port)),
-			modules.Env("OPEN_SEARCH_PATH_PREFIX", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.PathPrefix),
-			modules.Env("OPEN_SEARCH_SCHEME", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Scheme),
-			modules.Env("OPEN_SEARCH_SERVICE", controllerutils.ComputeEnvVar("", "%s:%s%s",
-				"OPEN_SEARCH_HOST",
-				"OPEN_SEARCH_PORT",
-				"OPEN_SEARCH_PATH_PREFIX",
-			)),
-		}
-		if resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
-			env = env.Append(
-				modules.Env("OPEN_SEARCH_USERNAME", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username),
-				modules.Env("OPEN_SEARCH_PASSWORD", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password),
-			)
-		}
-
-		credentialsStr := ""
-		if resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
-			credentialsStr = "-u ${OPEN_SEARCH_USERNAME}:${OPEN_SEARCH_PASSWORD} "
-		}
-
-		mapping, err := searchengine.GetIndexDefinition()
-		if err != nil {
-			panic(err)
-		}
-
-		var args []string
-		if resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.UseZinc {
-			if err != nil {
-				panic(err)
-			}
-			args = []string{
-				"-c", fmt.Sprintf("curl -H 'Content-Type: application/json' "+
-					"-X POST -v -d '%s' "+
-					credentialsStr+
-					"${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/index", string(mapping)),
-			}
-		} else {
-			args = []string{
-				"-c", fmt.Sprintf("curl -H 'Content-Type: application/json' "+
-					"-X PUT -v -d '%s' "+
-					credentialsStr+
-					"${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/%s", string(mapping), resolveContext.Stack.Name),
-			}
-		}
-
-		return []modules.Container{{
-			Command: []string{"sh"},
-			Env:     env,
-			Image:   "curlimages/curl:7.86.0",
-			Name:    "init-mapping",
-			Args:    args,
-		}}
 	}
 }
 

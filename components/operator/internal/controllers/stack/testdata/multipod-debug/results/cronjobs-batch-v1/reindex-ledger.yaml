@@ -19,9 +19,9 @@ spec:
                 spec:
                     containers:
                         - command:
-                            - /bin/sh
+                            - sh
                             - -c
-                            - 'curl http://search-benthos.multipod-debug.svc.cluster.local:4195/ledger_reindex_all -X POST -H ''Content-Type: application/json'' -d ''{}'''
+                            - "/bin/sh <<'EOF'\n\n\t\t\n\t\t\t\t\tcurl http://search-benthos.multipod-debug.svc.cluster.local:4195/ledger_reindex_all -X POST -H 'Content-Type: application/json' -d '{}'\n \t\t\t\t\t\t    \nEOF"
                           image: curlimages/curl:8.2.1
                           imagePullPolicy: IfNotPresent
                           name: reindex-ledger

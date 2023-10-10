@@ -46,7 +46,7 @@ type PodDeployerFinalizer interface {
 }
 
 type defaultPodDeployer struct {
-	deployer *ResourceDeployer
+	deployer *scopedResourceDeployer
 }
 
 var _ PodDeployer = (*defaultPodDeployer)(nil)
@@ -108,14 +108,14 @@ func (d *defaultPodDeployer) shutdown(ctx context.Context, podName string) (bool
 	return scaleDownToZero(ctx, d.deployer, podName)
 }
 
-func NewDefaultPodDeployer(deployer *ResourceDeployer) *defaultPodDeployer {
+func NewDefaultPodDeployer(deployer *scopedResourceDeployer) *defaultPodDeployer {
 	return &defaultPodDeployer{
 		deployer: deployer,
 	}
 }
 
 type monoPodDeployer struct {
-	deployer *ResourceDeployer
+	deployer *scopedResourceDeployer
 	pod
 }
 
@@ -159,7 +159,7 @@ func (d *monoPodDeployer) finalize(ctx context.Context) error {
 	return NewDefaultPodDeployer(d.deployer).deploy(ctx, d.pod)
 }
 
-func NewMonoPodDeployer(deployer *ResourceDeployer, stackName string) *monoPodDeployer {
+func NewMonoPodDeployer(deployer *scopedResourceDeployer, stackName string) *monoPodDeployer {
 	return &monoPodDeployer{
 		deployer: deployer,
 		pod: pod{
@@ -169,7 +169,7 @@ func NewMonoPodDeployer(deployer *ResourceDeployer, stackName string) *monoPodDe
 	}
 }
 
-func scaleDownToZero(ctx context.Context, deployer *ResourceDeployer, name string) (bool, error) {
+func scaleDownToZero(ctx context.Context, deployer *scopedResourceDeployer, name string) (bool, error) {
 	deployment, err := deployer.Deployments().Get(ctx, name)
 	if apierrors.IsNotFound(err) {
 		return true, nil

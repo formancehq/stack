@@ -49,16 +49,17 @@ type ReconciliationConfig struct {
 
 type StackReconciler struct {
 	ReconciliationConfig
+	JobRunner
 	podDeployer                PodDeployer
 	portAllocator              PortAllocator
-	namespacedResourceDeployer *ResourceDeployer
+	namespacedResourceDeployer *scopedResourceDeployer
 
 	ready collectionutils.Set[Module]
 }
 
 func newStackReconciler(client client.Client, scheme *runtime.Scheme, cfg ReconciliationConfig) *StackReconciler {
 
-	resourceDeployer := NewDeployer(client, scheme, cfg.Stack, cfg.Configuration)
+	resourceDeployer := NewScopedDeployer(client, scheme, cfg.Stack, cfg.Stack)
 
 	var (
 		portAllocator PortAllocator = StaticPortAllocator(8080)
@@ -75,6 +76,7 @@ func newStackReconciler(client client.Client, scheme *runtime.Scheme, cfg Reconc
 		podDeployer:                podDeployer,
 		portAllocator:              portAllocator,
 		ready:                      collectionutils.NewSet[Module](),
+		JobRunner:                  NewJobRunner(client, scheme, cfg.Stack, cfg.Stack, ""),
 	}
 }
 
