@@ -12,7 +12,6 @@ import (
 	"github.com/formancehq/ledger/internal/storage/paginate"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/query"
-	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
@@ -28,7 +27,7 @@ type Logs struct {
 	Type           string           `bun:"type,type:log_type"`
 	Hash           []byte           `bun:"hash,type:bytea"`
 	Date           ledger.Time      `bun:"date,type:timestamptz"`
-	Data           []byte           `bun:"data,type:jsonb"`
+	Data           RawMessage       `bun:"data,type:jsonb"`
 	IdempotencyKey string           `bun:"idempotency_key,type:varchar(256),unique"`
 }
 
@@ -83,46 +82,31 @@ func (store *Store) logsQueryBuilder(q PaginatedQueryOptions[any]) func(*bun.Sel
 }
 
 func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.ChainedLog) error {
-	return store.withTransaction(ctx, func(tx bun.Tx) error {
-		// Beware: COPY query is not supported by bun if the pgx driver is used.
-		stmt, err := tx.Prepare(pq.CopyInSchema(
-			store.name,
-			LogTableName,
-			"id", "type", "hash", "date", "data", "idempotency_key",
-		))
+	ls := make([]Logs, len(activeLogs))
+	for i, chainedLogs := range activeLogs {
+		data, err := json.Marshal(chainedLogs.Data)
 		if err != nil {
-			return storageerrors.PostgresError(err)
+			return errors.Wrap(err, "marshaling log data")
 		}
 
-		ls := make([]Logs, len(activeLogs))
-		for i, chainedLogs := range activeLogs {
-			data, err := json.Marshal(chainedLogs.Data)
-			if err != nil {
-				return errors.Wrap(err, "marshaling log data")
-			}
-
-			ls[i] = Logs{
-				ID:             (*paginate.BigInt)(chainedLogs.ID),
-				Type:           chainedLogs.Type.String(),
-				Hash:           chainedLogs.Hash,
-				Date:           chainedLogs.Date,
-				Data:           data,
-				IdempotencyKey: chainedLogs.IdempotencyKey,
-			}
-
-			_, err = stmt.Exec(ls[i].ID, ls[i].Type, ls[i].Hash, ls[i].Date, RawMessage(ls[i].Data), chainedLogs.IdempotencyKey)
-			if err != nil {
-				return storageerrors.PostgresError(err)
-			}
+		ls[i] = Logs{
+			ID:             (*paginate.BigInt)(chainedLogs.ID),
+			Type:           chainedLogs.Type.String(),
+			Hash:           chainedLogs.Hash,
+			Date:           chainedLogs.Date,
+			Data:           data,
+			IdempotencyKey: chainedLogs.IdempotencyKey,
 		}
+	}
 
-		_, err = stmt.Exec()
-		if err != nil {
-			return storageerrors.PostgresError(err)
-		}
+	_, err := store.db.NewInsert().
+		ModelTableExpr("?0.?1", bun.Ident(store.Name()), bun.Ident(LogTableName)).
+		Model(&ls).Exec(ctx)
+	if err != nil {
+		return storageerrors.PostgresError(err)
+	}
 
-		return stmt.Close()
-	})
+	return nil
 }
 
 func (store *Store) GetLastLog(ctx context.Context) (*ledger.ChainedLog, error) {
