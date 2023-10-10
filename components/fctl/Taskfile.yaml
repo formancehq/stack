@@ -17,3 +17,7 @@ tasks:
   completions:
     cmds:
       - sh ./scripts/completions.sh
+
+  generate-client:
+    cmds:
+      - go generate

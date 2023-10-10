@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **Creator** | Pointer to [**User**](User.md) |  | [optional] 
 **Production** | Pointer to **bool** |  | [optional] 
 **Public** | **bool** |  | 
+**Version** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -148,6 +149,31 @@ and a boolean to check if the value has been set.
 
 SetPublic sets Public field to given value.
 
+
+### GetVersion
+
+`func (o *AnyRegionAllOf) GetVersion() string`
+
+GetVersion returns the Version field if non-nil, zero value otherwise.
+
+### GetVersionOk
+
+`func (o *AnyRegionAllOf) GetVersionOk() (*string, bool)`
+
+GetVersionOk returns a tuple with the Version field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetVersion
+
+`func (o *AnyRegionAllOf) SetVersion(v string)`
+
+SetVersion sets Version field to given value.
+
+### HasVersion
+
+`func (o *AnyRegionAllOf) HasVersion() bool`
+
+HasVersion returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

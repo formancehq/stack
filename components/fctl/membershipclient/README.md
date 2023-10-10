@@ -90,10 +90,13 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**DeleteOrganization**](docs/DefaultApi.md#deleteorganization) | **Delete** /organizations/{organizationId} | Delete organization
 *DefaultApi* | [**DeleteRegion**](docs/DefaultApi.md#deleteregion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
 *DefaultApi* | [**DeleteStack**](docs/DefaultApi.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+*DefaultApi* | [**DisableStack**](docs/DefaultApi.md#disablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
 *DefaultApi* | [**DisableStargate**](docs/DefaultApi.md#disablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
+*DefaultApi* | [**EnableStack**](docs/DefaultApi.md#enablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/enable | Enable stack
 *DefaultApi* | [**EnableStargate**](docs/DefaultApi.md#enablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
 *DefaultApi* | [**GetRegion**](docs/DefaultApi.md#getregion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
+*DefaultApi* | [**GetStack**](docs/DefaultApi.md#getstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
 *DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
 *DefaultApi* | [**ListOrganizationInvitations**](docs/DefaultApi.md#listorganizationinvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
 *DefaultApi* | [**ListOrganizations**](docs/DefaultApi.md#listorganizations) | **Get** /organizations | List organizations of the connected user
@@ -103,7 +106,6 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ListUsers**](docs/DefaultApi.md#listusers) | **Get** /organizations/{organizationId}/users | List users
 *DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
-*DefaultApi* | [**ReadStack**](docs/DefaultApi.md#readstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Read stack
 *DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
