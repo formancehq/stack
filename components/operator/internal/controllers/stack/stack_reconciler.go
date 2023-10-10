@@ -64,10 +64,11 @@ type Reconciler struct {
 	client                 client.Client
 	scheme                 *runtime.Scheme
 	stackReconcilerFactory *modules.StackReconcilerFactory
+
+	disableStackFinalizer bool
 }
 
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
 	log := log.FromContext(ctx, "stack", req.NamespacedName)
 	stack := &stackv1beta3.Stack{}
 	if err := r.client.Get(ctx, req.NamespacedName, stack); err != nil {
@@ -122,6 +123,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		Versions:      nil,
 		Platform:      platform,
 	}
+
 	stackFinalizer := NewStackFinalizer(
 		ctx,
 		r.client,
@@ -129,16 +131,19 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		configuration,
 	)
 
-	deleted, err := stackFinalizer.HandleFinalizer(ctx, log, stack, conf, req)
-	if err != nil {
-		return ctrl.Result{
-			Requeue:      true,
-			RequeueAfter: time.Second,
-		}, err
+	if !r.disableStackFinalizer {
+		deleted, err := stackFinalizer.HandleFinalizer(ctx, log, stack, conf, req)
+		if err != nil {
+			return ctrl.Result{
+				Requeue:      true,
+				RequeueAfter: time.Second,
+			}, err
+		}
+		if deleted {
+			return ctrl.Result{}, nil
+		}
 	}
-	if deleted {
-		return ctrl.Result{}, nil
-	}
+
 	if patchErr := r.client.Status().Update(ctx, stack); patchErr != nil {
 		log.Info("unable to update status", "error", patchErr)
 		return ctrl.Result{
@@ -253,10 +258,24 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func NewReconciler(client client.Client, scheme *runtime.Scheme, stackReconcilerFactory *modules.StackReconcilerFactory) *Reconciler {
-	return &Reconciler{
+type ReconcilerOpts func(*Reconciler)
+
+func NewReconciler(client client.Client, scheme *runtime.Scheme, stackReconcilerFactory *modules.StackReconcilerFactory, opts ...ReconcilerOpts) *Reconciler {
+	r := &Reconciler{
 		client:                 client,
 		scheme:                 scheme,
 		stackReconcilerFactory: stackReconcilerFactory,
+	}
+
+	for _, opt := range opts {
+		opt(r)
+	}
+
+	return r
+}
+
+func WithDisableStackFinalizer(disable bool) ReconcilerOpts {
+	return func(r *Reconciler) {
+		r.disableStackFinalizer = disable
 	}
 }

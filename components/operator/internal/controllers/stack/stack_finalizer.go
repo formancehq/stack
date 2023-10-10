@@ -34,59 +34,6 @@ type StackFinalizer struct {
 	reconcileConf modules.ReconciliationConfig
 }
 
-func (f *StackFinalizer) retrieveModuleTopic() []string {
-	subjectSet := collectionutils.NewSet[string]()
-	values := reflect.ValueOf(f.reconcileConf.Configuration.Spec.Services)
-
-	// TODO: iterate over registered modules ?
-	for i := 0; i < values.NumField(); i++ {
-		serviceName := strings.ToLower(values.Field(i).Type().Name())
-		mod := modules.Get(strings.ToLower(serviceName))
-		if mod == nil {
-			continue
-		}
-
-		for _, v := range mod.Versions() {
-			services := v.Services(f.reconcileConf)
-			for _, service := range services {
-				if service.NeedTopic {
-					subjectSet.Put(service.Name)
-					break
-				}
-			}
-		}
-
-	}
-
-	subjects := []string{}
-	for k := range subjectSet {
-		subjects = append(subjects, fmt.Sprintf("%s-%s", f.reconcileConf.Stack.Name, k))
-	}
-
-	return subjects
-
-}
-
-func (f *StackFinalizer) deleteStack(ctx context.Context, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, log logr.Logger) (*ctrl.Result, error) {
-	log.Info("start deleting databases " + stack.Name)
-	if err := f.DeleteByService(conf, stack.Name, log); err != nil {
-		return &ctrl.Result{
-			Requeue:      true,
-			RequeueAfter: time.Second,
-		}, err
-	}
-
-	log.Info("start deleting brokers subjects " + stack.Name)
-	if err := f.DeleteByBrokers(conf, stack.Name, f.retrieveModuleTopic(), log); err != nil {
-		return &ctrl.Result{
-			Requeue:      true,
-			RequeueAfter: time.Second,
-		}, err
-	}
-
-	return nil, nil
-}
-
 var ErrNotFullyDisabled = errors.New("not fully disabled")
 
 func (f *StackFinalizer) HandleFinalizer(ctx context.Context, log logr.Logger, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, req ctrl.Request) (bool, error) {
@@ -147,6 +94,59 @@ func (f *StackFinalizer) HandleFinalizer(ctx context.Context, log logr.Logger, s
 	return false, nil
 }
 
+func (f *StackFinalizer) retrieveModuleTopic() []string {
+	subjectSet := collectionutils.NewSet[string]()
+	values := reflect.ValueOf(f.reconcileConf.Configuration.Spec.Services)
+
+	// TODO: iterate over registered modules ?
+	for i := 0; i < values.NumField(); i++ {
+		serviceName := strings.ToLower(values.Field(i).Type().Name())
+		mod := modules.Get(strings.ToLower(serviceName))
+		if mod == nil {
+			continue
+		}
+
+		for _, v := range mod.Versions() {
+			services := v.Services(f.reconcileConf)
+			for _, service := range services {
+				if service.NeedTopic {
+					subjectSet.Put(service.Name)
+					break
+				}
+			}
+		}
+
+	}
+
+	subjects := []string{}
+	for k := range subjectSet {
+		subjects = append(subjects, fmt.Sprintf("%s-%s", f.reconcileConf.Stack.Name, k))
+	}
+
+	return subjects
+
+}
+
+func (f *StackFinalizer) deleteStack(ctx context.Context, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, log logr.Logger) (*ctrl.Result, error) {
+	log.Info("start deleting databases " + stack.Name)
+	if err := f.deleteByService(conf, stack.Name, log); err != nil {
+		return &ctrl.Result{
+			Requeue:      true,
+			RequeueAfter: time.Second,
+		}, err
+	}
+
+	log.Info("start deleting brokers subjects " + stack.Name)
+	if err := f.deleteByBrokers(conf, stack.Name, f.retrieveModuleTopic(), log); err != nil {
+		return &ctrl.Result{
+			Requeue:      true,
+			RequeueAfter: time.Second,
+		}, err
+	}
+
+	return nil, nil
+}
+
 var (
 	natsClientId = "membership"
 )
@@ -154,7 +154,7 @@ var (
 	ErrCast = errors.New("cannot cast interface to string")
 )
 
-func (f *StackFinalizer) DeleteByBrokers(c *v1beta3.Configuration, stackName string, subjectService []string, logger logr.Logger) error {
+func (f *StackFinalizer) deleteByBrokers(c *v1beta3.Configuration, stackName string, subjectService []string, logger logr.Logger) error {
 	values := reflect.ValueOf(c.Spec.Broker)
 	for i := 0; i < values.NumField(); i++ {
 		switch t := values.Field(i).Interface().(type) {
@@ -202,7 +202,7 @@ func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackNam
 	return nil
 }
 
-func (f *StackFinalizer) DeleteByService(c *v1beta3.Configuration, stackName string, logger logr.Logger) error {
+func (f *StackFinalizer) deleteByService(c *v1beta3.Configuration, stackName string, logger logr.Logger) error {
 
 	values := reflect.ValueOf(c.Spec.Services)
 	for i := 0; i < values.NumField(); i++ {
@@ -261,12 +261,21 @@ func NewStackFinalizer(
 	client client.Client,
 	log logr.Logger,
 	conf modules.ReconciliationConfig,
+	opts ...StackFinalizerOpt,
 ) *StackFinalizer {
-	return &StackFinalizer{
+	s := &StackFinalizer{
 		name:          "delete",
 		ctx:           context,
 		client:        client,
 		log:           log,
 		reconcileConf: conf,
 	}
+
+	for _, opt := range opts {
+		opt(s)
+	}
+
+	return s
 }
+
+type StackFinalizerOpt func(*StackFinalizer)
