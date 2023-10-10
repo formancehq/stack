@@ -13,7 +13,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0-rc.5
 	github.com/hashicorp/go-retryablehttp v0.7.2
 	github.com/lestrrat-go/jwx v1.2.26
-	github.com/nats-io/nats-server v1.4.1
+	github.com/nats-io/nats-server/v2 v2.2.0
 	github.com/nats-io/nats-server/v2 v2.9.8
 	github.com/nats-io/nats.go v1.23.0
 	github.com/pkg/errors v0.9.1
