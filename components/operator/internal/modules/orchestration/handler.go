@@ -22,7 +22,7 @@ func (o module) Versions() map[string]modules.Version {
 				return modules.Services{
 					{
 						Port: 8080,
-						AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {
+						AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
 							return stackv1beta3.NewClientConfiguration()
 						},
 						ExposeHTTP:              modules.DefaultExposeHTTP,

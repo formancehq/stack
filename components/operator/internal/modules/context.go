@@ -1,6 +1,8 @@
 package modules
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -19,8 +21,9 @@ func (ctx ContainerResolutionConfiguration) GetSecret(name string) SecretHandle 
 	return ctx.Secrets[name]
 }
 
-func (ctx ContainerResolutionConfiguration) volumes(serviceName string) []corev1.Volume {
+func (ctx ContainerResolutionConfiguration) volumes(serviceName string) ([]corev1.Volume, string) {
 	ret := make([]corev1.Volume, 0)
+	hash := sha256.New()
 	for _, configName := range ctx.Configs.sort() {
 		config := ctx.Configs[configName]
 		if config.MountPath == "" {
@@ -36,6 +39,7 @@ func (ctx ContainerResolutionConfiguration) volumes(serviceName string) []corev1
 				},
 			},
 		})
+		hash.Write([]byte(config.Hash))
 	}
 	for _, secretName := range ctx.Secrets.sort() {
 		secret := ctx.Secrets[secretName]
@@ -50,9 +54,10 @@ func (ctx ContainerResolutionConfiguration) volumes(serviceName string) []corev1
 				},
 			},
 		})
+		hash.Write([]byte(secret.Hash))
 	}
 
-	return ret
+	return ret, base64.URLEncoding.EncodeToString(hash.Sum(nil))
 }
 
 type RegisteredService struct {

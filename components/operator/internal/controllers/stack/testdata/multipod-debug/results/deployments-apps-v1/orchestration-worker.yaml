@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    annotations:
-        reloader.stakater.com/auto: "true"
     generation: 1
     labels:
         app.kubernetes.io/name: orchestration
@@ -24,6 +22,8 @@ spec:
         type: RollingUpdate
     template:
         metadata:
+            annotations:
+                stack.formance.cloud/volumes-hash: 47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: orchestration-worker
@@ -100,7 +100,8 @@ spec:
             securityContext: {}
             terminationGracePeriodSeconds: 30
 status:
-    conditions:
-        - status: "True"
-          type: Available
+    availableReplicas: 1
     observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1

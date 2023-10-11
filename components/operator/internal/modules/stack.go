@@ -3,7 +3,6 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
@@ -173,7 +172,7 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 }
 
 func (r *StackReconciler) prepareSecrets(ctx context.Context) error {
-	logger := logging.FromContext(ctx)
+	logger := log.FromContext(ctx)
 	logger.Info("Prepare secrets")
 	requirement, err := labels.NewRequirement(PartOfConfigurationLabel, selection.In, []string{r.Configuration.Name, PartOfConfigurationAny})
 	if err != nil {

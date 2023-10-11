@@ -10,7 +10,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
-	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/controllerutils"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -34,6 +33,7 @@ type pod struct {
 	disableRollingUpdate bool
 	mono                 bool
 	replicas             *int32
+	annotations          map[string]string
 }
 
 type PodDeployer interface {
@@ -55,7 +55,9 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 	return controllerutils.JustError(d.deployer.
 		Deployments().
 		CreateOrUpdate(ctx, pod.name, func(t *appsv1.Deployment) {
-			matchLabels := collectionutils.CreateMap("app.kubernetes.io/name", pod.name)
+			matchLabels := map[string]string{
+				"app.kubernetes.io/name": pod.name,
+			}
 			strategy := appsv1.DeploymentStrategy{}
 			if pod.disableRollingUpdate {
 				strategy.Type = appsv1.RecreateDeploymentStrategyType
@@ -83,6 +85,11 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 					replicas = t.Spec.Replicas
 				}
 			}
+
+			if t.Annotations != nil {
+				// notes(gfyrag): Usage of the stakater reloader operator until v0.17.0
+				delete(t.Annotations, "reloader.stakater.com/auto")
+			}
 			t.Spec = appsv1.DeploymentSpec{
 				Replicas: replicas,
 				Selector: &metav1.LabelSelector{
@@ -91,7 +98,8 @@ func (d *defaultPodDeployer) deploy(ctx context.Context, pod pod) error {
 				Strategy: strategy,
 				Template: corev1.PodTemplateSpec{
 					ObjectMeta: metav1.ObjectMeta{
-						Labels: matchLabels,
+						Labels:      matchLabels,
+						Annotations: pod.annotations,
 					},
 					Spec: corev1.PodSpec{
 						Volumes:        pod.volumes,

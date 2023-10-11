@@ -23,7 +23,7 @@ func (c module) Versions() map[string]modules.Version {
 					ExposeHTTP:  modules.DefaultExposeHTTP,
 					Liveness:    modules.LivenessDisable,
 					Annotations: ctx.Configuration.Spec.Services.Control.Annotations.Service,
-					AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {
+					AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
 						return stackv1beta3.NewClientConfiguration().
 							WithAdditionalScopes("profile", "email", "offline").
 							WithRedirectUris(fmt.Sprintf("%s/auth/login", config.Stack.URL())).

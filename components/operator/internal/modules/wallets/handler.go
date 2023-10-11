@@ -128,7 +128,7 @@ func service(ctx modules.ReconciliationConfig) modules.Services {
 		ExposeHTTP:         modules.DefaultExposeHTTP,
 		ListenEnvVar:       "LISTEN",
 		Annotations:        ctx.Configuration.Spec.Services.Wallets.Annotations.Service,
-		AuthConfiguration: func(config modules.ServiceInstallConfiguration) stackv1beta3.ClientConfiguration {
+		AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
 			return stackv1beta3.NewClientConfiguration()
 		},
 		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {

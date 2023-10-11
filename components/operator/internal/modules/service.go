@@ -2,12 +2,14 @@ package modules
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"sort"
 	"strings"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
-	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/common"
 	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -24,6 +26,15 @@ type Config struct {
 }
 
 func (c Config) create(ctx context.Context, deployer Deployer, serviceName, configName string) (*ConfigHandle, error) {
+
+	hash := sha256.New()
+	dataKeys := collectionutils.Keys(c.Data)
+	sort.Strings(dataKeys)
+	for _, k := range dataKeys {
+		hash.Write([]byte(k))
+		hash.Write([]byte(c.Data[k]))
+	}
+
 	configMap, err := deployer.
 		ConfigMaps().
 		CreateOrUpdate(ctx, serviceName+"-"+configName, func(t *corev1.ConfigMap) {
@@ -36,7 +47,7 @@ func (c Config) create(ctx context.Context, deployer Deployer, serviceName, conf
 	if c.Mount {
 		mountPath = fmt.Sprintf("/config/%s", configName)
 	}
-	h := NewConfigHandle(configMap.Name, mountPath)
+	h := NewConfigHandle(configMap.Name, mountPath, base64.URLEncoding.EncodeToString(hash.Sum(nil)))
 	return &h, nil
 }
 
@@ -60,6 +71,14 @@ type Secret struct {
 }
 
 func (s Secret) create(ctx context.Context, deployer *scopedResourceDeployer, serviceName, secretName string) (*SecretHandle, error) {
+
+	hash := sha256.New()
+	dataKeys := collectionutils.Keys(s.Data)
+	sort.Strings(dataKeys)
+	for _, k := range dataKeys {
+		hash.Write([]byte(k))
+		hash.Write(s.Data[k])
+	}
 	secret, err := deployer.
 		Secrets().
 		CreateOrUpdate(ctx, serviceName+"-"+secretName, func(t *corev1.Secret) {
@@ -82,7 +101,7 @@ func (s Secret) create(ctx context.Context, deployer *scopedResourceDeployer, se
 	if s.Mount {
 		mountPath = fmt.Sprintf("/secret/%s", secretName)
 	}
-	h := NewSecretHandle(secret.Name, mountPath)
+	h := NewSecretHandle(secret.Name, mountPath, base64.URLEncoding.EncodeToString(hash.Sum(nil)))
 	return &h, nil
 }
 
@@ -201,12 +220,14 @@ func (e ContainerEnv) ToCoreEnv() []corev1.EnvVar {
 type SecretHandle struct {
 	MountPath string
 	Name      string
+	Hash      string
 }
 
-func NewSecretHandle(name, mountPath string) SecretHandle {
+func NewSecretHandle(name, mountPath, hash string) SecretHandle {
 	return SecretHandle{
 		MountPath: mountPath,
 		Name:      name,
+		Hash:      hash,
 	}
 }
 
@@ -221,12 +242,14 @@ func (h SecretHandle) GetMountPath() string {
 type ConfigHandle struct {
 	MountPath string
 	Name      string
+	Hash      string
 }
 
-func NewConfigHandle(name, mountPath string) ConfigHandle {
+func NewConfigHandle(name, mountPath, hash string) ConfigHandle {
 	return ConfigHandle{
 		MountPath: mountPath,
 		Name:      name,
+		Hash:      hash,
 	}
 }
 
@@ -290,7 +313,7 @@ type Service struct {
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
 	Liveness                Liveness
-	AuthConfiguration       func(config ServiceInstallConfiguration) stackv1beta3.ClientConfiguration
+	AuthConfiguration       func(config ReconciliationConfig) stackv1beta3.ClientConfiguration
 	Configs                 func(resolveContext ServiceInstallConfiguration) Configs
 	Secrets                 func(resolveContext ServiceInstallConfiguration) Secrets
 	Container               func(resolveContext ContainerResolutionConfiguration) Container
@@ -322,15 +345,18 @@ type serviceReconciler struct {
 	usedPort int32
 }
 
-func (r *serviceReconciler) reconcile(ctx context.Context, config ServiceInstallConfiguration) error {
-
+func (r *serviceReconciler) prepare() {
 	if r.service.AuthConfiguration != nil {
-		_ = r.Stack.GetOrCreateClient(r.name, r.service.AuthConfiguration(config))
+		_ = r.Stack.GetOrCreateClient(r.name, r.service.AuthConfiguration(r.ReconciliationConfig))
 	}
 	if r.service.ExposeHTTP != nil || r.service.Liveness != LivenessDisable {
 		r.allocatePort()
 	}
+}
 
+func (r *serviceReconciler) reconcile(ctx context.Context, config ServiceInstallConfiguration) error {
+
+	// TODO: Use a job
 	if r.Configuration.Spec.Broker.Nats != nil && r.service.NeedTopic {
 		r.configureNats()
 	}
@@ -431,14 +457,18 @@ func (r *serviceReconciler) installSecrets(ctx context.Context, config ServiceIn
 
 func (r *serviceReconciler) createDeployment(ctx context.Context, config ContainerResolutionConfiguration) error {
 	container := r.service.Container(config)
+	volumes, volumesHash := config.volumes(r.name)
 	return r.podDeployer.deploy(ctx, pod{
 		name:                 r.name,
 		moduleName:           r.module.Name(),
-		volumes:              config.volumes(r.name),
+		volumes:              volumes,
 		initContainers:       r.initContainers(config, r.name),
 		containers:           r.containers(config, container, r.name),
 		disableRollingUpdate: container.DisableRollingUpdate,
 		replicas:             r.service.Replicas,
+		annotations: map[string]string{
+			"stack.formance.cloud/volumes-hash": volumesHash,
+		},
 	})
 }
 
@@ -569,7 +599,9 @@ func (r *serviceReconciler) install(ctx context.Context) error {
 		if r.Configuration.Spec.LightMode {
 			selector = r.Stack.Name
 		}
-		t.Labels = collectionutils.CreateMap("app.kubernetes.io/service-name", r.name)
+		t.Labels = map[string]string{
+			"app.kubernetes.io/service-name": r.name,
+		}
 		t.Spec = corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{{
 				Name:        "http",
@@ -578,7 +610,9 @@ func (r *serviceReconciler) install(ctx context.Context) error {
 				AppProtocol: pointer.String("http"),
 				TargetPort:  intstr.FromInt(int(r.usedPort)),
 			}},
-			Selector: collectionutils.CreateMap("app.kubernetes.io/name", selector),
+			Selector: map[string]string{
+				"app.kubernetes.io/name": selector,
+			},
 		}
 	}))
 }

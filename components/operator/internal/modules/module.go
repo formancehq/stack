@@ -98,6 +98,40 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 	registeredModules[r.module.Name()] = registeredModule
 
 	var (
+		chosenVersion      Version
+		chosenVersionLabel string
+		sortedVersions     = sortedVersions(r.module)
+		versions           = r.module.Versions()
+	)
+	for _, version := range sortedVersions {
+		if !r.Versions.IsHigherOrEqual(r.module.Name(), version) {
+			break
+		}
+		chosenVersion = versions[version]
+		chosenVersionLabel = version
+	}
+
+	services := chosenVersion.Services(r.ReconciliationConfig)
+	sort.Stable(services)
+
+	serviceReconcilers := make([]*serviceReconciler, 0)
+	for _, service := range services {
+		serviceName := r.module.Name()
+		if service.Name != "" {
+			serviceName = serviceName + "-" + service.Name
+		}
+
+		serviceReconciler := newServiceReconciler(r, *service, serviceName)
+		serviceReconciler.prepare()
+		serviceReconcilers = append(serviceReconcilers, serviceReconciler)
+
+		registeredModule.Services[serviceName] = RegisteredService{
+			Port:    serviceReconciler.usedPort,
+			Service: *service,
+		}
+	}
+
+	var (
 		postgresConfig v1beta3.PostgresConfig
 		err            error
 	)
@@ -114,26 +148,19 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		}
 	}
 
-	var (
-		chosenVersion      Version
-		chosenVersionLabel string
-	)
-	for _, version := range sortedVersions(r.module) {
-		if !r.Versions.IsHigherOrEqual(r.module.Name(), version) {
-			break
-		}
-		chosenVersion = r.module.Versions()[version]
-		chosenVersionLabel = version
-		if chosenVersion.PreUpgrade == nil {
-			continue
+	for _, version := range sortedVersions {
+		if versions[version].PreUpgrade != nil {
+			ready, err := r.runPreUpgradeMigration(ctx, r.module, version)
+			if err != nil {
+				return false, err
+			}
+			if !ready {
+				return false, nil
+			}
 		}
 
-		ready, err := r.runPreUpgradeMigration(ctx, r.module, version)
-		if err != nil {
-			return false, err
-		}
-		if !ready {
-			return false, nil
+		if version == chosenVersionLabel {
+			break
 		}
 	}
 
@@ -149,29 +176,15 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		}
 	}
 
-	services := chosenVersion.Services(r.ReconciliationConfig)
-	sort.Stable(services)
-
 	me := &serviceErrors{}
-	for _, service := range services {
-		serviceName := r.module.Name()
-		if service.Name != "" {
-			serviceName = serviceName + "-" + service.Name
-		}
-
-		serviceReconciler := newServiceReconciler(r, *service, serviceName)
+	for _, serviceReconciler := range serviceReconcilers {
 		err := serviceReconciler.reconcile(ctx, ServiceInstallConfiguration{
 			ReconciliationConfig: r.ReconciliationConfig,
 			RegisteredModules:    registeredModules,
 			PostgresConfig:       &postgresConfig,
 		})
 		if err != nil {
-			me.setError(serviceName, err)
-		}
-
-		registeredModule.Services[serviceName] = RegisteredService{
-			Port:    serviceReconciler.usedPort,
-			Service: *service,
+			me.setError(serviceReconciler.name, err)
 		}
 	}
 	if len(me.errors) > 0 {
@@ -370,19 +383,18 @@ func ensureDeploymentSync(ctx context.Context, deployment appsv1.Deployment) (bo
 			deployment.Name, deployment.Generation, deployment.Status.ObservedGeneration))
 		return false, nil
 	}
-	var moreRecentCondition appsv1.DeploymentCondition
-	for _, condition := range deployment.Status.Conditions {
-		if moreRecentCondition.Type == "" || condition.LastTransitionTime.After(moreRecentCondition.LastTransitionTime.Time) {
-			moreRecentCondition = condition
-		}
+	if deployment.Spec.Replicas != nil && deployment.Status.UpdatedReplicas < *deployment.Spec.Replicas {
+		return false, fmt.Errorf("waiting for deployment %q rollout to finish: %d out of %d new replicas have been updated",
+			deployment.Name, deployment.Status.UpdatedReplicas, *deployment.Spec.Replicas)
 	}
-	if moreRecentCondition.Type != appsv1.DeploymentAvailable {
-		logger.Info(fmt.Sprintf("Stop reconciliation as deployment '%s' is not ready (last condition must be '%s', found '%s')", deployment.Name, appsv1.DeploymentAvailable, moreRecentCondition.Type))
-		return false, nil
+	if deployment.Status.Replicas > deployment.Status.UpdatedReplicas {
+		return false, fmt.Errorf("waiting for deployment %q rollout to finish: %d old replicas are pending termination",
+			deployment.Name, deployment.Status.Replicas-deployment.Status.UpdatedReplicas)
 	}
-	if moreRecentCondition.Status != "True" {
-		logger.Info(fmt.Sprintf("Stop reconciliation as deployment '%s' is not ready ('%s' condition should be 'true')", deployment.Name, appsv1.DeploymentAvailable))
-		return false, nil
+	if deployment.Status.AvailableReplicas < deployment.Status.UpdatedReplicas {
+		return false, fmt.Errorf("waiting for deployment %q rollout to finish: %d of %d updated replicas are available",
+			deployment.Name, deployment.Status.AvailableReplicas, deployment.Status.UpdatedReplicas)
 	}
+
 	return true, nil
 }
