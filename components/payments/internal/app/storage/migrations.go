@@ -582,5 +582,25 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				ALTER TABLE accounts.bank_account ADD COLUMN account_id CHARACTER VARYING;
+
+				ALTER TABLE accounts.bank_account ADD CONSTRAINT bank_account_account_id
+				FOREIGN KEY (account_id)
+				REFERENCES accounts.account (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

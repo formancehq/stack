@@ -20,6 +20,8 @@ type BankAccount struct {
 	IBAN          string `bun:"decrypted_iban,scanonly"`
 	SwiftBicCode  string `bun:"decrypted_swift_bic_code,scanonly"`
 	Country       string `bun:"country"`
+
+	AccountID *AccountID
 }
 
 func (a *BankAccount) Offuscate() error {

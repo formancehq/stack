@@ -24,6 +24,7 @@ type bankAccountResponse struct {
 	CreatedAt     time.Time `json:"createdAt"`
 	Country       string    `json:"country"`
 	Provider      string    `json:"provider"`
+	AccountID     string    `json:"accountId,omitempty"`
 	Iban          string    `json:"iban,omitempty"`
 	AccountNumber string    `json:"accountNumber,omitempty"`
 	SwiftBicCode  string    `json:"swiftBicCode,omitempty"`
@@ -90,6 +91,7 @@ func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
 				CreatedAt: ret[i].CreatedAt,
 				Country:   ret[i].Country,
 				Provider:  ret[i].Provider.String(),
+				AccountID: ret[i].AccountID.String(),
 			}
 		}
 
@@ -143,6 +145,7 @@ func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
 			CreatedAt:     account.CreatedAt,
 			Country:       account.Country,
 			Provider:      account.Provider.String(),
+			AccountID:     account.AccountID.String(),
 			Iban:          account.IBAN,
 			AccountNumber: account.AccountNumber,
 			SwiftBicCode:  account.SwiftBicCode,
@@ -163,6 +166,7 @@ func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
 type createBankAccountRepository interface {
 	UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []*models.Account) error
 	CreateBankAccount(ctx context.Context, account *models.BankAccount) error
+	LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error
 	IsInstalled(ctx context.Context, provider models.ConnectorProvider) (bool, error)
 }
 
@@ -248,12 +252,13 @@ func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc
 		// BankingCircle does not have external accounts so we need to create
 		// one by hand
 		if provider == models.ConnectorProviderBankingCircle {
+			accountID := models.AccountID{
+				Reference: bankAccount.ID.String(),
+				Provider:  provider,
+			}
 			err = repo.UpsertAccounts(r.Context(), provider, []*models.Account{
 				{
-					ID: models.AccountID{
-						Reference: bankAccount.ID.String(),
-						Provider:  provider,
-					},
+					ID:          accountID,
 					CreatedAt:   time.Now(),
 					Reference:   bankAccount.ID.String(),
 					Provider:    provider,
@@ -261,6 +266,13 @@ func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc
 					Type:        models.AccountTypeExternalFormance,
 				},
 			})
+			if err != nil {
+				handleStorageErrors(w, r, err)
+
+				return
+			}
+
+			err = repo.LinkBankAccountWithAccount(r.Context(), bankAccount.ID, &accountID)
 			if err != nil {
 				handleStorageErrors(w, r, err)
 
