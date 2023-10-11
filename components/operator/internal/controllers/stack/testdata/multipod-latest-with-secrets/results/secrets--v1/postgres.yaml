@@ -4,8 +4,11 @@ data:
     username: cm9vdA==
 kind: Secret
 metadata:
+    annotations:
+        stack.formance.cloud/original-secret-name: postgres
+        stack.formance.cloud/original-secret-namespace: default
     labels:
-        stack: "true"
+        stack.formance.cloud/copied-secret: "true"
     name: postgres
     namespace: multipod-latest-with-secrets
 type: Opaque

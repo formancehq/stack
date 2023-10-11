@@ -5,9 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"sort"
 	"strings"
+
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/common"

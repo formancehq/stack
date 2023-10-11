@@ -4,8 +4,11 @@ data:
     tls.key: WFhY
 kind: Secret
 metadata:
+    annotations:
+        stack.formance.cloud/original-secret-name: temporal
+        stack.formance.cloud/original-secret-namespace: default
     labels:
-        stack: "true"
+        stack.formance.cloud/copied-secret: "true"
     name: temporal
     namespace: multipod-latest-with-secrets
 type: kubernetes.io/tls

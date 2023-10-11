@@ -3,6 +3,7 @@ package modules
 import (
 	"crypto/sha256"
 	"encoding/base64"
+
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	corev1 "k8s.io/api/core/v1"
 )

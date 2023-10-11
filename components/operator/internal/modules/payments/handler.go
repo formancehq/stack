@@ -3,9 +3,10 @@ package payments
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 

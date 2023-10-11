@@ -3,8 +3,9 @@ package modules
 import (
 	"context"
 	"fmt"
-	appsv1 "k8s.io/api/apps/v1"
 	"sort"
+
+	appsv1 "k8s.io/api/apps/v1"
 
 	"github.com/pkg/errors"
 

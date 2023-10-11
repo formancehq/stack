@@ -3,6 +3,7 @@ package modules
 import (
 	"context"
 	"fmt"
+
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	batchv1 "k8s.io/api/batch/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
