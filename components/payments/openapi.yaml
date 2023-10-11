@@ -51,7 +51,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
-  /transfer-initiation:
+  /transfer-initiations:
     get:
       summary: List Transfer Initiations
       operationId: listTransferInitiations
@@ -76,7 +76,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TransferInitiation'
-  /transfer-initiation/{transferId}:
+  /transfer-initiations/{transferId}:
     get:
       summary: Get a transfer initiation
       tags:
@@ -98,7 +98,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
-  /transfer-initiation/{transferId}/status:
+  /transfer-initiations/{transferId}/status:
     post:
       summary: Update the status of a transfer initiation
       tags:
@@ -112,7 +112,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
-  /transfer-initiation/{transferId}/retry:
+  /transfer-initiations/{transferId}/retry:
     post:
       summary: Retry a failed transfer initiation
       tags:

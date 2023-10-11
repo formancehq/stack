@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20231010"
+    "version": "v1.0.20231011"
   },
   "servers": [
     {
@@ -1823,7 +1823,7 @@
         }
       }
     },
-    "/api/payments/transfer-initiation": {
+    "/api/payments/transfer-initiations": {
       "get": {
         "summary": "List Transfer Initiations",
         "operationId": "listTransferInitiations",
@@ -1867,7 +1867,7 @@
         }
       }
     },
-    "/api/payments/transfer-initiation/{transferId}": {
+    "/api/payments/transfer-initiations/{transferId}": {
       "get": {
         "summary": "Get a transfer initiation",
         "tags": [
@@ -1904,7 +1904,7 @@
         }
       }
     },
-    "/api/payments/transfer-initiation/{transferId}/status": {
+    "/api/payments/transfer-initiations/{transferId}/status": {
       "post": {
         "summary": "Update the status of a transfer initiation",
         "tags": [
@@ -1927,7 +1927,7 @@
         }
       }
     },
-    "/api/payments/transfer-initiation/{transferId}/retry": {
+    "/api/payments/transfer-initiations/{transferId}/retry": {
       "post": {
         "summary": "Retry a failed transfer initiation",
         "tags": [
