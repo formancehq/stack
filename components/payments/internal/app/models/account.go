@@ -53,8 +53,8 @@ type AccountID struct {
 	Provider  ConnectorProvider
 }
 
-func (aid AccountID) String() string {
-	if aid.Reference == "" {
+func (aid *AccountID) String() string {
+	if aid == nil || aid.Reference == "" {
 		return ""
 	}
 
