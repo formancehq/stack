@@ -101,12 +101,13 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		chosenVersion      Version
 		chosenVersionLabel string
 		sortedVersions     = sortedVersions(r.module)
+		versions           = r.module.Versions()
 	)
 	for _, version := range sortedVersions {
 		if !r.Versions.IsHigherOrEqual(r.module.Name(), version) {
 			break
 		}
-		chosenVersion = r.module.Versions()[version]
+		chosenVersion = versions[version]
 		chosenVersionLabel = version
 	}
 
@@ -148,7 +149,7 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 	}
 
 	for _, version := range sortedVersions {
-		if chosenVersion.PreUpgrade != nil {
+		if versions[version].PreUpgrade != nil {
 			ready, err := r.runPreUpgradeMigration(ctx, r.module, version)
 			if err != nil {
 				return false, err
