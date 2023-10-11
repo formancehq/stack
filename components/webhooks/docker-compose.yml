@@ -64,7 +64,7 @@ services:
         condition: service_healthy
 
   redpanda:
-    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
+    image: docker.vectorized.io/vectorized/redpanda:v22.3.24
     command:
       - redpanda
       - start
@@ -90,7 +90,7 @@ services:
       - "9644:9644"
 
   redpanda-config:
-    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
+    image: docker.vectorized.io/vectorized/redpanda:v22.3.24
     command:
       - cluster
       - config
