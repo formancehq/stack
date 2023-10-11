@@ -11,6 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/client-go/tools/record"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
@@ -205,7 +206,7 @@ func (r *StackReconciler) copySecrets(ctx context.Context) ([]corev1.Secret, err
 			secretName = secret.Name
 		}
 
-		_, err := r.namespacedResourceDeployer.Secrets().CreateOrUpdate(ctx, secretName, func(t *corev1.Secret) {
+		_, operationResult, err := r.namespacedResourceDeployer.Secrets().CreateOrUpdate(ctx, secretName, func(t *corev1.Secret) {
 			t.Data = secret.Data
 			t.StringData = secret.StringData
 			t.Type = secret.Type
@@ -221,8 +222,14 @@ func (r *StackReconciler) copySecrets(ctx context.Context) ([]corev1.Secret, err
 			return nil, err
 		}
 
-		r.secretsEventRecorder.Eventf(r.Stack, "Normal", "Created secret",
-			"Secret created from secret %s/%s with name '%s'", secret.Namespace, secret.Name, secretName)
+		switch operationResult {
+		case controllerutil.OperationResultCreated:
+			r.secretsEventRecorder.Eventf(r.Stack, "Normal", "Created secret",
+				"Secret created from secret %s/%s with name '%s'", secret.Namespace, secret.Name, secretName)
+		case controllerutil.OperationResultUpdated:
+			r.secretsEventRecorder.Eventf(r.Stack, "Normal", "Updated secret",
+				"Secret updated from secret %s/%s with name '%s'", secret.Namespace, secret.Name, secretName)
+		}
 	}
 
 	return secretsToCopy.Items, nil

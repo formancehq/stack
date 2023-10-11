@@ -19,16 +19,16 @@ type ObjectFactory[T client.Object] struct {
 	namespace string
 }
 
-func (f *ObjectFactory[T]) CreateOrUpdate(ctx context.Context, name string, options ...ObjectMutator[T]) (T, error) {
-	ret, _, err := CreateOrUpdate[T](ctx, f.client, types.NamespacedName{
+func (f *ObjectFactory[T]) CreateOrUpdate(ctx context.Context, name string, options ...ObjectMutator[T]) (T, controllerutil.OperationResult, error) {
+	ret, operationResult, err := CreateOrUpdate[T](ctx, f.client, types.NamespacedName{
 		Namespace: f.namespace,
 		Name:      name,
 	}, append(options, f.options...)...)
 	if err != nil {
 		var ret T
-		return ret, err
+		return ret, operationResult, err
 	}
-	return ret, nil
+	return ret, operationResult, nil
 }
 
 func (f *ObjectFactory[T]) Update(ctx context.Context, t T, options ...ObjectMutator[T]) (T, error) {

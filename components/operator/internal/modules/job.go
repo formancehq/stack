@@ -34,7 +34,7 @@ func (d defaultJobRunner) RunJob(ctx context.Context, jobName string, preRun fun
 			}
 		}
 
-		_, err := d.Jobs().CreateOrUpdate(ctx, d.jobNamePrefix+jobName, modifier)
+		_, _, err := d.Jobs().CreateOrUpdate(ctx, d.jobNamePrefix+jobName, modifier)
 		if err != nil {
 			return false, err
 		}
