@@ -62,12 +62,12 @@ func httpRouter(
 	for _, h := range connectorHandlers {
 		paymentsHandlers[h.Provider] = h.initiatePayment
 	}
-	authGroup.Path("/transfer-initiation").Methods(http.MethodPost).Handler(createTransferInitiationHandler(store, paymentsHandlers))
-	authGroup.Path("/transfer-initiation").Methods(http.MethodGet).Handler(listTransferInitiationsHandler(store))
-	authGroup.Path("/transfer-initiation/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(store, paymentsHandlers))
-	authGroup.Path("/transfer-initiation/{transferID}/retry").Methods(http.MethodPost).Handler(retryTransferInitiationHandler(store, paymentsHandlers))
-	authGroup.Path("/transfer-initiation/{transferID}").Methods(http.MethodGet).Handler(readTransferInitiationHandler(store))
-	authGroup.Path("/transfer-initiation/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(store))
+	authGroup.Path("/transfer-initiations").Methods(http.MethodPost).Handler(createTransferInitiationHandler(store, paymentsHandlers))
+	authGroup.Path("/transfer-initiations").Methods(http.MethodGet).Handler(listTransferInitiationsHandler(store))
+	authGroup.Path("/transfer-initiations/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(store, paymentsHandlers))
+	authGroup.Path("/transfer-initiations/{transferID}/retry").Methods(http.MethodPost).Handler(retryTransferInitiationHandler(store, paymentsHandlers))
+	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodGet).Handler(readTransferInitiationHandler(store))
+	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(store))
 
 	authGroup.HandleFunc("/connectors", readConnectorsHandler(store))
 
