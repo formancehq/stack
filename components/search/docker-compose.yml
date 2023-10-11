@@ -67,7 +67,7 @@ services:
     working_dir: /app
 
   redpanda:
-    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
+    image: docker.vectorized.io/vectorized/redpanda:v22.3.24
     volumes:
     - .:/src
     command:
@@ -91,7 +91,7 @@ services:
       retries: 5
 
   redpanda-config:
-    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
+    image: docker.vectorized.io/vectorized/redpanda:v22.3.24
     command:
     - cluster
     - config
