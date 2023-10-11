@@ -223,6 +223,19 @@ func (p module) Versions() map[string]modules.Version {
 				return paymentsServices(paymentsEnvVars)
 			},
 		},
+		"v1.0.0-alpha.3": {
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
+			},
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServices(paymentsEnvVars)
+			},
+		},
 	}
 }
 
