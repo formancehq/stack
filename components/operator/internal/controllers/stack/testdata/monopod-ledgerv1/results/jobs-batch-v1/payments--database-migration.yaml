@@ -4,8 +4,8 @@ metadata:
     generation: 1
     labels:
         stack: "true"
-    name: ledger-v2.0.0-database-migration
-    namespace: monopod-search-before-v0-7-0
+    name: payments--database-migration
+    namespace: monopod-ledgerv1
 spec:
     backoffLimit: 6
     completionMode: NonIndexed
@@ -18,19 +18,18 @@ spec:
         metadata:
             creationTimestamp: null
             labels:
-                job-name: ledger-v2.0.0-database-migration
+                job-name: payments--database-migration
         spec:
             containers:
                 - args:
-                    - storage
-                    - upgrade-all
+                    - migrate
                   env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
                       value: "5432"
                     - name: POSTGRES_DATABASE
-                      value: monopod-search-before-v0-7-0-ledger
+                      value: monopod-ledgerv1-payments
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
@@ -39,9 +38,8 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: STORAGE_POSTGRES_CONN_STRING
-                      value: $(POSTGRES_URI)
-                  image: ghcr.io/formancehq/ledger:latest
+                    - name: CONFIG_ENCRYPTION_KEY
+                  image: ghcr.io/formancehq/payments:latest
                   imagePullPolicy: Always
                   name: migrate
                   resources: {}
