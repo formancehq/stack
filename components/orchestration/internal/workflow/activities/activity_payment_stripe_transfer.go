@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"go.temporal.io/sdk/activity"
@@ -16,7 +15,6 @@ func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityS
 	ti := shared.TransferInitiationRequest{
 		Amount:               request.Amount,
 		Asset:                *request.Asset,
-		CreatedAt:            time.Now(),
 		DestinationAccountID: *request.Destination,
 		Provider:             shared.ConnectorStripe,
 		Type:                 shared.TransferInitiationRequestTypeTransfer,
