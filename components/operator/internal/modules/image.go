@@ -2,9 +2,10 @@ package modules
 
 import (
 	"fmt"
+	"strings"
+
 	"golang.org/x/mod/semver"
 	corev1 "k8s.io/api/core/v1"
-	"strings"
 )
 
 func NormalizeVersion(version string) string {

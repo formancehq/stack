@@ -269,7 +269,7 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 				}
 
 				var listOptions []client.ListOption
-				if partOfConfiguration != modules.PartOfConfigurationAny {
+				if partOfConfiguration != modules.PartOfConfigurationAnyValue {
 					listOptions = append(listOptions, &client.ListOptions{
 						FieldSelector: fields.OneTermEqualSelector(".spec.seed", partOfConfiguration),
 					})

@@ -5,9 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"sort"
 	"strings"
+
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/common"
@@ -35,7 +36,7 @@ func (c Config) create(ctx context.Context, deployer Deployer, serviceName, conf
 		hash.Write([]byte(c.Data[k]))
 	}
 
-	configMap, err := deployer.
+	configMap, _, err := deployer.
 		ConfigMaps().
 		CreateOrUpdate(ctx, serviceName+"-"+configName, func(t *corev1.ConfigMap) {
 			t.Data = c.Data
@@ -79,7 +80,7 @@ func (s Secret) create(ctx context.Context, deployer *scopedResourceDeployer, se
 		hash.Write([]byte(k))
 		hash.Write(s.Data[k])
 	}
-	secret, err := deployer.
+	secret, _, err := deployer.
 		Secrets().
 		CreateOrUpdate(ctx, serviceName+"-"+secretName, func(t *corev1.Secret) {
 			// Only create secret if it does not exist

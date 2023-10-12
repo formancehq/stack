@@ -3,11 +3,16 @@ package modules
 import (
 	"context"
 	"fmt"
+	"strings"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
+	"k8s.io/client-go/tools/record"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
-	"strings"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -17,10 +22,14 @@ import (
 )
 
 const (
-	PartOfConfigurationLabel = "stacks.formance.cloud/partof-configuration"
-	PartOfConfigurationAny   = "any"
+	PartOfConfigurationLabel    = "stacks.formance.cloud/partof-configuration"
+	copiedSecretLabel           = "stack.formance.cloud/copied-secret"
+	PartOfConfigurationAnyValue = "any"
+	trueValue                   = "true"
 
 	secretNameOnConfigurationAnnotation = "stacks.formance.cloud/referenced-by-name"
+	originalSecretNamespaceAnnotation   = "stack.formance.cloud/original-secret-namespace"
+	originalSecretNameAnnotation        = "stack.formance.cloud/original-secret-name"
 )
 
 type StackReconcilerFactory struct {
@@ -63,7 +72,8 @@ type StackReconciler struct {
 	namespacedResourceDeployer *scopedResourceDeployer
 	manager                    manager.Manager
 
-	ready collectionutils.Set[Module]
+	ready                collectionutils.Set[Module]
+	secretsEventRecorder record.EventRecorder
 }
 
 func newStackReconciler(mgr manager.Manager, cfg ReconciliationConfig) *StackReconciler {
@@ -87,6 +97,7 @@ func newStackReconciler(mgr manager.Manager, cfg ReconciliationConfig) *StackRec
 		ready:                      collectionutils.NewSet[Module](),
 		JobRunner:                  NewJobRunner(mgr.GetClient(), mgr.GetScheme(), cfg.Stack, cfg.Stack, ""),
 		manager:                    mgr,
+		secretsEventRecorder:       mgr.GetEventRecorderFor("operator"),
 	}
 }
 
@@ -171,40 +182,102 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 	return allReady, nil
 }
 
-func (r *StackReconciler) prepareSecrets(ctx context.Context) error {
+func (r *StackReconciler) copySecrets(ctx context.Context) ([]corev1.Secret, error) {
+
 	logger := log.FromContext(ctx)
-	logger.Info("Prepare secrets")
-	requirement, err := labels.NewRequirement(PartOfConfigurationLabel, selection.In, []string{r.Configuration.Name, PartOfConfigurationAny})
+	logger.Info("Copy secrets")
+
+	requirement, err := labels.NewRequirement(PartOfConfigurationLabel, selection.In, []string{r.Configuration.Name, PartOfConfigurationAnyValue})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	k8sSecrets := &corev1.SecretList{}
-	if err := r.manager.GetClient().List(ctx, k8sSecrets, &client.ListOptions{
+	secretsToCopy := &corev1.SecretList{}
+	if err := r.manager.GetClient().List(ctx, secretsToCopy, &client.ListOptions{
 		LabelSelector: labels.NewSelector().Add(*requirement),
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
-	secretsEventRecorder := r.manager.GetEventRecorderFor("operator")
-	for _, secret := range k8sSecrets.Items {
+	for _, secret := range secretsToCopy.Items {
 		secretName, ok := secret.Annotations[secretNameOnConfigurationAnnotation]
 		if !ok {
 			logger.Info("Secret name annotation not found, use secret name", "secret", secret.Name)
 			secretName = secret.Name
 		}
 
-		secretsEventRecorder.Eventf(r.Stack, "Normal", "Created secret", "Secret created from secret %s/%s with name '%s'", secret.Namespace, secret.Name, secretName)
-		_, err := r.namespacedResourceDeployer.Secrets().CreateOrUpdate(ctx, secretName, func(t *corev1.Secret) {
+		_, operationResult, err := r.namespacedResourceDeployer.Secrets().CreateOrUpdate(ctx, secretName, func(t *corev1.Secret) {
 			t.Data = secret.Data
 			t.StringData = secret.StringData
 			t.Type = secret.Type
+			t.Labels = map[string]string{
+				copiedSecretLabel: trueValue,
+			}
+			t.Annotations = map[string]string{
+				originalSecretNamespaceAnnotation: secret.Namespace,
+				originalSecretNameAnnotation:      secret.Name,
+			}
 		})
 		if err != nil {
-			return err
+			return nil, err
+		}
+
+		switch operationResult {
+		case controllerutil.OperationResultCreated:
+			r.secretsEventRecorder.Eventf(r.Stack, "Normal", "Created secret",
+				"Secret created from secret %s/%s with name '%s'", secret.Namespace, secret.Name, secretName)
+		case controllerutil.OperationResultUpdated:
+			r.secretsEventRecorder.Eventf(r.Stack, "Normal", "Updated secret",
+				"Secret updated from secret %s/%s with name '%s'", secret.Namespace, secret.Name, secretName)
 		}
 	}
+
+	return secretsToCopy.Items, nil
+}
+
+func (r *StackReconciler) cleanSecrets(ctx context.Context, copiedSecrets []corev1.Secret) error {
+	logger := logging.FromContext(ctx)
+	logger.Info("Clean secrets")
+
+	requirement, err := labels.NewRequirement(copiedSecretLabel, selection.Equals, []string{trueValue})
+	if err != nil {
+		return err
+	}
+
+	existingSecrets := &corev1.SecretList{}
+	if err := r.manager.GetClient().List(ctx, existingSecrets, &client.ListOptions{
+		Namespace:     r.Stack.Name,
+		LabelSelector: labels.NewSelector().Add(*requirement),
+	}); err != nil {
+		return err
+	}
+
+l:
+	for _, existingSecret := range existingSecrets.Items {
+		originalSecretNamespace := existingSecret.Annotations[originalSecretNamespaceAnnotation]
+		originalSecretName := existingSecret.Annotations[originalSecretNameAnnotation]
+		for _, copiedSecret := range copiedSecrets {
+			if originalSecretNamespace == copiedSecret.Namespace && originalSecretName == copiedSecret.Name {
+				continue l
+			}
+		}
+		if err := r.manager.GetClient().Delete(ctx, &existingSecret); err != nil {
+			return errors.Wrap(err, "error deleting old secret")
+		}
+		r.secretsEventRecorder.AnnotatedEventf(r.Stack, existingSecret.Annotations, "Normal",
+			"Removed secret", "Secret %s removed", existingSecret.Name)
+	}
+
 	return nil
+}
+
+func (r *StackReconciler) prepareSecrets(ctx context.Context) error {
+	secrets, err := r.copySecrets(ctx)
+	if err != nil {
+		return err
+	}
+
+	return r.cleanSecrets(ctx, secrets)
 }
 
 func (r *StackReconciler) prepareModules(ctx context.Context, registeredModules RegisteredModules) error {

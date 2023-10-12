@@ -1,5 +1,7 @@
 package controllerutils
 
-func JustError[T any](t T, err error) error {
+import "sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+func JustError[T any](t T, result controllerutil.OperationResult, err error) error {
 	return err
 }

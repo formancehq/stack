@@ -3,8 +3,9 @@ package modules
 import (
 	"context"
 	"fmt"
-	appsv1 "k8s.io/api/apps/v1"
 	"sort"
+
+	appsv1 "k8s.io/api/apps/v1"
 
 	"github.com/pkg/errors"
 
@@ -216,7 +217,7 @@ func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (b
 			if !apierrors.IsNotFound(err) {
 				return false, err
 			}
-			_, err := r.namespacedResourceDeployer.Migrations().CreateOrUpdate(ctx, migrationName, func(t *v1beta3.Migration) {
+			_, _, err := r.namespacedResourceDeployer.Migrations().CreateOrUpdate(ctx, migrationName, func(t *v1beta3.Migration) {
 				t.Spec = v1beta3.MigrationSpec{
 					Configuration:   r.Configuration.Name,
 					Module:          module.Name(),
@@ -241,7 +242,7 @@ func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (b
 
 	if selectedVersion.Cron != nil {
 		for _, cron := range selectedVersion.Cron(r.ReconciliationConfig) {
-			_, err := r.namespacedResourceDeployer.CronJobs().CreateOrUpdate(ctx, cron.Container.Name, func(t *batchv1.CronJob) {
+			_, _, err := r.namespacedResourceDeployer.CronJobs().CreateOrUpdate(ctx, cron.Container.Name, func(t *batchv1.CronJob) {
 				t.Spec = batchv1.CronJobSpec{
 					Suspend:  &cron.Suspend,
 					Schedule: cron.Schedule,
@@ -312,7 +313,7 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 		if !apierrors.IsNotFound(err) {
 			return false, err
 		}
-		_, err := r.namespacedResourceDeployer.Migrations().CreateOrUpdate(ctx, migrationName, func(t *v1beta3.Migration) {
+		_, _, err := r.namespacedResourceDeployer.Migrations().CreateOrUpdate(ctx, migrationName, func(t *v1beta3.Migration) {
 			t.Spec = v1beta3.MigrationSpec{
 				Configuration:   r.Configuration.Name,
 				Module:          module.Name(),
