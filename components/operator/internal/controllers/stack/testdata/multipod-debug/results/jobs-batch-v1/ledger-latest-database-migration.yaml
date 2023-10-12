@@ -4,8 +4,8 @@ metadata:
     generation: 1
     labels:
         stack: "true"
-    name: ledger--database-migration
-    namespace: multipod-latest-with-secrets
+    name: ledger-latest-database-migration
+    namespace: multipod-debug
 spec:
     backoffLimit: 6
     completionMode: NonIndexed
@@ -18,7 +18,7 @@ spec:
         metadata:
             creationTimestamp: null
             labels:
-                job-name: ledger--database-migration
+                job-name: ledger-latest-database-migration
         spec:
             containers:
                 - args:
@@ -30,17 +30,11 @@ spec:
                     - name: POSTGRES_PORT
                       value: "5432"
                     - name: POSTGRES_DATABASE
-                      value: multipod-latest-with-secrets-ledger
+                      value: multipod-debug-ledger
                     - name: POSTGRES_USERNAME
-                      valueFrom:
-                        secretKeyRef:
-                            key: username
-                            name: postgres
+                      value: root
                     - name: POSTGRES_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                            key: password
-                            name: postgres
+                      value: root
                     - name: POSTGRES_NO_DATABASE_URI
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
