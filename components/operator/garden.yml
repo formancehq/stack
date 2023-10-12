@@ -8,7 +8,7 @@ spec:
   deployCommand:
     - sh
     - -c
-    - make docker-build-prod
+    - make docker-build
 ---
 apiVersion: garden.io/v0
 kind: Deploy
