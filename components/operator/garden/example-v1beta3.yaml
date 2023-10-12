@@ -125,16 +125,16 @@ kind: Versions
 metadata:
   name: default
 spec:
-  auth: v0.3.1
-  control: b8095a6244484304f9de3e530e5a41a3657fe56f
-  gateway: v0.1.5
-  ledger: v1.9.0
-  orchestration: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
-  payments: 7d6e38663b46cf94fc20733e25c49db2b5d85e11
-  search: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
-  wallets: v0.3.5
-  webhooks: v0.6.2
-  stargate: v0.1.0
+  auth: v0.4.4
+  control: v1.7.0
+  gateway: v0.1.7
+  ledger: v1.10.9
+  orchestration: v0.1.6
+  payments: v1.0.0-alpha.3
+  search: v0.7.0
+  wallets: v0.4.6
+  webhooks: v0.7.1
+  stargate: v0.1.10
 ---
 apiVersion: stack.formance.com/v1beta3
 kind: Stack

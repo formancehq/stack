@@ -167,7 +167,7 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 
 	if chosenVersion.DatabaseMigration != nil {
 		logger.Info("Start database migration process", "pod", r.module.Name())
-		databaseMigrated, err := r.runDatabaseMigration(ctx, chosenVersionLabel, *chosenVersion.DatabaseMigration, postgresConfig)
+		databaseMigrated, err := r.runDatabaseMigration(ctx, r.Versions.GetVersion(r.module.Name()), *chosenVersion.DatabaseMigration, postgresConfig)
 		if err != nil {
 			return false, err
 		}
