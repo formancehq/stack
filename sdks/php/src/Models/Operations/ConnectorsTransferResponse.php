@@ -14,14 +14,6 @@ class ConnectorsTransferResponse
 	
     public string $contentType;
     
-    /**
-     * Error
-     * 
-     * @var ?\formance\stack\Models\Shared\ErrorResponse $errorResponse
-     */
-	
-    public ?\formance\stack\Models\Shared\ErrorResponse $errorResponse = null;
-    
 	
     public int $statusCode;
     
@@ -39,7 +31,6 @@ class ConnectorsTransferResponse
 	public function __construct()
 	{
 		$this->contentType = "";
-		$this->errorResponse = null;
 		$this->statusCode = 0;
 		$this->rawResponse = null;
 		$this->transferResponse = null;

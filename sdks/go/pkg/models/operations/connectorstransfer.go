@@ -15,10 +15,8 @@ type ConnectorsTransferRequest struct {
 
 type ConnectorsTransferResponse struct {
 	ContentType string
-	// Error
-	ErrorResponse *shared.ErrorResponse
-	StatusCode    int
-	RawResponse   *http.Response
+	StatusCode  int
+	RawResponse *http.Response
 	// OK
 	TransferResponse *shared.TransferResponse
 }

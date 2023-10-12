@@ -32,65 +32,6 @@ req = operations.CreateTransactionsRequest(
         transactions=[
             shared.TransactionData(
                 metadata={
-                    "amet": 'deserunt',
-                    "nisi": 'vel',
-                    "natus": 'omnis',
-                    "molestiae": 'perferendis',
-                },
-                postings=[
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                ],
-                reference='ref:001',
-                timestamp=dateutil.parser.isoparse('2022-04-14T15:11:13.227Z'),
-            ),
-            shared.TransactionData(
-                metadata={
-                    "labore": 'labore',
-                    "suscipit": 'natus',
-                    "nobis": 'eum',
-                },
-                postings=[
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                ],
-                reference='ref:001',
-                timestamp=dateutil.parser.isoparse('2022-11-24T10:55:00.183Z'),
-            ),
-            shared.TransactionData(
-                metadata={
                     "et": 'excepturi',
                     "ullam": 'provident',
                 },

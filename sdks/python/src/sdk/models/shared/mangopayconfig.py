@@ -15,5 +15,5 @@ class MangoPayConfig:
     client_id: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('clientID') }})
     endpoint: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('endpoint') }})
     polling_period: Optional[str] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('pollingPeriod'), 'exclude': lambda f: f is None }})
-    r"""The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API."""
+    r"""The frequency at which the connector will try to fetch new BalanceTransaction objects from MangoPay API."""
     

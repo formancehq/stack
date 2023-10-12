@@ -4,7 +4,6 @@ from __future__ import annotations
 import dataclasses
 import requests as requests_http
 from ..shared import connector as shared_connector
-from ..shared import errorresponse as shared_errorresponse
 from ..shared import transferrequest as shared_transferrequest
 from ..shared import transferresponse as shared_transferresponse
 from typing import Optional
@@ -23,8 +22,6 @@ class ConnectorsTransferResponse:
     
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
-    error_response: Optional[shared_errorresponse.ErrorResponse] = dataclasses.field(default=None)
-    r"""Error"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     transfer_response: Optional[shared_transferresponse.TransferResponse] = dataclasses.field(default=None)
     r"""OK"""

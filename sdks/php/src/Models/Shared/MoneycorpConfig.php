@@ -24,7 +24,7 @@ class MoneycorpConfig
     public string $endpoint;
     
     /**
-     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+     * The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.
      * 
      * 
      * 

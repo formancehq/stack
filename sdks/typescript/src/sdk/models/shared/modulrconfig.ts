@@ -19,7 +19,7 @@ export class ModulrConfig extends SpeakeasyBase {
   endpoint?: string;
 
   /**
-   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.
    *
    * @remarks
    *

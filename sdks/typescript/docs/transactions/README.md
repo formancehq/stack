@@ -32,65 +32,6 @@ sdk.transactions.createTransactions({
     transactions: [
       {
         metadata: {
-          "amet": "deserunt",
-          "nisi": "vel",
-          "natus": "omnis",
-          "molestiae": "perferendis",
-        },
-        postings: [
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-        ],
-        reference: "ref:001",
-        timestamp: new Date("2022-04-14T15:11:13.227Z"),
-      },
-      {
-        metadata: {
-          "labore": "labore",
-          "suscipit": "natus",
-          "nobis": "eum",
-        },
-        postings: [
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-        ],
-        reference: "ref:001",
-        timestamp: new Date("2022-11-24T10:55:00.183Z"),
-      },
-      {
-        metadata: {
           "et": "excepturi",
           "ullam": "provident",
         },

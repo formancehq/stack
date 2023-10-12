@@ -31,8 +31,10 @@ try {
     $request = new RunScriptRequest();
     $request->script = new Script();
     $request->script->metadata = [
-        'modi' => 'qui',
-        'aliquid' => 'cupiditate',
+        'sint' => 'officia',
+        'dolor' => 'debitis',
+        'a' => 'dolorum',
+        'in' => 'in',
     ];
     $request->script->plain = 'vars {
     account $user
@@ -44,9 +46,10 @@ try {
     ';
     $request->script->reference = 'order_1234';
     $request->script->vars = [
-        'perferendis' => 'magni',
-        'assumenda' => 'ipsam',
-        'alias' => 'fugit',
+        'maiores' => 'rerum',
+        'dicta' => 'magnam',
+        'cumque' => 'facere',
+        'ea' => 'aliquid',
     ];
     $request->ledger = 'ledger001';
     $request->preview = true;

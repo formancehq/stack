@@ -32,7 +32,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("cumque") {{
+                .setSecurity(new Security("rerum") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -45,25 +45,12 @@ public class Application {
                                                                         destination = "users:002";
                                                                         source = "users:001";
                                                                     }}),
-                                                                }}) {{
-                                                    metadata = new java.util.HashMap<String, Object>() {{
-                                                        put("libero", "nobis");
-                                                        put("dolores", "quis");
-                                                        put("totam", "dignissimos");
-                                                        put("eaque", "quis");
-                                                    }};
-                                                    postings = new com.formance.formance_sdk.models.shared.Posting[]{{
-                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
-                                                            amount = 100L;
-                                                            asset = "COIN";
-                                                            destination = "users:002";
-                                                            source = "users:001";
-                                                        }}),
-                                                    }};
-                                                    reference = "ref:001";
-                                                    timestamp = OffsetDateTime.parse("2022-12-25T05:44:55.720Z");
-                                                }}),
-                                                add(new TransactionData(                new com.formance.formance_sdk.models.shared.Posting[]{{
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
                                                                     add(new Posting(100L, "COIN", "users:002", "users:001") {{
                                                                         amount = 100L;
                                                                         asset = "COIN";
@@ -72,10 +59,10 @@ public class Application {
                                                                     }}),
                                                                 }}) {{
                                                     metadata = new java.util.HashMap<String, Object>() {{
-                                                        put("quam", "dolor");
-                                                        put("vero", "nostrum");
-                                                        put("hic", "recusandae");
-                                                        put("omnis", "facilis");
+                                                        put("earum", "modi");
+                                                        put("iste", "dolorum");
+                                                        put("deleniti", "pariatur");
+                                                        put("provident", "nobis");
                                                     }};
                                                     postings = new com.formance.formance_sdk.models.shared.Posting[]{{
                                                         add(new Posting(100L, "COIN", "users:002", "users:001") {{
@@ -98,7 +85,7 @@ public class Application {
                                                         }}),
                                                     }};
                                                     reference = "ref:001";
-                                                    timestamp = OffsetDateTime.parse("2022-03-20T23:16:34.777Z");
+                                                    timestamp = OffsetDateTime.parse("2022-01-24T10:05:07.174Z");
                                                 }}),
                                             }});, "ledger001");            
 
@@ -132,16 +119,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("blanditiis") {{
+                .setSecurity(new Security("aliquid") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             AddMetadataOnTransactionRequest req = new AddMetadataOnTransactionRequest("ledger001", 1234L) {{
                 requestBody = new java.util.HashMap<String, Object>() {{
-                    put("eaque", "occaecati");
-                    put("rerum", "adipisci");
-                    put("asperiores", "earum");
+                    put("dolorem", "dolor");
                 }};
             }};            
 
@@ -176,7 +161,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("modi") {{
+                .setSecurity(new Security("qui") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -184,15 +169,15 @@ public class Application {
             CountTransactionsRequest req = new CountTransactionsRequest("ledger001") {{
                 account = "users:001";
                 destination = "users:001";
-                endTime = OffsetDateTime.parse("2021-08-23T06:19:56.211Z");
+                endTime = OffsetDateTime.parse("2022-01-21T07:17:52.299Z");
                 metadata = new java.util.HashMap<String, Object>() {{
-                    put("pariatur", "provident");
-                    put("nobis", "libero");
-                    put("delectus", "quaerat");
+                    put("cum", "voluptate");
+                    put("dignissimos", "reiciendis");
+                    put("amet", "dolorum");
                 }};
                 reference = "ref:001";
                 source = "users:001";
-                startTime = OffsetDateTime.parse("2022-03-16T07:10:00.236Z");
+                startTime = OffsetDateTime.parse("2022-11-30T20:48:38.083Z");
             }};            
 
             CountTransactionsResponse res = sdk.transactions.countTransactions(req);
@@ -229,16 +214,22 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolorem") {{
+                .setSecurity(new Security("ipsa") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             CreateTransactionRequest req = new CreateTransactionRequest(                new PostTransaction() {{
                                 metadata = new java.util.HashMap<String, Object>() {{
-                                    put("dolor", "qui");
+                                    put("iure", "odio");
                                 }};
                                 postings = new com.formance.formance_sdk.models.shared.Posting[]{{
+                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                        amount = 100L;
+                                        asset = "COIN";
+                                        destination = "users:002";
+                                        source = "users:001";
+                                    }}),
                                     add(new Posting(100L, "COIN", "users:002", "users:001") {{
                                         amount = 100L;
                                         asset = "COIN";
@@ -256,15 +247,15 @@ public class Application {
                                 )
                                 ") {{
                                     vars = new java.util.HashMap<String, Object>() {{
-                                        put("excepturi", "cum");
-                                        put("voluptate", "dignissimos");
-                                        put("reiciendis", "amet");
-                                        put("dolorum", "numquam");
+                                        put("quidem", "voluptatibus");
+                                        put("voluptas", "natus");
+                                        put("eos", "atque");
+                                        put("sit", "fugiat");
                                     }};
                                 }};;
-                                timestamp = OffsetDateTime.parse("2022-12-10T19:39:51.391Z");
+                                timestamp = OffsetDateTime.parse("2022-04-04T12:00:33.616Z");
                             }};, "ledger001") {{
-                idempotencyKey = "ipsa";
+                idempotencyKey = "dolorum";
                 preview = true;
             }};            
 
@@ -298,7 +289,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("iure") {{
+                .setSecurity(new Security("iusto") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -336,27 +327,27 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("odio") {{
+                .setSecurity(new Security("voluptate") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             ListTransactionsRequest req = new ListTransactionsRequest("ledger001") {{
                 account = "users:001";
-                after = "quaerat";
+                after = "dolorum";
                 cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
                 destination = "users:001";
-                endTime = OffsetDateTime.parse("2020-11-29T12:05:35.198Z");
+                endTime = OffsetDateTime.parse("2021-10-14T20:34:13.522Z");
                 metadata = new java.util.HashMap<String, Object>() {{
-                    put("voluptas", "natus");
-                    put("eos", "atque");
-                    put("sit", "fugiat");
-                    put("ab", "soluta");
+                    put("distinctio", "asperiores");
+                    put("nihil", "ipsum");
+                    put("voluptate", "id");
+                    put("saepe", "eius");
                 }};
-                pageSize = 679393L;
+                pageSize = 137220L;
                 reference = "ref:001";
                 source = "users:001";
-                startTime = OffsetDateTime.parse("2022-07-19T09:36:55.923Z");
+                startTime = OffsetDateTime.parse("2022-10-09T08:02:18.659Z");
             }};            
 
             ListTransactionsResponse res = sdk.transactions.listTransactions(req);
@@ -389,7 +380,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolorum") {{
+                .setSecurity(new Security("optio") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
