@@ -82,6 +82,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			tf.ID,
 			tf.CreatedAt.Format(time.RFC3339),
 			tf.UpdatedAt.Format(time.RFC3339),
+			tf.ScheduledAt.Format(time.RFC3339),
 			tf.Description,
 			tf.SourceAccountID,
 			tf.DestinationAccountID,
@@ -93,7 +94,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			tf.Error,
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "UpdatedAt", "Description", "Source Account ID",
+	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "UpdatedAt", "ScheduledAt", "Description", "Source Account ID",
 		"Destination Account ID", "Provider", "Type", "Amount", "Asset", "Status", "Error"})
 	return pterm.DefaultTable.
 		WithHasHeader().
