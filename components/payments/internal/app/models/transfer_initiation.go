@@ -155,6 +155,7 @@ type TransferInitiation struct {
 	ID TransferInitiationID `bun:",pk,nullzero"`
 
 	CreatedAt   time.Time `bun:",nullzero"`
+	ScheduledAt time.Time `bun:",nullzero"`
 	UpdatedAt   time.Time `bun:",nullzero"`
 	Description string
 

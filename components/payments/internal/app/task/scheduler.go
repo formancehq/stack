@@ -374,6 +374,14 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	case models.OPTIONS_RUN_NOW:
 		options.Duration = 0
 		fallthrough
+	case models.OPTIONS_RUN_SCHEDULED_AT:
+		if !options.ScheduleAt.IsZero() {
+			options.Duration = time.Until(options.ScheduleAt)
+			if options.Duration < 0 {
+				options.Duration = 0
+			}
+		}
+		fallthrough
 	case models.OPTIONS_RUN_IN_DURATION:
 		go func() {
 			if options.Duration > 0 {
