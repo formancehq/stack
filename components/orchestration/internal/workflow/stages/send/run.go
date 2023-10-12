@@ -206,7 +206,7 @@ func runWalletToPayment(ctx workflow.Context, source *WalletSource, destination 
 		return err
 	}
 
-	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.StripeTransferRequest{
+	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.ActivityStripeTransfer{
 		Amount:      amount.Amount,
 		Asset:       &amount.Asset,
 		Destination: &stripeConnectID,
@@ -371,7 +371,7 @@ func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, dest
 		return err
 	}
 
-	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.StripeTransferRequest{
+	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.ActivityStripeTransfer{
 		Amount:      amount.Amount,
 		Asset:       &amount.Asset,
 		Destination: &stripeConnectID,
