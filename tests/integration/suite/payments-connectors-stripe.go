@@ -15,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = WithModules([]*Module{modules.Payments}, func() {
+var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 	When("configuring stripe connector", func() {
 		var (
 			msgs               chan *nats.Msg
