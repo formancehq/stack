@@ -2,6 +2,7 @@ package suite
 
 import (
 	"encoding/json"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"os"
 	"path/filepath"
 	"time"
@@ -17,7 +18,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some environment with dummy pay connector", func() {
+var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 	var (
 		existingPaymentID  string
 		msgs               chan *nats.Msg

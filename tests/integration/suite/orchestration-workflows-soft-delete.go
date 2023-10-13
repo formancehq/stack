@@ -4,12 +4,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/pborman/uuid"
 )
 
-var _ = Given("An empty environment", func() {
+var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 	When("populating 1 workflow", func() {
 		var (
 			workflow *shared.Workflow

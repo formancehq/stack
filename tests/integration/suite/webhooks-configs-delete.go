@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -11,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("empty environment for webhooks configs", func() {
+var _ = WithModules([]*Module{modules.Webhooks}, func() {
 	var (
 		secret     = webhooks.NewSecret()
 		insertResp *shared.ConfigResponse

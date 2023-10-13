@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("An environment configured with a webhook sent on created transaction", func() {
+var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 	var (
 		httpServer *httptest.Server
 		called     chan struct{}

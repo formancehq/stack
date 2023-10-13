@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"os"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Payments}, func() {
 	When("configuring stripe connector", func() {
 		var (
 			msgs               chan *nats.Msg

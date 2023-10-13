@@ -271,6 +271,13 @@ func (l *ConnectorManager[ConnectorConfig]) InitiatePayment(ctx context.Context,
 	return nil
 }
 
+func (l *ConnectorManager[ConnectorConfig]) Close(ctx context.Context) error {
+	if l.scheduler == nil {
+		return nil
+	}
+	return l.scheduler.Shutdown(ctx)
+}
+
 func NewConnectorManager[ConnectorConfig models.ConnectorConfigObject](
 	store Repository,
 	loader Loader[ConnectorConfig],

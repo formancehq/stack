@@ -62,7 +62,5 @@ func serve(cmd *cobra.Command, _ []string) error {
 		))
 	}
 
-	return errors.Wrap(
-		service.New(cmd.OutOrStdout(), options...).
-			Run(cmd.Context()), "staging service")
+	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 }

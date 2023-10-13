@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -11,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, func() {
 	const countWallets = 3
 	When(fmt.Sprintf("creating %d wallets", countWallets), func() {
 		JustBeforeEach(func() {

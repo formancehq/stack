@@ -81,6 +81,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 
 					return nil
 				},
+				OnStop: cm.Close,
 			})
 		}),
 	)

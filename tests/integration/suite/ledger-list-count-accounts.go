@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"sort"
 	"time"
@@ -14,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("counting and listing accounts", func() {
 		var (
 			metadata1 = map[string]string{
@@ -179,9 +180,7 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 	})
-})
 
-var _ = Given("some empty environment", func() {
 	When("counting and listing accounts empty", func() {
 		It("should be countable on api even if empty", func() {
 			response, err := Client().Ledger.CountAccounts(
@@ -209,9 +208,7 @@ var _ = Given("some empty environment", func() {
 			Expect(response.AccountsCursorResponse.Cursor.Data).To(HaveLen(0))
 		})
 	})
-})
 
-var _ = Given("some environment with accounts", func() {
 	const (
 		pageSize      = int64(10)
 		accountCounts = 2 * pageSize

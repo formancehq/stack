@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"time"
 
@@ -16,7 +17,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 	When("creating a transaction on a ledger", func() {
 		var (
 			msgs               chan *nats.Msg
@@ -212,13 +213,7 @@ var _ = Given("some empty environment", func() {
 			}).Should(BeTrue())
 		})
 	})
-})
 
-type GenericOpenAPIError interface {
-	Model() any
-}
-
-var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
 			response, err := Client().Ledger.CreateTransaction(
@@ -250,9 +245,7 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 	})
-})
 
-var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger with an idempotency key", func() {
 		var (
 			err      error
@@ -292,3 +285,7 @@ var _ = Given("some empty environment", func() {
 		})
 	})
 })
+
+type GenericOpenAPIError interface {
+	Model() any
+}

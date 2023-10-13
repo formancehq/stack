@@ -207,7 +207,7 @@ func (s *DefaultTaskScheduler) registerTaskError(ctx context.Context, holder *ta
 
 	err := s.store.UpdateTaskStatus(ctx, s.provider, holder.descriptor, models.TaskStatusFailed, taskError)
 	if err != nil {
-		holder.logger.Error("Error updating task status: %s", taskError)
+		holder.logger.Errorf("Error updating task status: %s", taskError)
 	}
 }
 
@@ -386,6 +386,7 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 		go func() {
 			if options.Duration > 0 {
 				logger.Infof("Waiting %s before starting task...", options.Duration)
+				// todo(gfyrag): need to listen on stopChan if the application is stopped
 				time.Sleep(options.Duration)
 			}
 
@@ -411,7 +412,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 							errChan <- fmt.Errorf("%s", v)
 						}
 					}
-					return
 				}
 			}()
 
@@ -431,7 +431,7 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 
 			err = s.store.UpdateTaskStatus(ctx, s.provider, descriptor, models.TaskStatusTerminated, "")
 			if err != nil {
-				logger.Error("Error updating task status: %s", err)
+				logger.Errorf("Error updating task status: %s", err)
 				if sendError {
 					errChan <- err
 				}

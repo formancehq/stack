@@ -50,6 +50,9 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	defer func() {
+		_ = db.Close()
+	}()
 
 	bunDB := bun.NewDB(db, pgdialect.New())
 	if viper.GetBool(service.DebugFlag) {

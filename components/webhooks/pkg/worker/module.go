@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/webhooks/cmd/flag"
 	"net/http"
 	"os"
 	"strings"
@@ -14,7 +15,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
-	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/google/uuid"
@@ -26,8 +26,10 @@ func StartModule(serviceName string, retriesCron time.Duration, retriesSchedule 
 	var options []fx.Option
 
 	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
+		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retriesSchedule, pond.New(50, 50))
+	}))
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
-
 	options = append(options, fx.Provide(
 		func() (time.Duration, []time.Duration) {
 			return retriesCron, retriesSchedule
@@ -35,16 +37,13 @@ func StartModule(serviceName string, retriesCron time.Duration, retriesSchedule 
 		NewRetrier,
 	))
 	options = append(options, fx.Invoke(run))
-	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
-		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retriesSchedule, pond.New(50, 50))
-	}))
 
 	logging.Debugf("starting worker with env:")
 	for _, e := range os.Environ() {
 		logging.Debugf("%s", e)
 	}
 
-	return fx.Module("webhooks worker", options...)
+	return fx.Options(options...)
 }
 
 func run(lc fx.Lifecycle, w *Retrier) {

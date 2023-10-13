@@ -2,6 +2,7 @@ package suite
 
 import (
 	"encoding/json"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 	"github.com/pborman/uuid"
 )
 
-var _ = Given("An empty environment", func() {
+var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
 	When("creating a new workflow", func() {
 		var (
 			createWorkflowResponse *shared.CreateWorkflowResponse

@@ -2,6 +2,7 @@ package suite
 
 import (
 	"database/sql"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -20,21 +21,23 @@ import (
 	"github.com/uptrace/bun/driver/pgdriver"
 )
 
-var _ = Given("an environment configured with a webhook sent on created transaction", func() {
+var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 	Context("the endpoint only returning errors", func() {
 		It("with a retries schedule of [1s,2s], 3 attempts have to be made and all should have a failed status", func() {
 			httpServer := httptest.NewServer(http.HandlerFunc(
 				func(w http.ResponseWriter, _ *http.Request) {
 					http.Error(w, "error", http.StatusNotFound)
 				}))
+			defer func() {
+				httpServer.Close()
+			}()
 			sqldb := sql.OpenDB(
 				pgdriver.NewConnector(
 					pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))
 			db := bun.NewDB(sqldb, pgdialect.New())
-			DeferCleanup(func() {
-				httpServer.Close()
-				Expect(db.Close()).To(Succeed())
-			})
+			defer func() {
+				_ = db.Close()
+			}()
 
 			response, err := Client().Webhooks.InsertConfig(
 				TestContext(),
