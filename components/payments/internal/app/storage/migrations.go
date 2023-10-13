@@ -602,5 +602,18 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				ALTER TABLE transfers.transfer_initiation ADD COLUMN scheduled_at timestamp with time zone;
+				;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

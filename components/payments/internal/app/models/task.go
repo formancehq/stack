@@ -18,6 +18,7 @@ const (
 	OPTIONS_RUN_IN_DURATION
 	OPTIONS_RUN_INDEFINITELY
 	OPTIONS_RUN_NOW_SYNC
+	OPTIONS_RUN_SCHEDULED_AT
 )
 
 type RestartOption int
@@ -52,6 +53,7 @@ func (t Task) GetDescriptor() TaskDescriptor {
 type TaskSchedulerOptions struct {
 	ScheduleOption ScheduleOption
 	Duration       time.Duration
+	ScheduleAt     time.Time
 
 	// TODO(polo): Deprecated, will be removed in the next release, use
 	// RestartOption instead.

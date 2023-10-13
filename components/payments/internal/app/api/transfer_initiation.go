@@ -22,6 +22,7 @@ type transferInitiationResponse struct {
 	ID                   string    `json:"id"`
 	CreatedAt            time.Time `json:"createdAt"`
 	UpdatedAt            time.Time `json:"updatedAt"`
+	ScheduledAt          time.Time `json:"scheduledAt"`
 	Description          string    `json:"description"`
 	SourceAccountID      string    `json:"sourceAccountID"`
 	DestinationAccountID string    `json:"destinationAccountID"`
@@ -42,7 +43,7 @@ type transferInitiationPaymentsResponse struct {
 
 type createTransferInitiationRequest struct {
 	Reference            string    `json:"reference"`
-	CreatedAt            time.Time `json:"createdAt"`
+	ScheduledAt          time.Time `json:"scheduledAt"`
 	Description          string    `json:"description"`
 	SourceAccountID      string    `json:"sourceAccountID"`
 	DestinationAccountID string    `json:"destinationAccountID"`
@@ -121,10 +122,6 @@ func createTransferInitiationHandler(
 			return
 		}
 
-		if payload.CreatedAt.IsZero() {
-			payload.CreatedAt = time.Now()
-		}
-
 		status := models.TransferInitiationStatusWaitingForValidation
 		if payload.Validated {
 			status = models.TransferInitiationStatusValidated
@@ -153,14 +150,16 @@ func createTransferInitiationHandler(
 			return
 		}
 
+		createdAt := time.Now()
 		provider := models.MustConnectorProviderFromString(payload.Provider)
 		tf := &models.TransferInitiation{
 			ID: models.TransferInitiationID{
 				Reference: payload.Reference,
 				Provider:  provider,
 			},
-			CreatedAt:            payload.CreatedAt,
-			UpdatedAt:            payload.CreatedAt, // When created, should be the same
+			CreatedAt:            createdAt,
+			UpdatedAt:            createdAt, // When created, should be the same
+			ScheduledAt:          payload.ScheduledAt,
 			Description:          payload.Description,
 			DestinationAccountID: models.MustAccountIDFromString(payload.DestinationAccountID),
 			Provider:             provider,
@@ -200,6 +199,7 @@ func createTransferInitiationHandler(
 			ID:                   tf.ID.String(),
 			CreatedAt:            tf.CreatedAt,
 			UpdatedAt:            tf.UpdatedAt,
+			ScheduledAt:          tf.ScheduledAt,
 			Description:          tf.Description,
 			SourceAccountID:      tf.SourceAccountID.String(),
 			DestinationAccountID: tf.DestinationAccountID.String(),
@@ -403,6 +403,7 @@ func readTransferInitiationHandler(repo readTransferInitiationRepository) http.H
 				ID:                   ret.ID.String(),
 				CreatedAt:            ret.CreatedAt,
 				UpdatedAt:            ret.UpdatedAt,
+				ScheduledAt:          ret.ScheduledAt,
 				Description:          ret.Description,
 				SourceAccountID:      ret.SourceAccountID.String(),
 				DestinationAccountID: ret.DestinationAccountID.String(),
@@ -505,6 +506,7 @@ func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http
 				ID:                   ret[i].ID.String(),
 				CreatedAt:            ret[i].CreatedAt,
 				UpdatedAt:            ret[i].UpdatedAt,
+				ScheduledAt:          ret[i].ScheduledAt,
 				Description:          ret[i].Description,
 				SourceAccountID:      ret[i].SourceAccountID.String(),
 				DestinationAccountID: ret[i].DestinationAccountID.String(),

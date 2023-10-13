@@ -1058,6 +1058,7 @@ components:
         - id
         - createdAt
         - updatedAt
+        - scheduledAt
         - description
         - sourceAccountID
         - destinationAccountID
@@ -1075,6 +1076,9 @@ components:
           type: string
           format: date-time
         updatedAt:
+          type: string
+          format: date-time
+        scheduledAt:
           type: string
           format: date-time
         description:
@@ -1514,7 +1518,7 @@ components:
       type: object
       required:
         - reference
-        - createdAt
+        - scheduledAt
         - description
         - sourceAccountID
         - destinationAccountID
@@ -1527,7 +1531,7 @@ components:
         reference:
           type: string
           example: XXX
-        createdAt:
+        scheduledAt:
           type: string
           format: date-time
         description:

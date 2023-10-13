@@ -38,8 +38,15 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 		return err
 	}
 
+	scheduleOption := models.OPTIONS_RUN_NOW_SYNC
+	scheduledAt := transfer.ScheduledAt
+	if !scheduledAt.IsZero() {
+		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
+	}
+
 	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+		ScheduleOption: scheduleOption,
+		ScheduleAt:     scheduledAt,
 		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 	})
 	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
