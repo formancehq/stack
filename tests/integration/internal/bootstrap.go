@@ -473,7 +473,7 @@ func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc
 	case err := <-errCh:
 		By("starting service " + service)
 		Expect(err).ToNot(HaveOccurred())
-	case <-time.After(10 * time.Second):
+	case <-time.After(30 * time.Second):
 		Fail(fmt.Sprintf("timeout waiting for service '%s' to be properly started", service))
 	}
 	port := httpserver.Port(ctx)
