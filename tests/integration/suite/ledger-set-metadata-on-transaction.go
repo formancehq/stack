@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("creating a transaction on a ledger", func() {
 		var (
 			timestamp = time.Now().Round(time.Second).UTC()

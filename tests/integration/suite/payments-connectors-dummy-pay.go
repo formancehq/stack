@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"os"
 	"path/filepath"
 	"time"
@@ -16,7 +17,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Payments}, func() {
 	When("configuring dummy pay connector", func() {
 		var (
 			msgs               chan *nats.Msg

@@ -94,6 +94,18 @@ func gormModule(kind, uri string) fx.Option {
 					logging.FromContext(ctx).Info("Migrate tables")
 					return MigrateTables(ctx, db)
 				},
+				OnStop: func(ctx context.Context) error {
+					logging.FromContext(ctx).Info("Closing database...")
+					defer func() {
+						logging.FromContext(ctx).Info("Database closed.")
+					}()
+					sqlDB, err := db.DB()
+					if err != nil {
+						return err
+					}
+
+					return sqlDB.Close()
+				},
 			})
 		}),
 		fx.Provide(func() gorm.Dialector {

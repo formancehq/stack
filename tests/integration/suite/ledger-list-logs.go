@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"sort"
 	"time"
@@ -13,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("listing logs", func() {
 		var (
 			timestamp1 = time.Date(2023, 4, 11, 10, 0, 0, 0, time.UTC)
@@ -144,9 +145,7 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 	})
-})
 
-var _ = Given("some environment with accounts", func() {
 	type expectedLog struct {
 		id       int64
 		typ      shared.LogType

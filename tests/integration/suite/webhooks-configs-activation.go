@@ -4,12 +4,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("empty environment for webhooks configs", func() {
+var _ = WithModules([]*Module{modules.Webhooks}, func() {
 	var (
 		secret     = webhooks.NewSecret()
 		insertResp *shared.ConfigResponse

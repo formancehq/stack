@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +16,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("empty environment for webhooks configs", func() {
+var _ = WithModules([]*Module{modules.Webhooks}, func() {
 	When("testing configs", func() {
 		Context("inserting a config with an endpoint to a success handler", func() {
 			var (

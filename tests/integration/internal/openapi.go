@@ -2,15 +2,14 @@ package internal
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 	"os"
 	"path/filepath"
 
 	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"
@@ -55,6 +54,7 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 
 	data, err := io.ReadAll(rsp.Body)
 	Expect(err).WithOffset(8).To(Succeed())
+
 	rsp.Body = io.NopCloser(bytes.NewBuffer(data))
 
 	err = openapi3filter.ValidateResponse(req.Context(), &openapi3filter.ResponseValidationInput{
@@ -71,16 +71,20 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 
 var _ http.RoundTripper = &openapiCheckerRoundTripper{}
 
-func newOpenapiCheckerTransport(rt http.RoundTripper) *openapiCheckerRoundTripper {
+func newOpenapiCheckerTransport(ctx context.Context, rt http.RoundTripper) (*openapiCheckerRoundTripper, error) {
 	openapiRawSpec, err := os.ReadFile(filepath.Join("..", "..", "..", "openapi", "build", "generate.json"))
-	Expect(err).ToNot(HaveOccurred())
+	if err != nil {
+		return nil, err
+	}
 
 	loader := &openapi3.Loader{
-		Context:               TestContext(),
+		Context:               ctx,
 		IsExternalRefsAllowed: true,
 	}
 	doc, err := loader.LoadFromData(openapiRawSpec)
-	Expect(err).ToNot(HaveOccurred())
+	if err != nil {
+		return nil, err
+	}
 
 	// Override default servers
 	doc.Servers = []*openapi3.Server{{
@@ -90,34 +94,17 @@ func newOpenapiCheckerTransport(rt http.RoundTripper) *openapiCheckerRoundTrippe
 	doc.Components.SecuritySchemes = openapi3.SecuritySchemes{}
 
 	err = doc.Validate(ctx)
-	Expect(err).ToNot(HaveOccurred())
+	if err != nil {
+		return nil, err
+	}
 
 	router, err := gorillamux.NewRouter(doc)
-	Expect(err).ToNot(HaveOccurred())
+	if err != nil {
+		return nil, err
+	}
 
 	return &openapiCheckerRoundTripper{
 		router:     router,
 		underlying: rt,
-	}
-}
-
-func configureSDK() {
-	gatewayUrl, err := url.Parse(gatewayServer.URL)
-	if err != nil {
-		panic(err)
-	}
-
-	sdkClient = formance.New(
-		formance.WithServerURL(gatewayUrl.String()),
-		formance.WithClient(
-			&http.Client{
-				Transport: newOpenapiCheckerTransport(
-					httpclient.NewDebugHTTPTransport(http.DefaultTransport),
-				),
-			},
-		))
-}
-
-func Client() *formance.Formance {
-	return sdkClient
+	}, nil
 }

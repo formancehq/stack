@@ -20,7 +20,7 @@ require (
 	github.com/uptrace/bun/driver/pgdriver v1.1.14
 	github.com/uptrace/bun/extra/bunotel v1.1.14
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
-	go.uber.org/fx v1.19.1
+	go.uber.org/fx v1.19.2
 )
 
 require (

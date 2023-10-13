@@ -48,6 +48,10 @@ func Module(uri, configEncryptionKey string, debug bool, output io.Writer) fx.Op
 		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
 			lc.Append(fx.Hook{
 				OnStop: func(ctx context.Context) error {
+					logging.FromContext(ctx).Infof("Closing database...")
+					defer func() {
+						logging.FromContext(ctx).Infof("Database closed.")
+					}()
 					return db.Close()
 				},
 			})

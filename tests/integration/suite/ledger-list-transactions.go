@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("some empty environment", func() {
+var _ = WithModules([]*Module{modules.Ledger}, func() {
 	const (
 		pageSize = int64(10)
 		txCount  = 2 * pageSize
@@ -164,9 +165,6 @@ var _ = Given("some empty environment", func() {
 			})
 		})
 	})
-})
-
-var _ = Given("some empty environment", func() {
 	var (
 		timestamp1 = time.Date(2023, 4, 10, 10, 0, 0, 0, time.UTC)
 		timestamp2 = time.Date(2023, 4, 11, 10, 0, 0, 0, time.UTC)
@@ -925,9 +923,7 @@ var _ = Given("some empty environment", func() {
 			Expect(response.StatusCode).To(Equal(404))
 		})
 	})
-})
 
-var _ = Given("some empty environment", func() {
 	When("counting and listing transactions empty", func() {
 		It("should be countable on api even if empty", func() {
 			response, err := Client().Ledger.CountTransactions(
