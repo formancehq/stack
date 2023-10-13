@@ -28,7 +28,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("doloribus") {{
+                .setSecurity(new Security("voluptatibus") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -70,7 +70,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("ut") {{
+                .setSecurity(new Security("quisquam") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -109,7 +109,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("facilis") {{
+                .setSecurity(new Security("vero") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -146,7 +146,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("cupiditate") {{
+                .setSecurity(new Security("omnis") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -183,7 +183,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("qui") {{
+                .setSecurity(new Security("quis") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -232,12 +232,13 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("quae") {{
+                .setSecurity(new Security("ipsum") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             com.formance.formance_sdk.models.shared.ConfigUser req = new ConfigUser("https://example.com",                 new String[]{{
+                                add("TYPE1"),
                                 add("TYPE1"),
                                 add("TYPE1"),
                                 add("TYPE1"),
@@ -275,7 +276,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("odio") {{
+                .setSecurity(new Security("voluptate") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();

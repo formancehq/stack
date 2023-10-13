@@ -23,7 +23,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("aut") {{
+                .setSecurity(new Security("occaecati") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();

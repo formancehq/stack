@@ -11,7 +11,7 @@ export class WiseConfig extends SpeakeasyBase {
   apiKey: string;
 
   /**
-   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.
    *
    * @remarks
    *

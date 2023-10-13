@@ -4,7 +4,6 @@
 
 package com.formance.formance_sdk;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formance.formance_sdk.utils.HTTPClient;
 import com.formance.formance_sdk.utils.HTTPRequest;
@@ -33,59 +32,6 @@ public class Payments {
 	}
 
     /**
-     * Transfer funds between Stripe accounts
-     * Execute a transfer between two Stripe accounts.
-     * @param request the request object containing all of the parameters for the API call
-     * @return the response from the API call
-     * @throws Exception if the API call fails
-     */
-    public com.formance.formance_sdk.models.operations.ConnectorsStripeTransferResponse connectorsStripeTransfer(com.formance.formance_sdk.models.shared.StripeTransferRequest request) throws Exception {
-        String baseUrl = this._serverUrl;
-        String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/payments/connectors/stripe/transfers");
-        
-        HTTPRequest req = new HTTPRequest();
-        req.setMethod("POST");
-        req.setURL(url);
-        SerializedBody serializedRequestBody = com.formance.formance_sdk.utils.Utils.serializeRequestBody(request, "request", "json");
-        if (serializedRequestBody == null) {
-            throw new Exception("Request body is required");
-        }
-        req.setBody(serializedRequestBody);
-
-        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
-        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
-        
-        HTTPClient client = this._securityClient;
-        
-        HttpResponse<byte[]> httpRes = client.send(req);
-
-        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
-
-        com.formance.formance_sdk.models.operations.ConnectorsStripeTransferResponse res = new com.formance.formance_sdk.models.operations.ConnectorsStripeTransferResponse(contentType, httpRes.statusCode()) {{
-            stripeTransferResponse = null;
-            errorResponse = null;
-        }};
-        res.rawResponse = httpRes;
-        
-        if (httpRes.statusCode() == 200) {
-            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
-                ObjectMapper mapper = JSON.getMapper();
-                java.util.Map<String, Object> out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), new TypeReference<java.util.Map<String, Object>>() {});
-                res.stripeTransferResponse = out;
-            }
-        }
-        else if ((httpRes.statusCode() >= 500 && httpRes.statusCode() < 600)) {
-            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
-                ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
-            }
-        }
-
-        return res;
-    }
-
-    /**
      * Transfer funds between Connector accounts
      * Execute a transfer between two accounts.
      * @param request the request object containing all of the parameters for the API call
@@ -105,7 +51,7 @@ public class Payments {
         }
         req.setBody(serializedRequestBody);
 
-        req.addHeader("Accept", "application/json;q=1, application/json;q=0");
+        req.addHeader("Accept", "application/json");
         req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
         HTTPClient client = this._securityClient;
@@ -116,7 +62,6 @@ public class Payments {
 
         com.formance.formance_sdk.models.operations.ConnectorsTransferResponse res = new com.formance.formance_sdk.models.operations.ConnectorsTransferResponse(contentType, httpRes.statusCode()) {{
             transferResponse = null;
-            errorResponse = null;
         }};
         res.rawResponse = httpRes;
         
@@ -127,12 +72,129 @@ public class Payments {
                 res.transferResponse = out;
             }
         }
-        else if ((httpRes.statusCode() >= 500 && httpRes.statusCode() < 600)) {
+
+        return res;
+    }
+
+    /**
+     * Create a BankAccount in Payments and on the PSP
+     * Create a bank account in Payments and on the PSP.
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.CreateBankAccountResponse createBankAccount(com.formance.formance_sdk.models.shared.BankAccountRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/payments/bank-accounts");
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("POST");
+        req.setURL(url);
+        SerializedBody serializedRequestBody = com.formance.formance_sdk.utils.Utils.serializeRequestBody(request, "request", "json");
+        if (serializedRequestBody == null) {
+            throw new Exception("Request body is required");
+        }
+        req.setBody(serializedRequestBody);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.CreateBankAccountResponse res = new com.formance.formance_sdk.models.operations.CreateBankAccountResponse(contentType, httpRes.statusCode()) {{
+            bankAccountResponse = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.ErrorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ErrorResponse.class);
-                res.errorResponse = out;
+                com.formance.formance_sdk.models.shared.BankAccountResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.BankAccountResponse.class);
+                res.bankAccountResponse = out;
             }
+        }
+
+        return res;
+    }
+
+    /**
+     * Create a TransferInitiation
+     * Create a transfer initiation
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.CreateTransferInitiationResponse createTransferInitiation(com.formance.formance_sdk.models.shared.TransferInitiationRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/payments/transfer-initiations");
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("POST");
+        req.setURL(url);
+        SerializedBody serializedRequestBody = com.formance.formance_sdk.utils.Utils.serializeRequestBody(request, "request", "json");
+        if (serializedRequestBody == null) {
+            throw new Exception("Request body is required");
+        }
+        req.setBody(serializedRequestBody);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.CreateTransferInitiationResponse res = new com.formance.formance_sdk.models.operations.CreateTransferInitiationResponse(contentType, httpRes.statusCode()) {{
+            transferInitiationResponse = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.TransferInitiationResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.TransferInitiationResponse.class);
+                res.transferInitiationResponse = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * Delete a transfer initiation
+     * Delete a transfer initiation by its id.
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.DeleteTransferInitiationResponse deleteTransferInitiation(com.formance.formance_sdk.models.operations.DeleteTransferInitiationRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.DeleteTransferInitiationRequest.class, baseUrl, "/api/payments/transfer-initiations/{transferId}", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("DELETE");
+        req.setURL(url);
+
+        req.addHeader("Accept", "*/*");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.DeleteTransferInitiationResponse res = new com.formance.formance_sdk.models.operations.DeleteTransferInitiationResponse(contentType, httpRes.statusCode()) {{
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 204) {
         }
 
         return res;
@@ -177,6 +239,45 @@ public class Payments {
                 ObjectMapper mapper = JSON.getMapper();
                 com.formance.formance_sdk.models.shared.BalancesCursor out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.BalancesCursor.class);
                 res.balancesCursor = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * Get a bank account created by user on Formance
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.GetBankAccountResponse getBankAccount(com.formance.formance_sdk.models.operations.GetBankAccountRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetBankAccountRequest.class, baseUrl, "/api/payments/bank-accounts/{bankAccountId}", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("GET");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.GetBankAccountResponse res = new com.formance.formance_sdk.models.operations.GetBankAccountResponse(contentType, httpRes.statusCode()) {{
+            bankAccountResponse = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.BankAccountResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.BankAccountResponse.class);
+                res.bankAccountResponse = out;
             }
         }
 
@@ -263,6 +364,45 @@ public class Payments {
     }
 
     /**
+     * Get a transfer initiation
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.GetTransferInitiationResponse getTransferInitiation(com.formance.formance_sdk.models.operations.GetTransferInitiationRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetTransferInitiationRequest.class, baseUrl, "/api/payments/transfer-initiations/{transferId}", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("GET");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.GetTransferInitiationResponse res = new com.formance.formance_sdk.models.operations.GetTransferInitiationResponse(contentType, httpRes.statusCode()) {{
+            transferInitiationResponse = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.TransferInitiationResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.TransferInitiationResponse.class);
+                res.transferInitiationResponse = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
      * Install a connector
      * Install a connector by its name and config.
      * @param request the request object containing all of the parameters for the API call
@@ -334,6 +474,52 @@ public class Payments {
                 ObjectMapper mapper = JSON.getMapper();
                 com.formance.formance_sdk.models.shared.ConnectorsResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ConnectorsResponse.class);
                 res.connectorsResponse = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * List bank accounts created by user on Formance
+     * List all bank accounts created by user on Formance.
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.ListBankAccountsResponse listBankAccounts(com.formance.formance_sdk.models.operations.ListBankAccountsRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/payments/bank-accounts");
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("GET");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        java.util.List<NameValuePair> queryParams = com.formance.formance_sdk.utils.Utils.getQueryParams(com.formance.formance_sdk.models.operations.ListBankAccountsRequest.class, request, null);
+        if (queryParams != null) {
+            for (NameValuePair queryParam : queryParams) {
+                req.addQueryParam(queryParam);
+            }
+        }
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.ListBankAccountsResponse res = new com.formance.formance_sdk.models.operations.ListBankAccountsResponse(contentType, httpRes.statusCode()) {{
+            bankAccountsCursor = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.BankAccountsCursor out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.BankAccountsCursor.class);
+                res.bankAccountsCursor = out;
             }
         }
 
@@ -504,6 +690,51 @@ public class Payments {
                 ObjectMapper mapper = JSON.getMapper();
                 com.formance.formance_sdk.models.shared.PaymentsCursor out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.PaymentsCursor.class);
                 res.paymentsCursor = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * List Transfer Initiations
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.ListTransferInitiationsResponse listTransferInitiations(com.formance.formance_sdk.models.operations.ListTransferInitiationsRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(baseUrl, "/api/payments/transfer-initiations");
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("GET");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        java.util.List<NameValuePair> queryParams = com.formance.formance_sdk.utils.Utils.getQueryParams(com.formance.formance_sdk.models.operations.ListTransferInitiationsRequest.class, request, null);
+        if (queryParams != null) {
+            for (NameValuePair queryParam : queryParams) {
+                req.addQueryParam(queryParam);
+            }
+        }
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.ListTransferInitiationsResponse res = new com.formance.formance_sdk.models.operations.ListTransferInitiationsResponse(contentType, httpRes.statusCode()) {{
+            transferInitiationsCursor = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.TransferInitiationsCursor out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.TransferInitiationsCursor.class);
+                res.transferInitiationsCursor = out;
             }
         }
 
@@ -699,6 +930,79 @@ public class Payments {
         String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
 
         com.formance.formance_sdk.models.operations.ResetConnectorResponse res = new com.formance.formance_sdk.models.operations.ResetConnectorResponse(contentType, httpRes.statusCode()) {{
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 204) {
+        }
+
+        return res;
+    }
+
+    /**
+     * Retry a failed transfer initiation
+     * Retry a failed transfer initiation
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.RetryTransferInitiationResponse retryTransferInitiation(com.formance.formance_sdk.models.operations.RetryTransferInitiationRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.RetryTransferInitiationRequest.class, baseUrl, "/api/payments/transfer-initiations/{transferId}/retry", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("POST");
+        req.setURL(url);
+
+        req.addHeader("Accept", "*/*");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.RetryTransferInitiationResponse res = new com.formance.formance_sdk.models.operations.RetryTransferInitiationResponse(contentType, httpRes.statusCode()) {{
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 204) {
+        }
+
+        return res;
+    }
+
+    /**
+     * Update the status of a transfer initiation
+     * Update a transfer initiation status
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.UdpateTransferInitiationStatusResponse udpateTransferInitiationStatus(com.formance.formance_sdk.models.operations.UdpateTransferInitiationStatusRequest request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.UdpateTransferInitiationStatusRequest.class, baseUrl, "/api/payments/transfer-initiations/{transferId}/status", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("POST");
+        req.setURL(url);
+        SerializedBody serializedRequestBody = com.formance.formance_sdk.utils.Utils.serializeRequestBody(request, "updateTransferInitiationStatusRequest", "json");
+        if (serializedRequestBody == null) {
+            throw new Exception("Request body is required");
+        }
+        req.setBody(serializedRequestBody);
+
+        req.addHeader("Accept", "*/*");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.UdpateTransferInitiationStatusResponse res = new com.formance.formance_sdk.models.operations.UdpateTransferInitiationStatusResponse(contentType, httpRes.statusCode()) {{
         }};
         res.rawResponse = httpRes;
         

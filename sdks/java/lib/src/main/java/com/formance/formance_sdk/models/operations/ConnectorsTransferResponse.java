@@ -16,17 +16,6 @@ public class ConnectorsTransferResponse {
         return this;
     }
     
-    /**
-     * Error
-     */
-    
-    public com.formance.formance_sdk.models.shared.ErrorResponse errorResponse;
-
-    public ConnectorsTransferResponse withErrorResponse(com.formance.formance_sdk.models.shared.ErrorResponse errorResponse) {
-        this.errorResponse = errorResponse;
-        return this;
-    }
-    
     
     public Integer statusCode;
 

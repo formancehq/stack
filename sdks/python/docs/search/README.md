@@ -25,27 +25,22 @@ req = shared.Query(
     after=[
         'users:002',
         'users:002',
-        'users:002',
     ],
     cursor='YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=',
     ledgers=[
         'quickstart',
         'quickstart',
-        'quickstart',
-        'quickstart',
     ],
-    page_size=249796,
+    page_size=716075,
     policy='OR',
     raw={
-        "enim": 'accusamus',
-        "delectus": 'quidem',
-        "provident": 'nam',
+        "labore": 'labore',
+        "suscipit": 'natus',
+        "nobis": 'eum',
     },
     sort='txid:asc',
-    target='id',
+    target='vero',
     terms=[
-        'destination=central_bank1',
-        'destination=central_bank1',
         'destination=central_bank1',
     ],
 )

@@ -110,22 +110,30 @@ func main() {
 
 ### [Payments](docs/payments/README.md)
 
-* [ConnectorsStripeTransfer](docs/payments/README.md#connectorsstripetransfer) - Transfer funds between Stripe accounts
 * [ConnectorsTransfer](docs/payments/README.md#connectorstransfer) - Transfer funds between Connector accounts
+* [CreateBankAccount](docs/payments/README.md#createbankaccount) - Create a BankAccount in Payments and on the PSP
+* [CreateTransferInitiation](docs/payments/README.md#createtransferinitiation) - Create a TransferInitiation
+* [DeleteTransferInitiation](docs/payments/README.md#deletetransferinitiation) - Delete a transfer initiation
 * [GetAccountBalances](docs/payments/README.md#getaccountbalances) - Get account balances
+* [GetBankAccount](docs/payments/README.md#getbankaccount) - Get a bank account created by user on Formance
 * [GetConnectorTask](docs/payments/README.md#getconnectortask) - Read a specific task of the connector
 * [GetPayment](docs/payments/README.md#getpayment) - Get a payment
+* [GetTransferInitiation](docs/payments/README.md#gettransferinitiation) - Get a transfer initiation
 * [InstallConnector](docs/payments/README.md#installconnector) - Install a connector
 * [ListAllConnectors](docs/payments/README.md#listallconnectors) - List all installed connectors
+* [ListBankAccounts](docs/payments/README.md#listbankaccounts) - List bank accounts created by user on Formance
 * [ListConfigsAvailableConnectors](docs/payments/README.md#listconfigsavailableconnectors) - List the configs of each available connector
 * [ListConnectorTasks](docs/payments/README.md#listconnectortasks) - List tasks from a connector
 * [ListConnectorsTransfers](docs/payments/README.md#listconnectorstransfers) - List transfers and their statuses
 * [ListPayments](docs/payments/README.md#listpayments) - List payments
+* [ListTransferInitiations](docs/payments/README.md#listtransferinitiations) - List Transfer Initiations
 * [PaymentsgetAccount](docs/payments/README.md#paymentsgetaccount) - Get an account
 * [PaymentsgetServerInfo](docs/payments/README.md#paymentsgetserverinfo) - Get server info
 * [PaymentslistAccounts](docs/payments/README.md#paymentslistaccounts) - List accounts
 * [ReadConnectorConfig](docs/payments/README.md#readconnectorconfig) - Read the config of a connector
 * [ResetConnector](docs/payments/README.md#resetconnector) - Reset a connector
+* [RetryTransferInitiation](docs/payments/README.md#retrytransferinitiation) - Retry a failed transfer initiation
+* [UdpateTransferInitiationStatus](docs/payments/README.md#udpatetransferinitiationstatus) - Update the status of a transfer initiation
 * [UninstallConnector](docs/payments/README.md#uninstallconnector) - Uninstall a connector
 * [UpdateMetadata](docs/payments/README.md#updatemetadata) - Update metadata
 

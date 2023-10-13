@@ -6,7 +6,7 @@ type MoneycorpConfig struct {
 	APIKey   string `json:"apiKey"`
 	ClientID string `json:"clientID"`
 	Endpoint string `json:"endpoint"`
-	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+	// The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.
 	//
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 }

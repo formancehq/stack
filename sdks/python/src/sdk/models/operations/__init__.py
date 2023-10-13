@@ -8,16 +8,17 @@ from .addtransientscope import *
 from .cancelevent import *
 from .changeconfigsecret import *
 from .confirmhold import *
-from .connectorsstripetransfer import *
 from .connectorstransfer import *
 from .countaccounts import *
 from .counttransactions import *
 from .createbalance import *
+from .createbankaccount import *
 from .createclient import *
 from .createscope import *
 from .createsecret import *
 from .createtransaction import *
 from .createtransactions import *
+from .createtransferinitiation import *
 from .createwallet import *
 from .createworkflow import *
 from .creditwallet import *
@@ -28,6 +29,7 @@ from .deleteconfig import *
 from .deletescope import *
 from .deletescopefromclient import *
 from .deletesecret import *
+from .deletetransferinitiation import *
 from .deletetransientscope import *
 from .deleteworkflow import *
 from .getaccount import *
@@ -35,6 +37,7 @@ from .getaccountbalances import *
 from .getbalance import *
 from .getbalances import *
 from .getbalancesaggregated import *
+from .getbankaccount import *
 from .getconnectortask import *
 from .gethold import *
 from .getholds import *
@@ -49,6 +52,7 @@ from .getpayment import *
 from .getserverinfo import *
 from .gettransaction import *
 from .gettransactions import *
+from .gettransferinitiation import *
 from .getversions import *
 from .getwallet import *
 from .getwalletsummary import *
@@ -58,6 +62,7 @@ from .installconnector import *
 from .listaccounts import *
 from .listallconnectors import *
 from .listbalances import *
+from .listbankaccounts import *
 from .listclients import *
 from .listconfigsavailableconnectors import *
 from .listconnectorstransfers import *
@@ -67,6 +72,7 @@ from .listlogs import *
 from .listpayments import *
 from .listscopes import *
 from .listtransactions import *
+from .listtransferinitiations import *
 from .listusers import *
 from .listwallets import *
 from .listworkflows import *
@@ -80,6 +86,7 @@ from .readscope import *
 from .readstats import *
 from .readuser import *
 from .resetconnector import *
+from .retrytransferinitiation import *
 from .reverttransaction import *
 from .runscript import *
 from .runworkflow import *
@@ -87,6 +94,7 @@ from .search import *
 from .searchgetserverinfo import *
 from .sendevent import *
 from .testconfig import *
+from .udpatetransferinitiationstatus import *
 from .uninstallconnector import *
 from .updateclient import *
 from .updatemapping import *
@@ -96,4 +104,4 @@ from .updatewallet import *
 from .voidhold import *
 from .walletsgetserverinfo import *
 
-__all__ = ["ActivateConfigRequest","ActivateConfigResponse","AddMetadataOnTransactionRequest","AddMetadataOnTransactionResponse","AddMetadataToAccountRequest","AddMetadataToAccountResponse","AddScopeToClientRequest","AddScopeToClientResponse","AddTransientScopeRequest","AddTransientScopeResponse","CancelEventRequest","CancelEventResponse","ChangeConfigSecretRequest","ChangeConfigSecretResponse","ConfirmHoldRequest","ConfirmHoldResponse","ConnectorsStripeTransferResponse","ConnectorsTransferRequest","ConnectorsTransferResponse","CountAccountsRequest","CountAccountsResponse","CountTransactionsRequest","CountTransactionsResponse","CreateBalanceRequest","CreateBalanceResponse","CreateClientResponse","CreateScopeResponse","CreateSecretRequest","CreateSecretResponse","CreateTransactionRequest","CreateTransactionResponse","CreateTransactionsRequest","CreateTransactionsResponse","CreateWalletResponse","CreateWorkflowResponse","CreditWalletRequest","CreditWalletResponse","DeactivateConfigRequest","DeactivateConfigResponse","DebitWalletRequest","DebitWalletResponse","DeleteClientRequest","DeleteClientResponse","DeleteConfigRequest","DeleteConfigResponse","DeleteScopeFromClientRequest","DeleteScopeFromClientResponse","DeleteScopeRequest","DeleteScopeResponse","DeleteSecretRequest","DeleteSecretResponse","DeleteTransientScopeRequest","DeleteTransientScopeResponse","DeleteWorkflowRequest","DeleteWorkflowResponse","GetAccountBalancesRequest","GetAccountBalancesResponse","GetAccountRequest","GetAccountResponse","GetBalanceRequest","GetBalanceResponse","GetBalancesAggregatedRequest","GetBalancesAggregatedResponse","GetBalancesRequest","GetBalancesResponse","GetConnectorTaskRequest","GetConnectorTaskResponse","GetHoldRequest","GetHoldResponse","GetHoldsRequest","GetHoldsResponse","GetInfoResponse","GetInstanceHistoryRequest","GetInstanceHistoryResponse","GetInstanceRequest","GetInstanceResponse","GetInstanceStageHistoryRequest","GetInstanceStageHistoryResponse","GetLedgerInfoRequest","GetLedgerInfoResponse","GetManyConfigsRequest","GetManyConfigsResponse","GetMappingRequest","GetMappingResponse","GetPaymentRequest","GetPaymentResponse","GetServerInfoResponse","GetTransactionRequest","GetTransactionResponse","GetTransactionsRequest","GetTransactionsResponse","GetVersionsResponse","GetWalletRequest","GetWalletResponse","GetWalletSummaryRequest","GetWalletSummaryResponse","GetWorkflowRequest","GetWorkflowResponse","InsertConfigResponse","InstallConnectorRequest","InstallConnectorResponse","ListAccountsBalanceOperator","ListAccountsRequest","ListAccountsResponse","ListAllConnectorsResponse","ListBalancesRequest","ListBalancesResponse","ListClientsResponse","ListConfigsAvailableConnectorsResponse","ListConnectorTasksRequest","ListConnectorTasksResponse","ListConnectorsTransfersRequest","ListConnectorsTransfersResponse","ListInstancesRequest","ListInstancesResponse","ListLogsRequest","ListLogsResponse","ListPaymentsRequest","ListPaymentsResponse","ListScopesResponse","ListTransactionsRequest","ListTransactionsResponse","ListUsersResponse","ListWalletsRequest","ListWalletsResponse","ListWorkflowsResponse","OrchestrationgetServerInfoResponse","PaymentsgetAccountRequest","PaymentsgetAccountResponse","PaymentsgetServerInfoResponse","PaymentslistAccountsRequest","PaymentslistAccountsResponse","ReadClientRequest","ReadClientResponse","ReadConnectorConfigRequest","ReadConnectorConfigResponse","ReadScopeRequest","ReadScopeResponse","ReadStatsRequest","ReadStatsResponse","ReadUserRequest","ReadUserResponse","ResetConnectorRequest","ResetConnectorResponse","RevertTransactionRequest","RevertTransactionResponse","RunScriptRequest","RunScriptResponse","RunWorkflowRequest","RunWorkflowResponse","SearchResponse","SearchgetServerInfoResponse","SendEventRequest","SendEventRequestBody","SendEventResponse","TestConfigRequest","TestConfigResponse","UninstallConnectorRequest","UninstallConnectorResponse","UpdateClientRequest","UpdateClientResponse","UpdateMappingRequest","UpdateMappingResponse","UpdateMetadataRequest","UpdateMetadataResponse","UpdateScopeRequest","UpdateScopeResponse","UpdateWalletRequest","UpdateWalletRequestBody","UpdateWalletResponse","VoidHoldRequest","VoidHoldResponse","WalletsgetServerInfoResponse"]
+__all__ = ["ActivateConfigRequest","ActivateConfigResponse","AddMetadataOnTransactionRequest","AddMetadataOnTransactionResponse","AddMetadataToAccountRequest","AddMetadataToAccountResponse","AddScopeToClientRequest","AddScopeToClientResponse","AddTransientScopeRequest","AddTransientScopeResponse","CancelEventRequest","CancelEventResponse","ChangeConfigSecretRequest","ChangeConfigSecretResponse","ConfirmHoldRequest","ConfirmHoldResponse","ConnectorsTransferRequest","ConnectorsTransferResponse","CountAccountsRequest","CountAccountsResponse","CountTransactionsRequest","CountTransactionsResponse","CreateBalanceRequest","CreateBalanceResponse","CreateBankAccountResponse","CreateClientResponse","CreateScopeResponse","CreateSecretRequest","CreateSecretResponse","CreateTransactionRequest","CreateTransactionResponse","CreateTransactionsRequest","CreateTransactionsResponse","CreateTransferInitiationResponse","CreateWalletResponse","CreateWorkflowResponse","CreditWalletRequest","CreditWalletResponse","DeactivateConfigRequest","DeactivateConfigResponse","DebitWalletRequest","DebitWalletResponse","DeleteClientRequest","DeleteClientResponse","DeleteConfigRequest","DeleteConfigResponse","DeleteScopeFromClientRequest","DeleteScopeFromClientResponse","DeleteScopeRequest","DeleteScopeResponse","DeleteSecretRequest","DeleteSecretResponse","DeleteTransferInitiationRequest","DeleteTransferInitiationResponse","DeleteTransientScopeRequest","DeleteTransientScopeResponse","DeleteWorkflowRequest","DeleteWorkflowResponse","GetAccountBalancesRequest","GetAccountBalancesResponse","GetAccountRequest","GetAccountResponse","GetBalanceRequest","GetBalanceResponse","GetBalancesAggregatedRequest","GetBalancesAggregatedResponse","GetBalancesRequest","GetBalancesResponse","GetBankAccountRequest","GetBankAccountResponse","GetConnectorTaskRequest","GetConnectorTaskResponse","GetHoldRequest","GetHoldResponse","GetHoldsRequest","GetHoldsResponse","GetInfoResponse","GetInstanceHistoryRequest","GetInstanceHistoryResponse","GetInstanceRequest","GetInstanceResponse","GetInstanceStageHistoryRequest","GetInstanceStageHistoryResponse","GetLedgerInfoRequest","GetLedgerInfoResponse","GetManyConfigsRequest","GetManyConfigsResponse","GetMappingRequest","GetMappingResponse","GetPaymentRequest","GetPaymentResponse","GetServerInfoResponse","GetTransactionRequest","GetTransactionResponse","GetTransactionsRequest","GetTransactionsResponse","GetTransferInitiationRequest","GetTransferInitiationResponse","GetVersionsResponse","GetWalletRequest","GetWalletResponse","GetWalletSummaryRequest","GetWalletSummaryResponse","GetWorkflowRequest","GetWorkflowResponse","InsertConfigResponse","InstallConnectorRequest","InstallConnectorResponse","ListAccountsBalanceOperator","ListAccountsRequest","ListAccountsResponse","ListAllConnectorsResponse","ListBalancesRequest","ListBalancesResponse","ListBankAccountsRequest","ListBankAccountsResponse","ListClientsResponse","ListConfigsAvailableConnectorsResponse","ListConnectorTasksRequest","ListConnectorTasksResponse","ListConnectorsTransfersRequest","ListConnectorsTransfersResponse","ListInstancesRequest","ListInstancesResponse","ListLogsRequest","ListLogsResponse","ListPaymentsRequest","ListPaymentsResponse","ListScopesResponse","ListTransactionsRequest","ListTransactionsResponse","ListTransferInitiationsRequest","ListTransferInitiationsResponse","ListUsersResponse","ListWalletsRequest","ListWalletsResponse","ListWorkflowsResponse","OrchestrationgetServerInfoResponse","PaymentsgetAccountRequest","PaymentsgetAccountResponse","PaymentsgetServerInfoResponse","PaymentslistAccountsRequest","PaymentslistAccountsResponse","ReadClientRequest","ReadClientResponse","ReadConnectorConfigRequest","ReadConnectorConfigResponse","ReadScopeRequest","ReadScopeResponse","ReadStatsRequest","ReadStatsResponse","ReadUserRequest","ReadUserResponse","ResetConnectorRequest","ResetConnectorResponse","RetryTransferInitiationRequest","RetryTransferInitiationResponse","RevertTransactionRequest","RevertTransactionResponse","RunScriptRequest","RunScriptResponse","RunWorkflowRequest","RunWorkflowResponse","SearchResponse","SearchgetServerInfoResponse","SendEventRequest","SendEventRequestBody","SendEventResponse","TestConfigRequest","TestConfigResponse","UdpateTransferInitiationStatusRequest","UdpateTransferInitiationStatusResponse","UninstallConnectorRequest","UninstallConnectorResponse","UpdateClientRequest","UpdateClientResponse","UpdateMappingRequest","UpdateMappingResponse","UpdateMetadataRequest","UpdateMetadataResponse","UpdateScopeRequest","UpdateScopeResponse","UpdateWalletRequest","UpdateWalletRequestBody","UpdateWalletResponse","VoidHoldRequest","VoidHoldResponse","WalletsgetServerInfoResponse"]

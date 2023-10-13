@@ -23,7 +23,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("maiores") {{
+                .setSecurity(new Security("dolores") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -33,21 +33,26 @@ public class Application {
                     add("users:002"),
                     add("users:002"),
                     add("users:002"),
+                    add("users:002"),
                 }};
                 cursor = "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=";
                 ledgers = new String[]{{
                     add("quickstart"),
                     add("quickstart"),
                 }};
-                pageSize = 453543L;
+                pageSize = 223924L;
                 policy = "OR";
                 raw = new java.util.HashMap<String, Object>() {{
-                    put("nam", "eaque");
-                    put("pariatur", "nemo");
+                    put("nostrum", "hic");
+                    put("recusandae", "omnis");
+                    put("facilis", "perspiciatis");
+                    put("voluptatem", "porro");
                 }};
                 sort = "txid:asc";
-                target = "voluptatibus";
+                target = "consequuntur";
                 terms = new String[]{{
+                    add("destination=central_bank1"),
+                    add("destination=central_bank1"),
                     add("destination=central_bank1"),
                 }};
             }};            
@@ -81,7 +86,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("fugiat") {{
+                .setSecurity(new Security("error") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();

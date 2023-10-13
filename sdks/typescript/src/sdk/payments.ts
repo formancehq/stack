@@ -32,88 +32,6 @@ export class Payments {
   }
 
   /**
-   * Transfer funds between Stripe accounts
-   *
-   * @remarks
-   * Execute a transfer between two Stripe accounts.
-   */
-  async connectorsStripeTransfer(
-    req: shared.StripeTransferRequest,
-    config?: AxiosRequestConfig
-  ): Promise<operations.ConnectorsStripeTransferResponse> {
-    if (!(req instanceof utils.SpeakeasyBase)) {
-      req = new shared.StripeTransferRequest(req);
-    }
-
-    const baseURL: string = this._serverURL;
-    const url: string =
-      baseURL.replace(/\/$/, "") + "/api/payments/connectors/stripe/transfers";
-
-    let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
-
-    try {
-      [reqBodyHeaders, reqBody] = utils.serializeRequestBody(
-        req,
-        "request",
-        "json"
-      );
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        throw new Error(`Error serializing request body, cause: ${e.message}`);
-      }
-    }
-
-    const client: AxiosInstance = this._securityClient || this._defaultClient;
-
-    const headers = { ...reqBodyHeaders, ...config?.headers };
-    if (reqBody == null || Object.keys(reqBody).length === 0)
-      throw new Error("request body is required");
-    headers["Accept"] = "application/json;q=1, application/json;q=0";
-    headers[
-      "user-agent"
-    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
-
-    const httpRes: AxiosResponse = await client.request({
-      validateStatus: () => true,
-      url: url,
-      method: "post",
-      headers: headers,
-      data: reqBody,
-      ...config,
-    });
-
-    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
-
-    if (httpRes?.status == null) {
-      throw new Error(`status code not found in response: ${httpRes}`);
-    }
-
-    const res: operations.ConnectorsStripeTransferResponse =
-      new operations.ConnectorsStripeTransferResponse({
-        statusCode: httpRes.status,
-        contentType: contentType,
-        rawResponse: httpRes,
-      });
-    switch (true) {
-      case httpRes?.status == 200:
-        if (utils.matchContentType(contentType, `application/json`)) {
-          res.stripeTransferResponse = utils.objectToClass(httpRes?.data);
-        }
-        break;
-      case httpRes?.status >= 500 && httpRes?.status < 600:
-        if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
-            httpRes?.data,
-            shared.ErrorResponse
-          );
-        }
-        break;
-    }
-
-    return res;
-  }
-
-  /**
    * Transfer funds between Connector accounts
    *
    * @remarks
@@ -153,7 +71,7 @@ export class Payments {
     const headers = { ...reqBodyHeaders, ...config?.headers };
     if (reqBody == null || Object.keys(reqBody).length === 0)
       throw new Error("request body is required");
-    headers["Accept"] = "application/json;q=1, application/json;q=0";
+    headers["Accept"] = "application/json";
     headers[
       "user-agent"
     ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
@@ -188,13 +106,216 @@ export class Payments {
           );
         }
         break;
-      case httpRes?.status >= 500 && httpRes?.status < 600:
+    }
+
+    return res;
+  }
+
+  /**
+   * Create a BankAccount in Payments and on the PSP
+   *
+   * @remarks
+   * Create a bank account in Payments and on the PSP.
+   */
+  async createBankAccount(
+    req: shared.BankAccountRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.CreateBankAccountResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new shared.BankAccountRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string =
+      baseURL.replace(/\/$/, "") + "/api/payments/bank-accounts";
+
+    let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+    try {
+      [reqBodyHeaders, reqBody] = utils.serializeRequestBody(
+        req,
+        "request",
+        "json"
+      );
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        throw new Error(`Error serializing request body, cause: ${e.message}`);
+      }
+    }
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...reqBodyHeaders, ...config?.headers };
+    if (reqBody == null || Object.keys(reqBody).length === 0)
+      throw new Error("request body is required");
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "post",
+      headers: headers,
+      data: reqBody,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.CreateBankAccountResponse =
+      new operations.CreateBankAccountResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.errorResponse = utils.objectToClass(
+          res.bankAccountResponse = utils.objectToClass(
             httpRes?.data,
-            shared.ErrorResponse
+            shared.BankAccountResponse
           );
         }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Create a TransferInitiation
+   *
+   * @remarks
+   * Create a transfer initiation
+   */
+  async createTransferInitiation(
+    req: shared.TransferInitiationRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.CreateTransferInitiationResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new shared.TransferInitiationRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string =
+      baseURL.replace(/\/$/, "") + "/api/payments/transfer-initiations";
+
+    let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+    try {
+      [reqBodyHeaders, reqBody] = utils.serializeRequestBody(
+        req,
+        "request",
+        "json"
+      );
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        throw new Error(`Error serializing request body, cause: ${e.message}`);
+      }
+    }
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...reqBodyHeaders, ...config?.headers };
+    if (reqBody == null || Object.keys(reqBody).length === 0)
+      throw new Error("request body is required");
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "post",
+      headers: headers,
+      data: reqBody,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.CreateTransferInitiationResponse =
+      new operations.CreateTransferInitiationResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.transferInitiationResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.TransferInitiationResponse
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Delete a transfer initiation
+   *
+   * @remarks
+   * Delete a transfer initiation by its id.
+   */
+  async deleteTransferInitiation(
+    req: operations.DeleteTransferInitiationRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.DeleteTransferInitiationResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.DeleteTransferInitiationRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/transfer-initiations/{transferId}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "*/*";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "delete",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.DeleteTransferInitiationResponse =
+      new operations.DeleteTransferInitiationResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 204:
         break;
     }
 
@@ -254,6 +375,66 @@ export class Payments {
           res.balancesCursor = utils.objectToClass(
             httpRes?.data,
             shared.BalancesCursor
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Get a bank account created by user on Formance
+   */
+  async getBankAccount(
+    req: operations.GetBankAccountRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.GetBankAccountResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.GetBankAccountRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/bank-accounts/{bankAccountId}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.GetBankAccountResponse =
+      new operations.GetBankAccountResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.bankAccountResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.BankAccountResponse
           );
         }
         break;
@@ -386,6 +567,66 @@ export class Payments {
   }
 
   /**
+   * Get a transfer initiation
+   */
+  async getTransferInitiation(
+    req: operations.GetTransferInitiationRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.GetTransferInitiationResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.GetTransferInitiationRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/transfer-initiations/{transferId}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.GetTransferInitiationResponse =
+      new operations.GetTransferInitiationResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.transferInitiationResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.TransferInitiationResponse
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
    * Install a connector
    *
    * @remarks
@@ -505,6 +746,67 @@ export class Payments {
           res.connectorsResponse = utils.objectToClass(
             httpRes?.data,
             shared.ConnectorsResponse
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * List bank accounts created by user on Formance
+   *
+   * @remarks
+   * List all bank accounts created by user on Formance.
+   */
+  async listBankAccounts(
+    req: operations.ListBankAccountsRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.ListBankAccountsResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.ListBankAccountsRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string =
+      baseURL.replace(/\/$/, "") + "/api/payments/bank-accounts";
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    const queryParams: string = utils.serializeQueryParams(req);
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url + queryParams,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.ListBankAccountsResponse =
+      new operations.ListBankAccountsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.bankAccountsCursor = utils.objectToClass(
+            httpRes?.data,
+            shared.BankAccountsCursor
           );
         }
         break;
@@ -744,6 +1046,64 @@ export class Payments {
           res.paymentsCursor = utils.objectToClass(
             httpRes?.data,
             shared.PaymentsCursor
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * List Transfer Initiations
+   */
+  async listTransferInitiations(
+    req: operations.ListTransferInitiationsRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.ListTransferInitiationsResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.ListTransferInitiationsRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string =
+      baseURL.replace(/\/$/, "") + "/api/payments/transfer-initiations";
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    const queryParams: string = utils.serializeQueryParams(req);
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url + queryParams,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.ListTransferInitiationsResponse =
+      new operations.ListTransferInitiationsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.transferInitiationsCursor = utils.objectToClass(
+            httpRes?.data,
+            shared.TransferInitiationsCursor
           );
         }
         break;
@@ -1030,6 +1390,137 @@ export class Payments {
 
     const res: operations.ResetConnectorResponse =
       new operations.ResetConnectorResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 204:
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Retry a failed transfer initiation
+   *
+   * @remarks
+   * Retry a failed transfer initiation
+   */
+  async retryTransferInitiation(
+    req: operations.RetryTransferInitiationRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.RetryTransferInitiationResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.RetryTransferInitiationRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/transfer-initiations/{transferId}/retry",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "*/*";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "post",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.RetryTransferInitiationResponse =
+      new operations.RetryTransferInitiationResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 204:
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Update the status of a transfer initiation
+   *
+   * @remarks
+   * Update a transfer initiation status
+   */
+  async udpateTransferInitiationStatus(
+    req: operations.UdpateTransferInitiationStatusRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.UdpateTransferInitiationStatusResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.UdpateTransferInitiationStatusRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/transfer-initiations/{transferId}/status",
+      req
+    );
+
+    let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+    try {
+      [reqBodyHeaders, reqBody] = utils.serializeRequestBody(
+        req,
+        "updateTransferInitiationStatusRequest",
+        "json"
+      );
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        throw new Error(`Error serializing request body, cause: ${e.message}`);
+      }
+    }
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...reqBodyHeaders, ...config?.headers };
+    if (reqBody == null || Object.keys(reqBody).length === 0)
+      throw new Error("request body is required");
+    headers["Accept"] = "*/*";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "post",
+      headers: headers,
+      data: reqBody,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.UdpateTransferInitiationStatusResponse =
+      new operations.UdpateTransferInitiationStatusResponse({
         statusCode: httpRes.status,
         contentType: contentType,
         rawResponse: httpRes,

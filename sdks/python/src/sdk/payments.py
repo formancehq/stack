@@ -3,7 +3,7 @@
 import requests as requests_http
 from . import utils
 from sdk.models import operations, shared
-from typing import Any, Optional
+from typing import Optional
 
 class Payments:
     _client: requests_http.Session
@@ -22,41 +22,6 @@ class Payments:
         self._gen_version = gen_version
         
     
-    def connectors_stripe_transfer(self, request: shared.StripeTransferRequest) -> operations.ConnectorsStripeTransferResponse:
-        r"""Transfer funds between Stripe accounts
-        Execute a transfer between two Stripe accounts.
-        """
-        base_url = self._server_url
-        
-        url = base_url.removesuffix('/') + '/api/payments/connectors/stripe/transfers'
-        headers = {}
-        req_content_type, data, form = utils.serialize_request_body(request, "request", 'json')
-        if req_content_type not in ('multipart/form-data', 'multipart/mixed'):
-            headers['content-type'] = req_content_type
-        if data is None and form is None:
-            raise Exception('request body is required')
-        headers['Accept'] = 'application/json;q=1, application/json;q=0'
-        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
-        
-        client = self._security_client
-        
-        http_res = client.request('POST', url, data=data, files=form, headers=headers)
-        content_type = http_res.headers.get('Content-Type')
-
-        res = operations.ConnectorsStripeTransferResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
-        
-        if http_res.status_code == 200:
-            if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[dict[str, Any]])
-                res.stripe_transfer_response = out
-        elif http_res.status_code >= 500 and http_res.status_code < 600:
-            if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
-
-        return res
-
-    
     def connectors_transfer(self, request: operations.ConnectorsTransferRequest) -> operations.ConnectorsTransferResponse:
         r"""Transfer funds between Connector accounts
         Execute a transfer between two accounts.
@@ -70,7 +35,7 @@ class Payments:
             headers['content-type'] = req_content_type
         if data is None and form is None:
             raise Exception('request body is required')
-        headers['Accept'] = 'application/json;q=1, application/json;q=0'
+        headers['Accept'] = 'application/json'
         headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
         
         client = self._security_client
@@ -84,10 +49,90 @@ class Payments:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.TransferResponse])
                 res.transfer_response = out
-        elif http_res.status_code >= 500 and http_res.status_code < 600:
+
+        return res
+
+    
+    def create_bank_account(self, request: shared.BankAccountRequest) -> operations.CreateBankAccountResponse:
+        r"""Create a BankAccount in Payments and on the PSP
+        Create a bank account in Payments and on the PSP.
+        """
+        base_url = self._server_url
+        
+        url = base_url.removesuffix('/') + '/api/payments/bank-accounts'
+        headers = {}
+        req_content_type, data, form = utils.serialize_request_body(request, "request", 'json')
+        if req_content_type not in ('multipart/form-data', 'multipart/mixed'):
+            headers['content-type'] = req_content_type
+        if data is None and form is None:
+            raise Exception('request body is required')
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('POST', url, data=data, files=form, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.CreateBankAccountResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.ErrorResponse])
-                res.error_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.BankAccountResponse])
+                res.bank_account_response = out
+
+        return res
+
+    
+    def create_transfer_initiation(self, request: shared.TransferInitiationRequest) -> operations.CreateTransferInitiationResponse:
+        r"""Create a TransferInitiation
+        Create a transfer initiation
+        """
+        base_url = self._server_url
+        
+        url = base_url.removesuffix('/') + '/api/payments/transfer-initiations'
+        headers = {}
+        req_content_type, data, form = utils.serialize_request_body(request, "request", 'json')
+        if req_content_type not in ('multipart/form-data', 'multipart/mixed'):
+            headers['content-type'] = req_content_type
+        if data is None and form is None:
+            raise Exception('request body is required')
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('POST', url, data=data, files=form, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.CreateTransferInitiationResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.TransferInitiationResponse])
+                res.transfer_initiation_response = out
+
+        return res
+
+    
+    def delete_transfer_initiation(self, request: operations.DeleteTransferInitiationRequest) -> operations.DeleteTransferInitiationResponse:
+        r"""Delete a transfer initiation
+        Delete a transfer initiation by its id.
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.DeleteTransferInitiationRequest, base_url, '/api/payments/transfer-initiations/{transferId}', request)
+        headers = {}
+        headers['Accept'] = '*/*'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('DELETE', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.DeleteTransferInitiationResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
 
         return res
 
@@ -113,6 +158,30 @@ class Payments:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.BalancesCursor])
                 res.balances_cursor = out
+
+        return res
+
+    
+    def get_bank_account(self, request: operations.GetBankAccountRequest) -> operations.GetBankAccountResponse:
+        r"""Get a bank account created by user on Formance"""
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.GetBankAccountRequest, base_url, '/api/payments/bank-accounts/{bankAccountId}', request)
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.GetBankAccountResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.BankAccountResponse])
+                res.bank_account_response = out
 
         return res
 
@@ -167,6 +236,30 @@ class Payments:
         return res
 
     
+    def get_transfer_initiation(self, request: operations.GetTransferInitiationRequest) -> operations.GetTransferInitiationResponse:
+        r"""Get a transfer initiation"""
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.GetTransferInitiationRequest, base_url, '/api/payments/transfer-initiations/{transferId}', request)
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.GetTransferInitiationResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.TransferInitiationResponse])
+                res.transfer_initiation_response = out
+
+        return res
+
+    
     def install_connector(self, request: operations.InstallConnectorRequest) -> operations.InstallConnectorResponse:
         r"""Install a connector
         Install a connector by its name and config.
@@ -216,6 +309,33 @@ class Payments:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.ConnectorsResponse])
                 res.connectors_response = out
+
+        return res
+
+    
+    def list_bank_accounts(self, request: operations.ListBankAccountsRequest) -> operations.ListBankAccountsResponse:
+        r"""List bank accounts created by user on Formance
+        List all bank accounts created by user on Formance.
+        """
+        base_url = self._server_url
+        
+        url = base_url.removesuffix('/') + '/api/payments/bank-accounts'
+        headers = {}
+        query_params = utils.get_query_params(operations.ListBankAccountsRequest, request)
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, params=query_params, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.ListBankAccountsResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.BankAccountsCursor])
+                res.bank_accounts_cursor = out
 
         return res
 
@@ -320,6 +440,31 @@ class Payments:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.PaymentsCursor])
                 res.payments_cursor = out
+
+        return res
+
+    
+    def list_transfer_initiations(self, request: operations.ListTransferInitiationsRequest) -> operations.ListTransferInitiationsResponse:
+        r"""List Transfer Initiations"""
+        base_url = self._server_url
+        
+        url = base_url.removesuffix('/') + '/api/payments/transfer-initiations'
+        headers = {}
+        query_params = utils.get_query_params(operations.ListTransferInitiationsRequest, request)
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, params=query_params, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.ListTransferInitiationsResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.TransferInitiationsCursor])
+                res.transfer_initiations_cursor = out
 
         return res
 
@@ -441,6 +586,55 @@ class Payments:
         content_type = http_res.headers.get('Content-Type')
 
         res = operations.ResetConnectorResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+
+        return res
+
+    
+    def retry_transfer_initiation(self, request: operations.RetryTransferInitiationRequest) -> operations.RetryTransferInitiationResponse:
+        r"""Retry a failed transfer initiation
+        Retry a failed transfer initiation
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.RetryTransferInitiationRequest, base_url, '/api/payments/transfer-initiations/{transferId}/retry', request)
+        headers = {}
+        headers['Accept'] = '*/*'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('POST', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.RetryTransferInitiationResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+
+        return res
+
+    
+    def udpate_transfer_initiation_status(self, request: operations.UdpateTransferInitiationStatusRequest) -> operations.UdpateTransferInitiationStatusResponse:
+        r"""Update the status of a transfer initiation
+        Update a transfer initiation status
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.UdpateTransferInitiationStatusRequest, base_url, '/api/payments/transfer-initiations/{transferId}/status', request)
+        headers = {}
+        req_content_type, data, form = utils.serialize_request_body(request, "update_transfer_initiation_status_request", 'json')
+        if req_content_type not in ('multipart/form-data', 'multipart/mixed'):
+            headers['content-type'] = req_content_type
+        if data is None and form is None:
+            raise Exception('request body is required')
+        headers['Accept'] = '*/*'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('POST', url, data=data, files=form, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.UdpateTransferInitiationStatusResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
         
 
         return res

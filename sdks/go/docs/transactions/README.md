@@ -42,65 +42,6 @@ func main() {
             Transactions: []shared.TransactionData{
                 shared.TransactionData{
                     Metadata: map[string]interface{}{
-                        "amet": "deserunt",
-                        "nisi": "vel",
-                        "natus": "omnis",
-                        "molestiae": "perferendis",
-                    },
-                    Postings: []shared.Posting{
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                    },
-                    Reference: formance.String("ref:001"),
-                    Timestamp: types.MustTimeFromString("2022-04-14T15:11:13.227Z"),
-                },
-                shared.TransactionData{
-                    Metadata: map[string]interface{}{
-                        "labore": "labore",
-                        "suscipit": "natus",
-                        "nobis": "eum",
-                    },
-                    Postings: []shared.Posting{
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                    },
-                    Reference: formance.String("ref:001"),
-                    Timestamp: types.MustTimeFromString("2022-11-24T10:55:00.183Z"),
-                },
-                shared.TransactionData{
-                    Metadata: map[string]interface{}{
                         "et": "excepturi",
                         "ullam": "provident",
                     },

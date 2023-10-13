@@ -24,7 +24,7 @@ class BankingCircleConfig
     public string $password;
     
     /**
-     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Banking Circle API.
      * 
      * 
      * 

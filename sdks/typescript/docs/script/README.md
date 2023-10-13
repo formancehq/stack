@@ -27,9 +27,10 @@ const sdk = new SDK({
 sdk.script.runScript({
   script: {
     metadata: {
-      "dolor": "debitis",
-      "a": "dolorum",
-      "in": "in",
+      "quidem": "provident",
+      "nam": "id",
+      "blanditiis": "deleniti",
+      "sapiente": "amet",
     },
     plain: "vars {
   account $user
@@ -41,10 +42,9 @@ sdk.script.runScript({
   ",
     reference: "order_1234",
     vars: {
-      "maiores": "rerum",
-      "dicta": "magnam",
-      "cumque": "facere",
-      "ea": "aliquid",
+      "nisi": "vel",
+      "natus": "omnis",
+      "molestiae": "perferendis",
     },
   },
   ledger: "ledger001",

@@ -25,7 +25,7 @@ class ModulrConfig
     public ?string $endpoint = null;
     
     /**
-     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
+     * The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.
      * 
      * 
      * 
