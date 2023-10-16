@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"go.uber.org/fx"

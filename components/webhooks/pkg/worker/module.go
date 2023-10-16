@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/formancehq/webhooks/cmd/flag"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/formancehq/webhooks/cmd/flag"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/alitto/pond"
