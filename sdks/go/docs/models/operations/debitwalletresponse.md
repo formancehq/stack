@@ -1,0 +1,12 @@
+# DebitWalletResponse
+
+
+## Fields
+
+| Field                                                                       | Type                                                                        | Required                                                                    | Description                                                                 |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `ContentType`                                                               | *string*                                                                    | :heavy_check_mark:                                                          | N/A                                                                         |
+| `DebitWalletResponse`                                                       | [*shared.DebitWalletResponse](../../models/shared/debitwalletresponse.md)   | :heavy_minus_sign:                                                          | Wallet successfully debited as a pending hold                               |
+| `StatusCode`                                                                | *int*                                                                       | :heavy_check_mark:                                                          | N/A                                                                         |
+| `RawResponse`                                                               | [*http.Response](https://pkg.go.dev/net/http#Response)                      | :heavy_minus_sign:                                                          | N/A                                                                         |
+| `WalletsErrorResponse`                                                      | [*shared.WalletsErrorResponse](../../models/shared/walletserrorresponse.md) | :heavy_minus_sign:                                                          | Error                                                                       |
