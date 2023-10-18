@@ -1,0 +1,23 @@
+replicas: 3
+image:
+  repository: ghcr.io/formancehq/stargate
+  tag: v0.1.9
+
+resources:
+   limits:
+     cpu: 1000m
+     memory: 2048Mi
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
+
+config:
+  targetGroup: ""
+  auth_issuer_url: ""
+  nats:
+    url: ""
+    client: ""
+    topic: ""
+  traces:
+    enabled: false
+    endpoint: ""

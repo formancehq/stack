@@ -1,0 +1,56 @@
+VERSION --pass-args --arg-scope-and-set 0.7
+
+ARG core=github.com/formancehq/earthly:v0.3.0
+IMPORT $core AS core
+IMPORT ../.. AS stack
+
+FROM core+base-image
+
+temporalite-build:
+    FROM core+builder-image
+    GIT CLONE --branch=v0.2.0 https://github.com/temporalio/temporalite.git /src
+    WORKDIR /src
+    ENV GOBIN=/go/bin
+    DO --pass-args core+GO_INSTALL --package=./cmd/temporalite
+    SAVE ARTIFACT $GOPATH/bin/temporalite
+
+temporalite:
+    FROM core+final-image
+    COPY (+temporalite-build/temporalite) /bin/temporalite
+    EXPOSE 7233 8233
+    ENTRYPOINT ["/bin/temporalite", "start", "--ephemeral", "-n", "default", "--ip" , "0.0.0.0"]
+    SAVE IMAGE temporalite
+
+tests:
+    FROM core+builder-image
+    WORKDIR /src
+    RUN apk update && apk add docker-cli-compose
+    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
+    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
+    COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
+    COPY --pass-args (stack+sources/out --LOCATION=openapi/build/generate.json) /src/openapi/build/generate.json
+    COPY --pass-args (stack+build-sdk/go --LANG=go) /src/sdks/go
+    COPY . /src/tests/integration
+    WORKDIR /src/tests/integration
+    COPY .earthly/docker-compose.yml .
+    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo
+
+    ARG GOPROXY
+    ARG focusFile
+    ARG skipFile
+
+    LET cmd="ginkgo -p"
+    IF [ $focusFile != "" ]
+        SET cmd="$cmd --focus-file=$focusFile"
+    END
+    IF [ $skipFile != "" ]
+        SET cmd="$cmd --skip-file=$skipFile"
+    END
+
+    WITH DOCKER --pull=jeffail/benthos:4.11 --load temporalite=+temporalite --compose docker-compose.yml
+        RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
+            --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+            DOCKER_HOSTNAME=$(ip addr show docker0 | head -3 | tail -1 | cut -d / -f1 | cut -d\  -f6) \
+            $cmd ./suite/...
+    END

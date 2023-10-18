@@ -1,0 +1,81 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stargate
+  labels:
+    io.kompose.service: stargate
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: stargate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: stargate
+    spec:
+      containers:
+        - name: stargate
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - 'stargate'
+            - 'server'
+          ports:
+            - containerPort: 3068
+              protocol: TCP
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DEBUG
+              value: "true"
+            - name: DEV
+              value: "true"
+            - name: AUTH_ISSUER_URL
+              value: "{{ .Values.config.auth_issuer_url }}"
+            - name: PUBLISHER_NATS_ENABLED
+              value: 'true'
+            - name: PUBLISHER_NATS_URL
+              value: "{{ .Values.config.nats.url }}"
+            - name: PUBLISHER_NATS_CLIENT_ID
+              value: "{{ .Values.config.nats.client }}"
+            - name: PUBLISHER_TOPIC_MAPPING
+              value: "{{ .Values.config.nats.topic }}"
+            - name: GRPC_ADDR
+              value: 0.0.0.0:3068
+            - name: HTTP_ADDR
+              value: 0.0.0.0:8080
+            - name: OTEL_TRACES
+              value: "{{ .Values.config.traces.enabled }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: deployment.environment=cloud
+            - name: OTEL_SERVICE_NAME
+              value: stargate
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+              value: "true"
+            - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+              value: grpc
+            - name: OTEL_TRACES_PORT
+              value: "4317"
+            - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+              value: "{{ .Values.config.traces.endpoint }}"
+            - name: OTEL_METRICS
+              value: "true"
+            - name: OTEL_METRICS_ENDPOINT
+              value: "{{ .Values.config.traces.endpoint }}"
+            - name: OTEL_METRICS_EXPORTER
+              value: otlp
+            - name: OTEL_METRICS_EXPORTER_OTLP_INSECURE
+              value: "true"
+            - name: OTEL_METRICS_EXPORTER_OTLP_MODE
+              value: grpc
+            - name: OTEL_METRICS_PORT
+              value: "4317"
+            - name: OTEL_METRICS_RUNTIME
+              value: "true"
+            - name: OTEL_METRICS_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.config.traces.endpoint }}

@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	_ "github.com/athul/shelby/mods"
 	goprompt "github.com/c-bata/go-prompt"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/iancoleman/strcase"
