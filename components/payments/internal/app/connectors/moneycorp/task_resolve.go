@@ -39,7 +39,11 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 	if err != nil {
 		logger.Error(err)
 
-		return nil
+		return func(taskDescriptor TaskDescriptor) task.Task {
+			return func() error {
+				return fmt.Errorf("cannot build moneycorp client: %w", err)
+			}
+		}
 	}
 
 	return func(taskDescriptor TaskDescriptor) task.Task {
