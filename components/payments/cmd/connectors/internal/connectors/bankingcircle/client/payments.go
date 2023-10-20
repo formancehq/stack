@@ -34,8 +34,8 @@ type Payment struct {
 		} `json:"viban"`
 		InstructedDate interface{} `json:"instructedDate"`
 		DebitAmount    struct {
-			Currency string      `json:"currency"`
-			Amount   json.Number `json:"amount"`
+			Currency string  `json:"currency"`
+			Amount   float64 `json:"amount"`
 		} `json:"debitAmount"`
 		DebitValueDate time.Time   `json:"debitValueDate"`
 		FxRate         interface{} `json:"fxRate"`
@@ -46,8 +46,8 @@ type Payment struct {
 		DebtorName    interface{} `json:"debtorName"`
 		DebtorAddress interface{} `json:"debtorAddress"`
 		Amount        struct {
-			Currency string      `json:"currency"`
-			Amount   json.Number `json:"amount"`
+			Currency string  `json:"currency"`
+			Amount   float64 `json:"amount"`
 		} `json:"amount"`
 		ValueDate             interface{} `json:"valueDate"`
 		ChargeBearer          interface{} `json:"chargeBearer"`
@@ -70,8 +70,8 @@ type Payment struct {
 			Country              string `json:"country"`
 		} `json:"viban"`
 		CreditAmount struct {
-			Currency string      `json:"currency"`
-			Amount   json.Number `json:"amount"`
+			Currency string  `json:"currency"`
+			Amount   float64 `json:"amount"`
 		} `json:"creditAmount"`
 		CreditValueDate time.Time   `json:"creditValueDate"`
 		FxRate          interface{} `json:"fxRate"`
@@ -128,4 +128,44 @@ func (c *Client) GetPayments(ctx context.Context, page int) ([]*Payment, error) 
 	}
 
 	return res.Result, nil
+}
+
+type StatusResponse struct {
+	Status string `json:"status"`
+}
+
+func (c *Client) GetPaymentStatus(ctx context.Context, paymentID string) (*StatusResponse, error) {
+	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/v1/payments/singles/%s/status", c.endpoint, paymentID), http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create payments request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+c.accessToken)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get payments: %w", err)
+	}
+
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			c.logger.Error(err)
+		}
+	}()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read payments response body: %w", err)
+	}
+
+	var res StatusResponse
+	if err = json.Unmarshal(responseBody, &res); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal payments response: %w", err)
+	}
+
+	return &res, nil
 }

@@ -3,7 +3,6 @@ package bankingcircle
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"math/big"
 	"time"
 
@@ -73,10 +72,7 @@ func ingestBatch(
 		paymentType := matchPaymentType(paymentEl.Classification)
 
 		var amount big.Float
-		_, ok := amount.SetString(paymentEl.Transfer.Amount.Amount.String())
-		if !ok {
-			return fmt.Errorf("failed to parse amount %s", paymentEl.Transfer.Amount.Amount.String())
-		}
+		amount.SetFloat64(paymentEl.Transfer.Amount.Amount)
 
 		var amountInt big.Int
 		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
@@ -85,12 +81,12 @@ func ingestBatch(
 			Payment: &models.Payment{
 				ID: models.PaymentID{
 					PaymentReference: models.PaymentReference{
-						Reference: paymentEl.TransactionReference,
+						Reference: paymentEl.PaymentID,
 						Type:      paymentType,
 					},
 					Provider: models.ConnectorProviderBankingCircle,
 				},
-				Reference: paymentEl.TransactionReference,
+				Reference: paymentEl.PaymentID,
 				Type:      paymentType,
 				Status:    matchPaymentStatus(paymentEl.Status),
 				Scheme:    models.PaymentSchemeOther,
@@ -146,6 +142,8 @@ func matchPaymentType(paymentType string) models.PaymentType {
 		return models.PaymentTypePayIn
 	case "Outgoing":
 		return models.PaymentTypePayOut
+	case "Own":
+		return models.PaymentTypeTransfer
 	}
 
 	return models.PaymentTypeOther
