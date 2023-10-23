@@ -34,7 +34,7 @@ fctl ledger send world foo 100 EUR/2 --ledger=demo
 fctl ui
 ```
 
-[1] https://docs.formance.com/cloud/sandboxes
+[1] https://docs.formance.com/guides/newSandbox
 
 ## 💻 Getting started locally
 
