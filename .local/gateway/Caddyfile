@@ -27,6 +27,17 @@
 	}
 }
 
+(handle_route_with_auth) {
+	# handle_path automatically strips the prefix from the request path
+	handle {args.0} {
+		reverse_proxy {args.2}
+		uri strip_prefix {args.1}
+
+		import cors
+		import auth
+	}
+}
+
 (handle_path_route_without_auth) {
 	# handle_path automatically strips the prefix from the request path
 	handle_path {args.0}* {
@@ -34,6 +45,52 @@
 
 		import cors
 	}
+}
+
+(payments) {
+	@transferinitiationwritermatcher {
+		path {args.0}/transfer-initiations*
+		method POST DELETE
+	}
+
+	@transferinitiationreadermatcher {
+		path {args.0}/transfer-initiation*
+		method GET
+	}
+
+	@bankaccountswritermatcher {
+		path {args.0}/bank-accounts*
+		method POST
+	}
+
+	@bankaccountsreadermatcher {
+		path {args.0}/bank-accounts*
+		method GET
+	}
+
+	@connectorsmatcher {
+		path {args.0}/connectors*
+	}
+
+	@configmatcher {
+		path {args.0}/configs*
+	}
+
+	@accountsmatcher {
+		path {args.0}/accounts*
+	}
+
+	import handle_route_with_auth @transferinitiationreadermatcher {args.0} {args.1}
+	import handle_route_with_auth @bankaccountsreadermatcher {args.0} {args.1}
+	import handle_route_with_auth @accountsmatcher {args.0} {args.1}
+
+	import handle_route_with_auth @bankaccountswritermatcher {args.0} {args.2}
+	import handle_route_with_auth @transferinitiationwritermatcher {args.0} {args.2}
+	import handle_route_with_auth @connectorsmatcher {args.0} {args.2}
+	import handle_route_with_auth @configmatcher {args.0} {args.2}
+
+	# All other requests on the api
+	import handle_path_route_with_auth {args.0} {args.1}
 }
 
 (auth) {
@@ -65,8 +122,8 @@ localhost:80 {
 	import handle_path_route_without_auth "/api/auth" "127.0.0.1:8083"
 	import handle_path_route_with_auth "/api/ledger" "127.0.0.1:3068"
 	import handle_path_route_with_auth "/api/wallets" "127.0.0.1:8081"
-	import handle_path_route_with_auth "/api/payments" "127.0.0.1:8082"
 	import handle_path_route_with_auth "/api/search" "127.0.0.1:8080"
+	import payments "/api/payments" "127.0.0.1:8082" "127.0.0.1:8087"
 	import handle_path_route_with_auth "/api/webhooks" "127.0.0.1:8084"
 
 	handle /versions {
@@ -77,7 +134,8 @@ localhost:80 {
 				auth http://127.0.0.1:8083/_info http://127.0.0.1:8083/_healthcheck
 				ledger http://127.0.0.1:3068/_info http://127.0.0.1:3068/_healthcheck
 				wallets http://127.0.0.1:8081/_info http://127.0.0.1:8081/_healthcheck
-				payments http://127.0.0.1:8082/_info http://127.0.0.1:8082/_healthcheck
+				paymentsapi http://127.0.0.1:8082/_info http://127.0.0.1:8082/_healthcheck
+				paymentsconnectors http://127.0.0.1:8087/_info http://127.0.0.1:8087/_healthcheck
 				search http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
 				webhooks http://127.0.0.1:8084/_info http://127.0.0.1:8084/_healthcheck
 			}

@@ -49,12 +49,19 @@ processes:
     environment:
       - "OTEL_SERVICE_NAME=wallets"
 
-  payments:
-    command: payments server --listen 0.0.0.0:8082 --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-topic-mapping *:payments --postgres-uri postgresql://formance:formance@postgres/payments?sslmode=disable --config-encryption-key mysuperencryptionkey
+  paymentsapi:
+    command: payments api server --listen 0.0.0.0:8082 --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-topic-mapping *:payments --postgres-uri postgresql://formance:formance@postgres/payments?sslmode=disable --config-encryption-key mysuperencryptionkey
     availability:
       restart: always
     environment:
-      - "OTEL_SERVICE_NAME=payments"
+      - "OTEL_SERVICE_NAME=paymentsapi"
+
+  paymentsconnectors:
+    command: payments connectors server --listen 0.0.0.0:8087 --publisher-nats-enabled true --publisher-nats-url nats:4222 --publisher-topic-mapping *:payments --postgres-uri postgresql://formance:formance@postgres/payments?sslmode=disable --config-encryption-key mysuperencryptionkey
+    availability:
+      restart: always
+    environment:
+      - "OTEL_SERVICE_NAME=paymentsconnectors"
 
   payments-migrate:
     command: payments migrate up --postgres-uri postgresql://formance:formance@postgres/payments?sslmode=disable
