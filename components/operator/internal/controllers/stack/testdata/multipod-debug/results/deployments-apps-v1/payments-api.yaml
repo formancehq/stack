@@ -6,15 +6,15 @@ metadata:
         app.kubernetes.io/name: payments
         formance.com/monopod: "false"
         stack: "true"
-    name: payments
-    namespace: multipod-latest
+    name: payments-api
+    namespace: multipod-debug
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
     revisionHistoryLimit: 10
     selector:
         matchLabels:
-            app.kubernetes.io/name: payments
+            app.kubernetes.io/name: payments-api
     strategy:
         rollingUpdate:
             maxSurge: 25%
@@ -26,7 +26,7 @@ spec:
                 stack.formance.cloud/volumes-hash: 47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=
             creationTimestamp: null
             labels:
-                app.kubernetes.io/name: payments
+                app.kubernetes.io/name: payments-api
         spec:
             containers:
                 - env:
@@ -35,7 +35,7 @@ spec:
                     - name: POSTGRES_PORT
                       value: "5432"
                     - name: POSTGRES_DATABASE
-                      value: multipod-latest-payments
+                      value: multipod-debug-payments
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
@@ -64,26 +64,26 @@ spec:
                     - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
                       value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
-                      value: "false"
+                      value: "true"
                     - name: DEV
-                      value: "false"
+                      value: "true"
                     - name: STACK_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
-                      value: payments
+                      value: payments-api
                     - name: STACK
-                      value: multipod-latest
+                      value: multipod-debug
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
-                      value: kafka1:1234 kafka2:1234
+                      value: kafka:1234
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
                     - name: PUBLISHER_TOPIC_MAPPING
-                      value: '*:multipod-latest-payments'
+                      value: '*:multipod-debug-payments'
                   image: ghcr.io/formancehq/payments:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -96,7 +96,7 @@ spec:
                     periodSeconds: 2
                     successThreshold: 1
                     timeoutSeconds: 30
-                  name: payments
+                  name: payments-api
                   ports:
                     - containerPort: 8080
                       name: http

@@ -482,7 +482,7 @@ spec:
                     - name: STACK_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
-                      value: payments
+                      value: payments-api
                     - name: STACK
                       value: monopod-latest
                     - name: BROKER
@@ -508,7 +508,7 @@ spec:
                     periodSeconds: 2
                     successThreshold: 1
                     timeoutSeconds: 30
-                  name: payments
+                  name: payments-api
                   ports:
                     - containerPort: 10004
                       name: http
@@ -520,8 +520,86 @@ spec:
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - env:
-                    - name: BIND
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-latest-payments
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: LISTEN
                       value: :10005
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
+                    - name: DEBUG
+                      value: "false"
+                    - name: DEV
+                      value: "false"
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: OTEL_SERVICE_NAME
+                      value: payments-connectors
+                    - name: STACK
+                      value: monopod-latest
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: POSTGRES_DATABASE_NAME
+                      value: $(POSTGRES_DATABASE)
+                    - name: CONFIG_ENCRYPTION_KEY
+                    - name: PUBLISHER_TOPIC_MAPPING
+                      value: '*:monopod-latest-payments'
+                  image: ghcr.io/formancehq/payments:latest
+                  imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_health
+                        port: 10005
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: payments-connectors
+                  ports:
+                    - containerPort: 10005
+                      name: http
+                      protocol: TCP
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 50Mi
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+                - env:
+                    - name: BIND
+                      value: :10006
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -574,7 +652,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10005
+                        port: 10006
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -582,7 +660,7 @@ spec:
                     timeoutSeconds: 30
                   name: search
                   ports:
-                    - containerPort: 10005
+                    - containerPort: 10006
                       name: http
                       protocol: TCP
                   resources:
@@ -686,7 +764,7 @@ spec:
                       readOnly: true
                 - env:
                     - name: BIND
-                      value: :10007
+                      value: :10008
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -730,7 +808,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10007
+                        port: 10008
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -738,7 +816,7 @@ spec:
                     timeoutSeconds: 30
                   name: stargate
                   ports:
-                    - containerPort: 10007
+                    - containerPort: 10008
                       name: http
                       protocol: TCP
                   resources:
@@ -822,7 +900,7 @@ spec:
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
                     - name: LISTEN
-                      value: :10006
+                      value: :10007
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -864,7 +942,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10006
+                        port: 10007
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -872,7 +950,7 @@ spec:
                     timeoutSeconds: 30
                   name: webhooks
                   ports:
-                    - containerPort: 10006
+                    - containerPort: 10007
                       name: http
                       protocol: TCP
                   resources:

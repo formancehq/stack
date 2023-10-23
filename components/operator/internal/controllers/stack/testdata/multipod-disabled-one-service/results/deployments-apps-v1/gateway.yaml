@@ -23,7 +23,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: d4_YEEF26NvqE7YpavaytdpnfnfiAfx_AYWs28WIR7Q=
+                stack.formance.cloud/volumes-hash: SiY68h2NXt0lgNg6NCb98o0HZSdxAQr0GAe_G7OqcIQ=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: gateway

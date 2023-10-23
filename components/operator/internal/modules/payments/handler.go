@@ -237,6 +237,19 @@ func (p module) Versions() map[string]modules.Version {
 				return paymentsServices(paymentsEnvVars)
 			},
 		},
+		"v1.0.0-alpha.6": {
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
+			},
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServicesSplitted(paymentsEnvVars)
+			},
+		},
 	}
 }
 
@@ -279,6 +292,93 @@ func paymentsServices(
 			}
 		},
 	}}
+}
+
+func paymentsServicesSplitted(
+	env func(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv,
+) modules.Services {
+	return modules.Services{
+		{
+			Name:                    "api",
+			InjectPostgresVariables: true,
+			HasVersionEndpoint:      true,
+			ListenEnvVar:            "LISTEN",
+			ExposeHTTP:              modules.DefaultExposeHTTP,
+			Paths: []modules.Path{
+				{
+					Path:    "/payments",
+					Methods: []string{"GET", "PATCH"},
+					Name:    "payments",
+				},
+				{
+					Path:    "/accounts",
+					Methods: []string{"GET"},
+					Name:    "accounts",
+				},
+				{
+					Path:    "/bank-accounts",
+					Methods: []string{"GET"},
+					Name:    "bank-accounts-read",
+				},
+				{
+					Path:    "transfer-initiations",
+					Methods: []string{"GET"},
+					Name:    "transfer-initiations-read",
+				},
+			},
+			NeedTopic: true,
+			Liveness:  modules.LivenessLegacy,
+			Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
+				return modules.Container{
+					Env:   env(resolveContext),
+					Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+					Resources: modules.GetResourcesWithDefault(
+						resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
+						modules.ResourceSizeSmall(),
+					),
+				}
+			},
+		},
+		{
+			Name:                    "connectors",
+			InjectPostgresVariables: true,
+			HasVersionEndpoint:      true,
+			ListenEnvVar:            "LISTEN",
+			ExposeHTTP:              modules.DefaultExposeHTTP,
+			Paths: []modules.Path{
+				{
+					Path: "/connectors",
+					Name: "connectors",
+				},
+				{
+					Path: "/configs",
+					Name: "configs",
+				},
+				{
+					Path:    "transfer-initiations",
+					Methods: []string{"POST", "DELETE"},
+					Name:    "transfer-initiations-write",
+				},
+				{
+					Path:    "/bank-accounts",
+					Methods: []string{"POST"},
+					Name:    "bank-accounts-write",
+				},
+			},
+			NeedTopic: true,
+			Liveness:  modules.LivenessLegacy,
+			Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
+				return modules.Container{
+					Env:   env(resolveContext),
+					Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+					Resources: modules.GetResourcesWithDefault(
+						resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
+						modules.ResourceSizeSmall(),
+					),
+				}
+			},
+		},
+	}
 }
 
 func resetConnectors(ctx context.Context, config modules.ReconciliationConfig) (bool, error) {

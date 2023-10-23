@@ -6,15 +6,15 @@ metadata:
         app.kubernetes.io/name: payments
         formance.com/monopod: "false"
         stack: "true"
-    name: payments
-    namespace: multipod-latest-with-secrets
+    name: payments-connectors
+    namespace: multipod-latest-no-monitoring
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
     revisionHistoryLimit: 10
     selector:
         matchLabels:
-            app.kubernetes.io/name: payments
+            app.kubernetes.io/name: payments-connectors
     strategy:
         rollingUpdate:
             maxSurge: 25%
@@ -26,7 +26,7 @@ spec:
                 stack.formance.cloud/volumes-hash: 47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=
             creationTimestamp: null
             labels:
-                app.kubernetes.io/name: payments
+                app.kubernetes.io/name: payments-connectors
         spec:
             containers:
                 - env:
@@ -35,40 +35,17 @@ spec:
                     - name: POSTGRES_PORT
                       value: "5432"
                     - name: POSTGRES_DATABASE
-                      value: multipod-latest-with-secrets-payments
+                      value: multipod-latest-no-monitoring-payments
                     - name: POSTGRES_USERNAME
-                      valueFrom:
-                        secretKeyRef:
-                            key: username
-                            name: postgres
+                      value: root
                     - name: POSTGRES_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                            key: password
-                            name: postgres
+                      value: root
                     - name: POSTGRES_NO_DATABASE_URI
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
                     - name: LISTEN
                       value: :8080
-                    - name: OTEL_TRACES
-                      value: "true"
-                    - name: OTEL_TRACES_EXPORTER
-                      value: otlp
-                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
-                      value: "true"
-                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
-                      value: grpc
-                    - name: OTEL_TRACES_PORT
-                      value: "4317"
-                    - name: OTEL_TRACES_ENDPOINT
-                      value: localhost
-                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
-                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
-                    - name: OTEL_RESOURCE_ATTRIBUTES
-                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-                      value: http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                     - name: DEBUG
                       value: "false"
                     - name: DEV
@@ -76,20 +53,20 @@ spec:
                     - name: STACK_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
-                      value: payments
+                      value: payments-connectors
                     - name: STACK
-                      value: multipod-latest-with-secrets
+                      value: multipod-latest-no-monitoring
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
-                      value: kafka1:1234 kafka2:1234
+                      value: kafka:1234
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
                     - name: PUBLISHER_TOPIC_MAPPING
-                      value: '*:multipod-latest-with-secrets-payments'
+                      value: '*:multipod-latest-no-monitoring-payments'
                   image: ghcr.io/formancehq/payments:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -102,7 +79,7 @@ spec:
                     periodSeconds: 2
                     successThreshold: 1
                     timeoutSeconds: 30
-                  name: payments
+                  name: payments-connectors
                   ports:
                     - containerPort: 8080
                       name: http

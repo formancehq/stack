@@ -2,9 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
     labels:
-        app.kubernetes.io/service-name: webhooks
-    name: webhooks
-    namespace: monopod-latest
+        app.kubernetes.io/service-name: payments-api
+    name: payments-api
+    namespace: monopod-disabled-one-service
 spec:
     internalTrafficPolicy: Cluster
     ipFamilies:
@@ -13,11 +13,11 @@ spec:
     ports:
         - appProtocol: http
           name: http
-          port: 10007
+          port: 10003
           protocol: TCP
-          targetPort: 10007
+          targetPort: 10003
     selector:
-        app.kubernetes.io/name: monopod-latest
+        app.kubernetes.io/name: monopod-disabled-one-service
     sessionAffinity: None
     type: ClusterIP
 status:
