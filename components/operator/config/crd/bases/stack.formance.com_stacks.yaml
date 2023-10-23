@@ -1840,8 +1840,9 @@ spec:
     subresources:
       status: {}
   - additionalPrinterColumns:
-    - jsonPath: .status.progress
-      name: Status
+    - description: Stack Disabled
+      jsonPath: .spec.disabled
+      name: Disable
       type: string
     - description: Stack Version
       jsonPath: .spec.versions
