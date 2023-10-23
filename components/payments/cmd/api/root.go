@@ -9,7 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewAPI(version string) *cobra.Command {
+func NewAPI(
+	version string,
+	addAutoMigrateCommandFunc func(cmd *cobra.Command),
+) *cobra.Command {
 
 	root := &cobra.Command{
 		Use:               "api",
@@ -21,6 +24,7 @@ func NewAPI(version string) *cobra.Command {
 	}
 
 	server := newServer(version)
+	addAutoMigrateCommandFunc(server)
 	root.AddCommand(server)
 
 	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")

@@ -25,12 +25,6 @@ func NewRootCommand() *cobra.Command {
 		Use:               "payments",
 		Short:             "payments",
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if viper.GetBool(autoMigrateFlag) {
-				return runMigrate(cmd, []string{"up"})
-			}
-			return nil
-		},
 	}
 
 	version := newVersion()
@@ -39,15 +33,11 @@ func NewRootCommand() *cobra.Command {
 	migrate := newMigrate()
 	root.AddCommand(migrate)
 
-	api := api.NewAPI(Version)
+	api := api.NewAPI(Version, addAutoMigrateCommand)
 	root.AddCommand(api)
 
-	connectors := connectors.NewConnectors(Version)
+	connectors := connectors.NewConnectors(Version, addAutoMigrateCommand)
 	root.AddCommand(connectors)
-
-	migrate.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
-	migrate.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
-	root.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
 
 	return root
 }
@@ -59,5 +49,15 @@ func Execute() {
 		}
 
 		os.Exit(1)
+	}
+}
+
+func addAutoMigrateCommand(cmd *cobra.Command) {
+	cmd.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if viper.GetBool(autoMigrateFlag) {
+			return runMigrate(cmd, []string{"up"})
+		}
+		return nil
 	}
 }

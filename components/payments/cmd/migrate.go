@@ -24,11 +24,16 @@ var (
 )
 
 func newMigrate() *cobra.Command {
-	return &cobra.Command{
+	migrate := &cobra.Command{
 		Use:   "migrate",
 		Short: "Run migrations",
 		RunE:  runMigrate,
 	}
+
+	migrate.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
+	migrate.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
+
+	return migrate
 }
 
 func runMigrate(cmd *cobra.Command, args []string) error {
