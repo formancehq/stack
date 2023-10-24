@@ -330,6 +330,7 @@ func paymentsServicesSplitted(
 			Liveness:  modules.LivenessLegacy,
 			Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 				return modules.Container{
+					Args:  []string{"api", "serve"},
 					Env:   env(resolveContext),
 					Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
 					Resources: modules.GetResourcesWithDefault(
@@ -369,6 +370,7 @@ func paymentsServicesSplitted(
 			Liveness:  modules.LivenessLegacy,
 			Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 				return modules.Container{
+					Args:  []string{"connectors", "serve"},
 					Env:   env(resolveContext),
 					Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
 					Resources: modules.GetResourcesWithDefault(

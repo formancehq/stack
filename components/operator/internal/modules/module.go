@@ -329,7 +329,7 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 
 func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version string, migration DatabaseMigration, postgresConfig v1beta3.PostgresConfig) (bool, error) {
 	logger := log.FromContext(ctx)
-	return r.RunJob(ctx, fmt.Sprintf("%s-%s-database-migration", r.module.Name(), version),
+	return r.RunJob(ctx, fmt.Sprintf("%s-%s-db-migration", r.module.Name(), version),
 		func() error {
 			if migration.Shutdown {
 				logger.Info("Stop module reconciliation as required by upgrade", "module", r.module.Name())
