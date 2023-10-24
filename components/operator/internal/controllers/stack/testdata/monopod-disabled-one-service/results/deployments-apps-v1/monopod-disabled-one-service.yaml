@@ -220,7 +220,10 @@ spec:
                     - mountPath: /config/config
                       name: gateway-config
                       readOnly: true
-                - env:
+                - args:
+                    - api
+                    - serve
+                  env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
@@ -298,7 +301,10 @@ spec:
                         memory: 50Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
-                - env:
+                - args:
+                    - connectors
+                    - serve
+                  env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT

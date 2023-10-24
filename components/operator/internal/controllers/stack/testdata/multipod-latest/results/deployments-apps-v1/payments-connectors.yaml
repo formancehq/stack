@@ -29,7 +29,10 @@ spec:
                 app.kubernetes.io/name: payments-connectors
         spec:
             containers:
-                - env:
+                - args:
+                    - connectors
+                    - serve
+                  env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
