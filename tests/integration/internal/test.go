@@ -3,20 +3,26 @@ package internal
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/xo/dburl"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
 )
+
+type routing struct {
+	port        uint16
+	routingFunc func(path, method string) bool
+}
 
 type Test struct {
 	env             *env
 	id              string
 	loadedModules   collectionutils.Set[string]
-	servicesToRoute map[string]uint16
+	servicesToRoute map[string][]routing
 	httpServer      *httptest.Server
 	sdkClient       *formance.Formance
 }
@@ -99,8 +105,8 @@ func (test *Test) dropDatabase(ctx context.Context, name string) error {
 	return err
 }
 
-func (test *Test) registerServiceToRoute(name string, port int) {
-	test.servicesToRoute[name] = uint16(port)
+func (test *Test) registerServiceToRoute(name string, routing routing) {
+	test.servicesToRoute[name] = append(test.servicesToRoute[name], routing)
 }
 
 func (test *Test) GetDatabaseSourceName(name string) string {

@@ -2,13 +2,14 @@ package internal
 
 import (
 	"context"
+	"io"
+	"os"
+
 	"github.com/docker/docker/client"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/ory/dockertest/v3"
-	"io"
-	"os"
 )
 
 type env struct {
@@ -67,7 +68,7 @@ func (e *env) newTest() *Test {
 		env:             e,
 		id:              uuid.NewString(),
 		loadedModules:   collectionutils.NewSet[string](),
-		servicesToRoute: make(map[string]uint16),
+		servicesToRoute: make(map[string][]routing),
 	}
 }
 
