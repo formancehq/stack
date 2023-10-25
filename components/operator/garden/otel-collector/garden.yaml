@@ -11,9 +11,9 @@ spec:
     - -c
     - >
       helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts &&
-      helm upgrade --install --namespace formance-system --create-namespace otel-collector open-telemetry/opentelemetry-collector --version 0.67.0
+      helm upgrade --install --create-namespace otel-collector open-telemetry/opentelemetry-collector --version 0.67.0
       --set mode=deployment
-      --set config.exporters.jaeger.endpoint=jaeger.formance-system.svc:14250
+      --set config.exporters.jaeger.endpoint=jaeger:14250
       --set config.service.pipelines.traces.exporters[0]=jaeger
       --set config.exporters.jaeger.tls.insecure=true
   cleanupCommand:
