@@ -7,27 +7,27 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.2.0
 	github.com/ThreeDotsLabs/watermill-http v1.1.4
 	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2
-	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0
-	github.com/coreos/go-semver v0.3.0
+	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.1
+	github.com/coreos/go-semver v0.3.1
 	github.com/dgraph-io/ristretto v0.1.1
-	github.com/google/uuid v1.3.0
-	github.com/imdario/mergo v0.3.13
+	github.com/google/uuid v1.3.1
+	github.com/imdario/mergo v0.3.16
 	github.com/jackc/pgx/v5 v5.3.0
-	github.com/lib/pq v1.10.7
+	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats-server/v2 v2.9.8
 	github.com/nats-io/nats.go v1.23.0
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pkg/errors v0.9.1
 	github.com/segmentio/analytics-go v3.1.0+incompatible
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
-	github.com/uptrace/bun v1.1.14
-	github.com/uptrace/bun/dialect/pgdialect v1.1.14
-	github.com/uptrace/bun/extra/bundebug v1.1.14
+	github.com/stretchr/testify v1.8.4
+	github.com/uptrace/bun v1.1.16
+	github.com/uptrace/bun/dialect/pgdialect v1.1.16
+	github.com/uptrace/bun/extra/bundebug v1.1.16
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21
 	github.com/xdg-go/scram v1.1.2
 	go.opentelemetry.io/contrib/instrumentation/host v0.42.0
@@ -148,7 +148,7 @@ require (
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/time v0.2.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
