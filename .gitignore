@@ -26,3 +26,4 @@ worktrees
 
 # Ignore SDKS
 sdks
+.DS_Store

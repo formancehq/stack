@@ -83,6 +83,49 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 
 	stack.SetProgressing()
 
+	conf := &stackv1beta3.Configuration{}
+	if err := r.client.Get(ctx, types.NamespacedName{
+		Namespace: "",
+		Name:      stack.Spec.Seed,
+	}, conf); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	platform := r.stackReconcilerFactory.Platform()
+
+	configuration := &modules.ReconciliationConfig{
+		Stack:         stack,
+		Configuration: conf,
+		Versions:      nil,
+		Platform:      platform,
+	}
+
+	stackFinalizer := NewStackFinalizer(
+		r.client,
+		log,
+		configuration,
+	)
+
+	if r.enableStackFinalizer {
+		deleted, err := stackFinalizer.HandleFinalizer(ctx, req.Name)
+		if err != nil {
+			return ctrl.Result{
+				Requeue:      true,
+				RequeueAfter: time.Second,
+			}, err
+		}
+		if deleted {
+			return ctrl.Result{}, nil
+		}
+	} else {
+		if err := stackFinalizer.RemoveFinalizer(ctx); err != nil {
+			return ctrl.Result{
+				Requeue:      true,
+				RequeueAfter: time.Second,
+			}, err
+		}
+	}
+
 	var (
 		reconcileError error
 		ready          bool
@@ -106,43 +149,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 			Requeue:      true,
 			RequeueAfter: time.Second,
 		}, nil
-	}
-
-	conf := &stackv1beta3.Configuration{}
-	if err := r.client.Get(ctx, types.NamespacedName{
-		Namespace: "",
-		Name:      stack.Spec.Seed,
-	}, conf); err != nil {
-		return ctrl.Result{}, err
-	}
-
-	platform := r.stackReconcilerFactory.Platform()
-
-	configuration := modules.ReconciliationConfig{
-		Stack:         stack,
-		Configuration: conf,
-		Versions:      nil,
-		Platform:      platform,
-	}
-
-	stackFinalizer := NewStackFinalizer(
-		ctx,
-		r.client,
-		log,
-		configuration,
-	)
-
-	if r.enableStackFinalizer {
-		deleted, err := stackFinalizer.HandleFinalizer(ctx, log, stack, conf, req)
-		if err != nil {
-			return ctrl.Result{
-				Requeue:      true,
-				RequeueAfter: time.Second,
-			}, err
-		}
-		if deleted {
-			return ctrl.Result{}, nil
-		}
 	}
 
 	if patchErr := r.client.Status().Update(ctx, stack); patchErr != nil {

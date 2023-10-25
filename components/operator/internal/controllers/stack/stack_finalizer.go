@@ -1,17 +1,18 @@
 package stack
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
-	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/nats-io/nats.go"
+	"github.com/opensearch-project/opensearch-go"
 
 	"github.com/formancehq/operator/internal/modules"
 	"github.com/formancehq/operator/internal/storage/es"
@@ -20,30 +21,65 @@ import (
 	"github.com/go-logr/logr"
 
 	appsv1 "k8s.io/api/apps/v1"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
 type StackFinalizer struct {
 	name   string
-	ctx    context.Context
 	client client.Client
 	log    logr.Logger
 
-	reconcileConf modules.ReconciliationConfig
+	reconcileConf *modules.ReconciliationConfig
 }
 
-var ErrNotFullyDisabled = errors.New("not fully disabled")
+const stacksIndex = "stacks"
 
-func (f *StackFinalizer) HandleFinalizer(ctx context.Context, log logr.Logger, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, req ctrl.Request) (bool, error) {
+var ErrNotFullyDisabled = errors.New("not fully disabled")
+var ErrFinalizerNotRemoved = errors.New("finalizer not removed")
+var ErrFinalizerNotAdded = errors.New("finalizer not added")
+var ErrCast = errors.New("cannot cast interface to string")
+var natsClientId = "membership"
+
+func NewStackFinalizer(
+	client client.Client,
+	log logr.Logger,
+	conf *modules.ReconciliationConfig,
+) *StackFinalizer {
+	s := &StackFinalizer{
+		name:          "delete",
+		client:        client,
+		log:           log,
+		reconcileConf: conf,
+	}
+
+	return s
+}
+
+func (f *StackFinalizer) RemoveFinalizer(ctx context.Context) error {
+	if !controllerutil.ContainsFinalizer(f.reconcileConf.Stack, f.name) {
+		return nil
+	}
+
+	updated := controllerutil.RemoveFinalizer(f.reconcileConf.Stack, f.name)
+	if !updated {
+		return ErrFinalizerNotRemoved
+	}
+
+	if err := f.client.Update(ctx, f.reconcileConf.Stack); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *StackFinalizer) HandleFinalizer(ctx context.Context, reqName string) (bool, error) {
 
 	// examine DeletionTimestamp to determine if object is under deletion
 	// The object is being deleted
-	if !stack.ObjectMeta.DeletionTimestamp.IsZero() && controllerutil.ContainsFinalizer(stack, f.name) {
+	if !f.reconcileConf.Stack.ObjectMeta.DeletionTimestamp.IsZero() && controllerutil.ContainsFinalizer(f.reconcileConf.Stack, f.name) {
 		// Make sur that the object is disable
-		stack.Spec.Disabled = true
-		if err := f.client.Update(ctx, stack); err != nil {
+		f.reconcileConf.Stack.Spec.Disabled = true
+		if err := f.client.Update(ctx, f.reconcileConf.Stack); err != nil {
 			return false, err
 		}
 
@@ -51,7 +87,7 @@ func (f *StackFinalizer) HandleFinalizer(ctx context.Context, log logr.Logger, s
 		// So that no one is already accessing ours databases.
 		found := &appsv1.DeploymentList{}
 		opts := &client.ListOptions{
-			Namespace: req.Name,
+			Namespace: reqName,
 		}
 
 		if err := f.client.List(ctx, found, opts); err != nil {
@@ -63,7 +99,7 @@ func (f *StackFinalizer) HandleFinalizer(ctx context.Context, log logr.Logger, s
 		}
 
 		// our StackFinalizer is present, so lets handle any external dependency
-		_, err := f.deleteStack(ctx, stack, conf, log)
+		err := f.deleteStack(ctx)
 		if err != nil {
 			// if fail to delete the external dependency here, return with error
 			// so that it can be retried
@@ -71,8 +107,12 @@ func (f *StackFinalizer) HandleFinalizer(ctx context.Context, log logr.Logger, s
 		}
 
 		// remove our StackFinalizer from the list and update it.
-		controllerutil.RemoveFinalizer(stack, f.name)
-		if err := f.client.Update(ctx, stack); err != nil {
+		updated := controllerutil.RemoveFinalizer(f.reconcileConf.Stack, f.name)
+		if !updated {
+			return false, ErrFinalizerNotRemoved
+		}
+
+		if err := f.client.Update(ctx, f.reconcileConf.Stack); err != nil {
 			return false, err
 		}
 
@@ -84,9 +124,12 @@ func (f *StackFinalizer) HandleFinalizer(ctx context.Context, log logr.Logger, s
 	// The object is not being deleted, so if it does not have our StackFinalizer,
 	// then lets add the StackFinalizer and update the object. This is equivalent
 	// registering our StackFinalizer.
-	if !controllerutil.ContainsFinalizer(stack, f.name) {
-		controllerutil.AddFinalizer(stack, f.name)
-		if err := f.client.Update(ctx, stack); err != nil {
+	if !controllerutil.ContainsFinalizer(f.reconcileConf.Stack, f.name) {
+		updated := controllerutil.AddFinalizer(f.reconcileConf.Stack, f.name)
+		if !updated {
+			return false, ErrFinalizerNotAdded
+		}
+		if err := f.client.Update(ctx, f.reconcileConf.Stack); err != nil {
 			return false, err
 		}
 	}
@@ -107,7 +150,7 @@ func (f *StackFinalizer) retrieveModuleTopic() []string {
 		}
 
 		for _, v := range mod.Versions() {
-			services := v.Services(f.reconcileConf)
+			services := v.Services(*f.reconcileConf)
 			for _, service := range services {
 				if service.NeedTopic {
 					subjectSet.Put(service.Name)
@@ -124,42 +167,28 @@ func (f *StackFinalizer) retrieveModuleTopic() []string {
 	}
 
 	return subjects
-
 }
 
-func (f *StackFinalizer) deleteStack(ctx context.Context, stack *stackv1beta3.Stack, conf *stackv1beta3.Configuration, log logr.Logger) (*ctrl.Result, error) {
-	log.Info("start deleting databases " + stack.Name)
-	if err := f.deleteByService(conf, stack.Name, log); err != nil {
-		return &ctrl.Result{
-			Requeue:      true,
-			RequeueAfter: time.Second,
-		}, err
+func (f *StackFinalizer) deleteStack(ctx context.Context) error {
+	f.log.Info("start deleting databases " + f.reconcileConf.Stack.Name)
+	if err := f.deleteByService(ctx); err != nil {
+		return err
 	}
 
-	log.Info("start deleting brokers subjects " + stack.Name)
-	if err := f.deleteByBrokers(conf, stack.Name, f.retrieveModuleTopic(), log); err != nil {
-		return &ctrl.Result{
-			Requeue:      true,
-			RequeueAfter: time.Second,
-		}, err
+	f.log.Info("start deleting brokers subjects " + f.reconcileConf.Stack.Name)
+	if err := f.deleteByBrokers(ctx); err != nil {
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
-var (
-	natsClientId = "membership"
-)
-var (
-	ErrCast = errors.New("cannot cast interface to string")
-)
-
-func (f *StackFinalizer) deleteByBrokers(c *v1beta3.Configuration, stackName string, subjectService []string, logger logr.Logger) error {
-	values := reflect.ValueOf(c.Spec.Broker)
+func (f *StackFinalizer) deleteByBrokers(ctx context.Context) error {
+	values := reflect.ValueOf(f.reconcileConf.Configuration.Spec.Broker)
 	for i := 0; i < values.NumField(); i++ {
 		switch t := values.Field(i).Interface().(type) {
 		case v1beta3.NatsConfig:
-			if err := f.deleleNatsSubjects(&t, stackName, subjectService, logger); err != nil {
+			if err := f.deleleNatsSubjects(ctx, &t, f.reconcileConf.Stack.Name, f.retrieveModuleTopic()); err != nil {
 				return err
 			}
 		}
@@ -168,10 +197,10 @@ func (f *StackFinalizer) deleteByBrokers(c *v1beta3.Configuration, stackName str
 	return nil
 }
 
-func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackName string, subjectService []string, logger logr.Logger) error {
+func (f *StackFinalizer) deleleNatsSubjects(ctx context.Context, config *v1beta3.NatsConfig, stackName string, subjectService []string) error {
 	client, err := natsStore.NewClient(config, natsClientId)
 	if err != nil {
-		logger.Error(err, "NATS: client")
+		f.log.Error(err, "NATS: client")
 		return err
 	}
 	defer client.Close()
@@ -183,7 +212,7 @@ func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackNam
 
 	for _, service := range subjectService {
 		stackServiceSubject := fmt.Sprintf("%s-%s", stackName, service)
-		exist, err := natsStore.ExistSubject(jsCtx, stackServiceSubject, logger, f.ctx)
+		exist, err := existSubject(ctx, jsCtx, stackServiceSubject)
 		if err != nil {
 			return err
 		}
@@ -193,7 +222,7 @@ func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackNam
 			continue
 		}
 
-		err = jsCtx.DeleteStream(stackServiceSubject, nats.Context(f.ctx))
+		err = jsCtx.DeleteStream(stackServiceSubject, nats.Context(ctx))
 		if err != nil {
 			return err
 		}
@@ -202,27 +231,27 @@ func (f *StackFinalizer) deleleNatsSubjects(config *v1beta3.NatsConfig, stackNam
 	return nil
 }
 
-func (f *StackFinalizer) deleteByService(c *v1beta3.Configuration, stackName string, logger logr.Logger) error {
+func (f *StackFinalizer) deleteByService(ctx context.Context) error {
 
-	values := reflect.ValueOf(c.Spec.Services)
+	values := reflect.ValueOf(f.reconcileConf.Configuration.Spec.Services)
 	for i := 0; i < values.NumField(); i++ {
 		servicesValues := reflect.ValueOf(values.Field(i).Interface())
 		for j := 0; j < servicesValues.NumField(); j++ {
 			switch t := servicesValues.Field(j).Interface().(type) {
 			case v1beta3.PostgresConfig:
 				serviceName := strings.ToLower(values.Type().Field(i).Name)
-				if err := f.deletePostgresDb(t, stackName, serviceName, logger); err != nil {
+				if err := f.deletePostgresDb(ctx, serviceName, t); err != nil {
 					return err
 				}
 
 			case v1beta3.ElasticSearchConfig:
-				client, err := es.NewElasticSearchClient(&t)
+				client, err := es.NewElasticSearchClient(t)
 				if err != nil {
-					logger.Error(err, "ELK: client")
+					f.log.Error(err, "ELK: client")
 					return err
 				}
 
-				if err := es.DropESIndex(client, logger, stackName, f.ctx); err != nil {
+				if err := f.dropESIndex(ctx, client); err != nil {
 					return err
 				}
 			}
@@ -233,49 +262,69 @@ func (f *StackFinalizer) deleteByService(c *v1beta3.Configuration, stackName str
 	return nil
 }
 
-func (f *StackFinalizer) deletePostgresDb(
-	postgresConfig v1beta3.PostgresConfig,
-	stackName string,
-	serviceName string,
-	logger logr.Logger,
-) error {
-	client, err := pg.OpenClient(postgresConfig)
+func (f *StackFinalizer) dropESIndex(ctx context.Context, client *opensearch.Client) error {
+	var (
+		buf bytes.Buffer
+	)
+
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"match": map[string]interface{}{
+				"stack": f.reconcileConf.Stack.Name,
+			},
+		},
+	}
+
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		f.log.Error(err, "ELK: Error during json encoding")
+
+		return err
+	}
+	body := bytes.NewReader(buf.Bytes())
+	response, err := client.DeleteByQuery([]string{stacksIndex}, body, client.DeleteByQuery.WithContext(ctx))
 	if err != nil {
-		logger.Error(err, "PG: Cannot open pg client")
 		return err
 	}
-	defer client.Close()
+	defer response.Body.Close()
 
-	if err := pg.DropDB(client, stackName, serviceName, f.ctx); err != nil {
-		logger.Error(err, "PG: Error during drop")
-		return err
+	if response.IsError() {
+		return fmt.Errorf("ELK status: %d", response.StatusCode)
 	}
-
-	logger.Info(fmt.Sprintf("PG: database \"%s-%s\" droped", stackName, serviceName))
 
 	return nil
 }
 
-func NewStackFinalizer(
-	context context.Context,
-	client client.Client,
-	log logr.Logger,
-	conf modules.ReconciliationConfig,
-	opts ...StackFinalizerOpt,
-) *StackFinalizer {
-	s := &StackFinalizer{
-		name:          "delete",
-		ctx:           context,
-		client:        client,
-		log:           log,
-		reconcileConf: conf,
+func (f *StackFinalizer) deletePostgresDb(
+	ctx context.Context,
+	serviceName string,
+	postgresConfig v1beta3.PostgresConfig,
+) error {
+	client, err := pg.OpenClient(postgresConfig)
+	if err != nil {
+		f.log.Error(err, "PG: Cannot open pg client")
+		return err
+	}
+	defer client.Close()
+
+	if err := pg.DropDB(client, f.reconcileConf.Stack.Name, serviceName, ctx); err != nil {
+		f.log.Error(err, "PG: Error during drop")
+		return err
 	}
 
-	for _, opt := range opts {
-		opt(s)
-	}
+	f.log.Info(fmt.Sprintf("PG: database \"%s-%s\" droped", f.reconcileConf.Stack.Name, serviceName))
 
-	return s
+	return nil
 }
 
-type StackFinalizerOpt func(*StackFinalizer)
+func existSubject(ctx context.Context, natsContext nats.JetStreamContext, subject string) (bool, error) {
+	_, err := natsContext.StreamNameBySubject(subject, nats.Context(ctx))
+	if err != nil {
+		if errors.Is(err, nats.ErrStreamNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
+
+}

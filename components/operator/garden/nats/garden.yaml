@@ -14,5 +14,5 @@ spec:
     config:
       jetstream:
         enabled: true
-        fileStore:
-          enabled: false
+        memoryStore:
+          enabled: true
