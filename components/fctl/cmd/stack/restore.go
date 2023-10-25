@@ -68,7 +68,7 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 
 	var stack *membershipclient.Stack
 	if len(args) == 1 {
-		rsp, _, err := apiClient.DefaultApi.ReadStack(cmd.Context(), organization, args[0]).Execute()
+		rsp, _, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
 		if err != nil {
 			return nil, err
 		}
