@@ -118,7 +118,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 
 	platform := r.stackReconcilerFactory.Platform()
 
-	configuration := modules.ReconciliationConfig{
+	configuration := &modules.ReconciliationConfig{
 		Stack:         stack,
 		Configuration: conf,
 		Versions:      nil,
@@ -126,14 +126,13 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 	}
 
 	stackFinalizer := NewStackFinalizer(
-		ctx,
 		r.client,
 		log,
 		configuration,
 	)
 
 	if r.enableStackFinalizer {
-		deleted, err := stackFinalizer.HandleFinalizer(ctx, log, stack, conf, req)
+		deleted, err := stackFinalizer.HandleFinalizer(ctx, req.Name)
 		if err != nil {
 			return ctrl.Result{
 				Requeue:      true,
@@ -142,6 +141,13 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		}
 		if deleted {
 			return ctrl.Result{}, nil
+		}
+	} else {
+		if err := stackFinalizer.RemoveFinalizer(ctx); err != nil {
+			return ctrl.Result{
+				Requeue:      true,
+				RequeueAfter: time.Second,
+			}, err
 		}
 	}
 
