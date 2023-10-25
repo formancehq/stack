@@ -66,6 +66,23 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, err
 	}
 
+	var stack *membershipclient.Stack
+	if len(args) == 1 {
+		rsp, _, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+		if err != nil {
+			return nil, err
+		}
+		stack = rsp.Data
+	}
+
+	if stack == nil {
+		return nil, errors.New("Stack not found")
+	}
+
+	if !fctl.CheckStackApprobation(cmd, stack, "You are about to restore stack '%s'", stack.Name) {
+		return nil, fctl.ErrMissingApproval
+	}
+
 	response, _, err := apiClient.DefaultApi.
 		RestoreStack(cmd.Context(), organization, args[0]).
 		Execute()
