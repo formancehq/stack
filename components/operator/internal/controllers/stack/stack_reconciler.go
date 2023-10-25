@@ -83,31 +83,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 
 	stack.SetProgressing()
 
-	var (
-		reconcileError error
-		ready          bool
-	)
-	func() {
-		ready, reconcileError = r.reconcileStack(ctx, stack)
-		if reconcileError != nil {
-			log.Info("reconciliation terminated with error", "error", reconcileError)
-			stack.SetError(reconcileError)
-		} else {
-			log.Info("reconciliation terminated with success")
-			if ready {
-				stack.SetReady()
-			}
-		}
-	}()
-
-	if reconcileError != nil {
-		log.Info("reconcile failed with error", "error", reconcileError)
-		return ctrl.Result{
-			Requeue:      true,
-			RequeueAfter: time.Second,
-		}, nil
-	}
-
 	conf := &stackv1beta3.Configuration{}
 	if err := r.client.Get(ctx, types.NamespacedName{
 		Namespace: "",
@@ -149,6 +124,31 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 				RequeueAfter: time.Second,
 			}, err
 		}
+	}
+
+	var (
+		reconcileError error
+		ready          bool
+	)
+	func() {
+		ready, reconcileError = r.reconcileStack(ctx, stack)
+		if reconcileError != nil {
+			log.Info("reconciliation terminated with error", "error", reconcileError)
+			stack.SetError(reconcileError)
+		} else {
+			log.Info("reconciliation terminated with success")
+			if ready {
+				stack.SetReady()
+			}
+		}
+	}()
+
+	if reconcileError != nil {
+		log.Info("reconcile failed with error", "error", reconcileError)
+		return ctrl.Result{
+			Requeue:      true,
+			RequeueAfter: time.Second,
+		}, nil
 	}
 
 	if patchErr := r.client.Status().Update(ctx, stack); patchErr != nil {
