@@ -11,7 +11,7 @@ FROM ghcr.io/formancehq/control:v1.7.0 as control
 FROM ghcr.io/formancehq/auth-dex:latest as dex
 FROM jeffail/benthos:4.12.1 as benthos
 
-FROM golang:1.20 as builder
+FROM golang:1.21 as builder
 WORKDIR /tmp
 RUN apt update && apt install -y wget
 RUN wget https://github.com/F1bonacc1/process-compose/archive/refs/tags/v0.51.4.tar.gz \

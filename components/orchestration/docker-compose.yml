@@ -112,7 +112,7 @@ services:
       retries: 30
 
   api:
-    image: golang:1.19-alpine
+    image: golang:1.21-alpine
     entrypoint:
     - go
     - run
