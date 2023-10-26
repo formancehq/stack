@@ -6,7 +6,7 @@ require (
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/athul/shelby v1.0.6
 	github.com/c-bata/go-prompt v0.2.6
-	github.com/formancehq/fctl/membershipclient v0.0.0-00010101000000-000000000000
+	github.com/formancehq/fctl/membershipclient 5d4c9193a44c
 	github.com/formancehq/formance-sdk-go v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/golang-jwt/jwt v3.2.2+incompatible
