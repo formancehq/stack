@@ -13,7 +13,7 @@ services:
     - 9200:9200/tcp
 
   benthos:
-    image: jeffail/benthos:4.11
+    image: jeffail/benthos:4.22
     ports:
     - "4195:4195/tcp"
     volumes:
