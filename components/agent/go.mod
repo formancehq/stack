@@ -122,7 +122,7 @@ replace (
 	github.com/formancehq/payments => ../payments
 	github.com/formancehq/search => ../search
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
-	github.com/zitadel/oidc/v2 => github.com/formancehq/oidc/v2 v2.0.0-20230524073911-09bdd1dca291
+	github.com/zitadel/oidc/v2 => github.com/formancehq/oidc/v2 v2.6.1
 	k8s.io/client-go v0.26.0 => k8s.io/client-go v0.25.4
 
 )

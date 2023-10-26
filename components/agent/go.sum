@@ -91,6 +91,8 @@ github.com/felixge/httpsnoop v1.0.3/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSw
 github.com/flowstack/go-jsonschema v0.1.1/go.mod h1:yL7fNggx1o8rm9RlgXv7hTBWxdBM0rVwpMwimd3F3N0=
 github.com/formancehq/oidc/v2 v2.0.0-20230524073911-09bdd1dca291 h1:wr0F5Vst5P2ghA3PnuLjg1u+USAdf/3OlIe21w5rgLM=
 github.com/formancehq/oidc/v2 v2.0.0-20230524073911-09bdd1dca291/go.mod h1:vsFNrYCj2x0it0pYmIRVZ12HJ1VGaMVyGl7HLqw5p+Y=
+github.com/formancehq/oidc/v2 v2.6.1 h1:0S1mloAqFPjJtl5vrgdrw6ViwlG0w2KapfMEuW/2DvE=
+github.com/formancehq/oidc/v2 v2.6.1/go.mod h1:vsFNrYCj2x0it0pYmIRVZ12HJ1VGaMVyGl7HLqw5p+Y=
 github.com/frankban/quicktest v1.14.3 h1:FJKSZTDHjyhriyC81FLQ0LY93eSai0ZyR/ZIkd3ZUKE=
 github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
