@@ -294,6 +294,12 @@ type ExposeHTTP struct {
 	Name    string
 }
 
+type Path struct {
+	Path    string
+	Methods []string
+	Name    string
+}
+
 var DefaultExposeHTTP = &ExposeHTTP{}
 
 type Service struct {
@@ -302,6 +308,8 @@ type Service struct {
 	Secured bool
 	// ExposeHTTP indicate the service expose a http endpoint
 	ExposeHTTP *ExposeHTTP
+	// Paths indicates the paths exposed by the service
+	Paths []Path
 	// ListenEnvVar indicate the flag used to configure the http service address
 	// TODO(gfyrag): Remove this in a future version when all services implements --listen
 	ListenEnvVar string

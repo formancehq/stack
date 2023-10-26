@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/formancehq/payments/internal/app/storage"
+	"github.com/formancehq/payments/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -14,16 +15,25 @@ import (
 
 	// Import the postgres driver.
 	_ "github.com/lib/pq"
+)
 
-	"github.com/spf13/cobra"
+var (
+	postgresURIFlag         = "postgres-uri"
+	configEncryptionKeyFlag = "config-encryption-key"
+	autoMigrateFlag         = "auto-migrate"
 )
 
 func newMigrate() *cobra.Command {
-	return &cobra.Command{
+	migrate := &cobra.Command{
 		Use:   "migrate",
 		Short: "Run migrations",
 		RunE:  runMigrate,
 	}
+
+	migrate.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
+	migrate.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
+
+	return migrate
 }
 
 func runMigrate(cmd *cobra.Command, args []string) error {

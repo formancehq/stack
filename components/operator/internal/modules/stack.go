@@ -314,16 +314,24 @@ func (r *StackReconciler) prepareModule(ctx context.Context, module Module,
 		return r.scaleDownStackModule(ctx, module)
 	}
 
-	isReady, err := newModuleReconciler(r, module).installModule(ctx, registeredModules)
+	isReady, deploymentNames, err := newModuleReconciler(r, module).installModule(ctx, registeredModules)
 	if err != nil {
 		return err
 	}
 	if isReady {
 		log.FromContext(ctx).Info("Mark module as ready", "module", module.Name())
 		r.ready.Put(module)
+
+		if err := r.cleanOldModuleDeployments(ctx, module, deploymentNames); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func (r *StackReconciler) deleteStackDeployment(ctx context.Context, deployment *appsv1.Deployment) error {
+	return r.namespacedResourceDeployer.client.Delete(ctx, deployment)
 }
 
 func (r *StackReconciler) deleteAllStackDeployments(ctx context.Context) error {
@@ -333,6 +341,29 @@ func (r *StackReconciler) deleteAllStackDeployments(ctx context.Context) error {
 			"stack": "true",
 		},
 	)
+}
+
+func (r *StackReconciler) cleanOldModuleDeployments(ctx context.Context, module Module, deploymentNames map[string]struct{}) error {
+	// Clean old deployments
+	deploymentsList := appsv1.DeploymentList{}
+	if err := r.namespacedResourceDeployer.client.List(ctx, &deploymentsList,
+		client.InNamespace(r.Stack.Name),
+		client.MatchingLabels(map[string]string{
+			"app.kubernetes.io/name": module.Name(),
+			stackLabel:               "true",
+		})); err != nil {
+		return err
+	}
+
+	for _, d := range deploymentsList.Items {
+		if _, ok := deploymentNames[d.Name]; !ok {
+			if err := r.deleteStackDeployment(ctx, &d); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (r *StackReconciler) checkDeployments(ctx context.Context) (bool, error) {

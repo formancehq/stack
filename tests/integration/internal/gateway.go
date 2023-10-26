@@ -47,9 +47,31 @@ func (g gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	service := strings.Split(r.URL.Path, "/")[2]
-	port, ok := g.test.servicesToRoute[service]
+	paths := strings.Split(r.URL.Path, "/")
+	service := paths[2]
+	routings, ok := g.test.servicesToRoute[service]
 	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	found := false
+	var port uint16
+	for _, routing := range routings {
+		if routing.routingFunc == nil {
+			port = routing.port
+			found = true
+			break
+		}
+
+		ok = routing.routingFunc("/"+strings.Join(paths[3:], "/"), r.Method)
+		if ok {
+			port = routing.port
+			found = true
+			break
+		}
+	}
+	if !found {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

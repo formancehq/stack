@@ -36,6 +36,7 @@ data:
         	log {
         		output stdout
         	}
+
         			@authmatcher {
         				path /api/auth*
         			}
@@ -45,6 +46,7 @@ data:
 
         				import cors
         			}
+
         			@ledgermatcher {
         				path /api/ledger*
         			}
@@ -55,6 +57,7 @@ data:
         				import cors
         				import auth
         			}
+
         			@orchestrationmatcher {
         				path /api/orchestration*
         			}
@@ -66,15 +69,106 @@ data:
         				import auth
         			}
         			@paymentsmatcher {
-        				path /api/payments*
+        				path /api/payments/payments*
+        				method GET PATCH
         			}
         			handle @paymentsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy payments:8080
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+        			@accountsmatcher {
+        				path /api/payments/accounts*
+        				method GET
+        			}
+        			handle @accountsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+        			@bank-accounts-readmatcher {
+        				path /api/payments/bank-accounts*
+        				method GET
+        			}
+        			handle @bank-accounts-readmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+        			@transfer-initiations-readmatcher {
+        				path /api/paymentstransfer-initiations*
+        				method GET
+        			}
+        			handle @transfer-initiations-readmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+
+        			@payments-apimatcher {
+        				path /api/payments*
+        			}
+        			handle @payments-apimatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
 
         				import cors
         				import auth
         			}
+        			@connectorsmatcher {
+        				path /api/payments/connectors*
+        			}
+        			handle @connectorsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+        			@configsmatcher {
+        				path /api/payments/configs*
+        			}
+        			handle @configsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+        			@transfer-initiations-writematcher {
+        				path /api/paymentstransfer-initiations*
+        				method POST DELETE
+        			}
+        			handle @transfer-initiations-writematcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+        			@bank-accounts-writematcher {
+        				path /api/payments/bank-accounts*
+        				method POST
+        			}
+        			handle @bank-accounts-writematcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+
+        			@payments-connectorsmatcher {
+        				path /api/payments*
+        			}
+        			handle @payments-connectorsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+
+        				import cors
+        				import auth
+        			}
+
         			@searchmatcher {
         				path /api/search*
         			}
@@ -85,6 +179,7 @@ data:
         				import cors
         				import auth
         			}
+
         			@search-benthosmatcher {
         				path /api/search-benthos*
         			}
@@ -95,6 +190,7 @@ data:
         				import cors
         				import auth
         			}
+
         			@walletsmatcher {
         				path /api/wallets*
         			}
@@ -105,6 +201,7 @@ data:
         				import cors
         				import auth
         			}
+
         			@webhooksmatcher {
         				path /api/webhooks*
         			}
@@ -124,7 +221,8 @@ data:
         				auth http://auth:8080/_info http://auth:8080/_healthcheck
         				ledger http://ledger:8080/_info http://ledger:8080/_healthcheck
         				orchestration http://orchestration:8080/_info http://orchestration:8080/_healthcheck
-        				payments http://payments:8080/_info http://payments:8080/_health
+        				payments-api http://payments-api:8080/_info http://payments-api:8080/_health
+        				payments-connectors http://payments-connectors:8080/_info http://payments-connectors:8080/_health
         				search http://search:8080/_info http://search:8080/_healthcheck
         				wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
         				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck

@@ -36,6 +36,7 @@ data:
         	log {
         		output stdout
         	}
+
         			@authmatcher {
         				path /api/auth*
         			}
@@ -45,6 +46,7 @@ data:
 
         				import cors
         			}
+
         			@ledgermatcher {
         				path /api/ledger*
         			}
@@ -55,6 +57,7 @@ data:
         				import cors
         				import auth
         			}
+
         			@orchestrationmatcher {
         				path /api/orchestration*
         			}
@@ -66,25 +69,117 @@ data:
         				import auth
         			}
         			@paymentsmatcher {
-        				path /api/payments*
+        				path /api/payments/payments*
+        				method GET PATCH
         			}
         			handle @paymentsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10004
+        				import cors
+        				import auth
+        			}
+        			@accountsmatcher {
+        				path /api/payments/accounts*
+        				method GET
+        			}
+        			handle @accountsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10004
+        				import cors
+        				import auth
+        			}
+        			@bank-accounts-readmatcher {
+        				path /api/payments/bank-accounts*
+        				method GET
+        			}
+        			handle @bank-accounts-readmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10004
+        				import cors
+        				import auth
+        			}
+        			@transfer-initiations-readmatcher {
+        				path /api/paymentstransfer-initiations*
+        				method GET
+        			}
+        			handle @transfer-initiations-readmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10004
+        				import cors
+        				import auth
+        			}
+
+        			@payments-apimatcher {
+        				path /api/payments*
+        			}
+        			handle @payments-apimatcher {
         				uri strip_prefix /api/payments
         				reverse_proxy 127.0.0.1:10004
 
         				import cors
         				import auth
         			}
-        			@searchmatcher {
-        				path /api/search*
+        			@connectorsmatcher {
+        				path /api/payments/connectors*
         			}
-        			handle @searchmatcher {
-        				uri strip_prefix /api/search
+        			handle @connectorsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10005
+        				import cors
+        				import auth
+        			}
+        			@configsmatcher {
+        				path /api/payments/configs*
+        			}
+        			handle @configsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10005
+        				import cors
+        				import auth
+        			}
+        			@transfer-initiations-writematcher {
+        				path /api/paymentstransfer-initiations*
+        				method POST DELETE
+        			}
+        			handle @transfer-initiations-writematcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10005
+        				import cors
+        				import auth
+        			}
+        			@bank-accounts-writematcher {
+        				path /api/payments/bank-accounts*
+        				method POST
+        			}
+        			handle @bank-accounts-writematcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10005
+        				import cors
+        				import auth
+        			}
+
+        			@payments-connectorsmatcher {
+        				path /api/payments*
+        			}
+        			handle @payments-connectorsmatcher {
+        				uri strip_prefix /api/payments
         				reverse_proxy 127.0.0.1:10005
 
         				import cors
         				import auth
         			}
+
+        			@searchmatcher {
+        				path /api/search*
+        			}
+        			handle @searchmatcher {
+        				uri strip_prefix /api/search
+        				reverse_proxy 127.0.0.1:10006
+
+        				import cors
+        				import auth
+        			}
+
         			@search-benthosmatcher {
         				path /api/search-benthos*
         			}
@@ -95,6 +190,7 @@ data:
         				import cors
         				import auth
         			}
+
         			@walletsmatcher {
         				path /api/wallets*
         			}
@@ -105,12 +201,13 @@ data:
         				import cors
         				import auth
         			}
+
         			@webhooksmatcher {
         				path /api/webhooks*
         			}
         			handle @webhooksmatcher {
         				uri strip_prefix /api/webhooks
-        				reverse_proxy 127.0.0.1:10006
+        				reverse_proxy 127.0.0.1:10007
 
         				import cors
         				import auth
@@ -124,10 +221,11 @@ data:
         				auth http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
         				ledger http://127.0.0.1:10003/_info http://127.0.0.1:10003/_healthcheck
         				orchestration http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
-        				payments http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
-        				search http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
+        				payments-api http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
+        				payments-connectors http://127.0.0.1:10005/_info http://127.0.0.1:10005/_health
+        				search http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
         				wallets http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
-        				webhooks http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
+        				webhooks http://127.0.0.1:10007/_info http://127.0.0.1:10007/_healthcheck
         			}
         		}
         	}

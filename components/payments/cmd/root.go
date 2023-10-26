@@ -6,10 +6,8 @@ import (
 	"os"
 
 	_ "github.com/bombsimon/logrusr/v3"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	"github.com/formancehq/stack/libs/go-libs/publish"
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/payments/cmd/api"
+	"github.com/formancehq/payments/cmd/connectors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -27,35 +25,19 @@ func NewRootCommand() *cobra.Command {
 		Use:               "payments",
 		Short:             "payments",
 		DisableAutoGenTag: true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 	}
 
 	version := newVersion()
 	root.AddCommand(version)
 
-	server := newServer()
-	root.AddCommand(server)
-
 	migrate := newMigrate()
 	root.AddCommand(migrate)
 
-	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
+	api := api.NewAPI(Version, addAutoMigrateCommand)
+	root.AddCommand(api)
 
-	migrate.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
-	migrate.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
-
-	server.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	server.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
-	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
-	server.Flags().String(envFlag, "local", "Environment")
-	server.Flags().String(listenFlag, ":8080", "Listen address")
-	server.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
-
-	otlptraces.InitOTLPTracesFlags(server.Flags())
-	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
-	publish.InitCLIFlags(server)
+	connectors := connectors.NewConnectors(Version, addAutoMigrateCommand)
+	root.AddCommand(connectors)
 
 	return root
 }
@@ -67,5 +49,15 @@ func Execute() {
 		}
 
 		os.Exit(1)
+	}
+}
+
+func addAutoMigrateCommand(cmd *cobra.Command) {
+	cmd.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if viper.GetBool(autoMigrateFlag) {
+			return runMigrate(cmd, []string{"up"})
+		}
+		return nil
 	}
 }

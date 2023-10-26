@@ -223,6 +223,23 @@ const caddyfile = `(cors) {
 
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}
+			{{- range $i, $path := $service.Paths }}
+			@{{ $path.Name }}matcher {
+				path /api/{{ $service.RoutingPath }}{{ $path.Path }}*
+				{{- if gt ($path.Methods | len) 0 }}
+				method {{ join $path.Methods " " }}
+				{{- end }}
+			}
+			handle @{{ $path.Name }}matcher {
+				uri strip_prefix /api/{{ $service.RoutingPath }}
+				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
+				import cors
+				{{- if not $service.Secured }}
+				import auth
+				{{- end }}
+			}
+			{{- end }}
+
 			@{{ $service.Name }}matcher {
 				path /api/{{ $service.RoutingPath }}*
 				{{- if gt ($service.Methods | len) 0 }}

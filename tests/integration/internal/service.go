@@ -3,14 +3,15 @@ package internal
 import (
 	"context"
 	"fmt"
+	"io"
+	"time"
+
 	"github.com/docker/docker/api/types"
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	serviceutils "github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/ory/dockertest/v3"
 	"github.com/spf13/cobra"
-	"io"
-	"time"
 )
 
 type service interface {
@@ -19,11 +20,13 @@ type service interface {
 }
 
 type cobraCommandService struct {
-	args       func(*Test) []string
-	command    func() *cobra.Command
-	name       string
-	cancel     func()
-	appContext context.Context
+	args        func(*Test) []string
+	routingName string
+	routingFunc func(path, method string) bool
+	command     func() *cobra.Command
+	name        string
+	cancel      func()
+	appContext  context.Context
 }
 
 func (c *cobraCommandService) load(ctx context.Context, t *Test) error {
@@ -45,7 +48,13 @@ func (c *cobraCommandService) load(ctx context.Context, t *Test) error {
 	}()
 	select {
 	case <-serviceutils.Ready(c.appContext):
-		t.registerServiceToRoute(c.name, httpserver.Port(c.appContext))
+		if c.routingFunc != nil {
+			t.registerServiceToRoute(c.routingName, routing{
+				port:        uint16(httpserver.Port(c.appContext)),
+				routingFunc: c.routingFunc,
+			})
+		}
+		t.registerServiceToRoute(c.name, routing{port: uint16(httpserver.Port(c.appContext))})
 
 		return nil
 	case err := <-errCh:
@@ -67,6 +76,13 @@ func (c cobraCommandService) unload(context.Context, *Test) error {
 
 func (c *cobraCommandService) WithArgs(fn func(*Test) []string) *cobraCommandService {
 	c.args = fn
+
+	return c
+}
+
+func (c *cobraCommandService) WithRoutingFunc(name string, fn func(path, method string) bool) *cobraCommandService {
+	c.routingName = name
+	c.routingFunc = fn
 
 	return c
 }

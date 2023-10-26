@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app.kubernetes.io/service-name: payments-api
+    name: payments-api
+    namespace: monopod-ledgerv1
+spec:
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 10004
+          protocol: TCP
+          targetPort: 10004
+    selector:
+        app.kubernetes.io/name: monopod-ledgerv1
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

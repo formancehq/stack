@@ -87,8 +87,7 @@ type moduleReconciler struct {
 	module Module
 }
 
-func (r *moduleReconciler) installModule(ctx context.Context, registeredModules RegisteredModules) (bool, error) {
-
+func (r *moduleReconciler) installModule(ctx context.Context, registeredModules RegisteredModules) (bool, map[string]struct{}, error) {
 	logger := log.FromContext(ctx)
 	logger.Info(fmt.Sprintf("Installing module %s", r.module.Name()))
 
@@ -141,11 +140,11 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		postgresConfig = pam.Postgres(r.ReconciliationConfig)
 		ok, err = r.createDatabase(ctx, postgresConfig)
 		if err != nil {
-			return false, err
+			return false, nil, err
 		}
 		if !ok {
 			logger.Info("Waiting for database to be created", "module", pam.Name())
-			return false, nil
+			return false, nil, nil
 		}
 	}
 
@@ -153,10 +152,10 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		if versions[version].PreUpgrade != nil {
 			ready, err := r.runPreUpgradeMigration(ctx, r.module, version)
 			if err != nil {
-				return false, err
+				return false, nil, err
 			}
 			if !ready {
-				return false, nil
+				return false, nil, nil
 			}
 		}
 
@@ -169,14 +168,15 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		logger.Info("Start database migration process", "pod", r.module.Name())
 		databaseMigrated, err := r.runDatabaseMigration(ctx, r.Versions.GetVersion(r.module.Name()), *chosenVersion.DatabaseMigration, postgresConfig)
 		if err != nil {
-			return false, err
+			return false, nil, err
 		}
 		if !databaseMigrated {
 			logger.Info("Mark module as not ready since the database is not up to date")
-			return false, nil
+			return false, nil, nil
 		}
 	}
 
+	deploymentNames := make(map[string]struct{})
 	me := &serviceErrors{}
 	for _, serviceReconciler := range serviceReconcilers {
 		err := serviceReconciler.reconcile(ctx, ServiceInstallConfiguration{
@@ -187,12 +187,13 @@ func (r *moduleReconciler) installModule(ctx context.Context, registeredModules 
 		if err != nil {
 			me.setError(serviceReconciler.name, err)
 		}
+		deploymentNames[serviceReconciler.name] = struct{}{}
 	}
 	if len(me.errors) > 0 {
-		return false, me
+		return false, nil, me
 	}
 
-	return true, nil
+	return true, deploymentNames, nil
 }
 
 func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (bool, error) {
@@ -329,7 +330,7 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 
 func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version string, migration DatabaseMigration, postgresConfig v1beta3.PostgresConfig) (bool, error) {
 	logger := log.FromContext(ctx)
-	return r.RunJob(ctx, fmt.Sprintf("%s-%s-database-migration", r.module.Name(), version),
+	return r.RunJob(ctx, fmt.Sprintf("%s-%s-db-migration", r.module.Name(), version),
 		func() error {
 			if migration.Shutdown {
 				logger.Info("Stop module reconciliation as required by upgrade", "module", r.module.Name())
