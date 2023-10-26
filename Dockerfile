@@ -6,7 +6,7 @@ FROM ghcr.io/formancehq/orchestration:v0.1.5 as orchestration
 FROM ghcr.io/formancehq/auth:v0.4.3 as auth
 FROM ghcr.io/formancehq/search:v0.8.0 as search
 FROM ghcr.io/formancehq/wallets:v0.4.3 as wallets
-FROM ghcr.io/formancehq/webhooks:v0.6.6 as webhooks
+FROM ghcr.io/formancehq/webhooks:v0.7.1 as webhooks
 FROM ghcr.io/formancehq/control:v1.7.0 as control
 FROM ghcr.io/formancehq/auth-dex:latest as dex
 FROM jeffail/benthos:4.12.1 as benthos
