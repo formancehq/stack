@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
@@ -25,8 +26,34 @@ type Connector struct {
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	// TODO implement me
-	return errors.New("not implemented")
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, _ := contextutil.Detached(ctx.Context())
+	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:       "Initiate payment",
+		Key:        taskNameInitiatePayment,
+		TransferID: transfer.ID.String(),
+	})
+	if err != nil {
+		return err
+	}
+
+	scheduleOption := models.OPTIONS_RUN_NOW_SYNC
+	scheduledAt := transfer.ScheduledAt
+	if !scheduledAt.IsZero() {
+		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
+	}
+
+	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: scheduleOption,
+		ScheduleAt:     scheduledAt,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {

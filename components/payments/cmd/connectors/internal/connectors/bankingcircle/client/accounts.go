@@ -83,3 +83,38 @@ func (c *Client) GetAccounts(ctx context.Context, page int) ([]*Account, error) 
 
 	return res.Result, nil
 }
+
+func (c *Client) GetAccount(ctx context.Context, accountID string) (*Account, error) {
+	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/v1/accounts/%s", c.endpoint, accountID), http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create account request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+c.accessToken)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get accounts: %w", err)
+	}
+
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			c.logger.Error(err)
+		}
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("wrong status code: %d", resp.StatusCode)
+	}
+
+	var account Account
+	if err := json.NewDecoder(resp.Body).Decode(&account); err != nil {
+		return nil, fmt.Errorf("failed to decode account response: %w", err)
+	}
+
+	return &account, nil
+}

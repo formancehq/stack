@@ -136,6 +136,10 @@ func createTransferInitiationHandler(
 			return
 		}
 
+		if payload.ScheduledAt.IsZero() {
+			payload.ScheduledAt = time.Now().UTC()
+		}
+
 		createdAt := time.Now()
 		provider := models.MustConnectorProviderFromString(payload.Provider)
 		tf := &models.TransferInitiation{
