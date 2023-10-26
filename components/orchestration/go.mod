@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
+	github.com/formancehq/stack/libs/go-libs d94135d4ceb7
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/google/uuid v1.3.0
