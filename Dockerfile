@@ -3,7 +3,7 @@ FROM ghcr.io/formancehq/gateway:v0.1.7 as gateway
 FROM ghcr.io/formancehq/ledger:v1.10.3 as ledger
 FROM ghcr.io/formancehq/payments:v0.9.7 as payments
 FROM ghcr.io/formancehq/orchestration:v0.1.5 as orchestration
-FROM ghcr.io/formancehq/auth:v0.4.3 as auth
+FROM ghcr.io/formancehq/auth:v0.4.4 as auth
 FROM ghcr.io/formancehq/search:v0.8.0 as search
 FROM ghcr.io/formancehq/wallets:v0.4.3 as wallets
 FROM ghcr.io/formancehq/webhooks:v0.6.6 as webhooks
