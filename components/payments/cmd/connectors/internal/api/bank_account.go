@@ -47,49 +47,42 @@ func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc
 
 		err := json.NewDecoder(r.Body).Decode(&bankAccountRequest)
 		if err != nil {
-			handleErrorBadRequest(w, r, err)
-
+			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
 		if bankAccountRequest.AccountNumber == "" &&
 			bankAccountRequest.IBAN == "" {
-			handleErrorBadRequest(w, r, errors.New("either accountNumber or iban must be provided"))
-
+			api.BadRequest(w, ErrValidation, errors.New("either accountNumber or iban must be provided"))
 			return
 		}
 
 		if bankAccountRequest.Name == "" {
-			handleErrorBadRequest(w, r, errors.New("name must be provided"))
-
+			api.BadRequest(w, ErrValidation, errors.New("name must be provided"))
 			return
 		}
 
 		provider, err := models.ConnectorProviderFromString(bankAccountRequest.Provider)
 		if err != nil {
-			handleErrorBadRequest(w, r, err)
-
+			api.BadRequest(w, ErrValidation, errors.New("provider must be provided"))
 			return
 		}
 
 		if provider != models.ConnectorProviderBankingCircle {
 			// For now, bank accounts can only be created for BankingCircle
 			// in the future, we will support other providers
-			handleErrorBadRequest(w, r, errors.New("provider not supported"))
-
+			api.BadRequest(w, ErrValidation, errors.New("provider not supported"))
 			return
 		}
 
 		isInstalled, err := repo.IsInstalled(r.Context(), provider)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
 		if !isInstalled {
-			handleErrorBadRequest(w, r, errors.New("connector not installed"))
-
+			api.BadRequest(w, ErrValidation, errors.New("connector not installed"))
 			return
 		}
 
@@ -105,7 +98,6 @@ func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc
 		err = repo.CreateBankAccount(r.Context(), bankAccount)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
@@ -128,14 +120,12 @@ func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc
 			})
 			if err != nil {
 				handleStorageErrors(w, r, err)
-
 				return
 			}
 
 			err = repo.LinkBankAccountWithAccount(r.Context(), bankAccount.ID, &accountID)
 			if err != nil {
 				handleStorageErrors(w, r, err)
-
 				return
 			}
 		}
@@ -151,8 +141,7 @@ func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc
 			Data: data,
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}

@@ -49,8 +49,7 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 					case "dsc", "desc", "DSC", "DESC":
 						order = storage.SortOrderDesc
 					default:
-						handleValidationError(w, r, errors.New("sort order not well specified, got "+parts[1]))
-
+						api.BadRequest(w, ErrValidation, errors.New("sort order not well specified, got "+parts[1]))
 						return
 					}
 				}
@@ -63,22 +62,19 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 
 		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		accountID, err := models.AccountIDFromString(mux.Vars(r)["accountID"])
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
@@ -91,24 +87,21 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 		if from != "" {
 			startTimeParsed, err = time.Parse(time.RFC3339Nano, from)
 			if err != nil {
-				handleValidationError(w, r, err)
-
+				api.BadRequest(w, ErrValidation, err)
 				return
 			}
 		}
 		if to != "" {
 			endTimeParsed, err = time.Parse(time.RFC3339Nano, to)
 			if err != nil {
-				handleValidationError(w, r, err)
-
+				api.BadRequest(w, ErrValidation, err)
 				return
 			}
 		}
 		if r.URL.Query().Get("limit") != "" {
 			limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64)
 			if err != nil {
-				handleValidationError(w, r, err)
-
+				api.BadRequest(w, ErrValidation, err)
 				return
 			}
 
@@ -136,8 +129,7 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 
 		ret, paginationDetails, err := repo.ListBalances(r.Context(), balanceQuery)
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -163,8 +155,7 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 			},
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}

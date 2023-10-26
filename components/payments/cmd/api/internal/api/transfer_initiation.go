@@ -48,8 +48,7 @@ func readTransferInitiationHandler(repo readTransferInitiationRepository) http.H
 
 		transferID, err := models.TransferInitiationIDFromString(mux.Vars(r)["transferID"])
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
@@ -96,8 +95,7 @@ func readTransferInitiationHandler(repo readTransferInitiationRepository) http.H
 			Data: data,
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}
@@ -113,8 +111,7 @@ func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http
 
 		qb, err := getQueryBuilder(r)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
@@ -134,8 +131,7 @@ func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http
 					case "dsc", "desc", "DSC", "DESC":
 						order = storage.SortOrderDesc
 					default:
-						handleValidationError(w, r, errors.New("sort order not well specified, got "+parts[1]))
-
+						api.BadRequest(w, ErrValidation, errors.New("sort order not well specified, got "+parts[1]))
 						return
 					}
 				}
@@ -148,15 +144,13 @@ func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http
 
 		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, qb)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
@@ -196,8 +190,7 @@ func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http
 			},
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}

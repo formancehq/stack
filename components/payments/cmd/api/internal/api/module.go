@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"runtime/debug"
@@ -11,7 +10,6 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -23,6 +21,12 @@ import (
 const (
 	otelTracesFlag = "otel-traces"
 	serviceName    = "Payments"
+
+	ErrUniqueReference = "CONFLICT"
+	ErrNotFound        = "NOT_FOUND"
+	ErrInvalidID       = "INVALID_ID"
+	ErrMissingBody     = "MISSING_BODY"
+	ErrValidation      = "VALIDATION"
 )
 
 func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
@@ -61,69 +65,11 @@ func httpServeFunc(handler http.Handler) http.Handler {
 
 func handleStorageErrors(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, storage.ErrDuplicateKeyValue) {
-		handleErrorBadRequest(w, r, errors.New("unique reference already existing"))
+		api.BadRequest(w, ErrUniqueReference, err)
 	} else if errors.Is(err, storage.ErrNotFound) {
-		handleNotFoundError(w, r, err)
+		api.NotFound(w)
 	} else {
-		handleServerError(w, r, err)
-	}
-}
-
-func handleErrorBadRequest(w http.ResponseWriter, r *http.Request, err error) {
-	w.WriteHeader(http.StatusBadRequest)
-
-	logging.FromContext(r.Context()).Error(err)
-	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(api.ErrorResponse{
-		ErrorCode:    http.StatusText(http.StatusBadRequest),
-		ErrorMessage: err.Error(),
-	})
-	if err != nil {
-		panic(err)
-	}
-}
-
-func handleError(w http.ResponseWriter, r *http.Request, err error) {
-	w.WriteHeader(http.StatusInternalServerError)
-
-	logging.FromContext(r.Context()).Error(err)
-	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(api.ErrorResponse{
-		ErrorCode:    "INTERNAL",
-		ErrorMessage: err.Error(),
-	})
-	if err != nil {
-		panic(err)
-	}
-}
-
-func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
-	w.WriteHeader(http.StatusInternalServerError)
-	logging.FromContext(r.Context()).Error(err)
-	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(api.ErrorResponse{
-		ErrorCode:    "INTERNAL",
-		ErrorMessage: err.Error(),
-	})
-	if err != nil {
-		panic(err)
-	}
-}
-
-func handleNotFoundError(w http.ResponseWriter, r *http.Request, err error) {
-	api.NotFound(w)
-}
-
-func handleValidationError(w http.ResponseWriter, r *http.Request, err error) {
-	w.WriteHeader(http.StatusBadRequest)
-	logging.FromContext(r.Context()).Error(err)
-	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(api.ErrorResponse{
-		ErrorCode:    "VALIDATION",
-		ErrorMessage: err.Error(),
-	})
-	if err != nil {
-		panic(err)
+		api.InternalServerError(w, r, err)
 	}
 }
 

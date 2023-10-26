@@ -63,8 +63,7 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 					case "dsc", "desc", "DSC", "DESC":
 						order = storage.SortOrderDesc
 					default:
-						handleValidationError(w, r, errors.New("sort order not well specified, got "+parts[1]))
-
+						api.BadRequest(w, ErrValidation, errors.New("sort order not well specified, got "+parts[1]))
 						return
 					}
 				}
@@ -77,22 +76,19 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 
 		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		ret, paginationDetails, err := repo.ListPayments(r.Context(), pagination)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
@@ -150,8 +146,7 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 			},
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}
@@ -170,7 +165,6 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 		payment, err := repo.GetPayment(r.Context(), paymentID)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
@@ -218,8 +212,7 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			Data: &data,
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}

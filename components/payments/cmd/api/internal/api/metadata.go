@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 
 	"github.com/gorilla/mux"
@@ -21,30 +22,26 @@ func updateMetadataHandler(repo updateMetadataRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		paymentID, err := models.PaymentIDFromString(mux.Vars(r)["paymentID"])
 		if err != nil {
-			handleErrorBadRequest(w, r, err)
-
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		var metadata updateMetadataRequest
 
 		if r.ContentLength == 0 {
-			handleErrorBadRequest(w, r, errors.New("body is required"))
-
+			api.BadRequest(w, ErrMissingBody, errors.New("body is required"))
 			return
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&metadata)
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
 		err = repo.UpdatePaymentMetadata(r.Context(), *paymentID, metadata)
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 

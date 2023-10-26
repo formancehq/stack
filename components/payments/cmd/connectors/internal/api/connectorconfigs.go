@@ -36,8 +36,7 @@ func connectorConfigsHandler() http.HandlerFunc {
 			Data: &configs,
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}

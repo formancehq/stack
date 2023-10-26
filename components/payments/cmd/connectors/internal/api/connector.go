@@ -9,38 +9,9 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
-
-func handleErrorBadRequest(w http.ResponseWriter, r *http.Request, err error) {
-	w.WriteHeader(http.StatusBadRequest)
-
-	logging.FromContext(r.Context()).Error(err)
-	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(api.ErrorResponse{
-		ErrorCode:    http.StatusText(http.StatusBadRequest),
-		ErrorMessage: err.Error(),
-	})
-	if err != nil {
-		panic(err)
-	}
-}
-
-func handleError(w http.ResponseWriter, r *http.Request, err error) {
-	w.WriteHeader(http.StatusInternalServerError)
-
-	logging.FromContext(r.Context()).Error(err)
-	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(api.ErrorResponse{
-		ErrorCode:    "INTERNAL",
-		ErrorMessage: err.Error(),
-	})
-	if err != nil {
-		panic(err)
-	}
-}
 
 func readConfig[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
@@ -51,8 +22,7 @@ func readConfig[Config models.ConnectorConfigObject](connectorManager *integrati
 
 		config, err := connectorManager.ReadConfig(r.Context())
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -85,22 +55,19 @@ func listTasks[Config models.ConnectorConfigObject](connectorManager *integratio
 
 		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), nil, nil)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		tasks, paginationDetails, err := connectorManager.ListTasksStates(r.Context(), pagination)
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -142,15 +109,13 @@ func readTask[Config models.ConnectorConfigObject](connectorManager *integration
 
 		taskID, err := uuid.Parse(mux.Vars(r)["taskID"])
 		if err != nil {
-			handleErrorBadRequest(w, r, err)
-
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		task, err := connectorManager.ReadTaskState(r.Context(), taskID)
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -183,8 +148,7 @@ func uninstall[Config models.ConnectorConfigObject](connectorManager *integratio
 
 		err := connectorManager.Uninstall(r.Context())
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -197,14 +161,12 @@ func install[Config models.ConnectorConfigObject](connectorManager *integration.
 	return func(w http.ResponseWriter, r *http.Request) {
 		installed, err := connectorManager.IsInstalled(r.Context())
 		if err != nil {
-			handleError(w, r, err)
-
+			handleStorageErrors(w, r, err)
 			return
 		}
 
 		if installed {
-			handleError(w, r, integration.ErrAlreadyInstalled)
-
+			api.BadRequest(w, ErrValidation, integration.ErrAlreadyInstalled)
 			return
 		}
 
@@ -212,16 +174,14 @@ func install[Config models.ConnectorConfigObject](connectorManager *integration.
 		if r.ContentLength > 0 {
 			err = json.NewDecoder(r.Body).Decode(&config)
 			if err != nil {
-				handleError(w, r, err)
-
+				api.BadRequest(w, ErrMissingOrInvalidBody, err)
 				return
 			}
 		}
 
 		err = connectorManager.Install(r.Context(), config)
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -239,8 +199,7 @@ func reset[Config models.ConnectorConfigObject](
 
 		err := connectorManager.Reset(r.Context())
 		if err != nil {
-			handleError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -253,14 +212,12 @@ func connectorNotInstalled[Config models.ConnectorConfigObject](connectorManager
 ) bool {
 	installed, err := connectorManager.IsInstalled(r.Context())
 	if err != nil {
-		handleError(w, r, err)
-
+		handleStorageErrors(w, r, err)
 		return true
 	}
 
 	if !installed {
-		handleErrorBadRequest(w, r, integration.ErrNotInstalled)
-
+		api.BadRequest(w, ErrValidation, integration.ErrNotInstalled)
 		return true
 	}
 

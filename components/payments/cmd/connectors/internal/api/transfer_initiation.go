@@ -102,14 +102,12 @@ func createTransferInitiationHandler(
 
 		payload := &createTransferInitiationRequest{}
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
 		if err := payload.Validate(repo); err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
@@ -120,8 +118,7 @@ func createTransferInitiationHandler(
 
 		isInstalled, _ := repo.IsInstalled(r.Context(), models.MustConnectorProviderFromString(payload.Provider))
 		if !isInstalled {
-			handleValidationError(w, r, fmt.Errorf("provider %s is not installed", payload.Provider))
-
+			api.BadRequest(w, ErrValidation, fmt.Errorf("provider %s is not installed", payload.Provider))
 			return
 		}
 
@@ -129,7 +126,6 @@ func createTransferInitiationHandler(
 			_, err := repo.GetAccount(r.Context(), payload.SourceAccountID)
 			if err != nil {
 				handleStorageErrors(w, r, fmt.Errorf("failed to get source account: %w", err))
-
 				return
 			}
 		}
@@ -137,7 +133,6 @@ func createTransferInitiationHandler(
 		_, err := repo.GetAccount(r.Context(), payload.DestinationAccountID)
 		if err != nil {
 			handleStorageErrors(w, r, fmt.Errorf("failed to get destination account: %w", err))
-
 			return
 		}
 
@@ -173,15 +168,13 @@ func createTransferInitiationHandler(
 		if status == models.TransferInitiationStatusValidated {
 			f, ok := paymentHandlers[provider]
 			if !ok {
-				handleServerError(w, r, errors.New("no payment handler for provider "+provider.String()))
-
+				api.InternalServerError(w, r, errors.New("no payment handler for provider "+provider.String()))
 				return
 			}
 
 			err = f(r.Context(), tf)
 			if err != nil {
-				handleServerError(w, r, err)
-
+				api.InternalServerError(w, r, err)
 				return
 			}
 		}
@@ -206,8 +199,7 @@ func createTransferInitiationHandler(
 			Data: data,
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}
@@ -230,49 +222,42 @@ func updateTransferInitiationStatusHandler(
 	return func(w http.ResponseWriter, r *http.Request) {
 		payload := &updateTransferInitiationStatusRequest{}
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
 		status, err := models.TransferInitiationStatusFromString(payload.Status)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		switch status {
 		case models.TransferInitiationStatusWaitingForValidation:
-			handleValidationError(w, r, errors.New("cannot set back transfer initiation status to waiting for validation"))
-
+			api.BadRequest(w, ErrValidation, errors.New("cannot set back transfer initiation status to waiting for validation"))
 			return
 		case models.TransferInitiationStatusFailed,
 			models.TransferInitiationStatusProcessed,
 			models.TransferInitiationStatusProcessing:
-			handleValidationError(w, r, errors.New("Either VALIDATED or REJECTED status can be set"))
-
+			api.BadRequest(w, ErrValidation, errors.New("either VALIDATED or REJECTED status can be set"))
 			return
 		default:
 		}
 
 		transferID, err := models.TransferInitiationIDFromString((mux.Vars(r)["transferID"]))
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		previousTransferInitiation, err := repo.ReadTransferInitiation(r.Context(), transferID)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
 		if previousTransferInitiation.Status != models.TransferInitiationStatusWaitingForValidation {
-			handleValidationError(w, r, errors.New("only waiting for validation transfer initiation can be updated"))
-
+			api.BadRequest(w, ErrValidation, errors.New("only waiting for validation transfer initiation can be updated"))
 			return
 		}
 		previousTransferInitiation.Status = status
@@ -281,22 +266,19 @@ func updateTransferInitiationStatusHandler(
 		err = repo.UpdateTransferInitiationPaymentsStatus(r.Context(), transferID, nil, status, "", previousTransferInitiation.Attempts, time.Now())
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
 		if status == models.TransferInitiationStatusValidated {
 			f, ok := paymentHandlers[previousTransferInitiation.Provider]
 			if !ok {
-				handleServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
-
+				api.InternalServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
 				return
 			}
 
 			err = f(r.Context(), previousTransferInitiation)
 			if err != nil {
-				handleServerError(w, r, err)
-
+				api.InternalServerError(w, r, err)
 				return
 			}
 		}
@@ -317,21 +299,18 @@ func retryTransferInitiationHandler(
 	return func(w http.ResponseWriter, r *http.Request) {
 		transferID, err := models.TransferInitiationIDFromString((mux.Vars(r)["transferID"]))
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		previousTransferInitiation, err := repo.ReadTransferInitiation(r.Context(), transferID)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
 		if previousTransferInitiation.Status != models.TransferInitiationStatusFailed {
-			handleValidationError(w, r, errors.New("only failed transfer initiation can be updated"))
-
+			api.BadRequest(w, ErrValidation, errors.New("only failed transfer initiation can be updated"))
 			return
 		}
 		previousTransferInitiation.Status = models.TransferInitiationStatusProcessing
@@ -340,21 +319,18 @@ func retryTransferInitiationHandler(
 		err = repo.UpdateTransferInitiationPaymentsStatus(r.Context(), transferID, nil, models.TransferInitiationStatusProcessing, "", previousTransferInitiation.Attempts, time.Now())
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
 		f, ok := paymentHandlers[previousTransferInitiation.Provider]
 		if !ok {
-			handleServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
-
+			api.InternalServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
 			return
 		}
 
 		err = f(r.Context(), previousTransferInitiation)
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -371,21 +347,19 @@ func deleteTransferInitiationHandler(repo deleteTransferInitiationRepository) ht
 	return func(w http.ResponseWriter, r *http.Request) {
 		transferID, err := models.TransferInitiationIDFromString(mux.Vars(r)["transferID"])
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		tf, err := repo.ReadTransferInitiation(r.Context(), transferID)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
 		if tf.Status != models.TransferInitiationStatusWaitingForValidation {
-			handleValidationError(w, r, errors.New("cannot delete transfer initiation not waiting for validation"))
-
+			api.BadRequest(w, ErrValidation, errors.New("cannot delete transfer initiation not waiting for validation"))
+			return
 		}
 
 		err = repo.DeleteTransferInitiation(r.Context(), transferID)

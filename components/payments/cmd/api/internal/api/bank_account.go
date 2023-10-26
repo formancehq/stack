@@ -50,8 +50,7 @@ func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
 					case "dsc", "desc", "DSC", "DESC":
 						order = storage.SortOrderDesc
 					default:
-						handleValidationError(w, r, errors.New("sort order not well specified, got "+parts[1]))
-
+						api.BadRequest(w, ErrValidation, errors.New("sort order not well specified, got "+parts[1]))
 						return
 					}
 				}
@@ -64,22 +63,19 @@ func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
 
 		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
 		if err != nil {
-			handleValidationError(w, r, err)
-
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		ret, paginationDetails, err := repo.ListBankAccounts(r.Context(), pagination)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
@@ -105,8 +101,7 @@ func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
 			},
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 	}
@@ -122,21 +117,18 @@ func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
 
 		bankAccountID, err := uuid.Parse(mux.Vars(r)["bankAccountID"])
 		if err != nil {
-			handleErrorBadRequest(w, r, err)
-
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		account, err := repo.GetBankAccount(r.Context(), bankAccountID, true)
 		if err != nil {
 			handleStorageErrors(w, r, err)
-
 			return
 		}
 
 		if err := account.Offuscate(); err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -155,8 +147,7 @@ func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
 			Data: data,
 		})
 		if err != nil {
-			handleServerError(w, r, err)
-
+			api.InternalServerError(w, r, err)
 			return
 		}
 

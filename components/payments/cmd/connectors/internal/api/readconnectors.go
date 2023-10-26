@@ -25,8 +25,7 @@ func readConnectorsHandler(repo readConnectorsRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := repo.ListConnectors(r.Context())
 		if err != nil {
-			handleError(w, r, err)
-
+			handleStorageErrors(w, r, err)
 			return
 		}
 
