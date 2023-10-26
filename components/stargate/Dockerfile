@@ -12,7 +12,7 @@ RUN --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
-FROM alpine:3.16
+FROM alpine:3.18
 RUN apk update && apk add ca-certificates curl
 COPY --from=builder src/components/stargate/stargate /usr/bin/stargate
 ENV OTEL_SERVICE_NAME stargate
