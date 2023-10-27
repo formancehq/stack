@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.4.0
+ARG core=github.com/formancehq/earthly:v0.5.2
 IMPORT $core AS core
 IMPORT ../.. AS stack
 
@@ -49,12 +49,13 @@ deploy:
     RUN kubectl patch Versions default -p "{\"spec\":{\"stargate\": \"${tag}\"}}" --type=merge
     COPY .earthly/stargate-values.yaml stargate-values.yaml
     COPY helm helm
-    RUN --secret user --secret tld helm upgrade --namespace formance-system --create-namespace --install formance-stargate ./helm \
+    ARG --required user
+    RUN --secret tld helm upgrade --namespace formance-system --create-namespace --install formance-stargate ./helm \
         -f stargate-values.yaml \
         --set config.auth_issuer_url=https://$user.$tld/api \
         --set image.tag=$tag
     COPY .earthly/ingress ingress-chart
-    RUN helm upgrade --install stargate-ingress ./ingress-chart \
+    RUN --secret tld helm upgrade --install stargate-ingress ./ingress-chart \
         --namespace formance-system \
         --set user=$user \
         --set tld=$tld

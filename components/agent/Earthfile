@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.4.0
+ARG core=github.com/formancehq/earthly:v0.5.2
 IMPORT $core AS core
 
 IMPORT ../.. AS stack
@@ -57,7 +57,8 @@ deploy:
     FROM --pass-args core+vcluster-deployer-image
     COPY helm helm
     COPY .earthly .earthly
-    RUN --secret user --secret tld helm upgrade --namespace formance-system \
+    ARG --required user
+    RUN --secret tld helm upgrade --namespace formance-system \
         --create-namespace \
         --install \
         -f .earthly/values.yaml \
