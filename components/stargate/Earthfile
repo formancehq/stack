@@ -61,7 +61,6 @@ deploy:
         --set user=$user \
         --set tld=$tld
 
-
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
