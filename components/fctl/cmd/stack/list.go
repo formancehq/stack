@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	deletedFlag  = "deleted"
-	disabledFlag = "disabled"
+	allFlag = "all"
 )
 
 type Stack struct {
@@ -23,6 +22,7 @@ type Stack struct {
 	RegionID   string  `json:"region"`
 	DisabledAt *string `json:"disabledAt"`
 	DeletedAt  *string `json:"deletedAt"`
+	Status     string  `json:"status"`
 }
 type StackListStore struct {
 	Stacks []Stack `json:"stacks"`
@@ -52,8 +52,7 @@ func NewListCommand() *cobra.Command {
 		fctl.WithAliases("ls", "l"),
 		fctl.WithShortDescription("List stacks"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithBoolFlag(deletedFlag, false, "Display deleted stacks"),
-		fctl.WithBoolFlag(disabledFlag, false, "Display disabled stacks"),
+		fctl.WithBoolFlag(allFlag, false, "Display deleted stacks"),
 		fctl.WithController[*StackListStore](NewStackListController()),
 	)
 }
@@ -81,8 +80,7 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 	}
 
 	rsp, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).
-		Deleted(fctl.GetBool(cmd, deletedFlag)).
-		Disabled(fctl.GetBool(cmd, disabledFlag)).
+		All(fctl.GetBool(cmd, allFlag)).
 		Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "listing stacks")
@@ -99,6 +97,7 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 			Name:      stack.Name,
 			Dashboard: c.profile.ServicesBaseUrl(&stack).String(),
 			RegionID:  stack.RegionID,
+			Status:    stack.State,
 			DisabledAt: func() *string {
 				if stack.DisabledAt != nil {
 					t := stack.DisabledAt.Format(time.RFC3339)
@@ -131,32 +130,36 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 			stack.Name,
 			stack.Dashboard,
 			stack.RegionID,
+			stack.Status,
 		}
-		if fctl.GetBool(cmd, disabledFlag) {
+		if fctl.GetBool(cmd, allFlag) {
+
 			if stack.DisabledAt != nil {
 				data = append(data, *stack.DisabledAt)
 			} else {
 				data = append(data, "")
 			}
-		}
-		if fctl.GetBool(cmd, deletedFlag) {
+
 			if stack.DeletedAt != nil {
 				data = append(data, *stack.DeletedAt)
 			} else {
-				data = append(data, "")
+				if stack.Status != "DELETED" {
+					data = append(data, "")
+
+				} else {
+
+					data = append(data, "<retention period>")
+				}
 			}
 		}
+
 		return data
 	})
 
-	headers := []string{"ID", "Name", "Dashboard", "Region"}
-	if fctl.GetBool(cmd, disabledFlag) {
-		headers = append(headers, "Disabled at")
+	headers := []string{"ID", "Name", "Dashboard", "Region", "Status"}
+	if fctl.GetBool(cmd, allFlag) {
+		headers = append(headers, "Disabled At", "Deleted At")
 	}
-	if fctl.GetBool(cmd, deletedFlag) {
-		headers = append(headers, "Deleted at")
-	}
-
 	tableData = fctl.Prepend(tableData, headers)
 
 	return pterm.DefaultTable.

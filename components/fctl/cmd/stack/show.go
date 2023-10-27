@@ -3,6 +3,7 @@ package stack
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
 	"github.com/formancehq/fctl/membershipclient"
@@ -13,6 +14,7 @@ import (
 )
 
 var errStackNotFound = errors.New("stack not found")
+var errStackStatusNotFound = errors.New("http status not ok: 404 Not Found 404 page not found")
 
 type StackShowStore struct {
 	Stack    *membershipclient.Stack     `json:"stack"`
@@ -107,11 +109,18 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 
 	stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
 	if err != nil {
+		if strings.Contains(err.Error(), "404 page not found") && stack.Status != "ACTIVE" {
+			c.store.Stack = stack
+			c.store.Versions = nil
+			c.config = cfg
+			return c, nil
+		}
 		return nil, err
 	}
 
 	versions, err := stackClient.GetVersions(cmd.Context())
 	if err != nil {
+
 		return nil, err
 	}
 
