@@ -57,9 +57,7 @@ deploy:
     FROM --pass-args core+vcluster-deployer-image
     COPY helm helm
     COPY .earthly .earthly
-    ARG --required user
-    ARG --required tld
-    RUN helm upgrade --namespace formance-system \
+    RUN --secret user --secret tld helm upgrade --namespace formance-system \
         --create-namespace \
         --install \
         -f .earthly/values.yaml \
