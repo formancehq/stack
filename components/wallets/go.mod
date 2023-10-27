@@ -12,7 +12,7 @@ require (
 	github.com/riandyrn/otelchi v0.5.1
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	go.uber.org/fx v1.19.2
 	golang.org/x/oauth2 v0.6.0
 )
