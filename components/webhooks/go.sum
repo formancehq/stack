@@ -400,8 +400,12 @@ github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc h1:9lRDQMhESg+zvGYm
 github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc/go.mod h1:bciPuU6GHm1iF1pBvUfxfsH0Wmnc2VbpgvbI9ZWuIRs=
 github.com/uptrace/bun v1.1.14 h1:S5vvNnjEynJ0CvnrBOD7MIRW7q/WbtvFXrdfy0lddAM=
 github.com/uptrace/bun v1.1.14/go.mod h1:RHk6DrIisO62dv10pUOJCz5MphXThuOTpVNYEYv7NI8=
+github.com/uptrace/bun v1.1.16 h1:cn9cgEMFwcyYRsQLfxCRMUxyK1WaHwOVrR3TvzEFZ/A=
+github.com/uptrace/bun v1.1.16/go.mod h1:7HnsMRRvpLFUcquJxp22JO8PsWKpFQO/gNXqqsuGWg8=
 github.com/uptrace/bun/dialect/pgdialect v1.1.14 h1:b7+V1KDJPQSFYgkG/6YLXCl2uvwEY3kf/GSM7hTHRDY=
 github.com/uptrace/bun/dialect/pgdialect v1.1.14/go.mod h1:v6YiaXmnKQ2FlhRD2c0ZfKd+QXH09pYn4H8ojaavkKk=
+github.com/uptrace/bun/dialect/pgdialect v1.1.16 h1:eUPZ+YCJ69BA+W1X1ZmpOJSkv1oYtinr0zCXf7zCo5g=
+github.com/uptrace/bun/dialect/pgdialect v1.1.16/go.mod h1:KQjfx/r6JM0OXfbv0rFrxAbdkPD7idK8VitnjIV9fZI=
 github.com/uptrace/bun/driver/pgdriver v1.1.14 h1:V2Etm7mLGS3mhx8ddxZcUnwZLX02Jmq9JTlo0sNVDhA=
 github.com/uptrace/bun/driver/pgdriver v1.1.14/go.mod h1:D4FjWV9arDYct6sjMJhFoyU71SpllZRHXFRRP2Kd0Kw=
 github.com/uptrace/bun/extra/bunotel v1.1.14 h1:jKA1zNfD2/Y/O3eFP15ao+V0cMigXN+ReNbsVUqrOhg=
@@ -651,6 +655,8 @@ golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20220908164124-27713097b956/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.8.0 h1:EBmGv8NaZBZTWvrbjNoL6HVt+IVy3QDQpJs7VRIw3tU=
 golang.org/x/sys v0.8.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=
+golang.org/x/sys v0.12.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210927222741-03fcf44c2211/go.mod h1:jbD1KX2456YbFQfuXm/mYQcufACuNUgVhRMnK/tPxf8=
 golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
