@@ -8,7 +8,7 @@ require (
 	github.com/ThreeDotsLabs/watermill-http v1.1.4
 	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0
-	github.com/coreos/go-semver v0.3.0
+	github.com/coreos/go-semver v0.3.1
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/google/uuid v1.3.0
 	github.com/imdario/mergo v0.3.13
