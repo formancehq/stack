@@ -19,7 +19,7 @@ require (
 	github.com/uptrace/bun/dialect/pgdialect v1.1.14
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.14
 	github.com/uptrace/bun/driver/pgdriver v1.1.14
-	github.com/uptrace/bun/driver/sqliteshim v1.1.14
+	github.com/uptrace/bun/driver/sqliteshim v1.1.16
 	github.com/uptrace/bun/extra/bundebug v1.1.14
 	go.opentelemetry.io/otel v1.16.0
 	go.temporal.io/api v1.18.1
