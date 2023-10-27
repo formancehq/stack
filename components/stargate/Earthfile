@@ -49,9 +49,7 @@ deploy:
     RUN kubectl patch Versions default -p "{\"spec\":{\"stargate\": \"${tag}\"}}" --type=merge
     COPY .earthly/stargate-values.yaml stargate-values.yaml
     COPY helm helm
-    ARG --required user
-    ARG --required tld
-    RUN helm upgrade --namespace formance-system --create-namespace --install formance-stargate ./helm \
+    RUN --secret user --secret tld helm upgrade --namespace formance-system --create-namespace --install formance-stargate ./helm \
         -f stargate-values.yaml \
         --set config.auth_issuer_url=https://$user.$tld/api \
         --set image.tag=$tag
