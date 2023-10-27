@@ -10,7 +10,7 @@ require (
 	github.com/gibson042/canonicaljson-go v1.0.3
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
-	github.com/hashicorp/golang-lru/v2 v2.0.4
+	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/lib/pq v1.10.7
 	github.com/pkg/errors v0.9.1
