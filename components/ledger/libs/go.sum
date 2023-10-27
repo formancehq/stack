@@ -57,6 +57,8 @@ github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2 h1:COB5neqVL8jGwoz1Y9dawQ7Xhx
 github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2/go.mod h1:U001oyrHo+df3Q7hIXgKqxY2OW6woz64+GNuIxZokbM=
 github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0 h1:ZbdQ+cHwOZmXByEoKUH8SS6qR/erNQfrsNpvH5z/gfk=
 github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0/go.mod h1:X6pcl579pScj4mII3KM/WJ+bcOqORqiCToy92f4gqJ4=
+github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.1 h1:BCElnueHAdtL/5YEyMrQ6eTO+8ya/Xa2BWxeMG+yXiY=
+github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.1/go.mod h1:X6pcl579pScj4mII3KM/WJ+bcOqORqiCToy92f4gqJ4=
 github.com/ajg/form v1.5.1 h1:t9c7v8JUKu/XxOGBU0yjNpaMloxGEJhUkqFRq0ibGeU=
 github.com/ajg/form v1.5.1/go.mod h1:uL1WgH+h2mgNtvBq0339dVnzXdBETtL2LeUXaIv25UY=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
