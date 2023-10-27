@@ -107,11 +107,10 @@ deploy:
     BUILD --pass-args ./components/$component+deploy
 
 deploy-all:
-    FROM core+base-image
+    LOCALLY
     WAIT
         BUILD --pass-args +deploy --component=operator
     END
-    COPY components components
     FOR component IN $(ls components)
         IF [ "$component" != "operator" ]
             BUILD --pass-args +deploy --component=$component
