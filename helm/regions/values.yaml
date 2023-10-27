@@ -4,7 +4,7 @@ operator:
   nameOverride: "operator"
   image:
     repository: "ghcr.io/formancehq/operator"
-    tag: "v0.17.0"
+    tag: "v0.18.0"
   operator:
     disableWebhooks: false
     region: "private"
