@@ -6,7 +6,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.2.0
 	github.com/alitto/pond v1.8.3
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/google/uuid v1.3.0
 	github.com/pkg/errors v0.9.1
 	github.com/riandyrn/otelchi v0.5.1
