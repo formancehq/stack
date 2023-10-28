@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "json-schema-static-docs": "^0.24.1",
+    "json-schema-static-docs": "^0.25.0",
     "yaml": "^2.3.2"
   }
 }
