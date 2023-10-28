@@ -8,7 +8,7 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
-	github.com/nats-io/nats.go v1.24.0
+	github.com/nats-io/nats.go v1.31.0
 	github.com/numary/auth/authclient v0.0.0-20220811153653-6335dd9658f2
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
@@ -23,7 +23,10 @@ require (
 	sigs.k8s.io/controller-runtime v0.14.4
 )
 
-require github.com/davecgh/go-spew v1.1.1 // indirect
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/klauspost/compress v1.17.0 // indirect
+)
 
 require (
 	github.com/benbjohnson/clock v1.3.0 // indirect
@@ -52,7 +55,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nats-io/nkeys v0.3.0 // indirect
+	github.com/nats-io/nkeys v0.4.5 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
@@ -72,7 +75,7 @@ require (
 	golang.org/x/oauth2 v0.6.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/term v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.2.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
