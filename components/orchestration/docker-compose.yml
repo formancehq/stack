@@ -102,7 +102,7 @@ services:
     - temporalite
     environment:
     - TEMPORAL_CLI_ADDRESS=temporalite:7233
-    image: temporalio/admin-tools:1.17.5
+    image: temporalio/admin-tools:1.22.1
     stdin_open: true
     tty: true
     healthcheck:
