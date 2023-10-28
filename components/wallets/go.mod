@@ -7,7 +7,7 @@ require (
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/render v1.0.2
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/riandyrn/otelchi v0.5.1
 	github.com/spf13/cobra v1.6.1
