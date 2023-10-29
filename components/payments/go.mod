@@ -1,14 +1,16 @@
 module github.com/formancehq/payments
 
-go 1.20
+go 1.21
+
+toolchain go1.21.3
 
 require (
-	github.com/ThreeDotsLabs/watermill v1.2.0
+	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/gibson042/canonicaljson-go v1.0.3
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/golang-lru/v2 v2.0.4
 	github.com/jackc/pgx/v5 v5.3.0
@@ -19,7 +21,7 @@ require (
 	github.com/spf13/afero v1.9.3
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/stripe/stripe-go/v72 v72.122.0
 	github.com/uptrace/bun v1.1.14
 	github.com/uptrace/bun/dialect/pgdialect v1.1.14

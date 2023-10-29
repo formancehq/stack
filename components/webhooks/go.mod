@@ -1,20 +1,22 @@
 module github.com/formancehq/webhooks
 
-go 1.20
+go 1.21
+
+toolchain go1.21.3
 
 require (
-	github.com/ThreeDotsLabs/watermill v1.2.0
+	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/alitto/pond v1.8.3
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/pkg/errors v0.9.1
 	github.com/riandyrn/otelchi v0.5.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/uptrace/bun v1.1.14
 	github.com/uptrace/bun/dialect/pgdialect v1.1.14
 	github.com/uptrace/bun/driver/pgdriver v1.1.14

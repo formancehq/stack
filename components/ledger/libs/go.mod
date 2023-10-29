@@ -1,16 +1,18 @@
 module github.com/formancehq/stack/libs/go-libs
 
-go 1.19
+go 1.21
+
+toolchain go1.21.3
 
 require (
 	github.com/Shopify/sarama v1.38.1
-	github.com/ThreeDotsLabs/watermill v1.2.0
+	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/ThreeDotsLabs/watermill-http v1.1.4
 	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/dgraph-io/ristretto v0.1.1
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/imdario/mergo v0.3.13
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/lib/pq v1.10.7
@@ -24,7 +26,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/uptrace/bun v1.1.14
 	github.com/uptrace/bun/dialect/pgdialect v1.1.14
 	github.com/uptrace/bun/extra/bundebug v1.1.14
