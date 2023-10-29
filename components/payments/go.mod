@@ -30,8 +30,8 @@ require (
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/metric v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
-	go.uber.org/dig v1.16.1
-	go.uber.org/fx v1.19.1
+	go.uber.org/dig v1.17.0
+	go.uber.org/fx v1.20.1
 	golang.org/x/oauth2 v0.6.0
 	golang.org/x/sync v0.1.0
 )
