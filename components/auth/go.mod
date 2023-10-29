@@ -20,7 +20,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.16.0
 	go.uber.org/fx v1.19.1
 	golang.org/x/oauth2 v0.7.0
-	golang.org/x/text v0.9.0
+	golang.org/x/text v0.13.0
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gorm.io/driver/postgres v1.4.8
 	gorm.io/gorm v1.24.5
