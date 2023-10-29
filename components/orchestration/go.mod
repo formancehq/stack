@@ -23,7 +23,7 @@ require (
 	github.com/uptrace/bun/extra/bundebug v1.1.14
 	go.opentelemetry.io/otel v1.16.0
 	go.temporal.io/api v1.18.1
-	go.temporal.io/sdk v1.21.1
+	go.temporal.io/sdk v1.25.1
 	go.temporal.io/sdk/contrib/opentelemetry v0.2.0
 	go.uber.org/fx v1.19.1
 	golang.org/x/mod v0.10.0
