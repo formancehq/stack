@@ -32,7 +32,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.16.0
 	go.uber.org/fx v1.19.2
 	go.uber.org/mock v0.3.0
-	gopkg.in/segmentio/analytics-go.v3 v3.1.0
+	gopkg.in/segmentio/analytics-go.v3 v3.2.1
 )
 
 require (
