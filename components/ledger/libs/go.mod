@@ -28,7 +28,7 @@ require (
 	github.com/uptrace/bun v1.1.14
 	github.com/uptrace/bun/dialect/pgdialect v1.1.14
 	github.com/uptrace/bun/extra/bundebug v1.1.14
-	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21
+	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.2.3
 	github.com/xdg-go/scram v1.1.2
 	go.opentelemetry.io/contrib/instrumentation/host v0.42.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
