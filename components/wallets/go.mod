@@ -14,7 +14,7 @@ require (
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.3
 	go.uber.org/fx v1.19.2
-	golang.org/x/oauth2 v0.6.0
+	golang.org/x/oauth2 v0.13.0
 )
 
 require (

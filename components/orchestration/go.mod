@@ -27,7 +27,7 @@ require (
 	go.temporal.io/sdk/contrib/opentelemetry v0.2.0
 	go.uber.org/fx v1.19.1
 	golang.org/x/mod v0.10.0
-	golang.org/x/oauth2 v0.6.0
+	golang.org/x/oauth2 v0.13.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
