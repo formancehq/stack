@@ -9,26 +9,13 @@
   "schedule": ["every weekend after 4am"],
   "packageRules": [
     {
-      "matchManagers": ["dockerfile"]
+      "matchManagers": ["dockerfile"],
+      "matchUpdateTypes": ["minor", "patch"]
     },
     {
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch"],
       "pinDigests": true
-    },
-    {
-      "extends": "monorepo:opentelemetry-go",
-      "groupName": "opentelemetry-go monorepo",
-      "matchUpdateTypes": [
-        "digest",
-        "patch",
-        "minor",
-        "major"
-      ]
     }
-  ],
-  "vulnerabilityAlerts": {
-    "labels": ["security"],
-    "automerge": true
-  }
+  ]
 }
