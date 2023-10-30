@@ -615,5 +615,25 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				ALTER TABLE accounts.bank_account ADD COLUMN IF NOT EXISTS "connector_id" uuid;
+
+				ALTER TABLE accounts.bank_account ADD CONSTRAINT bank_accounts_connector
+				FOREIGN KEY (connector_id)
+				REFERENCES connectors.connector (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }

@@ -109,7 +109,7 @@ func (s *Storage) Enable(ctx context.Context, provider models.ConnectorProvider)
 func (s *Storage) Disable(ctx context.Context, provider models.ConnectorProvider) error {
 	_, err := s.db.NewUpdate().
 		Model(&models.Connector{}).
-		Set("enabled = TRUE").
+		Set("enabled = FALSE").
 		Where("provider = ?", provider).
 		Exec(ctx)
 	if err != nil {
