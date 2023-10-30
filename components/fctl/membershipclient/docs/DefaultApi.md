@@ -1656,7 +1656,7 @@ Name | Type | Description  | Notes
 
 ## ListStacks
 
-> ListStacksResponse ListStacks(ctx, organizationId).All(all).Execute()
+> ListStacksResponse ListStacks(ctx, organizationId).All(all).Deleted(deleted).Execute()
 
 List stacks
 
@@ -1675,10 +1675,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     all := true // bool | Include deleted and disabled stacks (optional)
+    deleted := true // bool | Include deleted (Deprecated) (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListStacks(context.Background(), organizationId).All(all).Execute()
+    resp, r, err := apiClient.DefaultApi.ListStacks(context.Background(), organizationId).All(all).Deleted(deleted).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListStacks``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1705,6 +1706,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **all** | **bool** | Include deleted and disabled stacks | 
+ **deleted** | **bool** | Include deleted (Deprecated) | 
 
 ### Return type
 

@@ -255,6 +255,14 @@ paths:
         schema:
           type: boolean
         style: form
+      - description: Include deleted (Deprecated)
+        explode: true
+        in: query
+        name: deleted
+        required: false
+        schema:
+          type: boolean
+        style: form
       responses:
         "200":
           content:

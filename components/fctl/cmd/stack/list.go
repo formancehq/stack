@@ -55,7 +55,7 @@ func NewListCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithBoolFlag(deletedFlag, false, "Display deleted stacks"),
 		fctl.WithBoolFlag(allFlag, false, "Display deleted stacks"),
-		fctl.WithDeprecatedFlag("deleted", "Use --all instead"),
+		fctl.WithDeprecatedFlag(deletedFlag, "Use --all instead"),
 		fctl.WithController[*StackListStore](NewStackListController()),
 	)
 }
@@ -82,15 +82,9 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, err
 	}
 
-	all := fctl.GetBool(cmd, allFlag)
-
-	// Deprecated flags
-	if fctl.GetBool(cmd, deletedFlag) {
-		all = true
-	}
-
 	rsp, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).
-		All(all).
+		All(fctl.GetBool(cmd, allFlag)).
+		Deleted(fctl.GetBool(cmd, deletedFlag)).
 		Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "listing stacks")
