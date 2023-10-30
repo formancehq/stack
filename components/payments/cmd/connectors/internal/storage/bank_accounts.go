@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"time"
 
@@ -10,16 +11,22 @@ import (
 )
 
 func (s *Storage) CreateBankAccount(ctx context.Context, bankAccount *models.BankAccount) error {
+	connector, err := s.GetConnector(ctx, bankAccount.Provider)
+	if err != nil {
+		return fmt.Errorf("failed to get connector: %w", err)
+	}
+
 	account := models.BankAccount{
-		CreatedAt: bankAccount.CreatedAt,
-		Country:   bankAccount.Country,
-		Provider:  bankAccount.Provider,
-		Name:      bankAccount.Name,
-		AccountID: bankAccount.AccountID,
+		CreatedAt:   bankAccount.CreatedAt,
+		Country:     bankAccount.Country,
+		Provider:    bankAccount.Provider,
+		Name:        bankAccount.Name,
+		AccountID:   bankAccount.AccountID,
+		ConnectorID: connector.ID,
 	}
 
 	var id uuid.UUID
-	err := s.db.NewInsert().Model(&account).Returning("id").Scan(ctx, &id)
+	err = s.db.NewInsert().Model(&account).Returning("id").Scan(ctx, &id)
 	if err != nil {
 		return e("install connector", err)
 	}

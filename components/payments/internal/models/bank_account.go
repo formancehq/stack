@@ -15,6 +15,7 @@ type BankAccount struct {
 	ID            uuid.UUID `bun:",pk,nullzero"`
 	CreatedAt     time.Time `bun:",nullzero"`
 	Provider      ConnectorProvider
+	ConnectorID   uuid.UUID `bun:",nullzero"`
 	Name          string
 	AccountNumber string `bun:"decrypted_account_number,scanonly"`
 	IBAN          string `bun:"decrypted_iban,scanonly"`

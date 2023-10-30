@@ -190,10 +190,6 @@ func (s *Storage) UpdateTransferInitiationPaymentsStatus(
 			query = query.Set("error = ?", errorMessage)
 		}
 
-		if attempts > 0 {
-			query = query.Set("attempts = ?", attempts)
-		}
-
 		_, err := query.
 			Where("transfer_initiation_id = ?", id).
 			Where("payment_id = ?", paymentID).
