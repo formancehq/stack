@@ -14,7 +14,6 @@ import (
 )
 
 var errStackNotFound = errors.New("stack not found")
-var errStackStatusNotFound = errors.New("http status not ok: 404 Not Found 404 page not found")
 
 type StackShowStore struct {
 	Stack    *membershipclient.Stack     `json:"stack"`
