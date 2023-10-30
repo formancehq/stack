@@ -12,9 +12,8 @@ import (
 )
 
 var (
-	b1T = time.Now().UTC().Add(-50 * time.Second)
-
-	b2T = time.Now().UTC().Add(-40 * time.Second)
+	b1T = time.Now().UTC().Add(-50 * time.Second).Round(time.Microsecond)
+	b2T = time.Now().UTC().Add(-40 * time.Second).Round(time.Microsecond)
 )
 
 func TestBalances(t *testing.T) {

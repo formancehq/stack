@@ -15,8 +15,8 @@ var (
 	bankAccount1ID uuid.UUID
 	bankAccount2ID uuid.UUID
 
-	bankAccount1T = time.Now().Add(-1 * time.Minute).UTC()
-	bankAccount2T = time.Now().Add(-2 * time.Minute).UTC()
+	bankAccount1T = time.Now().Add(-1 * time.Minute).UTC().Round(time.Microsecond)
+	bankAccount2T = time.Now().Add(-2 * time.Minute).UTC().Round(time.Microsecond)
 )
 
 func TestBankAccounts(t *testing.T) {
