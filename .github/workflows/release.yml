@@ -7,7 +7,7 @@ on:
 jobs:
   Extract:
     name: Extract
-    runs-on: formance-runner
+    runs-on: "formance-runner"
     outputs:
       service: ${{ steps.extract.outputs.service }}
       version: ${{ steps.extract.outputs.version }}
@@ -26,7 +26,7 @@ jobs:
         run: echo "version=$(node .github/actions/extract-in-tag/version.js ${{ github.ref_name }})" >> $GITHUB_OUTPUT
 
   Release:
-    runs-on: formance-runner
+    runs-on: "formance-runner"
     needs:
       - Extract
     steps:
@@ -36,12 +36,11 @@ jobs:
       - name: Setup Env
         uses: ./.github/actions/env
         with:
-          os: ${{ runner.os }}
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'devbox run -- moon run ${{ needs.Extract.outputs.service }}:release'
+      - run: "earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --remote-cache=ghcr.io/formancehq/earthly:release --push --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret FURY_TOKEN=$FURY_TOKEN --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY +goreleaser --mode=release --component=${{ needs.Extract.outputs.service }}"
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
-          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}

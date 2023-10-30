@@ -23,6 +23,12 @@ worktrees
 .moon/go
 
 .devbox
+.cache
+.env
+
+
+# Earthly
+.tmp-earthly-out
 
 # Ignore SDKS
 sdks

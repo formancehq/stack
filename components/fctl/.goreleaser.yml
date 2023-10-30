@@ -29,7 +29,7 @@ builds:
 
 before:
   hooks:
-  - task completions
+  - sh ./scripts/completions.sh
 
 archives:
   - id: "{{.ProjectName}}"

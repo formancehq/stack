@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
+	"net/http"
 	"time"
 )
 
@@ -35,6 +36,11 @@ var _ = BeforeSuite(func() {
 	// Some defaults
 	SetDefaultEventuallyTimeout(10 * time.Second)
 	SetDefaultEventuallyPollingInterval(500 * time.Millisecond)
+
+	Eventually(func() error {
+		_, err := http.Get("http://" + GetOpenSearchUrl())
+		return err
+	}).Should(Succeed())
 
 	currentEnv = newEnv(GinkgoWriter)
 	Expect(currentEnv.Setup(ctx)).To(Succeed())

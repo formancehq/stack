@@ -1,8 +1,0 @@
-type: 'tool'
-language: 'unknown'
-tasks:
-  generate:
-    command: 'echo toto'
-    platform: 'system'
-    options:
-      runInCI: false

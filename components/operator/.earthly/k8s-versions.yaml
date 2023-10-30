@@ -1,0 +1,16 @@
+---
+apiVersion: stack.formance.com/v1beta3
+kind: Versions
+metadata:
+  name: default
+spec:
+  auth: local
+  control: local
+  gateway: local
+  ledger: local
+  orchestration: local
+  payments: local
+  search: local
+  wallets: local
+  webhooks: local
+  stargate: local

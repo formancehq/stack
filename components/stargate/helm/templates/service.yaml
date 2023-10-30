@@ -1,0 +1,20 @@
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stargate
+  labels:
+    io.kompose.service: stargate
+spec:
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 3068
+      targetPort: 3068
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    io.kompose.service: stargate
