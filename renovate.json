@@ -2,14 +2,29 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base", ":disableRateLimiting"],
   "prHourlyLimit": 3,
+  "labels": ["dependencies"],
+  "assigneesFromCodeOwners": true,
+  "baseBranches": ["main"],
+  "rebaseWhen": "conflicted",
+  "schedule": ["every weekend after 4am"],
   "packageRules": [
     {
+      "matchManagers": ["dockerfile"],
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "pinDigests": true
+    },
+    {
+      "extends": "monorepo:opentelemetry-go",
+      "groupName": "opentelemetry-go monorepo",
       "matchUpdateTypes": [
+        "digest",
+        "patch",
         "minor",
-        "patch"
-      ],
-      "matchCurrentVersion": "!/^0/",
-      "automerge": true
+        "major"
+      ]
     }
   ],
   "vulnerabilityAlerts": {
