@@ -52,7 +52,7 @@ services:
 
   postgres:
     platform: linux/x86_64
-    image: "postgres:13-alpine"
+    image: "postgres:16-alpine"
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ledger" ]

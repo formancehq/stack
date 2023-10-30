@@ -44,7 +44,7 @@ services:
       OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
 
   postgres:
-    image: "postgres:13-alpine"
+    image: "postgres:16-alpine"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U webhooks"]
       interval: 10s
