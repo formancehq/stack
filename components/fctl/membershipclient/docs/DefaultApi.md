@@ -1675,7 +1675,7 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     all := true // bool | Include deleted and disabled stacks (optional)
-    deleted := true // bool | Include deleted (Deprecated) (optional)
+    deleted := true // bool | Include deleted stacks (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -1706,7 +1706,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **all** | **bool** | Include deleted and disabled stacks | 
- **deleted** | **bool** | Include deleted (Deprecated) | 
+ **deleted** | **bool** | Include deleted stacks | 
 
 ### Return type
 

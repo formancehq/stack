@@ -255,7 +255,8 @@ paths:
         schema:
           type: boolean
         style: form
-      - description: Include deleted (Deprecated)
+      - deprecated: true
+        description: Include deleted stacks
         explode: true
         in: query
         name: deleted

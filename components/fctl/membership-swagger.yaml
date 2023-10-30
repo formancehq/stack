@@ -212,7 +212,8 @@ paths:
         required: false
       - name: deleted
         in: query
-        description: Include deleted (Deprecated)
+        description: Include deleted stacks
+        deprecated: true
         schema:
           type: boolean
         required: false

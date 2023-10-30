@@ -2544,7 +2544,8 @@ func (r ApiListStacksRequest) All(all bool) ApiListStacksRequest {
 	return r
 }
 
-// Include deleted (Deprecated)
+// Include deleted stacks
+// Deprecated
 func (r ApiListStacksRequest) Deleted(deleted bool) ApiListStacksRequest {
 	r.deleted = &deleted
 	return r
