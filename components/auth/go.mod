@@ -14,7 +14,7 @@ require (
 	github.com/stretchr/testify v1.8.3
 	github.com/zitadel/logging v0.3.4
 	github.com/zitadel/oidc/v2 v2.6.0
-	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.39.0
+	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.44.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
