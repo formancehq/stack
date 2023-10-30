@@ -98,4 +98,5 @@ model_user_all_of.go
 model_user_data.go
 model_user_data_all_of.go
 response.go
+test/api_default_test.go
 utils.go
