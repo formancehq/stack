@@ -19,7 +19,7 @@ RUN wget https://github.com/F1bonacc1/process-compose/archive/refs/tags/v0.51.4.
 WORKDIR /tmp/process-compose-0.51.4
 RUN go build -o /usr/bin/process-compose ./src
 
-FROM node:18
+FROM node:21
 WORKDIR /tmp
 COPY --from=builder /usr/bin/process-compose /usr/bin/process-compose
 COPY --from=gateway /usr/bin/caddy /usr/bin/gateway
