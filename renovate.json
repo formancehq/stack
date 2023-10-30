@@ -9,7 +9,7 @@
   "schedule": ["every weekend after 4am"],
   "packageRules": [
     {
-      "matchManagers": ["dockerfile"],
+      "matchManagers": ["dockerfile"]
     },
     {
       "matchManagers": ["github-actions"],
