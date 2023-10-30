@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	allFlag = "all"
+	allFlag     = "all"
+	deletedFlag = "deleted"
 )
 
 type Stack struct {
@@ -52,7 +53,9 @@ func NewListCommand() *cobra.Command {
 		fctl.WithAliases("ls", "l"),
 		fctl.WithShortDescription("List stacks"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
+		fctl.WithBoolFlag(deletedFlag, false, "Display deleted stacks"),
 		fctl.WithBoolFlag(allFlag, false, "Display deleted stacks"),
+		fctl.WithDeprecatedFlag("deleted", "Use --all instead"),
 		fctl.WithController[*StackListStore](NewStackListController()),
 	)
 }
@@ -79,8 +82,15 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, err
 	}
 
+	all := fctl.GetBool(cmd, allFlag)
+
+	// Deprecated flags
+	if fctl.GetBool(cmd, deletedFlag) {
+		all = true
+	}
+
 	rsp, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).
-		All(fctl.GetBool(cmd, allFlag)).
+		All(all).
 		Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "listing stacks")
