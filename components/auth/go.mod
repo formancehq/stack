@@ -23,7 +23,7 @@ require (
 	golang.org/x/text v0.9.0
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gorm.io/driver/postgres v1.4.8
-	gorm.io/gorm v1.24.5
+	gorm.io/gorm v1.25.5
 )
 
 require (
