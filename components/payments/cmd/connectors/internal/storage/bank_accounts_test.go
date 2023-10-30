@@ -20,6 +20,8 @@ var (
 )
 
 func TestBankAccounts(t *testing.T) {
+	t.Parallel()
+
 	store := newStore(t)
 
 	testInstallConnectors(t, store)
