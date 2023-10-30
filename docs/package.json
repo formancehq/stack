@@ -25,7 +25,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@material-ui/core": "^4.12.4",
-    "@mdx-js/react": "^1.6.21",
+    "@mdx-js/react": "^3.0.0",
     "@mui/material": "^5.10.13",
     "@svgr/webpack": "^6.5.1",
     "axios": "^1.1.3",
