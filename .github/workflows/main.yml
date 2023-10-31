@@ -17,7 +17,7 @@ jobs:
         uses: ./.github/actions/env
         with:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret FURY_TOKEN=$FURY_TOKEN +pr'
+      - run: 'earthly --debug --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret FURY_TOKEN=$FURY_TOKEN +pr'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
