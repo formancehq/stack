@@ -5,7 +5,7 @@ metadata:
   name: default
 spec:
   auth: local
-  control: local
+  control: v.1.7.0
   gateway: local
   ledger: local
   orchestration: local
