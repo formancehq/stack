@@ -299,73 +299,7 @@ data:
 
         output:
           resource: elasticsearch
-    payments_ingestion.yaml: |
-        input:
-          event_bus:
-            topic: payments
-            consumer_group: search
-
-        pipeline:
-          processors:
-          - switch_event_type:
-              events:
-              - label: SAVED_PAYMENT
-                processors:
-                - bloblang: |
-                    root = {
-                        "data": this.payload,
-                        "indexed": {
-                            "provider": this.payload.provider,
-                            "reference": this.payload.reference,
-                            "scheme": this.payload.scheme,
-                            "type": this.payload.type,
-                            "status": this.payload.status,
-                            "id": this.payload.id,
-                            "initialAmount": this.payload.initialAmount,
-                            "createdAt": this.payload.createdAt
-                        },
-                        "kind": "PAYMENT",
-                        "when": this.date
-                    }
-                    meta action = "index"
-                    meta id = "PAYMENT-%s".format(this.payload.id)
-              - label: SAVED_ACCOUNT
-                processors:
-                - bloblang: |
-                    root = {
-                        "data": this.payload,
-                        "indexed": {
-                            "provider": this.payload.provider,
-                            "reference": this.payload.reference,
-                            "createdAt": this.payload.createdAt
-                            "id": this.payload.id,
-                            "type": this.payload.type,
-                            "defaultAsset": this.payload.defaultAsset,
-                            "accountName": this.payload.accountName,
-                        },
-                        "kind": "PAYMENT_ACCOUNT",
-                        "when": this.date
-                    }
-                    meta action = "index"
-                    meta id = "PAYMENT_ACCOUNT-%s".format(this.payload.id)
-              - label: SAVED_BALANCE
-                processors:
-                - bloblang: |
-                    root = {
-                        "data": this.payload,
-                        "indexed": {
-                            "createdAt": this.payload.createdAt
-                            "accountId": this.payload.accountID,
-                            "asset": this.payload.asset,
-                            "balance": this.payload.balance,
-                        },
-                        "kind": "PAYMENT_BALANCE",
-                        "when": this.date
-                    }
-
-        output:
-          resource: elasticsearch
-    payments_reset.yaml: |
+    payments_deletion.yaml: |
         input:
           event_bus:
             topic: payments
@@ -384,11 +318,6 @@ data:
                           "must": [
                             {
                               "match": {
-                                "kind": "PAYMENT"
-                              }
-                            },
-                            {
-                              "match": {
                                 "indexed.provider": this.payload.connector
                               }
                             },
@@ -401,6 +330,27 @@ data:
                         }
                       }
                     }
+              # - label: DELETED_TRANSFER_INITIATION
+              #   processors:
+              #   - bloblang: |
+              #       root = {
+              #         "query": {
+              #           "bool": {
+              #             "must": [
+              #               {
+              #                 "match": {
+              #                   "kind": "PAYMENT_TRANSFER_INITIATION"
+              #                 }
+              #               },
+              #               {
+              #                 "match": {
+              #                   "indexed.id": this.payload.id
+              #                 }
+              #               },
+              #             ]
+              #           }
+              #         }
+              #       }
 
         output:
           http_client:
@@ -412,6 +362,8 @@ data:
               enabled: ${BASIC_AUTH_ENABLED}
               username: ${BASIC_AUTH_USERNAME}
               password: ${BASIC_AUTH_PASSWORD}
+    payments_ingestion.yaml: "input:\n  event_bus:\n    topic: payments\n    consumer_group: search\n\npipeline:\n  processors:\n  - switch_event_type:\n      events:\n      - label: SAVED_PAYMENT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"provider\": this.payload.provider,\n                    \"reference\": this.payload.reference,\n                    \"scheme\": this.payload.scheme,\n                    \"type\": this.payload.type,\n                    \"status\": this.payload.status,\n                    \"id\": this.payload.id,\n                    \"initialAmount\": this.payload.initialAmount,\n                    \"createdAt\": this.payload.createdAt\n                },\n                \"kind\": \"PAYMENT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-%s\".format(this.payload.id)\n      - label: SAVED_ACCOUNT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"provider\": this.payload.provider,\n                    \"reference\": this.payload.reference,\n                    \"createdAt\": this.payload.createdAt,\n                    \"id\": this.payload.id,\n                    \"type\": this.payload.type,\n                    \"defaultAsset\": this.payload.defaultAsset,\n                    \"accountName\": this.payload.accountName\n                },\n                \"kind\": \"PAYMENT_ACCOUNT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT_ACCOUNT-%s\".format(this.payload.id)\n      - label: SAVED_BALANCE\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"createdAt\": this.payload.createdAt,\n                    \"accountId\": this.payload.accountID,\n                    \"asset\": this.payload.asset,\n                    \"balance\": this.payload.balance\n                },\n                \"kind\": \"PAYMENT_BALANCE\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT_BALANCE-%s\".format(this.payload.id)\n      - label: SAVED_BANK_ACCOUNT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"createdAt\": this.payload.createdAt,\n                    \"provider\": this.payload.provider,\n                    \"name\": this.payload.name,\n                    \"accountNumber\": this.payload.accountNumber,\n                    \"iban\": this.payload.iban,\n                    \"swiftBicCode\": this.payload.swiftBicCode,\n                    \"country\": this.payload.country,\n                    \"accountId\": this.payload.accountID\n                },\n                \"kind\": \"PAYMENT_BANK_ACCOUNT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT_BALANCE-%s\".format(this.payload.id)\n      - label: SAVED_TRANSFER_INITIATION\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"createdAt\": this.payload.createdAt,\n                    \"scheduledAt\": this.payload.scheduledAt,\n                    \"updatedAt\": this.payload.updatedAt,\n                    \"provider\": this.payload.provider,\n                    \"description\": this.payload.description,\n                    \"type\": this.payload.type,\n                    \"sourceAccountId\": this.payload.sourceAccountID,\n                    \"destinationAccountId\": this.payload.destinationAccountID,\n                    \"amount\": this.payload.amount,\n                    \"asset\": this.payload.asset,\n                    \"attempts\": this.payload.attempts,\n                    \"status\": this.payload.status,\n                    \"error\": this.payload.error,\n                    \"relatedPayment\": this.payload.relatedPayment\n                },\n                \"kind\": \"PAYMENT_TRANSFER_INITIATION\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT_TRANSFER_INITIATIONS-%s\".format(this.payload.id)\n            \n\noutput:\n  resource: elasticsearch\n"
+    test.json: '{"data":{"PAYMENT_ACCOUNT":[[{"accountName":"Joe Blogs","createdAt":"2023-08-14T09:26:07Z","defaultAsset":"","id":"eyJQcm92aWRlciI6Ik1BTkdPUEFZIiwiUmVmZXJlbmNlIjoiMjAwNTE4MDk1In0=","provider":"MANGOPAY","reference":"200518095","type":"EXTERNAL"}]],"PAYMENT_BALANCE":[[{"accountID":"eyJQcm92aWRlciI6Ik1BTkdPUEFZIiwiUmVmZXJlbmNlIjoiMTA0ODU4Nzc4In0=","asset":"EUR/2","balance":2395690,"createdAt":"2023-10-31T11:39:12.321158237Z"},{"accountID":"eyJQcm92aWRlciI6Ik1BTkdPUEFZIiwiUmVmZXJlbmNlIjoiMTk4NTM2Njg1In0=","asset":"USD/2","balance":10058699,"createdAt":"2023-10-31T11:39:12.321168019Z"},{"accountID":"eyJQcm92aWRlciI6Ik1BTkdPUEFZIiwiUmVmZXJlbmNlIjoiMjAxNjYxMTY2In0=","asset":"EUR/2","balance":30004400,"createdAt":"2023-10-31T11:39:12.32117635Z"}]],"PAYMENT_TRANSFER_INITIATION":[[{"RelatedPayments":[],"amount":300,"asset":"EUR/2","attempts":0,"createdAt":"2023-10-31T11:01:37.122857888Z","description":"test","destinationAccountId":"eyJQcm92aWRlciI6Ik1BTkdPUEFZIiwiUmVmZXJlbmNlIjoiMjAxNjYxMTY2In0=","error":"","id":"eyJQcm92aWRlciI6Ik1BTkdPUEFZIiwiUmVmZXJlbmNlIjoidGVzdF9yZXF1ZXN0XzEifQ==","provider":"MANGOPAY","scheduledAt":"2023-10-12T15:15:00Z","sourceAccountId":"eyJQcm92aWRlciI6Ik1BTkdPUEFZIiwiUmVmZXJlbmNlIjoiMTA0ODU4Nzc4In0=","status":"WAITING_FOR_VALIDATION","type":"TRANSFER","updatedAt":"2023-10-31T11:01:37.122857888Z"}]]}}'
 kind: ConfigMap
 metadata:
     labels:

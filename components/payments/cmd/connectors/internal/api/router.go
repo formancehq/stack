@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
@@ -17,6 +18,7 @@ func httpRouter(
 	logger logging.Logger,
 	store *storage.Storage,
 	serviceInfo api.ServiceInfo,
+	publisher message.Publisher,
 	connectorHandlers []connectorHandler,
 ) (*mux.Router, error) {
 	rootMux := mux.NewRouter()
@@ -46,16 +48,16 @@ func httpRouter(
 
 	authGroup := subRouter.Name("authenticated").Subrouter()
 
-	authGroup.Path("/bank-accounts").Methods(http.MethodPost).Handler(createBankAccountHandler(store))
+	authGroup.Path("/bank-accounts").Methods(http.MethodPost).Handler(createBankAccountHandler(store, publisher))
 
 	paymentsHandlers := make(map[models.ConnectorProvider]paymentHandler)
 	for _, h := range connectorHandlers {
 		paymentsHandlers[h.Provider] = h.initiatePayment
 	}
-	authGroup.Path("/transfer-initiations").Methods(http.MethodPost).Handler(createTransferInitiationHandler(store, paymentsHandlers))
-	authGroup.Path("/transfer-initiations/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(store, paymentsHandlers))
-	authGroup.Path("/transfer-initiations/{transferID}/retry").Methods(http.MethodPost).Handler(retryTransferInitiationHandler(store, paymentsHandlers))
-	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(store))
+	authGroup.Path("/transfer-initiations").Methods(http.MethodPost).Handler(createTransferInitiationHandler(store, publisher, paymentsHandlers))
+	authGroup.Path("/transfer-initiations/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(store, publisher, paymentsHandlers))
+	authGroup.Path("/transfer-initiations/{transferID}/retry").Methods(http.MethodPost).Handler(retryTransferInitiationHandler(store, publisher, paymentsHandlers))
+	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(store, publisher))
 
 	authGroup.HandleFunc("/connectors", readConnectorsHandler(store))
 

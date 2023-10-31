@@ -8,8 +8,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/payments/cmd/connectors/internal/messages"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
@@ -95,6 +99,7 @@ type createTransferInitiationRepository interface {
 
 func createTransferInitiationHandler(
 	repo createTransferInitiationRepository,
+	publisher message.Publisher,
 	paymentHandlers map[models.ConnectorProvider]paymentHandler,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -165,7 +170,17 @@ func createTransferInitiationHandler(
 
 		if err := repo.CreateTransferInitiation(r.Context(), tf); err != nil {
 			handleStorageErrors(w, r, err)
+			return
+		}
 
+		if err := publisher.Publish(
+			events.TopicPayments,
+			publish.NewMessage(
+				r.Context(),
+				messages.NewEventSavedTransferInitiations(tf),
+			),
+		); err != nil {
+			api.InternalServerError(w, r, err)
 			return
 		}
 
@@ -221,6 +236,7 @@ type updateTransferInitiationStatusRequest struct {
 
 func updateTransferInitiationStatusHandler(
 	repo udateTransferInitiationStatusRepository,
+	publisher message.Publisher,
 	paymentHandlers map[models.ConnectorProvider]paymentHandler,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -273,6 +289,17 @@ func updateTransferInitiationStatusHandler(
 			return
 		}
 
+		if err := publisher.Publish(
+			events.TopicPayments,
+			publish.NewMessage(
+				r.Context(),
+				messages.NewEventSavedTransferInitiations(previousTransferInitiation),
+			),
+		); err != nil {
+			api.InternalServerError(w, r, err)
+			return
+		}
+
 		if status == models.TransferInitiationStatusValidated {
 			f, ok := paymentHandlers[previousTransferInitiation.Provider]
 			if !ok {
@@ -298,6 +325,7 @@ type retryTransferInitiationRepository interface {
 
 func retryTransferInitiationHandler(
 	repo retryTransferInitiationRepository,
+	publisher message.Publisher,
 	paymentHandlers map[models.ConnectorProvider]paymentHandler,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -326,6 +354,17 @@ func retryTransferInitiationHandler(
 			return
 		}
 
+		if err := publisher.Publish(
+			events.TopicPayments,
+			publish.NewMessage(
+				r.Context(),
+				messages.NewEventSavedTransferInitiations(previousTransferInitiation),
+			),
+		); err != nil {
+			api.InternalServerError(w, r, err)
+			return
+		}
+
 		f, ok := paymentHandlers[previousTransferInitiation.Provider]
 		if !ok {
 			api.InternalServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
@@ -347,7 +386,10 @@ type deleteTransferInitiationRepository interface {
 	DeleteTransferInitiation(ctx context.Context, id models.TransferInitiationID) error
 }
 
-func deleteTransferInitiationHandler(repo deleteTransferInitiationRepository) http.HandlerFunc {
+func deleteTransferInitiationHandler(
+	repo deleteTransferInitiationRepository,
+	publisher message.Publisher,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		transferID, err := models.TransferInitiationIDFromString(mux.Vars(r)["transferID"])
 		if err != nil {
@@ -370,6 +412,17 @@ func deleteTransferInitiationHandler(repo deleteTransferInitiationRepository) ht
 		if err != nil {
 			handleStorageErrors(w, r, err)
 
+			return
+		}
+
+		if err := publisher.Publish(
+			events.TopicPayments,
+			publish.NewMessage(
+				r.Context(),
+				messages.NewEventDeleteTransferInitiation(tf.ID),
+			),
+		); err != nil {
+			api.InternalServerError(w, r, err)
 			return
 		}
 

@@ -45,13 +45,14 @@ pipeline:
                 "when": this.date
             }
             meta action = "index"
-            meta id = "PAYMENT_ACCOUNT-%s".format(this.payload.id)
+            meta id = "PAYMENT-ACCOUNT-%s".format(this.payload.id)
       - label: SAVED_BALANCE
         processors:
         - bloblang: |
             root = {
                 "data": this.payload,
                 "indexed": {
+                    "provider": this.payload.provider,
                     "createdAt": this.payload.createdAt,
                     "accountId": this.payload.accountID,
                     "asset": this.payload.asset,
@@ -61,7 +62,56 @@ pipeline:
                 "when": this.date
             }
             meta action = "index"
-            meta id = "PAYMENT_BALANCE-%s".format(this.payload.id)
+            meta id = "PAYMENT-BALANCE-%s-%s".format(this.payload.accountId, this.payload.asset)
+      - label: SAVED_BANK_ACCOUNT
+        processors:
+        - bloblang: |
+            root = {
+                "data": this.payload,
+                "indexed": {
+                    "id": this.payload.id,
+                    "createdAt": this.payload.createdAt,
+                    "provider": this.payload.provider,
+                    "name": this.payload.name,
+                    "accountNumber": this.payload.accountNumber,
+                    "iban": this.payload.iban,
+                    "swiftBicCode": this.payload.swiftBicCode,
+                    "country": this.payload.country,
+                    "accountId": this.payload.accountID
+                },
+                "kind": "PAYMENT_BANK_ACCOUNT",
+                "when": this.date
+            }
+            meta action = "index"
+            meta id = "PAYMENT-BANK-ACCOUNT-%s".format(this.payload.id)
+      - label: SAVED_TRANSFER_INITIATION
+        processors:
+        - bloblang: |
+            root = {
+                "data": this.payload,
+                "indexed": {
+                    "id": this.payload.id,
+                    "createdAt": this.payload.createdAt,
+                    "scheduledAt": this.payload.scheduledAt,
+                    "updatedAt": this.payload.updatedAt,
+                    "provider": this.payload.provider,
+                    "description": this.payload.description,
+                    "type": this.payload.type,
+                    "sourceAccountId": this.payload.sourceAccountID,
+                    "destinationAccountId": this.payload.destinationAccountID,
+                    "amount": this.payload.amount,
+                    "asset": this.payload.asset,
+                    "attempts": this.payload.attempts,
+                    "status": this.payload.status,
+                    "error": this.payload.error,
+                    "relatedPayment": this.payload.relatedPayment
+                },
+                "kind": "PAYMENT_TRANSFER_INITIATION",
+                "when": this.date
+            }
+            meta action = "index"
+            meta id = "PAYMENT-TRANSFER-INITIATION-%s".format(this.payload.id)
+            
 
 output:
   resource: elasticsearch

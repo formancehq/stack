@@ -17,19 +17,15 @@ type accountMessagePayload struct {
 	Type         string    `json:"type"`
 }
 
-func NewEventSavedAccounts(accounts []*models.Account) events.EventMessage {
-	payload := make([]accountMessagePayload, len(accounts))
-
-	for accountIdx, account := range accounts {
-		payload[accountIdx] = accountMessagePayload{
-			ID:           account.ID.String(),
-			CreatedAt:    account.CreatedAt,
-			Reference:    account.Reference,
-			Provider:     account.Provider.String(),
-			DefaultAsset: account.DefaultAsset.String(),
-			AccountName:  account.AccountName,
-			Type:         string(account.Type),
-		}
+func NewEventSavedAccounts(account *models.Account) events.EventMessage {
+	payload := accountMessagePayload{
+		ID:           account.ID.String(),
+		CreatedAt:    account.CreatedAt,
+		Reference:    account.Reference,
+		Provider:     account.Provider.String(),
+		DefaultAsset: account.DefaultAsset.String(),
+		AccountName:  account.AccountName,
+		Type:         string(account.Type),
 	}
 
 	return events.EventMessage{

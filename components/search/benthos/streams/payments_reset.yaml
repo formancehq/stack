@@ -15,13 +15,66 @@ pipeline:
                 "bool": {
                   "must": [
                     {
-                      "match": {
-                        "kind": "PAYMENT"
+                      "bool": {
+                        "should": [
+                          {
+                            "match": {
+                              "kind": "PAYMENT"
+                            },
+                          },
+                          {
+                            "match": {
+                              "kind": "PAYMENT_ACCOUNT"
+                            },
+                          },
+                          {
+                            "match": {
+                              "kind": "PAYMENT_BALANCE"
+                            },
+                          },
+                          {
+                            "match": {
+                              "kind": "PAYMENT_BANK_ACCOUNT"
+                            },
+                          },
+                          {
+                            "match": {
+                              "kind": "PAYMENT_TRANSFER_INITIATION"
+                            },
+                          }
+                        ]
                       }
                     },
                     {
                       "match": {
                         "indexed.provider": this.payload.connector
+                      }
+                    },
+                    {
+                      "match": {
+                        "stack": env("STACK")
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+
+      - label: DELETED_TRANSFER_INITIATION
+        processors:
+        - bloblang: |
+            root = {
+              "query": {
+                "bool": {
+                  "must": [
+                    {
+                      "match": {
+                        "kind": "PAYMENT_TRANSFER_INITIATION"
+                      }
+                    },
+                    {
+                      "match": {
+                        "indexed.id": this.payload.id
                       }
                     },
                     {
