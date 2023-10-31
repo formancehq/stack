@@ -60,12 +60,19 @@ func Register(newModules ...Module) {
 }
 
 func Get(name string) Module {
-	for _, module := range modules {
+	for _, module := range getSortedModules() {
 		if module.Name() == name {
 			return module
 		}
 	}
 	return nil
+}
+
+func getSortedModules() []Module {
+	sort.Slice(modules, func(i, j int) bool {
+		return modules[i].Name() < modules[j].Name()
+	})
+	return modules
 }
 
 func sortedVersions(module Module) []string {
