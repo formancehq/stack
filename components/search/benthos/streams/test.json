@@ -1,1 +1,0 @@
-{"query": {"bool": {"must":: "PAYMENT"}}]}}{"match": {"indexed.provider": this.payload.connector}}{"match": {"stack": env("STACK")}}]}}}
