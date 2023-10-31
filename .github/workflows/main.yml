@@ -17,7 +17,7 @@ jobs:
         uses: ./.github/actions/env
         with:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --remote-cache=ghcr.io/formancehq/earthly:lint --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY +lint-all'
+      - run: 'earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY +lint-all'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
@@ -32,7 +32,7 @@ jobs:
         uses: ./.github/actions/env
         with:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --remote-cache=ghcr.io/formancehq/earthly:tests --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY +tests-all'
+      - run: 'earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY +tests-all'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
@@ -47,7 +47,7 @@ jobs:
         uses: ./.github/actions/env
         with:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --remote-cache=ghcr.io/formancehq/earthly:integrations --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY +integration-tests'
+      - run: 'earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY +integration-tests'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
@@ -87,7 +87,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           version: "latest" # or pin to an specific version, e.g. "0.7.1"
-      - run: "earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --remote-cache=ghcr.io/formancehq/earthly:release-ci-${{ matrix.components }} --push --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret FURY_TOKEN=$FURY_TOKEN --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY +goreleaser --mode=ci --component=${{ matrix.components }}"
+      - run: "earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret FURY_TOKEN=$FURY_TOKEN --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY +goreleaser --mode=ci --component=${{ matrix.components }}"
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
