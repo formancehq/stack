@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 
-	"github.com/formancehq/formance-sdk-go"
+	formance "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/xo/dburl"

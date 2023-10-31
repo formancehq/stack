@@ -31,10 +31,12 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			response, err := Client().Payments.InstallConnector(
 				TestContext(),
 				operations.InstallConnectorRequest{
-					RequestBody: shared.DummyPayConfig{
-						FilePollingPeriod:    ptr("1s"),
-						Directory:            paymentsDir,
-						FileGenerationPeriod: ptr("1s"),
+					ConnectorConfig: shared.ConnectorConfig{
+						DummyPayConfig: &shared.DummyPayConfig{
+							FilePollingPeriod:    ptr("1s"),
+							Directory:            paymentsDir,
+							FileGenerationPeriod: ptr("1s"),
+						},
 					},
 					Connector: shared.ConnectorDummyPay,
 				},

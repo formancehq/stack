@@ -1,18 +1,13 @@
 package views
 
 import (
-	"errors"
-
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config, ok := connectorConfig.Data.(*shared.ModulrConfig)
-	if !ok {
-		return errors.New("invalid modulr connector config")
-	}
+	config := connectorConfig.Data.ModulrConfig
 
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})

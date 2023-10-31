@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/formancehq/formance-sdk-go"
+	formance "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 )
 

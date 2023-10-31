@@ -82,11 +82,13 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorMangopay,
-		RequestBody: shared.MangoPayConfig{
-			ClientID:      args[0],
-			APIKey:        args[1],
-			Endpoint:      fctl.GetString(cmd, c.endpointFlag),
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+		ConnectorConfig: shared.ConnectorConfig{
+			MangoPayConfig: &shared.MangoPayConfig{
+				ClientID:      args[0],
+				APIKey:        args[1],
+				Endpoint:      fctl.GetString(cmd, c.endpointFlag),
+				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			},
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)

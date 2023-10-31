@@ -63,8 +63,10 @@ func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []stri
 	}
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
-		RequestBody: shared.StripeConfig{
-			APIKey: args[0],
+		ConnectorConfig: shared.ConnectorConfig{
+			StripeConfig: &shared.StripeConfig{
+				APIKey: args[0],
+			},
 		},
 		Connector: shared.ConnectorStripe,
 	})

@@ -82,11 +82,13 @@ func (c *PaymentsConnectorsMoneycorpController) Run(cmd *cobra.Command, args []s
 
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorMoneycorp,
-		RequestBody: shared.MoneycorpConfig{
-			ClientID:      args[0],
-			APIKey:        args[1],
-			Endpoint:      fctl.GetString(cmd, c.endpointFlag),
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+		ConnectorConfig: shared.ConnectorConfig{
+			MoneycorpConfig: &shared.MoneycorpConfig{
+				ClientID:      args[0],
+				APIKey:        args[1],
+				Endpoint:      fctl.GetString(cmd, c.endpointFlag),
+				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			},
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)

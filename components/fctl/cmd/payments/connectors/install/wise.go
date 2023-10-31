@@ -64,9 +64,11 @@ func (c *PaymentsConnectorsWiseController) Run(cmd *cobra.Command, args []string
 	}
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
-		RequestBody: shared.WiseConfig{
-			APIKey:        args[1],
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+		ConnectorConfig: shared.ConnectorConfig{
+			WiseConfig: &shared.WiseConfig{
+				APIKey:        args[1],
+				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			},
 		},
 		Connector: shared.ConnectorWise,
 	})
