@@ -190,7 +190,7 @@ pr:
     BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
     BUILD --pass-args +integration-tests
-    BUILD --pass-args +all-local-goreleaser
+    #BUILD --pass-args +all-local-goreleaser
 
 INCLUDE_GO_LIBS:
     COMMAND
