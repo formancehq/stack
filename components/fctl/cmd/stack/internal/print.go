@@ -21,10 +21,12 @@ func PrintStackInformation(out io.Writer, profile *fctl.Profile, stack *membersh
 		return err
 	}
 
-	err = printVersion(out, baseUrlStr, versions, stack)
+	if versions != nil {
+		err = printVersion(out, baseUrlStr, versions, stack)
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
 	err = printMetadata(out, stack)
@@ -42,6 +44,8 @@ func printInformation(out io.Writer, stack *membershipclient.Stack) error {
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), stack.Id, ""})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), stack.Name, ""})
 	tableData = append(tableData, []string{pterm.LightCyan("Region"), stack.RegionID, ""})
+	tableData = append(tableData, []string{pterm.LightCyan("Status"), stack.State, ""})
+	tableData = append(tableData, []string{pterm.LightCyan("Effective status"), stack.Status, ""})
 	return pterm.DefaultTable.
 		WithWriter(out).
 		WithData(tableData).

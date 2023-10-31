@@ -45,6 +45,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateOrganizationResponse'
           description: Organization created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
       summary: Create organization
   /organizations/expanded:
     get:
@@ -241,18 +247,19 @@ paths:
         schema:
           type: string
         style: simple
-      - description: Include deleted stacks
+      - description: Include deleted and disabled stacks
         explode: true
         in: query
-        name: deleted
+        name: all
         required: false
         schema:
           type: boolean
         style: form
-      - description: Include disabled stacks
+      - deprecated: true
+        description: Include deleted stacks
         explode: true
         in: query
-        name: disabled
+        name: deleted
         required: false
         schema:
           type: boolean
@@ -1208,12 +1215,42 @@ components:
           - UNKNOWN
           - PROGRESSING
           - READY
+          - DISABLED
+          - DELETED
+          type: string
+        state:
+          enum:
+          - ACTIVE
+          - DISABLED
+          - DELETED
+          type: string
+        expectedStatus:
+          enum:
+          - UNKNOWN
+          - PROGRESSING
+          - READY
+          - DISABLED
+          - DELETED
+          type: string
+        lastStateUpdate:
+          format: date-time
+          type: string
+        lastExpectedStatusUpdate:
+          format: date-time
+          type: string
+        lastStatusUpdate:
+          format: date-time
           type: string
       required:
+      - expectedStatus
       - id
+      - lastExpectedStatusUpdate
+      - lastStateUpdate
+      - lastStatusUpdate
       - organizationId
       - regionID
       - stargateEnabled
+      - state
       - status
       - uri
       type: object
