@@ -2,9 +2,12 @@ name: Default
 on:
   pull_request:
     types: [ assigned, opened, synchronize, reopened ]
+  push:
+    branches:
+      - main
 
 jobs:
-  main:
+  pr:
     runs-on: "formance-runner"
     steps:
       - uses: 'actions/checkout@v4'
@@ -26,6 +29,7 @@ jobs:
             --secret GITHUB_TOKEN=$GITHUB_TOKEN 
             --secret FURY_TOKEN=$FURY_TOKEN 
             --secret GORELEASER_KEY=$GORELEASER_KEY
+            --buildImages=${{ if(contains(github.event.pull_request.labels.*.name, 'build-images')) }}1${{ else }}0${{ endif }} 
             +pr
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
