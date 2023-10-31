@@ -27,6 +27,41 @@ pipeline:
             }
             meta action = "index"
             meta id = "PAYMENT-%s".format(this.payload.id)
+      - label: SAVED_ACCOUNT
+        processors:
+        - bloblang: |
+            root = {
+                "data": this.payload,
+                "indexed": {
+                    "provider": this.payload.provider,
+                    "reference": this.payload.reference,
+                    "createdAt": this.payload.createdAt,
+                    "id": this.payload.id,
+                    "type": this.payload.type,
+                    "defaultAsset": this.payload.defaultAsset,
+                    "accountName": this.payload.accountName
+                },
+                "kind": "PAYMENT_ACCOUNT",
+                "when": this.date
+            }
+            meta action = "index"
+            meta id = "PAYMENT_ACCOUNT-%s".format(this.payload.id)
+      - label: SAVED_BALANCE
+        processors:
+        - bloblang: |
+            root = {
+                "data": this.payload,
+                "indexed": {
+                    "createdAt": this.payload.createdAt,
+                    "accountId": this.payload.accountID,
+                    "asset": this.payload.asset,
+                    "balance": this.payload.balance
+                },
+                "kind": "PAYMENT_BALANCE",
+                "when": this.date
+            }
+            meta action = "index"
+            meta id = "PAYMENT_BALANCE-%s".format(this.payload.id)
 
 output:
   resource: elasticsearch
