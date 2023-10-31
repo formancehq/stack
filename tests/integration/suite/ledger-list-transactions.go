@@ -30,7 +30,6 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				response, err := Client().Ledger.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
-						IdempotencyKey: new(string),
 						PostTransaction: shared.PostTransaction{
 							Metadata: map[string]string{},
 							Postings: []shared.Posting{
@@ -123,6 +122,28 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
+
+					// Create a new transaction to ensure cursor is stable
+					_, err := Client().Ledger.CreateTransaction(
+						TestContext(),
+						operations.CreateTransactionRequest{
+							PostTransaction: shared.PostTransaction{
+								Metadata: map[string]string{},
+								Postings: []shared.Posting{
+									{
+										Amount:      big.NewInt(100),
+										Asset:       "USD",
+										Source:      "world",
+										Destination: "account:0",
+									},
+								},
+								Timestamp: pointer.For(time.Now()),
+							},
+							Ledger: "default",
+						},
+					)
+					Expect(err).ToNot(HaveOccurred())
+
 					response, err := Client().Ledger.ListTransactions(
 						TestContext(),
 						operations.ListTransactionsRequest{

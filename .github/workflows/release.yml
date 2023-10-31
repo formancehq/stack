@@ -37,7 +37,7 @@ jobs:
         uses: ./.github/actions/env
         with:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: "earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --remote-cache=ghcr.io/formancehq/earthly:release --push --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret FURY_TOKEN=$FURY_TOKEN --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY +goreleaser --mode=release --component=${{ needs.Extract.outputs.service }}"
+      - run: "earthly --no-output --allow-privileged --use-inline-cache --save-inline-cache --push --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret FURY_TOKEN=$FURY_TOKEN --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY +goreleaser --mode=release --component=${{ needs.Extract.outputs.service }}"
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}

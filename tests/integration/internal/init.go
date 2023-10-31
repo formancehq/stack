@@ -44,6 +44,11 @@ var _ = BeforeSuite(func() {
 
 	currentEnv = newEnv(GinkgoWriter)
 	Expect(currentEnv.Setup(ctx)).To(Succeed())
+
+	Eventually(func() error {
+		_, err := http.Get("http://" + GetOpenSearchUrl())
+		return err
+	}).Should(Succeed())
 })
 
 var _ = AfterSuite(func() {
