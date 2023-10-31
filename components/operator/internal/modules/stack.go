@@ -133,7 +133,7 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 	}
 
 	if r.Configuration.Spec.LightMode {
-		for _, module := range modules {
+		for _, module := range getSortedModules() {
 			if r.Stack.IsDisabled(module.Name()) {
 				continue
 			}
@@ -159,7 +159,7 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 
 	logger.Info("Finalize modules")
 	allReady := true
-	for _, module := range modules {
+	for _, module := range getSortedModules() {
 		if r.Stack.IsDisabled(module.Name()) {
 			continue
 		}
@@ -282,7 +282,7 @@ func (r *StackReconciler) prepareSecrets(ctx context.Context) error {
 
 func (r *StackReconciler) prepareModules(ctx context.Context, registeredModules RegisteredModules) error {
 	processed := collectionutils.NewSet[Module]()
-	for _, module := range modules {
+	for _, module := range getSortedModules() {
 		if err := r.prepareModule(ctx, module, registeredModules, newGraphVisitor(), processed); err != nil {
 			return err
 		}

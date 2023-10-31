@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta3
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -116,6 +117,10 @@ type MetricsSpec struct {
 	Otlp *OtlpSpec `json:"otlp,omitempty"`
 }
 
+type RegistryConfig struct {
+	Endpoint string `json:"endpoint"`
+}
+
 type ConfigurationSpec struct {
 	Services ConfigurationServicesSpec `json:"services"`
 	Broker   Broker                    `json:"broker"`
@@ -128,6 +133,8 @@ type ConfigurationSpec struct {
 	// LightMode is experimental and indicate we want monopods
 	// +optional
 	LightMode bool `json:"light,omitempty"`
+	// +optional
+	Registries map[string]RegistryConfig `json:"registries,omitempty"`
 }
 
 func (in *ConfigurationSpec) GetServices() []string {
@@ -157,6 +164,26 @@ func (c Configuration) Validate() error {
 		return errors.New("either 'kafka' or 'nats' is required")
 	}
 	return nil
+}
+
+func (c *Configuration) ResolveImage(image string) string {
+	parts := strings.Split(image, ":")
+	repository := parts[0]
+	repositoryParts := strings.SplitN(repository, "/", 2)
+	var (
+		registry, path string
+	)
+	if len(repositoryParts) == 1 {
+		registry = "docker.io"
+		path = repository
+	} else {
+		registry = repositoryParts[0]
+		path = repositoryParts[1]
+	}
+	if config, ok := c.Spec.Registries[registry]; ok && config.Endpoint != "" {
+		return fmt.Sprintf("%s/%s:%s", config.Endpoint, path, parts[1])
+	}
+	return image
 }
 
 //+kubebuilder:object:root=true

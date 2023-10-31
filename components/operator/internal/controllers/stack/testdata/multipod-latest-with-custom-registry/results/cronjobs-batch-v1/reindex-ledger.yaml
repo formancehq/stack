@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: reindex-ledger
+    namespace: multipod-latest-with-custom-registry
+spec:
+    concurrencyPolicy: Allow
+    failedJobsHistoryLimit: 1
+    jobTemplate:
+        metadata:
+            creationTimestamp: null
+        spec:
+            template:
+                metadata:
+                    creationTimestamp: null
+                spec:
+                    containers:
+                        - command:
+                            - sh
+                            - -c
+                            - "/bin/sh <<'EOF'\n\n\t\t\n\t\t\t\t\tcurl http://search-benthos.multipod-latest-with-custom-registry.svc.cluster.local:4195/ledger_reindex_all -X POST -H 'Content-Type: application/json' -d '{}'\n \t\t\t\t\t\t    \nEOF"
+                          image: curlimages/curl:8.2.1
+                          imagePullPolicy: IfNotPresent
+                          name: reindex-ledger
+                          resources: {}
+                          terminationMessagePath: /dev/termination-log
+                          terminationMessagePolicy: File
+                    dnsPolicy: ClusterFirst
+                    restartPolicy: Never
+                    schedulerName: default-scheduler
+                    securityContext: {}
+                    terminationGracePeriodSeconds: 30
+    schedule: '* * * * *'
+    successfulJobsHistoryLimit: 3
+    suspend: true
+status: {}
