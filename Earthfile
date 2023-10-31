@@ -193,7 +193,7 @@ pr:
     BUILD --pass-args +tests-all
     BUILD --pass-args +integration-tests
     ARG buildImages=0
-    IF [ "$buildImage" == "1" ]
+    IF [ "$buildImages" == "1" ]
         BUILD --pass-args +all-local-goreleaser
     END
 
