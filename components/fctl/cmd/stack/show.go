@@ -105,10 +105,13 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, errStackNotFound
 	}
 
+	c.store.Stack = stack
+	c.config = cfg
+
+	// the stack is not active, we can't get the running versions
+	// Maybe add something in the process with sync status and store it in membership
+
 	if stack.Status != "ACTIVE" {
-		c.store.Stack = stack
-		c.store.Versions = nil
-		c.config = cfg
 		return c, nil
 	}
 
@@ -127,9 +130,7 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	c.store.Stack = stack
 	c.store.Versions = versions.GetVersionsResponse
-	c.config = cfg
 
 	return c, nil
 
