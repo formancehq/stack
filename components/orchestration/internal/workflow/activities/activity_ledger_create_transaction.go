@@ -1,14 +1,16 @@
 package activities
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
 	"unsafe"
 
-	"github.com/formancehq/formance-sdk-go"
+	formance "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
@@ -45,7 +47,7 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
 
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, "Data", "json")
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "PostTransaction", "json", `request:"mediaType=application/json"`)
 	if err != nil {
 		return nil, fmt.Errorf("error serializing request body: %w", err)
 	}
@@ -76,6 +78,12 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 	defer httpRes.Body.Close()
 
 	contentType := httpRes.Header.Get("Content-Type")
+	rawBody, err := io.ReadAll(httpRes.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %w", err)
+	}
+	httpRes.Body.Close()
+	httpRes.Body = io.NopCloser(bytes.NewBuffer(rawBody))
 
 	res := &CreateTransactionWrapper{
 		StatusCode:  httpRes.StatusCode,
@@ -87,7 +95,7 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
 			var out *CreateTransactionResponse
-			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
@@ -97,7 +105,7 @@ func createTransactionV1(ctx context.Context, client *formance.Formance, baseURL
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
 			var out *shared.ErrorResponse
-			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 

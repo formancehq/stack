@@ -75,12 +75,14 @@ func (c *PaymentsConnectorsBankingCircleController) Run(cmd *cobra.Command, args
 
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorBankingCircle,
-		RequestBody: shared.BankingCircleConfig{
-			Username:              args[0],
-			Password:              args[1],
-			Endpoint:              fctl.GetString(cmd, c.endpointFlag),
-			AuthorizationEndpoint: fctl.GetString(cmd, c.authorizationEndpointFlag),
-			PollingPeriod:         fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+		ConnectorConfig: shared.ConnectorConfig{
+			BankingCircleConfig: &shared.BankingCircleConfig{
+				Username:              args[0],
+				Password:              args[1],
+				Endpoint:              fctl.GetString(cmd, c.endpointFlag),
+				AuthorizationEndpoint: fctl.GetString(cmd, c.authorizationEndpointFlag),
+				PollingPeriod:         fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			},
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)

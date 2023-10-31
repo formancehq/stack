@@ -32,8 +32,10 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 			response, err := Client().Payments.InstallConnector(
 				TestContext(),
 				operations.InstallConnectorRequest{
-					RequestBody: shared.StripeConfig{
-						APIKey: apiKey,
+					ConnectorConfig: shared.ConnectorConfig{
+						StripeConfig: &shared.StripeConfig{
+							APIKey: apiKey,
+						},
 					},
 					Connector: shared.ConnectorStripe,
 				},

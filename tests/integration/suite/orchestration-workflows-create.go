@@ -17,7 +17,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 		BeforeEach(func() {
 			response, err := Client().Orchestration.CreateWorkflow(
 				TestContext(),
-				shared.CreateWorkflowRequest{
+				&shared.CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
 					Stages: []map[string]interface{}{
 						{

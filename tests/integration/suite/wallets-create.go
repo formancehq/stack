@@ -19,7 +19,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			for i := 0; i < countWallets; i++ {
 				response, err := Client().Wallets.CreateWallet(
 					TestContext(),
-					shared.CreateWalletRequest{
+					&shared.CreateWalletRequest{
 						Metadata: map[string]string{
 							"wallets_number": fmt.Sprint(i),
 						},

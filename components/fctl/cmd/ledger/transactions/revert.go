@@ -79,19 +79,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		ID:     txId,
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	baseUrl := profile.ServicesBaseUrl(stack).String()
-
-	response, err := internal.RevertTransaction(
-		ledgerClient,
-		cmd.Context(),
-		baseUrl,
-		request,
-	)
-	if err != nil {
-		return nil, err
-	}
-
+	response, err := ledgerClient.Ledger.RevertTransaction(cmd.Context(), request)
 	if response.ErrorResponse != nil {
 		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}

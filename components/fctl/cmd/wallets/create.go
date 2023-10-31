@@ -82,7 +82,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		Name:     args[0],
 		Metadata: metadata,
 	}
-	response, err := client.Wallets.CreateWallet(cmd.Context(), request)
+	response, err := client.Wallets.CreateWallet(cmd.Context(), &request)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating wallet")
 	}

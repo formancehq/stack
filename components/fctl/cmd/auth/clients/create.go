@@ -105,7 +105,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		Trusted:                &trusted,
 		PostLogoutRedirectUris: fctl.GetStringSlice(cmd, c.postLogoutRedirectUriFlag),
 	}
-	response, err := authClient.Auth.CreateClient(cmd.Context(), request)
+	response, err := authClient.Auth.CreateClient(cmd.Context(), &request)
 	if err != nil {
 		return nil, err
 	}

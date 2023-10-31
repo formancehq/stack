@@ -74,11 +74,13 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 	}
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
-		RequestBody: shared.ModulrConfig{
-			APIKey:        args[0],
-			APISecret:     args[1],
-			Endpoint:      endpoint,
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+		ConnectorConfig: shared.ConnectorConfig{
+			ModulrConfig: &shared.ModulrConfig{
+				APIKey:        args[0],
+				APISecret:     args[1],
+				Endpoint:      endpoint,
+				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			},
 		},
 		Connector: shared.ConnectorModulr,
 	})

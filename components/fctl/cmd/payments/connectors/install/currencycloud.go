@@ -75,11 +75,13 @@ func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args
 	}
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
-		RequestBody: shared.CurrencyCloudConfig{
-			APIKey:        args[1],
-			LoginID:       args[0],
-			Endpoint:      endpoint,
-			PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+		ConnectorConfig: shared.ConnectorConfig{
+			CurrencyCloudConfig: &shared.CurrencyCloudConfig{
+				APIKey:        args[1],
+				LoginID:       args[0],
+				Endpoint:      endpoint,
+				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+			},
 		},
 		Connector: shared.ConnectorCurrencyCloud,
 	})
