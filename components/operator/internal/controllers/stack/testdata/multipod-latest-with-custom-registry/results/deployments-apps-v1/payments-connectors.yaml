@@ -6,7 +6,7 @@ metadata:
         app.kubernetes.io/name: payments
         formance.com/monopod: "false"
         stack: "true"
-    name: payments
+    name: payments-connectors
     namespace: multipod-latest-with-custom-registry
 spec:
     progressDeadlineSeconds: 600
@@ -14,7 +14,7 @@ spec:
     revisionHistoryLimit: 10
     selector:
         matchLabels:
-            app.kubernetes.io/name: payments
+            app.kubernetes.io/name: payments-connectors
     strategy:
         rollingUpdate:
             maxSurge: 25%
@@ -26,10 +26,13 @@ spec:
                 stack.formance.cloud/volumes-hash: 47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=
             creationTimestamp: null
             labels:
-                app.kubernetes.io/name: payments
+                app.kubernetes.io/name: payments-connectors
         spec:
             containers:
-                - env:
+                - args:
+                    - connectors
+                    - serve
+                  env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
@@ -70,7 +73,7 @@ spec:
                     - name: STACK_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
-                      value: payments
+                      value: payments-connectors
                     - name: STACK
                       value: multipod-latest-with-custom-registry
                     - name: BROKER
@@ -96,7 +99,7 @@ spec:
                     periodSeconds: 2
                     successThreshold: 1
                     timeoutSeconds: 30
-                  name: payments
+                  name: payments-connectors
                   ports:
                     - containerPort: 8080
                       name: http

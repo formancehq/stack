@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
     generation: 1
     labels:
-        app.kubernetes.io/name: gateway
+        app.kubernetes.io/name: payments
         formance.com/monopod: "false"
         stack: "true"
-    name: gateway
+    name: payments-api
     namespace: multipod-latest-with-custom-registry
 spec:
     progressDeadlineSeconds: 600
@@ -14,7 +14,7 @@ spec:
     revisionHistoryLimit: 10
     selector:
         matchLabels:
-            app.kubernetes.io/name: gateway
+            app.kubernetes.io/name: payments-api
     strategy:
         rollingUpdate:
             maxSurge: 25%
@@ -23,21 +23,32 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: Opz5BdP5qEC39C_jArtxs7KTFV78enCWWQ2FA2ARpUg=
+                stack.formance.cloud/volumes-hash: 47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=
             creationTimestamp: null
             labels:
-                app.kubernetes.io/name: gateway
+                app.kubernetes.io/name: payments-api
         spec:
             containers:
                 - args:
-                    - run
-                    - --config
-                    - /config/config/Caddyfile
-                    - --adapter
-                    - caddyfile
-                  command:
-                    - /usr/bin/caddy
+                    - api
+                    - serve
                   env:
+                    - name: POSTGRES_HOST
+                      value: localhost
+                    - name: POSTGRES_PORT
+                      value: "5432"
+                    - name: POSTGRES_DATABASE
+                      value: multipod-latest-with-custom-registry-payments
+                    - name: POSTGRES_USERNAME
+                      value: root
+                    - name: POSTGRES_PASSWORD
+                      value: root
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: LISTEN
+                      value: :8080
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -62,14 +73,35 @@ spec:
                     - name: STACK_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
-                      value: gateway
+                      value: payments-api
                     - name: STACK
                       value: multipod-latest-with-custom-registry
-                  image: localhost:5000/formancehq/gateway:latest
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka1:1234 kafka2:1234
+                    - name: POSTGRES_DATABASE_NAME
+                      value: $(POSTGRES_DATABASE)
+                    - name: CONFIG_ENCRYPTION_KEY
+                    - name: PUBLISHER_TOPIC_MAPPING
+                      value: '*:multipod-latest-with-custom-registry-payments'
+                  image: localhost:5000/formancehq/payments:latest
                   imagePullPolicy: Always
-                  name: gateway
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_health
+                        port: 8080
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
+                  name: payments-api
                   ports:
-                    - containerPort: 8000
+                    - containerPort: 8080
                       name: http
                       protocol: TCP
                   resources:
@@ -78,20 +110,11 @@ spec:
                         memory: 50Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
-                  volumeMounts:
-                    - mountPath: /config/config
-                      name: config
-                      readOnly: true
             dnsPolicy: ClusterFirst
             restartPolicy: Always
             schedulerName: default-scheduler
             securityContext: {}
             terminationGracePeriodSeconds: 30
-            volumes:
-                - configMap:
-                    defaultMode: 420
-                    name: gateway-config
-                  name: config
 status:
     availableReplicas: 1
     observedGeneration: 1

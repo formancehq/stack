@@ -4,7 +4,7 @@ metadata:
     generation: 1
     labels:
         stack: "true"
-    name: payments-latest-database-migration
+    name: payments-latest-db-migration
     namespace: multipod-latest-with-custom-registry
 spec:
     backoffLimit: 6
@@ -18,7 +18,7 @@ spec:
         metadata:
             creationTimestamp: null
             labels:
-                job-name: payments-latest-database-migration
+                job-name: payments-latest-db-migration
         spec:
             containers:
                 - args:
