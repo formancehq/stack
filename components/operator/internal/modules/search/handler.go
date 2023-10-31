@@ -20,9 +20,7 @@ import (
 )
 
 const (
-	// benthosImage = "public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1"
-	// TODO: replace with correct image
-	benthosImage = "ghcr.io/formancehq/benthos:local"
+	benthosImage = "gallery.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es"
 )
 
 type module struct{}
