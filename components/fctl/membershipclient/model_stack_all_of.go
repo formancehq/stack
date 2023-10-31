@@ -33,13 +33,18 @@ type StackAllOf struct {
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	DisabledAt *time.Time `json:"disabledAt,omitempty"`
 	Status string `json:"status"`
+	State string `json:"state"`
+	ExpectedStatus string `json:"expectedStatus"`
+	LastStateUpdate time.Time `json:"lastStateUpdate"`
+	LastExpectedStatusUpdate time.Time `json:"lastExpectedStatusUpdate"`
+	LastStatusUpdate time.Time `json:"lastStatusUpdate"`
 }
 
 // NewStackAllOf instantiates a new StackAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool, status string) *StackAllOf {
+func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time) *StackAllOf {
 	this := StackAllOf{}
 	this.Id = id
 	this.OrganizationId = organizationId
@@ -47,6 +52,11 @@ func NewStackAllOf(id string, organizationId string, uri string, regionID string
 	this.RegionID = regionID
 	this.StargateEnabled = stargateEnabled
 	this.Status = status
+	this.State = state
+	this.ExpectedStatus = expectedStatus
+	this.LastStateUpdate = lastStateUpdate
+	this.LastExpectedStatusUpdate = lastExpectedStatusUpdate
+	this.LastStatusUpdate = lastStatusUpdate
 	return &this
 }
 
@@ -298,6 +308,126 @@ func (o *StackAllOf) SetStatus(v string) {
 	o.Status = v
 }
 
+// GetState returns the State field value
+func (o *StackAllOf) GetState() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.State
+}
+
+// GetStateOk returns a tuple with the State field value
+// and a boolean to check if the value has been set.
+func (o *StackAllOf) GetStateOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.State, true
+}
+
+// SetState sets field value
+func (o *StackAllOf) SetState(v string) {
+	o.State = v
+}
+
+// GetExpectedStatus returns the ExpectedStatus field value
+func (o *StackAllOf) GetExpectedStatus() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.ExpectedStatus
+}
+
+// GetExpectedStatusOk returns a tuple with the ExpectedStatus field value
+// and a boolean to check if the value has been set.
+func (o *StackAllOf) GetExpectedStatusOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.ExpectedStatus, true
+}
+
+// SetExpectedStatus sets field value
+func (o *StackAllOf) SetExpectedStatus(v string) {
+	o.ExpectedStatus = v
+}
+
+// GetLastStateUpdate returns the LastStateUpdate field value
+func (o *StackAllOf) GetLastStateUpdate() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.LastStateUpdate
+}
+
+// GetLastStateUpdateOk returns a tuple with the LastStateUpdate field value
+// and a boolean to check if the value has been set.
+func (o *StackAllOf) GetLastStateUpdateOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.LastStateUpdate, true
+}
+
+// SetLastStateUpdate sets field value
+func (o *StackAllOf) SetLastStateUpdate(v time.Time) {
+	o.LastStateUpdate = v
+}
+
+// GetLastExpectedStatusUpdate returns the LastExpectedStatusUpdate field value
+func (o *StackAllOf) GetLastExpectedStatusUpdate() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.LastExpectedStatusUpdate
+}
+
+// GetLastExpectedStatusUpdateOk returns a tuple with the LastExpectedStatusUpdate field value
+// and a boolean to check if the value has been set.
+func (o *StackAllOf) GetLastExpectedStatusUpdateOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.LastExpectedStatusUpdate, true
+}
+
+// SetLastExpectedStatusUpdate sets field value
+func (o *StackAllOf) SetLastExpectedStatusUpdate(v time.Time) {
+	o.LastExpectedStatusUpdate = v
+}
+
+// GetLastStatusUpdate returns the LastStatusUpdate field value
+func (o *StackAllOf) GetLastStatusUpdate() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.LastStatusUpdate
+}
+
+// GetLastStatusUpdateOk returns a tuple with the LastStatusUpdate field value
+// and a boolean to check if the value has been set.
+func (o *StackAllOf) GetLastStatusUpdateOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.LastStatusUpdate, true
+}
+
+// SetLastStatusUpdate sets field value
+func (o *StackAllOf) SetLastStatusUpdate(v time.Time) {
+	o.LastStatusUpdate = v
+}
+
 func (o StackAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -323,6 +453,11 @@ func (o StackAllOf) ToMap() (map[string]interface{}, error) {
 		toSerialize["disabledAt"] = o.DisabledAt
 	}
 	toSerialize["status"] = o.Status
+	toSerialize["state"] = o.State
+	toSerialize["expectedStatus"] = o.ExpectedStatus
+	toSerialize["lastStateUpdate"] = o.LastStateUpdate
+	toSerialize["lastExpectedStatusUpdate"] = o.LastExpectedStatusUpdate
+	toSerialize["lastStatusUpdate"] = o.LastStatusUpdate
 	return toSerialize, nil
 }
 

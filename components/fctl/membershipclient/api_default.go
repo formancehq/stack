@@ -516,6 +516,16 @@ func (a *DefaultApiService) CreateOrganizationExecute(r ApiCreateOrganizationReq
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -2524,19 +2534,20 @@ type ApiListStacksRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
 	organizationId string
+	all *bool
 	deleted *bool
-	disabled *bool
 }
 
-// Include deleted stacks
-func (r ApiListStacksRequest) Deleted(deleted bool) ApiListStacksRequest {
-	r.deleted = &deleted
+// Include deleted and disabled stacks
+func (r ApiListStacksRequest) All(all bool) ApiListStacksRequest {
+	r.all = &all
 	return r
 }
 
-// Include disabled stacks
-func (r ApiListStacksRequest) Disabled(disabled bool) ApiListStacksRequest {
-	r.disabled = &disabled
+// Include deleted stacks
+// Deprecated
+func (r ApiListStacksRequest) Deleted(deleted bool) ApiListStacksRequest {
+	r.deleted = &deleted
 	return r
 }
 
@@ -2581,11 +2592,11 @@ func (a *DefaultApiService) ListStacksExecute(r ApiListStacksRequest) (*ListStac
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if r.all != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "all", r.all, "")
+	}
 	if r.deleted != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "deleted", r.deleted, "")
-	}
-	if r.disabled != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "disabled", r.disabled, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

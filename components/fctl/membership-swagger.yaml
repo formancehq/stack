@@ -46,6 +46,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateOrganizationResponse'
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            
   /organizations/expanded:
     get:
       summary: List organizations of the connected user with expanded data
@@ -197,15 +204,16 @@ paths:
         schema:
           type: string
         required: true
-      - name: deleted
+      - name: all
         in: query
-        description: Include deleted stacks
+        description: Include deleted and disabled stacks
         schema:
           type: boolean
         required: false
-      - name: disabled
+      - name: deleted
         in: query
-        description: Include disabled stacks
+        description: Include deleted stacks
+        deprecated: true
         schema:
           type: boolean
         required: false
@@ -784,6 +792,11 @@ components:
         - regionID
         - stargateEnabled
         - status
+        - state
+        - expectedStatus
+        - lastStateUpdate
+        - lastExpectedStatusUpdate
+        - lastStatusUpdate
         properties:
           id:
             type: string
@@ -814,6 +827,31 @@ components:
             - UNKNOWN
             - PROGRESSING
             - READY
+            - DISABLED
+            - DELETED
+          state:
+            type: string
+            enum:
+            - ACTIVE
+            - DISABLED
+            - DELETED
+          expectedStatus:
+            type: string
+            enum:
+            - UNKNOWN
+            - PROGRESSING
+            - READY
+            - DISABLED
+            - DELETED
+          lastStateUpdate:
+            type: string
+            format: date-time
+          lastExpectedStatusUpdate:
+            type: string
+            format: date-time
+          lastStatusUpdate:
+            type: string
+            format: date-time
     UpdatableUserData:
       type: object
       properties:
