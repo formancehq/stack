@@ -45,7 +45,13 @@ func TestVerifyAccessToken(t *testing.T) {
 
 	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
+
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	defer sqlDB.Close()
+
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
+
 	storage := sqlstorage.New(db)
 
 	serverRelyingParty, err := rp.NewRelyingPartyOIDC(mockOIDC.Issuer(), mockOIDC.ClientID, mockOIDC.ClientSecret,
