@@ -19,7 +19,9 @@ func TestStore(t *testing.T) {
 
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(pgDB.ConnString())))
 	db := bun.NewDB(sqldb, pgdialect.New())
-	defer db.Close()
+	defer func() {
+		_ = db.Close()
+	}()
 
 	require.NoError(t, db.Ping())
 
@@ -29,6 +31,9 @@ func TestStore(t *testing.T) {
 
 	store, err := postgres.NewStore(pgDB.ConnString())
 	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = store.Close(context.Background())
+	})
 
 	cfgs, err := store.FindManyConfigs(context.Background(), map[string]any{})
 	require.NoError(t, err)

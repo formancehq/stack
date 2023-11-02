@@ -35,12 +35,8 @@ tests:
     FROM core+builder-image
     COPY (+sources/*) /src
     WORKDIR /src/components/auth
-    ARG GOPROXY
     WITH DOCKER --pull=postgres:15-alpine
-        #DO --pass-args core+GO_TESTS
-        RUN --mount type=cache,id=gopkgcache,target=${GOPATH}/pkg/mod \
-            --mount type=cache,id=gobuildcache,target=/root/.cache/go-build \
-            go test -v ./...
+        DO --pass-args core+GO_TESTS
     END
 
 lint:

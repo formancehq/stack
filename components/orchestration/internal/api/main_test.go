@@ -74,6 +74,10 @@ func test(t *testing.T, fn func(router *chi.Mux, m *workflow.Manager, db *bun.DB
 
 	database := pgtesting.NewPostgresDatabase(t)
 	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
+	t.Cleanup(func() {
+		_ = db.Close()
+	})
+
 	require.NoError(t, storage.Migrate(context.Background(), db))
 	manager := workflow.NewManager(db, newMockedClient(t, db), "default")
 	router := newRouter(manager, ServiceInfo{

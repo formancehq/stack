@@ -52,6 +52,8 @@ func (u *user) Userinfo(scope []string) ([]byte, error) {
 }
 
 func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, issuer string, provider op.OpenIDProvider)) {
+	t.Parallel()
+
 	// Create a mock OIDC server which will always return a default user
 	mockOIDC, err := mockoidc.Run()
 	require.NoError(t, err)
@@ -81,6 +83,10 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
+
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	defer sqlDB.Close()
 
 	storage := sqlstorage.New(db)
 
