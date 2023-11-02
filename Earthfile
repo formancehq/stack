@@ -183,10 +183,6 @@ pr:
     BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
     BUILD --pass-args +integration-tests
-    ARG buildImages=0
-    IF [ "$buildImages" == "1" ]
-        BUILD --pass-args +all-ci-goreleaser
-    END
 
 INCLUDE_GO_LIBS:
     COMMAND

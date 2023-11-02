@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [ assigned, opened, synchronize, reopened, labeled ]
 
 jobs:
-  main:
+  Main:
     runs-on: "formance-runner"
     steps:
       - uses: 'actions/checkout@v4'
@@ -28,6 +30,36 @@ jobs:
           --secret FURY_TOKEN=$FURY_TOKEN 
           --secret GORELEASER_KEY=$GORELEASER_KEY
           +pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+          SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+  GoReleaser:
+    runs-on: "formance-runner"
+    if: contains(github.event.issue.labels.*.name, 'build-images')
+    steps:
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+      - name: Setup Env
+        uses: ./.github/actions/env
+        with:
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - run: >
+          earthly 
+          --no-output 
+          --allow-privileged 
+          --use-inline-cache 
+          --save-inline-cache 
+          --push 
+          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY 
+          --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY 
+          --secret GITHUB_TOKEN=$GITHUB_TOKEN 
+          --secret FURY_TOKEN=$FURY_TOKEN 
+          --secret GORELEASER_KEY=$GORELEASER_KEY
+          +all-ci-goreleaser
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
