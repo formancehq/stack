@@ -60,6 +60,8 @@ func TestReadUser(t *testing.T) {
 }
 
 func withDbAndUserRouter(t *testing.T, callback func(router *mux.Router, db *gorm.DB)) {
+	t.Parallel()
+
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
 	dialector := postgres.Open(pgDatabase.ConnString())
 
