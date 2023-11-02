@@ -64,7 +64,6 @@ build-all-sdk:
 goreleaser:
     FROM core+builder-image
     ARG --required component
-    WORKDIR /src
     COPY . /src
     WORKDIR /src/components/$component
     ARG mode=local
@@ -83,10 +82,10 @@ goreleaser:
         RUN --secret GORELEASER_KEY --secret GITHUB_TOKEN --secret SPEAKEASY_API_KEY --secret FURY_TOKEN --secret SEGMENT_WRITE_KEY goreleaser release -f .goreleaser.yml $buildArgs
     END
 
-all-local-goreleaser:
+all-ci-goreleaser:
     LOCALLY
     FOR component IN $(ls components)
-        BUILD --pass-args +goreleaser --component=$component --mode=local
+        BUILD --pass-args +goreleaser --component=$component --mode=ci
     END
 
 build-images:
@@ -186,7 +185,7 @@ pr:
     BUILD --pass-args +integration-tests
     ARG buildImages=0
     IF [ "$buildImages" == "1" ]
-        BUILD --pass-args +all-local-goreleaser
+        BUILD --pass-args +all-ci-goreleaser
     END
 
 INCLUDE_GO_LIBS:
