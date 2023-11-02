@@ -6,8 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/payments/cmd/connectors/internal/messages"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
@@ -39,7 +43,10 @@ type createBankAccountRequest struct {
 	Name          string `json:"name"`
 }
 
-func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc {
+func createBankAccountHandler(
+	repo createBankAccountRepository,
+	publisher message.Publisher,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -128,6 +135,19 @@ func createBankAccountHandler(repo createBankAccountRepository) http.HandlerFunc
 				handleStorageErrors(w, r, err)
 				return
 			}
+
+			bankAccount.AccountID = &accountID
+		}
+
+		if err := publisher.Publish(
+			events.TopicPayments,
+			publish.NewMessage(
+				r.Context(),
+				messages.NewEventSavedBankAccounts(bankAccount),
+			),
+		); err != nil {
+			api.InternalServerError(w, r, err)
+			return
 		}
 
 		data := &bankAccountResponse{

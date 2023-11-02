@@ -32,10 +32,16 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 		return fmt.Errorf("error upserting accounts: %w", err)
 	}
 
-	err := i.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedAccounts(batch)))
-	if err != nil {
-		logging.FromContext(ctx).Errorf("Publishing message: %w", err)
+	for _, account := range batch {
+		if err := i.publisher.Publish(
+			events.TopicPayments,
+			publish.NewMessage(
+				ctx,
+				messages.NewEventSavedAccounts(account),
+			),
+		); err != nil {
+			logging.FromContext(ctx).Errorf("Publishing message: %w", err)
+		}
 	}
 
 	endedAt := time.Now()

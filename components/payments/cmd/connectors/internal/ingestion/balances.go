@@ -32,9 +32,16 @@ func (i *DefaultIngester) IngestBalances(ctx context.Context, batch BalanceBatch
 		return fmt.Errorf("error inserting balances: %w", err)
 	}
 
-	if err := i.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedBalances(batch))); err != nil {
-		logging.FromContext(ctx).Errorf("Publishing message: %w", err)
+	for _, balance := range batch {
+		if err := i.publisher.Publish(
+			events.TopicPayments,
+			publish.NewMessage(
+				ctx,
+				messages.NewEventSavedBalances(balance, i.provider),
+			),
+		); err != nil {
+			logging.FromContext(ctx).Errorf("Publishing message: %w", err)
+		}
 	}
 
 	endedAt := time.Now()

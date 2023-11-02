@@ -11,10 +11,13 @@ const (
 	EventVersion = "v1"
 	EventApp     = "payments"
 
-	EventTypeSavedPayments  = "SAVED_PAYMENT"
-	EventTypeSavedAccounts  = "SAVED_ACCOUNT"
-	EventTypeSavedBalances  = "SAVED_BALANCE"
-	EventTypeConnectorReset = "CONNECTOR_RESET"
+	EventTypeSavedPayments            = "SAVED_PAYMENT"
+	EventTypeSavedAccounts            = "SAVED_ACCOUNT"
+	EventTypeSavedBalances            = "SAVED_BALANCE"
+	EventTypeSavedBankAccount         = "SAVED_BANK_ACCOUNT"
+	EventTypeSavedTransferInitiation  = "SAVED_TRANSFER_INITIATION"
+	EventTypeDeleteTransferInitiation = "DELETED_TRANSFER_INITIATION"
+	EventTypeConnectorReset           = "CONNECTOR_RESET"
 )
 
 type EventMessage struct {

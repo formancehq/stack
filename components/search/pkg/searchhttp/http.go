@@ -128,6 +128,12 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, BaseQuery, error) {
 				qq.WithSort("txid", esquery.OrderDesc)
 			case "PAYMENT":
 				qq.WithSort("reference", esquery.OrderDesc)
+			case "PAYMENT_TRANSFER_INITIATION":
+				qq.WithSort("id", esquery.OrderDesc)
+			case "PAYMENT_BALANCE":
+				qq.WithSort("createdAt", esquery.OrderDesc)
+			case "PAYMENT_BANK_ACCOUNT":
+				qq.WithSort("id", esquery.OrderDesc)
 			}
 		}
 	}

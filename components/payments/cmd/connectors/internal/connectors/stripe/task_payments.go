@@ -36,28 +36,25 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 		logger.Info("initiate payment for transfer-initiation %s", transferID)
 
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
+		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
+		if err != nil {
+			return err
+		}
 
 		attrs := metric.WithAttributes(connectorAttrs...)
-		var err error
 		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, err.Error(), 0, time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessing, "", 0, time.Now())
-		if err != nil {
-			return err
-		}
-
-		var transfer *models.TransferInitiation
-		transfer, err = getTransfer(ctx, storageReader, transferInitiationID, true)
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", transfer.Attempts, time.Now())
 		if err != nil {
 			return err
 		}
@@ -139,7 +136,7 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 			},
 			Provider: models.ConnectorProviderStripe,
 		}
-		err = ingester.AddTransferInitiationPaymentID(ctx, transferInitiationID, paymentID, time.Now())
+		err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
 		if err != nil {
 			return err
 		}
@@ -230,7 +227,7 @@ func UpdatePaymentStatusTask(
 		}
 
 		if status == "" {
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusProcessed, "", 0, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
 			if err != nil {
 				return err
 			}
@@ -238,7 +235,7 @@ func UpdatePaymentStatusTask(
 			return nil
 		}
 
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transferInitiationID, paymentID, models.TransferInitiationStatusFailed, resultMessage, 0, time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, resultMessage, transfer.Attempts, time.Now())
 		if err != nil {
 			return err
 		}

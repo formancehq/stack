@@ -13,8 +13,8 @@ type Ingester interface {
 	IngestAccounts(ctx context.Context, batch AccountBatch) error
 	IngestPayments(ctx context.Context, batch PaymentBatch, commitState any) error
 	IngestBalances(ctx context.Context, batch BalanceBatch, checkIfAccountExists bool) error
-	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
-	AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time) error
+	UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
+	AddTransferInitiationPaymentID(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, updatedAt time.Time) error
 }
 
 type DefaultIngester struct {
