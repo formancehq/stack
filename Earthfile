@@ -63,15 +63,9 @@ build-all-sdk:
 
 goreleaser:
     FROM core+builder-image
-    COPY ./.goreleaser.default.yaml /src/.goreleaser.default.yaml
-    COPY .git /src/.git
     ARG --required component
-
-    COPY --pass-args (./components/$component+sources/*) /src
-    COPY ./components/$component/.goreleaser.yml /src/components/$component/.goreleaser.yml
-    COPY --if-exists ./components/$component/scripts/completions.sh /src/components/$component/scripts/completions.sh
-    COPY --if-exists ./components/$component/build.Dockerfile /src/components/$component/build.Dockerfile
-
+    WORKDIR /src
+    COPY . /src
     WORKDIR /src/components/$component
     ARG mode=local
     LET buildArgs = --clean
