@@ -19,6 +19,7 @@ temporalite:
     COPY (+temporalite-build/temporalite) /bin/temporalite
     EXPOSE 7233 8233
     ENTRYPOINT ["/bin/temporalite", "start", "--ephemeral", "-n", "default", "--ip" , "0.0.0.0"]
+
     SAVE IMAGE temporalite
 
 tests:
@@ -29,11 +30,10 @@ tests:
     COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
     COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
-    COPY --pass-args (stack+sources/out --LOCATION=openapi/build/generate.json) /src/openapi/build/generate.json
+    COPY --pass-args (stack+build-final-spec/generate-with-version.json) /src/openapi/build/generate.json
     COPY --pass-args (stack+build-sdk/go --LANG=go) /src/sdks/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
-    COPY .earthly/docker-compose.yml .
     DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo
 
     ARG GOPROXY

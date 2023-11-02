@@ -220,9 +220,8 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.ActivityCreateTransactionOutput{
 									Data: shared.Transaction{
-										Postings:  postings,
-										Reference: ptr(""),
-										Metadata:  map[string]string{},
+										Postings: postings,
+										Metadata: map[string]string{},
 									},
 								},
 							}))

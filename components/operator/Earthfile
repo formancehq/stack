@@ -77,7 +77,6 @@ helm-update:
     RUN rm -f helm/templates/gen/v1_namespace*.yaml
     RUN rm -f helm/templates/gen/apps_v1_deployment_*.yaml
     RUN rm -f helm/templates/gen/apiextensions.k8s.io_v1_customresourcedefinition_*.components.formance.com.yaml
-    RUN rm -rf helm/templates/gen/admissionregistration.k8s.io_v1_mutatingwebhookconfiguration_formance-system-mutating-webhook-configuration.yaml
 
     SAVE ARTIFACT helm AS LOCAL helm
 
@@ -89,6 +88,7 @@ deploy:
     END
     FROM --pass-args core+vcluster-deployer-image
     COPY --pass-args (+helm-update/helm) helm
+    RUN rm -rf helm/templates/gen/admissionregistration.k8s.io_v1_mutatingwebhookconfiguration_formance-system-mutating-webhook-configuration.yaml
     WORKDIR helm
     RUN helm upgrade --namespace formance-system --install formance-operator \
         --wait \

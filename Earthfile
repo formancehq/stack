@@ -12,7 +12,7 @@ sources:
 speakeasy:
     FROM core+base-image
     RUN apk update && apk add yarn jq unzip curl
-    ARG VERSION=v1.109.0
+    ARG VERSION=v1.109.1
     ARG TARGETARCH
     RUN curl -fsSL https://github.com/speakeasy-api/speakeasy/releases/download/${VERSION}/speakeasy_linux_$TARGETARCH.zip -o /tmp/speakeasy_linux_$TARGETARCH.zip
     RUN unzip /tmp/speakeasy_linux_$TARGETARCH.zip speakeasy
@@ -47,8 +47,6 @@ build-sdk:
     COPY (+build-final-spec/generate-with-version.json) final-spec.json
     ARG LANG=go
     COPY --dir openapi/templates/${LANG} sdks/${LANG}
-    ENV VERSION v1.0.$(date +%Y%m%d)
-    RUN yq e -i ".${LANG}.version = \"${VERSION}\"" sdks/${LANG}/gen.yaml
     RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/${LANG} -l ${LANG}
     ARG export
     IF [ "$export" == "1" ]

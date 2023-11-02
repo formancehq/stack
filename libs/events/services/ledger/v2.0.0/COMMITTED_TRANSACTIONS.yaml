@@ -39,7 +39,6 @@ properties:
           type: boolean
       required:
       - postings
-      - reference
       - metadata
       - id
       - timestamp
