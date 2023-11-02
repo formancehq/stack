@@ -78,16 +78,7 @@ func (g gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	url, _ := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", port))
 	proxy := httputil.NewSingleHostReverseProxy(url)
-	//proxy.Rewrite = func(request *httputil.ProxyRequest) {
-	//	request.Out = request.In
-	//	data, _ := httputil.DumpRequest(request.In, true)
-	//	_, _ = fmt.Fprintln(core.GinkgoWriter, string(data))
-	//}
-	//proxy.ModifyResponse = func(response *http.Response) error {
-	//	data, _ := httputil.DumpResponse(response, true)
-	//	_, _ = fmt.Fprintln(core.GinkgoWriter, string(data))
-	//	return nil
-	//}
+
 	http.StripPrefix("/api/"+service, proxy).ServeHTTP(w, r)
 }
 
