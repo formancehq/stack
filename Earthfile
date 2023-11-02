@@ -65,15 +65,17 @@ build-all-sdk:
 
 goreleaser:
     FROM core+builder-image
+    COPY ./.goreleaser.default.yaml /src/.goreleaser.default.yaml
+    COPY .git /src/.git
     ARG --required component
-    ARG mode=local
+
     COPY --pass-args (./components/$component+sources/*) /src
     COPY ./components/$component/.goreleaser.yml /src/components/$component/.goreleaser.yml
     COPY --if-exists ./components/$component/scripts/completions.sh /src/components/$component/scripts/completions.sh
     COPY --if-exists ./components/$component/build.Dockerfile /src/components/$component/build.Dockerfile
-    COPY ./.goreleaser.default.yaml /src/.goreleaser.default.yaml
-    COPY .git /src/.git
+
     WORKDIR /src/components/$component
+    ARG mode=local
     LET buildArgs = --clean
     IF [ "$mode" = "local" ]
       SET buildArgs = --nightly --skip=publish --clean
@@ -184,6 +186,16 @@ pre-commit:
         BUILD --pass-args ./components/$component+pre-commit
     END
     BUILD --pass-args +integration-tests
+
+pr:
+    LOCALLY
+    BUILD --pass-args +lint-all
+    BUILD --pass-args +tests-all
+    BUILD --pass-args +integration-tests
+    ARG buildImages=0
+    IF [ "$buildImages" == "1" ]
+        BUILD --pass-args +all-local-goreleaser
+    END
 
 INCLUDE_GO_LIBS:
     COMMAND

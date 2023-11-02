@@ -1,11 +1,10 @@
 name: Default
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [ assigned, opened, synchronize, reopened, labeled ]
 
 jobs:
-  main:
+  pr:
     runs-on: "formance-runner"
     steps:
       - uses: 'actions/checkout@v4'
@@ -26,8 +25,9 @@ jobs:
           --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY 
           --secret GITHUB_TOKEN=$GITHUB_TOKEN 
           --secret FURY_TOKEN=$FURY_TOKEN 
-          --secret GORELEASER_KEY=$GORELEASER_KEY
+          --secret GORELEASER_KEY=$GORELEASER_KEY 
           +pr
+          --buildImages=${{ contains(github.event.pull_request.labels.*.name, 'build-images') && '1' || '0'  }}
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
