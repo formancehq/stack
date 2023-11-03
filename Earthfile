@@ -12,7 +12,7 @@ sources:
 speakeasy:
     FROM core+base-image
     RUN apk update && apk add yarn jq unzip curl
-    ARG VERSION=v1.109.0
+    ARG VERSION=v1.109.1
     ARG TARGETARCH
     RUN curl -fsSL https://github.com/speakeasy-api/speakeasy/releases/download/${VERSION}/speakeasy_linux_$TARGETARCH.zip -o /tmp/speakeasy_linux_$TARGETARCH.zip
     RUN unzip /tmp/speakeasy_linux_$TARGETARCH.zip speakeasy
@@ -65,7 +65,7 @@ goreleaser:
     FROM core+builder-image
     ARG --required component
     COPY . /src
-    BUILD +build-sdk --LANG=go
+    COPY (+build-sdk/go --LANG=go) /src/sdks/go
     WORKDIR /src/components/$component
     ARG mode=local
     LET buildArgs = --clean
