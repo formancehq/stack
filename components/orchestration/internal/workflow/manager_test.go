@@ -29,6 +29,10 @@ func TestConfig(t *testing.T) {
 
 	database := pgtesting.NewPostgresDatabase(t)
 	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
+	t.Cleanup(func() {
+		_ = db.Close()
+	})
+
 	require.NoError(t, storage.Migrate(context.Background(), db))
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()

@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 
-	_ "github.com/formancehq/orchestration/internal/storage/migrations"
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/uptrace/bun"
 )

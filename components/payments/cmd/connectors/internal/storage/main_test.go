@@ -43,6 +43,9 @@ func newStore(t *testing.T) *storage.Storage {
 	require.NoError(t, err)
 
 	db := bun.NewDB(stdlib.OpenDB(*config), pgdialect.New())
+	t.Cleanup(func() {
+		_ = db.Close()
+	})
 
 	err = migrationstorage.Migrate(context.Background(), db)
 	require.NoError(t, err)

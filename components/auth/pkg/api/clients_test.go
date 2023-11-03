@@ -16,12 +16,18 @@ import (
 )
 
 func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *gorm.DB)) {
+	t.Parallel()
 
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
 	dialector := postgres.Open(pgDatabase.ConnString())
 
 	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
+
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	defer sqlDB.Close()
+
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 
 	router := mux.NewRouter()
@@ -31,6 +37,7 @@ func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *g
 }
 
 func TestCreateClient(t *testing.T) {
+	t.Parallel()
 
 	type testCase struct {
 		name    string
@@ -57,31 +64,37 @@ func TestCreateClient(t *testing.T) {
 			},
 		},
 	} {
-		withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
-			req := httptest.NewRequest(http.MethodPost, "/clients", createJSONBuffer(t, tc.options))
-			res := httptest.NewRecorder()
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
 
-			router.ServeHTTP(res, req)
+			withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+				req := httptest.NewRequest(http.MethodPost, "/clients", createJSONBuffer(t, tc.options))
+				res := httptest.NewRecorder()
 
-			require.Equal(t, http.StatusCreated, res.Code)
+				router.ServeHTTP(res, req)
 
-			createdClient := readTestResponse[clientView](t, res)
-			require.NotEmpty(t, createdClient.ID)
-			require.Equal(t, tc.options, createdClient.ClientOptions)
+				require.Equal(t, http.StatusCreated, res.Code)
 
-			tc.options.Id = createdClient.ID
+				createdClient := readTestResponse[clientView](t, res)
+				require.NotEmpty(t, createdClient.ID)
+				require.Equal(t, tc.options, createdClient.ClientOptions)
 
-			clientFromDatabase := auth.Client{}
-			require.NoError(t, db.Find(&clientFromDatabase, "id = ?", createdClient.ID).Error)
-			require.Equal(t, auth.Client{
-				ClientOptions: tc.options,
-			}, clientFromDatabase)
+				tc.options.Id = createdClient.ID
+
+				clientFromDatabase := auth.Client{}
+				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", createdClient.ID).Error)
+				require.Equal(t, auth.Client{
+					ClientOptions: tc.options,
+				}, clientFromDatabase)
+			})
 		})
+
 	}
 }
 
 func TestUpdateClient(t *testing.T) {
 
+	t.Parallel()
 	type testCase struct {
 		name    string
 		options auth.ClientOptions
@@ -107,29 +120,32 @@ func TestUpdateClient(t *testing.T) {
 			},
 		},
 	} {
-		withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
 
-			initialClient := auth.NewClient(auth.ClientOptions{})
-			require.NoError(t, db.Create(initialClient).Error)
+				initialClient := auth.NewClient(auth.ClientOptions{})
+				require.NoError(t, db.Create(initialClient).Error)
 
-			req := httptest.NewRequest(http.MethodPut, "/clients/"+initialClient.Id, createJSONBuffer(t, tc.options))
-			res := httptest.NewRecorder()
+				req := httptest.NewRequest(http.MethodPut, "/clients/"+initialClient.Id, createJSONBuffer(t, tc.options))
+				res := httptest.NewRecorder()
 
-			router.ServeHTTP(res, req)
+				router.ServeHTTP(res, req)
 
-			require.Equal(t, http.StatusOK, res.Code)
+				require.Equal(t, http.StatusOK, res.Code)
 
-			updatedClient := readTestResponse[clientView](t, res)
-			require.NotEmpty(t, updatedClient.ID)
-			require.Equal(t, tc.options, updatedClient.ClientOptions)
+				updatedClient := readTestResponse[clientView](t, res)
+				require.NotEmpty(t, updatedClient.ID)
+				require.Equal(t, tc.options, updatedClient.ClientOptions)
 
-			tc.options.Id = updatedClient.ID
+				tc.options.Id = updatedClient.ID
 
-			clientFromDatabase := auth.Client{}
-			require.NoError(t, db.Find(&clientFromDatabase, "id = ?", updatedClient.ID).Error)
-			require.Equal(t, auth.Client{
-				ClientOptions: tc.options,
-			}, clientFromDatabase)
+				clientFromDatabase := auth.Client{}
+				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", updatedClient.ID).Error)
+				require.Equal(t, auth.Client{
+					ClientOptions: tc.options,
+				}, clientFromDatabase)
+			})
 		})
 	}
 }

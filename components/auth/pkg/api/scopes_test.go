@@ -16,11 +16,18 @@ import (
 )
 
 func withDbAndScopesRouter(t *testing.T, callback func(router *mux.Router, db *gorm.DB)) {
+	t.Parallel()
+
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
 	dialector := postgres.Open(pgDatabase.ConnString())
 
 	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
+
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	defer sqlDB.Close()
+
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 
 	router := mux.NewRouter()

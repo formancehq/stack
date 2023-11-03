@@ -14,6 +14,7 @@ func TestMain(t *testing.M) {
 		os.Exit(1)
 	}
 	code := t.Run()
+
 	if err := pgtesting.DestroyPostgresServer(); err != nil {
 		logging.Errorf("Unable to stop postgres server: %s", err)
 	}

@@ -82,7 +82,10 @@ func (s *pgServer) NewDatabase(t TestingT) *pgDatabase {
 			s.lock.Lock()
 			defer s.lock.Unlock()
 
-			_, _ = s.db.ExecContext(context.Background(), fmt.Sprintf(`DROP DATABASE "%s"`, databaseName))
+			_, err := s.db.ExecContext(context.Background(), fmt.Sprintf(`DROP DATABASE "%s"`, databaseName))
+			if err != nil {
+				panic(err)
+			}
 		})
 	}
 
