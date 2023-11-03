@@ -33,6 +33,20 @@ func TestGetBalancesAggregated(t *testing.T) {
 		ledger.ChainLogs(
 			ledger.NewTransactionLog(tx1, map[string]metadata.Metadata{}).WithDate(tx1.Timestamp),
 			ledger.NewTransactionLog(tx2, map[string]metadata.Metadata{}).WithDate(tx2.Timestamp),
+			ledger.NewSetMetadataLog(now.Add(time.Minute), ledger.SetMetadataLogPayload{
+				TargetType: ledger.MetaTargetTypeAccount,
+				TargetID:   "users:1",
+				Metadata: metadata.Metadata{
+					"category": "premium",
+				},
+			}),
+			ledger.NewSetMetadataLog(now.Add(time.Minute), ledger.SetMetadataLogPayload{
+				TargetType: ledger.MetaTargetTypeAccount,
+				TargetID:   "users:2",
+				Metadata: metadata.Metadata{
+					"category": "premium",
+				},
+			}),
 		)...))
 
 	t.Run("aggregate on all", func(t *testing.T) {
@@ -66,5 +80,23 @@ func TestGetBalancesAggregated(t *testing.T) {
 		require.Equal(t, ledger.BalancesByAssets{
 			"USD": big.NewInt(200),
 		}, ret)
+	})
+	t.Run("using a metadata", func(t *testing.T) {
+		t.Parallel()
+		ret, err := store.GetAggregatedBalances(context.Background(), ledgerstore.NewGetAggregatedBalancesQuery(ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilter{}).
+			WithQueryBuilder(query.Match("metadata[category]", "premium")).
+			WithPageSize(10)))
+		require.NoError(t, err)
+		require.Equal(t, ledger.BalancesByAssets{
+			"USD": big.NewInt(400),
+		}, ret)
+	})
+	t.Run("when no matching", func(t *testing.T) {
+		t.Parallel()
+		ret, err := store.GetAggregatedBalances(context.Background(), ledgerstore.NewGetAggregatedBalancesQuery(ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilter{}).
+			WithQueryBuilder(query.Match("metadata[category]", "guest")).
+			WithPageSize(10)))
+		require.NoError(t, err)
+		require.Equal(t, ledger.BalancesByAssets{}, ret)
 	})
 }

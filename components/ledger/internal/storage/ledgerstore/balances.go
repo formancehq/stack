@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/formancehq/ledger/internal/storage"
 	"math/big"
 
 	ledger "github.com/formancehq/ledger/internal"
@@ -18,7 +19,7 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q *GetAggregatedB
 	type Temp struct {
 		Aggregated ledger.VolumesByAssets `bun:"aggregated,type:jsonb"`
 	}
-	return fetchAndMap[*Temp, ledger.BalancesByAssets](store, ctx,
+	ret, err := fetchAndMap[*Temp, ledger.BalancesByAssets](store, ctx,
 		func(temp *Temp) ledger.BalancesByAssets {
 			return temp.Aggregated.Balances()
 		},
@@ -27,6 +28,7 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q *GetAggregatedB
 				NewSelect().
 				Table(MovesTableName).
 				ColumnExpr("distinct on (moves.account_address, moves.asset) moves.*").
+				Join("left join accounts_metadata am on am.address = moves.account_address").
 				Order("account_address", "asset", "moves.seq desc").
 				Apply(filterPIT(q.Options.Options.PIT, "insertion_date")) // todo(gfyrag): expose capability to use effective_date
 
@@ -44,6 +46,15 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q *GetAggregatedB
 						default:
 							return "", nil, fmt.Errorf("unexpected type %T for column 'address'", address)
 						}
+					case metadataRegex.Match([]byte(key)):
+						if operator != "$match" {
+							return "", nil, errors.New("'metadata' column can only be used with $match")
+						}
+						match := metadataRegex.FindAllStringSubmatch(key, 3)
+
+						return "am.metadata @> ?", []any{map[string]any{
+							match[0][1]: value,
+						}}, nil
 					default:
 						return "", nil, fmt.Errorf("unknown key '%s' when building query", key)
 					}
@@ -60,6 +71,14 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q *GetAggregatedB
 				ColumnExpr("volumes_to_jsonb((moves.asset, (sum((moves.post_commit_volumes).inputs), sum((moves.post_commit_volumes).outputs))::volumes)) as aggregated").
 				Group("moves.asset")
 		})
+	if err != nil && !errors.Is(err, storage.ErrNotFound) {
+		return nil, err
+	}
+	if errors.Is(err, storage.ErrNotFound) {
+		return ledger.BalancesByAssets{}, nil
+	}
+
+	return ret, nil
 }
 
 func (store *Store) GetBalance(ctx context.Context, address, asset string) (*big.Int, error) {
