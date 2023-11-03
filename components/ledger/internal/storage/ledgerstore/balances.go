@@ -28,11 +28,11 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q *GetAggregatedB
 				NewSelect().
 				Table(MovesTableName).
 				ColumnExpr("distinct on (moves.account_address, moves.asset) moves.*").
-				Join("left join accounts_metadata am on am.address = moves.account_address").
 				Order("account_address", "asset", "moves.seq desc").
 				Apply(filterPIT(q.Options.Options.PIT, "insertion_date")) // todo(gfyrag): expose capability to use effective_date
 
 			if q.Options.QueryBuilder != nil {
+				joinOnMetadataAdded := false
 				subQuery, args, err := q.Options.QueryBuilder.Build(query.ContextFn(func(key, operator string, value any) (string, []any, error) {
 					switch {
 					case key == "address":
@@ -51,6 +51,9 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q *GetAggregatedB
 							return "", nil, errors.New("'metadata' column can only be used with $match")
 						}
 						match := metadataRegex.FindAllStringSubmatch(key, 3)
+						if !joinOnMetadataAdded {
+							moves = moves.Join("left join accounts_metadata am on am.address = moves.account_address")
+						}
 
 						return "am.metadata @> ?", []any{map[string]any{
 							match[0][1]: value,
