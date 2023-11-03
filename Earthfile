@@ -37,7 +37,7 @@ build-final-spec:
     ENV VERSION v1.0.$(date +%Y%m%d)
     RUN jq '.info.version = "${VERSION}"' build/generate.json > build/generate-with-version.json
     SAVE ARTIFACT build/generate-with-version.json
-    SAVE ARTIFACT build/generate-with-version.json AS LOCAL build/generate.json
+    SAVE ARTIFACT build/generate-with-version.json AS LOCAL openapi/build/generate.json
 
 build-sdk:
     FROM core+base-image
