@@ -28,8 +28,7 @@ var _ fctl.Controller[*StackShowStore] = (*StackShowController)(nil)
 
 func NewDefaultStackShowStore() *StackShowStore {
 	return &StackShowStore{
-		Stack:    &membershipclient.Stack{},
-		Versions: &shared.GetVersionsResponse{},
+		Stack: &membershipclient.Stack{},
 	}
 }
 
@@ -110,8 +109,7 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 
 	// the stack is not active, we can't get the running versions
 	// Maybe add something in the process with sync status and store it in membership
-
-	if stack.Status != "ACTIVE" {
+	if stack.State != "ACTIVE" {
 		return c, nil
 	}
 

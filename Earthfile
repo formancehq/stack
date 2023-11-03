@@ -59,9 +59,9 @@ build-sdk:
 
 build-all-sdk:
     LOCALLY
-      FOR lang IN $(ls openapi/templates)
-          BUILD +build-sdk --LANG=${lang}
-      END
+    FOR lang IN $(ls openapi/templates)
+        BUILD +build-sdk --LANG=${lang}
+    END
 
 goreleaser:
     FROM core+builder-image
@@ -78,17 +78,17 @@ goreleaser:
     ARG mode=local
     LET buildArgs = --clean
     IF [ "$mode" = "local" ]
-      SET buildArgs = --nightly --skip=publish --clean
+        SET buildArgs = --nightly --skip=publish --clean
     ELSE IF [ "$mode" = "ci" ]
-      SET buildArgs = --nightly --clean
+        SET buildArgs = --nightly --clean
     END
     IF [ "$mode" != "local" ]
-      WITH DOCKER
-        RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
-      END
+        WITH DOCKER
+            RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
+        END
     END
     WITH DOCKER
-      RUN --secret GORELEASER_KEY --secret GITHUB_TOKEN --secret SPEAKEASY_API_KEY --secret FURY_TOKEN --secret SEGMENT_WRITE_KEY goreleaser release -f .goreleaser.yml $buildArgs
+        RUN --secret GORELEASER_KEY --secret GITHUB_TOKEN --secret SPEAKEASY_API_KEY --secret FURY_TOKEN --secret SEGMENT_WRITE_KEY goreleaser release -f .goreleaser.yml $buildArgs
     END
 
 all-local-goreleaser:
