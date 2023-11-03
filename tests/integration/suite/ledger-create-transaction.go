@@ -140,8 +140,8 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 		})
 		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{
-				"reference": "",
 				"metadata":  map[string]any{},
+				"reference": nil,
 				"postings": []any{
 					map[string]any{
 						"source":      "world",

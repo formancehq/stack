@@ -4219,6 +4219,15 @@ spec:
                         type: object
                     type: object
                 type: object
+              registries:
+                additionalProperties:
+                  properties:
+                    endpoint:
+                      type: string
+                  required:
+                  - endpoint
+                  type: object
+                type: object
               services:
                 description: ConfigurationServicesSpec define all existing services
                   for a stack. Fields order is important. For example, auth must be

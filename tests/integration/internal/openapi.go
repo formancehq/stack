@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"context"
+	. "github.com/onsi/ginkgo/v2"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -64,7 +65,9 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 		Body:                   io.NopCloser(bytes.NewBuffer(data)),
 		Options:                options,
 	})
-	Expect(errors.Wrap(err, "validating response")).WithOffset(8).To(Succeed())
+	if err != nil {
+		Fail(err.Error())
+	}
 
 	return rsp, nil
 }

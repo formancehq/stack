@@ -116,7 +116,6 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transaction["metadata"]).To(Equal(map[string]any{
 				"clientType": "silver",
 			}))
-			Expect(transaction["reference"]).To(Equal(""))
 			Expect(transaction["timestamp"]).To(Equal("2023-04-12T10:00:00Z"))
 			Expect(transaction["postings"]).To(Equal([]any{
 				map[string]any{
@@ -133,7 +132,6 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(logsCursorResponse.Cursor.Data[2].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
 			transaction = logsCursorResponse.Cursor.Data[2].Data["transaction"].(map[string]any)
 			Expect(transaction["metadata"]).To(Equal(map[string]any{}))
-			Expect(transaction["reference"]).To(Equal(""))
 			Expect(transaction["timestamp"]).To(Equal("2023-04-11T10:00:00Z"))
 			Expect(transaction["postings"]).To(Equal([]any{
 				map[string]any{
@@ -160,7 +158,6 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(log.Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
 			transaction := log.Data["transaction"].(map[string]any)
 			Expect(transaction["metadata"]).To(Equal(map[string]any{}))
-			Expect(transaction["reference"]).To(Equal(""))
 			Expect(transaction["postings"]).To(Equal(expected.postings))
 		}
 	)

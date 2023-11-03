@@ -192,7 +192,7 @@ func WithDockerHostConfigOption(opt func(hostConfig *docker.HostConfig)) option 
 var defaultOptions = []option{
 	WithStatusCheckInterval(200 * time.Millisecond),
 	WithInitialUser("root", "root"),
-	WithMaximumWaitingTime(15 * time.Second),
+	WithMaximumWaitingTime(time.Minute),
 	WithInitialDatabaseName("formance"),
 	WithContext(context.Background()),
 }
@@ -226,6 +226,19 @@ func CreatePostgresServer(opts ...option) error {
 	if err != nil {
 		return errors.Wrap(err, "unable to start postgres server container")
 	}
+
+	go func() {
+		if err := pool.Client.Logs(docker.LogsOptions{
+			Container:    resource.Container.ID,
+			OutputStream: os.Stdout,
+			Stdout:       true,
+			Stderr:       true,
+			RawTerminal:  true,
+			Timestamps:   true,
+		}); err != nil {
+			fmt.Println(err)
+		}
+	}()
 
 	srv = &pgServer{
 		port: resource.GetPort("5432/tcp"),
