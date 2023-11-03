@@ -63,15 +63,9 @@ build-all-sdk:
 
 goreleaser:
     FROM core+builder-image
-    COPY ./.goreleaser.default.yaml /src/.goreleaser.default.yaml
-    COPY .git /src/.git
     ARG --required component
-
-    COPY --pass-args (./components/$component+sources/*) /src
-    COPY ./components/$component/.goreleaser.yml /src/components/$component/.goreleaser.yml
-    COPY --if-exists ./components/$component/scripts/completions.sh /src/components/$component/scripts/completions.sh
-    COPY --if-exists ./components/$component/build.Dockerfile /src/components/$component/build.Dockerfile
-
+    COPY . /src
+    COPY (+build-sdk/go --LANG=go) /src/sdks/go
     WORKDIR /src/components/$component
     ARG mode=local
     LET buildArgs = --clean
@@ -86,13 +80,20 @@ goreleaser:
         END
     END
     WITH DOCKER
-        RUN --secret GORELEASER_KEY --secret GITHUB_TOKEN --secret SPEAKEASY_API_KEY --secret FURY_TOKEN --secret SEGMENT_WRITE_KEY goreleaser release -f .goreleaser.yml $buildArgs
+       RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
+           --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+           --secret GORELEASER_KEY \
+           --secret GITHUB_TOKEN \
+           --secret SPEAKEASY_API_KEY \
+           --secret FURY_TOKEN \
+           --secret SEGMENT_WRITE_KEY \
+           goreleaser release -f .goreleaser.yml $buildArgs
     END
 
-all-local-goreleaser:
+all-ci-goreleaser:
     LOCALLY
     FOR component IN $(ls components)
-        BUILD --pass-args +goreleaser --component=$component --mode=local
+        BUILD --pass-args +goreleaser --component=$component --mode=ci
     END
 
 build-images:
@@ -190,10 +191,6 @@ pr:
     BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
     BUILD --pass-args +integration-tests
-    ARG buildImages=0
-    IF [ "$buildImages" == "1" ]
-        BUILD --pass-args +all-local-goreleaser
-    END
 
 INCLUDE_GO_LIBS:
     COMMAND
