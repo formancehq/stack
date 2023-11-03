@@ -34,8 +34,8 @@ build-final-spec:
     WORKDIR /src/openapi
     COPY openapi/openapi-merge.json .
     RUN npm run build
-    ENV VERSION v1.0.$(date +%Y%m%d)
-    RUN jq '.info.version = "${VERSION}"' build/generate.json > build/generate-with-version.json
+    LET VERSION=$(date +%Y%m%d)
+    RUN jq '.info.version = "v1.0.${VERSION}"' build/generate.json > build/generate-with-version.json
     SAVE ARTIFACT build/generate-with-version.json
     SAVE ARTIFACT build/generate-with-version.json AS LOCAL openapi/build/generate.json
 

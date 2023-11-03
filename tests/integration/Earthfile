@@ -48,7 +48,10 @@ tests:
         SET cmd="$cmd --skip-file=$skipFile"
     END
 
-    WITH DOCKER --pull=jeffail/benthos:4.11 --load temporalite=+temporalite --compose docker-compose.yml
+    WITH DOCKER --pull=jeffail/benthos:4.11 \
+        --load temporalite=+temporalite \
+        --pull public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es \
+        --compose docker-compose.yml
         RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
             --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
             DOCKER_HOSTNAME=$(ip addr show docker0 | head -3 | tail -1 | cut -d / -f1 | cut -d\  -f6) \

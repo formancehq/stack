@@ -22,7 +22,7 @@ var Search = internal.NewModule("search").
 					//"--mapping-init-disabled",
 				}
 			}),
-		internal.NewDockerService("jeffail/benthos", "4.11").
+		internal.NewDockerService("public.ecr.aws/formance-internal/jeffail/benthos", "v4.23.0-es").
 			WithEntrypoint([]string{
 				"/benthos",
 				"-c", "/config/config.yml",

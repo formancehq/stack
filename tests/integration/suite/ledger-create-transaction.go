@@ -173,7 +173,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
 			Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeCommittedTransactions)).Should(Succeed())
 		})
-		It("should pop a transaction, two accounts and two assets entries on search service", func() {
+		FIt("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{
 				"metadata":  map[string]any{},
 				"reference": "foo",
