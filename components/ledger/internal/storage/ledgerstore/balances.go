@@ -53,6 +53,7 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q *GetAggregatedB
 						match := metadataRegex.FindAllStringSubmatch(key, 3)
 						if !joinOnMetadataAdded {
 							moves = moves.Join("left join accounts_metadata am on am.address = moves.account_address")
+							joinOnMetadataAdded = true
 						}
 
 						return "am.metadata @> ?", []any{map[string]any{
