@@ -65,6 +65,7 @@ goreleaser:
     FROM core+builder-image
     ARG --required component
     COPY . /src
+    BUILD +build-sdk --LANG=go
     WORKDIR /src/components/$component
     ARG mode=local
     LET buildArgs = --clean
