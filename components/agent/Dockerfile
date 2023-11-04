@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.20-alpine AS builder
+FROM golang:1.21-alpine AS builder
 WORKDIR /src
 RUN apk update && apk add git
 COPY libs/go-libs libs/go-libs

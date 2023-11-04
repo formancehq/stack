@@ -1,4 +1,4 @@
-FROM golang:1.20-alpine AS builder
+FROM golang:1.21-alpine AS builder
 WORKDIR /src
 COPY components/auth components/auth
 COPY libs libs
