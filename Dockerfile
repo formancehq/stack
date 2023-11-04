@@ -9,7 +9,7 @@ FROM ghcr.io/formancehq/wallets:v0.4.3 as wallets
 FROM ghcr.io/formancehq/webhooks:v0.6.6 as webhooks
 FROM ghcr.io/formancehq/control:v1.7.0 as control
 FROM ghcr.io/formancehq/auth-dex:latest as dex
-FROM jeffail/benthos:4.12.1 as benthos
+FROM jeffail/benthos:4.23.0 as benthos
 
 FROM golang:1.20 as builder
 WORKDIR /tmp
