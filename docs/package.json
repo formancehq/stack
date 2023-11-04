@@ -39,7 +39,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-numscript-codeblock": "0.2.3",
-    "redocusaurus": "^1.4.0",
+    "redocusaurus": "^2.0.0",
     "rehype-katex": "5",
     "remark-math": "3",
     "url-loader": "^4.1.1"
