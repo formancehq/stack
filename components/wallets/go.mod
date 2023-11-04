@@ -3,7 +3,7 @@ module github.com/formancehq/wallets
 go 1.20
 
 require (
-	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230213140938-3b8735cf0168
+	github.com/formancehq/formance-sdk-go v1.0.202307124
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/render v1.0.2
