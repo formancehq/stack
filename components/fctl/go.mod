@@ -15,7 +15,7 @@ require (
 	github.com/pterm/pterm v0.12.62
 	github.com/segmentio/analytics-go/v3 v3.2.1
 	github.com/segmentio/ksuid v1.0.4
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.8.0
 	github.com/zitadel/oidc/v2 v2.6.4
 	golang.org/x/oauth2 v0.9.0
 	gopkg.in/yaml.v3 v3.0.1
