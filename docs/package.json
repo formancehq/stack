@@ -41,7 +41,7 @@
     "react-numscript-codeblock": "0.2.3",
     "redocusaurus": "^1.4.0",
     "rehype-katex": "5",
-    "remark-math": "3",
+    "remark-math": "6",
     "url-loader": "^4.1.1"
   },
   "browserslist": {
