@@ -13,7 +13,7 @@ require (
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.62
-	github.com/segmentio/analytics-go/v3 v3.2.1
+	github.com/segmentio/analytics-go/v3 v3.3.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/spf13/cobra v1.6.1
 	github.com/zitadel/oidc/v2 v2.6.4
