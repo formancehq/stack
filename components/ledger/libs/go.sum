@@ -53,6 +53,7 @@ github.com/ThreeDotsLabs/watermill v1.2.0 h1:TU3TML1dnQ/ifK09F2+4JQk2EKhmhXe7Qv7
 github.com/ThreeDotsLabs/watermill v1.2.0/go.mod h1:IuVxGk/kgCN0cex2S94BLglUiB0PwOm8hbUhm6g2Nx4=
 github.com/ThreeDotsLabs/watermill-http v1.1.4 h1:wRM54z/BPnIWjGbXMrOnwOlrCAESzoSNxTAHiLysFA4=
 github.com/ThreeDotsLabs/watermill-http v1.1.4/go.mod h1:mkQ9CC0pxTZerNwr281rBoOy355vYt/lePkmYSX/BRg=
+github.com/ThreeDotsLabs/watermill-http/v2 v2.1.0/go.mod h1:zfsCODQPKa7ZWSh+MUtj7T5TUjs88wWrJtfGWQ9V9Js=
 github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2 h1:COB5neqVL8jGwoz1Y9dawQ7Xhxid1XXX8+1CI/PebVU=
 github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2/go.mod h1:U001oyrHo+df3Q7hIXgKqxY2OW6woz64+GNuIxZokbM=
 github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0 h1:ZbdQ+cHwOZmXByEoKUH8SS6qR/erNQfrsNpvH5z/gfk=
