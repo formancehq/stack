@@ -13,7 +13,7 @@ require (
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.3
 	github.com/zitadel/logging v0.3.4
-	github.com/zitadel/oidc/v2 v2.6.0
+	github.com/zitadel/oidc/v3 v3.1.1
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.39.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
 	go.opentelemetry.io/otel v1.16.0

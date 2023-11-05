@@ -16,7 +16,7 @@ require (
 	github.com/segmentio/analytics-go/v3 v3.2.1
 	github.com/segmentio/ksuid v1.0.4
 	github.com/spf13/cobra v1.6.1
-	github.com/zitadel/oidc/v2 v2.6.4
+	github.com/zitadel/oidc/v3 v3.1.1
 	golang.org/x/oauth2 v0.9.0
 	gopkg.in/yaml.v3 v3.0.1
 )
