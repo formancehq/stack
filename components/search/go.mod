@@ -7,7 +7,7 @@ require (
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/gorilla/handlers v1.5.1
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.1
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.6.1
