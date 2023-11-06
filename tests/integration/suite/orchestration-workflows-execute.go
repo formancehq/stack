@@ -15,7 +15,7 @@ import (
 	"github.com/pborman/uuid"
 )
 
-var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
+var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledger}, func() {
 	When("creating a new workflow", func() {
 		var (
 			createWorkflowResponse *shared.CreateWorkflowResponse
