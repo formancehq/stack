@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/ory/dockertest/v3"
 	"io"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	serviceutils "github.com/formancehq/stack/libs/go-libs/service"
-	"github.com/ory/dockertest/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -107,7 +107,8 @@ type dockerContainerService struct {
 
 func (d *dockerContainerService) load(ctx context.Context, test *Test) error {
 
-	resource, err := test.env.dockerPool.RunWithOptions(&dockertest.RunOptions{
+	var err error
+	d.resource, err = test.env.dockerPool.RunWithOptions(&dockertest.RunOptions{
 		Repository: d.repository,
 		Tag:        d.tag,
 		Mounts:     d.mounts(test),
@@ -120,7 +121,7 @@ func (d *dockerContainerService) load(ctx context.Context, test *Test) error {
 	}
 
 	go func() {
-		reader, _ := test.env.dockerClient.ContainerLogs(TestContext(), resource.Container.ID, types.ContainerLogsOptions{
+		reader, _ := test.env.dockerClient.ContainerLogs(TestContext(), d.resource.Container.ID, types.ContainerLogsOptions{
 			ShowStdout: true,
 			ShowStderr: true,
 			Follow:     true,

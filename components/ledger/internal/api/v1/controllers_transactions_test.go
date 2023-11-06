@@ -156,7 +156,7 @@ func TestPostTransactions(t *testing.T) {
 			},
 			expectedRunScript: ledger.TxToScriptData(ledger.NewTransactionData().WithPostings(
 				ledger.NewPosting("world", "bank", "USD", big.NewInt(100)),
-			)),
+			), false),
 		},
 		{
 			name: "using JSON postings and dry run",
@@ -171,7 +171,7 @@ func TestPostTransactions(t *testing.T) {
 			expectedPreview: true,
 			expectedRunScript: ledger.TxToScriptData(ledger.NewTransactionData().WithPostings(
 				ledger.NewPosting("world", "bank", "USD", big.NewInt(100)),
-			)),
+			), false),
 		},
 		{
 			name:               "no postings or script",
@@ -608,7 +608,7 @@ func TestRevertTransaction(t *testing.T) {
 	backend, mockLedger := newTestingBackend(t, true)
 	mockLedger.
 		EXPECT().
-		RevertTransaction(gomock.Any(), command.Parameters{}, big.NewInt(0)).
+		RevertTransaction(gomock.Any(), command.Parameters{}, big.NewInt(0), false).
 		Return(expectedTx, nil)
 
 	router := v1.NewRouter(backend, nil, metrics.NewNoOpRegistry())

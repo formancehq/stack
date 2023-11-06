@@ -3,6 +3,7 @@ package activities
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -12,8 +13,8 @@ import (
 )
 
 type RevertTransactionRequest struct {
-	Ledger string `json:"ledger"`
-	ID     int64  `json:"txId"`
+	Ledger string   `json:"ledger"`
+	ID     *big.Int `json:"txId"`
 }
 
 func (a Activities) RevertTransaction(ctx context.Context, request RevertTransactionRequest) (*shared.Transaction, error) {
@@ -46,7 +47,7 @@ func (a Activities) RevertTransaction(ctx context.Context, request RevertTransac
 
 var RevertTransactionActivity = Activities{}.RevertTransaction
 
-func RevertTransaction(ctx workflow.Context, ledger string, txID int64) (*shared.Transaction, error) {
+func RevertTransaction(ctx workflow.Context, ledger string, txID *big.Int) (*shared.Transaction, error) {
 	tx := &shared.Transaction{}
 	if err := executeActivity(ctx, RevertTransactionActivity, tx, RevertTransactionRequest{
 		Ledger: ledger,

@@ -1,7 +1,11 @@
 package suite
 
 import (
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
+	"github.com/nats-io/nats.go"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"math/big"
 	"time"
 
@@ -10,9 +14,6 @@ import (
 	ledgerevents "github.com/formancehq/ledger/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	"github.com/nats-io/nats.go"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
@@ -58,13 +59,67 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		AfterEach(func() {
 			cancelSubscription()
 		})
+		Then("transferring funds from destination to another account", func() {
+			BeforeEach(func() {
+				response, err := Client().Ledger.CreateTransaction(
+					TestContext(),
+					operations.CreateTransactionRequest{
+						PostTransaction: shared.PostTransaction{
+							Metadata: map[string]string{},
+							Postings: []shared.Posting{
+								{
+									Amount:      big.NewInt(100),
+									Asset:       "USD",
+									Source:      "alice",
+									Destination: "foo",
+								},
+							},
+							Timestamp: &timestamp,
+						},
+						Ledger: "default",
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
+			})
+			Then("trying to revert the original transaction", func() {
+				var (
+					force    bool
+					err      error
+					response *operations.RevertTransactionResponse
+				)
+				JustBeforeEach(func() {
+					response, err = Client().Ledger.RevertTransaction(
+						TestContext(),
+						operations.RevertTransactionRequest{
+							Force:  pointer.For(force),
+							ID:     big.NewInt(0),
+							Ledger: "default",
+						},
+					)
+				})
+				It("Should fail", func() {
+					Expect(err).ToNot(HaveOccurred())
+					Expect(response.StatusCode).To(Equal(400))
+				})
+				Context("With forcing", func() {
+					BeforeEach(func() {
+						force = true
+					})
+					It("Should be ok", func() {
+						Expect(err).ToNot(HaveOccurred())
+						Expect(response.StatusCode).To(Equal(201))
+					})
+				})
+			})
+		})
 		Then("reverting it", func() {
 			BeforeEach(func() {
 				response, err := Client().Ledger.RevertTransaction(
 					TestContext(),
 					operations.RevertTransactionRequest{
 						Ledger: "default",
-						ID:     createTransactionResponse.Data.ID,
+						ID:     big.NewInt(createTransactionResponse.Data.ID),
 					},
 				)
 				Expect(err).To(Succeed())
@@ -94,7 +149,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						TestContext(),
 						operations.RevertTransactionRequest{
 							Ledger: "default",
-							ID:     createTransactionResponse.Data.ID,
+							ID:     big.NewInt(createTransactionResponse.Data.ID),
 						},
 					)
 					Expect(err).To(BeNil())
