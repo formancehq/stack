@@ -4452,7 +4452,7 @@
         ],
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/AccountWithVolumesAndBalances"
+            "$ref": "#/components/schemas/Account"
           }
         }
       },
@@ -4544,50 +4544,12 @@
             "example": {
               "admin": "true"
             }
-          }
-        }
-      },
-      "AccountWithVolumesAndBalances": {
-        "type": "object",
-        "required": [
-          "address",
-          "metadata"
-        ],
-        "properties": {
-          "address": {
-            "type": "string",
-            "example": "users:001"
-          },
-          "type": {
-            "type": "string",
-            "example": "virtual"
-          },
-          "metadata": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": {
-              "type": "string"
-            },
-            "example": {
-              "admin": "true"
-            }
           },
           "volumes": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "integer",
-                "format": "bigint",
-                "minimum": 0
-              }
-            },
-            "example": {
-              "COIN": {
-                "input": 100,
-                "output": 0
-              }
-            }
+            "$ref": "#/components/schemas/Volumes"
+          },
+          "effectiveVolumes": {
+            "$ref": "#/components/schemas/Volumes"
           }
         }
       },

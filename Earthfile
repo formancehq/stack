@@ -181,6 +181,7 @@ pre-commit:
     BUILD --pass-args +tidy-all
     BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
+    BUILD --pass-args +build-final-spec
     FOR component IN $(ls components)
         BUILD --pass-args ./components/$component+pre-commit
     END

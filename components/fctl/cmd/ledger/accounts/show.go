@@ -12,7 +12,7 @@ import (
 )
 
 type ShowStore struct {
-	Account *shared.AccountWithVolumesAndBalances `json:"account"`
+	Account *shared.Account `json:"account"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -93,8 +93,8 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		tableData := pterm.TableData{}
 		tableData = append(tableData, []string{"Asset", "Input", "Output"})
 		for asset, volumes := range c.store.Account.Volumes {
-			input := volumes["input"]
-			output := volumes["output"]
+			input := volumes.Input
+			output := volumes.Output
 			tableData = append(tableData, []string{pterm.LightCyan(asset), fmt.Sprint(input), fmt.Sprint(output)})
 		}
 		if err := pterm.DefaultTable.

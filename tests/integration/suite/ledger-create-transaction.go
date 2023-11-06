@@ -121,14 +121,14 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			Expect(accResponse.StatusCode).To(Equal(200))
 
 			accountResponse := accResponse.AccountResponse
-			Expect(accountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
+			Expect(accountResponse.Data).Should(Equal(shared.Account{
 				Address:  "alice",
 				Metadata: metadata.Metadata{},
-				Volumes: map[string]map[string]*big.Int{
+				Volumes: map[string]shared.Volume{
 					"USD": {
-						"input":   big.NewInt(100),
-						"output":  big.NewInt(0),
-						"balance": big.NewInt(100),
+						Input:   big.NewInt(100),
+						Output:  big.NewInt(0),
+						Balance: big.NewInt(100),
 					},
 				},
 			}))

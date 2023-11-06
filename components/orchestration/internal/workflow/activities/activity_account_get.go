@@ -48,7 +48,7 @@ func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (
 
 var GetAccountActivity = Activities{}.GetAccount
 
-func GetAccount(ctx workflow.Context, ledger, id string) (*shared.AccountWithVolumesAndBalances, error) {
+func GetAccount(ctx workflow.Context, ledger, id string) (*shared.Account, error) {
 	ret := &shared.AccountResponse{}
 	if err := executeActivity(ctx, GetAccountActivity, ret, GetAccountRequest{
 		Ledger: ledger,

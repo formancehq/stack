@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"sort"
@@ -27,6 +28,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}
 
 			timestamp = time.Now().Round(time.Second).UTC()
+			bigInt, _ = big.NewInt(0).SetString("999999999999999999999999999999999999999999999999999999999999999999999999999999999999999", 10)
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
@@ -59,7 +61,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Metadata: map[string]string{},
 						Postings: []shared.Posting{
 							{
-								Amount:      big.NewInt(100),
+								Amount:      bigInt,
 								Asset:       "USD",
 								Source:      "world",
 								Destination: "foo:foo",
@@ -90,6 +92,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
+					Expand: pointer.For("volumes"),
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -104,10 +107,24 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
+				Volumes: map[string]shared.Volume{
+					"USD": {
+						Input:   bigInt,
+						Output:  big.NewInt(0),
+						Balance: bigInt,
+					},
+				},
 			}))
 			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(shared.Account{
 				Address:  "world",
 				Metadata: metadata.Metadata{},
+				Volumes: map[string]shared.Volume{
+					"USD": {
+						Output:  bigInt,
+						Input:   big.NewInt(0),
+						Balance: big.NewInt(0).Neg(bigInt),
+					},
+				},
 			}))
 		})
 		It("should be listed on api using address filters", func() {
