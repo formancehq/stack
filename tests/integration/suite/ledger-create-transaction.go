@@ -274,13 +274,13 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 		BeforeEach(createTransaction)
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(response.CreateTransactionResponse.Data.ID).To(Equal(int64(0)))
+			Expect(response.CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
 		})
 		Then("replaying with the same IK", func() {
 			BeforeEach(createTransaction)
 			It("should respond with the same tx id", func() {
 				Expect(err).To(Succeed())
-				Expect(response.CreateTransactionResponse.Data.ID).To(Equal(int64(0)))
+				Expect(response.CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
 			})
 		})
 	})

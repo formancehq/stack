@@ -14,7 +14,7 @@ import (
 
 func printCommonInformation(
 	out io.Writer,
-	txID int64,
+	txID *big.Int,
 	reference string,
 	postings []shared.Posting,
 	timestamp time.Time,

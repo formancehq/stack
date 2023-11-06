@@ -96,7 +96,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 
 			// Cannot check the date and the hash since they are changing at
 			// every run
-			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(int64(2)))
+			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(big.NewInt(2)))
 			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.LogTypeSetMetadata))
 			Expect(logsCursorResponse.Cursor.Data[0].Data).To(Equal(map[string]any{
 				"targetType": "ACCOUNT",
@@ -106,7 +106,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"targetId": "foo:baz",
 			}))
 
-			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(int64(1)))
+			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(big.NewInt((1))))
 			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.LogTypeNewTransaction))
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
@@ -126,7 +126,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				},
 			}))
 
-			Expect(logsCursorResponse.Cursor.Data[2].ID).To(Equal(int64(0)))
+			Expect(logsCursorResponse.Cursor.Data[2].ID).To(Equal(big.NewInt((0))))
 			Expect(logsCursorResponse.Cursor.Data[2].Type).To(Equal(shared.LogTypeNewTransaction))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
@@ -145,7 +145,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	})
 
 	type expectedLog struct {
-		id       int64
+		id       *big.Int
 		typ      shared.LogType
 		postings []any
 	}
@@ -171,7 +171,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			expectedLogs []expectedLog
 		)
 		BeforeEach(func() {
-			for i := 0; i < int(accountCounts); i++ {
+			for i := int64(0); i < accountCounts; i++ {
 				now := time.Now().Round(time.Millisecond).UTC()
 
 				response, err := Client().Ledger.CreateTransaction(
@@ -196,7 +196,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(response.StatusCode).To(Equal(200))
 
 				expectedLogs = append(expectedLogs, expectedLog{
-					id:  int64(i),
+					id:  big.NewInt(i),
 					typ: shared.LogTypeNewTransaction,
 					postings: []any{
 						map[string]any{
@@ -210,7 +210,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}
 
 			sort.Slice(expectedLogs, func(i, j int) bool {
-				return expectedLogs[i].id > expectedLogs[j].id
+				return expectedLogs[i].id.Cmp(expectedLogs[j].id) > 0
 			})
 		})
 		AfterEach(func() {

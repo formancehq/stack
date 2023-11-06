@@ -212,14 +212,13 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt).NotTo(BeZero())
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Attempt).To(Equal(int64(1)))
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution).To(BeNil())
-
-							//TODO: fail here with zero timestamp
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp).
 								NotTo(BeZero())
 							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp = time.Time{}
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.ActivityCreateTransactionOutput{
 									Data: shared.Transaction{
+										ID:       big.NewInt(0),
 										Postings: postings,
 										Metadata: map[string]string{},
 									},

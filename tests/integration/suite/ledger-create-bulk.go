@@ -61,12 +61,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		It("should be ok", func() {
 			tx, err := Client().Ledger.GetTransaction(TestContext(), operations.GetTransactionRequest{
-				ID:     0,
+				ID:     big.NewInt(0),
 				Ledger: "default",
 			})
 			Expect(err).To(Succeed())
 			Expect(tx.GetTransactionResponse.Data).To(Equal(shared.ExpandedTransaction{
-				ID: 0,
+				ID: big.NewInt(0),
 				Metadata: metadata.Metadata{
 					"role": "admin",
 				},
