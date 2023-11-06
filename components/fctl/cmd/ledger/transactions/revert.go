@@ -2,6 +2,7 @@ package transactions
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -76,7 +77,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 
 	request := operations.RevertTransactionRequest{
 		Ledger: ledger,
-		ID:     txId,
+		ID:     big.NewInt(txId),
 	}
 
 	response, err := ledgerClient.Ledger.RevertTransaction(cmd.Context(), request)
