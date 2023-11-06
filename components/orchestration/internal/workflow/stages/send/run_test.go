@@ -677,7 +677,7 @@ var (
 					ID:     "foo",
 				}},
 				Returns: []any{&shared.AccountResponse{
-					Data: shared.AccountWithVolumesAndBalances{
+					Data: shared.Account{
 						Address: "foo",
 						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",

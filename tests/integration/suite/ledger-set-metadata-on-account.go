@@ -53,7 +53,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			Expect(response.AccountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
+			Expect(response.AccountResponse.Data).Should(Equal(shared.Account{
 				Address:  "foo",
 				Metadata: metadata,
 			}))
