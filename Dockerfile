@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM ghcr.io/formancehq/gateway:v0.1.7 as gateway
 FROM ghcr.io/formancehq/ledger:v1.10.3 as ledger
-FROM ghcr.io/formancehq/payments:v0.9.7 as payments
+FROM ghcr.io/formancehq/payments:v1.0.0-beta.1 as payments
 FROM ghcr.io/formancehq/orchestration:v0.1.5 as orchestration
 FROM ghcr.io/formancehq/auth:v0.4.3 as auth
 FROM ghcr.io/formancehq/search:v0.8.0 as search
