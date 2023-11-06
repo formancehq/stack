@@ -1,9 +1,9 @@
 package vm
 
 import (
-	"github.com/formancehq/ledger/internal"
 	"testing"
 
+	ledger "github.com/formancehq/ledger/internal"
 	internal2 "github.com/formancehq/ledger/internal/machine/internal"
 )
 

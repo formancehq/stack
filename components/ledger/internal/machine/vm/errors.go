@@ -1,7 +1,7 @@
 package vm
 
 import (
-	"github.com/formancehq/ledger/internal"
+	ledger "github.com/formancehq/ledger/internal"
 	"github.com/pkg/errors"
 )
 

@@ -3,7 +3,8 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"github.com/formancehq/ledger/internal"
+
+	ledger "github.com/formancehq/ledger/internal"
 )
 
 type FundingPart struct {
