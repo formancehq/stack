@@ -686,3 +686,28 @@ func TestRevertTransaction(t *testing.T) {
 	require.True(t, ok)
 	require.Equal(t, *expectedTx, tx)
 }
+
+func TestForceRevertTransaction(t *testing.T) {
+
+	expectedTx := ledger.NewTransaction().WithPostings(
+		ledger.NewPosting("world", "bank", "USD", big.NewInt(100)),
+	)
+
+	backend, mockLedger := newTestingBackend(t, true)
+	mockLedger.
+		EXPECT().
+		RevertTransaction(gomock.Any(), command.Parameters{}, big.NewInt(0), true).
+		Return(expectedTx, nil)
+
+	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry())
+
+	req := httptest.NewRequest(http.MethodPost, "/xxx/transactions/0/revert?force=true", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusCreated, rec.Code)
+	tx, ok := sharedapi.DecodeSingleResponse[ledger.Transaction](t, rec.Body)
+	require.True(t, ok)
+	require.Equal(t, *expectedTx, tx)
+}
