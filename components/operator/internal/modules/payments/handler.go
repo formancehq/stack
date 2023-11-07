@@ -8,6 +8,8 @@ import (
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 	"golang.org/x/mod/semver"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -243,6 +245,30 @@ func (p module) Versions() map[string]modules.Version {
 				return paymentsServicesSplitted(paymentsEnvVars)
 			},
 		},
+		"v1.0.0-beta.3": {
+			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error) {
+				ok, err := jobRunner.RunJob(ctx, "delete-search-data", nil, deleteSearchDataJob(config.ReconciliationConfig, config.ReconciliationConfig.Stack.Name))
+				if err != nil {
+					return false, err
+				}
+				if !ok {
+					return false, nil
+				}
+
+				return true, nil
+			},
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
+					return []modules.EnvVar{
+						modules.Env("CONFIG_ENCRYPTION_KEY", ctx.Configuration.Spec.Services.Payments.EncryptionKey),
+					}
+				},
+			},
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return paymentsServicesSplitted(paymentsEnvVars)
+			},
+		},
 	}
 }
 
@@ -452,5 +478,24 @@ func resetConnector(ctx context.Context, config modules.MigrationConfig, connect
 		// Return an error to retry the migration. It can be the case when the
 		// pod is up, but not the http server.
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+}
+
+func deleteSearchDataJob(config modules.ReconciliationConfig, name string) func(t *batchv1.Job) {
+	return func(t *batchv1.Job) {
+		t.Spec = batchv1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					RestartPolicy: corev1.RestartPolicyOnFailure,
+					Containers: []corev1.Container{{
+						Name:  "delete-index",
+						Image: "curlimages/curl",
+						Command: modules.ShellCommand(`
+							curl -X POST -H 'Content-Type: application/json' ${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/stacks/_delete_by_query -d '{"query": {"bool": {"must": [{"bool": {"should": [{"match": {"kind": "PAYMENT"}},{"match": {"kind": "PAYMENT_ACCOUNT"}},{"match": {"kind": "PAYMENT_BALANCE"}},{"match": {"kind": "PAYMENT_BANK_ACCOUNT"}},{"match": {"kind": "PAYMENT_TRANSFER_INITIATION"}}]}},{"match": {"stack": "%s"}}]}}}'`, name),
+						Env: modules.SearchEnvVars(config).ToCoreEnv(),
+					}},
+				},
+			},
+		}
 	}
 }

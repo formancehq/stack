@@ -323,34 +323,34 @@ data:
                                   {
                                     "match": {
                                       "kind": "PAYMENT"
-                                    },
+                                    }
                                   },
                                   {
                                     "match": {
                                       "kind": "PAYMENT_ACCOUNT"
-                                    },
+                                    }
                                   },
                                   {
                                     "match": {
                                       "kind": "PAYMENT_BALANCE"
-                                    },
+                                    }
                                   },
                                   {
                                     "match": {
                                       "kind": "PAYMENT_BANK_ACCOUNT"
-                                    },
+                                    }
                                   },
                                   {
                                     "match": {
                                       "kind": "PAYMENT_TRANSFER_INITIATION"
-                                    },
+                                    }
                                   }
                                 ]
                               }
                             },
                             {
                               "match": {
-                                "indexed.provider": this.payload.connector
+                                "indexed.connectorId": this.payload.connectorId
                               }
                             },
                             {
@@ -376,9 +376,18 @@ data:
                               }
                             },
                             {
-                              "match": {
-                                "indexed.id": this.payload.id
-                              }
+                              "should": [
+                                {
+                                  "match": {
+                                    "indexed.id": this.payload.id
+                                  }
+                                },
+                                {
+                                  "match": {
+                                    "indexed.provider": this.payload.provider
+                                  }
+                                }
+                              ]
                             },
                             {
                               "match": {
@@ -400,7 +409,7 @@ data:
               enabled: ${BASIC_AUTH_ENABLED}
               username: ${BASIC_AUTH_USERNAME}
               password: ${BASIC_AUTH_PASSWORD}
-    payments_ingestion.yaml: "input:\n  event_bus:\n    topic: payments\n    consumer_group: search\n\npipeline:\n  processors:\n  - switch_event_type:\n      events:\n      - label: SAVED_PAYMENT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"provider\": this.payload.provider,\n                    \"reference\": this.payload.reference,\n                    \"scheme\": this.payload.scheme,\n                    \"type\": this.payload.type,\n                    \"status\": this.payload.status,\n                    \"id\": this.payload.id,\n                    \"initialAmount\": this.payload.initialAmount,\n                    \"createdAt\": this.payload.createdAt\n                },\n                \"kind\": \"PAYMENT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-%s\".format(this.payload.id)\n      - label: SAVED_ACCOUNT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"provider\": this.payload.provider,\n                    \"reference\": this.payload.reference,\n                    \"createdAt\": this.payload.createdAt,\n                    \"id\": this.payload.id,\n                    \"type\": this.payload.type,\n                    \"defaultAsset\": this.payload.defaultAsset,\n                    \"accountName\": this.payload.accountName\n                },\n                \"kind\": \"PAYMENT_ACCOUNT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-ACCOUNT-%s\".format(this.payload.id)\n      - label: SAVED_BALANCE\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"provider\": this.payload.provider,\n                    \"createdAt\": this.payload.createdAt,\n                    \"accountId\": this.payload.accountID,\n                    \"asset\": this.payload.asset,\n                    \"balance\": this.payload.balance\n                },\n                \"kind\": \"PAYMENT_BALANCE\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-BALANCE-%s-%s\".format(this.payload.accountId, this.payload.asset)\n      - label: SAVED_BANK_ACCOUNT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"createdAt\": this.payload.createdAt,\n                    \"provider\": this.payload.provider,\n                    \"name\": this.payload.name,\n                    \"accountNumber\": this.payload.accountNumber,\n                    \"iban\": this.payload.iban,\n                    \"swiftBicCode\": this.payload.swiftBicCode,\n                    \"country\": this.payload.country,\n                    \"accountId\": this.payload.accountID\n                },\n                \"kind\": \"PAYMENT_BANK_ACCOUNT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-BANK-ACCOUNT-%s\".format(this.payload.id)\n      - label: SAVED_TRANSFER_INITIATION\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"createdAt\": this.payload.createdAt,\n                    \"scheduledAt\": this.payload.scheduledAt,\n                    \"updatedAt\": this.payload.updatedAt,\n                    \"provider\": this.payload.provider,\n                    \"description\": this.payload.description,\n                    \"type\": this.payload.type,\n                    \"sourceAccountId\": this.payload.sourceAccountID,\n                    \"destinationAccountId\": this.payload.destinationAccountID,\n                    \"amount\": this.payload.amount,\n                    \"asset\": this.payload.asset,\n                    \"attempts\": this.payload.attempts,\n                    \"status\": this.payload.status,\n                    \"error\": this.payload.error,\n                    \"relatedPayment\": this.payload.relatedPayment\n                },\n                \"kind\": \"PAYMENT_TRANSFER_INITIATION\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-TRANSFER-INITIATION-%s\".format(this.payload.id)\n            \n\noutput:\n  resource: elasticsearch\n"
+    payments_ingestion.yaml: "input:\n  event_bus:\n    topic: payments\n    consumer_group: search\n\npipeline:\n  processors:\n  - switch_event_type:\n      events:\n      - label: SAVED_PAYMENT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"reference\": this.payload.reference,\n                    \"provider\": this.payload.provider,\n                    \"createdAt\": this.payload.createdAt,\n                    \"connectorId\": this.payload.connectorId,\n                    \"type\": this.payload.type,\n                    \"status\": this.payload.status,\n                    \"scheme\": this.payload.scheme,\n                    \"asset\": this.payload.asset,\n                    \"initialAmount\": this.payload.initialAmount\n                },\n                \"kind\": \"PAYMENT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-%s\".format(this.payload.id)\n      - label: SAVED_ACCOUNT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"provider\": this.payload.provider,\n                    \"createdAt\": this.payload.createdAt,\n                    \"reference\": this.payload.reference,\n                    \"connectorId\": this.payload.connectorId,\n                    \"defaultAsset\": this.payload.defaultAsset,\n                    \"accountName\": this.payload.accountName,\n                    \"type\": this.payload.type\n                },\n                \"kind\": \"PAYMENT_ACCOUNT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-ACCOUNT-%s\".format(this.payload.id)\n      - label: SAVED_BALANCE\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"accountId\": this.payload.accountID,\n                    \"provider\": this.payload.provider,\n                    \"connectorId\": this.payload.connectorId,\n                    \"createdAt\": this.payload.createdAt,\n                    \"asset\": this.payload.asset,\n                    \"balance\": this.payload.balance\n                },\n                \"kind\": \"PAYMENT_BALANCE\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-BALANCE-%s-%s\".format(this.payload.accountId, this.payload.asset)\n      - label: SAVED_BANK_ACCOUNT\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"createdAt\": this.payload.createdAt,\n                    \"connectorId\": this.payload.connectorId,\n                    \"name\": this.payload.name,\n                    \"accountNumber\": this.payload.accountNumber,\n                    \"iban\": this.payload.iban,\n                    \"swiftBicCode\": this.payload.swiftBicCode,\n                    \"country\": this.payload.country,\n                    \"provider\": this.payload.provider,\n                    \"accountId\": this.payload.accountID\n                },\n                \"kind\": \"PAYMENT_BANK_ACCOUNT\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-BANK-ACCOUNT-%s\".format(this.payload.id)\n      - label: SAVED_TRANSFER_INITIATION\n        processors:\n        - bloblang: |\n            root = {\n                \"data\": this.payload,\n                \"indexed\": {\n                    \"id\": this.payload.id,\n                    \"createdAt\": this.payload.createdAt,\n                    \"scheduledAt\": this.payload.scheduledAt,\n                    \"updatedAt\": this.payload.updatedAt,\n                    \"connectorId\": this.payload.connectorId,\n                    \"description\": this.payload.description,\n                    \"type\": this.payload.type,\n                    \"provider\": this.payload.provider,\n                    \"sourceAccountId\": this.payload.sourceAccountID,\n                    \"destinationAccountId\": this.payload.destinationAccountID,\n                    \"amount\": this.payload.amount,\n                    \"asset\": this.payload.asset,\n                    \"attempts\": this.payload.attempts,\n                    \"status\": this.payload.status,\n                    \"error\": this.payload.error,\n                    \"relatedPayment\": this.payload.relatedPayment\n                },\n                \"kind\": \"PAYMENT_TRANSFER_INITIATION\",\n                \"when\": this.date\n            }\n            meta action = \"index\"\n            meta id = \"PAYMENT-TRANSFER-INITIATION-%s\".format(this.payload.id)\n            \n\noutput:\n  resource: elasticsearch\n"
 kind: ConfigMap
 metadata:
     labels:
