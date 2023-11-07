@@ -816,7 +816,7 @@
               "Count": {
                 "schema": {
                   "type": "integer",
-                  "format": "int64",
+                  "format": "bigint",
                   "minimum": 0
                 }
               }
@@ -1424,7 +1424,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int64",
+              "format": "bigint",
               "minimum": 0,
               "example": 1234
             }
@@ -1499,7 +1499,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int64",
+              "format": "bigint",
               "minimum": 0,
               "example": 1234
             }
@@ -1577,7 +1577,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int64",
+              "format": "bigint",
               "minimum": 0,
               "example": 1234
             }
@@ -4668,7 +4668,7 @@
           },
           "id": {
             "type": "integer",
-            "format": "int64",
+            "format": "bigint",
             "minimum": 0
           },
           "reverted": {
@@ -4756,7 +4756,7 @@
           },
           "transactions": {
             "type": "integer",
-            "format": "int64",
+            "format": "bigint",
             "minimum": 0
           }
         },
@@ -4770,7 +4770,7 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int64",
+            "format": "bigint",
             "minimum": 0,
             "example": 1234
           },

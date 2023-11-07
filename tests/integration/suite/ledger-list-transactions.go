@@ -937,7 +937,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
-					ID:     666,
+					ID:     big.NewInt(666),
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())

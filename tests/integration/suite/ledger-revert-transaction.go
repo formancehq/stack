@@ -119,7 +119,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					TestContext(),
 					operations.RevertTransactionRequest{
 						Ledger: "default",
-						ID:     big.NewInt(createTransactionResponse.Data.ID),
+						ID:     createTransactionResponse.Data.ID,
 					},
 				)
 				Expect(err).To(Succeed())
@@ -149,7 +149,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						TestContext(),
 						operations.RevertTransactionRequest{
 							Ledger: "default",
-							ID:     big.NewInt(createTransactionResponse.Data.ID),
+							ID:     createTransactionResponse.Data.ID,
 						},
 					)
 					Expect(err).To(BeNil())
