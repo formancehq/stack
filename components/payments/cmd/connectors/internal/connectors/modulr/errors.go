@@ -11,4 +11,7 @@ var (
 
 	// ErrMissingAPISecret is returned when the api secret is missing from config.
 	ErrMissingAPISecret = errors.New("missing apiSecret from config")
+
+	// ErrMissingName is returned when the name is missing from config.
+	ErrMissingName = errors.New("missing name from config")
 )

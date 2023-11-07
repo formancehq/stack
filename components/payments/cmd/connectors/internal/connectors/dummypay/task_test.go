@@ -3,6 +3,8 @@ package dummypay
 import (
 	"testing"
 
+	"github.com/formancehq/payments/internal/models"
+	"github.com/google/uuid"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,7 +29,10 @@ func TestTasks(t *testing.T) {
 	assert.Len(t, filesList, 1)
 
 	// test ingesting files
-	payload, err := parseIngestionPayload(config, TaskDescriptor{Key: taskKeyIngest, FileName: files[0].Name()}, fs)
+	payload, err := parseIngestionPayload(models.ConnectorID{
+		Reference: uuid.New(),
+		Provider:  models.ConnectorProviderDummyPay,
+	}, config, TaskDescriptor{Key: taskKeyIngest, FileName: files[0].Name()}, fs)
 	assert.NoError(t, err)
 	assert.Len(t, payload, 1)
 

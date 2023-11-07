@@ -11,21 +11,23 @@ type accountMessagePayload struct {
 	ID           string    `json:"id"`
 	CreatedAt    time.Time `json:"createdAt"`
 	Reference    string    `json:"reference"`
+	ConnectorID  string    `json:"connectorId"`
 	Provider     string    `json:"provider"`
 	DefaultAsset string    `json:"defaultAsset"`
 	AccountName  string    `json:"accountName"`
 	Type         string    `json:"type"`
 }
 
-func NewEventSavedAccounts(account *models.Account) events.EventMessage {
+func NewEventSavedAccounts(provider models.ConnectorProvider, account *models.Account) events.EventMessage {
 	payload := accountMessagePayload{
 		ID:           account.ID.String(),
 		CreatedAt:    account.CreatedAt,
 		Reference:    account.Reference,
-		Provider:     account.Provider.String(),
+		ConnectorID:  account.ConnectorID.String(),
 		DefaultAsset: account.DefaultAsset.String(),
 		AccountName:  account.AccountName,
 		Type:         string(account.Type),
+		Provider:     provider.String(),
 	}
 
 	return events.EventMessage{

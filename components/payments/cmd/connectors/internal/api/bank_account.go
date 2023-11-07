@@ -8,6 +8,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/connectors/internal/messages"
+	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -20,7 +21,7 @@ type bankAccountResponse struct {
 	ID            string    `json:"id"`
 	CreatedAt     time.Time `json:"createdAt"`
 	Country       string    `json:"country"`
-	Provider      string    `json:"provider"`
+	ConnectorID   string    `json:"connectorID"`
 	AccountID     string    `json:"accountId,omitempty"`
 	Iban          string    `json:"iban,omitempty"`
 	AccountNumber string    `json:"accountNumber,omitempty"`
@@ -28,10 +29,10 @@ type bankAccountResponse struct {
 }
 
 type createBankAccountRepository interface {
-	UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []*models.Account) error
+	UpsertAccounts(ctx context.Context, accounts []*models.Account) error
 	CreateBankAccount(ctx context.Context, account *models.BankAccount) error
 	LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error
-	IsInstalled(ctx context.Context, provider models.ConnectorProvider) (bool, error)
+	GetConnector(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error)
 }
 
 type createBankAccountRequest struct {
@@ -39,7 +40,7 @@ type createBankAccountRequest struct {
 	IBAN          string `json:"iban"`
 	SwiftBicCode  string `json:"swiftBicCode"`
 	Country       string `json:"country"`
-	Provider      string `json:"provider"`
+	ConnectorID   string `json:"connectorID"`
 	Name          string `json:"name"`
 }
 
@@ -69,27 +70,25 @@ func createBankAccountHandler(
 			return
 		}
 
-		provider, err := models.ConnectorProviderFromString(bankAccountRequest.Provider)
+		connectorID, err := models.ConnectorIDFromString(bankAccountRequest.ConnectorID)
 		if err != nil {
-			api.BadRequest(w, ErrValidation, errors.New("provider must be provided"))
+			api.BadRequest(w, ErrValidation, errors.New("connectorId must be a valid"))
 			return
 		}
 
-		if provider != models.ConnectorProviderBankingCircle {
-			// For now, bank accounts can only be created for BankingCircle
-			// in the future, we will support other providers
-			api.BadRequest(w, ErrValidation, errors.New("provider not supported"))
+		connector, err := repo.GetConnector(r.Context(), connectorID)
+		if err != nil && errors.Is(err, storage.ErrNotFound) {
+			api.BadRequest(w, ErrValidation, errors.New("connector not installed"))
 			return
-		}
-
-		isInstalled, err := repo.IsInstalled(r.Context(), provider)
-		if err != nil {
+		} else if err != nil {
 			handleStorageErrors(w, r, err)
 			return
 		}
 
-		if !isInstalled {
-			api.BadRequest(w, ErrValidation, errors.New("connector not installed"))
+		if connector.Provider != models.ConnectorProviderBankingCircle {
+			// For now, bank accounts can only be created for BankingCircle
+			// in the future, we will support other providers
+			api.BadRequest(w, ErrValidation, errors.New("provider not supported"))
 			return
 		}
 
@@ -99,7 +98,7 @@ func createBankAccountHandler(
 			IBAN:          bankAccountRequest.IBAN,
 			SwiftBicCode:  bankAccountRequest.SwiftBicCode,
 			Country:       bankAccountRequest.Country,
-			Provider:      provider,
+			ConnectorID:   connectorID,
 			Name:          bankAccountRequest.Name,
 		}
 		err = repo.CreateBankAccount(r.Context(), bankAccount)
@@ -110,17 +109,17 @@ func createBankAccountHandler(
 
 		// BankingCircle does not have external accounts so we need to create
 		// one by hand
-		if provider == models.ConnectorProviderBankingCircle {
+		if connector.Provider == models.ConnectorProviderBankingCircle {
 			accountID := models.AccountID{
-				Reference: bankAccount.ID.String(),
-				Provider:  provider,
+				Reference:   bankAccount.ID.String(),
+				ConnectorID: connector.ID,
 			}
-			err = repo.UpsertAccounts(r.Context(), provider, []*models.Account{
+			err = repo.UpsertAccounts(r.Context(), []*models.Account{
 				{
 					ID:          accountID,
 					CreatedAt:   time.Now(),
 					Reference:   bankAccount.ID.String(),
-					Provider:    provider,
+					ConnectorID: connector.ID,
 					AccountName: bankAccount.Name,
 					Type:        models.AccountTypeExternalFormance,
 				},
@@ -151,10 +150,10 @@ func createBankAccountHandler(
 		}
 
 		data := &bankAccountResponse{
-			ID:        bankAccount.ID.String(),
-			CreatedAt: bankAccount.CreatedAt,
-			Country:   bankAccount.Country,
-			Provider:  bankAccount.Provider.String(),
+			ID:          bankAccount.ID.String(),
+			CreatedAt:   bankAccount.CreatedAt,
+			Country:     bankAccount.Country,
+			ConnectorID: connectorID.String(),
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{

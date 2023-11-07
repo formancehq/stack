@@ -31,11 +31,11 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 		fx.Provide(func(store *storage.Storage,
 			publisher message.Publisher,
 			metricsRegistry metrics.MetricsRegistry,
-		) *integration.ConnectorManager[ConnectorConfig] {
+		) *integration.ConnectorsManager[ConnectorConfig] {
 			schedulerFactory := integration.TaskSchedulerFactoryFn(func(
-				resolver task.Resolver, maxTasks int,
+				connectorID models.ConnectorID, resolver task.Resolver, maxTasks int,
 			) *task.DefaultTaskScheduler {
-				return task.NewDefaultScheduler(loader.Name(), store, func(ctx context.Context,
+				return task.NewDefaultScheduler(connectorID, store, func(ctx context.Context,
 					descriptor models.TaskDescriptor,
 					taskID uuid.UUID,
 				) (*dig.Container, error) {
@@ -58,9 +58,9 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 			})
 
 			return integration.NewConnectorManager(
-				store, loader, schedulerFactory, publisher)
+				loader.Name(), store, loader, schedulerFactory, publisher)
 		}),
-		fx.Provide(fx.Annotate(func(cm *integration.ConnectorManager[ConnectorConfig],
+		fx.Provide(fx.Annotate(func(cm *integration.ConnectorsManager[ConnectorConfig],
 		) connectorHandler {
 			return connectorHandler{
 				Handler:         connectorRouter(loader.Name(), cm),
@@ -68,7 +68,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 				initiatePayment: cm.InitiatePayment,
 			}
 		}, fx.ResultTags(`group:"connectorHandlers"`))),
-		fx.Invoke(func(lc fx.Lifecycle, cm *integration.ConnectorManager[ConnectorConfig]) {
+		fx.Invoke(func(lc fx.Lifecycle, cm *integration.ConnectorsManager[ConnectorConfig]) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					err := cm.Restore(ctx)

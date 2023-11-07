@@ -15,4 +15,5 @@ type Balance struct {
 	Balance       *big.Int  `bun:"type:numeric"`
 	CreatedAt     time.Time
 	LastUpdatedAt time.Time
+	ConnectorID   ConnectorID `bun:"-"`
 }

@@ -25,6 +25,7 @@ var (
 func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
@@ -69,39 +70,40 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 							Reference: transaction.ID,
 							Type:      paymentType,
 						},
-						Provider: models.ConnectorProviderModulr,
+						ConnectorID: connectorID,
 					},
-					Reference: transaction.ID,
-					Type:      paymentType,
-					Status:    models.PaymentStatusSucceeded,
-					Scheme:    models.PaymentSchemeOther,
-					Amount:    &amountInt,
-					Asset:     models.Asset(fmt.Sprintf("%s/2", transaction.Account.Currency)),
-					RawData:   rawData,
+					Reference:   transaction.ID,
+					ConnectorID: connectorID,
+					Type:        paymentType,
+					Status:      models.PaymentStatusSucceeded,
+					Scheme:      models.PaymentSchemeOther,
+					Amount:      &amountInt,
+					Asset:       models.Asset(fmt.Sprintf("%s/2", transaction.Account.Currency)),
+					RawData:     rawData,
 				},
 			}
 
 			switch paymentType {
 			case models.PaymentTypePayIn:
 				batchElement.Payment.DestinationAccountID = &models.AccountID{
-					Reference: accountID,
-					Provider:  models.ConnectorProviderModulr,
+					Reference:   accountID,
+					ConnectorID: connectorID,
 				}
 			case models.PaymentTypePayOut:
 				batchElement.Payment.SourceAccountID = &models.AccountID{
-					Reference: accountID,
-					Provider:  models.ConnectorProviderModulr,
+					Reference:   accountID,
+					ConnectorID: connectorID,
 				}
 			default:
 				if transaction.Credit {
 					batchElement.Payment.DestinationAccountID = &models.AccountID{
-						Reference: accountID,
-						Provider:  models.ConnectorProviderModulr,
+						Reference:   accountID,
+						ConnectorID: connectorID,
 					}
 				} else {
 					batchElement.Payment.SourceAccountID = &models.AccountID{
-						Reference: accountID,
-						Provider:  models.ConnectorProviderModulr,
+						Reference:   accountID,
+						ConnectorID: connectorID,
 					}
 				}
 			}
@@ -109,7 +111,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 			batch = append(batch, batchElement)
 		}
 
-		if err := ingester.IngestPayments(ctx, batch, struct{}{}); err != nil {
+		if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}

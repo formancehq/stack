@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"time"
 
@@ -11,22 +10,16 @@ import (
 )
 
 func (s *Storage) CreateBankAccount(ctx context.Context, bankAccount *models.BankAccount) error {
-	connector, err := s.GetConnector(ctx, bankAccount.Provider)
-	if err != nil {
-		return fmt.Errorf("failed to get connector: %w", err)
-	}
-
 	account := models.BankAccount{
 		CreatedAt:   bankAccount.CreatedAt,
 		Country:     bankAccount.Country,
-		Provider:    bankAccount.Provider,
 		Name:        bankAccount.Name,
 		AccountID:   bankAccount.AccountID,
-		ConnectorID: connector.ID,
+		ConnectorID: bankAccount.ConnectorID,
 	}
 
 	var id uuid.UUID
-	err = s.db.NewInsert().Model(&account).Returning("id").Scan(ctx, &id)
+	err := s.db.NewInsert().Model(&account).Returning("id").Scan(ctx, &id)
 	if err != nil {
 		return e("install connector", err)
 	}
@@ -67,7 +60,7 @@ func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuer
 	var bankAccounts []*models.BankAccount
 
 	query := s.db.NewSelect().
-		Column("id", "name", "created_at", "country", "provider", "account_id").
+		Column("id", "name", "created_at", "country", "connector_id", "account_id").
 		Model(&bankAccounts)
 
 	query = pagination.apply(query, "bank_account.created_at")
@@ -119,7 +112,7 @@ func (s *Storage) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool)
 	var account models.BankAccount
 	query := s.db.NewSelect().
 		Model(&account).
-		Column("id", "name", "created_at", "country", "provider", "account_id")
+		Column("id", "name", "created_at", "country", "connector_id", "account_id")
 
 	if expand {
 		query = query.ColumnExpr("pgp_sym_decrypt(account_number, ?, ?) AS decrypted_account_number", s.configEncryptionKey, encryptionOptions).

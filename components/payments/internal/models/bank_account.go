@@ -12,10 +12,9 @@ import (
 type BankAccount struct {
 	bun.BaseModel `bun:"accounts.bank_account"`
 
-	ID            uuid.UUID `bun:",pk,nullzero"`
-	CreatedAt     time.Time `bun:",nullzero"`
-	Provider      ConnectorProvider
-	ConnectorID   uuid.UUID `bun:",nullzero"`
+	ID            uuid.UUID   `bun:",pk,nullzero"`
+	CreatedAt     time.Time   `bun:",nullzero"`
+	ConnectorID   ConnectorID `bun:",nullzero"`
 	Name          string
 	AccountNumber string `bun:"decrypted_account_number,scanonly"`
 	IBAN          string `bun:"decrypted_iban,scanonly"`

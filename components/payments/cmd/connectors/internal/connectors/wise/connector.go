@@ -87,7 +87,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 		panic(err)
 	}
 
-	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
+	return c.resolveTasks()(taskDescriptor)
 }
 
 var _ integration.Connector = &Connector{}

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gibson042/canonicaljson-go"
-	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -21,7 +20,7 @@ type PaymentReference struct {
 
 type PaymentID struct {
 	PaymentReference
-	Provider ConnectorProvider
+	ConnectorID ConnectorID
 }
 
 func (pid PaymentID) String() string {
@@ -30,11 +29,11 @@ func (pid PaymentID) String() string {
 		panic(err)
 	}
 
-	return base64.URLEncoding.EncodeToString(data)
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(data)
 }
 
 func PaymentIDFromString(value string) (*PaymentID, error) {
-	data, err := base64.URLEncoding.DecodeString(value)
+	data, err := base64.URLEncoding.WithPadding(base64.NoPadding).DecodeString(value)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +47,7 @@ func PaymentIDFromString(value string) (*PaymentID, error) {
 }
 
 func MustPaymentIDFromString(value string) *PaymentID {
-	data, err := base64.URLEncoding.DecodeString(value)
+	data, err := base64.URLEncoding.WithPadding(base64.NoPadding).DecodeString(value)
 	if err != nil {
 		panic(err)
 	}
@@ -90,9 +89,9 @@ func (pid *PaymentID) Scan(value interface{}) error {
 type Payment struct {
 	bun.BaseModel `bun:"payments.payment"`
 
-	ID          PaymentID `bun:",pk,nullzero"`
-	ConnectorID uuid.UUID `bun:",nullzero"`
-	CreatedAt   time.Time `bun:",nullzero"`
+	ID          PaymentID   `bun:",pk,nullzero"`
+	ConnectorID ConnectorID `bun:",nullzero"`
+	CreatedAt   time.Time   `bun:",nullzero"`
 	Reference   string
 	Amount      *big.Int `bun:"type:numeric"`
 	Type        PaymentType

@@ -23,4 +23,7 @@ var (
 
 	// ErrMissingUserCertificatePassphrase is returned when the user certificate passphrase is missing.
 	ErrMissingUserCertificatePassphrase = errors.New("missing user certificate passphrase from config")
+
+	// ErrMissingClientCertificate is returned when the client certificate is missing.
+	ErrMissingName = errors.New("missing name from config")
 )

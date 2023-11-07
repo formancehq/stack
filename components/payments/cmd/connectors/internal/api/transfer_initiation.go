@@ -28,7 +28,7 @@ type transferInitiationResponse struct {
 	Description          string    `json:"description"`
 	SourceAccountID      string    `json:"sourceAccountID"`
 	DestinationAccountID string    `json:"destinationAccountID"`
-	Provider             string    `json:"provider"`
+	ConnectorID          string    `json:"connectorID"`
 	Type                 string    `json:"type"`
 	Amount               *big.Int  `json:"amount"`
 	Asset                string    `json:"asset"`
@@ -42,6 +42,7 @@ type createTransferInitiationRequest struct {
 	Description          string    `json:"description"`
 	SourceAccountID      string    `json:"sourceAccountID"`
 	DestinationAccountID string    `json:"destinationAccountID"`
+	ConnectorID          string    `json:"connectorID"`
 	Provider             string    `json:"provider"`
 	Type                 string    `json:"type"`
 	Amount               *big.Int  `json:"amount"`
@@ -75,11 +76,6 @@ func (r *createTransferInitiationRequest) Validate(repo createTransferInitiation
 		return err
 	}
 
-	_, err = models.ConnectorProviderFromString(r.Provider)
-	if err != nil {
-		return err
-	}
-
 	if r.Amount == nil {
 		return errors.New("amount is required")
 	}
@@ -94,7 +90,9 @@ func (r *createTransferInitiationRequest) Validate(repo createTransferInitiation
 type createTransferInitiationRepository interface {
 	CreateTransferInitiation(ctx context.Context, transferInitiation *models.TransferInitiation) error
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
-	IsInstalled(ctx context.Context, provider models.ConnectorProvider) (bool, error)
+	GetConnector(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error)
+	ListConnectorsByProvider(ctx context.Context, provider models.ConnectorProvider) ([]*models.Connector, error)
+	IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)
 }
 
 func createTransferInitiationHandler(
@@ -121,9 +119,38 @@ func createTransferInitiationHandler(
 			status = models.TransferInitiationStatusValidated
 		}
 
-		isInstalled, _ := repo.IsInstalled(r.Context(), models.MustConnectorProviderFromString(payload.Provider))
+		var connectorID models.ConnectorID
+		if payload.ConnectorID == "" {
+			provider, err := models.ConnectorProviderFromString(payload.Provider)
+			if err != nil {
+				api.BadRequest(w, ErrValidation, err)
+				return
+			}
+
+			connectors, err := repo.ListConnectorsByProvider(r.Context(), provider)
+			if err != nil {
+				handleStorageErrors(w, r, err)
+				return
+			}
+
+			if len(connectors) == 0 {
+				api.BadRequest(w, ErrValidation, fmt.Errorf("no connector found for provider %s", provider))
+				return
+			}
+
+			if len(connectors) > 1 {
+				api.BadRequest(w, ErrValidation, fmt.Errorf("multiple connectors found for provider %s", provider))
+				return
+			}
+
+			connectorID = connectors[0].ID
+		} else {
+			connectorID = models.MustConnectorIDFromString(payload.ConnectorID)
+		}
+
+		isInstalled, _ := repo.IsInstalledByConnectorID(r.Context(), connectorID)
 		if !isInstalled {
-			api.BadRequest(w, ErrValidation, fmt.Errorf("provider %s is not installed", payload.Provider))
+			api.BadRequest(w, ErrValidation, fmt.Errorf("connector %s is not installed", payload.ConnectorID))
 			return
 		}
 
@@ -146,18 +173,17 @@ func createTransferInitiationHandler(
 		}
 
 		createdAt := time.Now()
-		provider := models.MustConnectorProviderFromString(payload.Provider)
 		tf := &models.TransferInitiation{
 			ID: models.TransferInitiationID{
-				Reference: payload.Reference,
-				Provider:  provider,
+				Reference:   payload.Reference,
+				ConnectorID: connectorID,
 			},
 			CreatedAt:            createdAt,
 			UpdatedAt:            createdAt, // When created, should be the same
 			ScheduledAt:          payload.ScheduledAt,
 			Description:          payload.Description,
 			DestinationAccountID: models.MustAccountIDFromString(payload.DestinationAccountID),
-			Provider:             provider,
+			ConnectorID:          connectorID,
 			Type:                 models.MustTransferInitiationTypeFromString(payload.Type),
 			Amount:               payload.Amount,
 			Asset:                models.Asset(payload.Asset),
@@ -185,9 +211,15 @@ func createTransferInitiationHandler(
 		}
 
 		if status == models.TransferInitiationStatusValidated {
-			f, ok := paymentHandlers[provider]
+			connector, err := repo.GetConnector(r.Context(), connectorID)
+			if err != nil {
+				handleStorageErrors(w, r, err)
+				return
+			}
+
+			f, ok := paymentHandlers[connector.Provider]
 			if !ok {
-				api.InternalServerError(w, r, errors.New("no payment handler for provider "+provider.String()))
+				api.InternalServerError(w, r, fmt.Errorf("no payment handler for provider %v", payload.ConnectorID))
 				return
 			}
 
@@ -206,7 +238,7 @@ func createTransferInitiationHandler(
 			Description:          tf.Description,
 			SourceAccountID:      tf.SourceAccountID.String(),
 			DestinationAccountID: tf.DestinationAccountID.String(),
-			Provider:             tf.Provider.String(),
+			ConnectorID:          connectorID.String(),
 			Type:                 tf.Type.String(),
 			Amount:               tf.Amount,
 			Asset:                tf.Asset.String(),

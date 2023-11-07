@@ -25,6 +25,7 @@ var (
 func taskFetchTransactions(logger logging.Logger, client *client.Client, userID string) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
@@ -46,7 +47,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, userID 
 				break
 			}
 
-			if err := ingestBatch(ctx, ingester, pagedPayments); err != nil {
+			if err := ingestBatch(ctx, connectorID, ingester, pagedPayments); err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
@@ -59,6 +60,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, userID 
 
 func ingestBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	payments []*client.Payment,
 ) error {
@@ -84,37 +86,38 @@ func ingestBatch(
 						Reference: payment.Id,
 						Type:      paymentType,
 					},
-					Provider: models.ConnectorProviderMangopay,
+					ConnectorID: connectorID,
 				},
-				CreatedAt: time.Unix(payment.CreationDate, 0),
-				Reference: payment.Id,
-				Amount:    &amount,
-				Type:      paymentType,
-				Status:    matchPaymentStatus(payment.Status),
-				Scheme:    models.PaymentSchemeOther,
-				Asset:     currency.FormatAsset(payment.DebitedFunds.Currency),
-				RawData:   rawData,
+				CreatedAt:   time.Unix(payment.CreationDate, 0),
+				Reference:   payment.Id,
+				Amount:      &amount,
+				ConnectorID: connectorID,
+				Type:        paymentType,
+				Status:      matchPaymentStatus(payment.Status),
+				Scheme:      models.PaymentSchemeOther,
+				Asset:       currency.FormatAsset(payment.DebitedFunds.Currency),
+				RawData:     rawData,
 			},
 		}
 
 		if payment.DebitedWalletID != "" {
 			batchElement.Payment.SourceAccountID = &models.AccountID{
-				Reference: payment.DebitedWalletID,
-				Provider:  models.ConnectorProviderMangopay,
+				Reference:   payment.DebitedWalletID,
+				ConnectorID: connectorID,
 			}
 		}
 
 		if payment.CreditedWalletID != "" {
 			batchElement.Payment.DestinationAccountID = &models.AccountID{
-				Reference: payment.CreditedWalletID,
-				Provider:  models.ConnectorProviderMangopay,
+				Reference:   payment.CreditedWalletID,
+				ConnectorID: connectorID,
 			}
 		}
 
 		batch = append(batch, batchElement)
 	}
 
-	return ingester.IngestPayments(ctx, batch, struct{}{})
+	return ingester.IngestPayments(ctx, connectorID, batch, struct{}{})
 }
 
 func matchPaymentType(paymentType string) models.PaymentType {

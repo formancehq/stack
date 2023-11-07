@@ -10,9 +10,10 @@ import (
 )
 
 // taskMain is the main task of the connector. It launches the other tasks.
-func taskMain(logger logging.Logger) task.Task {
+func taskMain() task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
 		scheduler task.Scheduler,
 	) error {
 		logger.Info(taskNameMain)

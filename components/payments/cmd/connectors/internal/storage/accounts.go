@@ -2,39 +2,21 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
 )
 
-func (s *Storage) UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []*models.Account) error {
+func (s *Storage) UpsertAccounts(ctx context.Context, accounts []*models.Account) error {
 	if len(accounts) == 0 {
 		return nil
 	}
 
-	accountsMap := make(map[string]*models.Account)
-	for _, account := range accounts {
-		accountsMap[account.Reference] = account
-	}
-
-	connector, err := s.GetConnector(ctx, provider)
-	if err != nil {
-		return fmt.Errorf("failed to get connector: %w", err)
-	}
-
-	accounts = make([]*models.Account, 0, len(accountsMap))
-	for _, account := range accountsMap {
-		account.ConnectorID = connector.ID
-		accounts = append(accounts, account)
-	}
-
-	_, err = s.db.NewInsert().
+	_, err := s.db.NewInsert().
 		Model(&accounts).
 		On("CONFLICT (id) DO UPDATE").
 		Set("connector_id = EXCLUDED.connector_id").
-		Set("provider = EXCLUDED.provider").
 		Set("raw_data = EXCLUDED.raw_data").
 		Set("default_currency = EXCLUDED.default_currency").
 		Set("account_name = EXCLUDED.account_name").

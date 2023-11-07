@@ -12,48 +12,16 @@ import (
 )
 
 var (
-	p1ID = &models.PaymentID{
-		PaymentReference: models.PaymentReference{
-			Reference: "test1",
-			Type:      models.PaymentTypePayOut,
-		},
-		Provider: models.ConnectorProviderDummyPay,
-	}
-	p1T = time.Date(2023, 11, 14, 4, 55, 0, 0, time.UTC)
-	p1  = &models.Payment{
-		ID:        *p1ID,
-		CreatedAt: p1T,
-		Reference: "ref1",
-		Amount:    big.NewInt(100),
-		Type:      models.PaymentTypePayOut,
-		Status:    models.PaymentStatusSucceeded,
-		Scheme:    models.PaymentSchemeCardVisa,
-		Asset:     models.Asset("USD/2"),
-	}
+	p1ID *models.PaymentID
+	p1T  = time.Date(2023, 11, 14, 4, 55, 0, 0, time.UTC)
+	p1   *models.Payment
 
-	p2ID = &models.PaymentID{
-		PaymentReference: models.PaymentReference{
-			Reference: "test2",
-			Type:      models.PaymentTypeTransfer,
-		},
-		Provider: models.ConnectorProviderDummyPay,
-	}
-	p2T = time.Date(2023, 11, 14, 4, 54, 0, 0, time.UTC)
-	p2  = &models.Payment{
-		ID:        *p2ID,
-		CreatedAt: p2T,
-		Reference: "ref2",
-		Amount:    big.NewInt(150),
-		Type:      models.PaymentTypePayIn,
-		Status:    models.PaymentStatusFailed,
-		Scheme:    models.PaymentSchemeCardVisa,
-		Asset:     models.Asset("EUR/2"),
-	}
+	p2ID *models.PaymentID
+	p2T  = time.Date(2023, 11, 14, 4, 54, 0, 0, time.UTC)
+	p2   *models.Payment
 )
 
 func TestPayments(t *testing.T) {
-	t.Parallel()
-
 	store := newStore(t)
 
 	testInstallConnectors(t, store)
@@ -65,28 +33,67 @@ func TestPayments(t *testing.T) {
 }
 
 func testCreatePayments(t *testing.T, store *storage.Storage) {
+	p1ID = &models.PaymentID{
+		PaymentReference: models.PaymentReference{
+			Reference: "test1",
+			Type:      models.PaymentTypePayOut,
+		},
+		ConnectorID: connectorID,
+	}
+	p1 = &models.Payment{
+		ID:          *p1ID,
+		CreatedAt:   p1T,
+		Reference:   "ref1",
+		Amount:      big.NewInt(100),
+		ConnectorID: connectorID,
+		Type:        models.PaymentTypePayOut,
+		Status:      models.PaymentStatusSucceeded,
+		Scheme:      models.PaymentSchemeCardVisa,
+		Asset:       models.Asset("USD/2"),
+	}
+
+	p2ID = &models.PaymentID{
+		PaymentReference: models.PaymentReference{
+			Reference: "test2",
+			Type:      models.PaymentTypeTransfer,
+		},
+		ConnectorID: connectorID,
+	}
+	p2 = &models.Payment{
+		ID:          *p2ID,
+		CreatedAt:   p2T,
+		Reference:   "ref2",
+		Amount:      big.NewInt(150),
+		ConnectorID: connectorID,
+		Type:        models.PaymentTypePayIn,
+		Status:      models.PaymentStatusFailed,
+		Scheme:      models.PaymentSchemeCardVisa,
+		Asset:       models.Asset("EUR/2"),
+	}
+
 	pFail := &models.Payment{
-		ID:        *p1ID,
-		CreatedAt: p1T,
-		Reference: "ref1",
-		Amount:    big.NewInt(100),
-		Type:      models.PaymentTypePayOut,
-		Status:    models.PaymentStatusSucceeded,
-		Scheme:    models.PaymentSchemeCardVisa,
-		Asset:     models.Asset("USD/2"),
+		ID:          *p1ID,
+		CreatedAt:   p1T,
+		Reference:   "ref1",
+		ConnectorID: connectorID,
+		Amount:      big.NewInt(100),
+		Type:        models.PaymentTypePayOut,
+		Status:      models.PaymentStatusSucceeded,
+		Scheme:      models.PaymentSchemeCardVisa,
+		Asset:       models.Asset("USD/2"),
 		SourceAccountID: &models.AccountID{
-			Reference: "not_existing",
-			Provider:  models.ConnectorProviderDummyPay,
+			Reference:   "not_existing",
+			ConnectorID: connectorID,
 		},
 	}
 
-	err := store.UpsertPayments(context.Background(), models.ConnectorProviderDummyPay, []*models.Payment{pFail})
+	err := store.UpsertPayments(context.Background(), []*models.Payment{pFail})
 	require.Error(t, err)
 
-	err = store.UpsertPayments(context.Background(), models.ConnectorProviderDummyPay, []*models.Payment{p1})
+	err = store.UpsertPayments(context.Background(), []*models.Payment{p1})
 	require.NoError(t, err)
 
-	err = store.UpsertPayments(context.Background(), models.ConnectorProviderDummyPay, []*models.Payment{p2})
+	err = store.UpsertPayments(context.Background(), []*models.Payment{p2})
 	require.NoError(t, err)
 
 	testGetPayment(t, store, *p1ID, p1, nil)
@@ -135,7 +142,7 @@ func testUpdatePayment(t *testing.T, store *storage.Storage) {
 	p1.Scheme = models.PaymentSchemeCardVisa
 	p1.Asset = models.Asset("USD/2")
 
-	err := store.UpsertPayments(context.Background(), models.ConnectorProviderDummyPay, []*models.Payment{p1})
+	err := store.UpsertPayments(context.Background(), []*models.Payment{p1})
 	require.NoError(t, err)
 
 	payment, err := store.GetPayment(context.Background(), p1ID.String())

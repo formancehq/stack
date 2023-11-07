@@ -20,9 +20,9 @@ var (
 	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
-func BalancesTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger,
+func balancesTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
 	ingester ingestion.Ingester, resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry) error {
-	return func(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
+	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, ingester ingestion.Ingester,
 		resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Infof("Create new balances trigger for account %s", account)
@@ -43,13 +43,14 @@ func BalancesTask(account string, client *client.DefaultClient) func(ctx context
 			timestamp := time.Now()
 			batch = append(batch, &models.Balance{
 				AccountID: models.AccountID{
-					Reference: account,
-					Provider:  models.ConnectorProviderStripe,
+					Reference:   account,
+					ConnectorID: connectorID,
 				},
 				Asset:         currency.FormatAsset(string(balance.Currency)),
 				Balance:       big.NewInt(balance.Value),
 				CreatedAt:     timestamp,
 				LastUpdatedAt: timestamp,
+				ConnectorID:   connectorID,
 			})
 		}
 

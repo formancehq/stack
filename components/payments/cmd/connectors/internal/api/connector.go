@@ -13,21 +13,28 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func readConfig[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+func readConfig[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorsManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if connectorNotInstalled(connectorManager, w, r) {
+		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		if err != nil {
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		config, err := connectorManager.ReadConfig(r.Context())
+		if connectorNotInstalled(connectorManager, connectorID, w, r) {
+			return
+		}
+
+		config, err := connectorManager.ReadConfig(r.Context(), connectorID)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[Config]{
-			Data: config,
+			Data: &config,
 		})
 		if err != nil {
 			panic(err)
@@ -46,10 +53,17 @@ type listTasksResponseElement struct {
 	Error       string            `json:"error"`
 }
 
-func listTasks[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+func listTasks[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorsManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if connectorNotInstalled(connectorManager, w, r) {
+		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		if err != nil {
+			api.BadRequest(w, ErrInvalidID, err)
+			return
+		}
+
+		if connectorNotInstalled(connectorManager, connectorID, w, r) {
 			return
 		}
 
@@ -65,7 +79,7 @@ func listTasks[Config models.ConnectorConfigObject](connectorManager *integratio
 			return
 		}
 
-		tasks, paginationDetails, err := connectorManager.ListTasksStates(r.Context(), pagination)
+		tasks, paginationDetails, err := connectorManager.ListTasksStates(r.Context(), connectorID, pagination)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
@@ -100,10 +114,17 @@ func listTasks[Config models.ConnectorConfigObject](connectorManager *integratio
 	}
 }
 
-func readTask[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+func readTask[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorsManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if connectorNotInstalled(connectorManager, w, r) {
+		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		if err != nil {
+			api.BadRequest(w, ErrInvalidID, err)
+			return
+		}
+
+		if connectorNotInstalled(connectorManager, connectorID, w, r) {
 			return
 		}
 
@@ -113,7 +134,7 @@ func readTask[Config models.ConnectorConfigObject](connectorManager *integration
 			return
 		}
 
-		task, err := connectorManager.ReadTaskState(r.Context(), taskID)
+		task, err := connectorManager.ReadTaskState(r.Context(), connectorID, taskID)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
@@ -139,14 +160,21 @@ func readTask[Config models.ConnectorConfigObject](connectorManager *integration
 	}
 }
 
-func uninstall[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+func uninstall[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorsManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if connectorNotInstalled(connectorManager, w, r) {
+		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		if err != nil {
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		err := connectorManager.Uninstall(r.Context())
+		if connectorNotInstalled(connectorManager, connectorID, w, r) {
+			return
+		}
+
+		err = connectorManager.Uninstall(r.Context(), connectorID)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
@@ -156,48 +184,56 @@ func uninstall[Config models.ConnectorConfigObject](connectorManager *integratio
 	}
 }
 
-func install[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+type installResponse struct {
+	ConnectorID string `json:"connectorID"`
+}
+
+func install[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorsManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		installed, err := connectorManager.IsInstalled(r.Context())
-		if err != nil {
-			handleStorageErrors(w, r, err)
-			return
-		}
-
-		if installed {
-			api.BadRequest(w, ErrValidation, integration.ErrAlreadyInstalled)
-			return
-		}
-
 		var config Config
 		if r.ContentLength > 0 {
-			err = json.NewDecoder(r.Body).Decode(&config)
+			err := json.NewDecoder(r.Body).Decode(&config)
 			if err != nil {
 				api.BadRequest(w, ErrMissingOrInvalidBody, err)
 				return
 			}
 		}
 
-		err = connectorManager.Install(r.Context(), config)
+		connectorID, err := connectorManager.Install(r.Context(), config.ConnectorName(), config)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusCreated)
+		err = json.NewEncoder(w).Encode(api.BaseResponse[installResponse]{
+			Data: &installResponse{
+				ConnectorID: connectorID.String(),
+			},
+		})
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
 func reset[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorManager[Config],
+	connectorManager *integration.ConnectorsManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if connectorNotInstalled(connectorManager, w, r) {
+		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		if err != nil {
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		err := connectorManager.Reset(r.Context())
+		if connectorNotInstalled(connectorManager, connectorID, w, r) {
+			return
+		}
+
+		err = connectorManager.Reset(r.Context(), connectorID)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
@@ -207,10 +243,12 @@ func reset[Config models.ConnectorConfigObject](
 	}
 }
 
-func connectorNotInstalled[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+func connectorNotInstalled[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorsManager[Config],
+	connectorID models.ConnectorID,
 	w http.ResponseWriter, r *http.Request,
 ) bool {
-	installed, err := connectorManager.IsInstalled(r.Context())
+	installed, err := connectorManager.IsInstalled(r.Context(), connectorID)
 	if err != nil {
 		handleStorageErrors(w, r, err)
 		return true

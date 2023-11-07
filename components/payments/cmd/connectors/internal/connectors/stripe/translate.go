@@ -14,7 +14,12 @@ import (
 	"github.com/stripe/stripe-go/v72"
 )
 
-func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account string, forward bool) (ingestion.PaymentBatchElement, bool) {
+func createBatchElement(
+	connectorID models.ConnectorID,
+	balanceTransaction *stripe.BalanceTransaction,
+	account string,
+	forward bool,
+) (ingestion.PaymentBatchElement, bool) {
 	var payment models.Payment // reference   payments.Referenced
 	// paymentData *payments.Data
 	// adjustment  *payments.Adjustment
@@ -50,22 +55,23 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayIn,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayIn,
-			Status:    models.PaymentStatusSucceeded,
-			Amount:    big.NewInt(balanceTransaction.Source.Charge.Amount),
-			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
-			RawData:   rawData,
-			Scheme:    models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
-			CreatedAt: time.Unix(balanceTransaction.Created, 0),
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayIn,
+			Status:      models.PaymentStatusSucceeded,
+			Amount:      big.NewInt(balanceTransaction.Source.Charge.Amount),
+			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
+			RawData:     rawData,
+			Scheme:      models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
+			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
 		}
 
 		if account != "" {
 			payment.DestinationAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -76,14 +82,15 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayOut,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayOut,
-			Status:    convertPayoutStatus(balanceTransaction.Source.Payout.Status),
-			Amount:    big.NewInt(balanceTransaction.Source.Payout.Amount),
-			RawData:   rawData,
-			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Payout.Currency)),
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayOut,
+			Status:      convertPayoutStatus(balanceTransaction.Source.Payout.Status),
+			Amount:      big.NewInt(balanceTransaction.Source.Payout.Amount),
+			RawData:     rawData,
+			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Payout.Currency)),
 			Scheme: func() models.PaymentScheme {
 				switch balanceTransaction.Source.Payout.Type {
 				case stripe.PayoutTypeBank:
@@ -99,8 +106,8 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 
 		if account != "" {
 			payment.SourceAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -111,22 +118,23 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayOut,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayOut,
-			Status:    models.PaymentStatusSucceeded,
-			Amount:    big.NewInt(balanceTransaction.Source.Transfer.Amount),
-			RawData:   rawData,
-			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Transfer.Currency)),
-			Scheme:    models.PaymentSchemeOther,
-			CreatedAt: time.Unix(balanceTransaction.Created, 0),
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayOut,
+			Status:      models.PaymentStatusSucceeded,
+			Amount:      big.NewInt(balanceTransaction.Source.Transfer.Amount),
+			RawData:     rawData,
+			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Transfer.Currency)),
+			Scheme:      models.PaymentSchemeOther,
+			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
 		}
 
 		if account != "" {
 			payment.SourceAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -137,10 +145,11 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayOut,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayOut,
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayOut,
 			Adjustments: []*models.Adjustment{
 				{
 					Reference: balanceTransaction.ID,
@@ -154,8 +163,8 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 
 		if account != "" {
 			payment.SourceAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -166,22 +175,23 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayIn,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayIn,
-			Status:    models.PaymentStatusSucceeded,
-			Amount:    big.NewInt(balanceTransaction.Source.Charge.Amount),
-			RawData:   rawData,
-			Asset:     currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
-			Scheme:    models.PaymentSchemeOther,
-			CreatedAt: time.Unix(balanceTransaction.Created, 0),
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayIn,
+			Status:      models.PaymentStatusSucceeded,
+			Amount:      big.NewInt(balanceTransaction.Source.Charge.Amount),
+			RawData:     rawData,
+			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
+			Scheme:      models.PaymentSchemeOther,
+			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
 		}
 
 		if account != "" {
 			payment.DestinationAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -192,11 +202,12 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayOut,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayOut,
-			Status:    models.PaymentStatusFailed,
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayOut,
+			Status:      models.PaymentStatusFailed,
 			Adjustments: []*models.Adjustment{
 				{
 					Reference: balanceTransaction.ID,
@@ -210,8 +221,8 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 
 		if account != "" {
 			payment.SourceAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -222,11 +233,12 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayIn,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayIn,
-			Status:    models.PaymentStatusFailed,
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayIn,
+			Status:      models.PaymentStatusFailed,
 			Adjustments: []*models.Adjustment{
 				{
 					Reference: balanceTransaction.ID,
@@ -240,8 +252,8 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 
 		if account != "" {
 			payment.DestinationAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -252,11 +264,12 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayOut,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayOut,
-			Status:    models.PaymentStatusSucceeded,
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayOut,
+			Status:      models.PaymentStatusSucceeded,
 			Adjustments: []*models.Adjustment{
 				{
 					Reference: balanceTransaction.ID,
@@ -270,8 +283,8 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 
 		if account != "" {
 			payment.SourceAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 
@@ -282,10 +295,11 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 					Reference: balanceTransaction.ID,
 					Type:      models.PaymentTypePayOut,
 				},
-				Provider: models.ConnectorProviderStripe,
+				ConnectorID: connectorID,
 			},
-			Reference: balanceTransaction.ID,
-			Type:      models.PaymentTypePayOut,
+			Reference:   balanceTransaction.ID,
+			ConnectorID: connectorID,
+			Type:        models.PaymentTypePayOut,
 			Adjustments: []*models.Adjustment{
 				{
 					Reference: balanceTransaction.ID,
@@ -299,8 +313,8 @@ func CreateBatchElement(balanceTransaction *stripe.BalanceTransaction, account s
 
 		if account != "" {
 			payment.SourceAccountID = &models.AccountID{
-				Reference: account,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account,
+				ConnectorID: connectorID,
 			}
 		}
 

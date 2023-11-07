@@ -17,6 +17,7 @@ import (
 // openssl pkcs12 -in PC20230412293693.pfx -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > clientcert.cer
 // openssl pkcs12 -in PC20230412293693.pfx -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > clientcert.key
 type Config struct {
+	Name                  string              `json:"name" yaml:"name" bson:"name"`
 	Username              string              `json:"username" yaml:"username" bson:"username"`
 	Password              string              `json:"password" yaml:"password" bson:"password"`
 	Endpoint              string              `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
@@ -57,6 +58,10 @@ func (c Config) Validate() error {
 		return ErrMissingUserCertificatePassphrase
 	}
 
+	if c.Name == "" {
+		return ErrMissingName
+	}
+
 	return nil
 }
 
@@ -64,9 +69,14 @@ func (c Config) Marshal() ([]byte, error) {
 	return json.Marshal(c)
 }
 
+func (c Config) ConnectorName() string {
+	return c.Name
+}
+
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
+	cfg.AddParameter("name", configtemplate.TypeString, true)
 	cfg.AddParameter("username", configtemplate.TypeString, true)
 	cfg.AddParameter("password", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, true)

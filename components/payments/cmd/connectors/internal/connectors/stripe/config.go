@@ -11,6 +11,7 @@ import (
 )
 
 type Config struct {
+	Name           string              `json:"name" yaml:"name" bson:"name"`
 	PollingPeriod  connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 	APIKey         string              `json:"apiKey" yaml:"apiKey" bson:"apiKey"`
 	TimelineConfig `bson:",inline"`
@@ -27,7 +28,15 @@ func (c Config) Validate() error {
 		return errors.New("missing api key")
 	}
 
+	if c.Name == "" {
+		return errors.New("missing name")
+	}
+
 	return nil
+}
+
+func (c Config) ConnectorName() string {
+	return c.Name
 }
 
 func (c Config) Marshal() ([]byte, error) {

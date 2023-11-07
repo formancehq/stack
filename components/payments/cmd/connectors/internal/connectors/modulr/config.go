@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	Name          string              `json:"name" bson:"name"`
 	APIKey        string              `json:"apiKey" bson:"apiKey"`
 	APISecret     string              `json:"apiSecret" bson:"apiSecret"`
 	Endpoint      string              `json:"endpoint" bson:"endpoint"`
@@ -30,6 +31,10 @@ func (c Config) Validate() error {
 		return ErrMissingAPISecret
 	}
 
+	if c.Name == "" {
+		return ErrMissingName
+	}
+
 	return nil
 }
 
@@ -37,9 +42,14 @@ func (c Config) Marshal() ([]byte, error) {
 	return json.Marshal(c)
 }
 
+func (c Config) ConnectorName() string {
+	return c.Name
+}
+
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
+	cfg.AddParameter("name", configtemplate.TypeString, true)
 	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
 	cfg.AddParameter("apiSecret", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, false)

@@ -8,4 +8,7 @@ var (
 
 	// ErrMissingAPIKey is returned when the api key is missing from config.
 	ErrMissingAPIKey = errors.New("missing apiKey from config")
+
+	// ErrMissingName is returned when the name is missing from config.
+	ErrMissingName = errors.New("missing name from config")
 )

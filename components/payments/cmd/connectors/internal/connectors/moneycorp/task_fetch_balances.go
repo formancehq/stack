@@ -25,6 +25,7 @@ var (
 func taskFetchBalances(logger logging.Logger, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
@@ -41,7 +42,7 @@ func taskFetchBalances(logger logging.Logger, client *client.Client, accountID s
 			return err
 		}
 
-		if err := ingestBalancesBatch(ctx, ingester, accountID, balances); err != nil {
+		if err := ingestBalancesBatch(ctx, connectorID, ingester, accountID, balances); err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
@@ -53,6 +54,7 @@ func taskFetchBalances(logger logging.Logger, client *client.Client, accountID s
 
 func ingestBalancesBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	accountID string,
 	balances []*client.Balance,
@@ -76,13 +78,14 @@ func ingestBalancesBatch(
 		now := time.Now()
 		batch = append(batch, &models.Balance{
 			AccountID: models.AccountID{
-				Reference: accountID,
-				Provider:  models.ConnectorProviderMoneycorp,
+				Reference:   accountID,
+				ConnectorID: connectorID,
 			},
 			Asset:         currency.FormatAsset(balance.Attributes.CurrencyCode),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
+			ConnectorID:   connectorID,
 		})
 	}
 

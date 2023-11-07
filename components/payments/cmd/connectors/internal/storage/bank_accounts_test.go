@@ -20,8 +20,6 @@ var (
 )
 
 func TestBankAccounts(t *testing.T) {
-	t.Parallel()
-
 	store := newStore(t)
 
 	testInstallConnectors(t, store)
@@ -35,7 +33,7 @@ func TestBankAccounts(t *testing.T) {
 func testCreateBankAccounts(t *testing.T, store *storage.Storage) {
 	bankAccount1 := &models.BankAccount{
 		CreatedAt:    bankAccount1T,
-		Provider:     models.ConnectorProviderDummyPay,
+		ConnectorID:  connectorID,
 		Name:         "test1",
 		IBAN:         "FR7630006000011234567890189",
 		SwiftBicCode: "BNPAFRPPXXX",
@@ -49,7 +47,7 @@ func testCreateBankAccounts(t *testing.T, store *storage.Storage) {
 
 	bankAccount2 := &models.BankAccount{
 		CreatedAt:     bankAccount2T,
-		Provider:      models.ConnectorProviderDummyPay,
+		ConnectorID:   connectorID,
 		Name:          "test2",
 		AccountNumber: "123456789",
 		Country:       "FR",
@@ -63,13 +61,13 @@ func testCreateBankAccounts(t *testing.T, store *storage.Storage) {
 
 	bankAccountFail := &models.BankAccount{
 		CreatedAt:     bankAccount2T,
-		Provider:      models.ConnectorProviderDummyPay,
+		ConnectorID:   connectorID,
 		Name:          "test2",
 		AccountNumber: "123456789",
 		Country:       "FR",
 		AccountID: &models.AccountID{
-			Reference: "not_existing",
-			Provider:  models.ConnectorProviderDummyPay,
+			Reference:   "not_existing",
+			ConnectorID: connectorID,
 		},
 	}
 
@@ -100,7 +98,7 @@ func testGetBankAccount(
 	require.Equal(t, bankAccount.Country, expectedBankAccount.Country)
 	require.Equal(t, bankAccount.CreatedAt.UTC(), expectedBankAccount.CreatedAt.UTC())
 	require.Equal(t, bankAccount.Name, expectedBankAccount.Name)
-	require.Equal(t, bankAccount.Provider, expectedBankAccount.Provider)
+	require.Equal(t, bankAccount.ConnectorID, expectedBankAccount.ConnectorID)
 
 	if expand {
 		require.Equal(t, bankAccount.SwiftBicCode, expectedBankAccount.SwiftBicCode)

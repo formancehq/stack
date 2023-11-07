@@ -62,7 +62,6 @@ func httpRouter(
 	authGroup.HandleFunc("/connectors", readConnectorsHandler(store))
 
 	connectorGroup := authGroup.PathPrefix("/connectors").Subrouter()
-
 	connectorGroup.Path("/configs").Handler(connectorConfigsHandler())
 
 	for _, h := range connectorHandlers {
@@ -78,16 +77,16 @@ func httpRouter(
 
 func connectorRouter[Config models.ConnectorConfigObject](
 	provider models.ConnectorProvider,
-	manager *integration.ConnectorManager[Config],
+	manager *integration.ConnectorsManager[Config],
 ) *mux.Router {
 	r := mux.NewRouter()
 
 	addRoute(r, provider, "", http.MethodPost, install(manager))
-	addRoute(r, provider, "", http.MethodDelete, uninstall(manager))
-	addRoute(r, provider, "/config", http.MethodGet, readConfig(manager))
-	addRoute(r, provider, "/reset", http.MethodPost, reset(manager))
-	addRoute(r, provider, "/tasks", http.MethodGet, listTasks(manager))
-	addRoute(r, provider, "/tasks/{taskID}", http.MethodGet, readTask(manager))
+	addRoute(r, provider, "/{connectorID}", http.MethodDelete, uninstall(manager))
+	addRoute(r, provider, "/{connectorID}/config", http.MethodGet, readConfig(manager))
+	addRoute(r, provider, "/{connectorID}/reset", http.MethodPost, reset(manager))
+	addRoute(r, provider, "/{connectorID}/tasks", http.MethodGet, listTasks(manager))
+	addRoute(r, provider, "/{connectorID}/tasks/{taskID}", http.MethodGet, readTask(manager))
 
 	return r
 }

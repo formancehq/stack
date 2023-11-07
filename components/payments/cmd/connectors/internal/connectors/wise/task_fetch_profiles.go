@@ -25,9 +25,11 @@ var (
 	balancesAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
-func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
+func taskFetchProfiles(wiseClient *client.Client) task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		metricsRegistry metrics.MetricsRegistry,
@@ -37,7 +39,7 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), profilesAndBalancesAttrs)
 		}()
 
-		profiles, err := client.GetProfiles()
+		profiles, err := wiseClient.GetProfiles()
 		if err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs)
 			return err
@@ -45,13 +47,20 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 
 		var descriptors []models.TaskDescriptor
 		for _, profile := range profiles {
-			balances, err := client.GetBalances(ctx, profile.ID)
+			balances, err := wiseClient.GetBalances(ctx, profile.ID)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 				return err
 			}
 
-			if err := ingestAccountsBatch(ctx, metricsRegistry, ingester, profile.ID, balances); err != nil {
+			if err := ingestAccountsBatch(
+				ctx,
+				connectorID,
+				metricsRegistry,
+				ingester,
+				profile.ID,
+				balances,
+			); err != nil {
 				return err
 			}
 
@@ -94,6 +103,7 @@ func taskFetchProfiles(logger logging.Logger, client *client.Client) task.Task {
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	metricsRegistry metrics.MetricsRegistry,
 	ingester ingestion.Ingester,
 	profileID uint64,
@@ -113,12 +123,12 @@ func ingestAccountsBatch(
 
 		accountsBatch = append(accountsBatch, &models.Account{
 			ID: models.AccountID{
-				Reference: fmt.Sprintf("%d", balance.ID),
-				Provider:  models.ConnectorProviderWise,
+				Reference:   fmt.Sprintf("%d", balance.ID),
+				ConnectorID: connectorID,
 			},
 			CreatedAt:    balance.CreationTime,
 			Reference:    fmt.Sprintf("%d", balance.ID),
-			Provider:     models.ConnectorProviderWise,
+			ConnectorID:  connectorID,
 			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)),
 			AccountName:  balance.Name,
 			Type:         models.AccountTypeInternal,
@@ -140,13 +150,14 @@ func ingestAccountsBatch(
 		now := time.Now()
 		balancesBatch = append(balancesBatch, &models.Balance{
 			AccountID: models.AccountID{
-				Reference: fmt.Sprintf("%d", balance.ID),
-				Provider:  models.ConnectorProviderWise,
+				Reference:   fmt.Sprintf("%d", balance.ID),
+				ConnectorID: connectorID,
 			},
 			Asset:         models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
+			ConnectorID:   connectorID,
 		})
 	}
 

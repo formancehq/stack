@@ -26,6 +26,7 @@ type paymentResponse struct {
 	DestinationAccountID string                   `json:"destinationAccountID"`
 	Type                 string                   `json:"type"`
 	Provider             models.ConnectorProvider `json:"provider"`
+	ConnectorID          string                   `json:"connectorID"`
 	Status               models.PaymentStatus     `json:"status"`
 	InitialAmount        *big.Int                 `json:"initialAmount"`
 	Scheme               models.PaymentScheme     `json:"scheme"`
@@ -99,7 +100,7 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 				ID:            ret[i].ID.String(),
 				Reference:     ret[i].Reference,
 				Type:          ret[i].Type.String(),
-				Provider:      ret[i].Connector.Provider,
+				ConnectorID:   ret[i].ConnectorID.String(),
 				Status:        ret[i].Status,
 				InitialAmount: ret[i].Amount,
 				Scheme:        ret[i].Scheme,
@@ -107,6 +108,10 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 				CreatedAt:     ret[i].CreatedAt,
 				Raw:           ret[i].RawData,
 				Adjustments:   make([]paymentAdjustment, len(ret[i].Adjustments)),
+			}
+
+			if ret[i].Connector != nil {
+				data[i].Provider = ret[i].Connector.Provider
 			}
 
 			if ret[i].SourceAccountID != nil {
@@ -172,7 +177,7 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			ID:            payment.ID.String(),
 			Reference:     payment.Reference,
 			Type:          payment.Type.String(),
-			Provider:      payment.Connector.Provider,
+			ConnectorID:   payment.ConnectorID.String(),
 			Status:        payment.Status,
 			InitialAmount: payment.Amount,
 			Scheme:        payment.Scheme,
@@ -188,6 +193,10 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 
 		if payment.DestinationAccountID != nil {
 			data.DestinationAccountID = payment.DestinationAccountID.String()
+		}
+
+		if payment.Connector != nil {
+			data.Provider = payment.Connector.Provider
 		}
 
 		for i := range payment.Adjustments {

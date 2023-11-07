@@ -6,10 +6,10 @@ import (
 	"github.com/formancehq/payments/internal/models"
 )
 
-func (s *Storage) IsInstalled(ctx context.Context, provider models.ConnectorProvider) (bool, error) {
+func (s *Storage) IsInstalledByConnectorName(ctx context.Context, name string) (bool, error) {
 	exists, err := s.db.NewSelect().
 		Model(&models.Connector{}).
-		Where("provider = ?", provider).
+		Where("name = ?", name).
 		Exists(ctx)
 	if err != nil {
 		return false, e("find connector", err)
@@ -18,13 +18,25 @@ func (s *Storage) IsInstalled(ctx context.Context, provider models.ConnectorProv
 	return exists, nil
 }
 
-func (s *Storage) GetConnector(ctx context.Context, provider models.ConnectorProvider) (*models.Connector, error) {
+func (s *Storage) IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error) {
+	exists, err := s.db.NewSelect().
+		Model(&models.Connector{}).
+		Where("id = ?", connectorID).
+		Exists(ctx)
+	if err != nil {
+		return false, e("find connector", err)
+	}
+
+	return exists, nil
+}
+
+func (s *Storage) GetConnectorByConnectorID(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error) {
 	var connector models.Connector
 
 	err := s.db.NewSelect().
 		Model(&connector).
 		ColumnExpr("*, pgp_sym_decrypt(config, ?, ?) AS decrypted_config", s.configEncryptionKey, encryptionOptions).
-		Where("provider = ?", provider).
+		Where("id = ?", connectorID).
 		Scan(ctx)
 	if err != nil {
 		return nil, e("find connector", err)

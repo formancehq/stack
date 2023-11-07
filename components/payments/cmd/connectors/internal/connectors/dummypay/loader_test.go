@@ -22,6 +22,7 @@ func TestLoader(t *testing.T) {
 	assert.Equal(t, Name, loader.Name())
 	assert.Equal(t, 10, loader.AllowTasks())
 	assert.Equal(t, Config{
+		Name:                 "DUMMY-PAY",
 		FilePollingPeriod:    connectors.Duration{Duration: 10 * time.Second},
 		FileGenerationPeriod: connectors.Duration{Duration: 5 * time.Second},
 	}, loader.ApplyDefaults(config))

@@ -33,7 +33,7 @@ type Task struct {
 	bun.BaseModel `bun:"tasks.task"`
 
 	ID               uuid.UUID `bun:",pk,nullzero"`
-	ConnectorID      uuid.UUID
+	ConnectorID      ConnectorID
 	CreatedAt        time.Time `bun:",nullzero"`
 	UpdatedAt        time.Time `bun:",nullzero"`
 	Name             string

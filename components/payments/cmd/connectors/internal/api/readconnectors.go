@@ -14,11 +14,9 @@ type readConnectorsRepository interface {
 }
 
 type readConnectorsResponseElement struct {
-	Provider models.ConnectorProvider `json:"provider" bson:"provider"`
-	Enabled  bool                     `json:"enabled" bson:"enabled"`
-
-	// TODO: remove disabled field when frontend switches to using enabled
-	Disabled bool `json:"disabled" bson:"disabled"`
+	Provider    models.ConnectorProvider `json:"provider" bson:"provider"`
+	ConnectorID string                   `json:"connectorID" bson:"connectorID"`
+	Name        string                   `json:"name" bson:"name"`
 }
 
 func readConnectorsHandler(repo readConnectorsRepository) http.HandlerFunc {
@@ -33,9 +31,9 @@ func readConnectorsHandler(repo readConnectorsRepository) http.HandlerFunc {
 
 		for i := range res {
 			data[i] = readConnectorsResponseElement{
-				Provider: res[i].Provider,
-				Enabled:  res[i].Enabled,
-				Disabled: !res[i].Enabled,
+				Provider:    res[i].Provider,
+				ConnectorID: res[i].ID.String(),
+				Name:        res[i].Name,
 			}
 		}
 

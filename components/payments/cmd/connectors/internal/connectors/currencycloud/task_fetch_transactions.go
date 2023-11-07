@@ -24,14 +24,15 @@ var (
 func taskFetchTransactions(logger logging.Logger, client *client.Client, config Config) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		return ingestTransactions(ctx, logger, client, ingester, metricsRegistry)
+		return ingestTransactions(ctx, logger, connectorID, client, ingester, metricsRegistry)
 	}
 }
 
-func ingestTransactions(ctx context.Context, logger logging.Logger,
+func ingestTransactions(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
 	client *client.Client, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry,
 ) error {
 	now := time.Now()
@@ -87,35 +88,36 @@ func ingestTransactions(ctx context.Context, logger logging.Logger,
 							Reference: transaction.ID,
 							Type:      paymentType,
 						},
-						Provider: models.ConnectorProviderCurrencyCloud,
+						ConnectorID: connectorID,
 					},
-					Reference: transaction.ID,
-					Type:      paymentType,
-					Status:    matchTransactionStatus(transaction.Status),
-					Scheme:    models.PaymentSchemeOther,
-					Amount:    &amountInt,
-					Asset:     models.Asset(fmt.Sprintf("%s/2", transaction.Currency)),
-					RawData:   rawData,
+					Reference:   transaction.ID,
+					Type:        paymentType,
+					ConnectorID: connectorID,
+					Status:      matchTransactionStatus(transaction.Status),
+					Scheme:      models.PaymentSchemeOther,
+					Amount:      &amountInt,
+					Asset:       models.Asset(fmt.Sprintf("%s/2", transaction.Currency)),
+					RawData:     rawData,
 				},
 			}
 
 			switch paymentType {
 			case models.PaymentTypePayOut:
 				batchElement.Payment.SourceAccountID = &models.AccountID{
-					Reference: transaction.AccountID,
-					Provider:  models.ConnectorProviderCurrencyCloud,
+					Reference:   transaction.AccountID,
+					ConnectorID: connectorID,
 				}
 			default:
 				batchElement.Payment.DestinationAccountID = &models.AccountID{
-					Reference: transaction.AccountID,
-					Provider:  models.ConnectorProviderCurrencyCloud,
+					Reference:   transaction.AccountID,
+					ConnectorID: connectorID,
 				}
 			}
 
 			batch = append(batch, batchElement)
 		}
 
-		err = ingester.IngestPayments(ctx, batch, struct{}{})
+		err = ingester.IngestPayments(ctx, connectorID, batch, struct{}{})
 		if err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err

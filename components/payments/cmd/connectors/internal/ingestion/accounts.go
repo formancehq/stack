@@ -28,7 +28,7 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 		"startingAt": startingAt,
 	}).Debugf("Ingest accounts batch")
 
-	if err := i.repo.UpsertAccounts(ctx, i.provider, batch); err != nil {
+	if err := i.repo.UpsertAccounts(ctx, batch); err != nil {
 		return fmt.Errorf("error upserting accounts: %w", err)
 	}
 
@@ -37,7 +37,7 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 			events.TopicPayments,
 			publish.NewMessage(
 				ctx,
-				messages.NewEventSavedAccounts(account),
+				messages.NewEventSavedAccounts(i.provider, account),
 			),
 		); err != nil {
 			logging.FromContext(ctx).Errorf("Publishing message: %w", err)

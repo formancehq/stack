@@ -15,7 +15,6 @@ type Metadata struct {
 	Value     string
 
 	Changelog []MetadataChangelog `bun:",nullzero"`
-	Payment   *Payment            `bun:"rel:has-one,join:payment_id=id"`
 }
 
 type MetadataChangelog struct {

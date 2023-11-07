@@ -29,7 +29,9 @@ func (s *InMemoryStore) GetTask(ctx context.Context, id uuid.UUID) (*models.Task
 	return &task, nil
 }
 
-func (s *InMemoryStore) GetTaskByDescriptor(ctx context.Context, provider models.ConnectorProvider,
+func (s *InMemoryStore) GetTaskByDescriptor(
+	ctx context.Context,
+	connectorID models.ConnectorID,
 	descriptor models.TaskDescriptor,
 ) (*models.Task, error) {
 	id, err := descriptor.EncodeToString()
@@ -52,13 +54,13 @@ func (s *InMemoryStore) GetTaskByDescriptor(ctx context.Context, provider models
 }
 
 func (s *InMemoryStore) ListTasks(ctx context.Context,
-	provider models.ConnectorProvider,
+	connectorID models.ConnectorID,
 	pagination storage.PaginatorQuery,
 ) ([]models.Task, storage.PaginationDetails, error) {
 	ret := make([]models.Task, 0)
 
 	for id, status := range s.statuses {
-		if !strings.HasPrefix(id, fmt.Sprintf("%s/", provider)) {
+		if !strings.HasPrefix(id, fmt.Sprintf("%s/", connectorID)) {
 			continue
 		}
 
@@ -76,8 +78,9 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 	return ret, storage.PaginationDetails{}, nil
 }
 
-func (s *InMemoryStore) ReadOldestPendingTask(ctx context.Context,
-	provider models.ConnectorProvider,
+func (s *InMemoryStore) ReadOldestPendingTask(
+	ctx context.Context,
+	connectorID models.ConnectorID,
 ) (*models.Task, error) {
 	var (
 		oldestDate time.Time
@@ -121,10 +124,12 @@ func (s *InMemoryStore) ReadOldestPendingTask(ctx context.Context,
 	}, nil
 }
 
-func (s *InMemoryStore) ListTasksByStatus(ctx context.Context,
-	provider models.ConnectorProvider, taskStatus models.TaskStatus,
+func (s *InMemoryStore) ListTasksByStatus(
+	ctx context.Context,
+	connectorID models.ConnectorID,
+	taskStatus models.TaskStatus,
 ) ([]models.Task, error) {
-	all, _, err := s.ListTasks(ctx, provider, storage.PaginatorQuery{})
+	all, _, err := s.ListTasks(ctx, connectorID, storage.PaginatorQuery{})
 	if err != nil {
 		return nil, err
 	}
@@ -144,13 +149,13 @@ func (s *InMemoryStore) ListTasksByStatus(ctx context.Context,
 
 func (s *InMemoryStore) FindAndUpsertTask(
 	ctx context.Context,
-	provider models.ConnectorProvider,
+	connectorID models.ConnectorID,
 	descriptor models.TaskDescriptor,
 	status models.TaskStatus,
 	options models.TaskSchedulerOptions,
 	taskErr string,
 ) (*models.Task, error) {
-	err := s.UpdateTaskStatus(ctx, provider, descriptor, status, taskErr)
+	err := s.UpdateTaskStatus(ctx, connectorID, descriptor, status, taskErr)
 	if err != nil {
 		return nil, err
 	}
@@ -163,15 +168,19 @@ func (s *InMemoryStore) FindAndUpsertTask(
 	}, nil
 }
 
-func (s *InMemoryStore) UpdateTaskStatus(ctx context.Context, provider models.ConnectorProvider,
-	descriptor models.TaskDescriptor, status models.TaskStatus, taskError string,
+func (s *InMemoryStore) UpdateTaskStatus(
+	ctx context.Context,
+	connectorID models.ConnectorID,
+	descriptor models.TaskDescriptor,
+	status models.TaskStatus,
+	taskError string,
 ) error {
 	taskID, err := descriptor.EncodeToString()
 	if err != nil {
 		return err
 	}
 
-	key := fmt.Sprintf("%s/%s", provider, taskID)
+	key := fmt.Sprintf("%s/%s", connectorID, taskID)
 
 	s.statuses[key] = status
 
@@ -183,7 +192,8 @@ func (s *InMemoryStore) UpdateTaskStatus(ctx context.Context, provider models.Co
 	return nil
 }
 
-func (s *InMemoryStore) Result(provider models.ConnectorProvider,
+func (s *InMemoryStore) Result(
+	connectorID models.ConnectorID,
 	descriptor models.TaskDescriptor,
 ) (models.TaskStatus, string, bool) {
 	taskID, err := descriptor.EncodeToString()
@@ -191,7 +201,7 @@ func (s *InMemoryStore) Result(provider models.ConnectorProvider,
 		panic(err)
 	}
 
-	key := fmt.Sprintf("%s/%s", provider, taskID)
+	key := fmt.Sprintf("%s/%s", connectorID, taskID)
 
 	status, ok := s.statuses[key]
 	if !ok {

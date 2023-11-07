@@ -9,20 +9,20 @@ import (
 )
 
 type balanceMessagePayload struct {
-	CreatedAt time.Time `json:"createdAt"`
-	Provider  string    `json:"provider"`
-	AccountID string    `json:"accountID"`
-	Asset     string    `json:"asset"`
-	Balance   *big.Int  `json:"balance"`
+	AccountID   string    `json:"accountID"`
+	ConnectorID string `json:"connectorId"`
+	CreatedAt   time.Time `json:"createdAt"`
+	Asset       string    `json:"asset"`
+	Balance     *big.Int  `json:"balance"`
 }
 
-func NewEventSavedBalances(balance *models.Balance, provider models.ConnectorProvider) events.EventMessage {
+func NewEventSavedBalances(balance *models.Balance) events.EventMessage {
 	payload := balanceMessagePayload{
-		CreatedAt: balance.CreatedAt,
-		Provider:  provider.String(),
-		AccountID: balance.AccountID.String(),
-		Asset:     balance.Asset.String(),
-		Balance:   balance.Balance,
+		CreatedAt:   balance.CreatedAt,
+		ConnectorID: balance.ConnectorID.String(),
+		AccountID:   balance.AccountID.String(),
+		Asset:       balance.Asset.String(),
+		Balance:     balance.Balance,
 	}
 
 	return events.EventMessage{
