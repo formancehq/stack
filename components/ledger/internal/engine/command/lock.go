@@ -6,7 +6,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
@@ -33,10 +32,9 @@ type Accounts struct {
 }
 
 type lockIntent struct {
-	accounts       Accounts
-	acquired       chan struct{}
-	at             time.Time
-	metricRegistry metrics.PerLedgerRegistry
+	accounts Accounts
+	acquired chan struct{}
+	at       time.Time
 }
 
 func (intent *lockIntent) tryLock(ctx context.Context, chain *DefaultLocker) bool {
@@ -73,8 +71,6 @@ func (intent *lockIntent) tryLock(ctx context.Context, chain *DefaultLocker) boo
 		chain.writeLocks[account] = struct{}{}
 	}
 
-	intent.metricRegistry.LockWaitingTime().Record(ctx, time.Since(intent.at).Milliseconds())
-
 	return true
 }
 
@@ -92,11 +88,10 @@ func (intent *lockIntent) unlock(ctx context.Context, chain *DefaultLocker) {
 }
 
 type DefaultLocker struct {
-	intents           *collectionutils.LinkedList[*lockIntent]
-	mu                sync.Mutex
-	readLocks         map[string]*atomic.Int64
-	writeLocks        map[string]struct{}
-	perLedgerRegistry metrics.PerLedgerRegistry
+	intents    *collectionutils.LinkedList[*lockIntent]
+	mu         sync.Mutex
+	readLocks  map[string]*atomic.Int64
+	writeLocks map[string]struct{}
 }
 
 func (defaultLocker *DefaultLocker) Lock(ctx context.Context, accounts Accounts) (Unlock, error) {
@@ -110,10 +105,9 @@ func (defaultLocker *DefaultLocker) Lock(ctx context.Context, accounts Accounts)
 
 	logger.Debugf("Intent lock")
 	intent := &lockIntent{
-		accounts:       accounts,
-		acquired:       make(chan struct{}),
-		at:             time.Now(),
-		metricRegistry: defaultLocker.perLedgerRegistry,
+		accounts: accounts,
+		acquired: make(chan struct{}),
+		at:       time.Now(),
 	}
 
 	recheck := func() {
@@ -160,11 +154,10 @@ func (defaultLocker *DefaultLocker) Lock(ctx context.Context, accounts Accounts)
 	}
 }
 
-func NewDefaultLocker(perLedgerRegistry metrics.PerLedgerRegistry) *DefaultLocker {
+func NewDefaultLocker() *DefaultLocker {
 	return &DefaultLocker{
-		intents:           collectionutils.NewLinkedList[*lockIntent](),
-		readLocks:         map[string]*atomic.Int64{},
-		writeLocks:        map[string]struct{}{},
-		perLedgerRegistry: perLedgerRegistry,
+		intents:    collectionutils.NewLinkedList[*lockIntent](),
+		readLocks:  map[string]*atomic.Int64{},
+		writeLocks: map[string]struct{}{},
 	}
 }

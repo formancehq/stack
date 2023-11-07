@@ -7,13 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stretchr/testify/require"
 )
 
 func TestLock(t *testing.T) {
-	locker := NewDefaultLocker(metrics.NewNoOpRegistry())
+	locker := NewDefaultLocker()
 	var accounts []string
 	for i := 0; i < 10; i++ {
 		accounts = append(accounts, fmt.Sprintf("accounts:%d", i))
