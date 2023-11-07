@@ -12,8 +12,8 @@ import (
 )
 
 type DeleteWebhookStore struct {
-	ErrorResponse *shared.ErrorResponse `json:"error"`
-	Success       bool                  `json:"success"`
+	ErrorResponse *shared.WebhooksErrorResponse `json:"error"`
+	Success       bool                          `json:"success"`
 }
 
 type DeleteWebhookController struct {
@@ -74,13 +74,13 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 		return nil, errors.Wrap(err, "deleting config")
 	}
 
-	if response.ErrorResponse != nil {
-		if response.ErrorResponse.ErrorCode == "NOT_FOUND" {
-			c.store.ErrorResponse = response.ErrorResponse
+	if response.WebhooksErrorResponse != nil {
+		if response.WebhooksErrorResponse.ErrorCode == "NOT_FOUND" {
+			c.store.ErrorResponse = response.WebhooksErrorResponse
 			c.store.Success = false
 			return c, nil
 		}
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

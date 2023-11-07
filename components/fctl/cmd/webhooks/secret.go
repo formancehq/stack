@@ -77,8 +77,8 @@ func (c *ChangeSecretWebhookController) Run(cmd *cobra.Command, args []string) (
 		return nil, errors.Wrap(err, "changing secret")
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.WebhooksErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

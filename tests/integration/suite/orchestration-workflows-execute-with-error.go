@@ -112,7 +112,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 								},
 							},
 						},
-						LastFailure:   ptr("account had insufficient funds"),
+						LastFailure:   ptr("running numscript: script execution failed: no more fund to withdraw"),
 						Attempt:       getWorkflowInstanceHistoryStageResponse.Data[0].Attempt,
 						NextExecution: getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution,
 						StartedAt:     getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt,

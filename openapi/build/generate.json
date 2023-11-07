@@ -2494,7 +2494,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2534,7 +2534,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2571,7 +2571,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2615,7 +2615,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2659,7 +2659,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2703,7 +2703,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -2756,7 +2756,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/webhooksErrorResponse"
                 }
               }
             }
@@ -4936,12 +4936,12 @@
           "INSUFFICIENT_FUND",
           "VALIDATION",
           "CONFLICT",
-          "NO_SCRIPT",
           "COMPILATION_FAILED",
           "METADATA_OVERRIDE",
           "NOT_FOUND",
-          "CONTEXT_CANCELLED",
-          "STORE"
+          "REVERT_OCCURRING",
+          "ALREADY_REVERT",
+          "NO_POSTINGS"
         ],
         "example": "VALIDATION"
       },
@@ -7091,6 +7091,35 @@
           "retryAttempt",
           "status"
         ]
+      },
+      "webhooksErrorResponse": {
+        "type": "object",
+        "required": [
+          "errorCode",
+          "errorMessage"
+        ],
+        "properties": {
+          "errorCode": {
+            "$ref": "#/components/schemas/webhooksErrorsEnum"
+          },
+          "errorMessage": {
+            "type": "string",
+            "example": "[VALIDATION] invalid 'cursor' query param"
+          },
+          "details": {
+            "type": "string",
+            "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+          }
+        }
+      },
+      "webhooksErrorsEnum": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "VALIDATION",
+          "NOT_FOUND"
+        ],
+        "example": "VALIDATION"
       },
       "Monetary": {
         "type": "object",

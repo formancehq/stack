@@ -71,8 +71,8 @@ func (c *DesactivateWebhookController) Run(cmd *cobra.Command, args []string) (f
 	c.store.Success = !response.ConfigResponse.Data.Active
 
 	// Check if there is an error
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.WebhooksErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
 	}
 
 	// Check if the status code is >= 300
