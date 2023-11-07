@@ -1,0 +1,52 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+
+exporters:
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
+    resource_to_telemetry_conversion:
+      enabled: true
+  logging:
+  jaeger:
+    endpoint: "jaeger:14250" # using the docker-compose name of the jaeger container
+    tls:
+      insecure: true
+
+processors:
+  batch:
+    send_batch_size: 10000
+    timeout: 10s
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+
+connectors:
+  spanmetrics:
+    namespace: span.metrics
+    histogram:
+      explicit:
+        buckets: [ 100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms ]
+    dimensions:
+    - name: http.status_code
+    - name: http.method
+
+service:
+  telemetry:
+    logs:
+      level: "debug"
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [spanmetrics, jaeger]
+    metrics:
+      receivers: [otlp, spanmetrics]
+      #      processors: [batch]
+      exporters: [prometheusremotewrite]

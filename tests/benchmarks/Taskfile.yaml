@@ -1,0 +1,35 @@
+version: '3'
+
+tasks:
+  tools:
+    dir: ./tools
+    cmds:
+      - docker compose up -d
+      - sleep 20
+
+  build:scripts:
+    dir: ./scripts
+    cmds:
+      - npm run build
+
+  build:k6:
+    cmds:
+      - xk6 build --with extension=$(pwd)/extension --with github.com/grafana/xk6-output-prometheus-remote@v0.2.3
+
+  run:
+    deps:
+      - tools
+      - build:scripts
+      - build:k6
+    cmds:
+      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "DROP DATABASE IF EXISTS ledgerv2;"
+      - PGPASSWORD=ledger psql -h 127.0.0.1 -U ledger -c "CREATE DATABASE ledgerv2;"
+      - TEST_ID=$(date +%s)-v2 K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true K6_PROMETHEUS_RW_SERVER_URL=http://127.0.0.1:9090/api/v1/write ./k6 run --summary-trend-stats="avg,min,med,max,p(90),p(95),p(99)" --out xk6-prometheus-rw scripts/dist/ledger-v2.js
+    env:
+      POSTGRES_DSN: postgresql://ledger:ledger@postgres:5432/ledgerv2?sslmode=disable
+      DOCKER_NETWORK: tools_benchmarks
+
+  cleanup:
+    dir: ./tools
+    cmds:
+      - docker compose down -v

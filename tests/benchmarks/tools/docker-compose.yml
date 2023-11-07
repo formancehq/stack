@@ -1,0 +1,107 @@
+---
+networks:
+  benchmarks: {}
+
+services:
+  postgres:
+    image: "postgres:15-alpine"
+    environment:
+      POSTGRES_USER: "ledger"
+      POSTGRES_PASSWORD: "ledger"
+      POSTGRES_DB: "ledger"
+    ports:
+    - 5432:5432
+    volumes:
+    - ./postgresql.conf:/etc/postgresql/postgresql.conf
+    command:
+    - -c
+    - 'config_file=/etc/postgresql/postgresql.conf'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ledger" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+    - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "${POSTGRES_CPU_COUNT:-2}"
+            memory: 32G
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+    networks:
+      - benchmarks
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+    - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/usr/share/prometheus/console_libraries
+    - --web.console.templates=/usr/share/prometheus/consoles
+    - --web.enable-remote-write-receiver
+    - --enable-feature=native-histograms
+    ports:
+    - "9090:9090"
+    networks:
+    - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "1"
+            memory: 512M
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    networks:
+    - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "1"
+            memory: 512M
+    ports:
+     - '3000:3000'
+    environment:
+        - GF_SECURITY_ADMIN_USER=admin
+        - GF_SECURITY_ADMIN_PASSWORD=admin
+        - GF_SECURITY_ALLOW_EMBEDDING=true
+        - GF_SECURITY_DISABLE_GRAVATAR=true
+        - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+     - './provisioning/datasources:/etc/grafana/provisioning/datasources'
+     - './provisioning/dashboards:/etc/grafana/provisioning/dashboards'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+    - benchmarks
+    deploy:
+      replicas: 1
+      resources:
+          limits:
+            cpus: "1"
+            memory: 512M
+
+volumes:
+  grafana_storage: {}
