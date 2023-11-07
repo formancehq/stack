@@ -20,34 +20,34 @@ pipeline:
                           {
                             "match": {
                               "kind": "PAYMENT"
-                            },
+                            }
                           },
                           {
                             "match": {
                               "kind": "PAYMENT_ACCOUNT"
-                            },
+                            }
                           },
                           {
                             "match": {
                               "kind": "PAYMENT_BALANCE"
-                            },
+                            }
                           },
                           {
                             "match": {
                               "kind": "PAYMENT_BANK_ACCOUNT"
-                            },
+                            }
                           },
                           {
                             "match": {
                               "kind": "PAYMENT_TRANSFER_INITIATION"
-                            },
+                            }
                           }
                         ]
                       }
                     },
                     {
                       "match": {
-                        "indexed.provider": this.payload.connector
+                        "indexed.connectorId": this.payload.connectorId
                       }
                     },
                     {
@@ -73,9 +73,18 @@ pipeline:
                       }
                     },
                     {
-                      "match": {
-                        "indexed.id": this.payload.id
-                      }
+                      "should": [
+                        {
+                          "match": {
+                            "indexed.id": this.payload.id
+                          }
+                        },
+                        {
+                          "match": {
+                            "indexed.provider": this.payload.provider
+                          }
+                        }
+                      ]
                     },
                     {
                       "match": {
