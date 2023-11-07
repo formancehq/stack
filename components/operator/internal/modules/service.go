@@ -415,6 +415,8 @@ func (r *serviceReconciler) configureNats() {
 	if err != nil {
 		logging.Error(err)
 	}
+	defer nc.Close()
+
 	js, err := nc.JetStream()
 	if err != nil {
 		logging.Error(err)
