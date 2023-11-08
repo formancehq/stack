@@ -51,7 +51,7 @@ type PreviousConnector struct {
 	Provider  models.ConnectorProvider
 
 	// EncryptedConfig is a PGP-encrypted JSON string.
-	EncryptedConfig string `bun:"config"`
+	EncryptedConfig []byte `bun:"config"`
 
 	// Config is a decrypted config. It is not stored in the database.
 	Config json.RawMessage `bun:"decrypted_config,scanonly"`
@@ -66,7 +66,7 @@ type Connector struct {
 	Provider  models.ConnectorProvider
 
 	// EncryptedConfig is a PGP-encrypted JSON string.
-	EncryptedConfig string `bun:"config"`
+	EncryptedConfig []byte `bun:"config"`
 }
 
 func migrateConnectors(ctx context.Context, tx bun.Tx) error {
@@ -325,8 +325,8 @@ func migrateAccountID(ctx context.Context, tx bun.Tx) error {
 
 		_, err = tx.NewUpdate().
 			Model((*models.TransferInitiation)(nil)).
-			Set("source_account = ?", migration.NewAccountID).
-			Where("source_account = ?", migration.PreviousAccountID).
+			Set("source_account_id = ?", migration.NewAccountID).
+			Where("source_account_id = ?", migration.PreviousAccountID).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -334,8 +334,8 @@ func migrateAccountID(ctx context.Context, tx bun.Tx) error {
 
 		_, err = tx.NewUpdate().
 			Model((*models.TransferInitiation)(nil)).
-			Set("destination_account = ?", migration.NewAccountID).
-			Where("destination_account = ?", migration.PreviousAccountID).
+			Set("destination_account_id = ?", migration.NewAccountID).
+			Where("destination_account_id = ?", migration.PreviousAccountID).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -343,8 +343,8 @@ func migrateAccountID(ctx context.Context, tx bun.Tx) error {
 
 		_, err = tx.NewUpdate().
 			Model((*models.Payment)(nil)).
-			Set("source_account = ?", migration.NewAccountID).
-			Where("source_account = ?", migration.PreviousAccountID).
+			Set("source_account_id = ?", migration.NewAccountID).
+			Where("source_account_id = ?", migration.PreviousAccountID).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -352,8 +352,8 @@ func migrateAccountID(ctx context.Context, tx bun.Tx) error {
 
 		_, err = tx.NewUpdate().
 			Model((*models.Payment)(nil)).
-			Set("destination_account = ?", migration.NewAccountID).
-			Where("destination_account = ?", migration.PreviousAccountID).
+			Set("destination_account_id = ?", migration.NewAccountID).
+			Where("destination_account_id = ?", migration.PreviousAccountID).
 			Exec(ctx)
 		if err != nil {
 			return err
