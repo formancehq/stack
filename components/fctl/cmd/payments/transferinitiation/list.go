@@ -86,7 +86,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			tf.Description,
 			tf.SourceAccountID,
 			tf.DestinationAccountID,
-			string(tf.Provider),
+			tf.ConnectorID,
 			string(tf.Type),
 			fmt.Sprint(tf.Amount),
 			tf.Asset,
@@ -95,7 +95,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "UpdatedAt", "ScheduledAt", "Description", "Source Account ID",
-		"Destination Account ID", "Provider", "Type", "Amount", "Asset", "Status", "Error"})
+		"Destination Account ID", "ConnectorID", "Type", "Amount", "Asset", "Status", "Error"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
