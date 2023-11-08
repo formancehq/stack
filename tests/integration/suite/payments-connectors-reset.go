@@ -2,10 +2,11 @@ package suite
 
 import (
 	"encoding/json"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -20,6 +21,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 	var (
+		connectorID        string
 		existingPaymentID  string
 		msgs               chan *nats.Msg
 		cancelSubscription func()
@@ -37,13 +39,17 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 						FilePollingPeriod:    ptr("1s"),
 						Directory:            paymentsDir,
 						FileGenerationPeriod: ptr("1s"),
+						Name:                 "test",
 					},
 				},
 				Connector: shared.ConnectorDummyPay,
 			},
 		)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(response.StatusCode).To(Equal(204))
+		Expect(response.StatusCode).To(Equal(201))
+		Expect(response.ConnectorResponse).ToNot(BeNil())
+		Expect(response.ConnectorResponse.Data).ToNot(BeNil())
+		connectorID = response.ConnectorResponse.Data.ConnectorID
 
 		Eventually(func(g Gomega) bool {
 			response, err := Client().Search.Search(
@@ -69,7 +75,8 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 			response, err := Client().Payments.ResetConnector(
 				TestContext(),
 				operations.ResetConnectorRequest{
-					Connector: shared.ConnectorDummyPay,
+					Connector:   shared.ConnectorDummyPay,
+					ConnectorID: connectorID,
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
