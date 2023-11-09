@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/google/uuid"
 )
 
 const (
@@ -19,13 +20,13 @@ type HttpRequest struct {
 	Url    *url.URL    `json:"path"`
 	Host   string      `json:"host"`
 	Header http.Header `json:"header"`
-	Body   string      `json:"body"`
+	Body   string      `json:"body,omitempty"`
 }
 
 type HttpResponse struct {
 	StatusCode int         `json:"status_code"`
 	Headers    http.Header `json:"headers"`
-	Body       string      `json:"body"`
+	Body       string      `json:"body,omitempty"`
 }
 
 func NewHttpResponse(
@@ -41,6 +42,7 @@ func NewHttpResponse(
 }
 
 type Payload struct {
+	ID       string       `json:"id"`
 	Request  HttpRequest  `json:"request"`
 	Response HttpResponse `json:"response"`
 }
@@ -51,6 +53,7 @@ func NewAuditMessagePayload(
 ) publish.EventMessage {
 
 	payload := Payload{
+		ID:       uuid.New().String(),
 		Request:  request,
 		Response: response,
 	}

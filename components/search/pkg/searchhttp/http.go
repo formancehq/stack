@@ -124,6 +124,8 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, BaseQuery, error) {
 			switch qq.Target {
 			case "ACCOUNT":
 				qq.WithSort("address", esquery.OrderDesc)
+			case "AUDIT":
+				qq.WithSort("audit", esquery.OrderDesc)
 			case "TRANSACTION":
 				qq.WithSort("txid", esquery.OrderDesc)
 			case "PAYMENT":
