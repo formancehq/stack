@@ -182,7 +182,10 @@ pre-commit:
     FOR component IN $(ls components)
         BUILD --pass-args ./components/$component+pre-commit
     END
-    BUILD --pass-args +integration-tests
+    ARG skipIntegrationTests=0
+    IF [ "$skipIntegrationTests" = "0" ]
+        BUILD --pass-args +integration-tests
+    END
 
 pr:
     LOCALLY
