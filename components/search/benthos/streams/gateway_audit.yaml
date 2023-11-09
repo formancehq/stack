@@ -1,0 +1,31 @@
+input:
+  event_bus:
+    topic: audit
+    consumer_group: search-audit
+
+pipeline:
+  processors:
+  - log:
+      message: "receive message: ${! this }"
+  - switch_event_type:
+      events:
+      - label: AUDIT
+        processors:
+        - bloblang: |
+            meta id = "AUDIT-%s".format(this.payload.id)
+            meta action = "index"
+            
+            root = {
+              "data": this.payload,
+              "indexed": {
+                "request": this.payload.request,
+                "response": this.payload.response,
+                "when": this.date
+              },
+              "kind": "AUDIT",
+              "when": this.date
+            }
+
+
+output:
+  resource: elasticsearch
