@@ -33,7 +33,12 @@ func countTransactions(w http.ResponseWriter, r *http.Request) {
 	count, err := backend.LedgerFromContext(r.Context()).
 		CountTransactions(r.Context(), ledgerstore.NewGetTransactionsQuery(*options))
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		switch {
+		case ledgerstore.IsErrInvalidQuery(err):
+			sharedapi.BadRequest(w, ErrValidation, err)
+		default:
+			sharedapi.InternalServerError(w, r, err)
+		}
 		return
 	}
 
@@ -63,7 +68,12 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 
 	cursor, err := l.GetTransactions(r.Context(), query)
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		switch {
+		case ledgerstore.IsErrInvalidQuery(err):
+			sharedapi.BadRequest(w, ErrValidation, err)
+		default:
+			sharedapi.InternalServerError(w, r, err)
+		}
 		return
 	}
 

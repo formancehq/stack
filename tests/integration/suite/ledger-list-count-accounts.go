@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
+	"net/http"
 	"sort"
 	"time"
 
@@ -74,6 +75,22 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(createTransactionResponse.StatusCode).To(Equal(200))
+		})
+		It("should return a "+string(shared.ErrorsEnumValidation)+" on invalid filter", func() {
+			response, err := Client().Ledger.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Ledger: "default",
+					RequestBody: map[string]interface{}{
+						"$match": map[string]any{
+							"invalid-key": 0,
+						},
+					},
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
+			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumValidation))
 		})
 		It("should be countable on api", func() {
 			response, err := Client().Ledger.CountAccounts(

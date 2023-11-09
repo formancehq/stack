@@ -18,7 +18,12 @@ func getBalancesAggregated(w http.ResponseWriter, r *http.Request) {
 	balances, err := backend.LedgerFromContext(r.Context()).
 		GetAggregatedBalances(r.Context(), ledgerstore.NewGetAggregatedBalancesQuery(*options))
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		switch {
+		case ledgerstore.IsErrInvalidQuery(err):
+			sharedapi.BadRequest(w, ErrValidation, err)
+		default:
+			sharedapi.InternalServerError(w, r, err)
+		}
 		return
 	}
 

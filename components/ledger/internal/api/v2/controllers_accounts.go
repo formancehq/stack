@@ -27,7 +27,12 @@ func countAccounts(w http.ResponseWriter, r *http.Request) {
 
 	count, err := l.CountAccounts(r.Context(), ledgerstore.NewGetAccountsQuery(*options))
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		switch {
+		case ledgerstore.IsErrInvalidQuery(err):
+			sharedapi.BadRequest(w, ErrValidation, err)
+		default:
+			sharedapi.InternalServerError(w, r, err)
+		}
 		return
 	}
 
@@ -57,7 +62,12 @@ func getAccounts(w http.ResponseWriter, r *http.Request) {
 
 	cursor, err := l.GetAccountsWithVolumes(r.Context(), query)
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		switch {
+		case ledgerstore.IsErrInvalidQuery(err):
+			sharedapi.BadRequest(w, ErrValidation, err)
+		default:
+			sharedapi.InternalServerError(w, r, err)
+		}
 		return
 	}
 
