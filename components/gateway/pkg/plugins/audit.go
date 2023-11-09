@@ -163,9 +163,6 @@ func parseBool(d *caddyfile.Dispenser) (bool, error) {
 
 // Implements the caddy.Provisioner interface.
 func (a *Audit) Provision(ctx caddy.Context) error {
-	// We have to instantiate a different logger here instead of using
-	// caddy's logger because we need a different interface for the watermill
-	// logger.
 	a.logger = ctx.Logger(a)
 	a.bufPool = &sync.Pool{
 		New: func() any {
