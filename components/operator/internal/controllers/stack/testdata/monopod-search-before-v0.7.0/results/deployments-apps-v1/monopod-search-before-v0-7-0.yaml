@@ -203,6 +203,12 @@ spec:
                       value: gateway
                     - name: STACK
                       value: monopod-search-before-v0-7-0
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
                   image: ghcr.io/formancehq/gateway:latest
                   imagePullPolicy: Always
                   name: gateway
