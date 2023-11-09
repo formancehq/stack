@@ -11,6 +11,7 @@ sources:
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     WORKDIR /src/components/gateway
     COPY go.* .
+    COPY --dir internal .
     COPY --dir pkg .
     COPY main.go Caddyfile .
     SAVE ARTIFACT /src
@@ -47,6 +48,7 @@ lint:
     COPY --pass-args (stack+tidy/go.* --component=gateway) .
     WORKDIR /src/components/gateway
     DO --pass-args stack+GO_LINT
+    SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT main.go AS LOCAL main.go
 

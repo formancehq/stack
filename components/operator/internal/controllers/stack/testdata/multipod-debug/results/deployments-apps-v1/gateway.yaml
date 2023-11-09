@@ -23,7 +23,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: cMgqSZkhzsI796ilNEEtWJ7YdP8Om10AW59FfU6KirM=
+                stack.formance.cloud/volumes-hash: ijAPW_uSdSI3eVzr8CfkMdRR9voMItIgMAafLMV3Lso=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: gateway
@@ -65,6 +65,12 @@ spec:
                       value: gateway
                     - name: STACK
                       value: multipod-debug
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
                   image: ghcr.io/formancehq/gateway:latest
                   imagePullPolicy: Always
                   name: gateway

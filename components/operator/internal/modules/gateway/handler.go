@@ -72,7 +72,8 @@ func (g module) Versions() map[string]modules.Version {
 								"--adapter", "caddyfile",
 							},
 							Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
-							Env:   modules.NewEnv(),
+							Env: modules.NewEnv().
+								Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "gateway")...),
 							Resources: modules.GetResourcesWithDefault(
 								resolveContext.Configuration.Spec.Services.Gateway.ResourceProperties,
 								modules.ResourceSizeSmall(),
@@ -168,6 +169,15 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
 		"Services": services,
 		"Debug":    context.Stack.Spec.Debug,
+		"Broker": func() string {
+			if context.Configuration.Spec.Broker.Kafka != nil {
+				return "kafka"
+			}
+			if context.Configuration.Spec.Broker.Nats != nil {
+				return "nats"
+			}
+			return ""
+		}(),
 		"Fallback": fmt.Sprintf("control:%d", servicesMap["control"].Port),
 		"Port":     gatewayPort,
 	}
@@ -199,15 +209,37 @@ const caddyfile = `(cors) {
 	}
 }
 
+(audit) {
+	audit {
+		# Kafka publisher
+		{{- if (eq .Broker "kafka") }}
+		publisher_kafka_broker {$PUBLISHER_KAFKA_BROKER:redpanda:29092}
+		publisher_kafka_enabled {$PUBLISHER_KAFKA_ENABLED:false}
+		publisher_kafka_tls_enabled {$PUBLISHER_KAFKA_TLS_ENABLED:false}
+		publisher_kafka_sasl_enabled {$PUBLISHER_KAFKA_SASL_ENABLED:false}
+		publisher_kafka_sasl_username {$PUBLISHER_KAFKA_SASL_USERNAME}
+		publisher_kafka_sasl_password {$PUBLISHER_KAFKA_SASL_PASSWORD}
+		publisher_kafka_sasl_mechanism {$PUBLISHER_KAFKA_SASL_MECHANISM}
+		publisher_kafka_sasl_scram_sha_size {$PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE}
+		{{- end }}
+		{{- if (eq .Broker "nats") }}
+		# Nats publisher
+		publisher_nats_enabled {$PUBLISHER_NATS_ENABLED:true}
+		publisher_nats_url {$PUBLISHER_NATS_URL:nats://nats:4222}
+		publisher_nats_client_id {$PUBLISHER_NATS_CLIENT_ID:gateway}
+		{{- end }}
+	}
+}
+
 {
 	{{ if .Debug }}debug{{ end }}
-
 	# Many directives manipulate the HTTP handler chain and the order in which
 	# those directives are evaluated matters. So the jwtauth directive must be
 	# ordered.
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
 	order auth before basicauth
 	order versions after metrics
+	order audit after encode
 }
 
 :{{ .Port }} {
@@ -220,6 +252,8 @@ const caddyfile = `(cors) {
 		level  DEBUG
 		{{- end }}
 	}
+
+	import audit
 
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}

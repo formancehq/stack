@@ -13,6 +13,7 @@
 		reverse_proxy {args.1}
 
 		import cors
+		
 	}
 }
 
@@ -24,6 +25,7 @@
 		import cors
 
 		import auth
+		
 	}
 }
 
@@ -35,6 +37,7 @@
 
 		import cors
 		import auth
+		
 	}
 }
 
@@ -44,6 +47,7 @@
 		reverse_proxy {args.1}
 
 		import cors
+		
 	}
 }
 
@@ -101,6 +105,25 @@
 	}
 }
 
+(audit) {
+	audit {
+		# Kafka publisher
+		publisher_kafka_broker {$PUBLISHER_KAFKA_BROKER:redpanda:29092}
+		publisher_kafka_enabled {$PUBLISHER_KAFKA_ENABLED:false}
+		publisher_kafka_tls_enabled {$PUBLISHER_KAFKA_TLS_ENABLED:false}
+		publisher_kafka_sasl_enabled {$PUBLISHER_KAFKA_SASL_ENABLED:false}
+		publisher_kafka_sasl_username {$PUBLISHER_KAFKA_SASL_USERNAME}
+		publisher_kafka_sasl_password {$PUBLISHER_KAFKA_SASL_PASSWORD}
+		publisher_kafka_sasl_mechanism {$PUBLISHER_KAFKA_SASL_MECHANISM}
+		publisher_kafka_sasl_scram_sha_size {$PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE}
+
+		# Nats publisher
+		publisher_nats_enabled {$PUBLISHER_NATS_ENABLED:true}
+		publisher_nats_url {$PUBLISHER_NATS_URL:nats://nats:4222}
+		publisher_nats_client_id {$PUBLISHER_NATS_CLIENT_ID:gateway}
+	}
+}
+
 {
 	# Many directives manipulate the HTTP handler chain and the order in which
 	# those directives are evaluated matters. So the jwtauth directive must be
@@ -108,6 +131,7 @@
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
 	order auth before basicauth
 	order versions after metrics
+	order audit after encode
 
 	# Local env dev config
 	debug
@@ -125,6 +149,7 @@ localhost:80 {
 	import handle_path_route_with_auth "/api/search" "127.0.0.1:8080"
 	import payments "/api/payments" "127.0.0.1:8082" "127.0.0.1:8087"
 	import handle_path_route_with_auth "/api/webhooks" "127.0.0.1:8084"
+	import audit
 
 	handle /versions {
 		versions {

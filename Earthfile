@@ -138,6 +138,7 @@ tidy:
 
 tidy-all:
     LOCALLY
+    BUILD --pass-args ./libs/go-libs+tidy
     FOR component IN $(ls components)
         BUILD --pass-args +tidy --component=$component
     END

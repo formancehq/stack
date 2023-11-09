@@ -18,15 +18,29 @@ data:
         	}
         }
 
+        (audit) {
+        	audit {
+        		# Kafka publisher
+        		publisher_kafka_broker {$PUBLISHER_KAFKA_BROKER:redpanda:29092}
+        		publisher_kafka_enabled {$PUBLISHER_KAFKA_ENABLED:false}
+        		publisher_kafka_tls_enabled {$PUBLISHER_KAFKA_TLS_ENABLED:false}
+        		publisher_kafka_sasl_enabled {$PUBLISHER_KAFKA_SASL_ENABLED:false}
+        		publisher_kafka_sasl_username {$PUBLISHER_KAFKA_SASL_USERNAME}
+        		publisher_kafka_sasl_password {$PUBLISHER_KAFKA_SASL_PASSWORD}
+        		publisher_kafka_sasl_mechanism {$PUBLISHER_KAFKA_SASL_MECHANISM}
+        		publisher_kafka_sasl_scram_sha_size {$PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE}
+        	}
+        }
+
         {
         	debug
-
         	# Many directives manipulate the HTTP handler chain and the order in which
         	# those directives are evaluated matters. So the jwtauth directive must be
         	# ordered.
         	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
         	order auth before basicauth
         	order versions after metrics
+        	order audit after encode
         }
 
         :8000 {
@@ -37,6 +51,8 @@ data:
         		output stdout
         		level  DEBUG
         	}
+
+        	import audit
 
         			@authmatcher {
         				path /api/auth*
