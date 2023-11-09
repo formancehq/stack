@@ -33,8 +33,8 @@ output_resources:
       username: ${BASIC_AUTH_USERNAME}
       password: ${BASIC_AUTH_PASSWORD}
     batching:
-      count: ${OPENSEARCH_BATCHING_COUNT}
-      period: ${OPENSEARCH_BATCHING_PERIOD}
+      count: ${OPENSEARCH_BATCHING_COUNT:10}
+      period: ${OPENSEARCH_BATCHING_PERIOD:1s}
     multipart: true
     doc: ${! if json().exists("document") { json("document") } else {""} }
     script: ${! if json().exists("script") { json("script") } else {""} }

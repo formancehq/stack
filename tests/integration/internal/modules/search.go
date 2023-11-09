@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/formancehq/search/cmd"
 	"github.com/formancehq/stack/tests/integration/internal"
+	"github.com/ory/dockertest/v3"
+	"net/http"
 )
 
 var Search = internal.NewModule("search").
@@ -28,7 +30,7 @@ var Search = internal.NewModule("search").
 				"-c", "/config/config.yml",
 				"-t", "/config/templates/*.yaml",
 				"-r", "/config/resources/*.yaml",
-				"streams", "/config/streams/*.yaml",
+				"streams", "/config/streams/ledger/v2.0.0/*.yaml", "/config/streams/payments/v0.0.0/*.yaml",
 			}).
 			WithEnv(func(test *internal.Test) []string {
 				return []string{
@@ -46,5 +48,13 @@ var Search = internal.NewModule("search").
 				return []string{
 					test.Workdir() + "/../../../components/search/benthos:/config",
 				}
+			}).
+			WithHealthCheck(func(test *internal.Test, resource *dockertest.Resource) bool {
+				rsp, err := http.Get("http://localhost:" + resource.GetPort("4195/tcp") + "/ping")
+				if err != nil {
+					return false
+				}
+
+				return rsp.StatusCode == http.StatusOK
 			}),
 	)

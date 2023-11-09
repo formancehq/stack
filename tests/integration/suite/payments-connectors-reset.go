@@ -89,6 +89,7 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 				type typedMessage struct {
 					Type string `json:"type"`
 				}
+
 				tm := &typedMessage{}
 				g.Expect(json.Unmarshal(msg.Data, tm)).To(Succeed())
 				return tm.Type == paymentEvents.EventTypeConnectorReset

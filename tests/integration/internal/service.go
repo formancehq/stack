@@ -3,11 +3,11 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/docker/docker/api/types"
 	"github.com/ory/dockertest/v3"
 	"io"
 	"time"
 
-	"github.com/docker/docker/api/types"
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	serviceutils "github.com/formancehq/stack/libs/go-libs/service"
@@ -96,13 +96,16 @@ func NewCommandService(name string, factory func() *cobra.Command) *cobraCommand
 	}
 }
 
+type HealthCheck func(test *Test, container *dockertest.Resource) bool
+
 type dockerContainerService struct {
-	entrypoint []string
-	repository string
-	tag        string
-	mounts     func(*Test) []string
-	env        func(*Test) []string
-	resource   *dockertest.Resource
+	entrypoint  []string
+	repository  string
+	tag         string
+	mounts      func(*Test) []string
+	healthCheck HealthCheck
+	env         func(*Test) []string
+	resource    *dockertest.Resource
 }
 
 func (d *dockerContainerService) load(ctx context.Context, test *Test) error {
@@ -134,6 +137,21 @@ func (d *dockerContainerService) load(ctx context.Context, test *Test) error {
 		}
 	}()
 
+	healthCheckContext, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	if d.healthCheck != nil {
+		for {
+			if d.healthCheck(test, d.resource) {
+				break
+			}
+			select {
+			case <-healthCheckContext.Done():
+				return healthCheckContext.Err()
+			case <-time.After(100 * time.Millisecond):
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -158,6 +176,12 @@ func (d *dockerContainerService) WithEnv(f func(*Test) []string) *dockerContaine
 
 func (d *dockerContainerService) WithMounts(mounts func(test *Test) []string) *dockerContainerService {
 	d.mounts = mounts
+
+	return d
+}
+
+func (d *dockerContainerService) WithHealthCheck(fn HealthCheck) *dockerContainerService {
+	d.healthCheck = fn
 
 	return d
 }

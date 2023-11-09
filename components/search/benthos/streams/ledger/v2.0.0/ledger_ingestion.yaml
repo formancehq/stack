@@ -138,12 +138,12 @@ pipeline:
               "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),
               "upsert": {
                 "data": { 
-                  "address": this,
+                  "address": this.payload.targetId,
                   "metadata": { item.key: item.value },
                   "ledger": this.payload.ledger
                 },
                 "indexed": { 
-                  "address": this,
+                  "address": this.payload.targetId,
                   "ledger": this.payload.ledger
                 },
                 "kind": "ACCOUNT"

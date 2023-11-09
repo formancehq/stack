@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"golang.org/x/mod/semver"
 	"io/fs"
 	"path/filepath"
 	"strings"

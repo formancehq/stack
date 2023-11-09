@@ -18,7 +18,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
+var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	When("creating a transaction on a ledger", func() {
 		var (
 			msgs               chan *nats.Msg
@@ -173,7 +173,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
 			Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeCommittedTransactions)).Should(Succeed())
 		})
-		FIt("should pop a transaction, two accounts and two assets entries on search service", func() {
+		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{
 				"metadata":  map[string]any{},
 				"reference": "foo",
@@ -236,12 +236,14 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 				g.Expect(res.Cursor.Data).To(HaveLen(2))
 				g.Expect(res.Cursor.Data).To(ContainElements(
 					map[string]any{
-						"address": "world",
-						"ledger":  "default",
+						"address":  "world",
+						"ledger":   "default",
+						"metadata": map[string]any{},
 					},
 					map[string]any{
-						"address": "alice",
-						"ledger":  "default",
+						"address":  "alice",
+						"ledger":   "default",
+						"metadata": map[string]any{},
 					},
 				))
 				return true
