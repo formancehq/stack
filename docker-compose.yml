@@ -60,7 +60,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "5432:5432"
+      - "${FORMANCE_POSTGRES_PORT:-5432}:5432"
     environment:
       POSTGRES_USER: "formance"
       POSTGRES_PASSWORD: "formance"
