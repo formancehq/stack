@@ -381,6 +381,13 @@ func PostUpgradePreV1(ctx context.Context, upgrader modules.JobRunner, config mo
 		return true, nil
 	}
 
+	// That mean the version is a commit, and we assume that a commit is always
+	// the highest version.
+	// cf https://github.com/formancehq/stack/blob/main/components/operator/apis/stack/v1beta3/versions_types.go#L89
+	if !semver.IsValid(config.Version) {
+		return true, nil
+	}
+
 	switch semver.Compare(config.Version, "v1.0.0-alpha.6") {
 	case 0, 1:
 		// Services are splitted, nothing to do
