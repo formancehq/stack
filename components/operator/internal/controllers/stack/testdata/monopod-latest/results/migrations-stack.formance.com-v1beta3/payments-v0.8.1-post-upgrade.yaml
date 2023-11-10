@@ -8,6 +8,7 @@ metadata:
     namespace: monopod-latest
 spec:
     configuration: monopod-latest
+    currentVersion: latest
     module: payments
     postUpgrade: true
     targetedVersion: v0.8.1

@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-latest-no-monitoring
 spec:
     configuration: multipod-latest-no-monitoring
+    currentVersion: latest
     module: payments
     postUpgrade: true
     targetedVersion: v0.7.0

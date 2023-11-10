@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-latest-with-secrets
 spec:
     configuration: multipod-latest-with-secrets
+    currentVersion: ""
     module: wallets
     postUpgrade: true
     targetedVersion: v0.4.4

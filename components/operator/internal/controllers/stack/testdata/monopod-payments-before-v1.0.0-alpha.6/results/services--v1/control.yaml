@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app.kubernetes.io/service-name: control
+    name: control
+    namespace: monopod-payments-before-v1-0-0-alpha-6
+spec:
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 3000
+          protocol: TCP
+          targetPort: 3000
+    selector:
+        app.kubernetes.io/name: monopod-payments-before-v1-0-0-alpha-6
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

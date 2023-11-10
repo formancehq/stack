@@ -1,0 +1,18 @@
+apiVersion: v1
+data:
+    config.yaml: |
+        ---
+        tracer:
+          open_telemetry_collector:
+            tags:
+              service.name: search-ingester
+              service.version: latest
+            grpc:
+            - url: ${OTEL_TRACES_EXPORTER_OTLP_ENDPOINT}
+          # a useless comment
+kind: ConfigMap
+metadata:
+    labels:
+        stack: "true"
+    name: search-benthos-global
+    namespace: monopod-payments-before-v1-0-0-alpha-6

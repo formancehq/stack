@@ -8,6 +8,7 @@ metadata:
     namespace: monopod-ledgerv1
 spec:
     configuration: monopod-ledgerv1
+    currentVersion: ""
     module: payments
     postUpgrade: true
     targetedVersion: v0.7.0
