@@ -30,8 +30,8 @@ func (s module) Name() string {
 func (s module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
-			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
-				return jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config))
+			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error) {
+				return jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config.ReconciliationConfig))
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{searchService(ctx), benthosService(ctx)}
@@ -39,8 +39,8 @@ func (s module) Versions() map[string]modules.Version {
 			Cron: reindexCron,
 		},
 		"v0.7.0": {
-			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
-				ok, err := jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config))
+			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error) {
+				ok, err := jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config.ReconciliationConfig))
 				if err != nil {
 					return false, err
 				}
@@ -48,7 +48,7 @@ func (s module) Versions() map[string]modules.Version {
 					return false, nil
 				}
 
-				ok, err = jobRunner.RunJob(ctx, "reindex-data", nil, reindexDataJob(config))
+				ok, err = jobRunner.RunJob(ctx, "reindex-data", nil, reindexDataJob(config.ReconciliationConfig))
 				if err != nil {
 					return false, err
 				}
@@ -58,9 +58,9 @@ func (s module) Versions() map[string]modules.Version {
 
 				return true, nil
 			},
-			PostUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
+			PostUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error) {
 
-				ok, err := jobRunner.RunJob(ctx, "reindex-data", nil, reindexDataJob(config))
+				ok, err := jobRunner.RunJob(ctx, "reindex-data", nil, reindexDataJob(config.ReconciliationConfig))
 				if err != nil {
 					return false, err
 				}
@@ -68,7 +68,7 @@ func (s module) Versions() map[string]modules.Version {
 					return false, nil
 				}
 
-				ok, err = jobRunner.RunJob(ctx, "delete-old-index", nil, deleteIndexJob(config, config.Stack.Name))
+				ok, err = jobRunner.RunJob(ctx, "delete-old-index", nil, deleteIndexJob(config.ReconciliationConfig, config.ReconciliationConfig.Stack.Name))
 				if err != nil {
 					return false, err
 				}

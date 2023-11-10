@@ -8,6 +8,7 @@ metadata:
     namespace: monopod-disabled-one-service
 spec:
     configuration: monopod-disabled-one-service
+    currentVersion: ""
     module: wallets
     postUpgrade: true
     targetedVersion: v0.4.3

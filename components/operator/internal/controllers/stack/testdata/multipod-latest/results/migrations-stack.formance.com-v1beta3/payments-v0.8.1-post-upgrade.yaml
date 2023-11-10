@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-latest
 spec:
     configuration: multipod-latest
+    currentVersion: latest
     module: payments
     postUpgrade: true
     targetedVersion: v0.8.1

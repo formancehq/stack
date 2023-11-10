@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-latest-with-secrets
 spec:
     configuration: multipod-latest-with-secrets
+    currentVersion: ""
     module: search
     postUpgrade: false
     targetedVersion: v0.0.0

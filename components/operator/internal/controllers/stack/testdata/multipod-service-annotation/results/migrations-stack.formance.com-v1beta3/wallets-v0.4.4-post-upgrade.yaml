@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-service-annotation
 spec:
     configuration: multipod-service-annotation
+    currentVersion: ""
     module: wallets
     postUpgrade: true
     targetedVersion: v0.4.4

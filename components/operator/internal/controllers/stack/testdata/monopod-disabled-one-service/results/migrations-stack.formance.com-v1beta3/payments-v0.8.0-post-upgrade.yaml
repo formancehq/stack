@@ -8,6 +8,7 @@ metadata:
     namespace: monopod-disabled-one-service
 spec:
     configuration: monopod-disabled-one-service
+    currentVersion: latest
     module: payments
     postUpgrade: true
     targetedVersion: v0.8.0
