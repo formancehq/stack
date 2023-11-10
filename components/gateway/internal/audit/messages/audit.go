@@ -2,7 +2,6 @@ package messages
 
 import (
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -17,7 +16,7 @@ const (
 
 type HttpRequest struct {
 	Method string      `json:"method"`
-	Url    *url.URL    `json:"path"`
+	Path   string      `json:"path"`
 	Host   string      `json:"host"`
 	Header http.Header `json:"header"`
 	Body   string      `json:"body,omitempty"`

@@ -287,7 +287,7 @@ func (a *Audit) provisionKafkaPublisher() error {
 func (a Audit) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	request := messages.HttpRequest{
 		Method: r.Method,
-		Url:    r.URL,
+		Path:   r.URL.Path,
 		Host:   r.Host,
 		Header: r.Header,
 		Body:   "",
