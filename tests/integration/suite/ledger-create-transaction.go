@@ -3,6 +3,7 @@ package suite
 import (
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
+	"net/http"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -44,6 +45,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 							},
 						},
 						Timestamp: &timestamp,
+						Reference: pointer.For("foo"),
 					},
 					Ledger: "default",
 				},
@@ -133,6 +135,39 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 				},
 			}))
 		})
+		Then("trying to commit a new transaction with the same reference", func() {
+			var (
+				response *operations.CreateTransactionResponse
+				err      error
+			)
+			BeforeEach(func() {
+				// Create a transaction
+				response, err = Client().Ledger.CreateTransaction(
+					TestContext(),
+					operations.CreateTransactionRequest{
+						PostTransaction: shared.PostTransaction{
+							Metadata: map[string]string{},
+							Postings: []shared.Posting{
+								{
+									Amount:      big.NewInt(100),
+									Asset:       "USD",
+									Source:      "world",
+									Destination: "alice",
+								},
+							},
+							Timestamp: &timestamp,
+							Reference: pointer.For("foo"),
+						},
+						Ledger: "default",
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+			})
+			It("Should fail with "+string(shared.ErrorsEnumConflict)+" error code", func() {
+				Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
+				Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumConflict))
+			})
+		})
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
@@ -141,7 +176,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{
 				"metadata":  map[string]any{},
-				"reference": nil,
+				"reference": "foo",
 				"postings": []any{
 					map[string]any{
 						"source":      "world",
@@ -237,11 +272,9 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			Expect(response.StatusCode).To(Equal(400))
 			Expect(response.CreateTransactionResponse).To(BeNil())
 
-			details := "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
 			Expect(response.ErrorResponse).Should(Equal(&shared.ErrorResponse{
 				ErrorCode:    shared.ErrorsEnumInsufficientFund,
-				ErrorMessage: "account had insufficient funds",
-				Details:      &details,
+				ErrorMessage: "running numscript: script execution failed: no more fund to withdraw",
 			}))
 		})
 	})
@@ -282,6 +315,173 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 				Expect(err).To(Succeed())
 				Expect(response.CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
 			})
+		})
+	})
+	// TODO(gfyrag): test negative amount with a variable
+	When("creating a transaction on a ledger with a negative amount in the script", func() {
+		var (
+			err      error
+			response *operations.CreateTransactionResponse
+		)
+		BeforeEach(func() {
+			response, err = Client().Ledger.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					IdempotencyKey: ptr("testing"),
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Script: &shared.PostTransactionScript{
+							Plain: `send [COIN -100] (
+								source = @world
+								destination = @bob
+							)`,
+							Vars: map[string]interface{}{},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+		})
+		It("should fail with "+string(shared.ErrorsEnumCompilationFailed)+" code", func() {
+			Expect(err).To(Succeed())
+			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
+			Expect(response.ErrorResponse).NotTo(BeNil())
+			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumCompilationFailed))
+			Expect(response.ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjE1XHJcbiAgXHUwMDFiWzM0bXxcdTAwMWJbMG1cclxuXHUwMDFiWzMxbTEgfCBcdTAwMWJbMG1cdTAwMWJbOTBtc2VuZCBbQ09JTiAtMTAwXHUwMDFiWzBtXVx1MDAxYls5MG0gKFxyXG5cdTAwMWJbMG0gIFx1MDAxYlszNG18XHUwMDFiWzBtICAgICAgICAgICAgICAgIFx1MDAxYlszMW1eXHUwMDFiWzBtIG5vIHZpYWJsZSBhbHRlcm5hdGl2ZSBhdCBpbnB1dCAnW0NPSU4tMTAwXSdcclxuIn0=")))
+		})
+	})
+	When("creating a transaction on a ledger with a negative amount in the script", func() {
+		var (
+			err      error
+			response *operations.CreateTransactionResponse
+		)
+		BeforeEach(func() {
+			response, err = Client().Ledger.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					IdempotencyKey: ptr("testing"),
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Script: &shared.PostTransactionScript{
+							Plain: `vars {
+								monetary $amount
+							}
+							send $amount (
+								source = @world
+								destination = @bob
+							)`,
+							Vars: map[string]interface{}{
+								"amount": "USD -100",
+							},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+		})
+		It("should fail with "+string(shared.ErrorsEnumCompilationFailed)+" code", func() {
+			Expect(err).To(Succeed())
+			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
+			Expect(response.ErrorResponse).NotTo(BeNil())
+			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumCompilationFailed))
+			Expect(response.ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
+		})
+	})
+	When("creating a transaction on a ledger with error on script", func() {
+		var (
+			err      error
+			response *operations.CreateTransactionResponse
+		)
+		BeforeEach(func() {
+			response, err = Client().Ledger.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					IdempotencyKey: ptr("testing"),
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Script: &shared.PostTransactionScript{
+							Plain: `XXX`,
+							Vars:  map[string]interface{}{},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+		})
+		It("should fail with "+string(shared.ErrorsEnumCompilationFailed)+" code", func() {
+			Expect(err).To(Succeed())
+			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
+			Expect(response.ErrorResponse).NotTo(BeNil())
+			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumCompilationFailed))
+			Expect(response.ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjBcclxuICBcdTAwMWJbMzRtfFx1MDAxYlswbVxyXG5cdTAwMWJbMzFtMSB8IFx1MDAxYlswbVx1MDAxYls5MG1cdTAwMWJbMG1YWFhcdTAwMWJbOTBtXHJcblx1MDAxYlswbSAgXHUwMDFiWzM0bXxcdTAwMWJbMG0gXHUwMDFiWzMxbV5eXHUwMDFiWzBtIG1pc21hdGNoZWQgaW5wdXQgJ1hYWCcgZXhwZWN0aW5nIHtORVdMSU5FLCAndmFycycsICdzZXRfdHhfbWV0YScsICdzZXRfYWNjb3VudF9tZXRhJywgJ3ByaW50JywgJ2ZhaWwnLCAnc2VuZCcsICdzYXZlJ31cclxuIn0=")))
+		})
+	})
+	When("creating a transaction with no postings", func() {
+		var (
+			err      error
+			response *operations.CreateTransactionResponse
+		)
+		BeforeEach(func() {
+			response, err = Client().Ledger.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					IdempotencyKey: ptr("testing"),
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Script: &shared.PostTransactionScript{
+							Plain: `vars {
+								monetary $amount
+							}
+							set_tx_meta("foo", "bar")
+							`,
+							Vars: map[string]interface{}{
+								"amount": "USD 100",
+							},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+		})
+		It("should fail with "+string(shared.ErrorsEnumNoPostings)+" code", func() {
+			Expect(err).To(Succeed())
+			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
+			Expect(response.ErrorResponse).NotTo(BeNil())
+			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumNoPostings))
+		})
+	})
+	When("creating a transaction with metadata override", func() {
+		var (
+			err      error
+			response *operations.CreateTransactionResponse
+		)
+		BeforeEach(func() {
+			response, err = Client().Ledger.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					IdempotencyKey: ptr("testing"),
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{
+							"foo": "baz",
+						},
+						Script: &shared.PostTransactionScript{
+							Plain: `send [COIN 100] (
+								source = @world
+								destination = @bob
+							)
+							set_tx_meta("foo", "bar")`,
+							Vars: map[string]interface{}{},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+		})
+		It("should fail with "+string(shared.ErrorsEnumMetadataOverride)+" code", func() {
+			Expect(err).To(Succeed())
+			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
+			Expect(response.ErrorResponse).NotTo(BeNil())
+			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumMetadataOverride))
 		})
 	})
 })

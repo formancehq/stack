@@ -27,7 +27,6 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		BeforeEach(func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
-			_ = msgs
 
 			// Create a transaction
 			response, err := Client().Ledger.CreateTransaction(
@@ -88,7 +87,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					err      error
 					response *operations.RevertTransactionResponse
 				)
-				JustBeforeEach(func() {
+				revertTx := func() {
 					response, err = Client().Ledger.RevertTransaction(
 						TestContext(),
 						operations.RevertTransactionRequest{
@@ -97,10 +96,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 							Ledger: "default",
 						},
 					)
-				})
+				}
+				JustBeforeEach(revertTx)
 				It("Should fail", func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(response.StatusCode).To(Equal(400))
+					Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumInsufficientFund))
 				})
 				Context("With forcing", func() {
 					BeforeEach(func() {
@@ -154,6 +155,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					)
 					Expect(err).To(BeNil())
 					Expect(response.StatusCode).To(Equal(400))
+					Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumAlreadyRevert))
 				})
 			})
 		})

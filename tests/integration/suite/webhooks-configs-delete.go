@@ -71,7 +71,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
-			Expect(response.ErrorResponse).ToNot(BeNil())
+			Expect(response.WebhooksErrorResponse).ToNot(BeNil())
 		})
 	})
 
@@ -85,7 +85,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
-			Expect(response.ErrorResponse).ToNot(BeNil())
+			Expect(response.WebhooksErrorResponse).ToNot(BeNil())
 		})
 	})
 })

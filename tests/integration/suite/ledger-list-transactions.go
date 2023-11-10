@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
+	"net/http"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -183,6 +184,32 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Expect(rsp.Cursor.Previous).To(BeNil())
 					})
 				})
+			})
+		})
+
+		Then("listing transactions using invalid filter", func() {
+			var (
+				err error
+				rsp *operations.ListTransactionsResponse
+			)
+			BeforeEach(func() {
+				rsp, err = Client().Ledger.ListTransactions(
+					TestContext(),
+					operations.ListTransactionsRequest{
+						RequestBody: map[string]interface{}{
+							"$match": map[string]any{
+								"invalid-key": 0,
+							},
+						},
+						Ledger:   "default",
+						PageSize: ptr(pageSize),
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+			})
+			It("Should fail with "+string(shared.ErrorsEnumValidation)+" error code", func() {
+				Expect(rsp.StatusCode).To(Equal(http.StatusBadRequest))
+				Expect(rsp.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumValidation))
 			})
 		})
 	})

@@ -64,8 +64,8 @@ func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl
 		return nil, errors.Wrap(err, "activating config")
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.WebhooksErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
