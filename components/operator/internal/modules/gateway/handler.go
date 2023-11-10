@@ -163,7 +163,18 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		services = append(services, servicesMap[key])
 	}
 
-	data := map[string]any{
+	fallback := ""
+	redirect := false
+	if context.Configuration.Spec.Services.Gateway.Fallback != nil && *context.Configuration.Spec.Services.Gateway.Fallback != "" {
+		fallback = *context.Configuration.Spec.Services.Gateway.Fallback
+		redirect = true
+	} else {
+		if !context.IsDisabled("control") {
+			fallback = fmt.Sprintf("control:%d", servicesMap["control"].Port)
+		}
+	}
+
+	if err := caddyfileTemplate.Execute(buf, map[string]any{
 		"Region":   context.Platform.Region,
 		"Env":      context.Platform.Environment,
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
@@ -178,15 +189,10 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			}
 			return ""
 		}(),
-		"Fallback": fmt.Sprintf("control:%d", servicesMap["control"].Port),
 		"Port":     gatewayPort,
-	}
-	control, ok := context.RegisteredModules["control"]
-	if ok {
-		data["Fallback"] = fmt.Sprintf("control:%d", control.Services["control"].Port)
-	}
-
-	if err := caddyfileTemplate.Execute(buf, data); err != nil {
+		"Fallback": fallback,
+		"Redirect": redirect,
+	}); err != nil {
 		panic(err)
 	}
 	return buf.String()
@@ -312,8 +318,14 @@ const caddyfile = `(cors) {
 	}
 
 	# handle all other requests
+	{{- if not (eq .Fallback "") }}
 	handle {
+		{{- if .Redirect }}
+		redir {{ .Fallback }}
+		{{- else }}
 		reverse_proxy {{ .Fallback }}
+		{{- end }}
 		import cors
 	}
+	{{ end }}
 }`
