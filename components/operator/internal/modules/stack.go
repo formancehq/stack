@@ -57,6 +57,11 @@ func NewsStackReconcilerFactory(mgr manager.Manager, platform Platform) *StackRe
 	}
 }
 
+type MigrationConfig struct {
+	ReconciliationConfig ReconciliationConfig
+	Version              string
+}
+
 type ReconciliationConfig struct {
 	Stack         *v1beta3.Stack
 	Configuration *v1beta3.Configuration

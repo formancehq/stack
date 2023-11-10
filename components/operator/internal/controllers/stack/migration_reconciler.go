@@ -105,7 +105,7 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		Platform:      r.platform,
 	}
 
-	var fn func(ctx context.Context, jobRunner modules.JobRunner, config modules.ReconciliationConfig) (bool, error)
+	var fn func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error)
 
 	if migration.Spec.PostUpgrade {
 		fn = version.PostUpgrade
@@ -116,8 +116,13 @@ func (r *MigrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	jobRunner := modules.NewJobRunner(r.Client, r.Scheme, stack, migration, fmt.Sprintf("%s-%s-%s-upgrade-",
 		module.Name(), migration.Spec.TargetedVersion, migration.Discriminator()))
 
+	migrationConfig := modules.MigrationConfig{
+		ReconciliationConfig: rc,
+		Version:              migration.Spec.CurrentVersion,
+	}
+
 	var returnedError error
-	if terminated, err := fn(ctx, jobRunner, rc); err != nil {
+	if terminated, err := fn(ctx, jobRunner, migrationConfig); err != nil {
 		returnedError = err
 		migration.Status.Err = returnedError.Error()
 	} else {

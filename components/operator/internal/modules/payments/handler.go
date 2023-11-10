@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	"golang.org/x/mod/semver"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -76,9 +77,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
-				return resetConnectors(ctx, config)
-			},
+			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
@@ -120,9 +119,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
-				return resetConnectors(ctx, config)
-			},
+			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
@@ -136,9 +133,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
-				return resetConnectors(ctx, config)
-			},
+			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
@@ -152,9 +147,7 @@ func (p module) Versions() map[string]modules.Version {
 					}
 				},
 			},
-			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
-				return resetConnectors(ctx, config)
-			},
+			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return paymentsServices(paymentsEnvVars)
 			},
@@ -383,7 +376,23 @@ func paymentsServicesSplitted(
 	}
 }
 
-func resetConnectors(ctx context.Context, config modules.ReconciliationConfig) (bool, error) {
+func PostUpgradePreV1(ctx context.Context, upgrader modules.JobRunner, config modules.MigrationConfig) (bool, error) {
+	if config.Version == "latest" {
+		return true, nil
+	}
+
+	switch semver.Compare(config.Version, "v1.0.0-alpha.6") {
+	case 0, 1:
+		// Services are splitted, nothing to do
+		return true, nil
+	case -1:
+		return resetConnectors(ctx, config)
+	}
+
+	return true, nil
+}
+
+func resetConnectors(ctx context.Context, config modules.MigrationConfig) (bool, error) {
 	if err := resetConnector(ctx, config, "stripe"); err != nil {
 		return false, err
 	}
@@ -412,11 +421,11 @@ func resetConnectors(ctx context.Context, config modules.ReconciliationConfig) (
 	return true, nil
 }
 
-func resetConnector(ctx context.Context, config modules.ReconciliationConfig, connector string) error {
+func resetConnector(ctx context.Context, config modules.MigrationConfig, connector string) error {
 	endpoint := fmt.Sprintf(
 		"http://payments.%s.svc:%d/connectors/%s/reset",
-		config.Stack.Name,
-		config.Stack.Status.Ports["payments"]["payments"],
+		config.ReconciliationConfig.Stack.Name,
+		config.ReconciliationConfig.Stack.Status.Ports["payments"]["payments"],
 		connector,
 	)
 	res, err := http.Post(endpoint, "", nil)
