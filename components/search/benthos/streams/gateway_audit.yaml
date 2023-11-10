@@ -18,12 +18,9 @@ pipeline:
             root = {
               "data": this.payload,
               "indexed": {
-                "request": this.payload.request,
-                "response": this.payload.response,
-                "when": this.date
+                "path": this.payload.request.path,
               },
-              "kind": "AUDIT",
-              "when": this.date
+              "kind": "AUDIT"
             }
 
 
