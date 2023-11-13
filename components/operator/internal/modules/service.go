@@ -640,30 +640,28 @@ func (r *serviceReconciler) createIngress(ctx context.Context) error {
 
 		pathType := networkingv1.PathTypePrefix
 		ingress.ObjectMeta.Annotations = annotations
-		ingress.Spec = networkingv1.IngressSpec{
-			TLS: func() []networkingv1.IngressTLS {
-				if r.Configuration.Spec.Ingress.TLS == nil {
-					return nil
-				}
-				return []networkingv1.IngressTLS{{
-					SecretName: r.Configuration.Spec.Ingress.TLS.SecretName,
-				}}
-			}(),
-			Rules: []networkingv1.IngressRule{
-				{
-					Host: r.Stack.Spec.Host,
-					IngressRuleValue: networkingv1.IngressRuleValue{
-						HTTP: &networkingv1.HTTPIngressRuleValue{
-							Paths: []networkingv1.HTTPIngressPath{
-								{
-									Path:     r.service.ExposeHTTP.Path,
-									PathType: &pathType,
-									Backend: networkingv1.IngressBackend{
-										Service: &networkingv1.IngressServiceBackend{
-											Name: r.name,
-											Port: networkingv1.ServiceBackendPort{
-												Name: "http",
-											},
+		ingress.Spec.TLS = func() []networkingv1.IngressTLS {
+			if r.Configuration.Spec.Ingress.TLS == nil {
+				return nil
+			}
+			return []networkingv1.IngressTLS{{
+				SecretName: r.Configuration.Spec.Ingress.TLS.SecretName,
+			}}
+		}()
+		ingress.Spec.Rules = []networkingv1.IngressRule{
+			{
+				Host: r.Stack.Spec.Host,
+				IngressRuleValue: networkingv1.IngressRuleValue{
+					HTTP: &networkingv1.HTTPIngressRuleValue{
+						Paths: []networkingv1.HTTPIngressPath{
+							{
+								Path:     r.service.ExposeHTTP.Path,
+								PathType: &pathType,
+								Backend: networkingv1.IngressBackend{
+									Service: &networkingv1.IngressServiceBackend{
+										Name: r.name,
+										Port: networkingv1.ServiceBackendPort{
+											Name: "http",
 										},
 									},
 								},

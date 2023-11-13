@@ -8,6 +8,7 @@ metadata:
     namespace: monopod-ledgerv1
 spec:
     configuration: monopod-ledgerv1
+    currentVersion: ""
     module: search
     postUpgrade: false
     targetedVersion: v0.0.0

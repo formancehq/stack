@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-debug
 spec:
     configuration: multipod-debug
+    currentVersion: ""
     module: search
     postUpgrade: false
     targetedVersion: v0.7.0

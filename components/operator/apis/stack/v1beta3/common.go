@@ -22,10 +22,5 @@ type ResourceProperties struct {
 type CommonServiceProperties struct {
 	DevProperties `json:",inline"`
 	// +optional
-	//+kubebuilder:default:="latest"
-	Version string `json:"version,omitempty"`
-}
-
-func (p CommonServiceProperties) GetVersion() string {
-	return p.Version
+	Disabled *bool `json:"disabled,omitempty"`
 }

@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-disabled-one-service
 spec:
     configuration: multipod-disabled-one-service
+    currentVersion: latest
     module: payments
     postUpgrade: true
     targetedVersion: v0.6.5

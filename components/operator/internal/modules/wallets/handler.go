@@ -29,18 +29,18 @@ func (w module) Versions() map[string]modules.Version {
 		},
 		"v0.4.3": {
 			Services: service,
-			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
+			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.MigrationConfig) (bool, error) {
 
-				_, ok := config.Stack.Status.Ports["ledger"]
+				_, ok := config.ReconciliationConfig.Stack.Status.Ports["ledger"]
 				if !ok {
 					return false, errors.New("not ready, missing ledger port")
 				}
-				_, ok = config.Stack.Status.Ports["ledger"]["ledger"]
+				_, ok = config.ReconciliationConfig.Stack.Status.Ports["ledger"]["ledger"]
 				if !ok {
 					return false, errors.New("not ready, missing ledger port")
 				}
 
-				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(config)+"/accounts", url.Values{})
+				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(config.ReconciliationConfig)+"/accounts", url.Values{})
 				if err != nil {
 					return false, errors.Wrap(err, "fetching accounts")
 				}
@@ -48,7 +48,7 @@ func (w module) Versions() map[string]modules.Version {
 				for _, account := range accounts {
 					walletCustomMetadata, ok := account.Metadata["wallets/custom_data"]
 					if ok && walletCustomMetadata != "" {
-						if err := updateAccountMetadataForLedgerV2(ctx, config, account); err != nil {
+						if err := updateAccountMetadataForLedgerV2(ctx, config.ReconciliationConfig, account); err != nil {
 							return false, errors.Wrapf(err, "updating account metadata of account: %s", account.Address)
 						}
 					}
@@ -59,19 +59,19 @@ func (w module) Versions() map[string]modules.Version {
 		},
 		"v0.4.4": {
 			Services: service,
-			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.ReconciliationConfig) (bool, error) {
+			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.MigrationConfig) (bool, error) {
 
-				_, ok := config.Stack.Status.Ports["ledger"]
+				_, ok := config.ReconciliationConfig.Stack.Status.Ports["ledger"]
 				if !ok {
 					return false, errors.New("not ready, missing ledger port")
 				}
 
-				_, ok = config.Stack.Status.Ports["ledger"]["ledger"]
+				_, ok = config.ReconciliationConfig.Stack.Status.Ports["ledger"]["ledger"]
 				if !ok {
 					return false, errors.New("not ready, missing ledger port")
 				}
 
-				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(config)+"/accounts", url.Values{})
+				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(config.ReconciliationConfig)+"/accounts", url.Values{})
 				if err != nil {
 					return false, errors.Wrap(err, "fetching accounts")
 				}
@@ -103,7 +103,7 @@ func (w module) Versions() map[string]modules.Version {
 
 					account.Metadata["wallets/custom_data"] = customData
 
-					if err := updateMetadata(ctx, config, account); err != nil {
+					if err := updateMetadata(ctx, config.ReconciliationConfig, account); err != nil {
 						return false, err
 					}
 				}

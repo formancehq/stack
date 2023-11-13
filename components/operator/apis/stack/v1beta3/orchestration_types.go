@@ -2,9 +2,8 @@ package v1beta3
 
 // +kubebuilder:object:generate=true
 type OrchestrationSpec struct {
-	Postgres PostgresConfig `json:"postgres"`
-	// +optional
-	DevProperties `json:",inline"`
+	CommonServiceProperties `json:",inline"`
+	Postgres                PostgresConfig `json:"postgres"`
 	// +optional
 	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
 	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`

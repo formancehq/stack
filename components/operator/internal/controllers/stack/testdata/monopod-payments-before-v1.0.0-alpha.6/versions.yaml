@@ -1,0 +1,7 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Versions
+metadata:
+  name: default
+spec:
+  ledger: latest
+  payments: v0.7.0

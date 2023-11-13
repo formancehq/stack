@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-disabled-one-service
 spec:
     configuration: multipod-disabled-one-service
+    currentVersion: ""
     module: wallets
     postUpgrade: true
     targetedVersion: v0.4.3
