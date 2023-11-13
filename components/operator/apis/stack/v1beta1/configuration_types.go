@@ -18,8 +18,6 @@ package v1beta1
 
 import (
 	"encoding/json"
-	"fmt"
-
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/conversion"
@@ -98,14 +96,6 @@ func (config *Configuration) ConvertFrom(hubRaw conversion.Hub) error {
 }
 
 func (config *Configuration) ConvertTo(hubRaw conversion.Hub) error {
-
-	fmt.Println("Convert to v1beta3 from v1beta1")
-	fmt.Println("Convert to v1beta3 from v1beta1")
-	fmt.Println("Convert to v1beta3 from v1beta1")
-	fmt.Println("Convert to v1beta3 from v1beta1")
-	fmt.Println("Convert to v1beta3 from v1beta1")
-	fmt.Println("Convert to v1beta3 from v1beta1")
-	fmt.Println("Convert to v1beta3 from v1beta1")
 
 	hub := hubRaw.(*v1beta3.Configuration)
 	specAsRaw, err := json.Marshal(config.Spec)

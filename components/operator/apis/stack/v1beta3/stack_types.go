@@ -110,7 +110,7 @@ type StackServicesSpec struct {
 
 type StackServicePropertiesSpec struct {
 	// +optional
-	Disabled bool `json:"disabled"`
+	Disabled *bool `json:"disabled,omitempty"`
 }
 
 // StackSpec defines the desired state of Stack
@@ -141,7 +141,8 @@ type StackSpec struct {
 func (in *StackServicesSpec) IsDisabled(service string) bool {
 	valueOf := reflect.ValueOf(in).Elem().FieldByName(strcase.ToCamel(service))
 	if valueOf.IsValid() {
-		return valueOf.Interface().(StackServicePropertiesSpec).Disabled
+		properties := valueOf.Interface().(StackServicePropertiesSpec)
+		return properties.Disabled != nil && *properties.Disabled
 	}
 	return false
 }
@@ -260,10 +261,6 @@ func (s *Stack) GetStaticClients(configuration *Configuration) []StaticClient {
 
 func (s *Stack) ModeChanged(configuration *Configuration) bool {
 	return s.Status.LightMode != configuration.Spec.LightMode
-}
-
-func (s *Stack) IsDisabled(module string) bool {
-	return s.Spec.Services.IsDisabled(module)
 }
 
 //+kubebuilder:object:root=true

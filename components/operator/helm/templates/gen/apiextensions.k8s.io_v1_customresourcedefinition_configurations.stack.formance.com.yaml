@@ -4329,6 +4329,8 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
+                      disabled:
+                        type: boolean
                       resourceProperties:
                         properties:
                           limits:
@@ -4356,6 +4358,8 @@ spec:
                               type: string
                             type: object
                         type: object
+                      fallback:
+                        type: string
                       resourceProperties:
                         properties:
                           limits:
@@ -4390,6 +4394,8 @@ spec:
                       deploymentStrategy:
                         type: string
                       dev:
+                        type: boolean
+                      disabled:
                         type: boolean
                       locking:
                         properties:
@@ -4473,6 +4479,8 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
+                      disabled:
+                        type: boolean
                       postgres:
                         properties:
                           credentialsFromSecret:
@@ -4525,6 +4533,8 @@ spec:
                       debug:
                         type: boolean
                       dev:
+                        type: boolean
+                      disabled:
                         type: boolean
                       encryptionKey:
                         type: string
@@ -4608,6 +4618,8 @@ spec:
                       debug:
                         type: boolean
                       dev:
+                        type: boolean
+                      disabled:
                         type: boolean
                       elasticSearch:
                         properties:
@@ -4705,6 +4717,8 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
+                      disabled:
+                        type: boolean
                       resourceProperties:
                         properties:
                           limits:
@@ -4735,6 +4749,8 @@ spec:
                       debug:
                         type: boolean
                       dev:
+                        type: boolean
+                      disabled:
                         type: boolean
                       postgres:
                         properties:

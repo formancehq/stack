@@ -18,6 +18,7 @@ package v1beta3
 
 import (
 	"fmt"
+	"github.com/iancoleman/strcase"
 	"reflect"
 	"strings"
 
@@ -50,6 +51,20 @@ func (in *ConfigurationServicesSpec) List() []string {
 		ret = append(ret, strings.ToLower(valueOf.Type().Field(i).Name))
 	}
 	return ret
+}
+
+func (in *ConfigurationServicesSpec) IsDisabled(service string) bool {
+	valueOf := reflect.ValueOf(in).Elem().FieldByName(strcase.ToCamel(service))
+	if valueOf.IsValid() {
+		_, ok := valueOf.Type().FieldByName("CommonServiceProperties")
+		if !ok {
+			return false
+		}
+		commonServiceProperties := valueOf.FieldByName("CommonServiceProperties")
+		properties := commonServiceProperties.Interface().(CommonServiceProperties)
+		return properties.Disabled != nil && *properties.Disabled
+	}
+	return false
 }
 
 // TODO: Handle validation

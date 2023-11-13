@@ -56,6 +56,8 @@ spec:
             properties:
               configuration:
                 type: string
+              currentVersion:
+                type: string
               module:
                 type: string
               postUpgrade:
@@ -66,6 +68,7 @@ spec:
                 type: string
             required:
             - configuration
+            - currentVersion
             - module
             - postUpgrade
             - targetedVersion
