@@ -3,5 +3,6 @@ kind: Versions
 metadata:
   name: default
 spec:
+  gateway: latest
   ledger: latest
   payments: latest

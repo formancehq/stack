@@ -194,8 +194,17 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		"Fallback": fallback,
 		"Redirect": redirect,
 		"EnableAudit": func() bool {
-			gatewayVersions := context.Versions.Spec.Gateway
-			return semver.Compare("v0.2.0", gatewayVersions) <= 0
+			gatewayVersion := context.Versions.Spec.Gateway
+			enable := context.Configuration.Spec.Services.Gateway.EnableAuditPlugin
+			if enable == nil {
+				return false
+			}
+
+			if !semver.IsValid(gatewayVersion) {
+				return *enable
+			}
+
+			return *enable && semver.Compare("v0.2.0", gatewayVersion) <= 0
 		}(),
 	}); err != nil {
 		panic(err)

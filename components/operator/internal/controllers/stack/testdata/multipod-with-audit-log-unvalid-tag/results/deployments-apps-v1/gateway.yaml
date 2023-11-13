@@ -7,7 +7,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: gateway
-    namespace: multipod-without-audit-log
+    namespace: multipod-with-audit-log-unvalid-tag
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -23,7 +23,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: 7p3kZCm5cFpCNLRGw3c9Lm-amWoDWT2Kvnp62eC5maI=
+                stack.formance.cloud/volumes-hash: G1cxhggszAmivKqWV23bKstzZHJAH9w9HK_X1AsOcqY=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: gateway
@@ -47,7 +47,7 @@ spec:
                     - name: OTEL_SERVICE_NAME
                       value: gateway
                     - name: STACK
-                      value: multipod-without-audit-log
+                      value: multipod-with-audit-log-unvalid-tag
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED

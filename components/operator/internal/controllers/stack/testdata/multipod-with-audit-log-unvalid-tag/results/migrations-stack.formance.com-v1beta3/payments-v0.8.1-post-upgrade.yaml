@@ -1,0 +1,17 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: payments-v0.8.1-post-upgrade
+    namespace: multipod-with-audit-log-unvalid-tag
+spec:
+    configuration: multipod-with-audit-log-unvalid-tag
+    currentVersion: latest
+    module: payments
+    postUpgrade: true
+    targetedVersion: v0.8.1
+    version: multipod-with-audit-log-unvalid-tag
+status:
+    terminated: true
