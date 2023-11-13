@@ -82,17 +82,23 @@ func connectorRouter[Config models.ConnectorConfigObject](
 	r := mux.NewRouter()
 
 	addRoute(r, provider, "", http.MethodPost, install(manager))
-	addRoute(r, provider, "/{connectorID}", http.MethodDelete, uninstall(manager))
-	addRoute(r, provider, "/{connectorID}/config", http.MethodGet, readConfig(manager))
-	addRoute(r, provider, "/{connectorID}/reset", http.MethodPost, reset(manager))
-	addRoute(r, provider, "/{connectorID}/tasks", http.MethodGet, listTasks(manager))
-	addRoute(r, provider, "/{connectorID}/tasks/{taskID}", http.MethodGet, readTask(manager))
+	addRoute(r, provider, "/{connectorID}", http.MethodDelete, uninstall(manager, V1))
+	addRoute(r, provider, "/{connectorID}/config", http.MethodGet, readConfig(manager, V1))
+	addRoute(r, provider, "/{connectorID}/reset", http.MethodPost, reset(manager, V1))
+	addRoute(r, provider, "/{connectorID}/tasks", http.MethodGet, listTasks(manager, V1))
+	addRoute(r, provider, "/{connectorID}/tasks/{taskID}", http.MethodGet, readTask(manager, V1))
+
+	// Deprecated routes
+	addRoute(r, provider, "", http.MethodDelete, uninstall(manager, V0))
+	addRoute(r, provider, "/config", http.MethodGet, readConfig(manager, V0))
+	addRoute(r, provider, "/reset", http.MethodPost, reset(manager, V0))
+	addRoute(r, provider, "/tasks", http.MethodGet, listTasks(manager, V0))
+	addRoute(r, provider, "/tasks/{taskID}", http.MethodGet, readTask(manager, V0))
 
 	return r
 }
 
 func addRoute(r *mux.Router, provider models.ConnectorProvider, path, method string, handler http.Handler) {
 	r.Path("/" + provider.String() + path).Methods(method).Handler(handler)
-
 	r.Path("/" + provider.StringLower() + path).Methods(method).Handler(handler)
 }

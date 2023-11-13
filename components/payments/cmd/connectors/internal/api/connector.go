@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -13,11 +14,51 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type APIVersion int
+
+const (
+	V0 APIVersion = iota
+	V1 APIVersion = iota
+)
+
+func getConnectorID[Config models.ConnectorConfigObject](
+	connectorManager *integration.ConnectorsManager[Config],
+	r *http.Request,
+	apiVersion APIVersion,
+) (models.ConnectorID, error) {
+	switch apiVersion {
+	case V0:
+		connectors := connectorManager.Connectors()
+		if len(connectors) == 0 {
+			return models.ConnectorID{}, fmt.Errorf("no connectors installed")
+		}
+
+		if len(connectors) > 1 {
+			return models.ConnectorID{}, fmt.Errorf("more than one connectors installed")
+		}
+
+		for id := range connectors {
+			return models.MustConnectorIDFromString(id), nil
+		}
+
+	case V1:
+		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		if err != nil {
+			return models.ConnectorID{}, err
+		}
+
+		return connectorID, nil
+	}
+
+	return models.ConnectorID{}, fmt.Errorf("unknown API version")
+}
+
 func readConfig[Config models.ConnectorConfigObject](
 	connectorManager *integration.ConnectorsManager[Config],
+	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
@@ -55,9 +96,10 @@ type listTasksResponseElement struct {
 
 func listTasks[Config models.ConnectorConfigObject](
 	connectorManager *integration.ConnectorsManager[Config],
+	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
@@ -116,9 +158,10 @@ func listTasks[Config models.ConnectorConfigObject](
 
 func readTask[Config models.ConnectorConfigObject](
 	connectorManager *integration.ConnectorsManager[Config],
+	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
@@ -162,9 +205,10 @@ func readTask[Config models.ConnectorConfigObject](
 
 func uninstall[Config models.ConnectorConfigObject](
 	connectorManager *integration.ConnectorsManager[Config],
+	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
@@ -221,9 +265,10 @@ func install[Config models.ConnectorConfigObject](
 
 func reset[Config models.ConnectorConfigObject](
 	connectorManager *integration.ConnectorsManager[Config],
+	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return

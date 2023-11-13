@@ -14,6 +14,7 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/ServerInfo'
+
   /payments:
     get:
       summary: List payments
@@ -27,6 +28,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Payments'
+
   /payments/{paymentId}:
     get:
       summary: Get a payment
@@ -38,6 +40,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Payment'
+
   /payments/{paymentId}/metadata:
     patch:
       summary: Update metadata
@@ -51,6 +54,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /transfer-initiations:
     get:
       summary: List Transfer Initiations
@@ -76,6 +80,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TransferInitiation'
+
   /transfer-initiations/{transferId}:
     get:
       summary: Get a transfer initiation
@@ -98,6 +103,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /transfer-initiations/{transferId}/status:
     post:
       summary: Update the status of a transfer initiation
@@ -112,6 +118,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /transfer-initiations/{transferId}/retry:
     post:
       summary: Retry a failed transfer initiation
@@ -124,6 +131,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /accounts:
     get:
       summary: List accounts
@@ -137,6 +145,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Accounts'
+
   /accounts/{accountId}:
     get:
       summary: Get an account
@@ -148,6 +157,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Account'
+
   /accounts/{accountId}/balances:
     get:
       summary: Get account balances
@@ -195,6 +205,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/AccountBalances'
+
   /bank-accounts:
     post:
       summary: Create a BankAccount in Payments and on the PSP
@@ -220,6 +231,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/BankAccounts'
+
   /bank-accounts/{bankAccountId}:
     get:
       summary: Get a bank account created by user on Formance
@@ -231,6 +243,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/BankAccount'
+
   /connectors:
     get:
       summary: List all installed connectors
@@ -241,6 +254,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Connectors'
+
   /connectors/configs:
     get:
       summary: List the configs of each available connector
@@ -251,6 +265,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ConnectorsConfigs'
+
   /connectors/{connector}:
     post:
       summary: Install a connector
@@ -265,6 +280,18 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/ConnectorInstalled'
+    delete:
+      summary: Uninstall a connector
+      deprecated: true
+      operationId: uninstallConnector
+      tags:
+        - Payments
+      description: Uninstall a connector by its name.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
   /connectors/{connector}/{connectorId}:
     delete:
       summary: Uninstall a connector
@@ -278,6 +305,20 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
+  /connectors/{connector}/config:
+    get:
+      summary: Read the config of a connector
+      deprecated: true
+      operationId: readConnectorConfig
+      tags:
+        - Payments
+      description: Read connector config
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+      responses:
+        '200':
+          $ref: '#/components/responses/ConnectorConfig'
   /connectors/{connector}/{connectorId}/config:
     get:
       summary: Read the config of a connector
@@ -291,6 +332,22 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ConnectorConfig'
+
+  /connectors/{connector}/reset:
+    post:
+      summary: Reset a connector
+      deprecated: true
+      operationId: resetConnector
+      tags:
+        - Payments
+      description: |
+        Reset a connector by its name.
+        It will remove the connector and ALL PAYMENTS generated with it.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
   /connectors/{connector}/{connectorId}/reset:
     post:
       summary: Reset a connector
@@ -306,6 +363,22 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  
+  /connectors/{connector}/tasks:
+    get:
+      summary: List tasks from a connector
+      deprecated: true
+      tags:
+        - Payments
+      operationId: listConnectorTasks
+      description: List all tasks associated with this connector.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          $ref: '#/components/responses/Tasks'
   /connectors/{connector}/{connectorId}/tasks:
     get:
       summary: List tasks from a connector
@@ -321,6 +394,21 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Tasks'
+
+  /connectors/{connector}/tasks/{taskId}:
+    get:
+      summary: Read a specific task of the connector
+      deprecated: true
+      tags:
+        - Payments
+      operationId: getConnectorTask
+      description: Get a specific task associated to the connector.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Task'
   /connectors/{connector}/{connectorId}/tasks/{taskId}:
     get:
       summary: Read a specific task of the connector
@@ -335,6 +423,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Task'
+
   /connectors/{connector}/transfers:
     post:
       summary: Transfer funds between Connector accounts
