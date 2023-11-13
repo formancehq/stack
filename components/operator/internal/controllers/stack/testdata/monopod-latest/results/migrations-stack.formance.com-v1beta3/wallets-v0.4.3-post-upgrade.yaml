@@ -8,6 +8,7 @@ metadata:
     namespace: monopod-latest
 spec:
     configuration: monopod-latest
+    currentVersion: ""
     module: wallets
     postUpgrade: true
     targetedVersion: v0.4.3

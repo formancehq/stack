@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-latest-with-custom-registry
 spec:
     configuration: multipod-latest-with-custom-registry
+    currentVersion: latest
     module: payments
     postUpgrade: true
     targetedVersion: v0.8.1

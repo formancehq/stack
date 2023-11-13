@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-latest-with-custom-registry
 spec:
     configuration: multipod-latest-with-custom-registry
+    currentVersion: ""
     module: wallets
     postUpgrade: true
     targetedVersion: v0.4.3

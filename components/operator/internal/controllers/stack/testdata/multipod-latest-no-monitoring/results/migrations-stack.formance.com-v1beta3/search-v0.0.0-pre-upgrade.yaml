@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-latest-no-monitoring
 spec:
     configuration: multipod-latest-no-monitoring
+    currentVersion: ""
     module: search
     postUpgrade: false
     targetedVersion: v0.0.0

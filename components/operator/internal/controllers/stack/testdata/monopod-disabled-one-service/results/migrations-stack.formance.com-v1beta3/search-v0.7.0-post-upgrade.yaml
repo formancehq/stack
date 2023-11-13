@@ -8,6 +8,7 @@ metadata:
     namespace: monopod-disabled-one-service
 spec:
     configuration: monopod-disabled-one-service
+    currentVersion: ""
     module: search
     postUpgrade: true
     targetedVersion: v0.7.0

@@ -43,7 +43,7 @@ jobs:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
   GoReleaser:
     runs-on: "formance-runner"
-    if: contains(github.event.pull_request.labels.*.name, 'build-images')
+    if: contains(github.event.pull_request.labels.*.name, 'build-images') || github.ref == 'refs/heads/main'
     steps:
       - uses: 'actions/checkout@v4'
         with:

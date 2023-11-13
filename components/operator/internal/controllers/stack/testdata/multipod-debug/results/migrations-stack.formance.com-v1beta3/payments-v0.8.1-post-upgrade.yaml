@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-debug
 spec:
     configuration: multipod-debug
+    currentVersion: latest
     module: payments
     postUpgrade: true
     targetedVersion: v0.8.1

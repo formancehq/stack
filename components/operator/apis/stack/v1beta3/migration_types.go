@@ -23,6 +23,7 @@ import (
 // MigrationSpec defines the desired state of Migration
 type MigrationSpec struct {
 	Configuration   string `json:"configuration"`
+	CurrentVersion  string `json:"currentVersion"`
 	Version         string `json:"version"`
 	Module          string `json:"module"`
 	TargetedVersion string `json:"targetedVersion"`

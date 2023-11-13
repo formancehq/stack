@@ -8,6 +8,7 @@ metadata:
     namespace: multipod-service-annotation
 spec:
     configuration: multipod-service-annotation
+    currentVersion: ""
     module: search
     postUpgrade: false
     targetedVersion: v0.0.0

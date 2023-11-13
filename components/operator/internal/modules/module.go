@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 
+	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 
 	"github.com/pkg/errors"
@@ -34,8 +35,8 @@ type Version struct {
 	DatabaseMigration *DatabaseMigration
 	Services          func(cfg ReconciliationConfig) Services
 	Cron              func(cfg ReconciliationConfig) []Cron
-	PreUpgrade        func(ctx context.Context, jobRunner JobRunner, cfg ReconciliationConfig) (bool, error)
-	PostUpgrade       func(ctx context.Context, jobRunner JobRunner, cfg ReconciliationConfig) (bool, error)
+	PreUpgrade        func(ctx context.Context, jobRunner JobRunner, cfg MigrationConfig) (bool, error)
+	PostUpgrade       func(ctx context.Context, jobRunner JobRunner, cfg MigrationConfig) (bool, error)
 }
 
 type Module interface {
@@ -77,7 +78,9 @@ func getSortedModules() []Module {
 
 func sortedVersions(module Module) []string {
 	versionsKeys := collectionutils.Keys(module.Versions())
-	sort.Strings(versionsKeys)
+	sort.Slice(versionsKeys, func(i, j int) bool {
+		return semver.Compare(versionsKeys[i], versionsKeys[j]) == -1
+	})
 
 	return versionsKeys
 }
@@ -228,6 +231,7 @@ func (r *moduleReconciler) finalizeModule(ctx context.Context, module Module) (b
 			_, _, err := r.namespacedResourceDeployer.Migrations().CreateOrUpdate(ctx, migrationName, func(t *v1beta3.Migration) {
 				t.Spec = v1beta3.MigrationSpec{
 					Configuration:   r.Configuration.Name,
+					CurrentVersion:  r.Versions.GetVersion(module.Name()),
 					Module:          module.Name(),
 					TargetedVersion: version,
 					Version:         r.Versions.Name,
@@ -324,6 +328,7 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 		_, _, err := r.namespacedResourceDeployer.Migrations().CreateOrUpdate(ctx, migrationName, func(t *v1beta3.Migration) {
 			t.Spec = v1beta3.MigrationSpec{
 				Configuration:   r.Configuration.Name,
+				CurrentVersion:  r.Versions.GetVersion(module.Name()),
 				Module:          module.Name(),
 				TargetedVersion: version,
 				Version:         r.Versions.Name,

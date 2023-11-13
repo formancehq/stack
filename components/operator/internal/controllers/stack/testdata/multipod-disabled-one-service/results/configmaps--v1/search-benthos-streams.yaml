@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-    gateway_audit.yaml: "input:\n  event_bus:\n    topic: audit\n    consumer_group: search-audit\n\npipeline:\n  processors:\n  - log:\n      message: \"receive message: ${! this }\"\n  - switch_event_type:\n      events:\n      - label: AUDIT\n        processors:\n        - bloblang: |\n            meta id = \"AUDIT-%s\".format(this.payload.id)\n            meta action = \"index\"\n            \n            root = {\n              \"data\": this.payload,\n              \"indexed\": {\n                \"request\": this.payload.request,\n                \"response\": this.payload.response,\n                \"when\": this.date\n              },\n              \"kind\": \"AUDIT\",\n              \"when\": this.date\n            }\n\n\noutput:\n  resource: elasticsearch\n"
+    gateway_audit.yaml: "input:\n  event_bus:\n    topic: audit\n    consumer_group: search-audit\n\npipeline:\n  processors:\n  - log:\n      message: \"receive message: ${! this }\"\n  - switch_event_type:\n      events:\n      - label: AUDIT\n        processors:\n        - bloblang: |\n            meta id = \"AUDIT-%s\".format(this.payload.id)\n            meta action = \"index\"\n            \n            root = {\n              \"data\": this.payload,\n              \"indexed\": {\n                \"path\": this.payload.request.path,\n              },\n              \"kind\": \"AUDIT\"\n            }\n\n\noutput:\n  resource: elasticsearch\n"
     ledger_ingestion.yaml: |
         ---
         input:
