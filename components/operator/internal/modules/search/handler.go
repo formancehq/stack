@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/mod/semver"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 
@@ -215,6 +216,23 @@ func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 	}
 }
 
+// When enabled, the audit plugin will be enabled for the gateway.
+// The audit plugin is available since gateway v0.2.0.
+// If the gateway version is not available, the audit plugin will be disabled.
+// Also if not enabled the nats stream will not be created.
+func enableAuditPlugin(ctx modules.ReconciliationConfig) bool {
+	gatewayVersion := ctx.Versions.Spec.Gateway
+	enable := ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin
+	if enable == nil {
+		return false
+	}
+
+	if !semver.IsValid(gatewayVersion) {
+		return *enable
+	}
+
+	return *enable && semver.Compare("v0.2.0", gatewayVersion) <= 0
+}
 func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 	return &modules.Service{
 		Name: "benthos",
@@ -253,13 +271,11 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 				})
 			}
 
-			if ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin != nil {
-				if *ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin {
-					directories = append(directories, directory{
-						name: "audit",
-						fs:   benthosOperator.Audit,
-					})
-				}
+			if enableAuditPlugin(ctx) {
+				directories = append(directories, directory{
+					name: "audit",
+					fs:   benthosOperator.Audit,
+				})
 			}
 
 			for _, x := range directories {
@@ -297,9 +313,14 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 			if ctx.Configuration.Spec.Monitoring != nil {
 				cmd = append(cmd, "-c", resolveContext.GetConfig("global").GetMountPath()+"/config.yaml")
 			}
+
 			cmd = append(cmd,
 				"--log.level", "trace", "streams",
 				resolveContext.GetConfig("streams").GetMountPath()+"/*.yaml")
+
+			if enableAuditPlugin(ctx) {
+				cmd = append(cmd, resolveContext.GetConfig("audit").GetMountPath()+"/gateway_audit.yaml")
+			}
 
 			return modules.Container{
 				Env:                  env,

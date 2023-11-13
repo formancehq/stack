@@ -36,6 +36,7 @@ spec:
                     - trace
                     - streams
                     - /config/streams/*.yaml
+                    - /config/audit/gateway_audit.yaml
                   env:
                     - name: DEBUG
                       value: "false"

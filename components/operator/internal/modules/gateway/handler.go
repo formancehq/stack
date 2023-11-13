@@ -100,6 +100,24 @@ func init() {
 	modules.Register(Module)
 }
 
+// When enabled, the audit plugin will be enabled for the gateway.
+// The audit plugin is available since gateway v0.2.0.
+// If the gateway version is not available, the audit plugin will be disabled.
+// Also if not enabled the nats stream will not be created.
+func EnableAuditPlugin(ctx modules.ReconciliationConfig) bool {
+	gatewayVersion := ctx.Versions.Spec.Gateway
+	enable := ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin
+	if enable == nil {
+		return false
+	}
+
+	if !semver.IsValid(gatewayVersion) {
+		return *enable
+	}
+
+	return *enable && semver.Compare("v0.2.0", gatewayVersion) <= 0
+}
+
 func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 	buf := bytes.NewBufferString("")
 
@@ -190,22 +208,10 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			}
 			return ""
 		}(),
-		"Port":     gatewayPort,
-		"Fallback": fallback,
-		"Redirect": redirect,
-		"EnableAudit": func() bool {
-			gatewayVersion := context.Versions.Spec.Gateway
-			enable := context.Configuration.Spec.Services.Gateway.EnableAuditPlugin
-			if enable == nil {
-				return false
-			}
-
-			if !semver.IsValid(gatewayVersion) {
-				return *enable
-			}
-
-			return *enable && semver.Compare("v0.2.0", gatewayVersion) <= 0
-		}(),
+		"Port":        gatewayPort,
+		"Fallback":    fallback,
+		"Redirect":    redirect,
+		"EnableAudit": EnableAuditPlugin(context.ReconciliationConfig),
 	}); err != nil {
 		panic(err)
 	}
