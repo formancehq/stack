@@ -35,18 +35,19 @@ const (
 
 // +kubebuilder:object:generate=true
 type LedgerSpec struct {
-	Postgres PostgresConfig `json:"postgres"`
+	CommonServiceProperties `json:",inline"`
+	Postgres                PostgresConfig `json:"postgres"`
 	// +optional
 	Locking LockingStrategy `json:"locking"`
 	// +optional
 	AllowPastTimestamps bool `json:"allowPastTimestamps"`
 	// +optional
-	DevProperties `json:",inline"`
-	// +optional
 	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
 	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
 	// +optional
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
+	// +optional
+	Disabled *bool `json:"disabled,omitempty"`
 }
 
 type ServiceSpec struct {

@@ -100,7 +100,10 @@ deploy:
     COPY .earthly .earthly
     WORKDIR .earthly
     RUN kubectl get versions default || kubectl apply -f k8s-versions.yaml
-    RUN kubectl apply -f k8s-configuration.yaml
+    ARG user
+    RUN --secret tld helm upgrade --install operator-configuration ./configuration \
+        --namespace formance-system \
+        --set gateway.fallback=https://console.$user.$tld
 
 lint:
     FROM core+builder-image

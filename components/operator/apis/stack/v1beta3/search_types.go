@@ -48,13 +48,12 @@ func (in *ElasticSearchConfig) Endpoint() string {
 
 // +kubebuilder:object:generate=true
 type SearchSpec struct {
-	ElasticSearchConfig ElasticSearchConfig `json:"elasticSearch"`
+	CommonServiceProperties `json:",inline"`
+	ElasticSearchConfig     ElasticSearchConfig `json:"elasticSearch"`
 
 	// +optional
 	Batching Batching `json:"batching"`
 
-	// +optional
-	DevProperties `json:",inline"`
 	// +optional
 	SearchResourceProperties *ResourceProperties `json:"searchResourceProperties,omitempty"`
 	// +optional

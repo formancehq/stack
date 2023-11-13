@@ -232,6 +232,7 @@ data:
         		reverse_proxy control:3000
         		import cors
         	}
+        	
         }
 kind: ConfigMap
 metadata:

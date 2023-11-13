@@ -2,7 +2,8 @@ package v1beta3
 
 // +kubebuilder:object:generate=true
 type WebhooksSpec struct {
-	Postgres PostgresConfig `json:"postgres"`
+	CommonServiceProperties `json:",inline"`
+	Postgres                PostgresConfig `json:"postgres"`
 	// +optional
 	DevProperties `json:",inline"`
 	// +optional

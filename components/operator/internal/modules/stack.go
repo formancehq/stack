@@ -69,6 +69,10 @@ type ReconciliationConfig struct {
 	Platform      Platform
 }
 
+func (s *ReconciliationConfig) IsDisabled(module string) bool {
+	return s.Stack.Spec.Services.IsDisabled(module) || s.Configuration.Spec.Services.IsDisabled(module)
+}
+
 type StackReconciler struct {
 	ReconciliationConfig
 	JobRunner
@@ -139,7 +143,7 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 
 	if r.Configuration.Spec.LightMode {
 		for _, module := range getSortedModules() {
-			if r.Stack.IsDisabled(module.Name()) {
+			if r.IsDisabled(module.Name()) {
 				continue
 			}
 			if !r.ready.Contains(module) {
@@ -165,7 +169,7 @@ func (r *StackReconciler) Reconcile(ctx context.Context) (bool, error) {
 	logger.Info("Finalize modules")
 	allReady := true
 	for _, module := range getSortedModules() {
-		if r.Stack.IsDisabled(module.Name()) {
+		if r.IsDisabled(module.Name()) {
 			continue
 		}
 		if !r.ready.Contains(module) {
@@ -315,7 +319,7 @@ func (r *StackReconciler) prepareModule(ctx context.Context, module Module,
 		return nil
 	}
 
-	if r.Stack.IsDisabled(module.Name()) {
+	if r.IsDisabled(module.Name()) {
 		return r.scaleDownStackModule(ctx, module)
 	}
 
