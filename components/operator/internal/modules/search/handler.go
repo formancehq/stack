@@ -253,8 +253,18 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 				})
 			}
 
+			if ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin != nil {
+				if *ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin {
+					directories = append(directories, directory{
+						name: "audit",
+						fs:   benthosOperator.Audit,
+					})
+				}
+			}
+
 			for _, x := range directories {
 				data := make(map[string]string)
+
 				copyDir(x.fs, x.name, x.name, &data)
 				ret[x.name] = modules.Config{
 					Mount: true,
