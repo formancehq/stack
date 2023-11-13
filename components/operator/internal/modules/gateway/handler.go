@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/operator/internal/modules/search"
 	"github.com/formancehq/operator/internal/modules/wallets"
 	"github.com/formancehq/operator/internal/modules/webhooks"
+	"golang.org/x/mod/semver"
 
 	"github.com/formancehq/operator/internal/modules"
 )
@@ -192,6 +193,10 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		"Port":     gatewayPort,
 		"Fallback": fallback,
 		"Redirect": redirect,
+		"EnableAudit": func() bool {
+			gatewayVersions := context.Versions.Spec.Gateway
+			return semver.Compare("v0.2.0", gatewayVersions) <= 0
+		}(),
 	}); err != nil {
 		panic(err)
 	}
@@ -215,6 +220,7 @@ const caddyfile = `(cors) {
 	}
 }
 
+{{- if .EnableAudit }}
 (audit) {
 	audit {
 		# Kafka publisher
@@ -236,6 +242,7 @@ const caddyfile = `(cors) {
 		{{- end }}
 	}
 }
+{{- end }}
 
 {
 	{{ if .Debug }}debug{{ end }}
@@ -259,7 +266,9 @@ const caddyfile = `(cors) {
 		{{- end }}
 	}
 
+	{{- if .EnableAudit }}
 	import audit
+	{{- end }}
 
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}

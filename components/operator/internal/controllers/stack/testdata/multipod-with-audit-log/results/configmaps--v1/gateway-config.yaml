@@ -1,0 +1,264 @@
+apiVersion: v1
+data:
+    Caddyfile: |-
+        (cors) {
+        	header {
+        		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
+        		Access-Control-Allow-Headers content-type
+        		Access-Control-Max-Age 100
+        		Access-Control-Allow-Origin *
+        	}
+        }
+
+        (auth) {
+        	auth {
+        		issuer http://example.net/api/auth
+
+        		read_key_set_max_retries 10
+        	}
+        }
+        (audit) {
+        	audit {
+        		# Kafka publisher
+        		publisher_kafka_broker {$PUBLISHER_KAFKA_BROKER:redpanda:29092}
+        		publisher_kafka_enabled {$PUBLISHER_KAFKA_ENABLED:false}
+        		publisher_kafka_tls_enabled {$PUBLISHER_KAFKA_TLS_ENABLED:false}
+        		publisher_kafka_sasl_enabled {$PUBLISHER_KAFKA_SASL_ENABLED:false}
+        		publisher_kafka_sasl_username {$PUBLISHER_KAFKA_SASL_USERNAME}
+        		publisher_kafka_sasl_password {$PUBLISHER_KAFKA_SASL_PASSWORD}
+        		publisher_kafka_sasl_mechanism {$PUBLISHER_KAFKA_SASL_MECHANISM}
+        		publisher_kafka_sasl_scram_sha_size {$PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE}
+        	}
+        }
+
+        {
+        	
+        	# Many directives manipulate the HTTP handler chain and the order in which
+        	# those directives are evaluated matters. So the jwtauth directive must be
+        	# ordered.
+        	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
+        	order auth before basicauth
+        	order versions after metrics
+        	order audit after encode
+        }
+
+        :8000 {
+        	tracing {
+        		span gateway
+        	}
+        	log {
+        		output stdout
+        	}
+        	import audit
+
+        			@authmatcher {
+        				path /api/auth*
+        			}
+        			handle @authmatcher {
+        				uri strip_prefix /api/auth
+        				reverse_proxy auth:8080
+
+        				import cors
+        			}
+
+        			@ledgermatcher {
+        				path /api/ledger*
+        			}
+        			handle @ledgermatcher {
+        				uri strip_prefix /api/ledger
+        				reverse_proxy ledger:8080
+
+        				import cors
+        				import auth
+        			}
+
+        			@orchestrationmatcher {
+        				path /api/orchestration*
+        			}
+        			handle @orchestrationmatcher {
+        				uri strip_prefix /api/orchestration
+        				reverse_proxy orchestration:8080
+
+        				import cors
+        				import auth
+        			}
+        			@paymentsmatcher {
+        				path /api/payments/payments*
+        				method GET PATCH
+        			}
+        			handle @paymentsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+        			@accountsmatcher {
+        				path /api/payments/accounts*
+        				method GET
+        			}
+        			handle @accountsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+        			@bank-accounts-readmatcher {
+        				path /api/payments/bank-accounts*
+        				method GET
+        			}
+        			handle @bank-accounts-readmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+        			@transfer-initiations-readmatcher {
+        				path /api/paymentstransfer-initiations*
+        				method GET
+        			}
+        			handle @transfer-initiations-readmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+
+        			@payments-apimatcher {
+        				path /api/payments*
+        			}
+        			handle @payments-apimatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+
+        				import cors
+        				import auth
+        			}
+        			@connectorsmatcher {
+        				path /api/payments/connectors*
+        			}
+        			handle @connectorsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+        			@configsmatcher {
+        				path /api/payments/configs*
+        			}
+        			handle @configsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+        			@transfer-initiations-writematcher {
+        				path /api/paymentstransfer-initiations*
+        				method POST DELETE
+        			}
+        			handle @transfer-initiations-writematcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+        			@bank-accounts-writematcher {
+        				path /api/payments/bank-accounts*
+        				method POST
+        			}
+        			handle @bank-accounts-writematcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+        				import cors
+        				import auth
+        			}
+
+        			@payments-connectorsmatcher {
+        				path /api/payments*
+        			}
+        			handle @payments-connectorsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-connectors:8080
+
+        				import cors
+        				import auth
+        			}
+
+        			@searchmatcher {
+        				path /api/search*
+        			}
+        			handle @searchmatcher {
+        				uri strip_prefix /api/search
+        				reverse_proxy search:8080
+
+        				import cors
+        				import auth
+        			}
+
+        			@search-benthosmatcher {
+        				path /api/search-benthos*
+        			}
+        			handle @search-benthosmatcher {
+        				uri strip_prefix /api/search-benthos
+        				reverse_proxy search-benthos:4195
+
+        				import cors
+        				import auth
+        			}
+
+        			@walletsmatcher {
+        				path /api/wallets*
+        			}
+        			handle @walletsmatcher {
+        				uri strip_prefix /api/wallets
+        				reverse_proxy wallets:8080
+
+        				import cors
+        				import auth
+        			}
+
+        			@webhooksmatcher {
+        				path /api/webhooks*
+        			}
+        			handle @webhooksmatcher {
+        				uri strip_prefix /api/webhooks
+        				reverse_proxy webhooks:8080
+
+        				import cors
+        				import auth
+        			}
+
+        	handle /versions {
+        		versions {
+        			region "us-west-1"
+        			env "staging"
+        			endpoints {
+        				auth http://auth:8080/_info http://auth:8080/_healthcheck
+        				ledger http://ledger:8080/_info http://ledger:8080/_healthcheck
+        				orchestration http://orchestration:8080/_info http://orchestration:8080/_healthcheck
+        				payments-api http://payments-api:8080/_info http://payments-api:8080/_health
+        				payments-connectors http://payments-connectors:8080/_info http://payments-connectors:8080/_health
+        				search http://search:8080/_info http://search:8080/_healthcheck
+        				wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
+        				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
+        			}
+        		}
+        	}
+
+        	# Respond 502 if service does not exists
+        	handle /api/* {
+        		respond "Bad Gateway" 502
+        	}
+
+        	# handle all other requests
+        	handle {
+        		reverse_proxy control:3000
+        		import cors
+        	}
+        	
+        }
+kind: ConfigMap
+metadata:
+    labels:
+        stack: "true"
+    name: gateway-config
+    namespace: multipod-with-audit-log

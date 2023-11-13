@@ -52,5 +52,14 @@
   },
   "type" : {
     "type": "keyword"
+  },
+  "requestPath" : {
+    "type": "keyword"
+  },
+  "requestMethod" : {
+    "type": "keyword"
+  },
+  "responseStatusCode" : {
+    "type": "short"
   }
 }

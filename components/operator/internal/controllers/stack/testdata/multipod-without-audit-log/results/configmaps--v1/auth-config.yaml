@@ -1,0 +1,42 @@
+apiVersion: v1
+data:
+    config.yaml: |
+        clients:
+            - public: false
+              description: null
+              redirectUris:
+                - http://example.net/auth/login
+              PostLogoutRedirectUris:
+                - http://example.net/auth/destroy
+              scopes:
+                - openid
+                - profile
+                - email
+                - offline
+              id: control
+              secrets:
+                - mocked-secret
+            - public: false
+              description: null
+              redirectUris: []
+              PostLogoutRedirectUris: []
+              scopes:
+                - openid
+              id: orchestration
+              secrets:
+                - mocked-secret
+            - public: false
+              description: null
+              redirectUris: []
+              PostLogoutRedirectUris: []
+              scopes:
+                - openid
+              id: wallets
+              secrets:
+                - mocked-secret
+kind: ConfigMap
+metadata:
+    labels:
+        stack: "true"
+    name: auth-config
+    namespace: multipod-without-audit-log
