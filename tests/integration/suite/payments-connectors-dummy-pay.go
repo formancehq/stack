@@ -39,7 +39,7 @@ var _ = Given("some empty environment", func() {
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(201))
 		})
 		AfterEach(func() {
 			cancelSubscription()

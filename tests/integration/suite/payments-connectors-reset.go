@@ -40,7 +40,7 @@ var _ = Given("some environment with dummy pay connector", func() {
 			},
 		)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(response.StatusCode).To(Equal(204))
+		Expect(response.StatusCode).To(Equal(201))
 
 		Eventually(func(g Gomega) bool {
 			response, err := Client().Search.Search(
