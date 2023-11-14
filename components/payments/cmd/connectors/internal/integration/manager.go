@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/connectors/internal/messages"
@@ -33,10 +34,12 @@ type connectorManager struct {
 type ConnectorsManager[Config models.ConnectorConfigObject] struct {
 	provider         models.ConnectorProvider
 	loader           Loader[Config]
-	connectors       map[string]*connectorManager
 	store            Repository
 	schedulerFactory TaskSchedulerFactory
 	publisher        message.Publisher
+
+	connectors map[string]*connectorManager
+	mu         sync.RWMutex
 }
 
 func (l *ConnectorsManager[ConnectorConfig]) logger(ctx context.Context) logging.Logger {
@@ -46,8 +49,28 @@ func (l *ConnectorsManager[ConnectorConfig]) logger(ctx context.Context) logging
 	})
 }
 
+func (l *ConnectorsManager[ConnectorConfig]) getManager(connectorID models.ConnectorID) (*connectorManager, error) {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+
+	connector, ok := l.connectors[connectorID.String()]
+	if !ok {
+		return nil, ErrNotInstalled
+	}
+
+	return connector, nil
+}
+
 func (l *ConnectorsManager[ConnectorConfig]) Connectors() map[string]*connectorManager {
-	return l.connectors
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+
+	copy := make(map[string]*connectorManager, len(l.connectors))
+	for k, v := range l.connectors {
+		copy[k] = v
+	}
+
+	return copy
 }
 
 func (l *ConnectorsManager[ConnectorConfig]) ReadConfig(
@@ -94,10 +117,12 @@ func (l *ConnectorsManager[ConnectorConfig]) load(
 	c := l.loader.Load(l.logger(ctx), connectorConfig)
 	scheduler := l.schedulerFactory.Make(connectorID, c, l.loader.AllowTasks())
 
+	l.mu.Lock()
 	l.connectors[connectorID.String()] = &connectorManager{
 		connector: c,
 		scheduler: scheduler,
 	}
+	l.mu.Unlock()
 
 	return nil
 }
@@ -151,7 +176,10 @@ func (l *ConnectorsManager[ConnectorConfig]) Install(
 		return models.ConnectorID{}, err
 	}
 
-	connectorManager := l.connectors[connector.ID.String()]
+	connectorManager, err := l.getManager(connector.ID)
+	if err != nil {
+		return models.ConnectorID{}, err
+	}
 
 	err = connectorManager.connector.Install(task.NewConnectorContext(logging.ContextWithLogger(
 		context.TODO(),
@@ -171,14 +199,13 @@ func (l *ConnectorsManager[ConnectorConfig]) Install(
 func (l *ConnectorsManager[ConnectorConfig]) Uninstall(ctx context.Context, connectorID models.ConnectorID) error {
 	l.logger(ctx).Infof("Uninstalling connector: %s", connectorID)
 
-	connectorManager, ok := l.connectors[connectorID.String()]
-	if !ok {
+	connectorManager, err := l.getManager(connectorID)
+	if err != nil {
 		l.logger(ctx).Errorf("Connector not installed")
-
-		return ErrNotInstalled
+		return err
 	}
 
-	err := connectorManager.scheduler.Shutdown(ctx)
+	err = connectorManager.scheduler.Shutdown(ctx)
 	if err != nil {
 		return err
 	}
@@ -193,7 +220,9 @@ func (l *ConnectorsManager[ConnectorConfig]) Uninstall(ctx context.Context, conn
 		return err
 	}
 
+	l.mu.Lock()
 	delete(l.connectors, connectorID.String())
+	l.mu.Unlock()
 
 	l.logger(ctx).Infof("Connector %s uninstalled", connectorID)
 
@@ -225,9 +254,7 @@ func (l *ConnectorsManager[ConnectorConfig]) Restore(ctx context.Context) error 
 func (l *ConnectorsManager[ConnectorConfig]) restore(ctx context.Context, connector *models.Connector) error {
 	l.logger(ctx).Infof("Restoring state for connector: %s", connector.Name)
 
-	connectorID := connector.ID.String()
-	_, ok := l.connectors[connectorID]
-	if ok {
+	if manager, _ := l.getManager(connector.ID); manager != nil {
 		return ErrAlreadyRunning
 	}
 
@@ -240,7 +267,12 @@ func (l *ConnectorsManager[ConnectorConfig]) restore(ctx context.Context, connec
 		return err
 	}
 
-	if err := l.connectors[connectorID].scheduler.Restore(ctx); err != nil {
+	manager, err := l.getManager(connector.ID)
+	if err != nil {
+		return err
+	}
+
+	if err := manager.scheduler.Restore(ctx); err != nil {
 		return err
 	}
 
@@ -255,7 +287,7 @@ func (l *ConnectorsManager[ConnectorConfig]) FindAll(ctx context.Context) ([]*mo
 		return nil, err
 	}
 
-	providerConnectors := make([]*models.Connector, 0, len(l.connectors))
+	providerConnectors := make([]*models.Connector, 0, len(connectors))
 	for _, connector := range connectors {
 		if connector.Provider == l.provider {
 			providerConnectors = append(providerConnectors, connector)
@@ -274,8 +306,8 @@ func (l *ConnectorsManager[ConnectorConfig]) ListTasksStates(
 	connectorID models.ConnectorID,
 	pagination storage.PaginatorQuery,
 ) ([]models.Task, storage.PaginationDetails, error) {
-	connectorManager, ok := l.connectors[connectorID.String()]
-	if !ok {
+	connectorManager, err := l.getManager(connectorID)
+	if err != nil {
 		return nil, storage.PaginationDetails{}, ErrConnectorNotFound
 	}
 
@@ -283,8 +315,8 @@ func (l *ConnectorsManager[ConnectorConfig]) ListTasksStates(
 }
 
 func (l *ConnectorsManager[Config]) ReadTaskState(ctx context.Context, connectorID models.ConnectorID, taskID uuid.UUID) (*models.Task, error) {
-	connectorManager, ok := l.connectors[connectorID.String()]
-	if !ok {
+	connectorManager, err := l.getManager(connectorID)
+	if err != nil {
 		return nil, ErrConnectorNotFound
 	}
 
@@ -322,11 +354,12 @@ func (l *ConnectorsManager[ConnectorConfig]) Reset(ctx context.Context, connecto
 }
 
 func (l *ConnectorsManager[ConnectorConfig]) InitiatePayment(ctx context.Context, transfer *models.TransferInitiation) error {
-	connectorManager, ok := l.connectors[transfer.ConnectorID.String()]
-	if !ok {
+	connectorManager, err := l.getManager(transfer.ConnectorID)
+	if err != nil {
 		return ErrConnectorNotFound
 	}
-	err := connectorManager.connector.InitiatePayment(task.NewConnectorContext(ctx, connectorManager.scheduler), transfer)
+
+	err = connectorManager.connector.InitiatePayment(task.NewConnectorContext(ctx, connectorManager.scheduler), transfer)
 	if err != nil {
 		return fmt.Errorf("initiating transfer: %w", err)
 	}

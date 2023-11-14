@@ -3,6 +3,7 @@ package integration_test
 import (
 	"context"
 	"encoding/json"
+	"sync"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/payments/internal/models"
@@ -18,9 +19,13 @@ type connector struct {
 type InMemoryConnectorStore struct {
 	connectorsByID   map[string]*connector
 	connectorsByName map[string]*connector
+	mu               sync.RWMutex
 }
 
 func (i *InMemoryConnectorStore) Uninstall(ctx context.Context, connectorID models.ConnectorID) error {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
 	connector, ok := i.connectorsByID[connectorID.String()]
 	if !ok {
 		return nil
@@ -33,6 +38,9 @@ func (i *InMemoryConnectorStore) Uninstall(ctx context.Context, connectorID mode
 }
 
 func (i *InMemoryConnectorStore) ListConnectors(_ context.Context) ([]*models.Connector, error) {
+	i.mu.RLock()
+	defer i.mu.RUnlock()
+
 	connectors := make([]*models.Connector, 0, len(i.connectorsByID))
 	for _, c := range i.connectorsByID {
 		connectors = append(connectors, &models.Connector{
@@ -46,22 +54,32 @@ func (i *InMemoryConnectorStore) ListConnectors(_ context.Context) ([]*models.Co
 }
 
 func (i *InMemoryConnectorStore) IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error) {
+	i.mu.RLock()
+	defer i.mu.RUnlock()
+
 	_, ok := i.connectorsByID[connectorID.String()]
 	return ok, nil
 }
 
 func (i *InMemoryConnectorStore) IsInstalledByConnectorName(ctx context.Context, name string) (bool, error) {
+	i.mu.RLock()
+	defer i.mu.RUnlock()
+
 	_, ok := i.connectorsByName[name]
 	return ok, nil
 }
 
 func (i *InMemoryConnectorStore) Install(ctx context.Context, newConnector *models.Connector, config json.RawMessage) error {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
 	c := &connector{
 		name:     newConnector.Name,
 		id:       newConnector.ID,
 		config:   config,
 		provider: newConnector.Provider,
 	}
+
 	i.connectorsByID[newConnector.ID.String()] = c
 	i.connectorsByName[newConnector.Name] = c
 
@@ -69,11 +87,17 @@ func (i *InMemoryConnectorStore) Install(ctx context.Context, newConnector *mode
 }
 
 func (i *InMemoryConnectorStore) UpdateConfig(ctx context.Context, connectorID models.ConnectorID, config json.RawMessage) error {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
 	i.connectorsByID[connectorID.String()].config = config
 	return nil
 }
 
 func (i *InMemoryConnectorStore) GetConnector(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error) {
+	i.mu.RLock()
+	defer i.mu.RUnlock()
+
 	c, ok := i.connectorsByID[connectorID.String()]
 	if !ok {
 		return nil, integration.ErrNotFound
