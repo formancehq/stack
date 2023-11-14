@@ -20,6 +20,12 @@ export class InstallConnectorRequest extends SpeakeasyBase {
 }
 
 export class InstallConnectorResponse extends SpeakeasyBase {
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  connectorResponse?: shared.ConnectorResponse;
+
   @SpeakeasyMetadata()
   contentType: string;
 

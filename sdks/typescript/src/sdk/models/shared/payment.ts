@@ -48,6 +48,10 @@ export class Payment extends SpeakeasyBase {
   asset: string;
 
   @SpeakeasyMetadata()
+  @Expose({ name: "connectorID" })
+  connectorID: string;
+
+  @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
   createdAt: Date;
@@ -71,7 +75,7 @@ export class Payment extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "provider" })
-  provider: Connector;
+  provider?: Connector;
 
   @SpeakeasyMetadata()
   @Expose({ name: "raw" })

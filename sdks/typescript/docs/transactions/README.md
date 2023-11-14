@@ -32,8 +32,9 @@ sdk.transactions.createTransactions({
     transactions: [
       {
         metadata: {
-          "et": "excepturi",
-          "ullam": "provident",
+          "sint": "accusantium",
+          "mollitia": "reiciendis",
+          "mollitia": "ad",
         },
         postings: [
           {
@@ -48,6 +49,21 @@ sdk.transactions.createTransactions({
             destination: "users:002",
             source: "users:001",
           },
+        ],
+        reference: "ref:001",
+        timestamp: new Date("2022-02-07T18:15:06.372Z"),
+      },
+      {
+        metadata: {
+          "nemo": "quasi",
+        },
+        postings: [
+          {
+            amount: 100,
+            asset: "COIN",
+            destination: "users:002",
+            source: "users:001",
+          },
           {
             amount: 100,
             asset: "COIN",
@@ -56,7 +72,23 @@ sdk.transactions.createTransactions({
           },
         ],
         reference: "ref:001",
-        timestamp: new Date("2022-12-07T10:53:17.121Z"),
+        timestamp: new Date("2020-04-29T08:15:14.819Z"),
+      },
+      {
+        metadata: {
+          "maxime": "deleniti",
+          "facilis": "in",
+        },
+        postings: [
+          {
+            amount: 100,
+            asset: "COIN",
+            destination: "users:002",
+            source: "users:001",
+          },
+        ],
+        reference: "ref:001",
+        timestamp: new Date("2022-01-30T09:19:56.236Z"),
       },
     ],
   },
@@ -87,9 +119,8 @@ const sdk = new SDK({
 
 sdk.transactions.addMetadataOnTransaction({
   requestBody: {
-    "reiciendis": "mollitia",
-    "ad": "eum",
-    "dolor": "necessitatibus",
+    "expedita": "nihil",
+    "repellat": "quibusdam",
   },
   ledger: "ledger001",
   txid: 1234,
@@ -120,14 +151,17 @@ const sdk = new SDK({
 sdk.transactions.countTransactions({
   account: "users:001",
   destination: "users:001",
-  endTime: new Date("2022-08-19T20:09:28.183Z"),
+  endTime: new Date("2022-02-04T19:17:08.641Z"),
   ledger: "ledger001",
   metadata: {
-    "iure": "doloribus",
+    "accusantium": "consequuntur",
+    "praesentium": "natus",
+    "magni": "sunt",
+    "quo": "illum",
   },
   reference: "ref:001",
   source: "users:001",
-  startTime: new Date("2022-03-21T22:14:24.691Z"),
+  startTime: new Date("2020-07-30T23:39:27.609Z"),
 }).then((res: CountTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -153,20 +187,14 @@ const sdk = new SDK({
 });
 
 sdk.transactions.createTransaction({
-  idempotencyKey: "maxime",
+  idempotencyKey: "ea",
   postTransaction: {
     metadata: {
-      "facilis": "in",
-      "architecto": "architecto",
-      "repudiandae": "ullam",
+      "odit": "ea",
+      "accusantium": "ab",
+      "maiores": "quidem",
     },
     postings: [
-      {
-        amount: 100,
-        asset: "COIN",
-        destination: "users:002",
-        source: "users:001",
-      },
       {
         amount: 100,
         asset: "COIN",
@@ -191,11 +219,11 @@ sdk.transactions.createTransaction({
     )
     ",
       vars: {
-        "repellat": "quibusdam",
-        "sed": "saepe",
+        "autem": "nam",
+        "eaque": "pariatur",
       },
     },
-    timestamp: new Date("2022-11-20T20:56:20.791Z"),
+    timestamp: new Date("2022-01-09T22:25:53.570Z"),
   },
   ledger: "ledger001",
   preview: true,
@@ -252,18 +280,18 @@ const sdk = new SDK({
 
 sdk.transactions.listTransactions({
   account: "users:001",
-  after: "consequuntur",
+  after: "perferendis",
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   destination: "users:001",
-  endTime: new Date("2021-10-08T15:23:46.576Z"),
+  endTime: new Date("2022-04-23T08:05:27.776Z"),
   ledger: "ledger001",
   metadata: {
-    "sunt": "quo",
+    "cumque": "corporis",
   },
-  pageSize: 848009,
+  pageSize: 944124,
   reference: "ref:001",
   source: "users:001",
-  startTime: new Date("2020-07-30T23:39:27.609Z"),
+  startTime: new Date("2021-07-02T12:00:47.197Z"),
 }).then((res: ListTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response

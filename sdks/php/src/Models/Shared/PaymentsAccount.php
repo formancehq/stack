@@ -15,6 +15,10 @@ class PaymentsAccount
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $accountName;
     
+	#[\JMS\Serializer\Annotation\SerializedName('connectorID')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $connectorID;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('createdAt')]
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $createdAt;
@@ -30,10 +34,6 @@ class PaymentsAccount
 	#[\JMS\Serializer\Annotation\SerializedName('id')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $id;
-    
-	#[\JMS\Serializer\Annotation\SerializedName('provider')]
-    #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\Connector>')]
-    public Connector $provider;
     
     /**
      * $raw
@@ -55,11 +55,11 @@ class PaymentsAccount
 	public function __construct()
 	{
 		$this->accountName = "";
+		$this->connectorID = "";
 		$this->createdAt = new \DateTime();
 		$this->defaultAsset = "";
 		$this->defaultCurrency = "";
 		$this->id = "";
-		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
 		$this->raw = [];
 		$this->reference = "";
 		$this->type = "";

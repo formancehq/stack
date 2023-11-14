@@ -11,9 +11,9 @@ namespace formance\stack\Models\Shared;
 
 class TaskModulr
 {
-	#[\JMS\Serializer\Annotation\SerializedName('connectorId')]
+	#[\JMS\Serializer\Annotation\SerializedName('connectorID')]
     #[\JMS\Serializer\Annotation\Type('string')]
-    public string $connectorId;
+    public string $connectorID;
     
 	#[\JMS\Serializer\Annotation\SerializedName('createdAt')]
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
@@ -51,7 +51,7 @@ class TaskModulr
     
 	public function __construct()
 	{
-		$this->connectorId = "";
+		$this->connectorID = "";
 		$this->createdAt = new \DateTime();
 		$this->descriptor = new \formance\stack\Models\Shared\TaskModulrDescriptor();
 		$this->error = null;

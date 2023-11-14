@@ -24,6 +24,10 @@ export class CurrencyCloudConfig extends SpeakeasyBase {
   @Expose({ name: "loginID" })
   loginID: string;
 
+  @SpeakeasyMetadata()
+  @Expose({ name: "name" })
+  name: string;
+
   /**
    * The frequency at which the connector will fetch transactions
    */

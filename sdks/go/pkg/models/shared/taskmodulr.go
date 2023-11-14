@@ -13,7 +13,7 @@ type TaskModulrDescriptor struct {
 }
 
 type TaskModulr struct {
-	ConnectorID string                 `json:"connectorId"`
+	ConnectorID string                 `json:"connectorID"`
 	CreatedAt   time.Time              `json:"createdAt"`
 	Descriptor  TaskModulrDescriptor   `json:"descriptor"`
 	Error       *string                `json:"error,omitempty"`

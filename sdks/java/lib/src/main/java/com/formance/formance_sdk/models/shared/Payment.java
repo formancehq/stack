@@ -4,6 +4,8 @@
 
 package com.formance.formance_sdk.models.shared;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -25,6 +27,14 @@ public class Payment {
 
     public Payment withAsset(String asset) {
         this.asset = asset;
+        return this;
+    }
+    
+    @JsonProperty("connectorID")
+    public String connectorID;
+
+    public Payment withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
         return this;
     }
     
@@ -70,6 +80,7 @@ public class Payment {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("provider")
     public Connector provider;
 
@@ -126,15 +137,15 @@ public class Payment {
         return this;
     }
     
-    public Payment(@JsonProperty("adjustments") PaymentAdjustment[] adjustments, @JsonProperty("asset") String asset, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("id") String id, @JsonProperty("initialAmount") Long initialAmount, @JsonProperty("metadata") PaymentMetadata metadata, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("scheme") PaymentScheme scheme, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("status") PaymentStatus status, @JsonProperty("type") PaymentType type) {
+    public Payment(@JsonProperty("adjustments") PaymentAdjustment[] adjustments, @JsonProperty("asset") String asset, @JsonProperty("connectorID") String connectorID, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("id") String id, @JsonProperty("initialAmount") Long initialAmount, @JsonProperty("metadata") PaymentMetadata metadata, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("scheme") PaymentScheme scheme, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("status") PaymentStatus status, @JsonProperty("type") PaymentType type) {
         this.adjustments = adjustments;
         this.asset = asset;
+        this.connectorID = connectorID;
         this.createdAt = createdAt;
         this.destinationAccountID = destinationAccountID;
         this.id = id;
         this.initialAmount = initialAmount;
         this.metadata = metadata;
-        this.provider = provider;
         this.raw = raw;
         this.reference = reference;
         this.scheme = scheme;

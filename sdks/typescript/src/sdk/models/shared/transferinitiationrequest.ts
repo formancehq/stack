@@ -21,9 +21,8 @@ export class TransferInitiationRequest extends SpeakeasyBase {
   asset: string;
 
   @SpeakeasyMetadata()
-  @Expose({ name: "createdAt" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  createdAt: Date;
+  @Expose({ name: "connectorID" })
+  connectorID?: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "description" })
@@ -35,11 +34,16 @@ export class TransferInitiationRequest extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "provider" })
-  provider: Connector;
+  provider?: Connector;
 
   @SpeakeasyMetadata()
   @Expose({ name: "reference" })
   reference: string;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "scheduledAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  scheduledAt: Date;
 
   @SpeakeasyMetadata()
   @Expose({ name: "sourceAccountID" })

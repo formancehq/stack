@@ -8,25 +8,29 @@
 * [DeleteTransferInitiation](#deletetransferinitiation) - Delete a transfer initiation
 * [GetAccountBalances](#getaccountbalances) - Get account balances
 * [GetBankAccount](#getbankaccount) - Get a bank account created by user on Formance
-* [GetConnectorTask](#getconnectortask) - Read a specific task of the connector
+* [~~GetConnectorTask~~](#getconnectortask) - Read a specific task of the connector :warning: **Deprecated**
+* [GetConnectorTaskV1](#getconnectortaskv1) - Read a specific task of the connector
 * [GetPayment](#getpayment) - Get a payment
 * [GetTransferInitiation](#gettransferinitiation) - Get a transfer initiation
 * [InstallConnector](#installconnector) - Install a connector
 * [ListAllConnectors](#listallconnectors) - List all installed connectors
 * [ListBankAccounts](#listbankaccounts) - List bank accounts created by user on Formance
 * [ListConfigsAvailableConnectors](#listconfigsavailableconnectors) - List the configs of each available connector
-* [ListConnectorTasks](#listconnectortasks) - List tasks from a connector
-* [ListConnectorsTransfers](#listconnectorstransfers) - List transfers and their statuses
+* [~~ListConnectorTasks~~](#listconnectortasks) - List tasks from a connector :warning: **Deprecated**
+* [ListConnectorTasksV1](#listconnectortasksv1) - List tasks from a connector
 * [ListPayments](#listpayments) - List payments
 * [ListTransferInitiations](#listtransferinitiations) - List Transfer Initiations
 * [PaymentsgetAccount](#paymentsgetaccount) - Get an account
 * [PaymentsgetServerInfo](#paymentsgetserverinfo) - Get server info
 * [PaymentslistAccounts](#paymentslistaccounts) - List accounts
-* [ReadConnectorConfig](#readconnectorconfig) - Read the config of a connector
-* [ResetConnector](#resetconnector) - Reset a connector
+* [~~ReadConnectorConfig~~](#readconnectorconfig) - Read the config of a connector :warning: **Deprecated**
+* [ReadConnectorConfigV1](#readconnectorconfigv1) - Read the config of a connector
+* [~~ResetConnector~~](#resetconnector) - Reset a connector :warning: **Deprecated**
+* [ResetConnectorV1](#resetconnectorv1) - Reset a connector
 * [RetryTransferInitiation](#retrytransferinitiation) - Retry a failed transfer initiation
 * [UdpateTransferInitiationStatus](#udpatetransferinitiationstatus) - Update the status of a transfer initiation
-* [UninstallConnector](#uninstallconnector) - Uninstall a connector
+* [~~UninstallConnector~~](#uninstallconnector) - Uninstall a connector :warning: **Deprecated**
+* [UninstallConnectorV1](#uninstallconnectorv1) - Uninstall a connector
 * [UpdateMetadata](#updatemetadata) - Update metadata
 
 ## ConnectorsTransfer
@@ -100,10 +104,10 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.CreateBankAccount(ctx, shared.BankAccountRequest{
         AccountNumber: formance.String("voluptates"),
+        ConnectorID: "quasi",
         Country: "GB",
-        Iban: formance.String("quasi"),
+        Iban: formance.String("repudiandae"),
         Name: "My account",
-        Provider: shared.ConnectorMoneycorp,
         SwiftBicCode: formance.String("sint"),
     })
     if err != nil {
@@ -145,13 +149,14 @@ func main() {
     res, err := s.Payments.CreateTransferInitiation(ctx, shared.TransferInitiationRequest{
         Amount: big.NewInt(83112),
         Asset: "USD",
-        CreatedAt: types.MustTimeFromString("2022-03-02T21:33:21.372Z"),
-        Description: "enim",
-        DestinationAccountID: "consequatur",
-        Provider: shared.ConnectorBankingCircle,
+        ConnectorID: formance.String("itaque"),
+        Description: "incidunt",
+        DestinationAccountID: "enim",
+        Provider: shared.ConnectorStripe.ToPointer(),
         Reference: "XXX",
-        SourceAccountID: "quibusdam",
-        Type: shared.TransferInitiationRequestTypeTransfer,
+        ScheduledAt: types.MustTimeFromString("2021-04-26T02:10:00.226Z"),
+        SourceAccountID: "explicabo",
+        Type: shared.TransferInitiationRequestTypePayout,
         Validated: false,
     })
     if err != nil {
@@ -189,7 +194,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.DeleteTransferInitiation(ctx, operations.DeleteTransferInitiationRequest{
-        TransferID: "deserunt",
+        TransferID: "distinctio",
     })
     if err != nil {
         log.Fatal(err)
@@ -227,18 +232,18 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetAccountBalances(ctx, operations.GetAccountBalancesRequest{
-        AccountID: "distinctio",
-        Asset: formance.String("quibusdam"),
+        AccountID: "quibusdam",
+        Asset: formance.String("labore"),
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        From: types.MustTimeFromString("2022-09-26T08:57:48.803Z"),
-        Limit: formance.Int64(183191),
-        PageSize: formance.Int64(397821),
+        From: types.MustTimeFromString("2022-10-26T03:14:36.345Z"),
+        Limit: formance.Int64(397821),
+        PageSize: formance.Int64(586513),
         Sort: []string{
-            "quos",
             "perferendis",
             "magni",
+            "assumenda",
         },
-        To: types.MustTimeFromString("2021-11-22T01:26:35.048Z"),
+        To: types.MustTimeFromString("2022-12-30T06:52:02.282Z"),
     })
     if err != nil {
         log.Fatal(err)
@@ -275,7 +280,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetBankAccount(ctx, operations.GetBankAccountRequest{
-        BankAccountID: "alias",
+        BankAccountID: "fugit",
     })
     if err != nil {
         log.Fatal(err)
@@ -287,7 +292,48 @@ func main() {
 }
 ```
 
-## GetConnectorTask
+## ~~GetConnectorTask~~
+
+Get a specific task associated to the connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.GetConnectorTask(ctx, operations.GetConnectorTaskRequest{
+        Connector: shared.ConnectorBankingCircle,
+        TaskID: "excepturi",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.TaskResponse != nil {
+        // handle response
+    }
+}
+```
+
+## GetConnectorTaskV1
 
 Get a specific task associated to the connector.
 
@@ -312,9 +358,10 @@ func main() {
     )
 
     ctx := context.Background()
-    res, err := s.Payments.GetConnectorTask(ctx, operations.GetConnectorTaskRequest{
-        Connector: shared.ConnectorDummyPay,
-        TaskID: "dolorum",
+    res, err := s.Payments.GetConnectorTaskV1(ctx, operations.GetConnectorTaskV1Request{
+        Connector: shared.ConnectorWise,
+        ConnectorID: "facilis",
+        TaskID: "tempore",
     })
     if err != nil {
         log.Fatal(err)
@@ -351,7 +398,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetPayment(ctx, operations.GetPaymentRequest{
-        PaymentID: "excepturi",
+        PaymentID: "labore",
     })
     if err != nil {
         log.Fatal(err)
@@ -388,7 +435,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.GetTransferInitiation(ctx, operations.GetTransferInitiationRequest{
-        TransferID: "tempora",
+        TransferID: "delectus",
     })
     if err != nil {
         log.Fatal(err)
@@ -426,22 +473,20 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.InstallConnector(ctx, operations.InstallConnectorRequest{
-        RequestBody: shared.BankingCircleConfig{
-            AuthorizationEndpoint: "XXX",
-            Endpoint: "XXX",
-            Password: "XXX",
+        RequestBody: shared.ModulrConfig{
+            APIKey: "XXX",
+            APISecret: "XXX",
+            Endpoint: formance.String("XXX"),
+            Name: "My Modulr Account",
             PollingPeriod: formance.String("60s"),
-            UserCertificate: "XXX",
-            UserCertificateKey: "XXX",
-            Username: "XXX",
         },
-        Connector: shared.ConnectorBankingCircle,
+        Connector: shared.ConnectorDummyPay,
     })
     if err != nil {
         log.Fatal(err)
     }
 
-    if res.StatusCode == http.StatusOK {
+    if res.ConnectorResponse != nil {
         // handle response
     }
 }
@@ -507,12 +552,11 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.ListBankAccounts(ctx, operations.ListBankAccountsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(288476),
+        PageSize: formance.Int64(756107),
         Sort: []string{
-            "eum",
-            "non",
-            "eligendi",
-            "sint",
+            "aliquid",
+            "provident",
+            "necessitatibus",
         },
     })
     if err != nil {
@@ -559,7 +603,49 @@ func main() {
 }
 ```
 
-## ListConnectorTasks
+## ~~ListConnectorTasks~~
+
+List all tasks associated with this connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.ListConnectorTasks(ctx, operations.ListConnectorTasksRequest{
+        Connector: shared.ConnectorCurrencyCloud,
+        Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        PageSize: formance.Int64(638921),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.TasksCursor != nil {
+        // handle response
+    }
+}
+```
+
+## ListConnectorTasksV1
 
 List all tasks associated with this connector.
 
@@ -584,54 +670,17 @@ func main() {
     )
 
     ctx := context.Background()
-    res, err := s.Payments.ListConnectorTasks(ctx, operations.ListConnectorTasksRequest{
-        Connector: shared.ConnectorModulr,
+    res, err := s.Payments.ListConnectorTasksV1(ctx, operations.ListConnectorTasksV1Request{
+        Connector: shared.ConnectorDummyPay,
+        ConnectorID: "debitis",
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(592042),
+        PageSize: formance.Int64(952749),
     })
     if err != nil {
         log.Fatal(err)
     }
 
     if res.TasksCursor != nil {
-        // handle response
-    }
-}
-```
-
-## ListConnectorsTransfers
-
-List transfers
-
-### Example Usage
-
-```go
-package main
-
-import(
-	"context"
-	"log"
-	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-)
-
-func main() {
-    s := formance.New(
-        formance.WithSecurity(shared.Security{
-            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
-        }),
-    )
-
-    ctx := context.Background()
-    res, err := s.Payments.ListConnectorsTransfers(ctx, operations.ListConnectorsTransfersRequest{
-        Connector: shared.ConnectorMoneycorp,
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    if res.TransfersResponse != nil {
         // handle response
     }
 }
@@ -663,11 +712,10 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.ListPayments(ctx, operations.ListPaymentsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(572252),
+        PageSize: formance.Int64(680056),
         Sort: []string{
-            "dolor",
-            "debitis",
-            "a",
+            "in",
+            "illum",
         },
     })
     if err != nil {
@@ -706,11 +754,10 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.ListTransferInitiations(ctx, operations.ListTransferInitiationsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(680056),
-        Query: formance.String("in"),
+        PageSize: formance.Int64(978571),
+        Query: formance.String("rerum"),
         Sort: []string{
-            "illum",
-            "maiores",
+            "magnam",
         },
     })
     if err != nil {
@@ -748,7 +795,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.PaymentsgetAccount(ctx, operations.PaymentsgetAccountRequest{
-        AccountID: "rerum",
+        AccountID: "cumque",
     })
     if err != nil {
         log.Fatal(err)
@@ -820,10 +867,10 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.PaymentslistAccounts(ctx, operations.PaymentslistAccountsRequest{
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-        PageSize: formance.Int64(116202),
+        PageSize: formance.Int64(813798),
         Sort: []string{
-            "cumque",
-            "facere",
+            "aliquid",
+            "laborum",
         },
     })
     if err != nil {
@@ -836,7 +883,47 @@ func main() {
 }
 ```
 
-## ReadConnectorConfig
+## ~~ReadConnectorConfig~~
+
+Read connector config
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.ReadConnectorConfig(ctx, operations.ReadConnectorConfigRequest{
+        Connector: shared.ConnectorMoneycorp,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.ConnectorConfigResponse != nil {
+        // handle response
+    }
+}
+```
+
+## ReadConnectorConfigV1
 
 Read connector config
 
@@ -861,8 +948,9 @@ func main() {
     )
 
     ctx := context.Background()
-    res, err := s.Payments.ReadConnectorConfig(ctx, operations.ReadConnectorConfigRequest{
-        Connector: shared.ConnectorModulr,
+    res, err := s.Payments.ReadConnectorConfigV1(ctx, operations.ReadConnectorConfigV1Request{
+        Connector: shared.ConnectorDummyPay,
+        ConnectorID: "occaecati",
     })
     if err != nil {
         log.Fatal(err)
@@ -874,7 +962,49 @@ func main() {
 }
 ```
 
-## ResetConnector
+## ~~ResetConnector~~
+
+Reset a connector by its name.
+It will remove the connector and ALL PAYMENTS generated with it.
+
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.ResetConnector(ctx, operations.ResetConnectorRequest{
+        Connector: shared.ConnectorWise,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+## ResetConnectorV1
 
 Reset a connector by its name.
 It will remove the connector and ALL PAYMENTS generated with it.
@@ -901,8 +1031,9 @@ func main() {
     )
 
     ctx := context.Background()
-    res, err := s.Payments.ResetConnector(ctx, operations.ResetConnectorRequest{
-        Connector: shared.ConnectorModulr,
+    res, err := s.Payments.ResetConnectorV1(ctx, operations.ResetConnectorV1Request{
+        Connector: shared.ConnectorMoneycorp,
+        ConnectorID: "delectus",
     })
     if err != nil {
         log.Fatal(err)
@@ -939,7 +1070,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.RetryTransferInitiation(ctx, operations.RetryTransferInitiationRequest{
-        TransferID: "laborum",
+        TransferID: "quidem",
     })
     if err != nil {
         log.Fatal(err)
@@ -978,9 +1109,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.UdpateTransferInitiationStatus(ctx, operations.UdpateTransferInitiationStatusRequest{
         UpdateTransferInitiationStatusRequest: shared.UpdateTransferInitiationStatusRequest{
-            Status: shared.UpdateTransferInitiationStatusRequestStatusValidated,
+            Status: shared.UpdateTransferInitiationStatusRequestStatusFailed,
         },
-        TransferID: "non",
+        TransferID: "nam",
     })
     if err != nil {
         log.Fatal(err)
@@ -992,7 +1123,47 @@ func main() {
 }
 ```
 
-## UninstallConnector
+## ~~UninstallConnector~~
+
+Uninstall a connector by its name.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.UninstallConnector(ctx, operations.UninstallConnectorRequest{
+        Connector: shared.ConnectorBankingCircle,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+## UninstallConnectorV1
 
 Uninstall a connector by its name.
 
@@ -1017,8 +1188,9 @@ func main() {
     )
 
     ctx := context.Background()
-    res, err := s.Payments.UninstallConnector(ctx, operations.UninstallConnectorRequest{
+    res, err := s.Payments.UninstallConnectorV1(ctx, operations.UninstallConnectorV1Request{
         Connector: shared.ConnectorCurrencyCloud,
+        ConnectorID: "deleniti",
     })
     if err != nil {
         log.Fatal(err)
@@ -1057,9 +1229,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.UpdateMetadata(ctx, operations.UpdateMetadataRequest{
         PaymentMetadata: shared.PaymentMetadata{
-            Key: formance.String("enim"),
+            Key: formance.String("sapiente"),
         },
-        PaymentID: "accusamus",
+        PaymentID: "amet",
     })
     if err != nil {
         log.Fatal(err)

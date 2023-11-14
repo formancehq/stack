@@ -116,25 +116,29 @@ func main() {
 * [DeleteTransferInitiation](docs/payments/README.md#deletetransferinitiation) - Delete a transfer initiation
 * [GetAccountBalances](docs/payments/README.md#getaccountbalances) - Get account balances
 * [GetBankAccount](docs/payments/README.md#getbankaccount) - Get a bank account created by user on Formance
-* [GetConnectorTask](docs/payments/README.md#getconnectortask) - Read a specific task of the connector
+* [~~GetConnectorTask~~](docs/payments/README.md#getconnectortask) - Read a specific task of the connector :warning: **Deprecated**
+* [GetConnectorTaskV1](docs/payments/README.md#getconnectortaskv1) - Read a specific task of the connector
 * [GetPayment](docs/payments/README.md#getpayment) - Get a payment
 * [GetTransferInitiation](docs/payments/README.md#gettransferinitiation) - Get a transfer initiation
 * [InstallConnector](docs/payments/README.md#installconnector) - Install a connector
 * [ListAllConnectors](docs/payments/README.md#listallconnectors) - List all installed connectors
 * [ListBankAccounts](docs/payments/README.md#listbankaccounts) - List bank accounts created by user on Formance
 * [ListConfigsAvailableConnectors](docs/payments/README.md#listconfigsavailableconnectors) - List the configs of each available connector
-* [ListConnectorTasks](docs/payments/README.md#listconnectortasks) - List tasks from a connector
-* [ListConnectorsTransfers](docs/payments/README.md#listconnectorstransfers) - List transfers and their statuses
+* [~~ListConnectorTasks~~](docs/payments/README.md#listconnectortasks) - List tasks from a connector :warning: **Deprecated**
+* [ListConnectorTasksV1](docs/payments/README.md#listconnectortasksv1) - List tasks from a connector
 * [ListPayments](docs/payments/README.md#listpayments) - List payments
 * [ListTransferInitiations](docs/payments/README.md#listtransferinitiations) - List Transfer Initiations
 * [PaymentsgetAccount](docs/payments/README.md#paymentsgetaccount) - Get an account
 * [PaymentsgetServerInfo](docs/payments/README.md#paymentsgetserverinfo) - Get server info
 * [PaymentslistAccounts](docs/payments/README.md#paymentslistaccounts) - List accounts
-* [ReadConnectorConfig](docs/payments/README.md#readconnectorconfig) - Read the config of a connector
-* [ResetConnector](docs/payments/README.md#resetconnector) - Reset a connector
+* [~~ReadConnectorConfig~~](docs/payments/README.md#readconnectorconfig) - Read the config of a connector :warning: **Deprecated**
+* [ReadConnectorConfigV1](docs/payments/README.md#readconnectorconfigv1) - Read the config of a connector
+* [~~ResetConnector~~](docs/payments/README.md#resetconnector) - Reset a connector :warning: **Deprecated**
+* [ResetConnectorV1](docs/payments/README.md#resetconnectorv1) - Reset a connector
 * [RetryTransferInitiation](docs/payments/README.md#retrytransferinitiation) - Retry a failed transfer initiation
 * [UdpateTransferInitiationStatus](docs/payments/README.md#udpatetransferinitiationstatus) - Update the status of a transfer initiation
-* [UninstallConnector](docs/payments/README.md#uninstallconnector) - Uninstall a connector
+* [~~UninstallConnector~~](docs/payments/README.md#uninstallconnector) - Uninstall a connector :warning: **Deprecated**
+* [UninstallConnectorV1](docs/payments/README.md#uninstallconnectorv1) - Uninstall a connector
 * [UpdateMetadata](docs/payments/README.md#updatemetadata) - Update metadata
 
 ### [Script](docs/script/README.md)

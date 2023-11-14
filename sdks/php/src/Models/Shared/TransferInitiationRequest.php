@@ -19,9 +19,10 @@ class TransferInitiationRequest
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $asset;
     
-	#[\JMS\Serializer\Annotation\SerializedName('createdAt')]
-    #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
-    public \DateTime $createdAt;
+	#[\JMS\Serializer\Annotation\SerializedName('connectorID')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?string $connectorID = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('description')]
     #[\JMS\Serializer\Annotation\Type('string')]
@@ -33,11 +34,16 @@ class TransferInitiationRequest
     
 	#[\JMS\Serializer\Annotation\SerializedName('provider')]
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\Connector>')]
-    public Connector $provider;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?Connector $provider = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('reference')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $reference;
+    
+	#[\JMS\Serializer\Annotation\SerializedName('scheduledAt')]
+    #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
+    public \DateTime $scheduledAt;
     
 	#[\JMS\Serializer\Annotation\SerializedName('sourceAccountID')]
     #[\JMS\Serializer\Annotation\Type('string')]
@@ -55,11 +61,12 @@ class TransferInitiationRequest
 	{
 		$this->amount = 0;
 		$this->asset = "";
-		$this->createdAt = new \DateTime();
+		$this->connectorID = null;
 		$this->description = "";
 		$this->destinationAccountID = "";
-		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
+		$this->provider = null;
 		$this->reference = "";
+		$this->scheduledAt = new \DateTime();
 		$this->sourceAccountID = "";
 		$this->type = \formance\stack\Models\Shared\TransferInitiationRequestType::TRANSFER;
 		$this->validated = false;

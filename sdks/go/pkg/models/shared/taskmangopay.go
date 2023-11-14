@@ -13,7 +13,7 @@ type TaskMangoPayDescriptor struct {
 }
 
 type TaskMangoPay struct {
-	ConnectorID string                 `json:"connectorId"`
+	ConnectorID string                 `json:"connectorID"`
 	CreatedAt   time.Time              `json:"createdAt"`
 	Descriptor  TaskMangoPayDescriptor `json:"descriptor"`
 	Error       *string                `json:"error,omitempty"`

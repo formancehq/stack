@@ -351,6 +351,8 @@ func (s *payments) GetBankAccount(ctx context.Context, request operations.GetBan
 
 // GetConnectorTask - Read a specific task of the connector
 // Get a specific task associated to the connector.
+//
+// Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible.
 func (s *payments) GetConnectorTask(ctx context.Context, request operations.GetConnectorTaskRequest) (*operations.GetConnectorTaskResponse, error) {
 	baseURL := s.serverURL
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/tasks/{taskId}", request, nil)
@@ -379,6 +381,56 @@ func (s *payments) GetConnectorTask(ctx context.Context, request operations.GetC
 	contentType := httpRes.Header.Get("Content-Type")
 
 	res := &operations.GetConnectorTaskResponse{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out *shared.TaskResponse
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+				return nil, err
+			}
+
+			res.TaskResponse = out
+		}
+	}
+
+	return res, nil
+}
+
+// GetConnectorTaskV1 - Read a specific task of the connector
+// Get a specific task associated to the connector.
+func (s *payments) GetConnectorTaskV1(ctx context.Context, request operations.GetConnectorTaskV1Request) (*operations.GetConnectorTaskV1Response, error) {
+	baseURL := s.serverURL
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/tasks/{taskId}", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
+
+	client := s.securityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+	defer httpRes.Body.Close()
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.GetConnectorTaskV1Response{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,
@@ -518,7 +570,7 @@ func (s *payments) InstallConnector(ctx context.Context, request operations.Inst
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
 
 	req.Header.Set("Content-Type", reqContentType)
@@ -542,7 +594,16 @@ func (s *payments) InstallConnector(ctx context.Context, request operations.Inst
 		RawResponse: httpRes,
 	}
 	switch {
-	case httpRes.StatusCode == 204:
+	case httpRes.StatusCode == 201:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out *shared.ConnectorResponse
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+				return nil, err
+			}
+
+			res.ConnectorResponse = out
+		}
 	}
 
 	return res, nil
@@ -695,6 +756,8 @@ func (s *payments) ListConfigsAvailableConnectors(ctx context.Context) (*operati
 
 // ListConnectorTasks - List tasks from a connector
 // List all tasks associated with this connector.
+//
+// Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible.
 func (s *payments) ListConnectorTasks(ctx context.Context, request operations.ListConnectorTasksRequest) (*operations.ListConnectorTasksResponse, error) {
 	baseURL := s.serverURL
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/tasks", request, nil)
@@ -747,11 +810,11 @@ func (s *payments) ListConnectorTasks(ctx context.Context, request operations.Li
 	return res, nil
 }
 
-// ListConnectorsTransfers - List transfers and their statuses
-// List transfers
-func (s *payments) ListConnectorsTransfers(ctx context.Context, request operations.ListConnectorsTransfersRequest) (*operations.ListConnectorsTransfersResponse, error) {
+// ListConnectorTasksV1 - List tasks from a connector
+// List all tasks associated with this connector.
+func (s *payments) ListConnectorTasksV1(ctx context.Context, request operations.ListConnectorTasksV1Request) (*operations.ListConnectorTasksV1Response, error) {
 	baseURL := s.serverURL
-	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/transfers", request, nil)
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/tasks", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -762,6 +825,10 @@ func (s *payments) ListConnectorsTransfers(ctx context.Context, request operatio
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	client := s.securityClient
 
@@ -776,7 +843,7 @@ func (s *payments) ListConnectorsTransfers(ctx context.Context, request operatio
 
 	contentType := httpRes.Header.Get("Content-Type")
 
-	res := &operations.ListConnectorsTransfersResponse{
+	res := &operations.ListConnectorTasksV1Response{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,
@@ -785,12 +852,12 @@ func (s *payments) ListConnectorsTransfers(ctx context.Context, request operatio
 	case httpRes.StatusCode == 200:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.TransfersResponse
+			var out *shared.TasksCursor
 			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
 				return nil, err
 			}
 
-			res.TransfersResponse = out
+			res.TasksCursor = out
 		}
 	}
 
@@ -1044,6 +1111,8 @@ func (s *payments) PaymentslistAccounts(ctx context.Context, request operations.
 
 // ReadConnectorConfig - Read the config of a connector
 // Read connector config
+//
+// Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible.
 func (s *payments) ReadConnectorConfig(ctx context.Context, request operations.ReadConnectorConfigRequest) (*operations.ReadConnectorConfigResponse, error) {
 	baseURL := s.serverURL
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/config", request, nil)
@@ -1092,9 +1161,61 @@ func (s *payments) ReadConnectorConfig(ctx context.Context, request operations.R
 	return res, nil
 }
 
+// ReadConnectorConfigV1 - Read the config of a connector
+// Read connector config
+func (s *payments) ReadConnectorConfigV1(ctx context.Context, request operations.ReadConnectorConfigV1Request) (*operations.ReadConnectorConfigV1Response, error) {
+	baseURL := s.serverURL
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/config", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
+
+	client := s.securityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+	defer httpRes.Body.Close()
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.ReadConnectorConfigV1Response{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out *shared.ConnectorConfigResponse
+			if err := utils.UnmarshalJsonFromResponseBody(httpRes.Body, &out); err != nil {
+				return nil, err
+			}
+
+			res.ConnectorConfigResponse = out
+		}
+	}
+
+	return res, nil
+}
+
 // ResetConnector - Reset a connector
 // Reset a connector by its name.
 // It will remove the connector and ALL PAYMENTS generated with it.
+//
+// Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible.
 func (s *payments) ResetConnector(ctx context.Context, request operations.ResetConnectorRequest) (*operations.ResetConnectorResponse, error) {
 	baseURL := s.serverURL
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/reset", request, nil)
@@ -1123,6 +1244,48 @@ func (s *payments) ResetConnector(ctx context.Context, request operations.ResetC
 	contentType := httpRes.Header.Get("Content-Type")
 
 	res := &operations.ResetConnectorResponse{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 204:
+	}
+
+	return res, nil
+}
+
+// ResetConnectorV1 - Reset a connector
+// Reset a connector by its name.
+// It will remove the connector and ALL PAYMENTS generated with it.
+func (s *payments) ResetConnectorV1(ctx context.Context, request operations.ResetConnectorV1Request) (*operations.ResetConnectorV1Response, error) {
+	baseURL := s.serverURL
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/reset", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
+
+	client := s.securityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+	defer httpRes.Body.Close()
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.ResetConnectorV1Response{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,
@@ -1228,6 +1391,8 @@ func (s *payments) UdpateTransferInitiationStatus(ctx context.Context, request o
 
 // UninstallConnector - Uninstall a connector
 // Uninstall a connector by its name.
+//
+// Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible.
 func (s *payments) UninstallConnector(ctx context.Context, request operations.UninstallConnectorRequest) (*operations.UninstallConnectorResponse, error) {
 	baseURL := s.serverURL
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}", request, nil)
@@ -1256,6 +1421,47 @@ func (s *payments) UninstallConnector(ctx context.Context, request operations.Un
 	contentType := httpRes.Header.Get("Content-Type")
 
 	res := &operations.UninstallConnectorResponse{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 204:
+	}
+
+	return res, nil
+}
+
+// UninstallConnectorV1 - Uninstall a connector
+// Uninstall a connector by its name.
+func (s *payments) UninstallConnectorV1(ctx context.Context, request operations.UninstallConnectorV1Request) (*operations.UninstallConnectorV1Response, error) {
+	baseURL := s.serverURL
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "DELETE", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s", s.language, s.sdkVersion, s.genVersion))
+
+	client := s.securityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+	defer httpRes.Body.Close()
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.UninstallConnectorV1Response{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,

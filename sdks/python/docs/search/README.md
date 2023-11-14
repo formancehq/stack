@@ -31,16 +31,17 @@ req = shared.Query(
         'quickstart',
         'quickstart',
     ],
-    page_size=716075,
+    page_size=618016,
     policy='OR',
     raw={
-        "labore": 'labore',
-        "suscipit": 'natus',
-        "nobis": 'eum',
+        "eum": 'vero',
+        "aspernatur": 'architecto',
+        "magnam": 'et',
     },
     sort='txid:asc',
-    target='vero',
+    target='excepturi',
     terms=[
+        'destination=central_bank1',
         'destination=central_bank1',
     ],
 )

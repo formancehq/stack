@@ -38,12 +38,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("accusamus") {{
+                .setSecurity(new Security("optio") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            ConfirmHoldRequest req = new ConfirmHoldRequest("ad") {{
+            ConfirmHoldRequest req = new ConfirmHoldRequest("accusamus") {{
                 confirmHoldRequest = new ConfirmHoldRequest() {{
                     amount = 100L;
                     final_ = true;
@@ -82,15 +82,15 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("saepe") {{
+                .setSecurity(new Security("ad") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            CreateBalanceRequest req = new CreateBalanceRequest("suscipit") {{
-                createBalanceRequest = new CreateBalanceRequest("deserunt") {{
-                    expiresAt = OffsetDateTime.parse("2022-05-08T23:33:14.875Z");
-                    priority = 831049L;
+            CreateBalanceRequest req = new CreateBalanceRequest("saepe") {{
+                createBalanceRequest = new CreateBalanceRequest("suscipit") {{
+                    expiresAt = OffsetDateTime.parse("2021-10-28T12:41:02.358Z");
+                    priority = 324683L;
                 }};;
             }};            
 
@@ -124,16 +124,16 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("totam") {{
+                .setSecurity(new Security("repellendus") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             com.formance.formance_sdk.models.shared.CreateWalletRequest req = new CreateWalletRequest(                new java.util.HashMap<String, String>() {{
-                                put("alias", "at");
-                                put("quaerat", "tempora");
-                                put("vel", "quod");
-                            }}, "officiis");            
+                                put("similique", "alias");
+                                put("at", "quaerat");
+                                put("tempora", "vel");
+                            }}, "quod");            
 
             CreateWalletResponse res = sdk.wallets.createWallet(req);
 
@@ -169,36 +169,37 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("qui") {{
+                .setSecurity(new Security("officiis") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            CreditWalletRequest req = new CreditWalletRequest("dolorum") {{
-                creditWalletRequest = new CreditWalletRequest(                new Monetary(952792L, "esse");,                 new java.util.HashMap<String, String>() {{
-                                    put("iusto", "ipsum");
-                                    put("quisquam", "tenetur");
-                                    put("amet", "tempore");
+            CreditWalletRequest req = new CreditWalletRequest("qui") {{
+                creditWalletRequest = new CreditWalletRequest(                new Monetary(679880L, "a");,                 new java.util.HashMap<String, String>() {{
+                                    put("harum", "iusto");
+                                    put("ipsum", "quisquam");
                                 }},                 new Object[]{{
-                                    add(new LedgerAccountSubject("sapiente", "totam") {{
-                                        identifier = "enim";
-                                        type = "dolorem";
+                                    add(new LedgerAccountSubject("numquam", "enim") {{
+                                        identifier = "tempore";
+                                        type = "accusamus";
                                     }}),
-                                    add(new LedgerAccountSubject("neque", "sed") {{
-                                        identifier = "sit";
-                                        type = "expedita";
+                                    add(new LedgerAccountSubject("nihil", "sit") {{
+                                        identifier = "sapiente";
+                                        type = "totam";
                                     }}),
-                                    add(new LedgerAccountSubject("deserunt", "quam") {{
-                                        identifier = "libero";
-                                        type = "voluptas";
+                                    add(new WalletSubject("libero", "voluptas") {{
+                                        balance = "neque";
+                                        identifier = "sed";
+                                        type = "vel";
                                     }}),
-                                    add(new LedgerAccountSubject("cupiditate", "maxime") {{
-                                        identifier = "incidunt";
-                                        type = "qui";
+                                    add(new WalletSubject("qui", "cupiditate") {{
+                                        balance = "quam";
+                                        identifier = "ipsum";
+                                        type = "incidunt";
                                     }}),
                                 }}) {{
-                    balance = "pariatur";
-                    reference = "soluta";
+                    balance = "maxime";
+                    reference = "pariatur";
                 }};;
             }};            
 
@@ -236,17 +237,17 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dicta") {{
+                .setSecurity(new Security("soluta") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            DebitWalletRequest req = new DebitWalletRequest("laborum") {{
-                debitWalletRequest = new DebitWalletRequest(                new Monetary(517379L, "incidunt");,                 new java.util.HashMap<String, String>() {{
-                                    put("dolores", "distinctio");
+            DebitWalletRequest req = new DebitWalletRequest("dicta") {{
+                debitWalletRequest = new DebitWalletRequest(                new Monetary(674848L, "totam");,                 new java.util.HashMap<String, String>() {{
+                                    put("aspernatur", "dolores");
+                                    put("distinctio", "facilis");
                                 }}) {{
                     balances = new String[]{{
-                        add("aliquid"),
                         add("quam"),
                         add("molestias"),
                     }};

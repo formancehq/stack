@@ -13,7 +13,7 @@ type TaskStripeDescriptor struct {
 }
 
 type TaskStripe struct {
-	ConnectorID string                 `json:"connectorId"`
+	ConnectorID string                 `json:"connectorID"`
 	CreatedAt   time.Time              `json:"createdAt"`
 	Descriptor  TaskStripeDescriptor   `json:"descriptor"`
 	Error       *string                `json:"error,omitempty"`

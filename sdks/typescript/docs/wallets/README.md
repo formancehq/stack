@@ -41,7 +41,7 @@ sdk.wallets.confirmHold({
     amount: 100,
     final: true,
   },
-  holdId: "ea",
+  holdId: "dolores",
 }).then((res: ConfirmHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -68,11 +68,11 @@ const sdk = new SDK({
 
 sdk.wallets.createBalance({
   createBalanceRequest: {
-    expiresAt: new Date("2022-09-20T19:40:48.375Z"),
-    name: "Donna Bernhard",
-    priority: 373291,
+    expiresAt: new Date("2022-06-24T19:43:09.208Z"),
+    name: "Cynthia Hayes",
+    priority: 18521,
   },
-  id: "76b0d5f0-d30c-45fb-b258-7053202c73d5",
+  id: "2c73d5fe-9b90-4c28-909b-3fe49a8d9cbf",
 }).then((res: CreateBalanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -99,12 +99,10 @@ const sdk = new SDK({
 
 sdk.wallets.createWallet({
   metadata: {
-    "recusandae": "omnis",
-    "facilis": "perspiciatis",
-    "voluptatem": "porro",
-    "consequuntur": "blanditiis",
+    "quos": "aliquid",
+    "dolorem": "dolorem",
   },
-  name: "Gary Mayert",
+  name: "Norma Erdman",
 }).then((res: CreateWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -132,29 +130,39 @@ const sdk = new SDK({
 sdk.wallets.creditWallet({
   creditWalletRequest: {
     amount: {
-      amount: 992397,
-      asset: "earum",
+      amount: 739551,
+      asset: "voluptate",
     },
-    balance: "modi",
+    balance: "dignissimos",
     metadata: {
-      "dolorum": "deleniti",
-      "pariatur": "provident",
-      "nobis": "libero",
+      "amet": "dolorum",
+      "numquam": "veritatis",
+      "ipsa": "ipsa",
+      "iure": "odio",
     },
-    reference: "delectus",
+    reference: "quaerat",
     sources: [
       {
-        balance: "aliquid",
-        identifier: "dolorem",
-        type: "dolorem",
+        balance: "voluptatibus",
+        identifier: "voluptas",
+        type: "natus",
       },
       {
-        identifier: "qui",
-        type: "ipsum",
+        identifier: "atque",
+        type: "sit",
+      },
+      {
+        balance: "ab",
+        identifier: "soluta",
+        type: "dolorum",
+      },
+      {
+        identifier: "voluptate",
+        type: "dolorum",
       },
     ],
   },
-  id: "f9b77f3a-4100-4674-abf6-9280d1ba77a8",
+  id: "89ebf737-ae42-403c-a5e6-a95d8a0d446c",
 }).then((res: CreditWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -182,26 +190,25 @@ const sdk = new SDK({
 sdk.wallets.debitWallet({
   debitWalletRequest: {
     amount: {
-      amount: 607045,
-      asset: "necessitatibus",
+      amount: 885338,
+      asset: "qui",
     },
     balances: [
-      "asperiores",
-      "nihil",
-      "ipsum",
+      "a",
+      "esse",
+      "harum",
     ],
-    description: "voluptate",
+    description: "iusto",
     destination: {
-      balance: "saepe",
-      identifier: "eius",
-      type: "aspernatur",
+      identifier: "quisquam",
+      type: "tenetur",
     },
     metadata: {
-      "amet": "optio",
+      "tempore": "accusamus",
     },
     pending: false,
   },
-  id: "e5e6a95d-8a0d-4446-8e2a-f7a73cf3be45",
+  id: "453f870b-326b-45a7-b429-cdb1a8422bb6",
 }).then((res: DebitWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -227,8 +234,8 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getBalance({
-  balanceName: "dolorem",
-  id: "f870b326-b5a7-4342-9cdb-1a8422bb679d",
+  balanceName: "quam",
+  id: "9d232271-5bf0-4cbb-9e31-b8b90f3443a1",
 }).then((res: GetBalanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -254,7 +261,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getHold({
-  holdID: "qui",
+  holdID: "quae",
 }).then((res: GetHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -282,10 +289,10 @@ const sdk = new SDK({
 sdk.wallets.getHolds({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   metadata: {
-    "fugit": "magni",
+    "quas": "itaque",
   },
-  pageSize: 488056,
-  walletID: "sunt",
+  pageSize: 9240,
+  walletID: "est",
 }).then((res: GetHoldsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -310,8 +317,8 @@ const sdk = new SDK({
 
 sdk.wallets.getTransactions({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 355613,
-  walletID: "nam",
+  pageSize: 833038,
+  walletID: "porro",
 }).then((res: GetTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -337,7 +344,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getWallet({
-  id: "f0cbb1e3-1b8b-490f-b443-a1108e0adcf4",
+  id: "f4b92187-9fce-4953-b73e-f7fbc7abd74d",
 }).then((res: GetWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -363,7 +370,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.getWalletSummary({
-  id: "b921879f-ce95-43f7-bef7-fbc7abd74dd3",
+  id: "d39c0f5d-2cff-47c7-8a45-626d436813f1",
 }).then((res: GetWalletSummaryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -388,7 +395,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.listBalances({
-  id: "9c0f5d2c-ff7c-470a-8562-6d436813f16d",
+  id: "6d9f5fce-6c55-4614-ac3e-250fb008c42e",
 }).then((res: ListBalancesResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -415,12 +422,10 @@ const sdk = new SDK({
 sdk.wallets.listWallets({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   metadata: {
-    "voluptatibus": "nostrum",
-    "sapiente": "quisquam",
-    "saepe": "ea",
+    "non": "et",
   },
-  name: "Lewis Hartmann II",
-  pageSize: 407241,
+  name: "Neal Schroeder",
+  pageSize: 420539,
 }).then((res: ListWalletsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -448,13 +453,13 @@ const sdk = new SDK({
 sdk.wallets.updateWallet({
   requestBody: {
     metadata: {
-      "consectetur": "recusandae",
-      "aspernatur": "minima",
-      "eaque": "a",
-      "libero": "aut",
+      "quas": "assumenda",
+      "nulla": "voluptas",
+      "libero": "quasi",
+      "tempora": "numquam",
     },
   },
-  id: "08c42e14-1aac-4366-88dd-6b1442907474",
+  id: "29074747-78a7-4bd4-a6d2-8c10ab3cdca4",
 }).then((res: UpdateWalletResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -480,7 +485,7 @@ const sdk = new SDK({
 });
 
 sdk.wallets.voidHold({
-  holdId: "esse",
+  holdId: "eos",
 }).then((res: VoidHoldResponse) => {
   if (res.statusCode == 200) {
     // handle response

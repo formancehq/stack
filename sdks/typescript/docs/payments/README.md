@@ -8,25 +8,29 @@
 * [deleteTransferInitiation](#deletetransferinitiation) - Delete a transfer initiation
 * [getAccountBalances](#getaccountbalances) - Get account balances
 * [getBankAccount](#getbankaccount) - Get a bank account created by user on Formance
-* [getConnectorTask](#getconnectortask) - Read a specific task of the connector
+* [~~getConnectorTask~~](#getconnectortask) - Read a specific task of the connector :warning: **Deprecated**
+* [getConnectorTaskV1](#getconnectortaskv1) - Read a specific task of the connector
 * [getPayment](#getpayment) - Get a payment
 * [getTransferInitiation](#gettransferinitiation) - Get a transfer initiation
 * [installConnector](#installconnector) - Install a connector
 * [listAllConnectors](#listallconnectors) - List all installed connectors
 * [listBankAccounts](#listbankaccounts) - List bank accounts created by user on Formance
 * [listConfigsAvailableConnectors](#listconfigsavailableconnectors) - List the configs of each available connector
-* [listConnectorTasks](#listconnectortasks) - List tasks from a connector
-* [listConnectorsTransfers](#listconnectorstransfers) - List transfers and their statuses
+* [~~listConnectorTasks~~](#listconnectortasks) - List tasks from a connector :warning: **Deprecated**
+* [listConnectorTasksV1](#listconnectortasksv1) - List tasks from a connector
 * [listPayments](#listpayments) - List payments
 * [listTransferInitiations](#listtransferinitiations) - List Transfer Initiations
 * [paymentsgetAccount](#paymentsgetaccount) - Get an account
 * [paymentsgetServerInfo](#paymentsgetserverinfo) - Get server info
 * [paymentslistAccounts](#paymentslistaccounts) - List accounts
-* [readConnectorConfig](#readconnectorconfig) - Read the config of a connector
-* [resetConnector](#resetconnector) - Reset a connector
+* [~~readConnectorConfig~~](#readconnectorconfig) - Read the config of a connector :warning: **Deprecated**
+* [readConnectorConfigV1](#readconnectorconfigv1) - Read the config of a connector
+* [~~resetConnector~~](#resetconnector) - Reset a connector :warning: **Deprecated**
+* [resetConnectorV1](#resetconnectorv1) - Reset a connector
 * [retryTransferInitiation](#retrytransferinitiation) - Retry a failed transfer initiation
 * [udpateTransferInitiationStatus](#udpatetransferinitiationstatus) - Update the status of a transfer initiation
-* [uninstallConnector](#uninstallconnector) - Uninstall a connector
+* [~~uninstallConnector~~](#uninstallconnector) - Uninstall a connector :warning: **Deprecated**
+* [uninstallConnectorV1](#uninstallconnectorv1) - Uninstall a connector
 * [updateMetadata](#updatemetadata) - Update metadata
 
 ## connectorsTransfer
@@ -70,7 +74,6 @@ Create a bank account in Payments and on the PSP.
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { CreateBankAccountResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -80,10 +83,10 @@ const sdk = new SDK({
 
 sdk.payments.createBankAccount({
   accountNumber: "voluptates",
+  connectorID: "quasi",
   country: "GB",
-  iban: "quasi",
+  iban: "repudiandae",
   name: "My account",
-  provider: Connector.Moneycorp,
   swiftBicCode: "sint",
 }).then((res: CreateBankAccountResponse) => {
   if (res.statusCode == 200) {
@@ -118,13 +121,14 @@ const sdk = new SDK({
 sdk.payments.createTransferInitiation({
   amount: 83112,
   asset: "USD",
-  createdAt: new Date("2022-03-02T21:33:21.372Z"),
-  description: "enim",
-  destinationAccountID: "consequatur",
-  provider: Connector.BankingCircle,
+  connectorID: "itaque",
+  description: "incidunt",
+  destinationAccountID: "enim",
+  provider: Connector.Stripe,
   reference: "XXX",
-  sourceAccountID: "quibusdam",
-  type: TransferInitiationRequestType.Transfer,
+  scheduledAt: new Date("2021-04-26T02:10:00.226Z"),
+  sourceAccountID: "explicabo",
+  type: TransferInitiationRequestType.Payout,
   validated: false,
 }).then((res: CreateTransferInitiationResponse) => {
   if (res.statusCode == 200) {
@@ -150,7 +154,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.deleteTransferInitiation({
-  transferId: "deserunt",
+  transferId: "distinctio",
 }).then((res: DeleteTransferInitiationResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -175,18 +179,18 @@ const sdk = new SDK({
 });
 
 sdk.payments.getAccountBalances({
-  accountId: "distinctio",
-  asset: "quibusdam",
+  accountId: "quibusdam",
+  asset: "labore",
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  from: new Date("2022-09-26T08:57:48.803Z"),
-  limit: 183191,
-  pageSize: 397821,
+  from: new Date("2022-10-26T03:14:36.345Z"),
+  limit: 397821,
+  pageSize: 586513,
   sort: [
-    "quos",
     "perferendis",
     "magni",
+    "assumenda",
   ],
-  to: new Date("2021-11-22T01:26:35.048Z"),
+  to: new Date("2022-12-30T06:52:02.282Z"),
 }).then((res: GetAccountBalancesResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -203,7 +207,6 @@ Get a bank account created by user on Formance
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { GetBankAccountResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -212,7 +215,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getBankAccount({
-  bankAccountId: "alias",
+  bankAccountId: "fugit",
 }).then((res: GetBankAccountResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -220,9 +223,11 @@ sdk.payments.getBankAccount({
 });
 ```
 
-## getConnectorTask
+## ~~getConnectorTask~~
 
 Get a specific task associated to the connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -238,9 +243,37 @@ const sdk = new SDK({
 });
 
 sdk.payments.getConnectorTask({
-  connector: Connector.DummyPay,
-  taskId: "dolorum",
+  connector: Connector.BankingCircle,
+  taskId: "excepturi",
 }).then((res: GetConnectorTaskResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## getConnectorTaskV1
+
+Get a specific task associated to the connector.
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { GetConnectorTaskV1Response } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.payments.getConnectorTaskV1({
+  connector: Connector.Wise,
+  connectorId: "facilis",
+  taskId: "tempore",
+}).then((res: GetConnectorTaskV1Response) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -265,7 +298,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getPayment({
-  paymentId: "excepturi",
+  paymentId: "labore",
 }).then((res: GetPaymentResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -282,7 +315,7 @@ Get a transfer initiation
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { GetTransferInitiationResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector, PaymentStatus, TransferInitiationStatus, TransferInitiationType } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { PaymentStatus, TransferInitiationStatus, TransferInitiationType } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -291,7 +324,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.getTransferInitiation({
-  transferId: "tempora",
+  transferId: "delectus",
 }).then((res: GetTransferInitiationResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -318,15 +351,13 @@ const sdk = new SDK({
 
 sdk.payments.installConnector({
   requestBody: {
-    authorizationEndpoint: "XXX",
+    apiKey: "XXX",
+    apiSecret: "XXX",
     endpoint: "XXX",
-    password: "XXX",
+    name: "My Modulr Account",
     pollingPeriod: "60s",
-    userCertificate: "XXX",
-    userCertificateKey: "XXX",
-    username: "XXX",
   },
-  connector: Connector.BankingCircle,
+  connector: Connector.DummyPay,
 }).then((res: InstallConnectorResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -367,7 +398,6 @@ List all bank accounts created by user on Formance.
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { ListBankAccountsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -377,12 +407,11 @@ const sdk = new SDK({
 
 sdk.payments.listBankAccounts({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 288476,
+  pageSize: 756107,
   sort: [
-    "eum",
-    "non",
-    "eligendi",
-    "sint",
+    "aliquid",
+    "provident",
+    "necessitatibus",
   ],
 }).then((res: ListBankAccountsResponse) => {
   if (res.statusCode == 200) {
@@ -414,9 +443,11 @@ sdk.payments.listConfigsAvailableConnectors().then((res: ListConfigsAvailableCon
 });
 ```
 
-## listConnectorTasks
+## ~~listConnectorTasks~~
 
 List all tasks associated with this connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -432,9 +463,9 @@ const sdk = new SDK({
 });
 
 sdk.payments.listConnectorTasks({
-  connector: Connector.Modulr,
+  connector: Connector.CurrencyCloud,
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 592042,
+  pageSize: 638921,
 }).then((res: ListConnectorTasksResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -442,15 +473,15 @@ sdk.payments.listConnectorTasks({
 });
 ```
 
-## listConnectorsTransfers
+## listConnectorTasksV1
 
-List transfers
+List all tasks associated with this connector.
 
 ### Example Usage
 
 ```typescript
 import { SDK } from "@formance/formance-sdk";
-import { ListConnectorsTransfersResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ListConnectorTasksV1Response } from "@formance/formance-sdk/dist/sdk/models/operations";
 import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
@@ -459,9 +490,12 @@ const sdk = new SDK({
   },
 });
 
-sdk.payments.listConnectorsTransfers({
-  connector: Connector.Moneycorp,
-}).then((res: ListConnectorsTransfersResponse) => {
+sdk.payments.listConnectorTasksV1({
+  connector: Connector.DummyPay,
+  connectorId: "debitis",
+  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
+  pageSize: 952749,
+}).then((res: ListConnectorTasksV1Response) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -487,11 +521,10 @@ const sdk = new SDK({
 
 sdk.payments.listPayments({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 572252,
+  pageSize: 680056,
   sort: [
-    "dolor",
-    "debitis",
-    "a",
+    "in",
+    "illum",
   ],
 }).then((res: ListPaymentsResponse) => {
   if (res.statusCode == 200) {
@@ -509,7 +542,7 @@ List Transfer Initiations
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { ListTransferInitiationsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector, PaymentStatus, TransferInitiationStatus, TransferInitiationType } from "@formance/formance-sdk/dist/sdk/models/shared";
+import { PaymentStatus, TransferInitiationStatus, TransferInitiationType } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -519,11 +552,10 @@ const sdk = new SDK({
 
 sdk.payments.listTransferInitiations({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 680056,
-  query: "in",
+  pageSize: 978571,
+  query: "rerum",
   sort: [
-    "illum",
-    "maiores",
+    "magnam",
   ],
 }).then((res: ListTransferInitiationsResponse) => {
   if (res.statusCode == 200) {
@@ -541,7 +573,6 @@ Get an account
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { PaymentsgetAccountResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -550,7 +581,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.paymentsgetAccount({
-  accountId: "rerum",
+  accountId: "cumque",
 }).then((res: PaymentsgetAccountResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -590,7 +621,6 @@ List accounts
 ```typescript
 import { SDK } from "@formance/formance-sdk";
 import { PaymentslistAccountsResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
-import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -600,10 +630,10 @@ const sdk = new SDK({
 
 sdk.payments.paymentslistAccounts({
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  pageSize: 116202,
+  pageSize: 813798,
   sort: [
-    "cumque",
-    "facere",
+    "aliquid",
+    "laborum",
   ],
 }).then((res: PaymentslistAccountsResponse) => {
   if (res.statusCode == 200) {
@@ -612,9 +642,11 @@ sdk.payments.paymentslistAccounts({
 });
 ```
 
-## readConnectorConfig
+## ~~readConnectorConfig~~
 
 Read connector config
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -630,7 +662,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.readConnectorConfig({
-  connector: Connector.Modulr,
+  connector: Connector.Moneycorp,
 }).then((res: ReadConnectorConfigResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -638,11 +670,40 @@ sdk.payments.readConnectorConfig({
 });
 ```
 
-## resetConnector
+## readConnectorConfigV1
+
+Read connector config
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { ReadConnectorConfigV1Response } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.payments.readConnectorConfigV1({
+  connector: Connector.DummyPay,
+  connectorId: "occaecati",
+}).then((res: ReadConnectorConfigV1Response) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## ~~resetConnector~~
 
 Reset a connector by its name.
 It will remove the connector and ALL PAYMENTS generated with it.
 
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -658,8 +719,37 @@ const sdk = new SDK({
 });
 
 sdk.payments.resetConnector({
-  connector: Connector.Modulr,
+  connector: Connector.Wise,
 }).then((res: ResetConnectorResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## resetConnectorV1
+
+Reset a connector by its name.
+It will remove the connector and ALL PAYMENTS generated with it.
+
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { ResetConnectorV1Response } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.payments.resetConnectorV1({
+  connector: Connector.Moneycorp,
+  connectorId: "delectus",
+}).then((res: ResetConnectorV1Response) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -683,7 +773,7 @@ const sdk = new SDK({
 });
 
 sdk.payments.retryTransferInitiation({
-  transferId: "laborum",
+  transferId: "quidem",
 }).then((res: RetryTransferInitiationResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -710,9 +800,9 @@ const sdk = new SDK({
 
 sdk.payments.udpateTransferInitiationStatus({
   updateTransferInitiationStatusRequest: {
-    status: UpdateTransferInitiationStatusRequestStatus.Validated,
+    status: UpdateTransferInitiationStatusRequestStatus.Failed,
   },
-  transferId: "non",
+  transferId: "nam",
 }).then((res: UdpateTransferInitiationStatusResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -720,9 +810,11 @@ sdk.payments.udpateTransferInitiationStatus({
 });
 ```
 
-## uninstallConnector
+## ~~uninstallConnector~~
 
 Uninstall a connector by its name.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -738,8 +830,35 @@ const sdk = new SDK({
 });
 
 sdk.payments.uninstallConnector({
-  connector: Connector.CurrencyCloud,
+  connector: Connector.BankingCircle,
 }).then((res: UninstallConnectorResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## uninstallConnectorV1
+
+Uninstall a connector by its name.
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { UninstallConnectorV1Response } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { Connector } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.payments.uninstallConnectorV1({
+  connector: Connector.CurrencyCloud,
+  connectorId: "deleniti",
+}).then((res: UninstallConnectorV1Response) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -764,9 +883,9 @@ const sdk = new SDK({
 
 sdk.payments.updateMetadata({
   paymentMetadata: {
-    key: "enim",
+    key: "sapiente",
   },
-  paymentId: "accusamus",
+  paymentId: "amet",
 }).then((res: UpdateMetadataResponse) => {
   if (res.statusCode == 200) {
     // handle response

@@ -13,7 +13,7 @@ type TaskMoneycorpDescriptor struct {
 }
 
 type TaskMoneycorp struct {
-	ConnectorID string                  `json:"connectorId"`
+	ConnectorID string                  `json:"connectorID"`
 	CreatedAt   time.Time               `json:"createdAt"`
 	Descriptor  TaskMoneycorpDescriptor `json:"descriptor"`
 	Error       *string                 `json:"error,omitempty"`

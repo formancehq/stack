@@ -23,6 +23,10 @@ class MangoPayConfig
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $endpoint;
     
+	#[\JMS\Serializer\Annotation\SerializedName('name')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $name;
+    
     /**
      * The frequency at which the connector will try to fetch new BalanceTransaction objects from MangoPay API.
      * 
@@ -40,6 +44,7 @@ class MangoPayConfig
 		$this->apiKey = "";
 		$this->clientID = "";
 		$this->endpoint = "";
+		$this->name = "";
 		$this->pollingPeriod = null;
 	}
 }

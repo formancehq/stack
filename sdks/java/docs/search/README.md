@@ -23,7 +23,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolores") {{
+                .setSecurity(new Security("occaecati") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -33,25 +33,22 @@ public class Application {
                     add("users:002"),
                     add("users:002"),
                     add("users:002"),
-                    add("users:002"),
                 }};
                 cursor = "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=";
                 ledgers = new String[]{{
                     add("quickstart"),
-                    add("quickstart"),
                 }};
-                pageSize = 223924L;
+                pageSize = 992397L;
                 policy = "OR";
                 raw = new java.util.HashMap<String, Object>() {{
-                    put("nostrum", "hic");
-                    put("recusandae", "omnis");
-                    put("facilis", "perspiciatis");
-                    put("voluptatem", "porro");
+                    put("modi", "iste");
+                    put("dolorum", "deleniti");
+                    put("pariatur", "provident");
+                    put("nobis", "libero");
                 }};
                 sort = "txid:asc";
-                target = "consequuntur";
+                target = "delectus";
                 terms = new String[]{{
-                    add("destination=central_bank1"),
                     add("destination=central_bank1"),
                     add("destination=central_bank1"),
                 }};
@@ -86,7 +83,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("error") {{
+                .setSecurity(new Security("quos") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();

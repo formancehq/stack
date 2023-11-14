@@ -29,26 +29,22 @@ try {
     $request->after = [
         'users:002',
         'users:002',
-        'users:002',
     ];
     $request->cursor = 'YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=';
     $request->ledgers = [
         'quickstart',
         'quickstart',
         'quickstart',
-        'quickstart',
     ];
-    $request->pageSize = 249796;
+    $request->pageSize = 606393;
     $request->policy = 'OR';
     $request->raw = [
-        'enim' => 'accusamus',
-        'delectus' => 'quidem',
-        'provident' => 'nam',
+        'perferendis' => 'nihil',
+        'magnam' => 'distinctio',
     ];
     $request->sort = 'txid:asc';
     $request->target = 'id';
     $request->terms = [
-        'destination=central_bank1',
         'destination=central_bank1',
         'destination=central_bank1',
     ];

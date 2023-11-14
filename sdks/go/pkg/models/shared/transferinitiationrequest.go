@@ -39,11 +39,12 @@ func (e *TransferInitiationRequestType) UnmarshalJSON(data []byte) error {
 type TransferInitiationRequest struct {
 	Amount               *big.Int                      `json:"amount"`
 	Asset                string                        `json:"asset"`
-	CreatedAt            time.Time                     `json:"createdAt"`
+	ConnectorID          *string                       `json:"connectorID,omitempty"`
 	Description          string                        `json:"description"`
 	DestinationAccountID string                        `json:"destinationAccountID"`
-	Provider             Connector                     `json:"provider"`
+	Provider             *Connector                    `json:"provider,omitempty"`
 	Reference            string                        `json:"reference"`
+	ScheduledAt          time.Time                     `json:"scheduledAt"`
 	SourceAccountID      string                        `json:"sourceAccountID"`
 	Type                 TransferInitiationRequestType `json:"type"`
 	Validated            bool                          `json:"validated"`

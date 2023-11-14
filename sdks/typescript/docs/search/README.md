@@ -31,16 +31,17 @@ sdk.search.search({
     "quickstart",
     "quickstart",
   ],
-  pageSize: 716075,
+  pageSize: 618016,
   policy: "OR",
   raw: {
-    "labore": "labore",
-    "suscipit": "natus",
-    "nobis": "eum",
+    "eum": "vero",
+    "aspernatur": "architecto",
+    "magnam": "et",
   },
   sort: "txid:asc",
-  target: "vero",
+  target: "excepturi",
   terms: [
+    "destination=central_bank1",
     "destination=central_bank1",
   ],
 }).then((res: SearchResponse) => {

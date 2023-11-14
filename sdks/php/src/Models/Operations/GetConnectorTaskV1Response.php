@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace formance\stack\Models\Operations;
 
 
-class ListConnectorsTransfersResponse
+class GetConnectorTaskV1Response
 {
 	
     public string $contentType;
@@ -23,16 +23,16 @@ class ListConnectorsTransfersResponse
     /**
      * OK
      * 
-     * @var ?\formance\stack\Models\Shared\TransfersResponse $transfersResponse
+     * @var ?\formance\stack\Models\Shared\TaskResponse $taskResponse
      */
 	
-    public ?\formance\stack\Models\Shared\TransfersResponse $transfersResponse = null;
+    public ?\formance\stack\Models\Shared\TaskResponse $taskResponse = null;
     
 	public function __construct()
 	{
 		$this->contentType = "";
 		$this->statusCode = 0;
 		$this->rawResponse = null;
-		$this->transfersResponse = null;
+		$this->taskResponse = null;
 	}
 }

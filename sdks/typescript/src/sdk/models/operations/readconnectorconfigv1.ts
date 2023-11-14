@@ -6,7 +6,7 @@ import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
-export class ListConnectorsTransfersRequest extends SpeakeasyBase {
+export class ReadConnectorConfigV1Request extends SpeakeasyBase {
   /**
    * The name of the connector.
    */
@@ -14,9 +14,23 @@ export class ListConnectorsTransfersRequest extends SpeakeasyBase {
     data: "pathParam, style=simple;explode=false;name=connector",
   })
   connector: shared.Connector;
+
+  /**
+   * The connector ID.
+   */
+  @SpeakeasyMetadata({
+    data: "pathParam, style=simple;explode=false;name=connectorId",
+  })
+  connectorId: string;
 }
 
-export class ListConnectorsTransfersResponse extends SpeakeasyBase {
+export class ReadConnectorConfigV1Response extends SpeakeasyBase {
+  /**
+   * OK
+   */
+  @SpeakeasyMetadata()
+  connectorConfigResponse?: shared.ConnectorConfigResponse;
+
   @SpeakeasyMetadata()
   contentType: string;
 
@@ -25,10 +39,4 @@ export class ListConnectorsTransfersResponse extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   rawResponse?: AxiosResponse;
-
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  transfersResponse?: shared.TransfersResponse;
 }

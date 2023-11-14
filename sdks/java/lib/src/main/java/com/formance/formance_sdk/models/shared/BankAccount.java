@@ -23,6 +23,14 @@ public class BankAccount {
         return this;
     }
     
+    @JsonProperty("connectorID")
+    public String connectorID;
+
+    public BankAccount withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
+        return this;
+    }
+    
     @JsonProperty("country")
     public String country;
 
@@ -58,14 +66,6 @@ public class BankAccount {
         return this;
     }
     
-    @JsonProperty("provider")
-    public Connector provider;
-
-    public BankAccount withProvider(Connector provider) {
-        this.provider = provider;
-        return this;
-    }
-    
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("swiftBicCode")
     public String swiftBicCode;
@@ -75,10 +75,10 @@ public class BankAccount {
         return this;
     }
     
-    public BankAccount(@JsonProperty("country") String country, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider) {
+    public BankAccount(@JsonProperty("connectorID") String connectorID, @JsonProperty("country") String country, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("id") String id) {
+        this.connectorID = connectorID;
         this.country = country;
         this.createdAt = createdAt;
         this.id = id;
-        this.provider = provider;
   }
 }

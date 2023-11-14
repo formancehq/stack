@@ -8,11 +8,11 @@ import (
 
 type PaymentsAccount struct {
 	AccountName     string                 `json:"accountName"`
+	ConnectorID     string                 `json:"connectorID"`
 	CreatedAt       time.Time              `json:"createdAt"`
 	DefaultAsset    string                 `json:"defaultAsset"`
 	DefaultCurrency string                 `json:"defaultCurrency"`
 	ID              string                 `json:"id"`
-	Provider        Connector              `json:"provider"`
 	Raw             map[string]interface{} `json:"raw"`
 	Reference       string                 `json:"reference"`
 	Type            string                 `json:"type"`

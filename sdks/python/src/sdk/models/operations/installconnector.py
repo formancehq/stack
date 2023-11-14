@@ -4,6 +4,7 @@ from __future__ import annotations
 import dataclasses
 import requests as requests_http
 from ..shared import connector as shared_connector
+from ..shared import connectorresponse as shared_connectorresponse
 from typing import Any, Optional
 
 
@@ -20,5 +21,7 @@ class InstallConnectorResponse:
     
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
+    connector_response: Optional[shared_connectorresponse.ConnectorResponse] = dataclasses.field(default=None)
+    r"""OK"""
     raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     

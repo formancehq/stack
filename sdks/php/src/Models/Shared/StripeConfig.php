@@ -15,6 +15,10 @@ class StripeConfig
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $apiKey;
     
+	#[\JMS\Serializer\Annotation\SerializedName('name')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $name;
+    
     /**
      * Number of BalanceTransaction to fetch at each polling interval.
      * 
@@ -42,6 +46,7 @@ class StripeConfig
 	public function __construct()
 	{
 		$this->apiKey = "";
+		$this->name = "";
 		$this->pageSize = null;
 		$this->pollingPeriod = null;
 	}

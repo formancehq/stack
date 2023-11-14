@@ -10,6 +10,10 @@ export class StripeConfig extends SpeakeasyBase {
   @Expose({ name: "apiKey" })
   apiKey: string;
 
+  @SpeakeasyMetadata()
+  @Expose({ name: "name" })
+  name: string;
+
   /**
    * Number of BalanceTransaction to fetch at each polling interval.
    *

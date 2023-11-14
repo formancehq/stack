@@ -41,7 +41,16 @@ public class DummyPayConfig {
         return this;
     }
     
-    public DummyPayConfig(@JsonProperty("directory") String directory) {
+    @JsonProperty("name")
+    public String name;
+
+    public DummyPayConfig withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    public DummyPayConfig(@JsonProperty("directory") String directory, @JsonProperty("name") String name) {
         this.directory = directory;
+        this.name = name;
   }
 }

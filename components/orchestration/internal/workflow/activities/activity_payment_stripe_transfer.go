@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"go.temporal.io/sdk/activity"
@@ -13,12 +12,13 @@ import (
 
 func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityStripeTransfer) error {
 	activityInfo := activity.GetInfo(ctx)
+	provider := shared.ConnectorStripe
 	ti := shared.TransferInitiationRequest{
 		Amount:               request.Amount,
 		Asset:                *request.Asset,
-		CreatedAt:            time.Now(),
 		DestinationAccountID: *request.Destination,
-		Provider:             shared.ConnectorStripe,
+		ConnectorID:          request.ConnectorID,
+		Provider:             &provider,
 		Type:                 shared.TransferInitiationRequestTypeTransfer,
 		Reference:            activityInfo.WorkflowExecution.ID + activityInfo.ActivityID,
 		Validated:            true, // No need to validate

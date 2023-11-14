@@ -15,6 +15,10 @@ class WiseConfig
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $apiKey;
     
+	#[\JMS\Serializer\Annotation\SerializedName('name')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $name;
+    
     /**
      * The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.
      * 
@@ -30,6 +34,7 @@ class WiseConfig
 	public function __construct()
 	{
 		$this->apiKey = "";
+		$this->name = "";
 		$this->pollingPeriod = null;
 	}
 }

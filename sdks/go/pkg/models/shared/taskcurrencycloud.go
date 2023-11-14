@@ -11,7 +11,7 @@ type TaskCurrencyCloudDescriptor struct {
 }
 
 type TaskCurrencyCloud struct {
-	ConnectorID string                      `json:"connectorId"`
+	ConnectorID string                      `json:"connectorID"`
 	CreatedAt   time.Time                   `json:"createdAt"`
 	Descriptor  TaskCurrencyCloudDescriptor `json:"descriptor"`
 	Error       *string                     `json:"error,omitempty"`

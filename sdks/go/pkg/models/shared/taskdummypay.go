@@ -13,7 +13,7 @@ type TaskDummyPayDescriptor struct {
 }
 
 type TaskDummyPay struct {
-	ConnectorID string                 `json:"connectorId"`
+	ConnectorID string                 `json:"connectorID"`
 	CreatedAt   time.Time              `json:"createdAt"`
 	Descriptor  TaskDummyPayDescriptor `json:"descriptor"`
 	Error       *string                `json:"error,omitempty"`

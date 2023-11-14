@@ -4,23 +4,25 @@ from __future__ import annotations
 import dataclasses
 import requests as requests_http
 from ..shared import connector as shared_connector
-from ..shared import transfersresponse as shared_transfersresponse
+from ..shared import connectorconfigresponse as shared_connectorconfigresponse
 from typing import Optional
 
 
 @dataclasses.dataclass
-class ListConnectorsTransfersRequest:
+class ReadConnectorConfigV1Request:
     
     connector: shared_connector.Connector = dataclasses.field(metadata={'path_param': { 'field_name': 'connector', 'style': 'simple', 'explode': False }})
     r"""The name of the connector."""
+    connector_id: str = dataclasses.field(metadata={'path_param': { 'field_name': 'connectorId', 'style': 'simple', 'explode': False }})
+    r"""The connector ID."""
     
 
 @dataclasses.dataclass
-class ListConnectorsTransfersResponse:
+class ReadConnectorConfigV1Response:
     
     content_type: str = dataclasses.field()
     status_code: int = dataclasses.field()
-    raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
-    transfers_response: Optional[shared_transfersresponse.TransfersResponse] = dataclasses.field(default=None)
+    connector_config_response: Optional[shared_connectorconfigresponse.ConnectorConfigResponse] = dataclasses.field(default=None)
     r"""OK"""
+    raw_response: Optional[requests_http.Response] = dataclasses.field(default=None)
     

@@ -14,8 +14,8 @@ export class TaskCurrencyCloudDescriptor extends SpeakeasyBase {
 
 export class TaskCurrencyCloud extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "connectorId" })
-  connectorId: string;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })

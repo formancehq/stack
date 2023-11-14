@@ -3,7 +3,6 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { Connector } from "./connector";
 import { TransferInitiationPayments } from "./transferinitiationpayments";
 import { TransferInitiationStatus } from "./transferinitiationstatus";
 import { Expose, Transform, Type } from "class-transformer";
@@ -21,6 +20,10 @@ export class TransferInitiation extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "asset" })
   asset: string;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })
@@ -43,14 +46,15 @@ export class TransferInitiation extends SpeakeasyBase {
   @Expose({ name: "id" })
   id: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "provider" })
-  provider: Connector;
-
   @SpeakeasyMetadata({ elemType: TransferInitiationPayments })
   @Expose({ name: "relatedPayments" })
   @Type(() => TransferInitiationPayments)
   relatedPayments?: TransferInitiationPayments[];
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "scheduledAt" })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  scheduledAt: Date;
 
   @SpeakeasyMetadata()
   @Expose({ name: "sourceAccountID" })

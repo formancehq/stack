@@ -17,6 +17,14 @@ public class WiseConfig {
         return this;
     }
     
+    @JsonProperty("name")
+    public String name;
+
+    public WiseConfig withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
     /**
      * The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.
      * 
@@ -30,7 +38,8 @@ public class WiseConfig {
         return this;
     }
     
-    public WiseConfig(@JsonProperty("apiKey") String apiKey) {
+    public WiseConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("name") String name) {
         this.apiKey = apiKey;
+        this.name = name;
   }
 }

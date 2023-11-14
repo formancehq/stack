@@ -5,6 +5,7 @@ package shared
 type BankingCircleConfig struct {
 	AuthorizationEndpoint string `json:"authorizationEndpoint"`
 	Endpoint              string `json:"endpoint"`
+	Name                  string `json:"name"`
 	Password              string `json:"password"`
 	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Banking Circle API.
 	//

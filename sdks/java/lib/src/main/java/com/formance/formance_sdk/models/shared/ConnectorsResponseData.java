@@ -4,21 +4,25 @@
 
 package com.formance.formance_sdk.models.shared;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConnectorsResponseData {
-    @JsonInclude(Include.NON_ABSENT)
-    @JsonProperty("enabled")
-    public Boolean enabled;
+    @JsonProperty("connectorID")
+    public String connectorID;
 
-    public ConnectorsResponseData withEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public ConnectorsResponseData withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
         return this;
     }
     
-    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("name")
+    public String name;
+
+    public ConnectorsResponseData withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
     @JsonProperty("provider")
     public Connector provider;
 
@@ -27,5 +31,9 @@ public class ConnectorsResponseData {
         return this;
     }
     
-    public ConnectorsResponseData(){}
+    public ConnectorsResponseData(@JsonProperty("connectorID") String connectorID, @JsonProperty("name") String name, @JsonProperty("provider") Connector provider) {
+        this.connectorID = connectorID;
+        this.name = name;
+        this.provider = provider;
+  }
 }

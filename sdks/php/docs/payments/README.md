@@ -8,25 +8,29 @@
 * [deleteTransferInitiation](#deletetransferinitiation) - Delete a transfer initiation
 * [getAccountBalances](#getaccountbalances) - Get account balances
 * [getBankAccount](#getbankaccount) - Get a bank account created by user on Formance
-* [getConnectorTask](#getconnectortask) - Read a specific task of the connector
+* [~~getConnectorTask~~](#getconnectortask) - Read a specific task of the connector :warning: **Deprecated**
+* [getConnectorTaskV1](#getconnectortaskv1) - Read a specific task of the connector
 * [getPayment](#getpayment) - Get a payment
 * [getTransferInitiation](#gettransferinitiation) - Get a transfer initiation
 * [installConnector](#installconnector) - Install a connector
 * [listAllConnectors](#listallconnectors) - List all installed connectors
 * [listBankAccounts](#listbankaccounts) - List bank accounts created by user on Formance
 * [listConfigsAvailableConnectors](#listconfigsavailableconnectors) - List the configs of each available connector
-* [listConnectorTasks](#listconnectortasks) - List tasks from a connector
-* [listConnectorsTransfers](#listconnectorstransfers) - List transfers and their statuses
+* [~~listConnectorTasks~~](#listconnectortasks) - List tasks from a connector :warning: **Deprecated**
+* [listConnectorTasksV1](#listconnectortasksv1) - List tasks from a connector
 * [listPayments](#listpayments) - List payments
 * [listTransferInitiations](#listtransferinitiations) - List Transfer Initiations
 * [paymentsgetAccount](#paymentsgetaccount) - Get an account
 * [paymentsgetServerInfo](#paymentsgetserverinfo) - Get server info
 * [paymentslistAccounts](#paymentslistaccounts) - List accounts
-* [readConnectorConfig](#readconnectorconfig) - Read the config of a connector
-* [resetConnector](#resetconnector) - Reset a connector
+* [~~readConnectorConfig~~](#readconnectorconfig) - Read the config of a connector :warning: **Deprecated**
+* [readConnectorConfigV1](#readconnectorconfigv1) - Read the config of a connector
+* [~~resetConnector~~](#resetconnector) - Reset a connector :warning: **Deprecated**
+* [resetConnectorV1](#resetconnectorv1) - Reset a connector
 * [retryTransferInitiation](#retrytransferinitiation) - Retry a failed transfer initiation
 * [udpateTransferInitiationStatus](#udpatetransferinitiationstatus) - Update the status of a transfer initiation
-* [uninstallConnector](#uninstallconnector) - Uninstall a connector
+* [~~uninstallConnector~~](#uninstallconnector) - Uninstall a connector :warning: **Deprecated**
+* [uninstallConnectorV1](#uninstallconnectorv1) - Uninstall a connector
 * [updateMetadata](#updatemetadata) - Update metadata
 
 ## connectorsTransfer
@@ -84,7 +88,6 @@ require_once 'vendor/autoload.php';
 use \formance\stack\SDK;
 use \formance\stack\Models\Shared\Security;
 use \formance\stack\Models\Shared\BankAccountRequest;
-use \formance\stack\Models\Shared\Connector;
 
 $sdk = SDK::builder()
     ->build();
@@ -92,10 +95,10 @@ $sdk = SDK::builder()
 try {
     $request = new BankAccountRequest();
     $request->accountNumber = 'corporis';
+    $request->connectorID = 'dolore';
     $request->country = 'GB';
-    $request->iban = 'dolore';
+    $request->iban = 'iusto';
     $request->name = 'My account';
-    $request->provider = Connector::MODULR;
     $request->swiftBicCode = 'dicta';
 
     $response = $sdk->payments->createBankAccount($request);
@@ -133,12 +136,13 @@ try {
     $request = new TransferInitiationRequest();
     $request->amount = 688661;
     $request->asset = 'USD';
-    $request->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-02-13T15:01:52.114Z');
-    $request->description = 'commodi';
-    $request->destinationAccountID = 'repudiandae';
-    $request->provider = Connector::STRIPE;
+    $request->connectorID = 'enim';
+    $request->description = 'accusamus';
+    $request->destinationAccountID = 'commodi';
+    $request->provider = Connector::MONEYCORP;
     $request->reference = 'XXX';
-    $request->sourceAccountID = 'ipsum';
+    $request->scheduledAt = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-10-13T20:38:16.426Z');
+    $request->sourceAccountID = 'quidem';
     $request->type = TransferInitiationRequestType::PAYOUT;
     $request->validated = false;
 
@@ -173,7 +177,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new DeleteTransferInitiationRequest();
-    $request->transferId = 'molestias';
+    $request->transferId = 'excepturi';
 
     $response = $sdk->payments->deleteTransferInitiation($request);
 
@@ -206,16 +210,19 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetAccountBalancesRequest();
-    $request->accountId = 'excepturi';
-    $request->asset = 'pariatur';
+    $request->accountId = 'pariatur';
+    $request->asset = 'modi';
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->from = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-06-29T05:25:54.356Z');
-    $request->limit = 523248;
-    $request->pageSize = 916723;
+    $request->from = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-12-15T00:41:38.329Z');
+    $request->limit = 916723;
+    $request->pageSize = 93940;
     $request->sort = [
-        'repudiandae',
+        'sint',
+        'veritatis',
+        'itaque',
+        'incidunt',
     ];
-    $request->to = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-11-01T07:52:08.326Z');
+    $request->to = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-12-28T14:02:06.064Z');
 
     $response = $sdk->payments->getAccountBalances($request);
 
@@ -248,7 +255,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetBankAccountRequest();
-    $request->bankAccountId = 'itaque';
+    $request->bankAccountId = 'est';
 
     $response = $sdk->payments->getBankAccount($request);
 
@@ -260,9 +267,11 @@ try {
 }
 ```
 
-## getConnectorTask
+## ~~getConnectorTask~~
 
 Get a specific task associated to the connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -282,10 +291,46 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetConnectorTaskRequest();
-    $request->connector = Connector::WISE;
-    $request->taskId = 'enim';
+    $request->connector = Connector::MANGOPAY;
+    $request->taskId = 'explicabo';
 
     $response = $sdk->payments->getConnectorTask($request);
+
+    if ($response->taskResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
+## getConnectorTaskV1
+
+Get a specific task associated to the connector.
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\GetConnectorTaskV1Request;
+use \formance\stack\Models\Shared\Connector;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new GetConnectorTaskV1Request();
+    $request->connector = Connector::BANKING_CIRCLE;
+    $request->connectorId = 'distinctio';
+    $request->taskId = 'quibusdam';
+
+    $response = $sdk->payments->getConnectorTaskV1($request);
 
     if ($response->taskResponse !== null) {
         // handle response
@@ -316,7 +361,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetPaymentRequest();
-    $request->paymentId = 'consequatur';
+    $request->paymentId = 'labore';
 
     $response = $sdk->payments->getPayment($request);
 
@@ -349,7 +394,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetTransferInitiationRequest();
-    $request->transferId = 'est';
+    $request->transferId = 'modi';
 
     $response = $sdk->payments->getTransferInitiation($request);
 
@@ -383,16 +428,16 @@ $sdk = SDK::builder()
 
 try {
     $request = new InstallConnectorRequest();
-    $request->requestBody = new MangoPayConfig();
-    $request->requestBody->apiKey = 'XXX';
-    $request->requestBody->clientID = 'XXX';
-    $request->requestBody->endpoint = 'XXX';
-    $request->requestBody->pollingPeriod = '60s';
-    $request->connector = Connector::DUMMY_PAY;
+    $request->requestBody = new DummyPayConfig();
+    $request->requestBody->directory = '/tmp/dummypay';
+    $request->requestBody->fileGenerationPeriod = '60s';
+    $request->requestBody->filePollingPeriod = '60s';
+    $request->requestBody->name = 'My DummyPay Account';
+    $request->connector = Connector::MODULR;
 
     $response = $sdk->payments->installConnector($request);
 
-    if ($response->statusCode === 200) {
+    if ($response->connectorResponse !== null) {
         // handle response
     }
 } catch (Exception $e) {
@@ -451,11 +496,11 @@ $sdk = SDK::builder()
 try {
     $request = new ListBankAccountsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 647174;
+    $request->pageSize = 586513;
     $request->sort = [
-        'quibusdam',
-        'labore',
-        'modi',
+        'perferendis',
+        'magni',
+        'assumenda',
     ];
 
     $response = $sdk->payments->listBankAccounts($request);
@@ -497,9 +542,11 @@ try {
 }
 ```
 
-## listConnectorTasks
+## ~~listConnectorTasks~~
 
 List all tasks associated with this connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -519,9 +566,9 @@ $sdk = SDK::builder()
 
 try {
     $request = new ListConnectorTasksRequest();
-    $request->connector = Connector::DUMMY_PAY;
+    $request->connector = Connector::WISE;
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 397821;
+    $request->pageSize = 4695;
 
     $response = $sdk->payments->listConnectorTasks($request);
 
@@ -533,9 +580,9 @@ try {
 }
 ```
 
-## listConnectorsTransfers
+## listConnectorTasksV1
 
-List transfers
+List all tasks associated with this connector.
 
 ### Example Usage
 
@@ -547,19 +594,22 @@ require_once 'vendor/autoload.php';
 
 use \formance\stack\SDK;
 use \formance\stack\Models\Shared\Security;
-use \formance\stack\Models\Operations\ListConnectorsTransfersRequest;
+use \formance\stack\Models\Operations\ListConnectorTasksV1Request;
 use \formance\stack\Models\Shared\Connector;
 
 $sdk = SDK::builder()
     ->build();
 
 try {
-    $request = new ListConnectorsTransfersRequest();
-    $request->connector = Connector::CURRENCY_CLOUD;
+    $request = new ListConnectorTasksV1Request();
+    $request->connector = Connector::DUMMY_PAY;
+    $request->connectorId = 'dolorum';
+    $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
+    $request->pageSize = 569618;
 
-    $response = $sdk->payments->listConnectorsTransfers($request);
+    $response = $sdk->payments->listConnectorTasksV1($request);
 
-    if ($response->transfersResponse !== null) {
+    if ($response->tasksCursor !== null) {
         // handle response
     }
 } catch (Exception $e) {
@@ -589,9 +639,11 @@ $sdk = SDK::builder()
 try {
     $request = new ListPaymentsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 552822;
+    $request->pageSize = 270008;
     $request->sort = [
-        'magni',
+        'tempore',
+        'labore',
+        'delectus',
     ];
 
     $response = $sdk->payments->listPayments($request);
@@ -626,10 +678,13 @@ $sdk = SDK::builder()
 try {
     $request = new ListTransferInitiationsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 828940;
-    $request->query = 'ipsam';
+    $request->pageSize = 433288;
+    $request->query = 'non';
     $request->sort = [
-        'fugit',
+        'sint',
+        'aliquid',
+        'provident',
+        'necessitatibus',
     ];
 
     $response = $sdk->payments->listTransferInitiations($request);
@@ -663,7 +718,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new PaymentsgetAccountRequest();
-    $request->accountId = 'dolorum';
+    $request->accountId = 'sint';
 
     $response = $sdk->payments->paymentsgetAccount($request);
 
@@ -726,10 +781,9 @@ $sdk = SDK::builder()
 try {
     $request = new PaymentslistAccountsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 569618;
+    $request->pageSize = 638921;
     $request->sort = [
-        'facilis',
-        'tempore',
+        'debitis',
     ];
 
     $response = $sdk->payments->paymentslistAccounts($request);
@@ -742,9 +796,11 @@ try {
 }
 ```
 
-## readConnectorConfig
+## ~~readConnectorConfig~~
 
 Read connector config
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -764,7 +820,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new ReadConnectorConfigRequest();
-    $request->connector = Connector::WISE;
+    $request->connector = Connector::MONEYCORP;
 
     $response = $sdk->payments->readConnectorConfig($request);
 
@@ -776,11 +832,48 @@ try {
 }
 ```
 
-## resetConnector
+## readConnectorConfigV1
+
+Read connector config
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\ReadConnectorConfigV1Request;
+use \formance\stack\Models\Shared\Connector;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new ReadConnectorConfigV1Request();
+    $request->connector = Connector::BANKING_CIRCLE;
+    $request->connectorId = 'in';
+
+    $response = $sdk->payments->readConnectorConfigV1($request);
+
+    if ($response->connectorConfigResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
+## ~~resetConnector~~
 
 Reset a connector by its name.
 It will remove the connector and ALL PAYMENTS generated with it.
 
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -800,9 +893,46 @@ $sdk = SDK::builder()
 
 try {
     $request = new ResetConnectorRequest();
-    $request->connector = Connector::MONEYCORP;
+    $request->connector = Connector::MODULR;
 
     $response = $sdk->payments->resetConnector($request);
+
+    if ($response->statusCode === 200) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
+## resetConnectorV1
+
+Reset a connector by its name.
+It will remove the connector and ALL PAYMENTS generated with it.
+
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\ResetConnectorV1Request;
+use \formance\stack\Models\Shared\Connector;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new ResetConnectorV1Request();
+    $request->connector = Connector::MANGOPAY;
+    $request->connectorId = 'maiores';
+
+    $response = $sdk->payments->resetConnectorV1($request);
 
     if ($response->statusCode === 200) {
         // handle response
@@ -833,7 +963,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new RetryTransferInitiationRequest();
-    $request->transferId = 'eum';
+    $request->transferId = 'rerum';
 
     $response = $sdk->payments->retryTransferInitiation($request);
 
@@ -869,8 +999,8 @@ $sdk = SDK::builder()
 try {
     $request = new UdpateTransferInitiationStatusRequest();
     $request->updateTransferInitiationStatusRequest = new UpdateTransferInitiationStatusRequest();
-    $request->updateTransferInitiationStatusRequest->status = UpdateTransferInitiationStatusRequestStatus::PROCESSING;
-    $request->transferId = 'eligendi';
+    $request->updateTransferInitiationStatusRequest->status = UpdateTransferInitiationStatusRequestStatus::WAITING_FOR_VALIDATION;
+    $request->transferId = 'magnam';
 
     $response = $sdk->payments->udpateTransferInitiationStatus($request);
 
@@ -882,9 +1012,11 @@ try {
 }
 ```
 
-## uninstallConnector
+## ~~uninstallConnector~~
 
 Uninstall a connector by its name.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
 
 ### Example Usage
 
@@ -904,9 +1036,44 @@ $sdk = SDK::builder()
 
 try {
     $request = new UninstallConnectorRequest();
-    $request->connector = Connector::CURRENCY_CLOUD;
+    $request->connector = Connector::MANGOPAY;
 
     $response = $sdk->payments->uninstallConnector($request);
+
+    if ($response->statusCode === 200) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
+## uninstallConnectorV1
+
+Uninstall a connector by its name.
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\UninstallConnectorV1Request;
+use \formance\stack\Models\Shared\Connector;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new UninstallConnectorV1Request();
+    $request->connector = Connector::MANGOPAY;
+    $request->connectorId = 'ea';
+
+    $response = $sdk->payments->uninstallConnectorV1($request);
 
     if ($response->statusCode === 200) {
         // handle response
@@ -940,7 +1107,7 @@ try {
     $request = new UpdateMetadataRequest();
     $request->paymentMetadata = new PaymentMetadata();
     $request->paymentMetadata->key = 'aliquid';
-    $request->paymentId = 'provident';
+    $request->paymentId = 'laborum';
 
     $response = $sdk->payments->updateMetadata($request);
 

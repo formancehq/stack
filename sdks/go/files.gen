@@ -76,6 +76,7 @@ pkg/models/operations/deletetransferinitiation.go
 pkg/models/operations/getaccountbalances.go
 pkg/models/operations/getbankaccount.go
 pkg/models/operations/getconnectortask.go
+pkg/models/operations/getconnectortaskv1.go
 pkg/models/operations/getpayment.go
 pkg/models/operations/gettransferinitiation.go
 pkg/models/operations/installconnector.go
@@ -83,17 +84,20 @@ pkg/models/operations/listallconnectors.go
 pkg/models/operations/listbankaccounts.go
 pkg/models/operations/listconfigsavailableconnectors.go
 pkg/models/operations/listconnectortasks.go
-pkg/models/operations/listconnectorstransfers.go
+pkg/models/operations/listconnectortasksv1.go
 pkg/models/operations/listpayments.go
 pkg/models/operations/listtransferinitiations.go
 pkg/models/operations/paymentsgetaccount.go
 pkg/models/operations/paymentsgetserverinfo.go
 pkg/models/operations/paymentslistaccounts.go
 pkg/models/operations/readconnectorconfig.go
+pkg/models/operations/readconnectorconfigv1.go
 pkg/models/operations/resetconnector.go
+pkg/models/operations/resetconnectorv1.go
 pkg/models/operations/retrytransferinitiation.go
 pkg/models/operations/udpatetransferinitiationstatus.go
 pkg/models/operations/uninstallconnector.go
+pkg/models/operations/uninstallconnectorv1.go
 pkg/models/operations/updatemetadata.go
 pkg/models/operations/runscript.go
 pkg/models/operations/search.go
@@ -254,6 +258,7 @@ pkg/models/shared/taskbankingcircle.go
 pkg/models/shared/taskmangopay.go
 pkg/models/shared/taskmoneycorp.go
 pkg/models/shared/paymentresponse.go
+pkg/models/shared/connectorresponse.go
 pkg/models/shared/stripeconfig.go
 pkg/models/shared/dummypayconfig.go
 pkg/models/shared/wiseconfig.go
@@ -266,7 +271,6 @@ pkg/models/shared/connectorsresponse.go
 pkg/models/shared/bankaccountscursor.go
 pkg/models/shared/connectorsconfigsresponse.go
 pkg/models/shared/taskscursor.go
-pkg/models/shared/transfersresponse.go
 pkg/models/shared/paymentscursor.go
 pkg/models/shared/transferinitiationscursor.go
 pkg/models/shared/paymentsaccountresponse.go

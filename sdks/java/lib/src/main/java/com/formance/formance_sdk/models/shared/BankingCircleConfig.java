@@ -25,6 +25,14 @@ public class BankingCircleConfig {
         return this;
     }
     
+    @JsonProperty("name")
+    public String name;
+
+    public BankingCircleConfig withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
     @JsonProperty("password")
     public String password;
 
@@ -70,10 +78,11 @@ public class BankingCircleConfig {
         return this;
     }
     
-    public BankingCircleConfig(@JsonProperty("userCertificate") String userCertificate, @JsonProperty("password") String password, @JsonProperty("authorizationEndpoint") String authorizationEndpoint, @JsonProperty("endpoint") String endpoint) {
+    public BankingCircleConfig(@JsonProperty("userCertificate") String userCertificate, @JsonProperty("password") String password, @JsonProperty("authorizationEndpoint") String authorizationEndpoint, @JsonProperty("endpoint") String endpoint, @JsonProperty("name") String name) {
         this.userCertificate = userCertificate;
         this.password = password;
         this.authorizationEndpoint = authorizationEndpoint;
         this.endpoint = endpoint;
+        this.name = name;
   }
 }

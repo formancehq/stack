@@ -280,11 +280,14 @@ class Payments
      * 
      * @param \formance\stack\Models\Operations\GetConnectorTaskRequest $request
      * @return \formance\stack\Models\Operations\GetConnectorTaskResponse
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
 	public function getConnectorTask(
         \formance\stack\Models\Operations\GetConnectorTaskRequest $request,
     ): \formance\stack\Models\Operations\GetConnectorTaskResponse
     {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        
         $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/tasks/{taskId}', \formance\stack\Models\Operations\GetConnectorTaskRequest::class, $request);
         
@@ -297,6 +300,44 @@ class Payments
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
         $response = new \formance\stack\Models\Operations\GetConnectorTaskResponse();
+        $response->statusCode = $httpResponse->getStatusCode();
+        $response->contentType = $contentType;
+        $response->rawResponse = $httpResponse;
+        
+        if ($httpResponse->getStatusCode() === 200) {
+            if (Utils\Utils::matchContentType($contentType, 'application/json')) {
+                $serializer = Utils\JSON::createSerializer();
+                $response->taskResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\TaskResponse', 'json');
+            }
+        }
+
+        return $response;
+    }
+	
+    /**
+     * Read a specific task of the connector
+     * 
+     * Get a specific task associated to the connector.
+     * 
+     * @param \formance\stack\Models\Operations\GetConnectorTaskV1Request $request
+     * @return \formance\stack\Models\Operations\GetConnectorTaskV1Response
+     */
+	public function getConnectorTaskV1(
+        \formance\stack\Models\Operations\GetConnectorTaskV1Request $request,
+    ): \formance\stack\Models\Operations\GetConnectorTaskV1Response
+    {
+        $baseUrl = $this->_serverUrl;
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/{connectorId}/tasks/{taskId}', \formance\stack\Models\Operations\GetConnectorTaskV1Request::class, $request);
+        
+        $options = ['http_errors' => false];
+        $options['headers']['Accept'] = 'application/json';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
+        
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
+        
+        $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
+
+        $response = new \formance\stack\Models\Operations\GetConnectorTaskV1Response();
         $response->statusCode = $httpResponse->getStatusCode();
         $response->contentType = $contentType;
         $response->rawResponse = $httpResponse;
@@ -404,7 +445,7 @@ class Payments
             throw new \Exception('Request body is required');
         }
         $options = array_merge_recursive($options, $body);
-        $options['headers']['Accept'] = '*/*';
+        $options['headers']['Accept'] = 'application/json';
         $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
         $httpResponse = $this->_securityClient->request('POST', $url, $options);
@@ -416,7 +457,11 @@ class Payments
         $response->contentType = $contentType;
         $response->rawResponse = $httpResponse;
         
-        if ($httpResponse->getStatusCode() === 204) {
+        if ($httpResponse->getStatusCode() === 201) {
+            if (Utils\Utils::matchContentType($contentType, 'application/json')) {
+                $serializer = Utils\JSON::createSerializer();
+                $response->connectorResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\ConnectorResponse', 'json');
+            }
         }
 
         return $response;
@@ -540,11 +585,14 @@ class Payments
      * 
      * @param \formance\stack\Models\Operations\ListConnectorTasksRequest $request
      * @return \formance\stack\Models\Operations\ListConnectorTasksResponse
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
 	public function listConnectorTasks(
         \formance\stack\Models\Operations\ListConnectorTasksRequest $request,
     ): \formance\stack\Models\Operations\ListConnectorTasksResponse
     {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        
         $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/tasks', \formance\stack\Models\Operations\ListConnectorTasksRequest::class, $request);
         
@@ -573,21 +621,22 @@ class Payments
     }
 	
     /**
-     * List transfers and their statuses
+     * List tasks from a connector
      * 
-     * List transfers
+     * List all tasks associated with this connector.
      * 
-     * @param \formance\stack\Models\Operations\ListConnectorsTransfersRequest $request
-     * @return \formance\stack\Models\Operations\ListConnectorsTransfersResponse
+     * @param \formance\stack\Models\Operations\ListConnectorTasksV1Request $request
+     * @return \formance\stack\Models\Operations\ListConnectorTasksV1Response
      */
-	public function listConnectorsTransfers(
-        \formance\stack\Models\Operations\ListConnectorsTransfersRequest $request,
-    ): \formance\stack\Models\Operations\ListConnectorsTransfersResponse
+	public function listConnectorTasksV1(
+        \formance\stack\Models\Operations\ListConnectorTasksV1Request $request,
+    ): \formance\stack\Models\Operations\ListConnectorTasksV1Response
     {
         $baseUrl = $this->_serverUrl;
-        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/transfers', \formance\stack\Models\Operations\ListConnectorsTransfersRequest::class, $request);
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/{connectorId}/tasks', \formance\stack\Models\Operations\ListConnectorTasksV1Request::class, $request);
         
         $options = ['http_errors' => false];
+        $options = array_merge_recursive($options, Utils\Utils::getQueryParams(\formance\stack\Models\Operations\ListConnectorTasksV1Request::class, $request, null));
         $options['headers']['Accept'] = 'application/json';
         $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
         
@@ -595,7 +644,7 @@ class Payments
         
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
-        $response = new \formance\stack\Models\Operations\ListConnectorsTransfersResponse();
+        $response = new \formance\stack\Models\Operations\ListConnectorTasksV1Response();
         $response->statusCode = $httpResponse->getStatusCode();
         $response->contentType = $contentType;
         $response->rawResponse = $httpResponse;
@@ -603,7 +652,7 @@ class Payments
         if ($httpResponse->getStatusCode() === 200) {
             if (Utils\Utils::matchContentType($contentType, 'application/json')) {
                 $serializer = Utils\JSON::createSerializer();
-                $response->transfersResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\TransfersResponse', 'json');
+                $response->tasksCursor = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\TasksCursor', 'json');
             }
         }
 
@@ -798,11 +847,14 @@ class Payments
      * 
      * @param \formance\stack\Models\Operations\ReadConnectorConfigRequest $request
      * @return \formance\stack\Models\Operations\ReadConnectorConfigResponse
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
 	public function readConnectorConfig(
         \formance\stack\Models\Operations\ReadConnectorConfigRequest $request,
     ): \formance\stack\Models\Operations\ReadConnectorConfigResponse
     {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        
         $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/config', \formance\stack\Models\Operations\ReadConnectorConfigRequest::class, $request);
         
@@ -830,6 +882,44 @@ class Payments
     }
 	
     /**
+     * Read the config of a connector
+     * 
+     * Read connector config
+     * 
+     * @param \formance\stack\Models\Operations\ReadConnectorConfigV1Request $request
+     * @return \formance\stack\Models\Operations\ReadConnectorConfigV1Response
+     */
+	public function readConnectorConfigV1(
+        \formance\stack\Models\Operations\ReadConnectorConfigV1Request $request,
+    ): \formance\stack\Models\Operations\ReadConnectorConfigV1Response
+    {
+        $baseUrl = $this->_serverUrl;
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/{connectorId}/config', \formance\stack\Models\Operations\ReadConnectorConfigV1Request::class, $request);
+        
+        $options = ['http_errors' => false];
+        $options['headers']['Accept'] = 'application/json';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
+        
+        $httpResponse = $this->_securityClient->request('GET', $url, $options);
+        
+        $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
+
+        $response = new \formance\stack\Models\Operations\ReadConnectorConfigV1Response();
+        $response->statusCode = $httpResponse->getStatusCode();
+        $response->contentType = $contentType;
+        $response->rawResponse = $httpResponse;
+        
+        if ($httpResponse->getStatusCode() === 200) {
+            if (Utils\Utils::matchContentType($contentType, 'application/json')) {
+                $serializer = Utils\JSON::createSerializer();
+                $response->connectorConfigResponse = $serializer->deserialize((string)$httpResponse->getBody(), 'formance\stack\Models\Shared\ConnectorConfigResponse', 'json');
+            }
+        }
+
+        return $response;
+    }
+	
+    /**
      * Reset a connector
      * 
      * Reset a connector by its name.
@@ -838,11 +928,14 @@ class Payments
      * 
      * @param \formance\stack\Models\Operations\ResetConnectorRequest $request
      * @return \formance\stack\Models\Operations\ResetConnectorResponse
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
 	public function resetConnector(
         \formance\stack\Models\Operations\ResetConnectorRequest $request,
     ): \formance\stack\Models\Operations\ResetConnectorResponse
     {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        
         $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/reset', \formance\stack\Models\Operations\ResetConnectorRequest::class, $request);
         
@@ -855,6 +948,42 @@ class Payments
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
         $response = new \formance\stack\Models\Operations\ResetConnectorResponse();
+        $response->statusCode = $httpResponse->getStatusCode();
+        $response->contentType = $contentType;
+        $response->rawResponse = $httpResponse;
+        
+        if ($httpResponse->getStatusCode() === 204) {
+        }
+
+        return $response;
+    }
+	
+    /**
+     * Reset a connector
+     * 
+     * Reset a connector by its name.
+     * It will remove the connector and ALL PAYMENTS generated with it.
+     * 
+     * 
+     * @param \formance\stack\Models\Operations\ResetConnectorV1Request $request
+     * @return \formance\stack\Models\Operations\ResetConnectorV1Response
+     */
+	public function resetConnectorV1(
+        \formance\stack\Models\Operations\ResetConnectorV1Request $request,
+    ): \formance\stack\Models\Operations\ResetConnectorV1Response
+    {
+        $baseUrl = $this->_serverUrl;
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/{connectorId}/reset', \formance\stack\Models\Operations\ResetConnectorV1Request::class, $request);
+        
+        $options = ['http_errors' => false];
+        $options['headers']['Accept'] = '*/*';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
+        
+        $httpResponse = $this->_securityClient->request('POST', $url, $options);
+        
+        $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
+
+        $response = new \formance\stack\Models\Operations\ResetConnectorV1Response();
         $response->statusCode = $httpResponse->getStatusCode();
         $response->contentType = $contentType;
         $response->rawResponse = $httpResponse;
@@ -945,11 +1074,14 @@ class Payments
      * 
      * @param \formance\stack\Models\Operations\UninstallConnectorRequest $request
      * @return \formance\stack\Models\Operations\UninstallConnectorResponse
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
 	public function uninstallConnector(
         \formance\stack\Models\Operations\UninstallConnectorRequest $request,
     ): \formance\stack\Models\Operations\UninstallConnectorResponse
     {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        
         $baseUrl = $this->_serverUrl;
         $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}', \formance\stack\Models\Operations\UninstallConnectorRequest::class, $request);
         
@@ -962,6 +1094,40 @@ class Payments
         $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
 
         $response = new \formance\stack\Models\Operations\UninstallConnectorResponse();
+        $response->statusCode = $httpResponse->getStatusCode();
+        $response->contentType = $contentType;
+        $response->rawResponse = $httpResponse;
+        
+        if ($httpResponse->getStatusCode() === 204) {
+        }
+
+        return $response;
+    }
+	
+    /**
+     * Uninstall a connector
+     * 
+     * Uninstall a connector by its name.
+     * 
+     * @param \formance\stack\Models\Operations\UninstallConnectorV1Request $request
+     * @return \formance\stack\Models\Operations\UninstallConnectorV1Response
+     */
+	public function uninstallConnectorV1(
+        \formance\stack\Models\Operations\UninstallConnectorV1Request $request,
+    ): \formance\stack\Models\Operations\UninstallConnectorV1Response
+    {
+        $baseUrl = $this->_serverUrl;
+        $url = Utils\Utils::generateUrl($baseUrl, '/api/payments/connectors/{connector}/{connectorId}', \formance\stack\Models\Operations\UninstallConnectorV1Request::class, $request);
+        
+        $options = ['http_errors' => false];
+        $options['headers']['Accept'] = '*/*';
+        $options['headers']['user-agent'] = sprintf('speakeasy-sdk/%s %s %s', $this->_language, $this->_sdkVersion, $this->_genVersion);
+        
+        $httpResponse = $this->_securityClient->request('DELETE', $url, $options);
+        
+        $contentType = $httpResponse->getHeader('Content-Type')[0] ?? '';
+
+        $response = new \formance\stack\Models\Operations\UninstallConnectorV1Response();
         $response->statusCode = $httpResponse->getStatusCode();
         $response->contentType = $contentType;
         $response->rawResponse = $httpResponse;

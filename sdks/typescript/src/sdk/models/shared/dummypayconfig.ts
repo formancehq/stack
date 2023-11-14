@@ -23,4 +23,8 @@ export class DummyPayConfig extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "filePollingPeriod" })
   filePollingPeriod?: string;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "name" })
+  name: string;
 }

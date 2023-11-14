@@ -15,6 +15,10 @@ export class ActivityStripeTransfer extends SpeakeasyBase {
   asset?: string;
 
   @SpeakeasyMetadata()
+  @Expose({ name: "connectorID" })
+  connectorID?: string;
+
+  @SpeakeasyMetadata()
   @Expose({ name: "destination" })
   destination?: string;
 

@@ -24,6 +24,10 @@ class ModulrConfig
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $endpoint = null;
     
+	#[\JMS\Serializer\Annotation\SerializedName('name')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $name;
+    
     /**
      * The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.
      * 
@@ -41,6 +45,7 @@ class ModulrConfig
 		$this->apiKey = "";
 		$this->apiSecret = "";
 		$this->endpoint = null;
+		$this->name = "";
 		$this->pollingPeriod = null;
 	}
 }

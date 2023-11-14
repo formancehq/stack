@@ -33,6 +33,14 @@ public class MoneycorpConfig {
         return this;
     }
     
+    @JsonProperty("name")
+    public String name;
+
+    public MoneycorpConfig withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
     /**
      * The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.
      * 
@@ -46,9 +54,10 @@ public class MoneycorpConfig {
         return this;
     }
     
-    public MoneycorpConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("clientID") String clientID, @JsonProperty("endpoint") String endpoint) {
+    public MoneycorpConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("clientID") String clientID, @JsonProperty("endpoint") String endpoint, @JsonProperty("name") String name) {
         this.apiKey = apiKey;
         this.clientID = clientID;
         this.endpoint = endpoint;
+        this.name = name;
   }
 }
