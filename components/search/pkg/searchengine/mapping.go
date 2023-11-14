@@ -18,12 +18,27 @@ func CreateIndex(ctx context.Context, client *opensearch.Client, index string) e
 	if err != nil {
 		return err
 	}
+
 	_, err = client.Indices.Create(
 		index,
 		client.Indices.Create.WithContext(ctx),
 		func(request *opensearchapi.IndicesCreateRequest) {
 			request.Body = bytes.NewReader(indexCreateBody)
 		})
+	return err
+}
+
+func UpdateMapping(ctx context.Context, client *opensearch.Client, index string) error {
+	indexCreateBody, err := GetIndexDefinition()
+	if err != nil {
+		return err
+	}
+
+	_, err = client.Indices.PutMapping(
+		bytes.NewReader(indexCreateBody),
+		client.Indices.PutMapping.WithContext(ctx),
+		client.Indices.PutMapping.WithIndex(index),
+	)
 	return err
 }
 

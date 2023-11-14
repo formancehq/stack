@@ -86,7 +86,7 @@ func (s module) Versions() map[string]modules.Version {
 		},
 		"v0.10.0": {
 			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error) {
-				ok, err := jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config.ReconciliationConfig))
+				ok, err := jobRunner.RunJob(ctx, "update-index-mapping", nil, updateMappingJob(config.ReconciliationConfig))
 				if err != nil {
 					return false, err
 				}
@@ -128,6 +128,31 @@ func initMappingJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
 						Name:  "init-mapping",
 						Image: "ghcr.io/formancehq/search:" + imageVersion,
 						Args:  []string{"init-mapping"},
+						Env:   modules.SearchEnvVars(config).ToCoreEnv(),
+					}},
+				},
+			},
+		}
+	}
+}
+
+func updateMappingJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
+	return func(t *batchv1.Job) {
+		imageVersion := config.Versions.Spec.Search
+
+		// notes(gfyrag): this is the first version where the command is available
+		// this code will evolved if the mapping change, but it is not planned today
+		if config.Versions.IsLower("search", "v0.10.0") {
+			imageVersion = "v0.10.0"
+		}
+		t.Spec = batchv1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					RestartPolicy: corev1.RestartPolicyOnFailure,
+					Containers: []corev1.Container{{
+						Name:  "update-mapping",
+						Image: "ghcr.io/formancehq/search:" + imageVersion,
+						Args:  []string{"update-mapping"},
 						Env:   modules.SearchEnvVars(config).ToCoreEnv(),
 					}},
 				},
