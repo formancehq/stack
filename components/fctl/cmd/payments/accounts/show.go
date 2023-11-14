@@ -86,7 +86,7 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Account.ID})
 	tableData = append(tableData, []string{pterm.LightCyan("AccountName"), c.store.Account.AccountName})
 	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.Account.CreatedAt.Format(time.RFC3339)})
-	tableData = append(tableData, []string{pterm.LightCyan("Provider"), string(c.store.Account.Provider)})
+	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), string(c.store.Account.ConnectorID)})
 	tableData = append(tableData, []string{pterm.LightCyan("DefaultAsset"), c.store.Account.DefaultAsset})
 	tableData = append(tableData, []string{pterm.LightCyan("DefaultCurrency"), c.store.Account.DefaultCurrency})
 	tableData = append(tableData, []string{pterm.LightCyan("Reference"), c.store.Account.Reference})
