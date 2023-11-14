@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"text/template"
+
+	"github.com/formancehq/stack/libs/go-libs/migrations"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
 
@@ -66,21 +66,8 @@ func (store *Store) Delete(ctx context.Context) error {
 	return tx.Commit()
 }
 
-func (store *Store) prepareTransaction(ctx context.Context) (bun.Tx, error) {
-	txOptions := &sql.TxOptions{}
-
-	tx, err := store.bucket.db.BeginTx(ctx, txOptions)
-	if err != nil {
-		return tx, err
-	}
-	if _, err := tx.Exec(fmt.Sprintf(`set search_path = "%s"`, store.Name())); err != nil {
-		return tx, err
-	}
-	return tx, nil
-}
-
 func (store *Store) withTransaction(ctx context.Context, callback func(tx bun.Tx) error) error {
-	tx, err := store.prepareTransaction(ctx)
+	tx, err := store.bucket.db.BeginTx(ctx, &sql.TxOptions{})
 	if err != nil {
 		return err
 	}

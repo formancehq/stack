@@ -1,9 +1,10 @@
 package driver_test
 
 import (
+	"testing"
+
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/storage/systemstore"
-	"testing"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
 

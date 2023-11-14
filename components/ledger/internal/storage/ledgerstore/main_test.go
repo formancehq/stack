@@ -29,9 +29,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func newLedgerStore(t *testing.T) *Store {
-	t.Helper()
-
+func newBucket(t *testing.T) *Bucket {
 	name := uuid.NewString()
 	ctx := logging.TestingContext()
 
@@ -59,7 +57,17 @@ func newLedgerStore(t *testing.T) *Store {
 	})
 	require.NoError(t, bucket.Migrate(ctx))
 
-	store, err := bucket.GetLedgerStore(ctx, name)
+	return bucket
+}
+
+func newLedgerStore(t *testing.T) *Store {
+	t.Helper()
+
+	ledgerName := uuid.NewString()
+	ctx := logging.TestingContext()
+
+	bucket := newBucket(t)
+	store, err := bucket.GetLedgerStore(ctx, ledgerName)
 	require.NoError(t, err)
 
 	return store

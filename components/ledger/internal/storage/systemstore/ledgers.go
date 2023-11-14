@@ -69,32 +69,11 @@ func (s *Store) RegisterLedger(ctx context.Context, l *Ledger) (bool, error) {
 	return affected > 0, nil
 }
 
-func (s *Store) ExistsLedger(ctx context.Context, ledger string) (bool, error) {
-	query := s.db.NewSelect().
-		Model((*Ledger)(nil)).
-		Column("ledger").
-		Where("ledger = ?", ledger).
-		String()
-
-	ret := s.db.QueryRowContext(ctx, query)
-	if ret.Err() != nil {
-		return false, nil
-	}
-
-	var t string
-	_ = ret.Scan(&t) // Trigger close
-
-	if t == "" {
-		return false, nil
-	}
-	return true, nil
-}
-
 func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 	ret := &Ledger{}
 	if err := s.db.NewSelect().
 		Model(ret).
-		Column("ledger").
+		Column("ledger", "bucket", "addedat").
 		Where("ledger = ?", name).
 		Scan(ctx); err != nil {
 		return nil, err

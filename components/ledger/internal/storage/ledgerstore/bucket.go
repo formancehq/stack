@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+
 	ledger "github.com/formancehq/ledger/internal"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
@@ -44,23 +45,14 @@ func (b *Bucket) Close() error {
 	return b.db.Close()
 }
 
-func (b *Bucket) newLedgerStore(name string) (*Store, error) {
+func (b *Bucket) openLedgerStore(name string) (*Store, error) {
 	return New(b, name, func(ctx context.Context) error {
 		return b.systemStore.DeleteLedger(ctx, name)
 	})
 }
 
 func (b *Bucket) createLedgerStore(ctx context.Context, name string) (*Store, error) {
-
-	ledgerExists, err := b.systemStore.ExistsLedger(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-	if ledgerExists {
-		return nil, sqlutils.ErrStoreAlreadyExists
-	}
-
-	_, err = b.systemStore.RegisterLedger(ctx, &systemstore.Ledger{
+	_, err := b.systemStore.RegisterLedger(ctx, &systemstore.Ledger{
 		Name:    name,
 		AddedAt: ledger.Now(),
 		Bucket:  b.name,
@@ -69,7 +61,7 @@ func (b *Bucket) createLedgerStore(ctx context.Context, name string) (*Store, er
 		return nil, err
 	}
 
-	store, err := b.newLedgerStore(name)
+	store, err := b.openLedgerStore(name)
 	if err != nil {
 		return nil, err
 	}
@@ -87,16 +79,31 @@ func (b *Bucket) CreateLedgerStore(ctx context.Context, name string) (*Store, er
 }
 
 func (b *Bucket) GetLedgerStore(ctx context.Context, name string) (*Store, error) {
-	exists, err := b.systemStore.ExistsLedger(ctx, name)
-	if err != nil {
-		return nil, err
+	row := b.db.QueryRowContext(ctx, `SELECT EXISTS (
+		SELECT FROM 
+			pg_tables
+		WHERE 
+			schemaname = ? AND 
+			tablename  = ?
+		)`, b.name, "transactions_"+name)
+	if row.Err() != nil {
+		return nil, sqlutils.PostgresError(row.Err())
 	}
 
-	var store *Store
+	var t string
+	if err := row.Scan(&t); err != nil {
+		return nil, err
+	}
+	exists := t == "true"
+
+	var (
+		store *Store
+		err   error
+	)
 	if !exists {
 		store, err = b.createLedgerStore(ctx, name)
 	} else {
-		store, err = b.newLedgerStore(name)
+		store, err = b.openLedgerStore(name)
 	}
 	if err != nil {
 		return nil, err
