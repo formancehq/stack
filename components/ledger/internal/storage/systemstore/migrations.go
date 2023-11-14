@@ -16,7 +16,7 @@ func (s *Store) getMigrator() *migrations.Migrator {
 			Name: "Init schema",
 			UpWithContext: func(ctx context.Context, tx bun.Tx) error {
 				_, err := tx.NewCreateTable().
-					Model((*Ledgers)(nil)).
+					Model((*Ledger)(nil)).
 					IfNotExists().
 					Exec(ctx)
 				if err != nil {

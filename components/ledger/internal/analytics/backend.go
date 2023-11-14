@@ -65,12 +65,8 @@ func (d defaultBackend) ListLedgers(ctx context.Context) ([]string, error) {
 }
 
 func (d defaultBackend) GetLedgerStore(ctx context.Context, name string) (Ledger, error) {
-	bucket, err := d.driver.GetBucket(ctx, name)
-	if err != nil {
-		return nil, err
-	}
 
-	store, err := bucket.GetLedgerStore(ctx, name)
+	store, err := d.driver.GetLedgerStore(ctx, name)
 	if err != nil {
 		return nil, err
 	}

@@ -94,6 +94,30 @@ func (d *Driver) GetBucket(ctx context.Context, name string) (*ledgerstore.Bucke
 	return ret, nil
 }
 
+func (d *Driver) GetLedgerStore(ctx context.Context, name string) (*ledgerstore.Store, error) {
+	d.lock.Lock()
+	defer d.lock.Unlock()
+
+	const defaultBucketName = "_default"
+
+	exists, err := d.systemStore.ExistsBucket(ctx, defaultBucketName)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret *ledgerstore.Bucket
+	if !exists {
+		ret, err = d.createBucket(ctx, name)
+	} else {
+		ret, err = d.openBucket(name)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return ret.GetLedgerStore(ctx, name)
+}
+
 func (d *Driver) Initialize(ctx context.Context) error {
 	logging.FromContext(ctx).Debugf("Initialize driver")
 

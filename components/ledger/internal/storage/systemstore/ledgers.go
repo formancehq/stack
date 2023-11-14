@@ -10,7 +10,7 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type Ledgers struct {
+type Ledger struct {
 	bun.BaseModel `bun:"_system.ledgers,alias:ledgers"`
 
 	Ledger  string      `bun:"ledger,type:varchar(255),pk"` // Primary key
@@ -19,7 +19,7 @@ type Ledgers struct {
 
 func (s *Store) ListLedgers(ctx context.Context) ([]string, error) {
 	query := s.db.NewSelect().
-		Model((*Ledgers)(nil)).
+		Model((*Ledger)(nil)).
 		Column("ledger").
 		String()
 
@@ -44,7 +44,7 @@ func (s *Store) ListLedgers(ctx context.Context) ([]string, error) {
 
 func (s *Store) DeleteLedger(ctx context.Context, name string) error {
 	_, err := s.db.NewDelete().
-		Model((*Ledgers)(nil)).
+		Model((*Ledger)(nil)).
 		Where("ledger = ?", name).
 		Exec(ctx)
 
@@ -52,7 +52,7 @@ func (s *Store) DeleteLedger(ctx context.Context, name string) error {
 }
 
 func (s *Store) RegisterLedger(ctx context.Context, ledgerName string) (bool, error) {
-	l := &Ledgers{
+	l := &Ledger{
 		Ledger:  ledgerName,
 		AddedAt: ledger.Now(),
 	}
@@ -75,7 +75,7 @@ func (s *Store) RegisterLedger(ctx context.Context, ledgerName string) (bool, er
 
 func (s *Store) ExistsLedger(ctx context.Context, ledger string) (bool, error) {
 	query := s.db.NewSelect().
-		Model((*Ledgers)(nil)).
+		Model((*Ledger)(nil)).
 		Column("ledger").
 		Where("ledger = ?", ledger).
 		String()
@@ -92,4 +92,17 @@ func (s *Store) ExistsLedger(ctx context.Context, ledger string) (bool, error) {
 		return false, nil
 	}
 	return true, nil
+}
+
+func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
+	ret := &Ledger{}
+	if err := s.db.NewSelect().
+		Model(ret).
+		Column("ledger").
+		Where("ledger = ?", name).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return ret, nil
 }

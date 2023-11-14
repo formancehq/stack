@@ -13,13 +13,13 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewStorage() *cobra.Command {
+func NewBucket() *cobra.Command {
 	return &cobra.Command{
-		Use: "storage",
+		Use: "buckets",
 	}
 }
 
-func NewStorageInit() *cobra.Command {
+func NewBucketInit() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "init",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -44,17 +44,7 @@ func NewStorageInit() *cobra.Command {
 									return errors.New("ledger already exists")
 								}
 
-								bucket, err := storageDriver.GetBucket(ctx, name)
-								if err != nil {
-									return err
-								}
-
-								err = bucket.Migrate(ctx)
-								if err != nil {
-									return err
-								}
-
-								store, err := bucket.CreateLedgerStore(ctx, name)
+								store, err := storageDriver.GetLedgerStore(ctx, name)
 								if err != nil {
 									return err
 								}
@@ -74,7 +64,7 @@ func NewStorageInit() *cobra.Command {
 	return cmd
 }
 
-func NewStorageList() *cobra.Command {
+func NewBucketList() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "list",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -105,7 +95,7 @@ func NewStorageList() *cobra.Command {
 	return cmd
 }
 
-func NewStorageUpgrade() *cobra.Command {
+func NewBucketUpgrade() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "upgrade",
 		Args:         cobra.ExactArgs(1),
@@ -135,7 +125,7 @@ func NewStorageUpgrade() *cobra.Command {
 	return cmd
 }
 
-func NewStorageUpgradeAll() *cobra.Command {
+func NewBucketUpgradeAll() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "upgrade-all",
 		Args:         cobra.ExactArgs(0),
@@ -160,7 +150,7 @@ func NewStorageUpgradeAll() *cobra.Command {
 	return cmd
 }
 
-func NewStorageDelete() *cobra.Command {
+func NewBucketDelete() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  "delete",
 		Args: cobra.ExactArgs(1),
@@ -173,11 +163,7 @@ func NewStorageDelete() *cobra.Command {
 						lc.Append(fx.Hook{
 							OnStart: func(ctx context.Context) error {
 								name := args[0]
-								bucket, err := storageDriver.GetBucket(ctx, name)
-								if err != nil {
-									return err
-								}
-								store, err := bucket.GetLedgerStore(ctx, name)
+								store, err := storageDriver.GetLedgerStore(ctx, name)
 								if err != nil {
 									return err
 								}
