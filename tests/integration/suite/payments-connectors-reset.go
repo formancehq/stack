@@ -72,9 +72,9 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 	})
 	When("resetting connector", func() {
 		BeforeEach(func() {
-			response, err := Client().Payments.ResetConnector(
+			response, err := Client().Payments.ResetConnectorV1(
 				TestContext(),
-				operations.ResetConnectorRequest{
+				operations.ResetConnectorV1Request{
 					Connector:   shared.ConnectorDummyPay,
 					ConnectorID: connectorID,
 				},

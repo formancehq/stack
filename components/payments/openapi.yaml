@@ -295,7 +295,7 @@ paths:
   /connectors/{connector}/{connectorId}:
     delete:
       summary: Uninstall a connector
-      operationId: uninstallConnector
+      operationId: uninstallConnectorV1
       tags:
         - Payments
       description: Uninstall a connector by its name.
@@ -322,7 +322,7 @@ paths:
   /connectors/{connector}/{connectorId}/config:
     get:
       summary: Read the config of a connector
-      operationId: readConnectorConfig
+      operationId: readConnectorConfigV1
       tags:
         - Payments
       description: Read connector config
@@ -351,7 +351,7 @@ paths:
   /connectors/{connector}/{connectorId}/reset:
     post:
       summary: Reset a connector
-      operationId: resetConnector
+      operationId: resetConnectorV1
       tags:
         - Payments
       description: |
@@ -384,7 +384,7 @@ paths:
       summary: List tasks from a connector
       tags:
         - Payments
-      operationId: listConnectorTasks
+      operationId: listConnectorTasksV1
       description: List all tasks associated with this connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -414,7 +414,7 @@ paths:
       summary: Read a specific task of the connector
       tags:
         - Payments
-      operationId: getConnectorTask
+      operationId: getConnectorTaskV1
       description: Get a specific task associated to the connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
