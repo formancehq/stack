@@ -10,7 +10,7 @@ import (
 
 type balanceMessagePayload struct {
 	AccountID   string    `json:"accountID"`
-	ConnectorID string `json:"connectorId"`
+	ConnectorID string    `json:"connectorId"`
 	CreatedAt   time.Time `json:"createdAt"`
 	Asset       string    `json:"asset"`
 	Balance     *big.Int  `json:"balance"`
