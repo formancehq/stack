@@ -1,7 +1,6 @@
 package driver_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
@@ -15,43 +14,39 @@ import (
 
 func TestConfiguration(t *testing.T) {
 	d := storagetesting.StorageDriver(t)
-	defer func() {
-		_ = d.Close()
-	}()
+	ctx := logging.TestingContext()
 
-	require.NoError(t, d.GetSystemStore().InsertConfiguration(context.Background(), "foo", "bar"))
-	bar, err := d.GetSystemStore().GetConfiguration(context.Background(), "foo")
+	require.NoError(t, d.GetSystemStore().InsertConfiguration(ctx, "foo", "bar"))
+	bar, err := d.GetSystemStore().GetConfiguration(ctx, "foo")
 	require.NoError(t, err)
 	require.Equal(t, "bar", bar)
 }
 
 func TestConfigurationError(t *testing.T) {
 	d := storagetesting.StorageDriver(t)
-	defer func() {
-		_ = d.Close()
-	}()
+	ctx := logging.TestingContext()
 
-	_, err := d.GetSystemStore().GetConfiguration(context.Background(), "not_existing")
+	_, err := d.GetSystemStore().GetConfiguration(ctx, "not_existing")
 	require.Error(t, err)
 	require.True(t, sqlutils.IsNotFoundError(err))
 }
 
-func TestErrorOnOutdatedSchema(t *testing.T) {
-	d := storagetesting.StorageDriver(t)
-	defer func() {
-		require.NoError(t, d.Close())
-	}()
-
+func TestErrorOnOutdatedBucket(t *testing.T) {
 	ctx := logging.TestingContext()
+	d := storagetesting.StorageDriver(t)
 
 	name := uuid.NewString()
-	_, err := d.GetSystemStore().Register(ctx, name)
+
+	_, err := d.GetSystemStore().RegisterBucket(ctx, name)
 	require.NoError(t, err)
 
-	store, err := d.GetLedgerStore(ctx, name)
+	b, err := d.GetBucket(ctx, name)
 	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = b.Close()
+	})
 
-	upToDate, err := store.IsSchemaUpToDate(ctx)
+	upToDate, err := b.IsUpToDate(ctx)
 	require.NoError(t, err)
 	require.False(t, upToDate)
 }
