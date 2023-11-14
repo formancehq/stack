@@ -18,6 +18,7 @@ package v1beta1
 
 import (
 	"encoding/json"
+
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/conversion"

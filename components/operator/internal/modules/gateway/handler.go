@@ -214,7 +214,6 @@ const caddyfile = `(cors) {
 		read_key_set_max_retries 10
 	}
 }
-
 (audit) {
 	audit {
 		# Kafka publisher
