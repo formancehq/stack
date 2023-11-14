@@ -48,12 +48,8 @@ build-sdk:
     ARG LANG=go
     COPY --dir openapi/templates/${LANG} sdks/${LANG}
     RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/${LANG} -l ${LANG}
-    ARG export
-    IF [ "$export" == "1" ]
-        SAVE ARTIFACT sdks/${LANG} AS LOCAL ./sdks/${LANG}
-    ELSE
-        SAVE ARTIFACT sdks/${LANG}
-    END
+    SAVE ARTIFACT sdks/${LANG} AS LOCAL ./sdks/${LANG}
+    SAVE ARTIFACT sdks/${LANG}
 
 build-all-sdk:
     LOCALLY
