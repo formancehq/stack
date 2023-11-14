@@ -19,7 +19,7 @@ var (
 		},
 		Provider: models.ConnectorProviderDummyPay,
 	}
-	p1T = time.Now().Add(-1 * time.Minute).UTC().Round(time.Microsecond)
+	p1T = time.Date(2023, 11, 14, 4, 55, 0, 0, time.UTC)
 	p1  = &models.Payment{
 		ID:        *p1ID,
 		CreatedAt: p1T,
@@ -38,7 +38,7 @@ var (
 		},
 		Provider: models.ConnectorProviderDummyPay,
 	}
-	p2T = time.Now().Add(-2 * time.Minute).UTC().Round(time.Microsecond)
+	p2T = time.Date(2023, 11, 14, 4, 54, 0, 0, time.UTC)
 	p2  = &models.Payment{
 		ID:        *p2ID,
 		CreatedAt: p2T,
@@ -127,7 +127,7 @@ func checkPaymentsEqual(t *testing.T, p1, p2 *models.Payment) {
 }
 
 func testUpdatePayment(t *testing.T, store *storage.Storage) {
-	p1.CreatedAt = time.Now().UTC().Round(time.Microsecond)
+	p1.CreatedAt = time.Date(2023, 11, 14, 5, 55, 0, 0, time.UTC)
 	p1.Reference = "ref1"
 	p1.Amount = big.NewInt(150)
 	p1.Type = models.PaymentTypePayIn

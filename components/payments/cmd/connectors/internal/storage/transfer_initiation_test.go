@@ -16,7 +16,7 @@ var (
 		Reference: "test1",
 		Provider:  models.ConnectorProviderDummyPay,
 	}
-	t1T = time.Now().UTC().Add(-1 * time.Minute).Round(time.Microsecond)
+	t1T = time.Date(2023, 11, 14, 5, 8, 0, 0, time.UTC)
 	t1  = &models.TransferInitiation{
 		ID:          t1ID,
 		CreatedAt:   t1T,
@@ -34,7 +34,7 @@ var (
 		Reference: "test2",
 		Provider:  models.ConnectorProviderDummyPay,
 	}
-	t2T = time.Now().UTC().Add(-2 * time.Minute).Round(time.Microsecond)
+	t2T = time.Date(2023, 11, 14, 5, 7, 0, 0, time.UTC)
 	t2  = &models.TransferInitiation{
 		ID:                   t2ID,
 		CreatedAt:            t2T,
@@ -50,8 +50,8 @@ var (
 		Status:               models.TransferInitiationStatusWaitingForValidation,
 	}
 
-	tAddPayments  = time.Now().UTC().Add(-10 * time.Second).Round(time.Microsecond)
-	tUpdateStatus = time.Now().UTC().Add(-5 * time.Second).Round(time.Microsecond)
+	tAddPayments  = time.Date(2023, 11, 14, 5, 1, 10, 0, time.UTC)
+	tUpdateStatus = time.Date(2023, 11, 14, 5, 1, 15, 0, time.UTC)
 )
 
 func TestTransferInitiations(t *testing.T) {
