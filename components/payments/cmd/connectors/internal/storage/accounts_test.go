@@ -15,19 +15,19 @@ var (
 		Reference: "test1",
 		Provider:  models.ConnectorProviderDummyPay,
 	}
-	acc1T = time.Now().Add(-1 * time.Minute).UTC().Round(time.Microsecond)
+	acc1T = time.Date(2023, 11, 14, 4, 59, 0, 0, time.UTC)
 
 	acc2ID = models.AccountID{
 		Reference: "test2",
 		Provider:  models.ConnectorProviderDummyPay,
 	}
-	acc2T = time.Now().Add(-2 * time.Minute).UTC().Round(time.Microsecond)
+	acc2T = time.Date(2023, 11, 14, 4, 58, 0, 0, time.UTC)
 
 	acc3ID = models.AccountID{
 		Reference: "test3",
 		Provider:  models.ConnectorProviderDummyPay,
 	}
-	acc3T = time.Now().Add(-3 * time.Minute).UTC().Round(time.Microsecond)
+	acc3T = time.Date(2023, 11, 14, 4, 57, 0, 0, time.UTC)
 )
 
 func TestAccounts(t *testing.T) {
@@ -119,7 +119,7 @@ func testUpdateAccounts(t *testing.T, store *storage.Storage) {
 			Reference: "test1",
 			Provider:  models.ConnectorProviderDummyPay,
 		},
-		CreatedAt:    time.Now().UTC().Round(time.Microsecond), // New timestamps, but should not be updated in the database
+		CreatedAt:    time.Date(2023, 11, 14, 5, 59, 0, 0, time.UTC), // New timestamps, but should not be updated in the database
 		Reference:    "test1",
 		Provider:     models.ConnectorProviderDummyPay,
 		DefaultAsset: "EUR",

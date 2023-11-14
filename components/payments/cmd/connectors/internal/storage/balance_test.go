@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	b1T = time.Now().UTC().Add(-50 * time.Second).Round(time.Microsecond)
-	b2T = time.Now().UTC().Add(-40 * time.Second).Round(time.Microsecond)
+	b1T = time.Date(2023, 11, 14, 5, 1, 10, 0, time.UTC)
+	b2T = time.Date(2023, 11, 14, 5, 1, 20, 0, time.UTC)
 )
 
 func TestBalances(t *testing.T) {
