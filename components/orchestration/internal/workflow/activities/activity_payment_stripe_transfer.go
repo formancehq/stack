@@ -24,24 +24,19 @@ func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityS
 		Validated:            true, // No need to validate
 	}
 
-	fmt.Println("TATTA 2")
 	response, err := a.client.Payments.
 		CreateTransferInitiation(
 			ctx,
 			ti,
 		)
 	if err != nil {
-		fmt.Println("TATTA 3")
 		return err
 	}
-	fmt.Println("TATTA 4")
 
 	switch response.StatusCode {
 	case http.StatusOK:
-		fmt.Println("TATTA 5")
 		return nil
 	default:
-		fmt.Println("TATTA 6")
 		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 }
@@ -49,6 +44,5 @@ func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityS
 var StripeTransferActivity = Activities{}.StripeTransfer
 
 func StripeTransfer(ctx workflow.Context, request shared.ActivityStripeTransfer) error {
-	fmt.Println("TATTA")
 	return executeActivity(ctx, StripeTransferActivity, nil, request)
 }

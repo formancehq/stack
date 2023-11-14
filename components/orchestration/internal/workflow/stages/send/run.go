@@ -40,13 +40,11 @@ func RunSend(ctx workflow.Context, send Send) (err error) {
 			err = errors.WithStack(fmt.Errorf("%s", e))
 		}
 	}()
-	fmt.Println("TOTOTOT")
 	amount := send.Amount
 	switch {
 	case send.Source.Account != nil && send.Destination.Account != nil:
 		return runAccountToAccount(ctx, send.Source.Account, send.Destination.Account, amount)
 	case send.Source.Account != nil && send.Destination.Payment != nil:
-		fmt.Println("TOTO 2")
 		return runAccountToPayment(ctx, send.ConnectorID, send.Source.Account, send.Destination.Payment, amount)
 	case send.Source.Account != nil && send.Destination.Wallet != nil:
 		return runAccountToWallet(ctx, send.Source.Account, send.Destination.Wallet, amount)
