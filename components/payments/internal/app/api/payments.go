@@ -26,6 +26,7 @@ type paymentResponse struct {
 	SourceAccountID      string                   `json:"sourceAccountID"`
 	DestinationAccountID string                   `json:"destinationAccountID"`
 	Type                 string                   `json:"type"`
+	ConnectorID          string                   `json:"connectorID"`
 	Provider             models.ConnectorProvider `json:"provider"`
 	Status               models.PaymentStatus     `json:"status"`
 	InitialAmount        *big.Int                 `json:"initialAmount"`
@@ -105,6 +106,7 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 				Reference:     ret[i].Reference,
 				Type:          ret[i].Type.String(),
 				Provider:      ret[i].Connector.Provider,
+				ConnectorID:   ret[i].Connector.ID.String(),
 				Status:        ret[i].Status,
 				InitialAmount: ret[i].Amount,
 				Scheme:        ret[i].Scheme,
@@ -179,6 +181,7 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			ID:            payment.ID.String(),
 			Reference:     payment.Reference,
 			Type:          payment.Type.String(),
+			ConnectorID:   payment.Connector.ID.String(),
 			Provider:      payment.Connector.Provider,
 			Status:        payment.Status,
 			InitialAmount: payment.Amount,

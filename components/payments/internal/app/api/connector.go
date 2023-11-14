@@ -199,6 +199,10 @@ func uninstall[Config models.ConnectorConfigObject](connectorManager *integratio
 	}
 }
 
+type installResponse struct {
+	ConnectorID string `json:"connectorID"`
+}
+
 func install[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -232,7 +236,15 @@ func install[Config models.ConnectorConfigObject](connectorManager *integration.
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusCreated)
+		err = json.NewEncoder(w).Encode(api.BaseResponse[installResponse]{
+			Data: &installResponse{
+				ConnectorID: "",
+			},
+		})
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
