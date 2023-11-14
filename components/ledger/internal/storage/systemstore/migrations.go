@@ -10,13 +10,21 @@ import (
 )
 
 func (s *Store) getMigrator() *migrations.Migrator {
-	migrator := migrations.NewMigrator(migrations.WithSchema("_system", true))
+	migrator := migrations.NewMigrator(migrations.WithSchema(Schema, true))
 	migrator.RegisterMigrations(
 		migrations.Migration{
 			Name: "Init schema",
 			UpWithContext: func(ctx context.Context, tx bun.Tx) error {
 				_, err := tx.NewCreateTable().
 					Model((*Ledgers)(nil)).
+					IfNotExists().
+					Exec(ctx)
+				if err != nil {
+					return sqlutils.PostgresError(err)
+				}
+
+				_, err = tx.NewCreateTable().
+					Model((*Buckets)(nil)).
 					IfNotExists().
 					Exec(ctx)
 				if err != nil {

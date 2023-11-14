@@ -6,7 +6,6 @@ import (
 
 	"github.com/formancehq/ledger/internal/storage"
 	"github.com/formancehq/ledger/internal/storage/driver"
-	"github.com/formancehq/ledger/internal/storage/ledgerstore"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
@@ -36,7 +35,7 @@ func NewStorageInit() *cobra.Command {
 									return errors.New("name is empty")
 								}
 
-								exists, err := storageDriver.GetSystemStore().Exists(ctx, name)
+								exists, err := storageDriver.GetSystemStore().ExistsLedger(ctx, name)
 								if err != nil {
 									return err
 								}
@@ -45,13 +44,22 @@ func NewStorageInit() *cobra.Command {
 									return errors.New("ledger already exists")
 								}
 
-								store, err := storageDriver.CreateLedgerStore(ctx, name)
+								bucket, err := storageDriver.GetBucket(ctx, name)
 								if err != nil {
 									return err
 								}
 
-								_, err = store.Migrate(ctx)
-								return err
+								err = bucket.Migrate(ctx)
+								if err != nil {
+									return err
+								}
+
+								store, err := bucket.CreateLedgerStore(ctx, name)
+								if err != nil {
+									return err
+								}
+
+								return store.Initialize(ctx)
 							},
 						})
 					}))...,
@@ -97,20 +105,6 @@ func NewStorageList() *cobra.Command {
 	return cmd
 }
 
-func upgradeStore(ctx context.Context, store *ledgerstore.Store, name string) error {
-	modified, err := store.Migrate(ctx)
-	if err != nil {
-		return err
-	}
-
-	if modified {
-		logging.FromContext(ctx).Infof("Storage '%s' upgraded", name)
-	} else {
-		logging.FromContext(ctx).Infof("Storage '%s' is up to date", name)
-	}
-	return nil
-}
-
 func NewStorageUpgrade() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "upgrade",
@@ -127,13 +121,15 @@ func NewStorageUpgrade() *cobra.Command {
 			}()
 
 			name := args[0]
-			store, err := driver.GetLedgerStore(cmd.Context(), name)
+
+			bucket, err := driver.GetBucket(cmd.Context(), name)
 			if err != nil {
 				return err
 			}
+
 			logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag), false)
 
-			return upgradeStore(logging.ContextWithLogger(cmd.Context(), logger), store, name)
+			return bucket.Migrate(logging.ContextWithLogger(cmd.Context(), logger))
 		},
 	}
 	return cmd
@@ -158,7 +154,7 @@ func NewStorageUpgradeAll() *cobra.Command {
 				return err
 			}
 
-			return driver.UpgradeAllLedgersSchemas(ctx)
+			return driver.UpgradeAllBuckets(ctx)
 		},
 	}
 	return cmd
@@ -177,10 +173,15 @@ func NewStorageDelete() *cobra.Command {
 						lc.Append(fx.Hook{
 							OnStart: func(ctx context.Context) error {
 								name := args[0]
-								store, err := storageDriver.GetLedgerStore(ctx, name)
+								bucket, err := storageDriver.GetBucket(ctx, name)
 								if err != nil {
 									return err
 								}
+								store, err := bucket.GetLedgerStore(ctx, name)
+								if err != nil {
+									return err
+								}
+
 								if err := store.Delete(ctx); err != nil {
 									return err
 								}
