@@ -146,6 +146,7 @@ func (store *Store) buildTransactionQuery(p PITFilterWithVolumes, query *bun.Sel
 	selectMetadata := query.NewSelect().
 		Table("transactions_metadata").
 		Where("transactions.id = transactions_metadata.transaction_id").
+		Where("transactions.ledger = ?", store.name).
 		Order("revision desc").
 		Limit(1)
 
@@ -153,7 +154,8 @@ func (store *Store) buildTransactionQuery(p PITFilterWithVolumes, query *bun.Sel
 		selectMetadata = selectMetadata.Where("date <= ?", p.PIT)
 	}
 
-	query = query.Table("transactions")
+	query = query.Table("transactions").
+		Where("transactions.ledger = ?", store.name)
 
 	if p.PIT != nil && !p.PIT.IsZero() {
 		query = query.
@@ -167,10 +169,10 @@ func (store *Store) buildTransactionQuery(p PITFilterWithVolumes, query *bun.Sel
 	}
 
 	if p.ExpandEffectiveVolumes {
-		query = query.ColumnExpr("get_aggregated_effective_volumes_for_transaction(transactions.id) as post_commit_effective_volumes")
+		query = query.ColumnExpr("get_aggregated_effective_volumes_for_transaction(?, transactions.id) as post_commit_effective_volumes", store.name)
 	}
 	if p.ExpandVolumes {
-		query = query.ColumnExpr("get_aggregated_volumes_for_transaction(transactions.id) as post_commit_volumes")
+		query = query.ColumnExpr("get_aggregated_volumes_for_transaction(?, transactions.id) as post_commit_volumes", store.name)
 	}
 	return query
 }
@@ -316,6 +318,7 @@ func (store *Store) GetTransaction(ctx context.Context, txId *big.Int) (*ledger.
 				ColumnExpr(`transactions.id, transactions.reference, transactions.postings, transactions.timestamp, transactions.reverted_at, tm.metadata`).
 				Join("left join transactions_metadata tm on tm.transaction_id = transactions.id").
 				Where("transactions.id = ?", (*paginate.BigInt)(txId)).
+				Where("transactions.ledger = ?", store.name).
 				Order("tm.revision desc").
 				Limit(1)
 		})
@@ -334,6 +337,7 @@ func (store *Store) GetTransactionByReference(ctx context.Context, ref string) (
 				ColumnExpr(`transactions.id, transactions.reference, transactions.postings, transactions.timestamp, transactions.reverted_at, tm.metadata`).
 				Join("left join transactions_metadata tm on tm.transaction_id = transactions.id").
 				Where("transactions.reference = ?", ref).
+				Where("transactions.ledger = ?", store.name).
 				Order("tm.revision desc").
 				Limit(1)
 		})
@@ -352,6 +356,7 @@ func (store *Store) GetLastTransaction(ctx context.Context) (*ledger.ExpandedTra
 				ColumnExpr(`transactions.id, transactions.reference, transactions.postings, transactions.timestamp, transactions.reverted_at, tm.metadata`).
 				Join("left join transactions_metadata tm on tm.transaction_id = transactions.id").
 				Order("transactions.id desc", "tm.revision desc").
+				Where("transactions.ledger = ?", store.name).
 				Limit(1)
 		})
 	if err != nil {

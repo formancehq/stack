@@ -34,6 +34,7 @@ jobs:
           --secret GITHUB_TOKEN=$GITHUB_TOKEN 
           --secret FURY_TOKEN=$FURY_TOKEN 
           --secret GORELEASER_KEY=$GORELEASER_KEY
+          ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
           +pr
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
@@ -64,6 +65,7 @@ jobs:
           --secret GITHUB_TOKEN=$GITHUB_TOKEN 
           --secret FURY_TOKEN=$FURY_TOKEN 
           --secret GORELEASER_KEY=$GORELEASER_KEY
+          ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
           +all-ci-goreleaser
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
