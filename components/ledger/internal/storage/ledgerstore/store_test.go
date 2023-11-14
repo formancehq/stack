@@ -2,26 +2,14 @@ package ledgerstore
 
 import (
 	"context"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
-	"github.com/stretchr/testify/require"
 )
-
-func TestInitializeStore(t *testing.T) {
-	t.Parallel()
-	store := newLedgerStore(t)
-
-	modified, err := store.Migrate(context.Background())
-	require.NoError(t, err)
-	require.False(t, modified)
-
-	migrationInfos, err := store.GetMigrationsInfo(context.Background())
-	require.NoError(t, err)
-	require.Len(t, migrationInfos, 1)
-}
 
 // TODO: remove that
 func insertTransactions(ctx context.Context, s *Store, txs ...ledger.Transaction) error {
@@ -31,4 +19,12 @@ func insertTransactions(ctx context.Context, s *Store, txs ...ledger.Transaction
 		return previous
 	})
 	return s.InsertLogs(ctx, logs...)
+}
+
+func TestDelete(t *testing.T) {
+	t.Parallel()
+	ctx := logging.TestingContext()
+
+	store := newLedgerStore(t)
+	require.NoError(t, store.Delete(ctx))
 }

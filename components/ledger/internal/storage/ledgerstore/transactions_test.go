@@ -337,6 +337,7 @@ func TestInsertTransactions(t *testing.T) {
 	t.Parallel()
 	store := newLedgerStore(t)
 	now := ledger.Now()
+	ctx := logging.TestingContext()
 
 	t.Run("success inserting transaction", func(t *testing.T) {
 		tx1 := ledger.ExpandedTransaction{
@@ -376,7 +377,7 @@ func TestInsertTransactions(t *testing.T) {
 		err := insertTransactions(context.Background(), store, tx1.Transaction)
 		require.NoError(t, err, "inserting transaction should not fail")
 
-		tx, err := store.GetTransactionWithVolumes(context.Background(), NewGetTransactionQuery(big.NewInt(0)).
+		tx, err := store.GetTransactionWithVolumes(ctx, NewGetTransactionQuery(big.NewInt(0)).
 			WithExpandVolumes())
 		require.NoError(t, err)
 		internaltesting.RequireEqual(t, tx1, *tx)

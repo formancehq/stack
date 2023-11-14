@@ -2,14 +2,13 @@ package ledgerstore
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
+	"github.com/uptrace/bun"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/formancehq/ledger/internal/storage/systemstore"
 
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -18,23 +17,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	bunDB *bun.DB
-)
-
 func TestMain(m *testing.M) {
 	if err := pgtesting.CreatePostgresServer(); err != nil {
 		logging.Error(err)
 		os.Exit(1)
 	}
-
-	db, err := sql.Open("postgres", pgtesting.Server().GetDSN())
-	if err != nil {
-		logging.Error(err)
-		os.Exit(1)
-	}
-
-	bunDB = bun.NewDB(db, pgdialect.New())
 
 	code := m.Run()
 	if err := pgtesting.DestroyPostgresServer(); err != nil {
@@ -52,28 +39,65 @@ type T interface {
 func newLedgerStore(t T, hooks ...bun.QueryHook) *Store {
 	t.Helper()
 
-	ledgerName := uuid.NewString()
+	name := uuid.NewString()
+	ctx := logging.TestingContext()
 
-	_, err := bunDB.Exec(fmt.Sprintf(`create schema if not exists "%s"`, ledgerName))
-	require.NoError(t, err)
+	pgDatabase := pgtesting.NewPostgresDatabase(t)
 
-	t.Cleanup(func() {
-		_, err = bunDB.Exec(fmt.Sprintf(`drop schema "%s" cascade`, ledgerName))
-		require.NoError(t, err)
-	})
+	//li := pq.NewListener(pgDatabase.ConnString(), 10*time.Second, time.Minute, func(event pq.ListenerEventType, err error) {
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	//})
+	//
+	//if err := li.Listen("raise_notice"); err != nil {
+	//	panic(err)
+	//}
+	//
+	//go func() {
+	//	for {
+	//		select {
+	//		case n := <-li.Notify:
+	//			// n.Extra contains the payload from the notification
+	//			fmt.Println("notification:", n.Extra)
+	//		case <-time.After(5 * time.Minute):
+	//			if err := li.Ping(); err != nil {
+	//				panic(err)
+	//			}
+	//		}
+	//	}
+	//}()
+	//
+	//defer func() {
+	//	<-time.After(time.Second)
+	//}()
+	//
+	//<-time.After(time.Second)
 
-	ledgerDB, err := sqlutils.OpenDBWithSchema(sqlutils.ConnectionOptions{
-		DatabaseSourceName: pgtesting.Server().GetDSN(),
+	connectionOptions := sqlutils.ConnectionOptions{
+		DatabaseSourceName: pgDatabase.ConnString(),
 		Debug:              testing.Verbose(),
-	}, ledgerName, hooks...)
-	require.NoError(t, err)
+		MaxIdleConns:       40,
+		MaxOpenConns:       40,
+		ConnMaxIdleTime:    time.Minute,
+	}
 
-	store, err := New(ledgerDB, ledgerName, func(ctx context.Context) error {
-		return nil
+	ss, err := systemstore.Connect(ctx, connectionOptions)
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = ss.Close()
 	})
-	require.NoError(t, err)
+	require.NoError(t, ss.Migrate(ctx))
 
-	_, err = store.Migrate(logging.TestingContext())
+	bucket, err := ConnectToBucket(ss, connectionOptions, name, hooks...)
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = bucket.Close()
+	})
+
+	require.NoError(t, bucket.Migrate(ctx))
+
+	store, err := bucket.GetLedgerStore(ctx, name)
 	require.NoError(t, err)
 
 	return store

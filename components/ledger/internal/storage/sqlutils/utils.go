@@ -59,16 +59,20 @@ func OpenSQLDB(options ConnectionOptions, hooks ...bun.QueryHook) (*bun.DB, erro
 }
 
 func OpenDBWithSchema(connectionOptions ConnectionOptions, schema string, hooks ...bun.QueryHook) (*bun.DB, error) {
-	parsedConnectionParams, err := url.Parse(connectionOptions.DatabaseSourceName)
+	connectionOptions.DatabaseSourceName = SchemaConnectionString(connectionOptions.DatabaseSourceName, schema)
+
+	return OpenSQLDB(connectionOptions, hooks...)
+}
+
+func SchemaConnectionString(sourceName, schema string) string {
+	parsedConnectionParams, err := url.Parse(sourceName)
 	if err != nil {
-		return nil, PostgresError(err)
+		panic(err)
 	}
 
 	query := parsedConnectionParams.Query()
 	query.Set("search_path", schema)
 	parsedConnectionParams.RawQuery = query.Encode()
 
-	connectionOptions.DatabaseSourceName = parsedConnectionParams.String()
-
-	return OpenSQLDB(connectionOptions, hooks...)
+	return parsedConnectionParams.String()
 }

@@ -3,24 +3,24 @@ package systemstore
 import (
 	"context"
 
+	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
 
-	ledger "github.com/formancehq/ledger/internal"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
-type Ledger struct {
-	bun.BaseModel `bun:"_system.ledgers,alias:ledgers"`
+type Buckets struct {
+	bun.BaseModel `bun:"_system.buckets,alias:buckets"`
 
-	Ledger  string      `bun:"ledger,type:varchar(255),pk"` // Primary key
+	Name    string      `bun:"name,type:varchar(255),pk"` // Primary key
 	AddedAt ledger.Time `bun:"addedat,type:timestamp"`
 }
 
-func (s *Store) ListLedgers(ctx context.Context) ([]string, error) {
+func (s *Store) ListBuckets(ctx context.Context) ([]string, error) {
 	query := s.db.NewSelect().
-		Model((*Ledger)(nil)).
-		Column("ledger").
+		Model((*Buckets)(nil)).
+		Column("name").
 		String()
 
 	rows, err := s.db.QueryContext(ctx, query)
@@ -42,18 +42,18 @@ func (s *Store) ListLedgers(ctx context.Context) ([]string, error) {
 	return res, nil
 }
 
-func (s *Store) DeleteLedger(ctx context.Context, name string) error {
+func (s *Store) DeleteBucket(ctx context.Context, name string) error {
 	_, err := s.db.NewDelete().
-		Model((*Ledger)(nil)).
-		Where("ledger = ?", name).
+		Model((*Buckets)(nil)).
+		Where("name = ?", name).
 		Exec(ctx)
 
-	return errors.Wrap(sqlutils.PostgresError(err), "delete ledger from system store")
+	return errors.Wrap(sqlutils.PostgresError(err), "delete bucket from system store")
 }
 
-func (s *Store) RegisterLedger(ctx context.Context, ledgerName string) (bool, error) {
-	l := &Ledger{
-		Ledger:  ledgerName,
+func (s *Store) RegisterBucket(ctx context.Context, bucketName string) (bool, error) {
+	l := &Buckets{
+		Name:    bucketName,
 		AddedAt: ledger.Now(),
 	}
 
@@ -73,11 +73,11 @@ func (s *Store) RegisterLedger(ctx context.Context, ledgerName string) (bool, er
 	return affected > 0, nil
 }
 
-func (s *Store) ExistsLedger(ctx context.Context, ledger string) (bool, error) {
+func (s *Store) ExistsBucket(ctx context.Context, bucket string) (bool, error) {
 	query := s.db.NewSelect().
-		Model((*Ledger)(nil)).
-		Column("ledger").
-		Where("ledger = ?", ledger).
+		Model((*Buckets)(nil)).
+		Column("name").
+		Where("name = ?", bucket).
 		String()
 
 	ret := s.db.QueryRowContext(ctx, query)
@@ -92,17 +92,4 @@ func (s *Store) ExistsLedger(ctx context.Context, ledger string) (bool, error) {
 		return false, nil
 	}
 	return true, nil
-}
-
-func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
-	ret := &Ledger{}
-	if err := s.db.NewSelect().
-		Model(ret).
-		Column("ledger").
-		Where("ledger = ?", name).
-		Scan(ctx); err != nil {
-		return nil, err
-	}
-
-	return ret, nil
 }

@@ -69,7 +69,7 @@ create table transactions
     metadata jsonb not null default '{}'::jsonb,
 
     primary key (ledger, id)
-);
+) partition by list(ledger);
 
 alter table transactions alter column sources set statistics 1000;
 alter table transactions alter column destinations set statistics 1000;
@@ -82,8 +82,8 @@ create table transactions_metadata
     date timestamp not null,
     metadata jsonb not null default '{}'::jsonb,
 
-    primary key (transaction_id, revision)
-);
+    primary key (ledger, transaction_id, revision)
+) partition by list(ledger);
 
 create table accounts
 (
@@ -95,7 +95,7 @@ create table accounts
     metadata jsonb not null default '{}'::jsonb,
 
     primary key (ledger, address)
-);
+) partition by list(ledger);
 
 create table accounts_metadata
 (
@@ -103,13 +103,15 @@ create table accounts_metadata
     address varchar,
     metadata jsonb not null default '{}'::jsonb,
     revision numeric default 0,
-    date timestamp
-);
+    date timestamp,
+
+    primary key (ledger, address, revision)
+) partition by list(ledger);
 
 create table moves
 (
     ledger varchar not null,
-    seq serial not null primary key ,
+    seq serial not null,
     transaction_id numeric not null,
     account_address varchar not null,
     account_address_array jsonb not null,
@@ -119,27 +121,29 @@ create table moves
     effective_date timestamp not null,
     post_commit_volumes volumes not null,
     post_commit_effective_volumes volumes default null,
-    is_source boolean not null
-);
+    is_source boolean not null,
+
+    primary key (ledger, seq)
+) partition by list(ledger);
 
 create type log_type as enum
-    (
-        'NEW_TRANSACTION',
+    ('NEW_TRANSACTION',
         'REVERTED_TRANSACTION',
         'SET_METADATA',
         'DELETE_METADATA'
         );
 
 create table logs
-(
-    ledger varchar not null,
-    id numeric not null primary key,
-    type log_type not null,
-    hash bytea not null,
-    date timestamp not null,
-    data jsonb not null,
-    idempotency_key varchar(255)
-);
+(ledger varchar not null,
+ id numeric not null,
+ type log_type not null,
+ hash bytea not null,
+ date timestamp not null,
+ data jsonb not null,
+ idempotency_key varchar(255),
+
+ primary key (ledger, id)
+) partition by list(ledger);;
 
 /** Define index **/
 
@@ -158,7 +162,7 @@ create index moves_range_dates on moves (account_address, asset, effective_date)
 create index transactions_date on transactions (timestamp);
 create index transactions_metadata_index on transactions using gin (metadata jsonb_path_ops);
 create index transactions_metadata_metadata on transactions_metadata using gin (metadata jsonb_path_ops);
-create unique index transactions_metadata_revisions on transactions_metadata(transaction_id asc, revision desc) include (metadata, date);
+create index transactions_metadata_revisions on transactions_metadata(transaction_id asc, revision desc) include (metadata, date);
 
 --create unique index transactions_revisions on transactions_metadata(id desc, revision desc);
 create index transactions_sources on transactions using gin (sources jsonb_path_ops);
@@ -181,7 +185,7 @@ create index accounts_address_array_length on accounts (jsonb_array_length(addre
 create index accounts_metadata_index on accounts (address) include (metadata);
 create index accounts_metadata_metadata on accounts_metadata using gin (metadata jsonb_path_ops);
 
-create unique index accounts_metadata_revisions on accounts_metadata(address asc, revision desc) include (metadata, date);
+create index accounts_metadata_revisions on accounts_metadata(ledger, address asc, revision desc) include (metadata, date);
 
 /** Define write functions **/
 
@@ -207,13 +211,13 @@ create function get_account(_ledger varchar, _account_address varchar, _before t
     language sql
     stable
 as $$
-    select distinct on (address) *
-    from accounts_metadata t
-    where (_before is null or t.date <= _before)
-        and t.address = _account_address
-        and t.ledger = _ledger
-    order by address, revision desc
-    limit 1;
+select distinct on (address) *
+from accounts_metadata t
+where (_before is null or t.date <= _before)
+  and t.address = _account_address
+  and t.ledger = _ledger
+order by address, revision desc
+limit 1;
 $$;
 
 create function get_transaction(_ledger varchar, _id numeric, _before timestamp default null)
@@ -240,12 +244,12 @@ with recursive t as (
     select min(asset) as asset
     from moves
     where ledger = _ledger
-        union all
-        select (
-            select min(asset)
-            from moves
-            where asset > t.asset and ledger = _ledger
-        )
+    union all
+    select (
+               select min(asset)
+               from moves
+               where asset > t.asset and ledger = _ledger
+           )
     from t
     where t.asset is not null
 )
@@ -262,9 +266,9 @@ as $$
 select *
 from moves s
 where (_before is null or s.effective_date <= _before)
-      and s.account_address = _account_address
-      and s.asset = _asset
-      and ledger = _ledger
+  and s.account_address = _account_address
+  and s.asset = _asset
+  and ledger = _ledger
 order by effective_date desc, seq desc
 limit 1;
 $$;
@@ -284,7 +288,6 @@ begin
         set metadata = accounts.metadata || coalesce(_metadata, '{}'::jsonb),
             updated_at = _date
     where not accounts.metadata @> coalesce(_metadata, '{}'::jsonb);
-
     return exists is null;
 end;
 $$;
@@ -306,7 +309,9 @@ create function update_transaction_metadata(_ledger varchar, _id numeric, _metad
 as $$
 begin
     update transactions
-    set metadata = metadata || _metadata, updated_at = _date
+    set metadata =metadata || _metadata,
+        updated_at = _date
+
     where id = _id and ledger = _ledger; -- todo: add fill factor on transactions table ?
 end;
 $$;
@@ -317,8 +322,11 @@ create function delete_transaction_metadata(_ledger varchar, _id numeric, _key v
 as $$
 begin
     update transactions
-    set metadata = metadata - _key, updated_at = _date
-    where id = _id and ledger = _ledger;
+    set metadata =metadata - _key,
+        updated_at = _date
+
+    where id = _id
+      and ledger = _ledger;
 end;
 $$;
 
@@ -349,14 +357,14 @@ begin
     -- where address = _account_address
     -- for update;
 
-        if not _new_account then
-            select (post_commit_volumes).inputs, (post_commit_volumes).outputs into _post_commit_volumes
-            from moves
-            where account_address = _account_address
-                and asset = _asset
-                and ledger = _ledger
-            order by seq desc
-            limit 1;
+    if not _new_account then
+        select (post_commit_volumes).inputs, (post_commit_volumes).outputs into _post_commit_volumes
+        from moves
+        where account_address = _account_address
+          and asset = _asset
+          and ledger = _ledger
+        order by seq desc
+        limit 1;
 
         if not found then
             _post_commit_volumes = (0, 0)::volumes;
@@ -366,8 +374,8 @@ begin
             from moves
             where account_address = _account_address
               and asset = _asset
-                    and effective_date <= _effective_date
-                    and ledger = _ledger
+              and effective_date <= _effective_date
+              and ledger = _ledger
             order by effective_date desc, seq desc
             limit 1;
         end if;
@@ -383,44 +391,42 @@ begin
 
     insert into moves (
         ledger,
-            insertion_date,
-            effective_date,
-            account_address,
-            asset,
-            transaction_id,
-            amount,
-            is_source,
-            account_address_array,
-            post_commit_volumes,
-            post_commit_effective_volumes
-        ) values (_ledger, _insertion_date, _effective_date, _account_address, _asset, _transaction_id,
-                  _amount, _is_source, (select to_json(string_to_array(_account_address, ':'))),
-                  _post_commit_volumes, _effective_post_commit_volumes)
-        returning seq into _seq;
+        insertion_date,
+        effective_date,
+        account_address,
+        asset,
+        transaction_id,
+        amount,
+        is_source,
+        account_address_array,
+        post_commit_volumes,
+        post_commit_effective_volumes
+    ) values (_ledger, _insertion_date, _effective_date, _account_address, _asset, _transaction_id,
+              _amount, _is_source, (select to_json(string_to_array(_account_address, ':'))),
+              _post_commit_volumes, _effective_post_commit_volumes)
+    returning seq into _seq;
 
     if not _new_account then
         update moves
         set post_commit_effective_volumes =
-                (
-                     (post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
-                     (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
+                ((post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
+                 (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
                     )
         where account_address = _account_address and
-                  asset = _asset and
-                  effective_date > _effective_date and
-                  ledger = _ledger;
+                asset = _asset and
+                effective_date > _effective_date and
+                ledger = _ledger;
 
         update moves
         set post_commit_effective_volumes =
-                (
-                     (post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
-                     (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
+                ((post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
+                 (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
                     )
         where account_address = _account_address and
-                  asset = _asset and
-                  effective_date = _effective_date and
-                  ledger = _ledger and
-                  seq > _seq;
+                asset = _asset and
+                effective_date = _effective_date and
+                ledger = _ledger and
+                seq > _seq;
     end if;
 end;
 $$;
@@ -437,7 +443,7 @@ begin
     select upsert_account(_ledger, posting->>'source', _account_metadata->(posting->>'source'), _insertion_date) into source_created;
     select upsert_account(_ledger, posting->>'destination', _account_metadata->(posting->>'destination'), _insertion_date) into destination_created;
 
-    -- todo: sometimes the balance is known at commit time (for sources != world), we need to forward the value to populate the pre_commit_aggregated_input and output
+-- todo: sometimes the balance is known at commit time (for sources != world), we need to forward the value to populate the pre_commit_aggregated_input and output
     perform insert_move(_ledger, _transaction_id, _insertion_date, _effective_date,
                         posting->>'source', posting->>'asset', (posting->>'amount')::numeric, true, source_created);
     perform insert_move(_ledger, _transaction_id, _insertion_date, _effective_date,
@@ -453,37 +459,41 @@ as $$
 declare
     posting jsonb;
 begin
+    PERFORM pg_notify('raise_notice', _ledger);
+    PERFORM pg_notify('raise_notice', (data->>'id')::varchar);
+
     insert into transactions (ledger, id, timestamp, updated_at, reference, postings, sources,
                               destinations, sources_arrays, destinations_arrays, metadata)
-    values (_ledger,
-                (data->>'id')::numeric,
-            (data->>'timestamp')::timestamp without time zone,
-            (data->>'timestamp')::timestamp without time zone,
-            data->>'reference',
-            jsonb_pretty(data->'postings'),
-            (
-                select to_jsonb(array_agg(v->>'source')) as value
-                from jsonb_array_elements(data->'postings') v
-            ),
-            (
-                select to_jsonb(array_agg(v->>'destination')) as value
-                from jsonb_array_elements(data->'postings') v
-            ),
-            (
-                select to_jsonb(array_agg(explode_address(v->>'source'))) as value
-                from jsonb_array_elements(data->'postings') v
-            ),
-            (
-                select to_jsonb(array_agg(explode_address(v->>'destination'))) as value
-                from jsonb_array_elements(data->'postings') v
-            ),
-            coalesce(data->'metadata', '{}'::jsonb)
+    values (
+               _ledger,
+               (data->>'id')::numeric,
+               (data->>'timestamp')::timestamp without time zone,
+               (data->>'timestamp')::timestamp without time zone,
+               data->>'reference',
+               jsonb_pretty(data->'postings'),
+               (
+                   select to_jsonb(array_agg(v->>'source')) as value
+                   from jsonb_array_elements(data->'postings') v
+               ),
+               (
+                   select to_jsonb(array_agg(v->>'destination')) as value
+                   from jsonb_array_elements(data->'postings') v
+               ),
+               (
+                   select to_jsonb(array_agg(explode_address(v->>'source'))) as value
+                   from jsonb_array_elements(data->'postings') v
+               ),
+               (
+                   select to_jsonb(array_agg(explode_address(v->>'destination'))) as value
+                   from jsonb_array_elements(data->'postings') v
+               ),
+               coalesce(data->'metadata', '{}'::jsonb)
            );
 
-    for posting in (select jsonb_array_elements(data->'postings')) loop
-        -- todo: sometimes the balance is known at commit time (for sources != world), we need to forward the value to populate the pre_commit_aggregated_input and output
-        perform insert_posting(_ledger, (data->>'id')::numeric, _date, (data->>'timestamp')::timestamp without time zone, posting, _account_metadata);
-    end loop;
+        for posting in (select jsonb_array_elements(data->'postings')) loop
+            -- todo: sometimes the balance is known at commit time (for sources != world), we need to forward the value to populate the pre_commit_aggregated_input and output
+            perform insert_posting(_ledger, (data->>'id')::numeric, _date, (data->>'timestamp')::timestamp without time zone, posting, _account_metadata);
+        end loop;
 
     if data->'metadata' is not null and data->>'metadata' <> '()' then
         insert into transactions_metadata (ledger, transaction_id, revision, date, metadata) values
@@ -507,10 +517,10 @@ declare
     _value jsonb;
 begin
     if new.type = 'NEW_TRANSACTION' then
-      perform insert_transaction(new.ledger, new.data->'transaction', new.date, new.data->'accountMetadata');
-      for _key, _value in (select * from jsonb_each_text(new.data->'accountMetadata')) loop
-          perform upsert_account(new.ledger, _key, _value, (new.data->'transaction'->>'timestamp')::timestamp);
-      end loop;
+        perform insert_transaction(new.ledger, new.data->'transaction', new.date, new.data->'accountMetadata');
+        for _key, _value in (select * from jsonb_each_text(new.data->'accountMetadata')) loop
+                perform upsert_account(new.ledger, _key, _value, (new.data->'transaction'->>'timestamp')::timestamp);
+            end loop;
     end if;
     if new.type = 'REVERTED_TRANSACTION' then
         perform insert_transaction(new.ledger, new.data->'transaction', new.date, '{}'::jsonb);
@@ -535,9 +545,6 @@ begin
 end;
 $$;
 
-create trigger insert_log after insert on logs
-    for each row execute procedure handle_log();
-
 create function update_account_metadata_history() returns trigger
     security definer
     language plpgsql
@@ -555,9 +562,6 @@ begin
 end;
 $$;
 
-create trigger update_account after update on accounts
-    for each row execute procedure update_account_metadata_history();
-
 create function insert_account_metadata_history() returns trigger
     security definer
     language plpgsql
@@ -568,9 +572,6 @@ begin
     return new;
 end;
 $$;
-
-create trigger insert_account after insert on accounts
-    for each row execute procedure insert_account_metadata_history();
 
 create function update_transaction_metadata_history() returns trigger
     security definer
@@ -589,9 +590,6 @@ begin
 end;
 $$;
 
-create trigger update_transaction after update on transactions
-    for each row execute procedure update_transaction_metadata_history();
-
 create function insert_transaction_metadata_history() returns trigger
     security definer
     language plpgsql
@@ -602,9 +600,6 @@ begin
     return new;
 end;
 $$;
-
-create trigger insert_transaction after insert on transactions
-    for each row execute procedure insert_transaction_metadata_history();
 
 create or replace function get_all_account_effective_volumes(_ledger varchar, _account varchar, _before timestamp default null)
     returns setof volumes_with_asset
@@ -623,9 +618,9 @@ with
             select *
             from moves s
             where (_before is null or s.effective_date <= _before)
-                  and s.account_address = _account
-                  and s.asset = assets.asset
-                  and s.ledger = _ledger
+              and s.account_address = _account
+              and s.asset = assets.asset
+              and s.ledger = _ledger
             order by effective_date desc, seq desc
             limit 1
             ) m on true
@@ -646,13 +641,14 @@ with
     ),
     moves as (
         select m.*
-        from all_assets assets join lateral (
+        from all_assets assets
+                 join lateral (
             select *
             from moves s
             where (_before is null or s.insertion_date <= _before)
-                  and s.account_address = _account
-                  and s.asset = assets.asset
-                  and s.ledger = _ledger
+              and s.account_address = _account
+              and s.asset = assets.asset
+              and s.ledger = _ledger
             order by seq desc
             limit 1
             ) m on true
@@ -696,9 +692,9 @@ as $$
 select (post_commit_volumes).inputs - (post_commit_volumes).outputs
 from moves s
 where (_before is null or s.effective_date <= _before)
-      and s.account_address = _account
-      and s.asset = _asset
-      and s.ledger = _ledger
+  and s.account_address = _account
+  and s.asset = _asset
+  and s.ledger = _ledger
 order by seq desc
 limit 1
 $$;
@@ -735,8 +731,9 @@ as
 $$
 select aggregate_objects(jsonb_build_object(data.account_address, data.aggregated))
 from (
-         select distinct on (move.account_address, move.asset) move.account_address,
-                                                               volumes_to_jsonb((move.asset, first(move.post_commit_effective_volumes))) as aggregated
+         select distinct on (move.account_address, move.asset)
+             move.account_address,
+             volumes_to_jsonb((move.asset, first(move.post_commit_effective_volumes))) as aggregated
          from moves move
          where move.transaction_id = tx and ledger = _ledger
          group by move.account_address, move.asset
@@ -750,8 +747,9 @@ as
 $$
 select aggregate_objects(jsonb_build_object(data.account_address, data.aggregated))
 from (
-         select distinct on (move.account_address, move.asset) move.account_address,
-                                                               volumes_to_jsonb((move.asset, first(move.post_commit_volumes))) as aggregated
+         select distinct on (move.account_address, move.asset)
+             move.account_address,
+             volumes_to_jsonb((move.asset, first(move.post_commit_volumes))) as aggregated
          from moves move
          where move.transaction_id = tx and ledger = _ledger
          group by move.account_address, move.asset
