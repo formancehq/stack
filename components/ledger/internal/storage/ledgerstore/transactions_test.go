@@ -378,6 +378,7 @@ func TestInsertTransactions(t *testing.T) {
 
 		tx, err := store.GetTransactionWithVolumes(context.Background(), NewGetTransactionQuery(big.NewInt(0)).
 			WithExpandVolumes())
+		require.NoError(t, err)
 		internaltesting.RequireEqual(t, tx1, *tx)
 	})
 
@@ -1035,4 +1036,38 @@ func TestGetTransactions(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGetLastTransaction(t *testing.T) {
+	t.Parallel()
+	store := newLedgerStore(t)
+	ctx := logging.TestingContext()
+
+	tx1 := ledger.NewTransaction().
+		WithIDUint64(0).
+		WithPostings(
+			ledger.NewPosting("world", "alice", "USD", big.NewInt(100)),
+		)
+	tx2 := ledger.NewTransaction().
+		WithIDUint64(1).
+		WithPostings(
+			ledger.NewPosting("world", "bob", "USD", big.NewInt(100)),
+		)
+	tx3 := ledger.NewTransaction().
+		WithIDUint64(2).
+		WithPostings(
+			ledger.NewPosting("world", "users:marley", "USD", big.NewInt(100)),
+		)
+
+	logs := []*ledger.Log{
+		ledger.NewTransactionLog(tx1, map[string]metadata.Metadata{}),
+		ledger.NewTransactionLog(tx2, map[string]metadata.Metadata{}),
+		ledger.NewTransactionLog(tx3, map[string]metadata.Metadata{}),
+	}
+
+	require.NoError(t, store.InsertLogs(ctx, ledger.ChainLogs(logs...)...))
+
+	tx, err := store.GetLastTransaction(ctx)
+	require.NoError(t, err)
+	require.Equal(t, *tx3, tx.Transaction)
 }
