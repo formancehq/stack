@@ -13,8 +13,9 @@ import (
 type Ledger struct {
 	bun.BaseModel `bun:"_system.ledgers,alias:ledgers"`
 
-	Ledger  string      `bun:"ledger,type:varchar(255),pk"` // Primary key
+	Name    string      `bun:"ledger,type:varchar(255),pk"` // Primary key
 	AddedAt ledger.Time `bun:"addedat,type:timestamp"`
+	Bucket  string      `bun:"bucket,type:varchar(255)"`
 }
 
 func (s *Store) ListLedgers(ctx context.Context) ([]string, error) {
@@ -51,12 +52,7 @@ func (s *Store) DeleteLedger(ctx context.Context, name string) error {
 	return errors.Wrap(sqlutils.PostgresError(err), "delete ledger from system store")
 }
 
-func (s *Store) RegisterLedger(ctx context.Context, ledgerName string) (bool, error) {
-	l := &Ledger{
-		Ledger:  ledgerName,
-		AddedAt: ledger.Now(),
-	}
-
+func (s *Store) RegisterLedger(ctx context.Context, l *Ledger) (bool, error) {
 	ret, err := s.db.NewInsert().
 		Model(l).
 		Ignore().

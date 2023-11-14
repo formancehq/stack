@@ -7,5 +7,5 @@ import (
 )
 
 func (l *Ledger) GetMigrationsInfo(ctx context.Context) ([]migrations.Info, error) {
-	return l.bucket.GetMigrationsInfo(ctx)
+	return l.store.GetMigrationsInfo(ctx)
 }

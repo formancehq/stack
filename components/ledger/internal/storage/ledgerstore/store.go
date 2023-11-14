@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"text/template"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
@@ -15,7 +16,7 @@ import (
 
 type Store struct {
 	onDelete func(ctx context.Context) error
-	db       *bun.DB
+	bucket   *Bucket
 
 	name string
 }
@@ -25,12 +26,12 @@ func (store *Store) Name() string {
 }
 
 func (store *Store) GetDB() *bun.DB {
-	return store.db
+	return store.bucket.db
 }
 
 func (store *Store) Delete(ctx context.Context) error {
 
-	tx, err := store.db.BeginTx(ctx, &sql.TxOptions{})
+	tx, err := store.bucket.db.BeginTx(ctx, &sql.TxOptions{})
 	if err != nil {
 		return err
 	}
@@ -68,7 +69,7 @@ func (store *Store) Delete(ctx context.Context) error {
 func (store *Store) prepareTransaction(ctx context.Context) (bun.Tx, error) {
 	txOptions := &sql.TxOptions{}
 
-	tx, err := store.db.BeginTx(ctx, txOptions)
+	tx, err := store.bucket.db.BeginTx(ctx, txOptions)
 	if err != nil {
 		return tx, err
 	}
@@ -91,7 +92,7 @@ func (store *Store) withTransaction(ctx context.Context, callback func(tx bun.Tx
 }
 
 func (store *Store) Initialize(ctx context.Context) error {
-	tx, err := store.db.BeginTx(ctx, &sql.TxOptions{})
+	tx, err := store.bucket.db.BeginTx(ctx, &sql.TxOptions{})
 	if err != nil {
 		return sqlutils.PostgresError(err)
 	}
@@ -126,13 +127,21 @@ func (store *Store) Initialize(ctx context.Context) error {
 	return tx.Commit()
 }
 
+func (store *Store) IsUpToDate(ctx context.Context) (bool, error) {
+	return store.bucket.IsUpToDate(ctx)
+}
+
+func (store *Store) GetMigrationsInfo(ctx context.Context) ([]migrations.Info, error) {
+	return store.bucket.GetMigrationsInfo(ctx)
+}
+
 func New(
-	db *bun.DB,
+	bucket *Bucket,
 	name string,
 	onDelete func(ctx context.Context) error,
 ) (*Store, error) {
 	return &Store{
-		db:       db,
+		bucket:   bucket,
 		name:     name,
 		onDelete: onDelete,
 	}, nil

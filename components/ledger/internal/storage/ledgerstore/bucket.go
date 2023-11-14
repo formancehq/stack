@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	ledger "github.com/formancehq/ledger/internal"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
 	"github.com/formancehq/ledger/internal/storage/systemstore"
@@ -44,7 +45,7 @@ func (b *Bucket) Close() error {
 }
 
 func (b *Bucket) newLedgerStore(name string) (*Store, error) {
-	return New(b.db, name, func(ctx context.Context) error {
+	return New(b, name, func(ctx context.Context) error {
 		return b.systemStore.DeleteLedger(ctx, name)
 	})
 }
@@ -59,7 +60,11 @@ func (b *Bucket) createLedgerStore(ctx context.Context, name string) (*Store, er
 		return nil, sqlutils.ErrStoreAlreadyExists
 	}
 
-	_, err = b.systemStore.RegisterLedger(ctx, name)
+	_, err = b.systemStore.RegisterLedger(ctx, &systemstore.Ledger{
+		Name:    name,
+		AddedAt: ledger.Now(),
+		Bucket:  b.name,
+	})
 	if err != nil {
 		return nil, err
 	}
