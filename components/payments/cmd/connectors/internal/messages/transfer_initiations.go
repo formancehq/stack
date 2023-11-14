@@ -21,6 +21,7 @@ type transferInitiationsMessagePayload struct {
 	CreatedAt            time.Time                                    `json:"createdAt"`
 	ScheduleAt           time.Time                                    `json:"scheduledAt"`
 	UpdatedAt            time.Time                                    `json:"updatedAt"`
+	ConnectorID          string                                       `json:"connectorId"`
 	Provider             string                                       `json:"provider"`
 	Description          string                                       `json:"description"`
 	Type                 string                                       `json:"type"`
@@ -40,6 +41,7 @@ func NewEventSavedTransferInitiations(tf *models.TransferInitiation) events.Even
 		CreatedAt:            tf.CreatedAt,
 		ScheduleAt:           tf.ScheduledAt,
 		UpdatedAt:            tf.UpdatedAt,
+		ConnectorID:          tf.ConnectorID.String(),
 		Provider:             tf.Provider.String(),
 		Description:          tf.Description,
 		Type:                 tf.Type.String(),

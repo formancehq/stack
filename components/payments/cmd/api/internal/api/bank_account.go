@@ -23,7 +23,7 @@ type bankAccountResponse struct {
 	ID            string    `json:"id"`
 	CreatedAt     time.Time `json:"createdAt"`
 	Country       string    `json:"country"`
-	Provider      string    `json:"provider"`
+	ConnectorID   string    `json:"connectorID"`
 	AccountID     string    `json:"accountId,omitempty"`
 	Iban          string    `json:"iban,omitempty"`
 	AccountNumber string    `json:"accountNumber,omitempty"`
@@ -83,11 +83,11 @@ func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
 
 		for i := range ret {
 			data[i] = &bankAccountResponse{
-				ID:        ret[i].ID.String(),
-				CreatedAt: ret[i].CreatedAt,
-				Country:   ret[i].Country,
-				Provider:  ret[i].Provider.String(),
-				AccountID: ret[i].AccountID.String(),
+				ID:          ret[i].ID.String(),
+				CreatedAt:   ret[i].CreatedAt,
+				Country:     ret[i].Country,
+				ConnectorID: ret[i].ConnectorID.String(),
+				AccountID:   ret[i].AccountID.String(),
 			}
 		}
 
@@ -136,7 +136,7 @@ func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
 			ID:            account.ID.String(),
 			CreatedAt:     account.CreatedAt,
 			Country:       account.Country,
-			Provider:      account.Provider.String(),
+			ConnectorID:   account.ConnectorID.String(),
 			AccountID:     account.AccountID.String(),
 			Iban:          account.IBAN,
 			AccountNumber: account.AccountNumber,

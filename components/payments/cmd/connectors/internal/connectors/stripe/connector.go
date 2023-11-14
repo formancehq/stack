@@ -4,14 +4,12 @@ import (
 	"context"
 	"errors"
 
-	"github.com/formancehq/payments/internal/models"
-	"go.opentelemetry.io/otel/attribute"
-
 	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-
+	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 const Name = models.ConnectorProviderStripe
@@ -55,7 +53,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 		panic(err)
 	}
 
-	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
+	return c.resolveTasks()(taskDescriptor)
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {

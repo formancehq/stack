@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gibson042/canonicaljson-go"
-	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -17,16 +16,17 @@ type Account struct {
 	bun.BaseModel `bun:"accounts.account"`
 
 	ID           AccountID `bun:",pk,nullzero"`
-	ConnectorID  uuid.UUID `bun:",nullzero"`
+	ConnectorID  ConnectorID
 	CreatedAt    time.Time `bun:",nullzero"`
 	Reference    string
-	Provider     ConnectorProvider
 	DefaultAsset Asset  `bun:"default_currency"` // Is optional and default to ''
 	AccountName  string // Is optional and default to ''
 	Type         AccountType
 	Metadata     map[string]string
 
 	RawData json.RawMessage
+
+	Connector *Connector `bun:"rel:has-one,join:connector_id=id"`
 }
 
 type AccountType string
@@ -49,8 +49,8 @@ func (at AccountType) String() string {
 }
 
 type AccountID struct {
-	Reference string
-	Provider  ConnectorProvider
+	Reference   string
+	ConnectorID ConnectorID
 }
 
 func (aid *AccountID) String() string {
@@ -63,11 +63,11 @@ func (aid *AccountID) String() string {
 		panic(err)
 	}
 
-	return base64.URLEncoding.EncodeToString(data)
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(data)
 }
 
 func AccountIDFromString(value string) (*AccountID, error) {
-	data, err := base64.URLEncoding.DecodeString(value)
+	data, err := base64.URLEncoding.WithPadding(base64.NoPadding).DecodeString(value)
 	if err != nil {
 		return nil, err
 	}

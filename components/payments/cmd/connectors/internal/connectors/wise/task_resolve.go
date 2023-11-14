@@ -2,13 +2,9 @@ package wise
 
 import (
 	"fmt"
-	"math/big"
-
-	"github.com/google/uuid"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const (
@@ -30,31 +26,23 @@ type TaskDescriptor struct {
 	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
-type Transfer struct {
-	ID          uuid.UUID `json:"id" yaml:"id" bson:"id"`
-	Source      string    `json:"source" yaml:"source" bson:"source"`
-	Destination string    `json:"destination" yaml:"destination" bson:"destination"`
-	Amount      *big.Int  `json:"amount" yaml:"amount" bson:"amount"`
-	Currency    string    `json:"currency" yaml:"currency" bson:"currency"`
-}
-
-func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
-	client := client.NewClient(config.APIKey)
+func (c *Connector) resolveTasks() func(taskDefinition TaskDescriptor) task.Task {
+	client := client.NewClient(c.cfg.APIKey)
 
 	return func(taskDefinition TaskDescriptor) task.Task {
 		switch taskDefinition.Key {
 		case taskNameMain:
-			return taskMain(logger)
+			return taskMain()
 		case taskNameFetchProfiles:
-			return taskFetchProfiles(logger, client)
+			return taskFetchProfiles(client)
 		case taskNameFetchRecipientAccounts:
-			return taskFetchRecipientAccounts(logger, client, taskDefinition.ProfileID)
+			return taskFetchRecipientAccounts(client, taskDefinition.ProfileID)
 		case taskNameFetchTransfers:
-			return taskFetchTransfers(logger, client, taskDefinition.ProfileID)
+			return taskFetchTransfers(client, taskDefinition.ProfileID)
 		case taskNameInitiatePayment:
-			return taskInitiatePayment(logger, client, taskDefinition.TransferID)
+			return taskInitiatePayment(client, taskDefinition.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, client, taskDefinition.TransferID, taskDefinition.PaymentID, taskDefinition.Attempt)
+			return taskUpdatePaymentStatus(client, taskDefinition.TransferID, taskDefinition.PaymentID, taskDefinition.Attempt)
 		}
 
 		// This should never happen.

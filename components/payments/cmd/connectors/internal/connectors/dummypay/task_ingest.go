@@ -34,6 +34,7 @@ func newTaskIngest(filePath string) TaskDescriptor {
 func taskIngest(config Config, descriptor TaskDescriptor, fs fs) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
@@ -42,14 +43,14 @@ func taskIngest(config Config, descriptor TaskDescriptor, fs fs) task.Task {
 			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
 		}()
 
-		ingestionPayload, err := parseIngestionPayload(config, descriptor, fs)
+		ingestionPayload, err := parseIngestionPayload(connectorID, config, descriptor, fs)
 		if err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
 		// Ingest the payment into the system.
-		err = ingester.IngestPayments(ctx, ingestionPayload, struct{}{})
+		err = ingester.IngestPayments(ctx, connectorID, ingestionPayload, struct{}{})
 		if err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return fmt.Errorf("failed to ingest file '%s': %w", descriptor.FileName, err)
@@ -60,7 +61,7 @@ func taskIngest(config Config, descriptor TaskDescriptor, fs fs) task.Task {
 	}
 }
 
-func parseIngestionPayload(config Config, descriptor TaskDescriptor, fs fs) (ingestion.PaymentBatch, error) {
+func parseIngestionPayload(connectorID models.ConnectorID, config Config, descriptor TaskDescriptor, fs fs) (ingestion.PaymentBatch, error) {
 	// Open the file.
 	file, err := fs.Open(filepath.Join(config.Directory, descriptor.FileName))
 	if err != nil {
@@ -84,15 +85,16 @@ func parseIngestionPayload(config Config, descriptor TaskDescriptor, fs fs) (ing
 					Reference: paymentElement.Reference,
 					Type:      paymentElement.Type,
 				},
-				Provider: models.ConnectorProviderDummyPay,
+				ConnectorID: connectorID,
 			},
-			Reference: paymentElement.Reference,
-			Amount:    paymentElement.Amount,
-			Type:      paymentElement.Type,
-			Status:    paymentElement.Status,
-			Scheme:    paymentElement.Scheme,
-			Asset:     paymentElement.Asset,
-			RawData:   paymentElement.RawData,
+			Reference:   paymentElement.Reference,
+			ConnectorID: connectorID,
+			Amount:      paymentElement.Amount,
+			Type:        paymentElement.Type,
+			Status:      paymentElement.Status,
+			Scheme:      paymentElement.Scheme,
+			Asset:       paymentElement.Asset,
+			RawData:     paymentElement.RawData,
 		},
 		Update: true,
 	}}

@@ -12,51 +12,19 @@ import (
 )
 
 var (
-	t1ID = models.TransferInitiationID{
-		Reference: "test1",
-		Provider:  models.ConnectorProviderDummyPay,
-	}
-	t1T = time.Date(2023, 11, 14, 5, 8, 0, 0, time.UTC)
-	t1  = &models.TransferInitiation{
-		ID:          t1ID,
-		CreatedAt:   t1T,
-		ScheduledAt: t1T,
-		UpdatedAt:   t1T,
-		Description: "test_description",
-		Type:        models.TransferInitiationTypeTransfer,
-		Provider:    models.ConnectorProviderDummyPay,
-		Amount:      big.NewInt(100),
-		Asset:       models.Asset("USD/2"),
-		Status:      models.TransferInitiationStatusWaitingForValidation,
-	}
+	t1ID models.TransferInitiationID
+	t1T  = time.Date(2023, 11, 14, 5, 8, 0, 0, time.UTC)
+	t1   *models.TransferInitiation
 
-	t2ID = models.TransferInitiationID{
-		Reference: "test2",
-		Provider:  models.ConnectorProviderDummyPay,
-	}
-	t2T = time.Date(2023, 11, 14, 5, 7, 0, 0, time.UTC)
-	t2  = &models.TransferInitiation{
-		ID:                   t2ID,
-		CreatedAt:            t2T,
-		ScheduledAt:          t2T,
-		UpdatedAt:            t2T,
-		Description:          "test_description2",
-		Type:                 models.TransferInitiationTypeTransfer,
-		Provider:             models.ConnectorProviderDummyPay,
-		Amount:               big.NewInt(150),
-		Asset:                models.Asset("USD/2"),
-		SourceAccountID:      acc1ID,
-		DestinationAccountID: acc2ID,
-		Status:               models.TransferInitiationStatusWaitingForValidation,
-	}
+	t2ID models.TransferInitiationID
+	t2T  = time.Date(2023, 11, 14, 5, 7, 0, 0, time.UTC)
+	t2   *models.TransferInitiation
 
 	tAddPayments  = time.Date(2023, 11, 14, 5, 1, 10, 0, time.UTC)
 	tUpdateStatus = time.Date(2023, 11, 14, 5, 1, 15, 0, time.UTC)
 )
 
 func TestTransferInitiations(t *testing.T) {
-	t.Parallel()
-
 	store := newStore(t)
 
 	testInstallConnectors(t, store)
@@ -72,6 +40,44 @@ func TestTransferInitiations(t *testing.T) {
 }
 
 func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
+	t1ID = models.TransferInitiationID{
+		Reference:   "test1",
+		ConnectorID: connectorID,
+	}
+	t1 = &models.TransferInitiation{
+		ID:          t1ID,
+		CreatedAt:   t1T,
+		ScheduledAt: t1T,
+		UpdatedAt:   t1T,
+		Description: "test_description",
+		Type:        models.TransferInitiationTypeTransfer,
+		ConnectorID: connectorID,
+		Provider:    models.ConnectorProviderDummyPay,
+		Amount:      big.NewInt(100),
+		Asset:       models.Asset("USD/2"),
+		Status:      models.TransferInitiationStatusWaitingForValidation,
+	}
+
+	t2ID = models.TransferInitiationID{
+		Reference:   "test2",
+		ConnectorID: connectorID,
+	}
+	t2 = &models.TransferInitiation{
+		ID:                   t2ID,
+		CreatedAt:            t2T,
+		ScheduledAt:          t2T,
+		UpdatedAt:            t2T,
+		Description:          "test_description2",
+		Type:                 models.TransferInitiationTypeTransfer,
+		ConnectorID:          connectorID,
+		Provider:             models.ConnectorProviderDummyPay,
+		Amount:               big.NewInt(150),
+		Asset:                models.Asset("USD/2"),
+		SourceAccountID:      acc1ID,
+		DestinationAccountID: acc2ID,
+		Status:               models.TransferInitiationStatusWaitingForValidation,
+	}
+
 	// Missing source account id and destination account id
 	err := store.CreateTransferInitiation(context.Background(), t1)
 	require.Error(t, err)
@@ -205,8 +211,8 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 	err = store.AddTransferInitiationPaymentID(
 		context.Background(),
 		models.TransferInitiationID{
-			Reference: "not_existing",
-			Provider:  models.ConnectorProviderDummyPay,
+			Reference:   "not_existing",
+			ConnectorID: connectorID,
 		},
 		p1ID,
 		tAddPayments,
@@ -260,8 +266,8 @@ func testDeleteTransferInitiations(t *testing.T, store *storage.Storage) {
 
 	// Delete does not generate an error when not existing
 	err = store.DeleteTransferInitiation(context.Background(), models.TransferInitiationID{
-		Reference: "not_existing",
-		Provider:  models.ConnectorProviderDummyPay,
+		Reference:   "not_existing",
+		ConnectorID: connectorID,
 	})
 	require.NoError(t, err)
 }

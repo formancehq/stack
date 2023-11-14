@@ -1,10 +1,11 @@
 package suite
 
 import (
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -36,13 +37,15 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 							FilePollingPeriod:    ptr("1s"),
 							Directory:            paymentsDir,
 							FileGenerationPeriod: ptr("1s"),
+							Name:                 "test",
 						},
 					},
 					Connector: shared.ConnectorDummyPay,
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(201))
+			Expect(response.ConnectorResponse).ToNot(BeNil())
 		})
 		AfterEach(func() {
 			cancelSubscription()

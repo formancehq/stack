@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
+	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
@@ -18,9 +19,9 @@ var (
 	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments_for_connected_account"))...)
 )
 
-func FetchPaymentsTask(config Config, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
+func fetchPaymentsTask(config TimelineConfig, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, resolver task.StateResolver,
 	scheduler task.Scheduler, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry) error {
-	return func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
+	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, resolver task.StateResolver,
 		scheduler task.Scheduler, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry,
 	) error {
 		now := time.Now()
@@ -32,7 +33,7 @@ func FetchPaymentsTask(config Config, client *client.DefaultClient) func(ctx con
 			logger,
 			NewIngester(
 				func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
-					if err := ingestBatch(ctx, "", logger, ingester, batch, commitState, tail); err != nil {
+					if err := ingestBatch(ctx, connectorID, "", logger, ingester, batch, commitState, tail); err != nil {
 						return err
 					}
 					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs)
@@ -47,7 +48,7 @@ func FetchPaymentsTask(config Config, client *client.DefaultClient) func(ctx con
 				},
 			),
 			NewTimeline(client,
-				config.TimelineConfig, task.MustResolveTo(ctx, resolver, TimelineState{})),
+				config, task.MustResolveTo(ctx, resolver, TimelineState{})),
 			TimelineTriggerTypeTransactions,
 		)
 

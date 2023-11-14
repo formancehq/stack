@@ -10,9 +10,10 @@ import (
 )
 
 // Launch accounts and payments tasks
-func MainTask(logger logging.Logger) task.Task {
+func (c *Connector) mainTask() task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
 		scheduler task.Scheduler,
 	) error {
 		logger.Info("main task")

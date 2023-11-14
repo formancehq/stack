@@ -22,10 +22,11 @@ var (
 	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
-func FetchAccountsTask(config Config, client *client.DefaultClient) task.Task {
+func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
+		connectorID models.ConnectorID,
 		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
@@ -44,7 +45,7 @@ func FetchAccountsTask(config Config, client *client.DefaultClient) task.Task {
 
 				},
 				func(ctx context.Context, batch []*stripe.Account, commitState TimelineState, tail bool) error {
-					if err := ingestAccountsBatch(ctx, ingester, batch); err != nil {
+					if err := ingestAccountsBatch(ctx, connectorID, ingester, batch); err != nil {
 						return err
 					}
 					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), accountsAttrs)
@@ -110,7 +111,7 @@ func FetchAccountsTask(config Config, client *client.DefaultClient) task.Task {
 				},
 			),
 			NewTimeline(client,
-				config.TimelineConfig, task.MustResolveTo(ctx, resolver, TimelineState{})),
+				config, task.MustResolveTo(ctx, resolver, TimelineState{})),
 			TimelineTriggerTypeAccounts,
 		)
 
@@ -125,6 +126,7 @@ func FetchAccountsTask(config Config, client *client.DefaultClient) task.Task {
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	accounts []*stripe.Account,
 ) error {
@@ -137,12 +139,12 @@ func ingestAccountsBatch(
 
 		batch = append(batch, &models.Account{
 			ID: models.AccountID{
-				Reference: account.ID,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account.ID,
+				ConnectorID: connectorID,
 			},
 			CreatedAt:    time.Unix(account.Created, 0),
 			Reference:    account.ID,
-			Provider:     models.ConnectorProviderStripe,
+			ConnectorID:  connectorID,
 			DefaultAsset: currency.FormatAsset(string(account.DefaultCurrency)),
 			Type:         models.AccountTypeInternal,
 			RawData:      raw,

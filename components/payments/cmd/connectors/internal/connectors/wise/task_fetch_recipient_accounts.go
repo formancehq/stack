@@ -11,7 +11,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -20,9 +19,10 @@ var (
 	recipientAccountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "recipient_accounts"))...)
 )
 
-func taskFetchRecipientAccounts(logger logging.Logger, client *client.Client, profileID uint64) task.Task {
+func taskFetchRecipientAccounts(wiseClient *client.Client, profileID uint64) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
@@ -31,13 +31,13 @@ func taskFetchRecipientAccounts(logger logging.Logger, client *client.Client, pr
 			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), recipientAccountsAttrs)
 		}()
 
-		recipientAccounts, err := client.GetRecipientAccounts(ctx, profileID)
+		recipientAccounts, err := wiseClient.GetRecipientAccounts(ctx, profileID)
 		if err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, recipientAccountsAttrs)
 			return err
 		}
 
-		if err := ingestRecipientAccountsBatch(ctx, metricsRegistry, ingester, recipientAccounts); err != nil {
+		if err := ingestRecipientAccountsBatch(ctx, connectorID, metricsRegistry, ingester, recipientAccounts); err != nil {
 			return err
 		}
 
@@ -47,6 +47,7 @@ func taskFetchRecipientAccounts(logger logging.Logger, client *client.Client, pr
 
 func ingestRecipientAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	metricsRegistry metrics.MetricsRegistry,
 	ingester ingestion.Ingester,
 	accounts []*client.RecipientAccount,
@@ -60,12 +61,12 @@ func ingestRecipientAccountsBatch(
 
 		accountsBatch = append(accountsBatch, &models.Account{
 			ID: models.AccountID{
-				Reference: fmt.Sprintf("%d", account.ID),
-				Provider:  models.ConnectorProviderWise,
+				Reference:   fmt.Sprintf("%d", account.ID),
+				ConnectorID: connectorID,
 			},
 			CreatedAt:    time.Now(),
 			Reference:    fmt.Sprintf("%d", account.ID),
-			Provider:     models.ConnectorProviderWise,
+			ConnectorID:  connectorID,
 			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", account.Currency)),
 			AccountName:  account.HolderName,
 			Type:         models.AccountTypeExternal,

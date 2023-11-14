@@ -13,14 +13,16 @@ pipeline:
             root = {
                 "data": this.payload,
                 "indexed": {
-                    "provider": this.payload.provider,
+                    "id": this.payload.id,
                     "reference": this.payload.reference,
-                    "scheme": this.payload.scheme,
+                    "provider": this.payload.provider,
+                    "createdAt": this.payload.createdAt,
+                    "connectorId": this.payload.connectorId,
                     "type": this.payload.type,
                     "status": this.payload.status,
-                    "id": this.payload.id,
-                    "initialAmount": this.payload.initialAmount,
-                    "createdAt": this.payload.createdAt
+                    "scheme": this.payload.scheme,
+                    "asset": this.payload.asset,
+                    "initialAmount": this.payload.initialAmount
                 },
                 "kind": "PAYMENT",
                 "when": this.date
@@ -33,13 +35,14 @@ pipeline:
             root = {
                 "data": this.payload,
                 "indexed": {
-                    "provider": this.payload.provider,
-                    "reference": this.payload.reference,
-                    "createdAt": this.payload.createdAt,
                     "id": this.payload.id,
-                    "type": this.payload.type,
+                    "provider": this.payload.provider,
+                    "createdAt": this.payload.createdAt,
+                    "reference": this.payload.reference,
+                    "connectorId": this.payload.connectorId,
                     "defaultAsset": this.payload.defaultAsset,
-                    "accountName": this.payload.accountName
+                    "accountName": this.payload.accountName,
+                    "type": this.payload.type
                 },
                 "kind": "PAYMENT_ACCOUNT",
                 "when": this.date
@@ -52,9 +55,10 @@ pipeline:
             root = {
                 "data": this.payload,
                 "indexed": {
-                    "provider": this.payload.provider,
-                    "createdAt": this.payload.createdAt,
                     "accountId": this.payload.accountID,
+                    "provider": this.payload.provider,
+                    "connectorId": this.payload.connectorId,
+                    "createdAt": this.payload.createdAt,
                     "asset": this.payload.asset,
                     "balance": this.payload.balance
                 },
@@ -71,12 +75,13 @@ pipeline:
                 "indexed": {
                     "id": this.payload.id,
                     "createdAt": this.payload.createdAt,
-                    "provider": this.payload.provider,
+                    "connectorId": this.payload.connectorId,
                     "name": this.payload.name,
                     "accountNumber": this.payload.accountNumber,
                     "iban": this.payload.iban,
                     "swiftBicCode": this.payload.swiftBicCode,
                     "country": this.payload.country,
+                    "provider": this.payload.provider,
                     "accountId": this.payload.accountID
                 },
                 "kind": "PAYMENT_BANK_ACCOUNT",
@@ -94,9 +99,10 @@ pipeline:
                     "createdAt": this.payload.createdAt,
                     "scheduledAt": this.payload.scheduledAt,
                     "updatedAt": this.payload.updatedAt,
-                    "provider": this.payload.provider,
+                    "connectorId": this.payload.connectorId,
                     "description": this.payload.description,
                     "type": this.payload.type,
+                    "provider": this.payload.provider,
                     "sourceAccountId": this.payload.sourceAccountID,
                     "destinationAccountId": this.payload.destinationAccountID,
                     "amount": this.payload.amount,

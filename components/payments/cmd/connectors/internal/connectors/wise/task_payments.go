@@ -27,9 +27,14 @@ var (
 	initiatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_payout"))...)
 )
 
-func taskInitiatePayment(logger logging.Logger, wiseClient *client.Client, transferID string) task.Task {
+func taskInitiatePayment(
+	wiseClient *client.Client,
+	transferID string,
+) task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -148,7 +153,7 @@ func taskInitiatePayment(logger logging.Logger, wiseClient *client.Client, trans
 				Reference: strconv.FormatUint(connectorPaymentID, 10),
 				Type:      paymentType,
 			},
-			Provider: models.ConnectorProviderWise,
+			ConnectorID: connectorID,
 		}
 		err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
 		if err != nil {
@@ -185,7 +190,6 @@ var (
 )
 
 func taskUpdatePaymentStatus(
-	logger logging.Logger,
 	wiseClient *client.Client,
 	transferID string,
 	pID string,
@@ -193,6 +197,7 @@ func taskUpdatePaymentStatus(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,

@@ -28,6 +28,8 @@ func TestConfigValidate(t *testing.T) {
 
 	var config Config
 
+	config.Name = "test1"
+
 	// fail on missing directory
 	assert.EqualError(t, config.Validate(), ErrMissingDirectory.Error())
 

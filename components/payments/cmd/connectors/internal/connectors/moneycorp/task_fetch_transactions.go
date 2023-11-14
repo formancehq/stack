@@ -31,6 +31,7 @@ var (
 func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
@@ -52,7 +53,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 				break
 			}
 
-			if err := ingestBatch(ctx, ingester, pagedTransactions); err != nil {
+			if err := ingestBatch(ctx, connectorID, ingester, pagedTransactions); err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
@@ -69,6 +70,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 
 func ingestBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	transactions []*client.Transaction,
 ) error {
@@ -110,40 +112,41 @@ func ingestBatch(
 						Reference: transaction.ID,
 						Type:      paymentType,
 					},
-					Provider: models.ConnectorProviderMoneycorp,
+					ConnectorID: connectorID,
 				},
-				CreatedAt: createdAt,
-				Reference: transaction.ID,
-				Amount:    &amountInt,
-				Asset:     currency.FormatAsset(transaction.Attributes.Currency),
-				Type:      paymentType,
-				Status:    models.PaymentStatusSucceeded,
-				Scheme:    models.PaymentSchemeOther,
-				RawData:   rawData,
+				CreatedAt:   createdAt,
+				Reference:   transaction.ID,
+				ConnectorID: connectorID,
+				Amount:      &amountInt,
+				Asset:       currency.FormatAsset(transaction.Attributes.Currency),
+				Type:        paymentType,
+				Status:      models.PaymentStatusSucceeded,
+				Scheme:      models.PaymentSchemeOther,
+				RawData:     rawData,
 			},
 		}
 
 		switch paymentType {
 		case models.PaymentTypePayIn:
 			batchElement.Payment.DestinationAccountID = &models.AccountID{
-				Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
-				Provider:  models.ConnectorProviderMoneycorp,
+				Reference:   strconv.Itoa(int(transaction.Attributes.AccountID)),
+				ConnectorID: connectorID,
 			}
 		case models.PaymentTypePayOut:
 			batchElement.Payment.SourceAccountID = &models.AccountID{
-				Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
-				Provider:  models.ConnectorProviderMoneycorp,
+				Reference:   strconv.Itoa(int(transaction.Attributes.AccountID)),
+				ConnectorID: connectorID,
 			}
 		default:
 			if transaction.Attributes.Direction == "Debit" {
 				batchElement.Payment.SourceAccountID = &models.AccountID{
-					Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
-					Provider:  models.ConnectorProviderMoneycorp,
+					Reference:   strconv.Itoa(int(transaction.Attributes.AccountID)),
+					ConnectorID: connectorID,
 				}
 			} else {
 				batchElement.Payment.DestinationAccountID = &models.AccountID{
-					Reference: strconv.Itoa(int(transaction.Attributes.AccountID)),
-					Provider:  models.ConnectorProviderMoneycorp,
+					Reference:   strconv.Itoa(int(transaction.Attributes.AccountID)),
+					ConnectorID: connectorID,
 				}
 			}
 		}
@@ -151,7 +154,7 @@ func ingestBatch(
 		batch = append(batch, batchElement)
 	}
 
-	return ingester.IngestPayments(ctx, batch, struct{}{})
+	return ingester.IngestPayments(ctx, connectorID, batch, struct{}{})
 }
 
 func matchPaymentType(transactionType string, transactionDirection string) (models.PaymentType, bool) {

@@ -21,10 +21,11 @@ var (
 	externalAccountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
-func FetchExternalAccountsTask(config Config, account string, client *client.DefaultClient) task.Task {
+func fetchExternalAccountsTask(config TimelineConfig, account string, client *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
+		connectorID models.ConnectorID,
 		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
@@ -46,7 +47,7 @@ func FetchExternalAccountsTask(config Config, account string, client *client.Def
 					return nil
 				},
 				func(ctx context.Context, batch []*stripe.ExternalAccount, commitState TimelineState, tail bool) error {
-					if err := ingestExternalAccountsBatch(ctx, ingester, batch); err != nil {
+					if err := ingestExternalAccountsBatch(ctx, connectorID, ingester, batch); err != nil {
 						return err
 					}
 					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), externalAccountsAttrs)
@@ -54,7 +55,7 @@ func FetchExternalAccountsTask(config Config, account string, client *client.Def
 				},
 			),
 			NewTimeline(client.ForAccount(account),
-				config.TimelineConfig, task.MustResolveTo(ctx, resolver, TimelineState{})),
+				config, task.MustResolveTo(ctx, resolver, TimelineState{})),
 			TimelineTriggerTypeExternalAccounts,
 		)
 
@@ -69,6 +70,7 @@ func FetchExternalAccountsTask(config Config, account string, client *client.Def
 
 func ingestExternalAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	accounts []*stripe.ExternalAccount,
 ) error {
@@ -81,12 +83,12 @@ func ingestExternalAccountsBatch(
 
 		batch = append(batch, &models.Account{
 			ID: models.AccountID{
-				Reference: account.ID,
-				Provider:  models.ConnectorProviderStripe,
+				Reference:   account.ID,
+				ConnectorID: connectorID,
 			},
 			CreatedAt:    time.Unix(account.BankAccount.Account.Created, 0),
 			Reference:    account.ID,
-			Provider:     models.ConnectorProviderStripe,
+			ConnectorID:  connectorID,
 			DefaultAsset: currency.FormatAsset(string(account.BankAccount.Account.DefaultCurrency)),
 			Type:         models.AccountTypeExternal,
 			RawData:      raw,

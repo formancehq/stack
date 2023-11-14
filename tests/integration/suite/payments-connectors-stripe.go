@@ -1,9 +1,10 @@
 package suite
 
 import (
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"os"
 	"time"
+
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -35,13 +36,16 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 					ConnectorConfig: shared.ConnectorConfig{
 						StripeConfig: &shared.StripeConfig{
 							APIKey: apiKey,
+							Name:   "stripe-test",
 						},
 					},
 					Connector: shared.ConnectorStripe,
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.StatusCode).To(Equal(201))
+			Expect(response.ConnectorResponse).ToNot(BeNil())
+			Expect(response.ConnectorResponse.Data).ToNot(BeNil())
 		})
 		AfterEach(func() {
 			cancelSubscription()

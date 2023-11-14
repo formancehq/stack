@@ -7,4 +7,4 @@ properties:
     type: string
 required:
 - createdAt
-- connector
+- connectorId

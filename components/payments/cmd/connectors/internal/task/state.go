@@ -26,7 +26,7 @@ func ResolveTo[State any](ctx context.Context, resolver StateResolver, to *State
 }
 
 func MustResolveTo[State any](ctx context.Context, resolver StateResolver, to State) State {
-	state, err := ResolveTo[State](ctx, resolver, &to)
+	state, err := ResolveTo(ctx, resolver, &to)
 	if errors.Is(err, storage.ErrNotFound) {
 		return to
 	}

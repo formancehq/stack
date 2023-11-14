@@ -8,19 +8,19 @@ import (
 )
 
 type connectorMessagePayload struct {
-	CreatedAt time.Time                `json:"createdAt"`
-	Connector models.ConnectorProvider `json:"connector"`
+	CreatedAt   time.Time `json:"createdAt"`
+	ConnectorID string    `json:"connectorId"`
 }
 
-func NewEventResetConnector(connector models.ConnectorProvider) events.EventMessage {
+func NewEventResetConnector(connectorID models.ConnectorID) events.EventMessage {
 	return events.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,
 		Type:    events.EventTypeConnectorReset,
 		Payload: connectorMessagePayload{
-			CreatedAt: time.Now().UTC(),
-			Connector: connector,
+			CreatedAt:   time.Now().UTC(),
+			ConnectorID: connectorID.String(),
 		},
 	}
 }

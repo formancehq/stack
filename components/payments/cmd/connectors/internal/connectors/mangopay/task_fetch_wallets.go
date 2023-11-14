@@ -28,6 +28,7 @@ var (
 func taskFetchWallets(logger logging.Logger, client *client.Client, userID string) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
@@ -72,12 +73,12 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 				transactionTasks = append(transactionTasks, transactionTask)
 				accountBatch = append(accountBatch, &models.Account{
 					ID: models.AccountID{
-						Reference: wallet.ID,
-						Provider:  models.ConnectorProviderMangopay,
+						Reference:   wallet.ID,
+						ConnectorID: connectorID,
 					},
 					CreatedAt:    time.Unix(wallet.CreationDate, 0),
 					Reference:    wallet.ID,
-					Provider:     models.ConnectorProviderMangopay,
+					ConnectorID:  connectorID,
 					DefaultAsset: currency.FormatAsset(wallet.Currency),
 					AccountName:  wallet.Description,
 					// Wallets are internal accounts on our side, since we
@@ -98,13 +99,14 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 				now := time.Now()
 				balanceBatch = append(balanceBatch, &models.Balance{
 					AccountID: models.AccountID{
-						Reference: wallet.ID,
-						Provider:  models.ConnectorProviderMangopay,
+						Reference:   wallet.ID,
+						ConnectorID: connectorID,
 					},
 					Asset:         currency.FormatAsset(wallet.Balance.Currency),
 					Balance:       &amount,
 					CreatedAt:     now,
 					LastUpdatedAt: now,
+					ConnectorID:   connectorID,
 				})
 			}
 

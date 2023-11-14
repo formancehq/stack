@@ -29,6 +29,7 @@ var (
 func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, transferID string) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -144,7 +145,7 @@ func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, 
 				Reference: connectorPaymentID,
 				Type:      paymentType,
 			},
-			Provider: models.ConnectorProviderMoneycorp,
+			ConnectorID: connectorID,
 		}
 		err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
 		if err != nil {

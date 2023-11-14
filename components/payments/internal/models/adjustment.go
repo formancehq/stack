@@ -21,6 +21,4 @@ type Adjustment struct {
 	Absolute  bool
 
 	RawData json.RawMessage
-
-	Payment *Payment `bun:"rel:has-one,join:payment_id=id"`
 }

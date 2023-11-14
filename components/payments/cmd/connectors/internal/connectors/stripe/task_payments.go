@@ -25,9 +25,11 @@ var (
 	initiatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_payout"))...)
 )
 
-func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient *client.DefaultClient) task.Task {
+func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -84,9 +86,9 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 			return err
 		}
 
-		c := client.Client(stripeClient)
+		stripeClient := client.Client(stripeClient)
 		if transfer.SourceAccount != nil {
-			c = stripeClient.ForAccount(transfer.SourceAccountID.Reference)
+			stripeClient = stripeClient.ForAccount(transfer.SourceAccountID.Reference)
 		}
 
 		var connectorPaymentID string
@@ -97,7 +99,7 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 		case models.AccountTypeInternal:
 			// Transfer between internal accounts
 			var resp *stripe.Transfer
-			resp, err = c.CreateTransfer(ctx, &client.CreateTransferRequest{
+			resp, err = stripeClient.CreateTransfer(ctx, &client.CreateTransferRequest{
 				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
 				Amount:         transfer.Amount.Int64(),
 				Currency:       curr,
@@ -113,7 +115,7 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 		case models.AccountTypeExternal:
 			// Payout to an external account
 			var resp *stripe.Payout
-			resp, err = c.CreatePayout(ctx, &client.CreatePayoutRequest{
+			resp, err = stripeClient.CreatePayout(ctx, &client.CreatePayoutRequest{
 				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
 				Amount:         transfer.Amount.Int64(),
 				Currency:       curr,
@@ -134,7 +136,7 @@ func InitiatePaymentTask(logger logging.Logger, transferID string, stripeClient 
 				Reference: connectorPaymentID,
 				Type:      paymentType,
 			},
-			Provider: models.ConnectorProviderStripe,
+			ConnectorID: connectorID,
 		}
 		err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
 		if err != nil {
@@ -170,8 +172,7 @@ var (
 	updatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_payout"))...)
 )
 
-func UpdatePaymentStatusTask(
-	logger logging.Logger,
+func updatePaymentStatusTask(
 	transferID string,
 	pID string,
 	attempt int,
@@ -179,6 +180,7 @@ func UpdatePaymentStatusTask(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,

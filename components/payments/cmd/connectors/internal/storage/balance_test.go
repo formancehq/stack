@@ -17,8 +17,6 @@ var (
 )
 
 func TestBalances(t *testing.T) {
-	t.Parallel()
-
 	store := newStore(t)
 
 	testInstallConnectors(t, store)
@@ -32,8 +30,8 @@ func TestBalances(t *testing.T) {
 func testCreateBalances(t *testing.T, store *storage.Storage) {
 	b1 := &models.Balance{
 		AccountID: models.AccountID{
-			Reference: "not_existing",
-			Provider:  models.ConnectorProviderDummyPay,
+			Reference:   "not_existing",
+			ConnectorID: connectorID,
 		},
 		Asset:         "USD",
 		Balance:       big.NewInt(int64(100)),

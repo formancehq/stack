@@ -22,6 +22,7 @@ var (
 func taskFetchBankAccounts(logger logging.Logger, client *client.Client, userID string) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
@@ -53,12 +54,12 @@ func taskFetchBankAccounts(logger logging.Logger, client *client.Client, userID 
 
 				accountBatch = append(accountBatch, &models.Account{
 					ID: models.AccountID{
-						Reference: bankAccount.ID,
-						Provider:  models.ConnectorProviderMangopay,
+						Reference:   bankAccount.ID,
+						ConnectorID: connectorID,
 					},
 					CreatedAt:   time.Unix(bankAccount.CreationDate, 0),
 					Reference:   bankAccount.ID,
-					Provider:    models.ConnectorProviderMangopay,
+					ConnectorID: connectorID,
 					AccountName: bankAccount.OwnerName,
 					Type:        models.AccountTypeExternal,
 					Metadata: map[string]string{

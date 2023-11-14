@@ -13,8 +13,8 @@ import (
 )
 
 type TransferInitiationID struct {
-	Reference string
-	Provider  ConnectorProvider
+	Reference   string
+	ConnectorID ConnectorID
 }
 
 func (tid TransferInitiationID) String() string {
@@ -23,11 +23,11 @@ func (tid TransferInitiationID) String() string {
 		panic(err)
 	}
 
-	return base64.URLEncoding.EncodeToString(data)
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(data)
 }
 
 func TransferInitiationIDFromString(value string) (TransferInitiationID, error) {
-	data, err := base64.URLEncoding.DecodeString(value)
+	data, err := base64.URLEncoding.WithPadding(base64.NoPadding).DecodeString(value)
 	if err != nil {
 		return TransferInitiationID{}, err
 	}
@@ -164,6 +164,7 @@ type TransferInitiation struct {
 	SourceAccountID      AccountID
 	DestinationAccountID AccountID
 	Provider             ConnectorProvider
+	ConnectorID          ConnectorID
 
 	Amount *big.Int `bun:"type:numeric"`
 	Asset  Asset

@@ -22,6 +22,7 @@ type accountResponse struct {
 	ID              string      `json:"id"`
 	Reference       string      `json:"reference"`
 	CreatedAt       time.Time   `json:"createdAt"`
+	ConnectorID     string      `json:"connectorID"`
 	Provider        string      `json:"provider"`
 	DefaultCurrency string      `json:"defaultCurrency"` // Deprecated: should be removed soon
 	DefaultAsset    string      `json:"defaultAsset"`
@@ -92,12 +93,16 @@ func listAccountsHandler(repo accountsRepository) http.HandlerFunc {
 				ID:              ret[i].ID.String(),
 				Reference:       ret[i].Reference,
 				CreatedAt:       ret[i].CreatedAt,
-				Provider:        ret[i].Provider.String(),
+				ConnectorID:     ret[i].ConnectorID.String(),
 				DefaultCurrency: ret[i].DefaultAsset.String(),
 				DefaultAsset:    ret[i].DefaultAsset.String(),
 				AccountName:     ret[i].AccountName,
 				Type:            accountType.String(),
 				Raw:             ret[i].RawData,
+			}
+
+			if ret[i].Connector != nil {
+				data[i].Provider = ret[i].Connector.Provider.String()
 			}
 		}
 
@@ -143,12 +148,16 @@ func readAccountHandler(repo readAccountRepository) http.HandlerFunc {
 			ID:              account.ID.String(),
 			Reference:       account.Reference,
 			CreatedAt:       account.CreatedAt,
-			Provider:        account.Provider.String(),
+			ConnectorID:     account.ConnectorID.String(),
 			DefaultCurrency: account.DefaultAsset.String(),
 			DefaultAsset:    account.DefaultAsset.String(),
 			AccountName:     account.AccountName,
 			Type:            accountType.String(),
 			Raw:             account.RawData,
+		}
+
+		if account.Connector != nil {
+			data.Provider = account.Connector.Provider.String()
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[accountResponse]{

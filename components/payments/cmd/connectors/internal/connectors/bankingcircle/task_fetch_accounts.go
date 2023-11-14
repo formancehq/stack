@@ -30,6 +30,7 @@ func taskFetchAccounts(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
@@ -50,7 +51,7 @@ func taskFetchAccounts(
 				break
 			}
 
-			if err := ingestAccountsBatch(ctx, ingester, metricsRegistry, pagedAccounts); err != nil {
+			if err := ingestAccountsBatch(ctx, connectorID, ingester, metricsRegistry, pagedAccounts); err != nil {
 				return err
 			}
 		}
@@ -79,6 +80,7 @@ func taskFetchAccounts(
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	metricsRegistry metrics.MetricsRegistry,
 	accounts []*client.Account,
@@ -99,12 +101,12 @@ func ingestAccountsBatch(
 
 		accountsBatch = append(accountsBatch, &models.Account{
 			ID: models.AccountID{
-				Reference: account.AccountID,
-				Provider:  models.ConnectorProviderBankingCircle,
+				Reference:   account.AccountID,
+				ConnectorID: connectorID,
 			},
 			CreatedAt:    openingDate,
 			Reference:    account.AccountID,
-			Provider:     models.ConnectorProviderBankingCircle,
+			ConnectorID:  connectorID,
 			DefaultAsset: models.Asset(account.Currency + "/2"),
 			AccountName:  account.AccountDescription,
 			Type:         models.AccountTypeInternal,
@@ -124,8 +126,8 @@ func ingestAccountsBatch(
 			now := time.Now()
 			balanceBatch = append(balanceBatch, &models.Balance{
 				AccountID: models.AccountID{
-					Reference: account.AccountID,
-					Provider:  models.ConnectorProviderBankingCircle,
+					Reference:   account.AccountID,
+					ConnectorID: connectorID,
 				},
 				// Note(polo): same thing as payments
 				// TODO(polo): do a complete pass on all connectors to
@@ -134,6 +136,7 @@ func ingestAccountsBatch(
 				Balance:       &amountInt,
 				CreatedAt:     now,
 				LastUpdatedAt: now,
+				ConnectorID:   connectorID,
 			})
 		}
 	}

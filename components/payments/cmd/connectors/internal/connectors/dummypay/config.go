@@ -11,6 +11,8 @@ import (
 
 // Config is the configuration for the dummy payment connector.
 type Config struct {
+	Name string `json:"name" yaml:"name" bson:"name"`
+
 	// Directory is the directory where the files are stored.
 	Directory string `json:"directory" yaml:"directory" bson:"directory"`
 
@@ -29,6 +31,10 @@ func (c Config) String() string {
 
 func (c Config) Marshal() ([]byte, error) {
 	return json.Marshal(c)
+}
+
+func (c Config) ConnectorName() string {
+	return c.Name
 }
 
 // Validate validates the configuration.
@@ -50,12 +56,17 @@ func (c Config) Validate() error {
 			ErrFileGenerationPeriodInvalid)
 	}
 
+	if c.Name == "" {
+		return fmt.Errorf("name must be set: %w", ErrMissingName)
+	}
+
 	return nil
 }
 
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
+	cfg.AddParameter("name", configtemplate.TypeString, true)
 	cfg.AddParameter("directory", configtemplate.TypeString, true)
 	cfg.AddParameter("filePollingPeriod", configtemplate.TypeDurationNs, true)
 	cfg.AddParameter("fileGenerationPeriod", configtemplate.TypeDurationNs, false)

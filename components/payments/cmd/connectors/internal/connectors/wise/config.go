@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	Name          string              `json:"name" yaml:"name" bson:"name"`
 	APIKey        string              `json:"apiKey" yaml:"apiKey" bson:"apiKey"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
@@ -23,6 +24,10 @@ func (c Config) Validate() error {
 		return ErrMissingAPIKey
 	}
 
+	if c.Name == "" {
+		return ErrMissingName
+	}
+
 	return nil
 }
 
@@ -30,9 +35,14 @@ func (c Config) Marshal() ([]byte, error) {
 	return json.Marshal(c)
 }
 
+func (c Config) ConnectorName() string {
+	return c.Name
+}
+
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
+	cfg.AddParameter("name", configtemplate.TypeString, true)
 	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
 	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
 

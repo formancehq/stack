@@ -23,6 +23,7 @@ var (
 func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		metricsRegistry metrics.MetricsRegistry,
@@ -45,7 +46,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 				break
 			}
 
-			if err := ingestAccountsBatch(ctx, ingester, pagedAccounts); err != nil {
+			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
@@ -117,6 +118,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	accounts []*client.Account,
 ) error {
@@ -129,13 +131,13 @@ func ingestAccountsBatch(
 
 		batch = append(batch, &models.Account{
 			ID: models.AccountID{
-				Reference: account.ID,
-				Provider:  models.ConnectorProviderMoneycorp,
+				Reference:   account.ID,
+				ConnectorID: connectorID,
 			},
 			// Moneycorp does not send the opening date of the account
 			CreatedAt:   time.Now(),
 			Reference:   account.ID,
-			Provider:    models.ConnectorProviderMoneycorp,
+			ConnectorID: connectorID,
 			AccountName: account.Attributes.AccountName,
 			Type:        models.AccountTypeInternal,
 			RawData:     raw,

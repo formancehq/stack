@@ -14,6 +14,7 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/ServerInfo'
+
   /payments:
     get:
       summary: List payments
@@ -27,6 +28,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Payments'
+
   /payments/{paymentId}:
     get:
       summary: Get a payment
@@ -38,6 +40,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Payment'
+
   /payments/{paymentId}/metadata:
     patch:
       summary: Update metadata
@@ -51,6 +54,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /transfer-initiations:
     get:
       summary: List Transfer Initiations
@@ -76,6 +80,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TransferInitiation'
+
   /transfer-initiations/{transferId}:
     get:
       summary: Get a transfer initiation
@@ -98,6 +103,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /transfer-initiations/{transferId}/status:
     post:
       summary: Update the status of a transfer initiation
@@ -112,6 +118,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /transfer-initiations/{transferId}/retry:
     post:
       summary: Retry a failed transfer initiation
@@ -124,6 +131,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
   /accounts:
     get:
       summary: List accounts
@@ -137,6 +145,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Accounts'
+
   /accounts/{accountId}:
     get:
       summary: Get an account
@@ -148,6 +157,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Account'
+
   /accounts/{accountId}/balances:
     get:
       summary: Get account balances
@@ -195,6 +205,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/AccountBalances'
+
   /bank-accounts:
     post:
       summary: Create a BankAccount in Payments and on the PSP
@@ -220,6 +231,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/BankAccounts'
+
   /bank-accounts/{bankAccountId}:
     get:
       summary: Get a bank account created by user on Formance
@@ -231,6 +243,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/BankAccount'
+
   /connectors:
     get:
       summary: List all installed connectors
@@ -241,6 +254,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Connectors'
+
   /connectors/configs:
     get:
       summary: List the configs of each available connector
@@ -251,6 +265,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ConnectorsConfigs'
+
   /connectors/{connector}:
     post:
       summary: Install a connector
@@ -263,10 +278,11 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/ConnectorConfig'
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
+        '201':
+          $ref: '#/components/responses/ConnectorInstalled'
     delete:
       summary: Uninstall a connector
+      deprecated: true
       operationId: uninstallConnector
       tags:
         - Payments
@@ -276,9 +292,24 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  /connectors/{connector}/{connectorId}:
+    delete:
+      summary: Uninstall a connector
+      operationId: uninstallConnectorV1
+      tags:
+        - Payments
+      description: Uninstall a connector by its name.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/ConnectorID'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
   /connectors/{connector}/config:
     get:
       summary: Read the config of a connector
+      deprecated: true
       operationId: readConnectorConfig
       tags:
         - Payments
@@ -288,9 +319,24 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ConnectorConfig'
+  /connectors/{connector}/{connectorId}/config:
+    get:
+      summary: Read the config of a connector
+      operationId: readConnectorConfigV1
+      tags:
+        - Payments
+      description: Read connector config
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/ConnectorID'
+      responses:
+        '200':
+          $ref: '#/components/responses/ConnectorConfig'
+
   /connectors/{connector}/reset:
     post:
       summary: Reset a connector
+      deprecated: true
       operationId: resetConnector
       tags:
         - Payments
@@ -302,9 +348,26 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  /connectors/{connector}/{connectorId}/reset:
+    post:
+      summary: Reset a connector
+      operationId: resetConnectorV1
+      tags:
+        - Payments
+      description: |
+        Reset a connector by its name.
+        It will remove the connector and ALL PAYMENTS generated with it.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/ConnectorID'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+  
   /connectors/{connector}/tasks:
     get:
       summary: List tasks from a connector
+      deprecated: true
       tags:
         - Payments
       operationId: listConnectorTasks
@@ -316,9 +379,26 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Tasks'
+  /connectors/{connector}/{connectorId}/tasks:
+    get:
+      summary: List tasks from a connector
+      tags:
+        - Payments
+      operationId: listConnectorTasksV1
+      description: List all tasks associated with this connector.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/ConnectorID'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          $ref: '#/components/responses/Tasks'
+
   /connectors/{connector}/tasks/{taskId}:
     get:
       summary: Read a specific task of the connector
+      deprecated: true
       tags:
         - Payments
       operationId: getConnectorTask
@@ -329,6 +409,21 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Task'
+  /connectors/{connector}/{connectorId}/tasks/{taskId}:
+    get:
+      summary: Read a specific task of the connector
+      tags:
+        - Payments
+      operationId: getConnectorTaskV1
+      description: Get a specific task associated to the connector.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/ConnectorID'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Task'
+
   /connectors/{connector}/transfers:
     post:
       summary: Transfer funds between Connector accounts
@@ -343,18 +438,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Transfer'
-    get:
-      summary: List transfers and their statuses
-      tags:
-        - Payments
-      operationId: listConnectorsTransfers
-      description: List transfers
-      parameters:
-        - $ref: '#/components/parameters/Connector'
-      responses:
-        '200':
-          $ref: '#/components/responses/Transfers'
-
+  
 # ---------------------- COMPONENTS ----------------------
 components:
   # ---------------------- PARAMETERS ----------------------
@@ -415,6 +499,14 @@ components:
       schema:
         type: string
       description: The account ID.
+      example: XXX
+      required: true
+    ConnectorID:
+      name: connectorId
+      in: path
+      schema:
+        type: string
+      description: The connector ID.
       example: XXX
       required: true
     TransferId:
@@ -501,6 +593,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/BalancesCursor'
+    ConnectorInstalled:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorResponse'
     Connectors:
       description: OK
       content:
@@ -753,6 +851,18 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Account'
+    ConnectorResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - connectorID
+          properties:
+            connectorID:
+              type: string
     ConnectorsResponse:
       type: object
       required:
@@ -762,12 +872,17 @@ components:
           type: array
           items:
             type: object
+            required:
+              - provider
+              - name
+              - connectorID
             properties:
               provider:
                 $ref: '#/components/schemas/Connector'
-              enabled:
-                type: boolean
-                example: true
+              name:
+                type: string
+              connectorID:
+                type: string
     BankAccountResponse:
       type: object
       required:
@@ -880,8 +995,12 @@ components:
     StripeConfig:
       type: object
       required:
+        - name
         - apiKey
       properties:
+        name:
+          type: string
+          example: 'My Stripe Account'
         pollingPeriod:
           type: string
           example: '60s'
@@ -902,8 +1021,12 @@ components:
     DummyPayConfig:
       type: object
       required:
+        - name
         - directory
       properties:
+        name:
+          type: string
+          example: 'My DummyPay Account'
         filePollingPeriod:
           type: string
           example: '60s'
@@ -920,8 +1043,12 @@ components:
     WiseConfig:
       type: object
       required:
+        - name
         - apiKey
       properties:
+        name:
+          type: string
+          example: 'My Wise Account'
         apiKey:
           type: string
           example: 'XXX'
@@ -934,9 +1061,13 @@ components:
     ModulrConfig:
       type: object
       required:
+      - name
       - apiKey
       - apiSecret
       properties:
+        name:
+          type: string
+          example: 'My Modulr Account'
         apiKey:
           type: string
           example: 'XXX'
@@ -955,6 +1086,7 @@ components:
     BankingCircleConfig:
       type: object
       required:
+        - name
         - username
         - password
         - endpoint
@@ -962,6 +1094,9 @@ components:
         - userCertificate
         - userCertificateKey
       properties:
+        name:
+          type: string
+          example: 'My Banking Circle Account'
         username:
           type: string
           example: 'XXX'
@@ -989,10 +1124,14 @@ components:
     MangoPayConfig:
       type: object
       required:
+        - name
         - clientID
         - apiKey
         - endpoint
       properties:
+        name:
+          type: string
+          example: 'My MangoPay Account'
         pollingPeriod:
           type: string
           example: '60s'
@@ -1011,10 +1150,14 @@ components:
     MoneycorpConfig:
       type: object
       required:
+        - name
         - clientID
         - apiKey
         - endpoint
       properties:
+        name:
+          type: string
+          example: 'My Moneycorp Account'
         clientID:
           type: string
           example: 'XXX'
@@ -1033,9 +1176,13 @@ components:
     CurrencyCloudConfig:
       type: object
       required:
+        - name
         - apiKey
         - loginID
       properties:
+        name:
+          type: string
+          example: 'My CurrencyCloud Account'
         apiKey:
           type: string
           example: 'XXX'
@@ -1062,7 +1209,7 @@ components:
         - description
         - sourceAccountID
         - destinationAccountID
-        - provider
+        - connectorID
         - type
         - amount
         - asset
@@ -1087,8 +1234,8 @@ components:
           type: string
         destinationAccountID:
           type: string
-        provider:
-          $ref: '#/components/schemas/Connector'
+        connectorID:
+          type: string
         type:
           type: string
           enum:
@@ -1131,7 +1278,7 @@ components:
         - id
         - createdAt
         - country
-        - provider
+        - connectorID
       properties:
         id:
           type: string
@@ -1140,8 +1287,8 @@ components:
           format: date-time
         country:
           type: string
-        provider:
-          $ref: '#/components/schemas/Connector'
+        connectorID:
+          type: string
         iban:
           type: string
         accountNumber:
@@ -1153,10 +1300,10 @@ components:
       required:
         - id
         - reference
+        - connectorID
         - sourceAccountID
         - destinationAccountID
         - type
-        - provider
         - status
         - initialAmount
         - scheme
@@ -1175,6 +1322,10 @@ components:
           type: string
         destinationAccountID:
           type: string
+        connectorID:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Connector'
         type:
           type: string
           enum:
@@ -1182,8 +1333,6 @@ components:
             - PAYOUT
             - TRANSFER
             - OTHER
-        provider:
-          $ref: '#/components/schemas/Connector'
         status:
           $ref: '#/components/schemas/PaymentStatus'
         initialAmount:
@@ -1261,8 +1410,8 @@ components:
       required:
         - id
         - createdAt
-        - provider
         - reference
+        - connectorID
         - defaultCurrency
         - defaultAsset
         - accountName
@@ -1274,9 +1423,9 @@ components:
         createdAt:
           type: string
           format: date-time
-        provider:
-          $ref: '#/components/schemas/Connector'
         reference:
+          type: string
+        connectorID:
           type: string
         defaultCurrency:
           type: string
@@ -1320,7 +1469,7 @@ components:
       type: object
       required:
         - id
-        - connectorId
+        - connectorID
         - createdAt
         - updatedAt
         - descriptor
@@ -1330,9 +1479,8 @@ components:
         id:
           type: string
           format: uuid
-        connectorId:
+        connectorID:
           type: string
-          format: uuid
         createdAt:
           type: string
           format: date-time
@@ -1497,14 +1645,14 @@ components:
       type: object
       required:
         - country
-        - provider
+        - connectorID
         - name
       properties:
         country:
           type: string
           example: GB
-        provider:
-          $ref: '#/components/schemas/Connector'
+        connectorID:
+          type: string
         name:
           type: string
           example: 'My account'
@@ -1522,7 +1670,6 @@ components:
         - description
         - sourceAccountID
         - destinationAccountID
-        - provider
         - type
         - amount
         - asset
@@ -1539,6 +1686,8 @@ components:
         sourceAccountID:
           type: string
         destinationAccountID:
+          type: string
+        connectorID:
           type: string
         provider:
           $ref: '#/components/schemas/Connector'

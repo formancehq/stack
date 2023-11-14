@@ -9,21 +9,22 @@ import (
 )
 
 type paymentMessagePayload struct {
-	ID        string               `json:"id"`
-	Reference string               `json:"reference"`
-	CreatedAt time.Time            `json:"createdAt"`
-	Provider  string               `json:"provider"`
-	Type      models.PaymentType   `json:"type"`
-	Status    models.PaymentStatus `json:"status"`
-	Scheme    models.PaymentScheme `json:"scheme"`
-	Asset     models.Asset         `json:"asset"`
+	ID          string               `json:"id"`
+	Reference   string               `json:"reference"`
+	CreatedAt   time.Time            `json:"createdAt"`
+	ConnectorID string               `json:"connectorId"`
+	Provider    string               `json:"provider"`
+	Type        models.PaymentType   `json:"type"`
+	Status      models.PaymentStatus `json:"status"`
+	Scheme      models.PaymentScheme `json:"scheme"`
+	Asset       models.Asset         `json:"asset"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
 	InitialAmount *big.Int `json:"initialAmount"`
 	Amount        *big.Int `json:"amount"`
 }
 
-func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorProvider) events.EventMessage {
+func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) events.EventMessage {
 	payload := paymentMessagePayload{
 		ID:            payment.ID.String(),
 		Reference:     payment.Reference,
@@ -34,6 +35,7 @@ func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorPro
 		Asset:         payment.Asset,
 		CreatedAt:     payment.CreatedAt,
 		Amount:        payment.Amount,
+		ConnectorID:   payment.ConnectorID.String(),
 		Provider:      provider.String(),
 	}
 

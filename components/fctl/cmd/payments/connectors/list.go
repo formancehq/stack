@@ -89,11 +89,12 @@ func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string
 func (c *PaymentsConnectorsListController) Render(cmd *cobra.Command, args []string) error {
 	tableData := fctl.Map(c.store.Connectors, func(connector shared.ConnectorsResponseData) []string {
 		return []string{
-			string(*connector.Provider),
-			fctl.BoolToString(*connector.Enabled),
+			string(connector.Provider),
+			connector.Name,
+			connector.ConnectorID,
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"Provider", "Enabled"})
+	tableData = fctl.Prepend(tableData, []string{"Provider", "Name", "ConnectorID"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

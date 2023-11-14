@@ -111,7 +111,7 @@ func initMappingJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
 						Name:  "init-mapping",
 						Image: "ghcr.io/formancehq/search:" + imageVersion,
 						Args:  []string{"init-mapping"},
-						Env:   searchEnvVars(config).ToCoreEnv(),
+						Env:   modules.SearchEnvVars(config).ToCoreEnv(),
 					}},
 				},
 			},
@@ -134,7 +134,7 @@ func reindexDataJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
 								-H 'Content-Type: application/json' \
 								-d '{ "source": { "index": "%s" }, "dest": { "index": "%s" }, "script": { "source": "ctx._source.stack = ctx._index; ctx._id = ctx._index + '"'"'-'"'"' + ctx._id", "lang": "painless" }}' \
 								${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/_reindex?refresh`, config.Stack.Name, stackv1beta3.DefaultESIndex),
-						Env: searchEnvVars(config).ToCoreEnv(),
+						Env: modules.SearchEnvVars(config).ToCoreEnv(),
 					}},
 				},
 			},
@@ -153,7 +153,7 @@ func deleteIndexJob(config modules.ReconciliationConfig, name string) func(t *ba
 						Image: "curlimages/curl",
 						Command: modules.ShellCommand(`
 							curl -X DELETE -H 'Content-Type: application/json' ${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/%s`, name),
-						Env: searchEnvVars(config).ToCoreEnv(),
+						Env: modules.SearchEnvVars(config).ToCoreEnv(),
 					}},
 				},
 			},
@@ -174,31 +174,6 @@ func reindexCron(ctx modules.ReconciliationConfig) []modules.Cron {
 			Suspend:  true,
 		},
 	}
-}
-
-func searchEnvVars(rc modules.ReconciliationConfig) modules.ContainerEnv {
-	env := elasticSearchEnvVars(rc.Stack, rc.Configuration, rc.Versions).
-		Append(
-			modules.Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d%s",
-				rc.Configuration.Spec.Services.Search.ElasticSearchConfig.Host,
-				rc.Configuration.Spec.Services.Search.ElasticSearchConfig.Port,
-				rc.Configuration.Spec.Services.Search.ElasticSearchConfig.PathPrefix)),
-			modules.Env("OPEN_SEARCH_SCHEME", rc.Configuration.Spec.Services.Search.ElasticSearchConfig.Scheme),
-			modules.Env("MAPPING_INIT_DISABLED", "true"),
-		)
-	if rc.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
-		env = env.Append(
-			modules.Env("OPEN_SEARCH_USERNAME", rc.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username),
-			modules.Env("OPEN_SEARCH_PASSWORD", rc.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password),
-		)
-	}
-	if rc.Versions.IsLower("search", "v0.7.0") {
-		env = env.Append(modules.Env("ES_INDICES", rc.Stack.Name))
-	} else {
-		env = env.Append(modules.Env("ES_INDICES", stackv1beta3.DefaultESIndex))
-	}
-
-	return env
 }
 
 func searchService(ctx modules.ReconciliationConfig) *modules.Service {

@@ -3,7 +3,6 @@ package stripe
 import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const (
@@ -28,32 +27,32 @@ type TaskDescriptor struct {
 }
 
 // clientID, apiKey, endpoint string, logger logging
-func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
-	client := client.NewDefaultClient(config.APIKey)
+func (c *Connector) resolveTasks() func(taskDefinition TaskDescriptor) task.Task {
+	client := client.NewDefaultClient(c.cfg.APIKey)
 
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		if taskDescriptor.Main {
-			return MainTask(logger)
+			return c.mainTask()
 		}
 
 		switch taskDescriptor.Key {
 		case taskNameFetchPayments:
-			return FetchPaymentsTask(config, client)
+			return fetchPaymentsTask(c.cfg.TimelineConfig, client)
 		case taskNameFetchAccounts:
-			return FetchAccountsTask(config, client)
+			return fetchAccountsTask(c.cfg.TimelineConfig, client)
 		case taskNameFetchExternalAccounts:
-			return FetchExternalAccountsTask(config, taskDescriptor.Account, client)
+			return fetchExternalAccountsTask(c.cfg.TimelineConfig, taskDescriptor.Account, client)
 		case taskNameFetchPaymentsForAccounts:
-			return ConnectedAccountTask(config, taskDescriptor.Account, client)
+			return connectedAccountTask(c.cfg.TimelineConfig, taskDescriptor.Account, client)
 		case taskNameFetchBalances:
-			return BalancesTask(taskDescriptor.Account, client)
+			return balancesTask(taskDescriptor.Account, client)
 		case taskNameInitiatePayment:
-			return InitiatePaymentTask(logger, taskDescriptor.TransferID, client)
+			return initiatePaymentTask(taskDescriptor.TransferID, client)
 		case taskNameUpdatePaymentStatus:
-			return UpdatePaymentStatusTask(logger, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt, client)
+			return updatePaymentStatusTask(taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt, client)
 		default:
 			// For compatibility with old tasks
-			return ConnectedAccountTask(config, taskDescriptor.Account, client)
+			return connectedAccountTask(c.cfg.TimelineConfig, taskDescriptor.Account, client)
 		}
 	}
 }

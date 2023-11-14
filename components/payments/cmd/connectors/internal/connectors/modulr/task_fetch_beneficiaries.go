@@ -24,6 +24,7 @@ var (
 func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		metricsRegistry metrics.MetricsRegistry,
@@ -41,7 +42,7 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 			return err
 		}
 
-		if err := ingestBeneficiariesAccountsBatch(ctx, ingester, metricsRegistry, beneficiaries); err != nil {
+		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, metricsRegistry, beneficiaries); err != nil {
 			return err
 		}
 
@@ -51,6 +52,7 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 
 func ingestBeneficiariesAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	metricsRegistry metrics.MetricsRegistry,
 	beneficiaries []*client.Beneficiary,
@@ -70,12 +72,12 @@ func ingestBeneficiariesAccountsBatch(
 
 		accountsBatch = append(accountsBatch, &models.Account{
 			ID: models.AccountID{
-				Reference: beneficiary.ID,
-				Provider:  models.ConnectorProviderModulr,
+				Reference:   beneficiary.ID,
+				ConnectorID: connectorID,
 			},
 			CreatedAt:   openingDate,
 			Reference:   beneficiary.ID,
-			Provider:    models.ConnectorProviderModulr,
+			ConnectorID: connectorID,
 			AccountName: beneficiary.Name,
 			Type:        models.AccountTypeExternal,
 			RawData:     raw,

@@ -26,6 +26,7 @@ func taskFetchPayments(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
@@ -45,7 +46,7 @@ func taskFetchPayments(
 				break
 			}
 
-			if err := ingestBatch(ctx, ingester, pagedPayments); err != nil {
+			if err := ingestBatch(ctx, connectorID, ingester, pagedPayments); err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
@@ -58,6 +59,7 @@ func taskFetchPayments(
 
 func ingestBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	payments []*client.Payment,
 ) error {
@@ -84,36 +86,37 @@ func ingestBatch(
 						Reference: paymentEl.PaymentID,
 						Type:      paymentType,
 					},
-					Provider: models.ConnectorProviderBankingCircle,
+					ConnectorID: connectorID,
 				},
-				Reference: paymentEl.PaymentID,
-				Type:      paymentType,
-				Status:    matchPaymentStatus(paymentEl.Status),
-				Scheme:    models.PaymentSchemeOther,
-				Amount:    &amountInt,
-				Asset:     models.Asset(paymentEl.Transfer.Amount.Currency + "/2"),
-				RawData:   raw,
+				Reference:   paymentEl.PaymentID,
+				Type:        paymentType,
+				ConnectorID: connectorID,
+				Status:      matchPaymentStatus(paymentEl.Status),
+				Scheme:      models.PaymentSchemeOther,
+				Amount:      &amountInt,
+				Asset:       models.Asset(paymentEl.Transfer.Amount.Currency + "/2"),
+				RawData:     raw,
 			},
 		}
 
 		if paymentEl.DebtorInformation.AccountID != "" {
 			batchElement.Payment.SourceAccountID = &models.AccountID{
-				Reference: paymentEl.DebtorInformation.AccountID,
-				Provider:  models.ConnectorProviderBankingCircle,
+				Reference:   paymentEl.DebtorInformation.AccountID,
+				ConnectorID: connectorID,
 			}
 		}
 
 		if paymentEl.CreditorInformation.AccountID != "" {
 			batchElement.Payment.DestinationAccountID = &models.AccountID{
-				Reference: paymentEl.CreditorInformation.AccountID,
-				Provider:  models.ConnectorProviderBankingCircle,
+				Reference:   paymentEl.CreditorInformation.AccountID,
+				ConnectorID: connectorID,
 			}
 		}
 
 		batch = append(batch, batchElement)
 	}
 
-	if err := ingester.IngestPayments(ctx, batch, struct{}{}); err != nil {
+	if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
 		return err
 	}
 

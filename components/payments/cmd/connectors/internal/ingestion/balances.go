@@ -37,7 +37,7 @@ func (i *DefaultIngester) IngestBalances(ctx context.Context, batch BalanceBatch
 			events.TopicPayments,
 			publish.NewMessage(
 				ctx,
-				messages.NewEventSavedBalances(balance, i.provider),
+				messages.NewEventSavedBalances(balance),
 			),
 		); err != nil {
 			logging.FromContext(ctx).Errorf("Publishing message: %w", err)

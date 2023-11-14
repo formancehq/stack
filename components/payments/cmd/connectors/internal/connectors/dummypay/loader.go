@@ -40,6 +40,10 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 		cfg.FilePollingPeriod = connectors.Duration{Duration: defaultFilePollingPeriod}
 	}
 
+	if cfg.Name == "" {
+		cfg.Name = Name.String()
+	}
+
 	return cfg
 }
 

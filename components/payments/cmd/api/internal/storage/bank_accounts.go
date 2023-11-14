@@ -11,7 +11,7 @@ import (
 
 func (s *Storage) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error {
 	_, err := s.db.NewUpdate().
-		Model(&models.BankAccount{}).
+		Model((*models.BankAccount)(nil)).
 		Set("account_id = ?", accountID).
 		Where("id = ?", id).
 		Exec(ctx)

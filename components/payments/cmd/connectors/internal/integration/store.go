@@ -9,12 +9,10 @@ import (
 
 type Repository interface {
 	ListConnectors(ctx context.Context) ([]*models.Connector, error)
-	IsInstalled(ctx context.Context, name models.ConnectorProvider) (bool, error)
-	Install(ctx context.Context, name models.ConnectorProvider, config json.RawMessage) error
-	Uninstall(ctx context.Context, name models.ConnectorProvider) error
-	UpdateConfig(ctx context.Context, name models.ConnectorProvider, config json.RawMessage) error
-	Enable(ctx context.Context, name models.ConnectorProvider) error
-	Disable(ctx context.Context, name models.ConnectorProvider) error
-	IsEnabled(ctx context.Context, name models.ConnectorProvider) (bool, error)
-	GetConnector(ctx context.Context, name models.ConnectorProvider) (*models.Connector, error)
+	IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)
+	IsInstalledByConnectorName(ctx context.Context, name string) (bool, error)
+	Install(ctx context.Context, connector *models.Connector, config json.RawMessage) error
+	Uninstall(ctx context.Context, connectorID models.ConnectorID) error
+	UpdateConfig(ctx context.Context, connectorID models.ConnectorID, config json.RawMessage) error
+	GetConnector(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error)
 }

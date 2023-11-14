@@ -40,18 +40,20 @@ func RunSend(ctx workflow.Context, send Send) (err error) {
 			err = errors.WithStack(fmt.Errorf("%s", e))
 		}
 	}()
+	fmt.Println("TOTOTOT")
 	amount := send.Amount
 	switch {
 	case send.Source.Account != nil && send.Destination.Account != nil:
 		return runAccountToAccount(ctx, send.Source.Account, send.Destination.Account, amount)
 	case send.Source.Account != nil && send.Destination.Payment != nil:
-		return runAccountToPayment(ctx, send.Source.Account, send.Destination.Payment, amount)
+		fmt.Println("TOTO 2")
+		return runAccountToPayment(ctx, send.ConnectorID, send.Source.Account, send.Destination.Payment, amount)
 	case send.Source.Account != nil && send.Destination.Wallet != nil:
 		return runAccountToWallet(ctx, send.Source.Account, send.Destination.Wallet, amount)
 	case send.Source.Wallet != nil && send.Destination.Account != nil:
 		return runWalletToAccount(ctx, send.Source.Wallet, send.Destination.Account, amount)
 	case send.Source.Wallet != nil && send.Destination.Payment != nil:
-		return runWalletToPayment(ctx, send.Source.Wallet, send.Destination.Payment, amount)
+		return runWalletToPayment(ctx, send.ConnectorID, send.Source.Wallet, send.Destination.Payment, amount)
 	case send.Source.Wallet != nil && send.Destination.Wallet != nil:
 		return runWalletToWallet(ctx, send.Source.Wallet, send.Destination.Wallet, amount)
 	case send.Source.Payment != nil && send.Destination.Account != nil:
@@ -178,7 +180,7 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	})
 }
 
-func runWalletToPayment(ctx workflow.Context, source *WalletSource, destination *PaymentDestination, amount *shared.Monetary) error {
+func runWalletToPayment(ctx workflow.Context, connectorID *string, source *WalletSource, destination *PaymentDestination, amount *shared.Monetary) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -199,6 +201,7 @@ func runWalletToPayment(ctx workflow.Context, source *WalletSource, destination 
 		Amount:      amount.Amount,
 		Asset:       &amount.Asset,
 		Destination: &stripeConnectID,
+		ConnectorID: connectorID,
 	}); err != nil {
 		return err
 	}
@@ -344,7 +347,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 	}))
 }
 
-func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, destination *PaymentDestination, amount *shared.Monetary) error {
+func runAccountToPayment(ctx workflow.Context, connectorID *string, source *LedgerAccountSource, destination *PaymentDestination, amount *shared.Monetary) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -364,6 +367,7 @@ func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, dest
 		Amount:      amount.Amount,
 		Asset:       &amount.Asset,
 		Destination: &stripeConnectID,
+		ConnectorID: connectorID,
 	}); err != nil {
 		return err
 	}

@@ -81,10 +81,10 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			bc.ID,
 			bc.CreatedAt.Format(time.RFC3339),
 			bc.Country,
-			string(bc.Provider),
+			string(bc.ConnectorID),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "Country", "Provider"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "Country", "ConnectorID"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

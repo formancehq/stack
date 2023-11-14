@@ -17,4 +17,7 @@ var (
 
 	// ErrDurationInvalid is returned when the duration is invalid.
 	ErrDurationInvalid = errors.New("duration is invalid")
+
+	// ErrMissingName is returned when the name is missing from config.
+	ErrMissingName = errors.New("missing name from config")
 )

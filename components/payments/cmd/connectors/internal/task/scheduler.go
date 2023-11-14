@@ -39,7 +39,7 @@ type taskHolder struct {
 type ContainerCreateFunc func(ctx context.Context, descriptor models.TaskDescriptor, taskID uuid.UUID) (*dig.Container, error)
 
 type DefaultTaskScheduler struct {
-	provider         models.ConnectorProvider
+	connectorID      models.ConnectorID
 	store            Repository
 	metricsRegistry  metrics.MetricsRegistry
 	containerFactory ContainerCreateFunc
@@ -51,7 +51,7 @@ type DefaultTaskScheduler struct {
 }
 
 func (s *DefaultTaskScheduler) ListTasks(ctx context.Context, pagination storage.PaginatorQuery) ([]models.Task, storage.PaginationDetails, error) {
-	return s.store.ListTasks(ctx, s.provider, pagination)
+	return s.store.ListTasks(ctx, s.connectorID, pagination)
 }
 
 func (s *DefaultTaskScheduler) ReadTask(ctx context.Context, taskID uuid.UUID) (*models.Task, error) {
@@ -64,7 +64,7 @@ func (s *DefaultTaskScheduler) ReadTaskByDescriptor(ctx context.Context, descrip
 		return nil, err
 	}
 
-	return s.store.GetTaskByDescriptor(ctx, s.provider, taskDescriptor)
+	return s.store.GetTaskByDescriptor(ctx, s.connectorID, taskDescriptor)
 }
 
 // Schedule schedules a task to be executed.
@@ -166,7 +166,7 @@ func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
 }
 
 func (s *DefaultTaskScheduler) Restore(ctx context.Context) error {
-	tasks, err := s.store.ListTasksByStatus(ctx, s.provider, models.TaskStatusActive)
+	tasks, err := s.store.ListTasksByStatus(ctx, s.connectorID, models.TaskStatusActive)
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func (s *DefaultTaskScheduler) registerTaskError(ctx context.Context, holder *ta
 
 	holder.logger.Errorf("Task terminated with error: %s", taskErr)
 
-	err := s.store.UpdateTaskStatus(ctx, s.provider, holder.descriptor, models.TaskStatusFailed, taskError)
+	err := s.store.UpdateTaskStatus(ctx, s.connectorID, holder.descriptor, models.TaskStatusFailed, taskError)
 	if err != nil {
 		holder.logger.Errorf("Error updating task status: %s", taskError)
 	}
@@ -224,7 +224,7 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 		return
 	}
 
-	oldestPendingTask, err := s.store.ReadOldestPendingTask(ctx, s.provider)
+	oldestPendingTask, err := s.store.ReadOldestPendingTask(ctx, s.connectorID)
 	if err != nil {
 		if errors.Is(err, storage.ErrNotFound) {
 			return
@@ -263,7 +263,7 @@ type StopChan chan chan struct{}
 func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) <-chan error {
 	errChan := make(chan error, 1)
 
-	task, err := s.store.FindAndUpsertTask(ctx, s.provider, descriptor,
+	task, err := s.store.FindAndUpsertTask(ctx, s.connectorID, descriptor,
 		models.TaskStatusActive, options, "")
 	if err != nil {
 		errChan <- errors.Wrap(err, "finding task and update")
@@ -285,8 +285,8 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, span := otel.Tracer("com.formance.payments").Start(ctx, "Task", trace.WithAttributes(
 		attribute.Stringer("id", task.ID),
-		attribute.Stringer("connector", s.provider),
-	))
+		attribute.String("connectorID", s.connectorID.String())),
+	)
 
 	holder := &taskHolder{
 		cancel:     cancel,
@@ -309,6 +309,13 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 
 	err = container.Provide(func() Scheduler {
 		return s
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	err = container.Provide(func() models.ConnectorID {
+		return s.connectorID
 	})
 	if err != nil {
 		panic(err)
@@ -425,7 +432,7 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 
 			logger.Infof("Task terminated with success")
 
-			err = s.store.UpdateTaskStatus(ctx, s.provider, descriptor, models.TaskStatusTerminated, "")
+			err = s.store.UpdateTaskStatus(ctx, s.connectorID, descriptor, models.TaskStatusTerminated, "")
 			if err != nil {
 				logger.Errorf("Error updating task status: %s", err)
 				if sendError {
@@ -491,20 +498,20 @@ func (s *DefaultTaskScheduler) stackTask(ctx context.Context, descriptor models.
 		"descriptor": string(descriptor),
 	}).Infof("Stacking task")
 
-	return s.store.UpdateTaskStatus(ctx, s.provider, descriptor, models.TaskStatusPending, "")
+	return s.store.UpdateTaskStatus(ctx, s.connectorID, descriptor, models.TaskStatusPending, "")
 }
 
 func (s *DefaultTaskScheduler) logger(ctx context.Context) logging.Logger {
 	return logging.FromContext(ctx).WithFields(map[string]any{
-		"component": "scheduler",
-		"provider":  s.provider,
+		"component":   "scheduler",
+		"connectorID": s.connectorID,
 	})
 }
 
 var _ Scheduler = &DefaultTaskScheduler{}
 
 func NewDefaultScheduler(
-	provider models.ConnectorProvider,
+	connectorID models.ConnectorID,
 	store Repository,
 	containerFactory ContainerCreateFunc,
 	resolver Resolver,
@@ -512,7 +519,7 @@ func NewDefaultScheduler(
 	maxTasks int,
 ) *DefaultTaskScheduler {
 	return &DefaultTaskScheduler{
-		provider:         provider,
+		connectorID:      connectorID,
 		store:            store,
 		metricsRegistry:  metricsRegistry,
 		tasks:            map[string]*taskHolder{},

@@ -127,7 +127,6 @@ var (
 						Data: shared.Payment{
 							InitialAmount: big.NewInt(100),
 							Asset:         "USD",
-							Provider:      shared.ConnectorStripe,
 							Status:        shared.PaymentStatusSucceeded,
 							Scheme:        shared.PaymentSchemeUnknown,
 							Type:          shared.PaymentTypeOther,
@@ -246,7 +245,6 @@ var (
 						Data: shared.Payment{
 							InitialAmount: big.NewInt(100),
 							Asset:         "USD",
-							Provider:      shared.ConnectorStripe,
 							Status:        shared.PaymentStatusSucceeded,
 							Scheme:        shared.PaymentSchemeUnknown,
 							Type:          shared.PaymentTypeOther,
@@ -347,7 +345,6 @@ var (
 						Data: shared.Payment{
 							InitialAmount: big.NewInt(100),
 							Asset:         "USD",
-							Provider:      shared.ConnectorStripe,
 							Status:        shared.PaymentStatusSucceeded,
 							Scheme:        shared.PaymentSchemeUnknown,
 							Type:          shared.PaymentTypeOther,
@@ -656,6 +653,7 @@ var (
 	accountToPayment = stagestesting.WorkflowTestCase[Send]{
 		Name: "account to payment",
 		Stage: Send{
+			ConnectorID: nil,
 			Source: NewSource().WithAccount(&LedgerAccountSource{
 				ID:     "foo",
 				Ledger: "default",
@@ -692,6 +690,7 @@ var (
 						Amount:      big.NewInt(100),
 						Asset:       pointer.For("USD"),
 						Destination: pointer.For("abcd"),
+						ConnectorID: nil,
 					},
 				},
 				Returns: []any{nil},
@@ -995,6 +994,7 @@ var (
 	walletToPayment = stagestesting.WorkflowTestCase[Send]{
 		Name: "wallet to payment",
 		Stage: Send{
+			ConnectorID: nil,
 			Source: NewSource().WithWallet(&WalletSource{
 				ID:      "foo",
 				Balance: "main",
@@ -1029,6 +1029,7 @@ var (
 						Amount:      big.NewInt(100),
 						Asset:       pointer.For("USD"),
 						Destination: pointer.For("abcd"),
+						ConnectorID: nil,
 					},
 				},
 				Returns: []any{nil},

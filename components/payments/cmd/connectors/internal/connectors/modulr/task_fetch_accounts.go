@@ -29,6 +29,7 @@ var (
 func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		metricsRegistry metrics.MetricsRegistry,
@@ -46,7 +47,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 			return err
 		}
 
-		if err := ingestAccountsBatch(ctx, ingester, metricsRegistry, accounts); err != nil {
+		if err := ingestAccountsBatch(ctx, connectorID, ingester, metricsRegistry, accounts); err != nil {
 			return err
 		}
 
@@ -77,6 +78,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	metricsRegistry metrics.MetricsRegistry,
 	accounts []*client.Account,
@@ -97,12 +99,12 @@ func ingestAccountsBatch(
 
 		accountsBatch = append(accountsBatch, &models.Account{
 			ID: models.AccountID{
-				Reference: account.ID,
-				Provider:  models.ConnectorProviderModulr,
+				Reference:   account.ID,
+				ConnectorID: connectorID,
 			},
 			CreatedAt:    openingDate,
 			Reference:    account.ID,
-			Provider:     models.ConnectorProviderModulr,
+			ConnectorID:  connectorID,
 			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", account.Currency)),
 			AccountName:  account.Name,
 			Type:         models.AccountTypeInternal,
@@ -121,13 +123,14 @@ func ingestAccountsBatch(
 		now := time.Now()
 		balancesBatch = append(balancesBatch, &models.Balance{
 			AccountID: models.AccountID{
-				Reference: account.ID,
-				Provider:  models.ConnectorProviderModulr,
+				Reference:   account.ID,
+				ConnectorID: connectorID,
 			},
 			Asset:         models.Asset(fmt.Sprintf("%s/2", account.Currency)),
 			Balance:       &balance,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
+			ConnectorID:   connectorID,
 		})
 	}
 

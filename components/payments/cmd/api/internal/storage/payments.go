@@ -80,21 +80,12 @@ func (s *Storage) GetPayment(ctx context.Context, id string) (*models.Payment, e
 	return &payment, nil
 }
 
-func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorProvider, payments []*models.Payment) error {
+func (s *Storage) UpsertPayments(ctx context.Context, payments []*models.Payment) error {
 	if len(payments) == 0 {
 		return nil
 	}
 
-	connector, err := s.GetConnector(ctx, provider)
-	if err != nil {
-		return fmt.Errorf("failed to get connector: %w", err)
-	}
-
-	for i := range payments {
-		payments[i].ConnectorID = connector.ID
-	}
-
-	_, err = s.db.NewInsert().
+	_, err := s.db.NewInsert().
 		Model(&payments).
 		On("CONFLICT (reference) DO UPDATE").
 		Set("amount = EXCLUDED.amount").

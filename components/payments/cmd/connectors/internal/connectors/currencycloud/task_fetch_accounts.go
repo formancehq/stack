@@ -26,6 +26,7 @@ func taskFetchAccounts(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		metricsRegistry metrics.MetricsRegistry,
@@ -51,7 +52,7 @@ func taskFetchAccounts(
 
 			page = nextPage
 
-			if err := ingestAccountsBatch(ctx, ingester, pagedAccounts); err != nil {
+			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
@@ -96,6 +97,7 @@ func taskFetchAccounts(
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	accounts []*client.Account,
 ) error {
@@ -108,13 +110,13 @@ func ingestAccountsBatch(
 
 		batch = append(batch, &models.Account{
 			ID: models.AccountID{
-				Reference: account.ID,
-				Provider:  models.ConnectorProviderCurrencyCloud,
+				Reference:   account.ID,
+				ConnectorID: connectorID,
 			},
 			// Moneycorp does not send the opening date of the account
 			CreatedAt:   account.CreatedAt,
 			Reference:   account.ID,
-			Provider:    models.ConnectorProviderCurrencyCloud,
+			ConnectorID: connectorID,
 			AccountName: account.AccountName,
 			Type:        models.AccountTypeInternal,
 			RawData:     raw,

@@ -81,7 +81,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			acc.ID,
 			acc.AccountName,
 			acc.CreatedAt.Format(time.RFC3339),
-			string(acc.Provider),
+			acc.ConnectorID,
 			acc.DefaultAsset,
 			acc.DefaultCurrency,
 			acc.Reference,
@@ -89,7 +89,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"ID", "AccountName", "CreatedAt",
-		"Provider", "DefaultAsset", "DefaultCurrency", "Reference", "Type"})
+		"ConnectorID", "DefaultAsset", "DefaultCurrency", "Reference", "Type"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

@@ -82,6 +82,7 @@ func (s Destination) WithAccount(src *LedgerAccountDestination) Destination {
 type Send struct {
 	Source      Source           `json:"source"`
 	Destination Destination      `json:"destination"`
+	ConnectorID *string          `json:"connectorId,omitempty"`
 	Amount      *shared.Monetary `json:"amount,omitempty"`
 }
 

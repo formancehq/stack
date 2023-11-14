@@ -1,0 +1,17 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: payments-v1.0.0-beta.3-pre-upgrade
+    namespace: multipod-latest-with-gateway-fallback
+spec:
+    configuration: multipod-latest-with-gateway-fallback
+    currentVersion: latest
+    module: payments
+    postUpgrade: false
+    targetedVersion: v1.0.0-beta.3
+    version: multipod-latest-with-gateway-fallback
+status:
+    terminated: true
