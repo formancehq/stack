@@ -84,6 +84,22 @@ func (s module) Versions() map[string]modules.Version {
 			},
 			Cron: reindexCron,
 		},
+		"v0.10.0": {
+			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error) {
+				ok, err := jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config.ReconciliationConfig))
+				if err != nil {
+					return false, err
+				}
+				if !ok {
+					return false, nil
+				}
+				return true, nil
+			},
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return modules.Services{searchService(ctx), benthosService(ctx)}
+			},
+			Cron: reindexCron,
+		},
 	}
 }
 
