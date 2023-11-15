@@ -8,12 +8,19 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"math/big"
+	"net/http"
 )
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 	When("creating two transactions on a ledger with custom metadata", func() {
 		BeforeEach(func() {
-			_, err := Client().Ledger.CreateBulk(TestContext(), operations.CreateBulkRequest{
+			response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+				Ledger: "default",
+			})
+			Expect(err).To(BeNil())
+			Expect(response.StatusCode).To(Equal(http.StatusNoContent))
+
+			_, err = Client().Ledger.CreateBulk(TestContext(), operations.CreateBulkRequest{
 				RequestBody: []shared.BulkElement{
 					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
 						Data: &shared.PostTransaction{

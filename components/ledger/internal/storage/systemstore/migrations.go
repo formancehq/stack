@@ -23,14 +23,6 @@ func (s *Store) getMigrator() *migrations.Migrator {
 					return sqlutils.PostgresError(err)
 				}
 
-				_, err = tx.NewCreateTable().
-					Model((*Buckets)(nil)).
-					IfNotExists().
-					Exec(ctx)
-				if err != nil {
-					return sqlutils.PostgresError(err)
-				}
-
 				_, err = s.db.NewCreateTable().
 					Model((*configuration)(nil)).
 					IfNotExists().

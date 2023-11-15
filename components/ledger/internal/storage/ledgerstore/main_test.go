@@ -6,10 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/ledger/internal/storage/sqlutils"
-	"github.com/formancehq/ledger/internal/storage/systemstore"
-
 	ledger "github.com/formancehq/ledger/internal"
+	"github.com/formancehq/ledger/internal/storage/sqlutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/google/uuid"
@@ -43,14 +41,7 @@ func newBucket(t *testing.T) *Bucket {
 		ConnMaxIdleTime:    time.Minute,
 	}
 
-	ss, err := systemstore.Connect(ctx, connectionOptions)
-	require.NoError(t, err)
-	t.Cleanup(func() {
-		_ = ss.Close()
-	})
-	require.NoError(t, ss.Migrate(ctx))
-
-	bucket, err := ConnectToBucket(ss, connectionOptions, name)
+	bucket, err := ConnectToBucket(connectionOptions, name)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = bucket.Close()
@@ -67,7 +58,7 @@ func newLedgerStore(t *testing.T) *Store {
 	ctx := logging.TestingContext()
 
 	bucket := newBucket(t)
-	store, err := bucket.GetLedgerStore(ctx, ledgerName)
+	store, err := bucket.CreateLedgerStore(ctx, ledgerName)
 	require.NoError(t, err)
 
 	return store

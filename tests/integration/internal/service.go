@@ -27,6 +27,7 @@ type cobraCommandService struct {
 	name        string
 	cancel      func()
 	appContext  context.Context
+	running     bool
 }
 
 func (c *cobraCommandService) load(ctx context.Context, t *Test) error {
@@ -55,6 +56,7 @@ func (c *cobraCommandService) load(ctx context.Context, t *Test) error {
 			})
 		}
 		t.registerServiceToRoute(c.name, routing{port: uint16(httpserver.Port(c.appContext))})
+		c.running = true
 
 		return nil
 	case err := <-errCh:
@@ -65,6 +67,9 @@ func (c *cobraCommandService) load(ctx context.Context, t *Test) error {
 }
 
 func (c cobraCommandService) unload(context.Context, *Test) error {
+	if !c.running {
+		return nil
+	}
 	c.cancel()
 	select {
 	case <-ctx.Done():

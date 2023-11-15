@@ -15,8 +15,7 @@ import (
 )
 
 type Store struct {
-	onDelete func(ctx context.Context) error
-	bucket   *Bucket
+	bucket *Bucket
 
 	name string
 }
@@ -56,10 +55,6 @@ func (store *Store) Delete(ctx context.Context) error {
 
 	_, err = tx.ExecContext(ctx, buf.String())
 	if err != nil {
-		return err
-	}
-
-	if err := store.onDelete(ctx); err != nil {
 		return err
 	}
 
@@ -125,11 +120,9 @@ func (store *Store) GetMigrationsInfo(ctx context.Context) ([]migrations.Info, e
 func New(
 	bucket *Bucket,
 	name string,
-	onDelete func(ctx context.Context) error,
 ) (*Store, error) {
 	return &Store{
-		bucket:   bucket,
-		name:     name,
-		onDelete: onDelete,
+		bucket: bucket,
+		name:   name,
 	}, nil
 }

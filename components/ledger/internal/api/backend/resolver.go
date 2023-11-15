@@ -70,7 +70,7 @@ func LedgerMiddleware(
 
 			r = r.WithContext(logging.ContextWithFields(r.Context(), loggerFields))
 
-			l, err := resolver.GetLedger(r.Context(), name)
+			l, err := resolver.GetLedgerEngine(r.Context(), name)
 			if err != nil {
 				sharedapi.BadRequest(w, sharedapi.ErrorInternal, err)
 				return

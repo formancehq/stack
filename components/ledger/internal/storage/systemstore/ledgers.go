@@ -13,34 +13,21 @@ import (
 type Ledger struct {
 	bun.BaseModel `bun:"_system.ledgers,alias:ledgers"`
 
-	Name    string      `bun:"ledger,type:varchar(255),pk"` // Primary key
-	AddedAt ledger.Time `bun:"addedat,type:timestamp"`
-	Bucket  string      `bun:"bucket,type:varchar(255)"`
+	Name    string      `bun:"ledger,type:varchar(255),pk" json:"name"` // Primary key
+	AddedAt ledger.Time `bun:"addedat,type:timestamp" json:"addedAt"`
+	Bucket  string      `bun:"bucket,type:varchar(255)" json:"bucket"`
 }
 
-func (s *Store) ListLedgers(ctx context.Context) ([]string, error) {
-	query := s.db.NewSelect().
-		Model((*Ledger)(nil)).
-		Column("ledger").
-		String()
-
-	rows, err := s.db.QueryContext(ctx, query)
-	if err != nil {
+func (s *Store) ListLedgers(ctx context.Context) ([]Ledger, error) {
+	ret := make([]Ledger, 0)
+	if err := s.db.NewSelect().
+		Model(&ret).
+		Column("ledger", "bucket", "addedat").
+		Scan(ctx); err != nil {
 		return nil, sqlutils.PostgresError(err)
 	}
-	defer func() {
-		_ = rows.Close()
-	}()
 
-	res := make([]string, 0)
-	for rows.Next() {
-		var name string
-		if err := rows.Scan(&name); err != nil {
-			return nil, sqlutils.PostgresError(err)
-		}
-		res = append(res, name)
-	}
-	return res, nil
+	return ret, nil
 }
 
 func (s *Store) DeleteLedger(ctx context.Context, name string) error {
@@ -76,7 +63,7 @@ func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 		Column("ledger", "bucket", "addedat").
 		Where("ledger = ?", name).
 		Scan(ctx); err != nil {
-		return nil, err
+		return nil, sqlutils.PostgresError(err)
 	}
 
 	return ret, nil

@@ -17,6 +17,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	const (
 		pageSize = int64(10)
 		txCount  = 2 * pageSize

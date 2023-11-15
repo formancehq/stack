@@ -41,14 +41,11 @@ type Ledger interface {
 
 var ErrAlreadyConfigured = errors.New("ledger already configured")
 
-type Configuration struct {
-	Bucket string `json:"bucket"`
-}
-
 type Backend interface {
-	GetLedger(ctx context.Context, name string) (Ledger, error)
-	ListLedgers(ctx context.Context) ([]string, error)
-	ConfigureLedger(ctx context.Context, name string, configuration Configuration) error
+	GetLedgerEngine(ctx context.Context, name string) (Ledger, error)
+	GetLedger(ctx context.Context, name string) (*systemstore.Ledger, error)
+	ListLedgers(ctx context.Context) ([]systemstore.Ledger, error)
+	CreateLedger(ctx context.Context, name string, configuration driver.LedgerConfiguration) error
 	GetVersion() string
 }
 
@@ -58,26 +55,21 @@ type DefaultBackend struct {
 	version       string
 }
 
-func (d DefaultBackend) ConfigureLedger(ctx context.Context, name string, configuration Configuration) error {
-	ok, err := d.storageDriver.GetSystemStore().RegisterLedger(ctx, &systemstore.Ledger{
-		Name:    name,
-		AddedAt: ledger.Now(),
-		Bucket:  configuration.Bucket,
-	})
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return ErrAlreadyConfigured
-	}
-	return nil
+func (d DefaultBackend) GetLedger(ctx context.Context, name string) (*systemstore.Ledger, error) {
+	return d.storageDriver.GetSystemStore().GetLedger(ctx, name)
 }
 
-func (d DefaultBackend) GetLedger(ctx context.Context, name string) (Ledger, error) {
+func (d DefaultBackend) CreateLedger(ctx context.Context, name string, configuration driver.LedgerConfiguration) error {
+	_, err := d.resolver.CreateLedger(ctx, name, configuration)
+
+	return err
+}
+
+func (d DefaultBackend) GetLedgerEngine(ctx context.Context, name string) (Ledger, error) {
 	return d.resolver.GetLedger(ctx, name)
 }
 
-func (d DefaultBackend) ListLedgers(ctx context.Context) ([]string, error) {
+func (d DefaultBackend) ListLedgers(ctx context.Context) ([]systemstore.Ledger, error) {
 	return d.storageDriver.GetSystemStore().ListLedgers(ctx)
 }
 

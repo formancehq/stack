@@ -9,10 +9,18 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"math/big"
+	"net/http"
 	"time"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
+	BeforeEach(func() {
+		response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(response.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	When("creating a bulk on a ledger", func() {
 		var (
 			now = time.Now().Round(time.Microsecond).UTC()

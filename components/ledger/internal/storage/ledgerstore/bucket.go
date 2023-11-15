@@ -2,13 +2,11 @@ package ledgerstore
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
 	"fmt"
 
-	ledger "github.com/formancehq/ledger/internal"
-
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
-	"github.com/formancehq/ledger/internal/storage/systemstore"
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -18,9 +16,8 @@ import (
 var initSchema string
 
 type Bucket struct {
-	name        string
-	systemStore *systemstore.Store
-	db          *bun.DB
+	name string
+	db   *bun.DB
 }
 
 func (b *Bucket) getMigrator() *migrations.Migrator {
@@ -45,23 +42,8 @@ func (b *Bucket) Close() error {
 	return b.db.Close()
 }
 
-func (b *Bucket) openLedgerStore(name string) (*Store, error) {
-	return New(b, name, func(ctx context.Context) error {
-		return b.systemStore.DeleteLedger(ctx, name)
-	})
-}
-
 func (b *Bucket) createLedgerStore(ctx context.Context, name string) (*Store, error) {
-	_, err := b.systemStore.RegisterLedger(ctx, &systemstore.Ledger{
-		Name:    name,
-		AddedAt: ledger.Now(),
-		Bucket:  b.name,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	store, err := b.openLedgerStore(name)
+	store, err := New(b, name)
 	if err != nil {
 		return nil, err
 	}
@@ -78,42 +60,44 @@ func (b *Bucket) CreateLedgerStore(ctx context.Context, name string) (*Store, er
 	return b.createLedgerStore(ctx, name)
 }
 
-func (b *Bucket) GetLedgerStore(ctx context.Context, name string) (*Store, error) {
-	row := b.db.QueryRowContext(ctx, `SELECT EXISTS (
-		SELECT FROM 
-			pg_tables
-		WHERE 
-			schemaname = ? AND 
-			tablename  = ?
-		)`, b.name, "transactions_"+name)
-	if row.Err() != nil {
-		return nil, sqlutils.PostgresError(row.Err())
-	}
-
-	var t string
-	if err := row.Scan(&t); err != nil {
-		return nil, err
-	}
-	exists := t == "true"
-
-	var (
-		store *Store
-		err   error
-	)
-	if !exists {
-		store, err = b.createLedgerStore(ctx, name)
-	} else {
-		store, err = b.openLedgerStore(name)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	return store, nil
+func (b *Bucket) GetLedgerStore(name string) (*Store, error) {
+	return New(b, name)
 }
 
-func (b *Bucket) DB() *bun.DB {
-	return b.db
+func (b *Bucket) IsInitialized(ctx context.Context) (bool, error) {
+	row := b.db.QueryRowContext(ctx, `
+		select schema_name 
+		from information_schema.schemata 
+		where schema_name = ?;
+	`, b.name)
+	if row.Err() != nil {
+		return false, sqlutils.PostgresError(row.Err())
+	}
+	var t string
+	if err := row.Scan(&t); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+func (b *Bucket) HasLedger(ctx context.Context, name string) (bool, error) {
+	row := b.db.QueryRowContext(ctx, `
+		select tablename
+		from pg_tables
+		where schemaname = ? and tablename  = ?
+	`, b.name, "transactions_"+name)
+	if row.Err() != nil {
+		return false, sqlutils.PostgresError(row.Err())
+	}
+	var t string
+	if err := row.Scan(&t); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func registerMigrations(migrator *migrations.Migrator, name string) {
@@ -170,15 +154,14 @@ func registerMigrations(migrator *migrations.Migrator, name string) {
 	)
 }
 
-func ConnectToBucket(systemStore *systemstore.Store, connectionOptions sqlutils.ConnectionOptions, name string) (*Bucket, error) {
+func ConnectToBucket(connectionOptions sqlutils.ConnectionOptions, name string) (*Bucket, error) {
 	db, err := sqlutils.OpenDBWithSchema(connectionOptions, name)
 	if err != nil {
 		return nil, sqlutils.PostgresError(err)
 	}
 
 	return &Bucket{
-		db:          db,
-		name:        name,
-		systemStore: systemStore,
+		db:   db,
+		name: name,
 	}, nil
 }

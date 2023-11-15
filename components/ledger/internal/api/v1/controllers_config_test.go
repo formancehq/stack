@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/formancehq/ledger/internal/storage/systemstore"
+
 	v2 "github.com/formancehq/ledger/internal/api/v2"
 	"github.com/formancehq/ledger/internal/opentelemetry/metrics"
 	"github.com/stretchr/testify/require"
@@ -21,7 +23,14 @@ func TestGetInfo(t *testing.T) {
 	backend.
 		EXPECT().
 		ListLedgers(gomock.Any()).
-		Return([]string{"a", "b"}, nil)
+		Return([]systemstore.Ledger{
+			{
+				Name: "a",
+			},
+			{
+				Name: "b",
+			},
+		}, nil)
 
 	backend.
 		EXPECT().
