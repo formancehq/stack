@@ -617,6 +617,8 @@ components:
     StripeTransferRequest:
       type: object
       properties:
+        connectorID:
+          type: string
         amount:
           type: integer
           format: bigint

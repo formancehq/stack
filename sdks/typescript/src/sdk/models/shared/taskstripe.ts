@@ -22,8 +22,8 @@ export class TaskStripeDescriptor extends SpeakeasyBase {
 
 export class TaskStripe extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "connectorId" })
-  connectorId: string;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })

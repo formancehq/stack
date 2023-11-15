@@ -4,6 +4,7 @@ package shared
 
 type StripeConfig struct {
 	APIKey string `json:"apiKey"`
+	Name   string `json:"name"`
 	// Number of BalanceTransaction to fetch at each polling interval.
 	//
 	PageSize *int64 `json:"pageSize,omitempty"`

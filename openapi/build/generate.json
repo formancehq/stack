@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20231012"
+    "version": "v1.0.20231114"
   },
   "servers": [
     {
@@ -2398,13 +2398,14 @@
           "$ref": "#/components/requestBodies/ConnectorConfig"
         },
         "responses": {
-          "204": {
-            "$ref": "#/components/responses/NoContent"
+          "201": {
+            "$ref": "#/components/responses/ConnectorInstalled"
           }
         }
       },
       "delete": {
         "summary": "Uninstall a connector",
+        "deprecated": true,
         "operationId": "uninstallConnector",
         "tags": [
           "Payments"
@@ -2422,9 +2423,33 @@
         }
       }
     },
+    "/api/payments/connectors/{connector}/{connectorId}": {
+      "delete": {
+        "summary": "Uninstall a connector",
+        "operationId": "uninstallConnectorV1",
+        "tags": [
+          "Payments"
+        ],
+        "description": "Uninstall a connector by its name.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Connector"
+          },
+          {
+            "$ref": "#/components/parameters/ConnectorID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          }
+        }
+      }
+    },
     "/api/payments/connectors/{connector}/config": {
       "get": {
         "summary": "Read the config of a connector",
+        "deprecated": true,
         "operationId": "readConnectorConfig",
         "tags": [
           "Payments"
@@ -2442,9 +2467,33 @@
         }
       }
     },
+    "/api/payments/connectors/{connector}/{connectorId}/config": {
+      "get": {
+        "summary": "Read the config of a connector",
+        "operationId": "readConnectorConfigV1",
+        "tags": [
+          "Payments"
+        ],
+        "description": "Read connector config",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Connector"
+          },
+          {
+            "$ref": "#/components/parameters/ConnectorID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ConnectorConfig"
+          }
+        }
+      }
+    },
     "/api/payments/connectors/{connector}/reset": {
       "post": {
         "summary": "Reset a connector",
+        "deprecated": true,
         "operationId": "resetConnector",
         "tags": [
           "Payments"
@@ -2462,9 +2511,33 @@
         }
       }
     },
+    "/api/payments/connectors/{connector}/{connectorId}/reset": {
+      "post": {
+        "summary": "Reset a connector",
+        "operationId": "resetConnectorV1",
+        "tags": [
+          "Payments"
+        ],
+        "description": "Reset a connector by its name.\nIt will remove the connector and ALL PAYMENTS generated with it.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Connector"
+          },
+          {
+            "$ref": "#/components/parameters/ConnectorID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          }
+        }
+      }
+    },
     "/api/payments/connectors/{connector}/tasks": {
       "get": {
         "summary": "List tasks from a connector",
+        "deprecated": true,
         "tags": [
           "Payments"
         ],
@@ -2488,9 +2561,39 @@
         }
       }
     },
+    "/api/payments/connectors/{connector}/{connectorId}/tasks": {
+      "get": {
+        "summary": "List tasks from a connector",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "listConnectorTasksV1",
+        "description": "List all tasks associated with this connector.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Connector"
+          },
+          {
+            "$ref": "#/components/parameters/ConnectorID"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Tasks"
+          }
+        }
+      }
+    },
     "/api/payments/connectors/{connector}/tasks/{taskId}": {
       "get": {
         "summary": "Read a specific task of the connector",
+        "deprecated": true,
         "tags": [
           "Payments"
         ],
@@ -2499,6 +2602,32 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/Connector"
+          },
+          {
+            "$ref": "#/components/parameters/TaskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Task"
+          }
+        }
+      }
+    },
+    "/api/payments/connectors/{connector}/{connectorId}/tasks/{taskId}": {
+      "get": {
+        "summary": "Read a specific task of the connector",
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "getConnectorTaskV1",
+        "description": "Get a specific task associated to the connector.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Connector"
+          },
+          {
+            "$ref": "#/components/parameters/ConnectorID"
           },
           {
             "$ref": "#/components/parameters/TaskId"
@@ -2530,24 +2659,6 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/Transfer"
-          }
-        }
-      },
-      "get": {
-        "summary": "List transfers and their statuses",
-        "tags": [
-          "Payments"
-        ],
-        "operationId": "listConnectorsTransfers",
-        "description": "List transfers",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Connector"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/Transfers"
           }
         }
       }
@@ -5565,6 +5676,25 @@
           }
         }
       },
+      "ConnectorResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "connectorID"
+            ],
+            "properties": {
+              "connectorID": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
       "ConnectorsResponse": {
         "type": "object",
         "required": [
@@ -5575,13 +5705,20 @@
             "type": "array",
             "items": {
               "type": "object",
+              "required": [
+                "provider",
+                "name",
+                "connectorID"
+              ],
               "properties": {
                 "provider": {
                   "$ref": "#/components/schemas/Connector"
                 },
-                "enabled": {
-                  "type": "boolean",
-                  "example": true
+                "name": {
+                  "type": "string"
+                },
+                "connectorID": {
+                  "type": "string"
                 }
               }
             }
@@ -5776,9 +5913,14 @@
       "StripeConfig": {
         "type": "object",
         "required": [
+          "name",
           "apiKey"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Stripe Account"
+          },
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
@@ -5802,9 +5944,14 @@
       "DummyPayConfig": {
         "type": "object",
         "required": [
+          "name",
           "directory"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My DummyPay Account"
+          },
           "filePollingPeriod": {
             "type": "string",
             "example": "60s",
@@ -5826,9 +5973,14 @@
       "WiseConfig": {
         "type": "object",
         "required": [
+          "name",
           "apiKey"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Wise Account"
+          },
           "apiKey": {
             "type": "string",
             "example": "XXX"
@@ -5844,10 +5996,15 @@
       "ModulrConfig": {
         "type": "object",
         "required": [
+          "name",
           "apiKey",
           "apiSecret"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Modulr Account"
+          },
           "apiKey": {
             "type": "string",
             "example": "XXX"
@@ -5871,6 +6028,7 @@
       "BankingCircleConfig": {
         "type": "object",
         "required": [
+          "name",
           "username",
           "password",
           "endpoint",
@@ -5879,6 +6037,10 @@
           "userCertificateKey"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Banking Circle Account"
+          },
           "username": {
             "type": "string",
             "example": "XXX"
@@ -5914,11 +6076,16 @@
       "MangoPayConfig": {
         "type": "object",
         "required": [
+          "name",
           "clientID",
           "apiKey",
           "endpoint"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My MangoPay Account"
+          },
           "pollingPeriod": {
             "type": "string",
             "example": "60s",
@@ -5942,11 +6109,16 @@
       "MoneycorpConfig": {
         "type": "object",
         "required": [
+          "name",
           "clientID",
           "apiKey",
           "endpoint"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Moneycorp Account"
+          },
           "clientID": {
             "type": "string",
             "example": "XXX"
@@ -5970,10 +6142,15 @@
       "CurrencyCloudConfig": {
         "type": "object",
         "required": [
+          "name",
           "apiKey",
           "loginID"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "My CurrencyCloud Account"
+          },
           "apiKey": {
             "type": "string",
             "example": "XXX"
@@ -6002,10 +6179,11 @@
           "id",
           "createdAt",
           "updatedAt",
+          "scheduledAt",
           "description",
           "sourceAccountID",
           "destinationAccountID",
-          "provider",
+          "connectorID",
           "type",
           "amount",
           "asset",
@@ -6025,6 +6203,10 @@
             "type": "string",
             "format": "date-time"
           },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time"
+          },
           "description": {
             "type": "string"
           },
@@ -6034,8 +6216,8 @@
           "destinationAccountID": {
             "type": "string"
           },
-          "provider": {
-            "$ref": "#/components/schemas/Connector"
+          "connectorID": {
+            "type": "string"
           },
           "type": {
             "type": "string",
@@ -6096,7 +6278,7 @@
           "id",
           "createdAt",
           "country",
-          "provider"
+          "connectorID"
         ],
         "properties": {
           "id": {
@@ -6109,8 +6291,8 @@
           "country": {
             "type": "string"
           },
-          "provider": {
-            "$ref": "#/components/schemas/Connector"
+          "connectorID": {
+            "type": "string"
           },
           "iban": {
             "type": "string"
@@ -6128,10 +6310,10 @@
         "required": [
           "id",
           "reference",
+          "connectorID",
           "sourceAccountID",
           "destinationAccountID",
           "type",
-          "provider",
           "status",
           "initialAmount",
           "scheme",
@@ -6155,6 +6337,12 @@
           "destinationAccountID": {
             "type": "string"
           },
+          "connectorID": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Connector"
+          },
           "type": {
             "type": "string",
             "enum": [
@@ -6163,9 +6351,6 @@
               "TRANSFER",
               "OTHER"
             ]
-          },
-          "provider": {
-            "$ref": "#/components/schemas/Connector"
           },
           "status": {
             "$ref": "#/components/schemas/PaymentStatus"
@@ -6267,8 +6452,8 @@
         "required": [
           "id",
           "createdAt",
-          "provider",
           "reference",
+          "connectorID",
           "defaultCurrency",
           "defaultAsset",
           "accountName",
@@ -6283,10 +6468,10 @@
             "type": "string",
             "format": "date-time"
           },
-          "provider": {
-            "$ref": "#/components/schemas/Connector"
-          },
           "reference": {
+            "type": "string"
+          },
+          "connectorID": {
             "type": "string"
           },
           "defaultCurrency": {
@@ -6347,7 +6532,7 @@
         "type": "object",
         "required": [
           "id",
-          "connectorId",
+          "connectorID",
           "createdAt",
           "updatedAt",
           "descriptor",
@@ -6359,9 +6544,8 @@
             "type": "string",
             "format": "uuid"
           },
-          "connectorId": {
-            "type": "string",
-            "format": "uuid"
+          "connectorID": {
+            "type": "string"
           },
           "createdAt": {
             "type": "string",
@@ -6643,7 +6827,7 @@
         "type": "object",
         "required": [
           "country",
-          "provider",
+          "connectorID",
           "name"
         ],
         "properties": {
@@ -6651,8 +6835,8 @@
             "type": "string",
             "example": "GB"
           },
-          "provider": {
-            "$ref": "#/components/schemas/Connector"
+          "connectorID": {
+            "type": "string"
           },
           "name": {
             "type": "string",
@@ -6673,11 +6857,10 @@
         "type": "object",
         "required": [
           "reference",
-          "createdAt",
+          "scheduledAt",
           "description",
           "sourceAccountID",
           "destinationAccountID",
-          "provider",
           "type",
           "amount",
           "asset",
@@ -6688,7 +6871,7 @@
             "type": "string",
             "example": "XXX"
           },
-          "createdAt": {
+          "scheduledAt": {
             "type": "string",
             "format": "date-time"
           },
@@ -6699,6 +6882,9 @@
             "type": "string"
           },
           "destinationAccountID": {
+            "type": "string"
+          },
+          "connectorID": {
             "type": "string"
           },
           "provider": {
@@ -8338,6 +8524,9 @@
       "StripeTransferRequest": {
         "type": "object",
         "properties": {
+          "connectorID": {
+            "type": "string"
+          },
           "amount": {
             "type": "integer",
             "format": "bigint",
@@ -8644,6 +8833,16 @@
           }
         }
       },
+      "ConnectorInstalled": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConnectorResponse"
+            }
+          }
+        }
+      },
       "Connectors": {
         "description": "OK",
         "content": {
@@ -8809,6 +9008,16 @@
           "type": "string"
         },
         "description": "The account ID.",
+        "example": "XXX",
+        "required": true
+      },
+      "ConnectorID": {
+        "name": "connectorId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The connector ID.",
         "example": "XXX",
         "required": true
       },

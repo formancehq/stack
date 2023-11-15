@@ -21,6 +21,11 @@ class ActivityStripeTransfer
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $asset = null;
     
+	#[\JMS\Serializer\Annotation\SerializedName('connectorID')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?string $connectorID = null;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('destination')]
     #[\JMS\Serializer\Annotation\Type('string')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
@@ -43,6 +48,7 @@ class ActivityStripeTransfer
 	{
 		$this->amount = null;
 		$this->asset = null;
+		$this->connectorID = null;
 		$this->destination = null;
 		$this->metadata = null;
 	}

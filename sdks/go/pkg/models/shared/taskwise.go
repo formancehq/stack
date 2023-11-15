@@ -13,7 +13,7 @@ type TaskWiseDescriptor struct {
 }
 
 type TaskWise struct {
-	ConnectorID string                 `json:"connectorId"`
+	ConnectorID string                 `json:"connectorID"`
 	CreatedAt   time.Time              `json:"createdAt"`
 	Descriptor  TaskWiseDescriptor     `json:"descriptor"`
 	Error       *string                `json:"error,omitempty"`

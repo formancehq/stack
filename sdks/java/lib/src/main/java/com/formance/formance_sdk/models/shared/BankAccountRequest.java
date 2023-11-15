@@ -18,6 +18,14 @@ public class BankAccountRequest {
         return this;
     }
     
+    @JsonProperty("connectorID")
+    public String connectorID;
+
+    public BankAccountRequest withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
+        return this;
+    }
+    
     @JsonProperty("country")
     public String country;
 
@@ -43,14 +51,6 @@ public class BankAccountRequest {
         return this;
     }
     
-    @JsonProperty("provider")
-    public Connector provider;
-
-    public BankAccountRequest withProvider(Connector provider) {
-        this.provider = provider;
-        return this;
-    }
-    
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("swiftBicCode")
     public String swiftBicCode;
@@ -60,9 +60,9 @@ public class BankAccountRequest {
         return this;
     }
     
-    public BankAccountRequest(@JsonProperty("country") String country, @JsonProperty("name") String name, @JsonProperty("provider") Connector provider) {
+    public BankAccountRequest(@JsonProperty("connectorID") String connectorID, @JsonProperty("country") String country, @JsonProperty("name") String name) {
+        this.connectorID = connectorID;
         this.country = country;
         this.name = name;
-        this.provider = provider;
   }
 }

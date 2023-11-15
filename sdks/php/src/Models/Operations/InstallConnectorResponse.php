@@ -11,6 +11,14 @@ namespace formance\stack\Models\Operations;
 
 class InstallConnectorResponse
 {
+    /**
+     * OK
+     * 
+     * @var ?\formance\stack\Models\Shared\ConnectorResponse $connectorResponse
+     */
+	
+    public ?\formance\stack\Models\Shared\ConnectorResponse $connectorResponse = null;
+    
 	
     public string $contentType;
     
@@ -22,6 +30,7 @@ class InstallConnectorResponse
     
 	public function __construct()
 	{
+		$this->connectorResponse = null;
 		$this->contentType = "";
 		$this->statusCode = 0;
 		$this->rawResponse = null;

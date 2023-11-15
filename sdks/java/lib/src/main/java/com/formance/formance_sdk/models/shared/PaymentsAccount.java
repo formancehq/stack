@@ -20,6 +20,14 @@ public class PaymentsAccount {
         return this;
     }
     
+    @JsonProperty("connectorID")
+    public String connectorID;
+
+    public PaymentsAccount withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
+        return this;
+    }
+    
     @JsonSerialize(using = DateTimeSerializer.class)
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonProperty("createdAt")
@@ -54,14 +62,6 @@ public class PaymentsAccount {
         return this;
     }
     
-    @JsonProperty("provider")
-    public Connector provider;
-
-    public PaymentsAccount withProvider(Connector provider) {
-        this.provider = provider;
-        return this;
-    }
-    
     @JsonProperty("raw")
     public java.util.Map<String, Object> raw;
 
@@ -86,13 +86,13 @@ public class PaymentsAccount {
         return this;
     }
     
-    public PaymentsAccount(@JsonProperty("accountName") String accountName, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("defaultAsset") String defaultAsset, @JsonProperty("defaultCurrency") String defaultCurrency, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("type") String type) {
+    public PaymentsAccount(@JsonProperty("accountName") String accountName, @JsonProperty("connectorID") String connectorID, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("defaultAsset") String defaultAsset, @JsonProperty("defaultCurrency") String defaultCurrency, @JsonProperty("id") String id, @JsonProperty("raw") java.util.Map<String, Object> raw, @JsonProperty("reference") String reference, @JsonProperty("type") String type) {
         this.accountName = accountName;
+        this.connectorID = connectorID;
         this.createdAt = createdAt;
         this.defaultAsset = defaultAsset;
         this.defaultCurrency = defaultCurrency;
         this.id = id;
-        this.provider = provider;
         this.raw = raw;
         this.reference = reference;
         this.type = type;

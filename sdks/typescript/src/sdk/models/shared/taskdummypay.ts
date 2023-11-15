@@ -22,8 +22,8 @@ export class TaskDummyPayDescriptor extends SpeakeasyBase {
 
 export class TaskDummyPay extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "connectorId" })
-  connectorId: string;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })

@@ -22,8 +22,8 @@ export class TaskMangoPayDescriptor extends SpeakeasyBase {
 
 export class TaskMangoPay extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "connectorId" })
-  connectorId: string;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })

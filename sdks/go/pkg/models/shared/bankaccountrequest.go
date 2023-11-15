@@ -3,10 +3,10 @@
 package shared
 
 type BankAccountRequest struct {
-	AccountNumber *string   `json:"accountNumber,omitempty"`
-	Country       string    `json:"country"`
-	Iban          *string   `json:"iban,omitempty"`
-	Name          string    `json:"name"`
-	Provider      Connector `json:"provider"`
-	SwiftBicCode  *string   `json:"swiftBicCode,omitempty"`
+	AccountNumber *string `json:"accountNumber,omitempty"`
+	ConnectorID   string  `json:"connectorID"`
+	Country       string  `json:"country"`
+	Iban          *string `json:"iban,omitempty"`
+	Name          string  `json:"name"`
+	SwiftBicCode  *string `json:"swiftBicCode,omitempty"`
 }

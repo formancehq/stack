@@ -34,6 +34,14 @@ public class ModulrConfig {
         return this;
     }
     
+    @JsonProperty("name")
+    public String name;
+
+    public ModulrConfig withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
     /**
      * The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.
      * 
@@ -47,8 +55,9 @@ public class ModulrConfig {
         return this;
     }
     
-    public ModulrConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("apiSecret") String apiSecret) {
+    public ModulrConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("apiSecret") String apiSecret, @JsonProperty("name") String name) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
+        this.name = name;
   }
 }

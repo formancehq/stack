@@ -8,10 +8,10 @@ import (
 
 type BankAccount struct {
 	AccountNumber *string   `json:"accountNumber,omitempty"`
+	ConnectorID   string    `json:"connectorID"`
 	Country       string    `json:"country"`
 	CreatedAt     time.Time `json:"createdAt"`
 	Iban          *string   `json:"iban,omitempty"`
 	ID            string    `json:"id"`
-	Provider      Connector `json:"provider"`
 	SwiftBicCode  *string   `json:"swiftBicCode,omitempty"`
 }

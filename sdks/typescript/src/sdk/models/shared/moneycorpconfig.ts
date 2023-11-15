@@ -18,6 +18,10 @@ export class MoneycorpConfig extends SpeakeasyBase {
   @Expose({ name: "endpoint" })
   endpoint: string;
 
+  @SpeakeasyMetadata()
+  @Expose({ name: "name" })
+  name: string;
+
   /**
    * The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.
    *

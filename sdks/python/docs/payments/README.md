@@ -8,25 +8,29 @@
 * [delete_transfer_initiation](#delete_transfer_initiation) - Delete a transfer initiation
 * [get_account_balances](#get_account_balances) - Get account balances
 * [get_bank_account](#get_bank_account) - Get a bank account created by user on Formance
-* [get_connector_task](#get_connector_task) - Read a specific task of the connector
+* [~~get_connector_task~~](#get_connector_task) - Read a specific task of the connector :warning: **Deprecated**
+* [get_connector_task_v1](#get_connector_task_v1) - Read a specific task of the connector
 * [get_payment](#get_payment) - Get a payment
 * [get_transfer_initiation](#get_transfer_initiation) - Get a transfer initiation
 * [install_connector](#install_connector) - Install a connector
 * [list_all_connectors](#list_all_connectors) - List all installed connectors
 * [list_bank_accounts](#list_bank_accounts) - List bank accounts created by user on Formance
 * [list_configs_available_connectors](#list_configs_available_connectors) - List the configs of each available connector
-* [list_connector_tasks](#list_connector_tasks) - List tasks from a connector
-* [list_connectors_transfers](#list_connectors_transfers) - List transfers and their statuses
+* [~~list_connector_tasks~~](#list_connector_tasks) - List tasks from a connector :warning: **Deprecated**
+* [list_connector_tasks_v1](#list_connector_tasks_v1) - List tasks from a connector
 * [list_payments](#list_payments) - List payments
 * [list_transfer_initiations](#list_transfer_initiations) - List Transfer Initiations
 * [paymentsget_account](#paymentsget_account) - Get an account
 * [paymentsget_server_info](#paymentsget_server_info) - Get server info
 * [paymentslist_accounts](#paymentslist_accounts) - List accounts
-* [read_connector_config](#read_connector_config) - Read the config of a connector
-* [reset_connector](#reset_connector) - Reset a connector
+* [~~read_connector_config~~](#read_connector_config) - Read the config of a connector :warning: **Deprecated**
+* [read_connector_config_v1](#read_connector_config_v1) - Read the config of a connector
+* [~~reset_connector~~](#reset_connector) - Reset a connector :warning: **Deprecated**
+* [reset_connector_v1](#reset_connector_v1) - Reset a connector
 * [retry_transfer_initiation](#retry_transfer_initiation) - Retry a failed transfer initiation
 * [udpate_transfer_initiation_status](#udpate_transfer_initiation_status) - Update the status of a transfer initiation
-* [uninstall_connector](#uninstall_connector) - Uninstall a connector
+* [~~uninstall_connector~~](#uninstall_connector) - Uninstall a connector :warning: **Deprecated**
+* [uninstall_connector_v1](#uninstall_connector_v1) - Uninstall a connector
 * [update_metadata](#update_metadata) - Update metadata
 
 ## connectors_transfer
@@ -79,10 +83,10 @@ s = sdk.SDK(
 
 req = shared.BankAccountRequest(
     account_number='voluptates',
+    connector_id='quasi',
     country='GB',
-    iban='quasi',
+    iban='repudiandae',
     name='My account',
-    provider=shared.Connector.MONEYCORP,
     swift_bic_code='sint',
 )
 
@@ -112,13 +116,14 @@ s = sdk.SDK(
 req = shared.TransferInitiationRequest(
     amount=83112,
     asset='USD',
-    created_at=dateutil.parser.isoparse('2022-03-02T21:33:21.372Z'),
-    description='enim',
-    destination_account_id='consequatur',
-    provider=shared.Connector.BANKING_CIRCLE,
+    connector_id='itaque',
+    description='incidunt',
+    destination_account_id='enim',
+    provider=shared.Connector.STRIPE,
     reference='XXX',
-    source_account_id='quibusdam',
-    type=shared.TransferInitiationRequestType.TRANSFER,
+    scheduled_at=dateutil.parser.isoparse('2021-04-26T02:10:00.226Z'),
+    source_account_id='explicabo',
+    type=shared.TransferInitiationRequestType.PAYOUT,
     validated=False,
 )
 
@@ -145,7 +150,7 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteTransferInitiationRequest(
-    transfer_id='deserunt',
+    transfer_id='distinctio',
 )
 
 res = s.payments.delete_transfer_initiation(req)
@@ -172,18 +177,18 @@ s = sdk.SDK(
 )
 
 req = operations.GetAccountBalancesRequest(
-    account_id='distinctio',
-    asset='quibusdam',
+    account_id='quibusdam',
+    asset='labore',
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    from_=dateutil.parser.isoparse('2022-09-26T08:57:48.803Z'),
-    limit=183191,
-    page_size=397821,
+    from_=dateutil.parser.isoparse('2022-10-26T03:14:36.345Z'),
+    limit=397821,
+    page_size=586513,
     sort=[
-        'quos',
         'perferendis',
         'magni',
+        'assumenda',
     ],
-    to=dateutil.parser.isoparse('2021-11-22T01:26:35.048Z'),
+    to=dateutil.parser.isoparse('2022-12-30T06:52:02.282Z'),
 )
 
 res = s.payments.get_account_balances(req)
@@ -209,7 +214,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetBankAccountRequest(
-    bank_account_id='alias',
+    bank_account_id='fugit',
 )
 
 res = s.payments.get_bank_account(req)
@@ -218,7 +223,36 @@ if res.bank_account_response is not None:
     # handle response
 ```
 
-## get_connector_task
+## ~~get_connector_task~~
+
+Get a specific task associated to the connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```python
+import sdk
+from sdk.models import operations, shared
+
+s = sdk.SDK(
+    security=shared.Security(
+        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
+    ),
+)
+
+req = operations.GetConnectorTaskRequest(
+    connector=shared.Connector.BANKING_CIRCLE,
+    task_id='excepturi',
+)
+
+res = s.payments.get_connector_task(req)
+
+if res.task_response is not None:
+    # handle response
+```
+
+## get_connector_task_v1
 
 Get a specific task associated to the connector.
 
@@ -234,12 +268,13 @@ s = sdk.SDK(
     ),
 )
 
-req = operations.GetConnectorTaskRequest(
-    connector=shared.Connector.DUMMY_PAY,
-    task_id='dolorum',
+req = operations.GetConnectorTaskV1Request(
+    connector=shared.Connector.WISE,
+    connector_id='facilis',
+    task_id='tempore',
 )
 
-res = s.payments.get_connector_task(req)
+res = s.payments.get_connector_task_v1(req)
 
 if res.task_response is not None:
     # handle response
@@ -262,7 +297,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetPaymentRequest(
-    payment_id='excepturi',
+    payment_id='labore',
 )
 
 res = s.payments.get_payment(req)
@@ -288,7 +323,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetTransferInitiationRequest(
-    transfer_id='tempora',
+    transfer_id='delectus',
 )
 
 res = s.payments.get_transfer_initiation(req)
@@ -314,21 +349,19 @@ s = sdk.SDK(
 )
 
 req = operations.InstallConnectorRequest(
-    request_body=shared.BankingCircleConfig(
-        authorization_endpoint='XXX',
+    request_body=shared.ModulrConfig(
+        api_key='XXX',
+        api_secret='XXX',
         endpoint='XXX',
-        password='XXX',
+        name='My Modulr Account',
         polling_period='60s',
-        user_certificate='XXX',
-        user_certificate_key='XXX',
-        username='XXX',
     ),
-    connector=shared.Connector.BANKING_CIRCLE,
+    connector=shared.Connector.DUMMY_PAY,
 )
 
 res = s.payments.install_connector(req)
 
-if res.status_code == 200:
+if res.connector_response is not None:
     # handle response
 ```
 
@@ -373,12 +406,11 @@ s = sdk.SDK(
 
 req = operations.ListBankAccountsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=288476,
+    page_size=756107,
     sort=[
-        'eum',
-        'non',
-        'eligendi',
-        'sint',
+        'aliquid',
+        'provident',
+        'necessitatibus',
     ],
 )
 
@@ -411,7 +443,37 @@ if res.connectors_configs_response is not None:
     # handle response
 ```
 
-## list_connector_tasks
+## ~~list_connector_tasks~~
+
+List all tasks associated with this connector.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```python
+import sdk
+from sdk.models import operations, shared
+
+s = sdk.SDK(
+    security=shared.Security(
+        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
+    ),
+)
+
+req = operations.ListConnectorTasksRequest(
+    connector=shared.Connector.CURRENCY_CLOUD,
+    cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
+    page_size=638921,
+)
+
+res = s.payments.list_connector_tasks(req)
+
+if res.tasks_cursor is not None:
+    # handle response
+```
+
+## list_connector_tasks_v1
 
 List all tasks associated with this connector.
 
@@ -427,41 +489,16 @@ s = sdk.SDK(
     ),
 )
 
-req = operations.ListConnectorTasksRequest(
-    connector=shared.Connector.MODULR,
+req = operations.ListConnectorTasksV1Request(
+    connector=shared.Connector.DUMMY_PAY,
+    connector_id='debitis',
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=592042,
+    page_size=952749,
 )
 
-res = s.payments.list_connector_tasks(req)
+res = s.payments.list_connector_tasks_v1(req)
 
 if res.tasks_cursor is not None:
-    # handle response
-```
-
-## list_connectors_transfers
-
-List transfers
-
-### Example Usage
-
-```python
-import sdk
-from sdk.models import operations, shared
-
-s = sdk.SDK(
-    security=shared.Security(
-        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
-    ),
-)
-
-req = operations.ListConnectorsTransfersRequest(
-    connector=shared.Connector.MONEYCORP,
-)
-
-res = s.payments.list_connectors_transfers(req)
-
-if res.transfers_response is not None:
     # handle response
 ```
 
@@ -483,11 +520,10 @@ s = sdk.SDK(
 
 req = operations.ListPaymentsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=572252,
+    page_size=680056,
     sort=[
-        'dolor',
-        'debitis',
-        'a',
+        'in',
+        'illum',
     ],
 )
 
@@ -515,11 +551,10 @@ s = sdk.SDK(
 
 req = operations.ListTransferInitiationsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=680056,
-    query='in',
+    page_size=978571,
+    query='rerum',
     sort=[
-        'illum',
-        'maiores',
+        'magnam',
     ],
 )
 
@@ -546,7 +581,7 @@ s = sdk.SDK(
 )
 
 req = operations.PaymentsgetAccountRequest(
-    account_id='rerum',
+    account_id='cumque',
 )
 
 res = s.payments.paymentsget_account(req)
@@ -596,10 +631,10 @@ s = sdk.SDK(
 
 req = operations.PaymentslistAccountsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=116202,
+    page_size=813798,
     sort=[
-        'cumque',
-        'facere',
+        'aliquid',
+        'laborum',
     ],
 )
 
@@ -609,7 +644,35 @@ if res.accounts_cursor is not None:
     # handle response
 ```
 
-## read_connector_config
+## ~~read_connector_config~~
+
+Read connector config
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```python
+import sdk
+from sdk.models import operations, shared
+
+s = sdk.SDK(
+    security=shared.Security(
+        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
+    ),
+)
+
+req = operations.ReadConnectorConfigRequest(
+    connector=shared.Connector.MONEYCORP,
+)
+
+res = s.payments.read_connector_config(req)
+
+if res.connector_config_response is not None:
+    # handle response
+```
+
+## read_connector_config_v1
 
 Read connector config
 
@@ -625,17 +688,48 @@ s = sdk.SDK(
     ),
 )
 
-req = operations.ReadConnectorConfigRequest(
-    connector=shared.Connector.MODULR,
+req = operations.ReadConnectorConfigV1Request(
+    connector=shared.Connector.DUMMY_PAY,
+    connector_id='occaecati',
 )
 
-res = s.payments.read_connector_config(req)
+res = s.payments.read_connector_config_v1(req)
 
 if res.connector_config_response is not None:
     # handle response
 ```
 
-## reset_connector
+## ~~reset_connector~~
+
+Reset a connector by its name.
+It will remove the connector and ALL PAYMENTS generated with it.
+
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```python
+import sdk
+from sdk.models import operations, shared
+
+s = sdk.SDK(
+    security=shared.Security(
+        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
+    ),
+)
+
+req = operations.ResetConnectorRequest(
+    connector=shared.Connector.WISE,
+)
+
+res = s.payments.reset_connector(req)
+
+if res.status_code == 200:
+    # handle response
+```
+
+## reset_connector_v1
 
 Reset a connector by its name.
 It will remove the connector and ALL PAYMENTS generated with it.
@@ -653,11 +747,12 @@ s = sdk.SDK(
     ),
 )
 
-req = operations.ResetConnectorRequest(
-    connector=shared.Connector.MODULR,
+req = operations.ResetConnectorV1Request(
+    connector=shared.Connector.MONEYCORP,
+    connector_id='delectus',
 )
 
-res = s.payments.reset_connector(req)
+res = s.payments.reset_connector_v1(req)
 
 if res.status_code == 200:
     # handle response
@@ -680,7 +775,7 @@ s = sdk.SDK(
 )
 
 req = operations.RetryTransferInitiationRequest(
-    transfer_id='laborum',
+    transfer_id='quidem',
 )
 
 res = s.payments.retry_transfer_initiation(req)
@@ -707,9 +802,9 @@ s = sdk.SDK(
 
 req = operations.UdpateTransferInitiationStatusRequest(
     update_transfer_initiation_status_request=shared.UpdateTransferInitiationStatusRequest(
-        status=shared.UpdateTransferInitiationStatusRequestStatus.VALIDATED,
+        status=shared.UpdateTransferInitiationStatusRequestStatus.FAILED,
     ),
-    transfer_id='non',
+    transfer_id='nam',
 )
 
 res = s.payments.udpate_transfer_initiation_status(req)
@@ -718,7 +813,35 @@ if res.status_code == 200:
     # handle response
 ```
 
-## uninstall_connector
+## ~~uninstall_connector~~
+
+Uninstall a connector by its name.
+
+> :warning: **DEPRECATED**: this method will be removed in a future release, please migrate away from it as soon as possible.
+
+### Example Usage
+
+```python
+import sdk
+from sdk.models import operations, shared
+
+s = sdk.SDK(
+    security=shared.Security(
+        authorization="Bearer YOUR_ACCESS_TOKEN_HERE",
+    ),
+)
+
+req = operations.UninstallConnectorRequest(
+    connector=shared.Connector.BANKING_CIRCLE,
+)
+
+res = s.payments.uninstall_connector(req)
+
+if res.status_code == 200:
+    # handle response
+```
+
+## uninstall_connector_v1
 
 Uninstall a connector by its name.
 
@@ -734,11 +857,12 @@ s = sdk.SDK(
     ),
 )
 
-req = operations.UninstallConnectorRequest(
+req = operations.UninstallConnectorV1Request(
     connector=shared.Connector.CURRENCY_CLOUD,
+    connector_id='deleniti',
 )
 
-res = s.payments.uninstall_connector(req)
+res = s.payments.uninstall_connector_v1(req)
 
 if res.status_code == 200:
     # handle response
@@ -762,9 +886,9 @@ s = sdk.SDK(
 
 req = operations.UpdateMetadataRequest(
     payment_metadata=shared.PaymentMetadata(
-        key='enim',
+        key='sapiente',
     ),
-    payment_id='accusamus',
+    payment_id='amet',
 )
 
 res = s.payments.update_metadata(req)

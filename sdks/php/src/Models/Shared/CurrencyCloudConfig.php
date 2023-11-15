@@ -34,6 +34,10 @@ class CurrencyCloudConfig
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $loginID;
     
+	#[\JMS\Serializer\Annotation\SerializedName('name')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $name;
+    
     /**
      * The frequency at which the connector will fetch transactions
      * 
@@ -49,6 +53,7 @@ class CurrencyCloudConfig
 		$this->apiKey = "";
 		$this->endpoint = null;
 		$this->loginID = "";
+		$this->name = "";
 		$this->pollingPeriod = null;
 	}
 }

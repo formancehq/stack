@@ -8,6 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.http.HttpResponse;
 
 public class InstallConnectorResponse {
+    /**
+     * OK
+     */
+    
+    public com.formance.formance_sdk.models.shared.ConnectorResponse connectorResponse;
+
+    public InstallConnectorResponse withConnectorResponse(com.formance.formance_sdk.models.shared.ConnectorResponse connectorResponse) {
+        this.connectorResponse = connectorResponse;
+        return this;
+    }
+    
     
     public String contentType;
 

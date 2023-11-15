@@ -3,8 +3,9 @@
 package shared
 
 type ConnectorsResponseData struct {
-	Enabled  *bool      `json:"enabled,omitempty"`
-	Provider *Connector `json:"provider,omitempty"`
+	ConnectorID string    `json:"connectorID"`
+	Name        string    `json:"name"`
+	Provider    Connector `json:"provider"`
 }
 
 // ConnectorsResponse - OK

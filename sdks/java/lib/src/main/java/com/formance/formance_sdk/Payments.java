@@ -290,7 +290,9 @@ public class Payments {
      * @param request the request object containing all of the parameters for the API call
      * @return the response from the API call
      * @throws Exception if the API call fails
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
+    @Deprecated
     public com.formance.formance_sdk.models.operations.GetConnectorTaskResponse getConnectorTask(com.formance.formance_sdk.models.operations.GetConnectorTaskRequest request) throws Exception {
         String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetConnectorTaskRequest.class, baseUrl, "/api/payments/connectors/{connector}/tasks/{taskId}", request, null);
@@ -309,6 +311,46 @@ public class Payments {
         String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
 
         com.formance.formance_sdk.models.operations.GetConnectorTaskResponse res = new com.formance.formance_sdk.models.operations.GetConnectorTaskResponse(contentType, httpRes.statusCode()) {{
+            taskResponse = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.TaskResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.TaskResponse.class);
+                res.taskResponse = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * Read a specific task of the connector
+     * Get a specific task associated to the connector.
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.GetConnectorTaskV1Response getConnectorTaskV1(com.formance.formance_sdk.models.operations.GetConnectorTaskV1Request request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.GetConnectorTaskV1Request.class, baseUrl, "/api/payments/connectors/{connector}/{connectorId}/tasks/{taskId}", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("GET");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.GetConnectorTaskV1Response res = new com.formance.formance_sdk.models.operations.GetConnectorTaskV1Response(contentType, httpRes.statusCode()) {{
             taskResponse = null;
         }};
         res.rawResponse = httpRes;
@@ -422,7 +464,7 @@ public class Payments {
         }
         req.setBody(serializedRequestBody);
 
-        req.addHeader("Accept", "*/*");
+        req.addHeader("Accept", "application/json");
         req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
         
         HTTPClient client = this._securityClient;
@@ -432,10 +474,16 @@ public class Payments {
         String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
 
         com.formance.formance_sdk.models.operations.InstallConnectorResponse res = new com.formance.formance_sdk.models.operations.InstallConnectorResponse(contentType, httpRes.statusCode()) {{
+            connectorResponse = null;
         }};
         res.rawResponse = httpRes;
         
-        if (httpRes.statusCode() == 204) {
+        if (httpRes.statusCode() == 201) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.ConnectorResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ConnectorResponse.class);
+                res.connectorResponse = out;
+            }
         }
 
         return res;
@@ -571,7 +619,9 @@ public class Payments {
      * @param request the request object containing all of the parameters for the API call
      * @return the response from the API call
      * @throws Exception if the API call fails
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
+    @Deprecated
     public com.formance.formance_sdk.models.operations.ListConnectorTasksResponse listConnectorTasks(com.formance.formance_sdk.models.operations.ListConnectorTasksRequest request) throws Exception {
         String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.ListConnectorTasksRequest.class, baseUrl, "/api/payments/connectors/{connector}/tasks", request, null);
@@ -612,15 +662,15 @@ public class Payments {
     }
 
     /**
-     * List transfers and their statuses
-     * List transfers
+     * List tasks from a connector
+     * List all tasks associated with this connector.
      * @param request the request object containing all of the parameters for the API call
      * @return the response from the API call
      * @throws Exception if the API call fails
      */
-    public com.formance.formance_sdk.models.operations.ListConnectorsTransfersResponse listConnectorsTransfers(com.formance.formance_sdk.models.operations.ListConnectorsTransfersRequest request) throws Exception {
+    public com.formance.formance_sdk.models.operations.ListConnectorTasksV1Response listConnectorTasksV1(com.formance.formance_sdk.models.operations.ListConnectorTasksV1Request request) throws Exception {
         String baseUrl = this._serverUrl;
-        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.ListConnectorsTransfersRequest.class, baseUrl, "/api/payments/connectors/{connector}/transfers", request, null);
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.ListConnectorTasksV1Request.class, baseUrl, "/api/payments/connectors/{connector}/{connectorId}/tasks", request, null);
         
         HTTPRequest req = new HTTPRequest();
         req.setMethod("GET");
@@ -628,6 +678,12 @@ public class Payments {
 
         req.addHeader("Accept", "application/json");
         req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        java.util.List<NameValuePair> queryParams = com.formance.formance_sdk.utils.Utils.getQueryParams(com.formance.formance_sdk.models.operations.ListConnectorTasksV1Request.class, request, null);
+        if (queryParams != null) {
+            for (NameValuePair queryParam : queryParams) {
+                req.addQueryParam(queryParam);
+            }
+        }
         
         HTTPClient client = this._securityClient;
         
@@ -635,16 +691,16 @@ public class Payments {
 
         String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
 
-        com.formance.formance_sdk.models.operations.ListConnectorsTransfersResponse res = new com.formance.formance_sdk.models.operations.ListConnectorsTransfersResponse(contentType, httpRes.statusCode()) {{
-            transfersResponse = null;
+        com.formance.formance_sdk.models.operations.ListConnectorTasksV1Response res = new com.formance.formance_sdk.models.operations.ListConnectorTasksV1Response(contentType, httpRes.statusCode()) {{
+            tasksCursor = null;
         }};
         res.rawResponse = httpRes;
         
         if (httpRes.statusCode() == 200) {
             if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
                 ObjectMapper mapper = JSON.getMapper();
-                com.formance.formance_sdk.models.shared.TransfersResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.TransfersResponse.class);
-                res.transfersResponse = out;
+                com.formance.formance_sdk.models.shared.TasksCursor out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.TasksCursor.class);
+                res.tasksCursor = out;
             }
         }
 
@@ -869,7 +925,9 @@ public class Payments {
      * @param request the request object containing all of the parameters for the API call
      * @return the response from the API call
      * @throws Exception if the API call fails
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
+    @Deprecated
     public com.formance.formance_sdk.models.operations.ReadConnectorConfigResponse readConnectorConfig(com.formance.formance_sdk.models.operations.ReadConnectorConfigRequest request) throws Exception {
         String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.ReadConnectorConfigRequest.class, baseUrl, "/api/payments/connectors/{connector}/config", request, null);
@@ -904,6 +962,46 @@ public class Payments {
     }
 
     /**
+     * Read the config of a connector
+     * Read connector config
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.ReadConnectorConfigV1Response readConnectorConfigV1(com.formance.formance_sdk.models.operations.ReadConnectorConfigV1Request request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.ReadConnectorConfigV1Request.class, baseUrl, "/api/payments/connectors/{connector}/{connectorId}/config", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("GET");
+        req.setURL(url);
+
+        req.addHeader("Accept", "application/json");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.ReadConnectorConfigV1Response res = new com.formance.formance_sdk.models.operations.ReadConnectorConfigV1Response(contentType, httpRes.statusCode()) {{
+            connectorConfigResponse = null;
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 200) {
+            if (com.formance.formance_sdk.utils.Utils.matchContentType(contentType, "application/json")) {
+                ObjectMapper mapper = JSON.getMapper();
+                com.formance.formance_sdk.models.shared.ConnectorConfigResponse out = mapper.readValue(new String(httpRes.body(), StandardCharsets.UTF_8), com.formance.formance_sdk.models.shared.ConnectorConfigResponse.class);
+                res.connectorConfigResponse = out;
+            }
+        }
+
+        return res;
+    }
+
+    /**
      * Reset a connector
      * Reset a connector by its name.
      * It will remove the connector and ALL PAYMENTS generated with it.
@@ -911,7 +1009,9 @@ public class Payments {
      * @param request the request object containing all of the parameters for the API call
      * @return the response from the API call
      * @throws Exception if the API call fails
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
+    @Deprecated
     public com.formance.formance_sdk.models.operations.ResetConnectorResponse resetConnector(com.formance.formance_sdk.models.operations.ResetConnectorRequest request) throws Exception {
         String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.ResetConnectorRequest.class, baseUrl, "/api/payments/connectors/{connector}/reset", request, null);
@@ -930,6 +1030,42 @@ public class Payments {
         String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
 
         com.formance.formance_sdk.models.operations.ResetConnectorResponse res = new com.formance.formance_sdk.models.operations.ResetConnectorResponse(contentType, httpRes.statusCode()) {{
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 204) {
+        }
+
+        return res;
+    }
+
+    /**
+     * Reset a connector
+     * Reset a connector by its name.
+     * It will remove the connector and ALL PAYMENTS generated with it.
+     * 
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.ResetConnectorV1Response resetConnectorV1(com.formance.formance_sdk.models.operations.ResetConnectorV1Request request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.ResetConnectorV1Request.class, baseUrl, "/api/payments/connectors/{connector}/{connectorId}/reset", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("POST");
+        req.setURL(url);
+
+        req.addHeader("Accept", "*/*");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.ResetConnectorV1Response res = new com.formance.formance_sdk.models.operations.ResetConnectorV1Response(contentType, httpRes.statusCode()) {{
         }};
         res.rawResponse = httpRes;
         
@@ -1018,7 +1154,9 @@ public class Payments {
      * @param request the request object containing all of the parameters for the API call
      * @return the response from the API call
      * @throws Exception if the API call fails
+     * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
      */
+    @Deprecated
     public com.formance.formance_sdk.models.operations.UninstallConnectorResponse uninstallConnector(com.formance.formance_sdk.models.operations.UninstallConnectorRequest request) throws Exception {
         String baseUrl = this._serverUrl;
         String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.UninstallConnectorRequest.class, baseUrl, "/api/payments/connectors/{connector}", request, null);
@@ -1037,6 +1175,40 @@ public class Payments {
         String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
 
         com.formance.formance_sdk.models.operations.UninstallConnectorResponse res = new com.formance.formance_sdk.models.operations.UninstallConnectorResponse(contentType, httpRes.statusCode()) {{
+        }};
+        res.rawResponse = httpRes;
+        
+        if (httpRes.statusCode() == 204) {
+        }
+
+        return res;
+    }
+
+    /**
+     * Uninstall a connector
+     * Uninstall a connector by its name.
+     * @param request the request object containing all of the parameters for the API call
+     * @return the response from the API call
+     * @throws Exception if the API call fails
+     */
+    public com.formance.formance_sdk.models.operations.UninstallConnectorV1Response uninstallConnectorV1(com.formance.formance_sdk.models.operations.UninstallConnectorV1Request request) throws Exception {
+        String baseUrl = this._serverUrl;
+        String url = com.formance.formance_sdk.utils.Utils.generateURL(com.formance.formance_sdk.models.operations.UninstallConnectorV1Request.class, baseUrl, "/api/payments/connectors/{connector}/{connectorId}", request, null);
+        
+        HTTPRequest req = new HTTPRequest();
+        req.setMethod("DELETE");
+        req.setURL(url);
+
+        req.addHeader("Accept", "*/*");
+        req.addHeader("user-agent", String.format("speakeasy-sdk/%s %s %s", this._language, this._sdkVersion, this._genVersion));
+        
+        HTTPClient client = this._securityClient;
+        
+        HttpResponse<byte[]> httpRes = client.send(req);
+
+        String contentType = httpRes.headers().firstValue("Content-Type").orElse("application/octet-stream");
+
+        com.formance.formance_sdk.models.operations.UninstallConnectorV1Response res = new com.formance.formance_sdk.models.operations.UninstallConnectorV1Response(contentType, httpRes.statusCode()) {{
         }};
         res.rawResponse = httpRes;
         

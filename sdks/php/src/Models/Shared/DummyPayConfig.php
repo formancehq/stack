@@ -35,10 +35,15 @@ class DummyPayConfig
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $filePollingPeriod = null;
     
+	#[\JMS\Serializer\Annotation\SerializedName('name')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $name;
+    
 	public function __construct()
 	{
 		$this->directory = "";
 		$this->fileGenerationPeriod = null;
 		$this->filePollingPeriod = null;
+		$this->name = "";
 	}
 }

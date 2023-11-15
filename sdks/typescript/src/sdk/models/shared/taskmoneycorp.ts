@@ -22,8 +22,8 @@ export class TaskMoneycorpDescriptor extends SpeakeasyBase {
 
 export class TaskMoneycorp extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "connectorId" })
-  connectorId: string;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })

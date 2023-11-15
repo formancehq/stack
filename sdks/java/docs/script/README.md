@@ -40,12 +40,16 @@ public class Application {
                             )
                             ") {{
                                 metadata = new java.util.HashMap<String, Object>() {{
-                                    put("totam", "dignissimos");
-                                    put("eaque", "quis");
+                                    put("quam", "dolor");
+                                    put("vero", "nostrum");
+                                    put("hic", "recusandae");
+                                    put("omnis", "facilis");
                                 }};
                                 reference = "order_1234";
                                 vars = new java.util.HashMap<String, Object>() {{
-                                    put("eos", "perferendis");
+                                    put("voluptatem", "porro");
+                                    put("consequuntur", "blanditiis");
+                                    put("error", "eaque");
                                 }};
                             }};, "ledger001") {{
                 preview = true;

@@ -40,6 +40,14 @@ public class CurrencyCloudConfig {
         return this;
     }
     
+    @JsonProperty("name")
+    public String name;
+
+    public CurrencyCloudConfig withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
     /**
      * The frequency at which the connector will fetch transactions
      */
@@ -52,8 +60,9 @@ public class CurrencyCloudConfig {
         return this;
     }
     
-    public CurrencyCloudConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("loginID") String loginID) {
+    public CurrencyCloudConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("loginID") String loginID, @JsonProperty("name") String name) {
         this.apiKey = apiKey;
         this.loginID = loginID;
+        this.name = name;
   }
 }

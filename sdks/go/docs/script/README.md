@@ -35,10 +35,9 @@ func main() {
     res, err := s.Script.RunScript(ctx, operations.RunScriptRequest{
         Script: shared.Script{
             Metadata: map[string]interface{}{
-                "quidem": "provident",
-                "nam": "id",
-                "blanditiis": "deleniti",
-                "sapiente": "amet",
+                "nisi": "vel",
+                "natus": "omnis",
+                "molestiae": "perferendis",
             },
             Plain: "vars {
         account $user
@@ -50,9 +49,8 @@ func main() {
         ",
             Reference: formance.String("order_1234"),
             Vars: map[string]interface{}{
-                "nisi": "vel",
-                "natus": "omnis",
-                "molestiae": "perferendis",
+                "magnam": "distinctio",
+                "id": "labore",
             },
         },
         Ledger: "ledger001",

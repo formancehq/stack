@@ -39,16 +39,17 @@ func main() {
             "quickstart",
             "quickstart",
         },
-        PageSize: formance.Int64(716075),
+        PageSize: formance.Int64(618016),
         Policy: formance.String("OR"),
         Raw: map[string]interface{}{
-            "labore": "labore",
-            "suscipit": "natus",
-            "nobis": "eum",
+            "eum": "vero",
+            "aspernatur": "architecto",
+            "magnam": "et",
         },
         Sort: formance.String("txid:asc"),
-        Target: formance.String("vero"),
+        Target: formance.String("excepturi"),
         Terms: []string{
+            "destination=central_bank1",
             "destination=central_bank1",
         },
     })

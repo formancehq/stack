@@ -7,15 +7,15 @@ import (
 	"net/http"
 )
 
-type ListConnectorsTransfersRequest struct {
+type ResetConnectorV1Request struct {
 	// The name of the connector.
 	Connector shared.Connector `pathParam:"style=simple,explode=false,name=connector"`
+	// The connector ID.
+	ConnectorID string `pathParam:"style=simple,explode=false,name=connectorId"`
 }
 
-type ListConnectorsTransfersResponse struct {
+type ResetConnectorV1Response struct {
 	ContentType string
 	StatusCode  int
 	RawResponse *http.Response
-	// OK
-	TransfersResponse *shared.TransfersResponse
 }

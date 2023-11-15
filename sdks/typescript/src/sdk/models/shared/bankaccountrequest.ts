@@ -3,13 +3,16 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { Connector } from "./connector";
 import { Expose } from "class-transformer";
 
 export class BankAccountRequest extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "accountNumber" })
   accountNumber?: string;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "country" })
@@ -22,10 +25,6 @@ export class BankAccountRequest extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "name" })
   name: string;
-
-  @SpeakeasyMetadata()
-  @Expose({ name: "provider" })
-  provider: Connector;
 
   @SpeakeasyMetadata()
   @Expose({ name: "swiftBicCode" })

@@ -18,8 +18,8 @@ export class TaskBankingCircleDescriptor extends SpeakeasyBase {
 
 export class TaskBankingCircle extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "connectorId" })
-  connectorId: string;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })

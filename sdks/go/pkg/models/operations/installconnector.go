@@ -14,7 +14,9 @@ type InstallConnectorRequest struct {
 }
 
 type InstallConnectorResponse struct {
-	ContentType string
-	StatusCode  int
-	RawResponse *http.Response
+	// OK
+	ConnectorResponse *shared.ConnectorResponse
+	ContentType       string
+	StatusCode        int
+	RawResponse       *http.Response
 }

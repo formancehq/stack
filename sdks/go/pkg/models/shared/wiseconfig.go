@@ -4,6 +4,7 @@ package shared
 
 type WiseConfig struct {
 	APIKey string `json:"apiKey"`
+	Name   string `json:"name"`
 	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.
 	//
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`

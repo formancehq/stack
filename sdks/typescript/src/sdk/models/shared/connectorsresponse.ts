@@ -8,12 +8,16 @@ import { Expose, Type } from "class-transformer";
 
 export class ConnectorsResponseData extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "enabled" })
-  enabled?: boolean;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "name" })
+  name: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "provider" })
-  provider?: Connector;
+  provider: Connector;
 }
 
 /**

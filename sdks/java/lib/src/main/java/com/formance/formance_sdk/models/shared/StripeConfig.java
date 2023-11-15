@@ -17,6 +17,14 @@ public class StripeConfig {
         return this;
     }
     
+    @JsonProperty("name")
+    public String name;
+
+    public StripeConfig withName(String name) {
+        this.name = name;
+        return this;
+    }
+    
     /**
      * Number of BalanceTransaction to fetch at each polling interval.
      * 
@@ -43,7 +51,8 @@ public class StripeConfig {
         return this;
     }
     
-    public StripeConfig(@JsonProperty("apiKey") String apiKey) {
+    public StripeConfig(@JsonProperty("apiKey") String apiKey, @JsonProperty("name") String name) {
         this.apiKey = apiKey;
+        this.name = name;
   }
 }

@@ -4,6 +4,8 @@
 
 package com.formance.formance_sdk.models.shared;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -28,13 +30,12 @@ public class TransferInitiationRequest {
         return this;
     }
     
-    @JsonSerialize(using = DateTimeSerializer.class)
-    @JsonDeserialize(using = DateTimeDeserializer.class)
-    @JsonProperty("createdAt")
-    public OffsetDateTime createdAt;
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("connectorID")
+    public String connectorID;
 
-    public TransferInitiationRequest withCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    public TransferInitiationRequest withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
         return this;
     }
     
@@ -54,6 +55,7 @@ public class TransferInitiationRequest {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("provider")
     public Connector provider;
 
@@ -67,6 +69,16 @@ public class TransferInitiationRequest {
 
     public TransferInitiationRequest withReference(String reference) {
         this.reference = reference;
+        return this;
+    }
+    
+    @JsonSerialize(using = DateTimeSerializer.class)
+    @JsonDeserialize(using = DateTimeDeserializer.class)
+    @JsonProperty("scheduledAt")
+    public OffsetDateTime scheduledAt;
+
+    public TransferInitiationRequest withScheduledAt(OffsetDateTime scheduledAt) {
+        this.scheduledAt = scheduledAt;
         return this;
     }
     
@@ -94,14 +106,13 @@ public class TransferInitiationRequest {
         return this;
     }
     
-    public TransferInitiationRequest(@JsonProperty("amount") Long amount, @JsonProperty("asset") String asset, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("description") String description, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("provider") Connector provider, @JsonProperty("reference") String reference, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("type") TransferInitiationRequestType type, @JsonProperty("validated") Boolean validated) {
+    public TransferInitiationRequest(@JsonProperty("amount") Long amount, @JsonProperty("asset") String asset, @JsonProperty("description") String description, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("reference") String reference, @JsonProperty("scheduledAt") OffsetDateTime scheduledAt, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("type") TransferInitiationRequestType type, @JsonProperty("validated") Boolean validated) {
         this.amount = amount;
         this.asset = asset;
-        this.createdAt = createdAt;
         this.description = description;
         this.destinationAccountID = destinationAccountID;
-        this.provider = provider;
         this.reference = reference;
+        this.scheduledAt = scheduledAt;
         this.sourceAccountID = sourceAccountID;
         this.type = type;
         this.validated = validated;

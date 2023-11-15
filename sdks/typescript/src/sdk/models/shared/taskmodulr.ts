@@ -22,8 +22,8 @@ export class TaskModulrDescriptor extends SpeakeasyBase {
 
 export class TaskModulr extends SpeakeasyBase {
   @SpeakeasyMetadata()
-  @Expose({ name: "connectorId" })
-  connectorId: string;
+  @Expose({ name: "connectorID" })
+  connectorID: string;
 
   @SpeakeasyMetadata()
   @Expose({ name: "createdAt" })

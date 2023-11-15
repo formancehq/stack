@@ -12,7 +12,7 @@ type TaskBankingCircleDescriptor struct {
 }
 
 type TaskBankingCircle struct {
-	ConnectorID string                      `json:"connectorId"`
+	ConnectorID string                      `json:"connectorID"`
 	CreatedAt   time.Time                   `json:"createdAt"`
 	Descriptor  TaskBankingCircleDescriptor `json:"descriptor"`
 	Error       *string                     `json:"error,omitempty"`

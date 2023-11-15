@@ -15,6 +15,10 @@ export class BankingCircleConfig extends SpeakeasyBase {
   endpoint: string;
 
   @SpeakeasyMetadata()
+  @Expose({ name: "name" })
+  name: string;
+
+  @SpeakeasyMetadata()
   @Expose({ name: "password" })
   password: string;
 

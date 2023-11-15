@@ -3,7 +3,6 @@
 from __future__ import annotations
 import dataclasses
 import dateutil.parser
-from ..shared import connector as shared_connector
 from dataclasses_json import Undefined, dataclass_json
 from datetime import datetime
 from marshmallow import fields
@@ -16,11 +15,11 @@ from typing import Any
 class PaymentsAccount:
     
     account_name: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('accountName') }})
+    connector_id: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('connectorID') }})
     created_at: datetime = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('createdAt'), 'encoder': utils.datetimeisoformat(False), 'decoder': dateutil.parser.isoparse, 'mm_field': fields.DateTime(format='iso') }})
     default_asset: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('defaultAsset') }})
     default_currency: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('defaultCurrency') }})
     id: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('id') }})
-    provider: shared_connector.Connector = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('provider') }})
     raw: dict[str, Any] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('raw') }})
     reference: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('reference') }})
     type: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('type') }})

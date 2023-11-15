@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace formance\stack\Models\Operations;
 
 use \formance\stack\Utils\SpeakeasyMetadata;
-class ListConnectorsTransfersRequest
+class UninstallConnectorV1Request
 {
     /**
      * The name of the connector.
@@ -19,8 +19,17 @@ class ListConnectorsTransfersRequest
 	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=connector')]
     public \formance\stack\Models\Shared\Connector $connector;
     
+    /**
+     * The connector ID.
+     * 
+     * @var string $connectorId
+     */
+	#[SpeakeasyMetadata('pathParam:style=simple,explode=false,name=connectorId')]
+    public string $connectorId;
+    
 	public function __construct()
 	{
 		$this->connector = \formance\stack\Models\Shared\Connector::STRIPE;
+		$this->connectorId = "";
 	}
 }

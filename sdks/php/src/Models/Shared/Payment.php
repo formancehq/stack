@@ -24,6 +24,10 @@ class Payment
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $asset;
     
+	#[\JMS\Serializer\Annotation\SerializedName('connectorID')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $connectorID;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('createdAt')]
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $createdAt;
@@ -46,7 +50,8 @@ class Payment
     
 	#[\JMS\Serializer\Annotation\SerializedName('provider')]
     #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\Connector>')]
-    public Connector $provider;
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?Connector $provider = null;
     
     /**
      * $raw
@@ -81,12 +86,13 @@ class Payment
 	{
 		$this->adjustments = [];
 		$this->asset = "";
+		$this->connectorID = "";
 		$this->createdAt = new \DateTime();
 		$this->destinationAccountID = "";
 		$this->id = "";
 		$this->initialAmount = 0;
 		$this->metadata = new \formance\stack\Models\Shared\PaymentMetadata();
-		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
+		$this->provider = null;
 		$this->raw = [];
 		$this->reference = "";
 		$this->scheme = \formance\stack\Models\Shared\PaymentScheme::VISA;

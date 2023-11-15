@@ -30,6 +30,14 @@ public class TransferInitiation {
         return this;
     }
     
+    @JsonProperty("connectorID")
+    public String connectorID;
+
+    public TransferInitiation withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
+        return this;
+    }
+    
     @JsonSerialize(using = DateTimeSerializer.class)
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonProperty("createdAt")
@@ -72,20 +80,22 @@ public class TransferInitiation {
         return this;
     }
     
-    @JsonProperty("provider")
-    public Connector provider;
-
-    public TransferInitiation withProvider(Connector provider) {
-        this.provider = provider;
-        return this;
-    }
-    
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("relatedPayments")
     public TransferInitiationPayments[] relatedPayments;
 
     public TransferInitiation withRelatedPayments(TransferInitiationPayments[] relatedPayments) {
         this.relatedPayments = relatedPayments;
+        return this;
+    }
+    
+    @JsonSerialize(using = DateTimeSerializer.class)
+    @JsonDeserialize(using = DateTimeDeserializer.class)
+    @JsonProperty("scheduledAt")
+    public OffsetDateTime scheduledAt;
+
+    public TransferInitiation withScheduledAt(OffsetDateTime scheduledAt) {
+        this.scheduledAt = scheduledAt;
         return this;
     }
     
@@ -123,15 +133,16 @@ public class TransferInitiation {
         return this;
     }
     
-    public TransferInitiation(@JsonProperty("amount") Long amount, @JsonProperty("asset") String asset, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("description") String description, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("error") String error, @JsonProperty("id") String id, @JsonProperty("provider") Connector provider, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("status") TransferInitiationStatus status, @JsonProperty("type") TransferInitiationType type, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
+    public TransferInitiation(@JsonProperty("amount") Long amount, @JsonProperty("asset") String asset, @JsonProperty("connectorID") String connectorID, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("description") String description, @JsonProperty("destinationAccountID") String destinationAccountID, @JsonProperty("error") String error, @JsonProperty("id") String id, @JsonProperty("scheduledAt") OffsetDateTime scheduledAt, @JsonProperty("sourceAccountID") String sourceAccountID, @JsonProperty("status") TransferInitiationStatus status, @JsonProperty("type") TransferInitiationType type, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
         this.amount = amount;
         this.asset = asset;
+        this.connectorID = connectorID;
         this.createdAt = createdAt;
         this.description = description;
         this.destinationAccountID = destinationAccountID;
         this.error = error;
         this.id = id;
-        this.provider = provider;
+        this.scheduledAt = scheduledAt;
         this.sourceAccountID = sourceAccountID;
         this.status = status;
         this.type = type;

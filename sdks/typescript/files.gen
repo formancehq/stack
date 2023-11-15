@@ -80,6 +80,7 @@ src/sdk/models/operations/deletetransferinitiation.ts
 src/sdk/models/operations/getaccountbalances.ts
 src/sdk/models/operations/getbankaccount.ts
 src/sdk/models/operations/getconnectortask.ts
+src/sdk/models/operations/getconnectortaskv1.ts
 src/sdk/models/operations/getpayment.ts
 src/sdk/models/operations/gettransferinitiation.ts
 src/sdk/models/operations/installconnector.ts
@@ -87,17 +88,20 @@ src/sdk/models/operations/listallconnectors.ts
 src/sdk/models/operations/listbankaccounts.ts
 src/sdk/models/operations/listconfigsavailableconnectors.ts
 src/sdk/models/operations/listconnectortasks.ts
-src/sdk/models/operations/listconnectorstransfers.ts
+src/sdk/models/operations/listconnectortasksv1.ts
 src/sdk/models/operations/listpayments.ts
 src/sdk/models/operations/listtransferinitiations.ts
 src/sdk/models/operations/paymentsgetaccount.ts
 src/sdk/models/operations/paymentsgetserverinfo.ts
 src/sdk/models/operations/paymentslistaccounts.ts
 src/sdk/models/operations/readconnectorconfig.ts
+src/sdk/models/operations/readconnectorconfigv1.ts
 src/sdk/models/operations/resetconnector.ts
+src/sdk/models/operations/resetconnectorv1.ts
 src/sdk/models/operations/retrytransferinitiation.ts
 src/sdk/models/operations/udpatetransferinitiationstatus.ts
 src/sdk/models/operations/uninstallconnector.ts
+src/sdk/models/operations/uninstallconnectorv1.ts
 src/sdk/models/operations/updatemetadata.ts
 src/sdk/models/operations/runscript.ts
 src/sdk/models/operations/search.ts
@@ -258,6 +262,7 @@ src/sdk/models/shared/taskbankingcircle.ts
 src/sdk/models/shared/taskmangopay.ts
 src/sdk/models/shared/taskmoneycorp.ts
 src/sdk/models/shared/paymentresponse.ts
+src/sdk/models/shared/connectorresponse.ts
 src/sdk/models/shared/stripeconfig.ts
 src/sdk/models/shared/dummypayconfig.ts
 src/sdk/models/shared/wiseconfig.ts
@@ -270,7 +275,6 @@ src/sdk/models/shared/connectorsresponse.ts
 src/sdk/models/shared/bankaccountscursor.ts
 src/sdk/models/shared/connectorsconfigsresponse.ts
 src/sdk/models/shared/taskscursor.ts
-src/sdk/models/shared/transfersresponse.ts
 src/sdk/models/shared/paymentscursor.ts
 src/sdk/models/shared/transferinitiationscursor.ts
 src/sdk/models/shared/paymentsaccountresponse.ts

@@ -19,6 +19,10 @@ class BankingCircleConfig
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $endpoint;
     
+	#[\JMS\Serializer\Annotation\SerializedName('name')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $name;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('password')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $password;
@@ -51,6 +55,7 @@ class BankingCircleConfig
 	{
 		$this->authorizationEndpoint = "";
 		$this->endpoint = "";
+		$this->name = "";
 		$this->password = "";
 		$this->pollingPeriod = null;
 		$this->userCertificate = "";

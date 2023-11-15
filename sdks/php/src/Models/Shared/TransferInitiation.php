@@ -19,6 +19,10 @@ class TransferInitiation
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $asset;
     
+	#[\JMS\Serializer\Annotation\SerializedName('connectorID')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $connectorID;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('createdAt')]
     #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
     public \DateTime $createdAt;
@@ -39,10 +43,6 @@ class TransferInitiation
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $id;
     
-	#[\JMS\Serializer\Annotation\SerializedName('provider')]
-    #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\Connector>')]
-    public Connector $provider;
-    
     /**
      * $relatedPayments
      * 
@@ -52,6 +52,10 @@ class TransferInitiation
     #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\TransferInitiationPayments>')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?array $relatedPayments = null;
+    
+	#[\JMS\Serializer\Annotation\SerializedName('scheduledAt')]
+    #[\JMS\Serializer\Annotation\Type("DateTime<'Y-m-d\TH:i:s.up'>")]
+    public \DateTime $scheduledAt;
     
 	#[\JMS\Serializer\Annotation\SerializedName('sourceAccountID')]
     #[\JMS\Serializer\Annotation\Type('string')]
@@ -73,13 +77,14 @@ class TransferInitiation
 	{
 		$this->amount = 0;
 		$this->asset = "";
+		$this->connectorID = "";
 		$this->createdAt = new \DateTime();
 		$this->description = "";
 		$this->destinationAccountID = "";
 		$this->error = "";
 		$this->id = "";
-		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
 		$this->relatedPayments = null;
+		$this->scheduledAt = new \DateTime();
 		$this->sourceAccountID = "";
 		$this->status = \formance\stack\Models\Shared\TransferInitiationStatus::WAITING_FOR_VALIDATION;
 		$this->type = \formance\stack\Models\Shared\TransferInitiationType::TRANSFER;

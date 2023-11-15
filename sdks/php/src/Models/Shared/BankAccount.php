@@ -16,6 +16,10 @@ class BankAccount
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?string $accountNumber = null;
     
+	#[\JMS\Serializer\Annotation\SerializedName('connectorID')]
+    #[\JMS\Serializer\Annotation\Type('string')]
+    public string $connectorID;
+    
 	#[\JMS\Serializer\Annotation\SerializedName('country')]
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $country;
@@ -33,10 +37,6 @@ class BankAccount
     #[\JMS\Serializer\Annotation\Type('string')]
     public string $id;
     
-	#[\JMS\Serializer\Annotation\SerializedName('provider')]
-    #[\JMS\Serializer\Annotation\Type('enum<formance\stack\Models\Shared\Connector>')]
-    public Connector $provider;
-    
 	#[\JMS\Serializer\Annotation\SerializedName('swiftBicCode')]
     #[\JMS\Serializer\Annotation\Type('string')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
@@ -45,11 +45,11 @@ class BankAccount
 	public function __construct()
 	{
 		$this->accountNumber = null;
+		$this->connectorID = "";
 		$this->country = "";
 		$this->createdAt = new \DateTime();
 		$this->iban = null;
 		$this->id = "";
-		$this->provider = \formance\stack\Models\Shared\Connector::STRIPE;
 		$this->swiftBicCode = null;
 	}
 }

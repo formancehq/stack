@@ -12,6 +12,7 @@ from typing import Optional
 class DummyPayConfig:
     
     directory: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('directory') }})
+    name: str = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('name') }})
     file_generation_period: Optional[str] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('fileGenerationPeriod'), 'exclude': lambda f: f is None }})
     r"""The frequency at which the connector will create new payment objects in the directory"""
     file_polling_period: Optional[str] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('filePollingPeriod'), 'exclude': lambda f: f is None }})

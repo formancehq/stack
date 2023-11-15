@@ -8,4 +8,5 @@ type DummyPayConfig struct {
 	FileGenerationPeriod *string `json:"fileGenerationPeriod,omitempty"`
 	// The frequency at which the connector will try to fetch new payment objects from the directory
 	FilePollingPeriod *string `json:"filePollingPeriod,omitempty"`
+	Name              string  `json:"name"`
 }

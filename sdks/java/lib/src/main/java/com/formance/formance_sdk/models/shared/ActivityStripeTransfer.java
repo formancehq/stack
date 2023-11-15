@@ -28,6 +28,15 @@ public class ActivityStripeTransfer {
     }
     
     @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("connectorID")
+    public String connectorID;
+
+    public ActivityStripeTransfer withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
+        return this;
+    }
+    
+    @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("destination")
     public String destination;
 

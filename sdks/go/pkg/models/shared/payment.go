@@ -120,12 +120,13 @@ func (e *PaymentType) UnmarshalJSON(data []byte) error {
 type Payment struct {
 	Adjustments          []PaymentAdjustment    `json:"adjustments"`
 	Asset                string                 `json:"asset"`
+	ConnectorID          string                 `json:"connectorID"`
 	CreatedAt            time.Time              `json:"createdAt"`
 	DestinationAccountID string                 `json:"destinationAccountID"`
 	ID                   string                 `json:"id"`
 	InitialAmount        *big.Int               `json:"initialAmount"`
 	Metadata             PaymentMetadata        `json:"metadata"`
-	Provider             Connector              `json:"provider"`
+	Provider             *Connector             `json:"provider,omitempty"`
 	Raw                  map[string]interface{} `json:"raw"`
 	Reference            string                 `json:"reference"`
 	Scheme               PaymentScheme          `json:"scheme"`

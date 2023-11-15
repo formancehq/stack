@@ -14,11 +14,11 @@ import com.formance.formance_sdk.utils.DateTimeSerializer;
 import java.time.OffsetDateTime;
 
 public class TaskStripe {
-    @JsonProperty("connectorId")
-    public String connectorId;
+    @JsonProperty("connectorID")
+    public String connectorID;
 
-    public TaskStripe withConnectorId(String connectorId) {
-        this.connectorId = connectorId;
+    public TaskStripe withConnectorID(String connectorID) {
+        this.connectorID = connectorID;
         return this;
     }
     
@@ -83,8 +83,8 @@ public class TaskStripe {
         return this;
     }
     
-    public TaskStripe(@JsonProperty("connectorId") String connectorId, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskStripeDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") java.util.Map<String, Object> state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
-        this.connectorId = connectorId;
+    public TaskStripe(@JsonProperty("connectorID") String connectorID, @JsonProperty("createdAt") OffsetDateTime createdAt, @JsonProperty("descriptor") TaskStripeDescriptor descriptor, @JsonProperty("id") String id, @JsonProperty("state") java.util.Map<String, Object> state, @JsonProperty("status") PaymentStatus status, @JsonProperty("updatedAt") OffsetDateTime updatedAt) {
+        this.connectorID = connectorID;
         this.createdAt = createdAt;
         this.descriptor = descriptor;
         this.id = id;

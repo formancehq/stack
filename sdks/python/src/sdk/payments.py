@@ -189,6 +189,8 @@ class Payments:
     def get_connector_task(self, request: operations.GetConnectorTaskRequest) -> operations.GetConnectorTaskResponse:
         r"""Read a specific task of the connector
         Get a specific task associated to the connector.
+        
+        Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible
         """
         base_url = self._server_url
         
@@ -203,6 +205,32 @@ class Payments:
         content_type = http_res.headers.get('Content-Type')
 
         res = operations.GetConnectorTaskResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.TaskResponse])
+                res.task_response = out
+
+        return res
+
+    
+    def get_connector_task_v1(self, request: operations.GetConnectorTaskV1Request) -> operations.GetConnectorTaskV1Response:
+        r"""Read a specific task of the connector
+        Get a specific task associated to the connector.
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.GetConnectorTaskV1Request, base_url, '/api/payments/connectors/{connector}/{connectorId}/tasks/{taskId}', request)
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.GetConnectorTaskV1Response(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
         
         if http_res.status_code == 200:
             if utils.match_content_type(content_type, 'application/json'):
@@ -273,7 +301,7 @@ class Payments:
             headers['content-type'] = req_content_type
         if data is None and form is None:
             raise Exception('request body is required')
-        headers['Accept'] = '*/*'
+        headers['Accept'] = 'application/json'
         headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
         
         client = self._security_client
@@ -283,6 +311,10 @@ class Payments:
 
         res = operations.InstallConnectorResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
         
+        if http_res.status_code == 201:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.ConnectorResponse])
+                res.connector_response = out
 
         return res
 
@@ -369,6 +401,8 @@ class Payments:
     def list_connector_tasks(self, request: operations.ListConnectorTasksRequest) -> operations.ListConnectorTasksResponse:
         r"""List tasks from a connector
         List all tasks associated with this connector.
+        
+        Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible
         """
         base_url = self._server_url
         
@@ -393,28 +427,29 @@ class Payments:
         return res
 
     
-    def list_connectors_transfers(self, request: operations.ListConnectorsTransfersRequest) -> operations.ListConnectorsTransfersResponse:
-        r"""List transfers and their statuses
-        List transfers
+    def list_connector_tasks_v1(self, request: operations.ListConnectorTasksV1Request) -> operations.ListConnectorTasksV1Response:
+        r"""List tasks from a connector
+        List all tasks associated with this connector.
         """
         base_url = self._server_url
         
-        url = utils.generate_url(operations.ListConnectorsTransfersRequest, base_url, '/api/payments/connectors/{connector}/transfers', request)
+        url = utils.generate_url(operations.ListConnectorTasksV1Request, base_url, '/api/payments/connectors/{connector}/{connectorId}/tasks', request)
         headers = {}
+        query_params = utils.get_query_params(operations.ListConnectorTasksV1Request, request)
         headers['Accept'] = 'application/json'
         headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
         
         client = self._security_client
         
-        http_res = client.request('GET', url, headers=headers)
+        http_res = client.request('GET', url, params=query_params, headers=headers)
         content_type = http_res.headers.get('Content-Type')
 
-        res = operations.ListConnectorsTransfersResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        res = operations.ListConnectorTasksV1Response(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
         
         if http_res.status_code == 200:
             if utils.match_content_type(content_type, 'application/json'):
-                out = utils.unmarshal_json(http_res.text, Optional[shared.TransfersResponse])
-                res.transfers_response = out
+                out = utils.unmarshal_json(http_res.text, Optional[shared.TasksCursor])
+                res.tasks_cursor = out
 
         return res
 
@@ -545,6 +580,8 @@ class Payments:
     def read_connector_config(self, request: operations.ReadConnectorConfigRequest) -> operations.ReadConnectorConfigResponse:
         r"""Read the config of a connector
         Read connector config
+        
+        Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible
         """
         base_url = self._server_url
         
@@ -568,10 +605,38 @@ class Payments:
         return res
 
     
+    def read_connector_config_v1(self, request: operations.ReadConnectorConfigV1Request) -> operations.ReadConnectorConfigV1Response:
+        r"""Read the config of a connector
+        Read connector config
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.ReadConnectorConfigV1Request, base_url, '/api/payments/connectors/{connector}/{connectorId}/config', request)
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.ReadConnectorConfigV1Response(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.ConnectorConfigResponse])
+                res.connector_config_response = out
+
+        return res
+
+    
     def reset_connector(self, request: operations.ResetConnectorRequest) -> operations.ResetConnectorResponse:
         r"""Reset a connector
         Reset a connector by its name.
         It will remove the connector and ALL PAYMENTS generated with it.
+        
+        Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible
         """
         base_url = self._server_url
         
@@ -586,6 +651,29 @@ class Payments:
         content_type = http_res.headers.get('Content-Type')
 
         res = operations.ResetConnectorResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+
+        return res
+
+    
+    def reset_connector_v1(self, request: operations.ResetConnectorV1Request) -> operations.ResetConnectorV1Response:
+        r"""Reset a connector
+        Reset a connector by its name.
+        It will remove the connector and ALL PAYMENTS generated with it.
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.ResetConnectorV1Request, base_url, '/api/payments/connectors/{connector}/{connectorId}/reset', request)
+        headers = {}
+        headers['Accept'] = '*/*'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('POST', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.ResetConnectorV1Response(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
         
 
         return res
@@ -643,6 +731,8 @@ class Payments:
     def uninstall_connector(self, request: operations.UninstallConnectorRequest) -> operations.UninstallConnectorResponse:
         r"""Uninstall a connector
         Uninstall a connector by its name.
+        
+        Deprecated: this method will be removed in a future release, please migrate away from it as soon as possible
         """
         base_url = self._server_url
         
@@ -657,6 +747,28 @@ class Payments:
         content_type = http_res.headers.get('Content-Type')
 
         res = operations.UninstallConnectorResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+
+        return res
+
+    
+    def uninstall_connector_v1(self, request: operations.UninstallConnectorV1Request) -> operations.UninstallConnectorV1Response:
+        r"""Uninstall a connector
+        Uninstall a connector by its name.
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.UninstallConnectorV1Request, base_url, '/api/payments/connectors/{connector}/{connectorId}', request)
+        headers = {}
+        headers['Accept'] = '*/*'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('DELETE', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.UninstallConnectorV1Response(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
         
 
         return res

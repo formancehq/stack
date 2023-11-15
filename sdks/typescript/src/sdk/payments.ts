@@ -448,6 +448,8 @@ export class Payments {
    *
    * @remarks
    * Get a specific task associated to the connector.
+   *
+   * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
    */
   async getConnectorTask(
     req: operations.GetConnectorTaskRequest,
@@ -488,6 +490,69 @@ export class Payments {
 
     const res: operations.GetConnectorTaskResponse =
       new operations.GetConnectorTaskResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.taskResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.TaskResponse
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Read a specific task of the connector
+   *
+   * @remarks
+   * Get a specific task associated to the connector.
+   */
+  async getConnectorTaskV1(
+    req: operations.GetConnectorTaskV1Request,
+    config?: AxiosRequestConfig
+  ): Promise<operations.GetConnectorTaskV1Response> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.GetConnectorTaskV1Request(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/connectors/{connector}/{connectorId}/tasks/{taskId}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.GetConnectorTaskV1Response =
+      new operations.GetConnectorTaskV1Response({
         statusCode: httpRes.status,
         contentType: contentType,
         rawResponse: httpRes,
@@ -666,7 +731,7 @@ export class Payments {
     const headers = { ...reqBodyHeaders, ...config?.headers };
     if (reqBody == null || Object.keys(reqBody).length === 0)
       throw new Error("request body is required");
-    headers["Accept"] = "*/*";
+    headers["Accept"] = "application/json";
     headers[
       "user-agent"
     ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
@@ -693,7 +758,13 @@ export class Payments {
         rawResponse: httpRes,
       });
     switch (true) {
-      case httpRes?.status == 204:
+      case httpRes?.status == 201:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.connectorResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.ConnectorResponse
+          );
+        }
         break;
     }
 
@@ -875,6 +946,8 @@ export class Payments {
    *
    * @remarks
    * List all tasks associated with this connector.
+   *
+   * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
    */
   async listConnectorTasks(
     req: operations.ListConnectorTasksRequest,
@@ -935,29 +1008,30 @@ export class Payments {
   }
 
   /**
-   * List transfers and their statuses
+   * List tasks from a connector
    *
    * @remarks
-   * List transfers
+   * List all tasks associated with this connector.
    */
-  async listConnectorsTransfers(
-    req: operations.ListConnectorsTransfersRequest,
+  async listConnectorTasksV1(
+    req: operations.ListConnectorTasksV1Request,
     config?: AxiosRequestConfig
-  ): Promise<operations.ListConnectorsTransfersResponse> {
+  ): Promise<operations.ListConnectorTasksV1Response> {
     if (!(req instanceof utils.SpeakeasyBase)) {
-      req = new operations.ListConnectorsTransfersRequest(req);
+      req = new operations.ListConnectorTasksV1Request(req);
     }
 
     const baseURL: string = this._serverURL;
     const url: string = utils.generateURL(
       baseURL,
-      "/api/payments/connectors/{connector}/transfers",
+      "/api/payments/connectors/{connector}/{connectorId}/tasks",
       req
     );
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
     const headers = { ...config?.headers };
+    const queryParams: string = utils.serializeQueryParams(req);
     headers["Accept"] = "application/json";
     headers[
       "user-agent"
@@ -965,7 +1039,7 @@ export class Payments {
 
     const httpRes: AxiosResponse = await client.request({
       validateStatus: () => true,
-      url: url,
+      url: url + queryParams,
       method: "get",
       headers: headers,
       ...config,
@@ -977,8 +1051,8 @@ export class Payments {
       throw new Error(`status code not found in response: ${httpRes}`);
     }
 
-    const res: operations.ListConnectorsTransfersResponse =
-      new operations.ListConnectorsTransfersResponse({
+    const res: operations.ListConnectorTasksV1Response =
+      new operations.ListConnectorTasksV1Response({
         statusCode: httpRes.status,
         contentType: contentType,
         rawResponse: httpRes,
@@ -986,9 +1060,9 @@ export class Payments {
     switch (true) {
       case httpRes?.status == 200:
         if (utils.matchContentType(contentType, `application/json`)) {
-          res.transfersResponse = utils.objectToClass(
+          res.tasksCursor = utils.objectToClass(
             httpRes?.data,
-            shared.TransfersResponse
+            shared.TasksCursor
           );
         }
         break;
@@ -1285,6 +1359,8 @@ export class Payments {
    *
    * @remarks
    * Read connector config
+   *
+   * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
    */
   async readConnectorConfig(
     req: operations.ReadConnectorConfigRequest,
@@ -1344,12 +1420,77 @@ export class Payments {
   }
 
   /**
+   * Read the config of a connector
+   *
+   * @remarks
+   * Read connector config
+   */
+  async readConnectorConfigV1(
+    req: operations.ReadConnectorConfigV1Request,
+    config?: AxiosRequestConfig
+  ): Promise<operations.ReadConnectorConfigV1Response> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.ReadConnectorConfigV1Request(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/connectors/{connector}/{connectorId}/config",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.ReadConnectorConfigV1Response =
+      new operations.ReadConnectorConfigV1Response({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.connectorConfigResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.ConnectorConfigResponse
+          );
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
    * Reset a connector
    *
    * @remarks
    * Reset a connector by its name.
    * It will remove the connector and ALL PAYMENTS generated with it.
    *
+   *
+   * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
    */
   async resetConnector(
     req: operations.ResetConnectorRequest,
@@ -1390,6 +1531,65 @@ export class Payments {
 
     const res: operations.ResetConnectorResponse =
       new operations.ResetConnectorResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 204:
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Reset a connector
+   *
+   * @remarks
+   * Reset a connector by its name.
+   * It will remove the connector and ALL PAYMENTS generated with it.
+   *
+   */
+  async resetConnectorV1(
+    req: operations.ResetConnectorV1Request,
+    config?: AxiosRequestConfig
+  ): Promise<operations.ResetConnectorV1Response> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.ResetConnectorV1Request(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/connectors/{connector}/{connectorId}/reset",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "*/*";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "post",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.ResetConnectorV1Response =
+      new operations.ResetConnectorV1Response({
         statusCode: httpRes.status,
         contentType: contentType,
         rawResponse: httpRes,
@@ -1538,6 +1738,8 @@ export class Payments {
    *
    * @remarks
    * Uninstall a connector by its name.
+   *
+   * @deprecated this method will be removed in a future release, please migrate away from it as soon as possible
    */
   async uninstallConnector(
     req: operations.UninstallConnectorRequest,
@@ -1578,6 +1780,63 @@ export class Payments {
 
     const res: operations.UninstallConnectorResponse =
       new operations.UninstallConnectorResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 204:
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Uninstall a connector
+   *
+   * @remarks
+   * Uninstall a connector by its name.
+   */
+  async uninstallConnectorV1(
+    req: operations.UninstallConnectorV1Request,
+    config?: AxiosRequestConfig
+  ): Promise<operations.UninstallConnectorV1Response> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.UninstallConnectorV1Request(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/payments/connectors/{connector}/{connectorId}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "*/*";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "delete",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.UninstallConnectorV1Response =
+      new operations.UninstallConnectorV1Response({
         statusCode: httpRes.status,
         contentType: contentType,
         rawResponse: httpRes,
