@@ -40,8 +40,9 @@ fctl ui
 
 ### Requirements
 1. Make sure docker is installed on your machine.
-2. Make sure Docker Compose is installed and available (it should be the case if you have chosen to install Docker via Docker Desktop); and
-3. Make sure Git is also installed on your machine.
+2. Ensure your docker daemon has at least 5GB uf usable RAM available. Otherwise you will run into random crashes.
+3. Make sure Docker Compose is installed and available (it should be the case if you have chosen to install Docker via Docker Desktop); and
+4. Make sure Git is also installed on your machine.
 
 
 ### Run the app
@@ -55,7 +56,7 @@ git clone https://github.com/formancehq/stack.git
 cd stack
 
 # Start the stack containers
-docker-compose up
+docker compose up
 ```
 
 You can now open your browser and go to http://localhost to connect to the application. The Stack's API is exposed at http://localhost/api.
@@ -65,6 +66,10 @@ You should use either use the pre-configured Github App (only for local testing)
 User:     demo@formance.com
 Password: demo
 ```
+
+### Caveats
+
+- Authentication won't work with Safari.
 
 ## ☁️ Cloud Native Deployment
 
