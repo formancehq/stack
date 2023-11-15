@@ -2,6 +2,7 @@ package driver
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"sync"
 
@@ -100,7 +101,17 @@ func (d *Driver) GetLedgerStore(ctx context.Context, name string) (*ledgerstore.
 
 	const defaultBucketName = "_default"
 
-	exists, err := d.systemStore.ExistsBucket(ctx, defaultBucketName)
+	l, err := d.systemStore.GetLedger(ctx, name)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return nil, err
+	}
+
+	bucketName := defaultBucketName
+	if l != nil && l.Bucket != "" {
+		bucketName = l.Bucket
+	}
+
+	exists, err := d.systemStore.ExistsBucket(ctx, bucketName)
 	if err != nil {
 		return nil, err
 	}

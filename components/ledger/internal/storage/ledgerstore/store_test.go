@@ -2,9 +2,10 @@ package ledgerstore
 
 import (
 	"context"
+	"testing"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"

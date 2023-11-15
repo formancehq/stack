@@ -292,6 +292,20 @@ func (m *MockBackend) EXPECT() *MockBackendMockRecorder {
 	return m.recorder
 }
 
+// ConfigureLedger mocks base method.
+func (m *MockBackend) ConfigureLedger(ctx context.Context, name string, configuration Configuration) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfigureLedger", ctx, name, configuration)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfigureLedger indicates an expected call of ConfigureLedger.
+func (mr *MockBackendMockRecorder) ConfigureLedger(ctx, name, configuration any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfigureLedger", reflect.TypeOf((*MockBackend)(nil).ConfigureLedger), ctx, name, configuration)
+}
+
 // GetLedger mocks base method.
 func (m *MockBackend) GetLedger(ctx context.Context, name string) (Ledger, error) {
 	m.ctrl.T.Helper()

@@ -13,8 +13,9 @@ import (
 type Ledger struct {
 	bun.BaseModel `bun:"_system.ledgers,alias:ledgers"`
 
-	Ledger  string      `bun:"ledger,type:varchar(255),pk"` // Primary key
+	Name    string      `bun:"ledger,type:varchar(255),pk"` // Primary key
 	AddedAt ledger.Time `bun:"addedat,type:timestamp"`
+	Bucket  string      `bun:"bucket,type:varchar(255)"`
 }
 
 func (s *Store) ListLedgers(ctx context.Context) ([]string, error) {
@@ -51,12 +52,7 @@ func (s *Store) DeleteLedger(ctx context.Context, name string) error {
 	return errors.Wrap(sqlutils.PostgresError(err), "delete ledger from system store")
 }
 
-func (s *Store) RegisterLedger(ctx context.Context, ledgerName string) (bool, error) {
-	l := &Ledger{
-		Ledger:  ledgerName,
-		AddedAt: ledger.Now(),
-	}
-
+func (s *Store) RegisterLedger(ctx context.Context, l *Ledger) (bool, error) {
 	ret, err := s.db.NewInsert().
 		Model(l).
 		Ignore().
@@ -73,32 +69,11 @@ func (s *Store) RegisterLedger(ctx context.Context, ledgerName string) (bool, er
 	return affected > 0, nil
 }
 
-func (s *Store) ExistsLedger(ctx context.Context, ledger string) (bool, error) {
-	query := s.db.NewSelect().
-		Model((*Ledger)(nil)).
-		Column("ledger").
-		Where("ledger = ?", ledger).
-		String()
-
-	ret := s.db.QueryRowContext(ctx, query)
-	if ret.Err() != nil {
-		return false, nil
-	}
-
-	var t string
-	_ = ret.Scan(&t) // Trigger close
-
-	if t == "" {
-		return false, nil
-	}
-	return true, nil
-}
-
 func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 	ret := &Ledger{}
 	if err := s.db.NewSelect().
 		Model(ret).
-		Column("ledger").
+		Column("ledger", "bucket", "addedat").
 		Where("ledger = ?", name).
 		Scan(ctx); err != nil {
 		return nil, err

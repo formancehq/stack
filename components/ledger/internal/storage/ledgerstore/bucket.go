@@ -44,7 +44,7 @@ func (b *Bucket) Close() error {
 }
 
 func (b *Bucket) newLedgerStore(name string) (*Store, error) {
-	return New(b.db, name, func(ctx context.Context) error {
+	return New(b, name, func(ctx context.Context) error {
 		return b.systemStore.DeleteLedger(ctx, name)
 	})
 }

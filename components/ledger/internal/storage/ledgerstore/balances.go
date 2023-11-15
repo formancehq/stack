@@ -65,7 +65,7 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q GetAggregatedBa
 	}
 	ret, err := fetch[*Temp](store, ctx,
 		func(selectQuery *bun.SelectQuery) *bun.SelectQuery {
-			moves := store.db.
+			moves := store.bucket.db.
 				NewSelect().
 				Table(MovesTableName).
 				ColumnExpr("distinct on (moves.account_address, moves.asset) moves.*").
