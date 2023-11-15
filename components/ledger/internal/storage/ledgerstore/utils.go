@@ -20,7 +20,7 @@ func fetch[T any](s *Store, ctx context.Context, builders ...func(query *bun.Sel
 	var ret T
 	ret = reflect.New(reflect.TypeOf(ret).Elem()).Interface().(T)
 
-	query := s.db.NewSelect()
+	query := s.bucket.db.NewSelect()
 	for _, builder := range builders {
 		query = query.Apply(builder)
 	}
@@ -36,7 +36,7 @@ func paginateWithOffset[FILTERS any, RETURN any](s *Store, ctx context.Context,
 	q *paginate.OffsetPaginatedQuery[FILTERS], builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (*api.Cursor[RETURN], error) {
 
 	var ret RETURN
-	query := s.db.NewSelect()
+	query := s.bucket.db.NewSelect()
 	for _, builder := range builders {
 		query = query.Apply(builder)
 	}
@@ -48,7 +48,7 @@ func paginateWithOffset[FILTERS any, RETURN any](s *Store, ctx context.Context,
 }
 
 func paginateWithColumn[FILTERS any, RETURN any](s *Store, ctx context.Context, q *paginate.ColumnPaginatedQuery[FILTERS], builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (*api.Cursor[RETURN], error) {
-	query := s.db.NewSelect()
+	query := s.bucket.db.NewSelect()
 	for _, builder := range builders {
 		query = query.Apply(builder)
 	}
@@ -57,11 +57,11 @@ func paginateWithColumn[FILTERS any, RETURN any](s *Store, ctx context.Context, 
 }
 
 func count(s *Store, ctx context.Context, builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (int, error) {
-	query := s.db.NewSelect()
+	query := s.bucket.db.NewSelect()
 	for _, builder := range builders {
 		query = query.Apply(builder)
 	}
-	return s.db.NewSelect().
+	return s.bucket.db.NewSelect().
 		TableExpr("(" + query.String() + ") data").
 		Count(ctx)
 }

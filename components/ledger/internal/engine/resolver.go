@@ -49,7 +49,7 @@ type Resolver struct {
 	lock            sync.RWMutex
 	metricsRegistry metrics.GlobalRegistry
 	//TODO(gfyrag): add a routine to clean old ledger
-	buckets   map[string]*Ledger
+	ledgers   map[string]*Ledger
 	compiler  *command.Compiler
 	logger    logging.Logger
 	publisher message.Publisher
@@ -58,7 +58,7 @@ type Resolver struct {
 func NewResolver(storageDriver *driver.Driver, options ...option) *Resolver {
 	r := &Resolver{
 		storageDriver: storageDriver,
-		buckets:       map[string]*Ledger{},
+		ledgers:       map[string]*Ledger{},
 	}
 	for _, opt := range append(defaultOptions, options...) {
 		opt(r)
@@ -69,7 +69,7 @@ func NewResolver(storageDriver *driver.Driver, options ...option) *Resolver {
 
 func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 	r.lock.RLock()
-	ledger, ok := r.buckets[name]
+	ledger, ok := r.ledgers[name]
 	r.lock.RUnlock()
 
 	if !ok {
@@ -78,24 +78,19 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) 
 
 		logging.FromContext(ctx).Infof("Initialize new ledger")
 
-		ledger, ok = r.buckets[name]
+		ledger, ok = r.ledgers[name]
 		if ok {
 			return ledger, nil
 		}
 
-		bucket, err := r.storageDriver.GetBucket(ctx, name)
+		store, err := r.storageDriver.GetLedgerStore(ctx, name)
 		if err != nil {
 			return nil, err
 		}
 
-		store, err := bucket.GetLedgerStore(ctx, name)
-		if err != nil {
-			return nil, err
-		}
-
-		ledger = New(bucket, store, r.publisher, r.compiler)
+		ledger = New(store, r.publisher, r.compiler)
 		ledger.Start(logging.ContextWithLogger(context.Background(), r.logger))
-		r.buckets[name] = ledger
+		r.ledgers[name] = ledger
 		r.metricsRegistry.ActiveLedgers().Add(ctx, +1)
 	}
 
@@ -107,10 +102,10 @@ func (r *Resolver) CloseLedgers(ctx context.Context) error {
 	defer func() {
 		r.logger.Info("All ledgers closed")
 	}()
-	for name, ledger := range r.buckets {
+	for name, ledger := range r.ledgers {
 		r.logger.Infof("Close ledger %s", name)
 		ledger.Close(logging.ContextWithLogger(ctx, r.logger.WithField("ledger", name)))
-		delete(r.buckets, name)
+		delete(r.ledgers, name)
 	}
 
 	return nil

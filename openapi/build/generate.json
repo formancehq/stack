@@ -665,6 +665,51 @@
         }
       }
     },
+    "/api/ledger/v2/{ledger}": {
+      "post": {
+        "summary": "Configure a ledger",
+        "operationId": "configureLedger",
+        "tags": [
+          "Ledger"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigureLedgerRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ledger/v2/{ledger}/_info": {
       "get": {
         "summary": "Get information about a ledger",
@@ -5410,6 +5455,17 @@
               "errorDescription"
             ]
           }
+        ]
+      },
+      "ConfigureLedgerRequest": {
+        "type": "object",
+        "properties": {
+          "bucket": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bucket"
         ]
       },
       "CursorBase": {

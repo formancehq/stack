@@ -76,9 +76,17 @@ func LedgerMiddleware(
 				return
 			}
 
+			pathWithoutLedger := r.URL.Path[1:]
+			nextSlash := strings.Index(pathWithoutLedger, "/")
+			if nextSlash >= 0 {
+				pathWithoutLedger = pathWithoutLedger[nextSlash:]
+			} else {
+				pathWithoutLedger = ""
+			}
+
 			excluded := false
 			for _, path := range excludePathFromSchemaCheck {
-				if strings.HasSuffix(r.URL.Path, path) {
+				if pathWithoutLedger == path {
 					excluded = true
 					break
 				}

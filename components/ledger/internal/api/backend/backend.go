@@ -4,6 +4,9 @@ import (
 	"context"
 	"math/big"
 
+	"github.com/formancehq/ledger/internal/storage/systemstore"
+	"github.com/pkg/errors"
+
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/engine"
 	"github.com/formancehq/ledger/internal/engine/command"
@@ -36,9 +39,16 @@ type Ledger interface {
 	IsDatabaseUpToDate(ctx context.Context) (bool, error)
 }
 
+var ErrAlreadyConfigured = errors.New("ledger already configured")
+
+type Configuration struct {
+	Bucket string `json:"bucket"`
+}
+
 type Backend interface {
 	GetLedger(ctx context.Context, name string) (Ledger, error)
 	ListLedgers(ctx context.Context) ([]string, error)
+	ConfigureLedger(ctx context.Context, name string, configuration Configuration) error
 	GetVersion() string
 }
 
@@ -46,6 +56,21 @@ type DefaultBackend struct {
 	storageDriver *driver.Driver
 	resolver      *engine.Resolver
 	version       string
+}
+
+func (d DefaultBackend) ConfigureLedger(ctx context.Context, name string, configuration Configuration) error {
+	ok, err := d.storageDriver.GetSystemStore().RegisterLedger(ctx, &systemstore.Ledger{
+		Name:    name,
+		AddedAt: ledger.Now(),
+		Bucket:  configuration.Bucket,
+	})
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return ErrAlreadyConfigured
+	}
+	return nil
 }
 
 func (d DefaultBackend) GetLedger(ctx context.Context, name string) (Ledger, error) {

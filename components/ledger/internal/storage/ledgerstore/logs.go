@@ -89,7 +89,7 @@ func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.Chaine
 	return store.withTransaction(ctx, func(tx bun.Tx) error {
 		// Beware: COPY query is not supported by bun if the pgx driver is used.
 		stmt, err := tx.Prepare(pq.CopyInSchema(
-			store.name,
+			store.bucket.name,
 			LogTableName,
 			"ledger", "id", "type", "hash", "date", "data", "idempotency_key",
 		))

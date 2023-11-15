@@ -16,13 +16,11 @@ import (
 
 type Ledger struct {
 	commander        *command.Commander
-	bucket           *ledgerstore.Bucket
 	store            *ledgerstore.Store
 	isSchemaUpToDate bool
 }
 
 func New(
-	bucket *ledgerstore.Bucket,
 	store *ledgerstore.Store,
 	publisher message.Publisher,
 	compiler *command.Compiler,
@@ -39,8 +37,7 @@ func New(
 			command.NewReferencer(),
 			monitor,
 		),
-		store:  store,
-		bucket: bucket,
+		store: store,
 	}
 }
 
@@ -125,7 +122,7 @@ func (l *Ledger) IsDatabaseUpToDate(ctx context.Context) (bool, error) {
 		return true, nil
 	}
 	var err error
-	l.isSchemaUpToDate, err = l.bucket.IsUpToDate(ctx)
+	l.isSchemaUpToDate, err = l.store.IsUpToDate(ctx)
 
 	return l.isSchemaUpToDate, err
 }
