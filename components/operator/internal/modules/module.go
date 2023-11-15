@@ -351,7 +351,7 @@ func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version str
 					return errors.Wrap(err, "stopping pod")
 				} else if !scaledDown {
 					logger.Info("Stop reconciliation as pod needs to be scaled down", "pod", r.module.Name())
-					return nil
+					return fmt.Errorf("pod needs to be scaled down")
 				}
 			}
 			return nil

@@ -4358,6 +4358,8 @@ spec:
                               type: string
                             type: object
                         type: object
+                      enableAuditPlugin:
+                        type: boolean
                       fallback:
                         type: string
                       resourceProperties:

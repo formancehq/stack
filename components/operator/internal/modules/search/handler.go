@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/mod/semver"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 
@@ -83,6 +84,22 @@ func (s module) Versions() map[string]modules.Version {
 			},
 			Cron: reindexCron,
 		},
+		"v0.10.0": {
+			PreUpgrade: func(ctx context.Context, jobRunner modules.JobRunner, config modules.MigrationConfig) (bool, error) {
+				ok, err := jobRunner.RunJob(ctx, "update-index-mapping", nil, updateMappingJob(config.ReconciliationConfig))
+				if err != nil {
+					return false, err
+				}
+				if !ok {
+					return false, nil
+				}
+				return true, nil
+			},
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return modules.Services{searchService(ctx), benthosService(ctx)}
+			},
+			Cron: reindexCron,
+		},
 	}
 }
 
@@ -111,6 +128,31 @@ func initMappingJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
 						Name:  "init-mapping",
 						Image: "ghcr.io/formancehq/search:" + imageVersion,
 						Args:  []string{"init-mapping"},
+						Env:   modules.SearchEnvVars(config).ToCoreEnv(),
+					}},
+				},
+			},
+		}
+	}
+}
+
+func updateMappingJob(config modules.ReconciliationConfig) func(t *batchv1.Job) {
+	return func(t *batchv1.Job) {
+		imageVersion := config.Versions.Spec.Search
+
+		// notes(gfyrag): this is the first version where the command is available
+		// this code will evolved if the mapping change, but it is not planned today
+		if config.Versions.IsLower("search", "v0.10.0") {
+			imageVersion = "v0.10.0"
+		}
+		t.Spec = batchv1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					RestartPolicy: corev1.RestartPolicyOnFailure,
+					Containers: []corev1.Container{{
+						Name:  "update-mapping",
+						Image: "ghcr.io/formancehq/search:" + imageVersion,
+						Args:  []string{"update-mapping"},
 						Env:   modules.SearchEnvVars(config).ToCoreEnv(),
 					}},
 				},
@@ -215,6 +257,23 @@ func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 	}
 }
 
+// When enabled, the audit plugin will be enabled for the gateway.
+// The audit plugin is available since gateway v0.2.0.
+// If the gateway version is not available, the audit plugin will be disabled.
+// Also if not enabled the nats stream will not be created.
+func enableAuditPlugin(ctx modules.ReconciliationConfig) bool {
+	gatewayVersion := ctx.Versions.Spec.Gateway
+	enable := ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin
+	if enable == nil {
+		return false
+	}
+
+	if !semver.IsValid(gatewayVersion) {
+		return *enable
+	}
+
+	return *enable && semver.Compare("v0.2.0", gatewayVersion) <= 0
+}
 func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 	return &modules.Service{
 		Name: "benthos",
@@ -253,8 +312,16 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 				})
 			}
 
+			if enableAuditPlugin(ctx) {
+				directories = append(directories, directory{
+					name: "audit",
+					fs:   benthosOperator.Audit,
+				})
+			}
+
 			for _, x := range directories {
 				data := make(map[string]string)
+
 				copyDir(x.fs, x.name, x.name, &data)
 				ret[x.name] = modules.Config{
 					Mount: true,
@@ -287,9 +354,14 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 			if ctx.Configuration.Spec.Monitoring != nil {
 				cmd = append(cmd, "-c", resolveContext.GetConfig("global").GetMountPath()+"/config.yaml")
 			}
+
 			cmd = append(cmd,
 				"--log.level", "trace", "streams",
 				resolveContext.GetConfig("streams").GetMountPath()+"/*.yaml")
+
+			if enableAuditPlugin(ctx) {
+				cmd = append(cmd, resolveContext.GetConfig("audit").GetMountPath()+"/gateway_audit.yaml")
+			}
 
 			return modules.Container{
 				Env:                  env,

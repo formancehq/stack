@@ -8,4 +8,7 @@ type GatewaySpec struct {
 	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
 	// +optional
 	Fallback *string `json:"fallback,omitempty"`
+
+	// +optional
+	EnableAuditPlugin *bool `json:"enableAuditPlugin,omitempty"`
 }
