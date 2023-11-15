@@ -20,22 +20,20 @@ type Bucket struct {
 	db   *bun.DB
 }
 
-func (b *Bucket) getMigrator() *migrations.Migrator {
-	migrator := migrations.NewMigrator(migrations.WithSchema(b.name, true))
-	registerMigrations(migrator, b.name)
-	return migrator
-}
-
 func (b *Bucket) Migrate(ctx context.Context) error {
-	return sqlutils.PostgresError(b.getMigrator().Up(ctx, b.db))
+	return MigrateBucket(ctx, b.db, b.name)
 }
 
 func (b *Bucket) GetMigrationsInfo(ctx context.Context) ([]migrations.Info, error) {
-	return b.getMigrator().GetMigrations(ctx, b.db)
+	return getBucketMigrator(b.name).GetMigrations(ctx, b.db)
 }
 
 func (b *Bucket) IsUpToDate(ctx context.Context) (bool, error) {
-	return b.getMigrator().IsUpToDate(ctx, b.db)
+	ret, err := getBucketMigrator(b.name).IsUpToDate(ctx, b.db)
+	if err != nil && errors.Is(err, migrations.ErrMissingVersionTable) {
+		return false, nil
+	}
+	return ret, err
 }
 
 func (b *Bucket) Close() error {
@@ -48,7 +46,7 @@ func (b *Bucket) createLedgerStore(ctx context.Context, name string) (*Store, er
 		return nil, err
 	}
 
-	err = store.Initialize(ctx)
+	err = InitializeLedgerStore(ctx, b.db, name)
 	if err != nil {
 		return nil, err
 	}
@@ -164,4 +162,14 @@ func ConnectToBucket(connectionOptions sqlutils.ConnectionOptions, name string) 
 		db:   db,
 		name: name,
 	}, nil
+}
+
+func getBucketMigrator(name string) *migrations.Migrator {
+	migrator := migrations.NewMigrator(migrations.WithSchema(name, true))
+	registerMigrations(migrator, name)
+	return migrator
+}
+
+func MigrateBucket(ctx context.Context, db bun.IDB, name string) error {
+	return getBucketMigrator(name).Up(ctx, db)
 }

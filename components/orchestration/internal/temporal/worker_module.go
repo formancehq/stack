@@ -47,17 +47,19 @@ func NewWorkerModule(taskQueue string) fx.Option {
 			return NewWorker(c, db, apiClient, taskQueue)
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, w worker.Worker) {
+			stopping := false
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					go func() {
 						err := w.Run(worker.InterruptCh())
-						if err != nil {
+						if err != nil && !stopping {
 							panic(err)
 						}
 					}()
 					return nil
 				},
 				OnStop: func(ctx context.Context) error {
+					stopping = true
 					w.Stop()
 					return nil
 				},

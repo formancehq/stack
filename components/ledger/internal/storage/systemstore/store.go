@@ -30,10 +30,6 @@ func Connect(ctx context.Context, connectionOptions sqlutils.ConnectionOptions) 
 	return &Store{db: db}, nil
 }
 
-func (s *Store) Migrate(ctx context.Context) error {
-	return sqlutils.PostgresError(s.getMigrator().Up(ctx, s.db))
-}
-
 func (s *Store) Close() error {
 	return s.db.Close()
 }

@@ -2,6 +2,7 @@ package driver
 
 import (
 	"context"
+	"database/sql"
 	"sync"
 
 	ledger "github.com/formancehq/ledger/internal"
@@ -74,6 +75,15 @@ func (d *Driver) GetLedgerStore(ctx context.Context, name string) (*ledgerstore.
 }
 
 func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configuration LedgerConfiguration) (*ledgerstore.Store, error) {
+
+	tx, err := f.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
 	bucketName := defaultBucket
 	if configuration.Bucket != "" {
 		bucketName = configuration.Bucket
@@ -81,51 +91,55 @@ func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configurati
 
 	bucket, err := f.OpenBucket(bucketName)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "opening bucket")
 	}
 
 	isInitialized, err := bucket.IsInitialized(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "checking if bucket is initialized")
 	}
 
 	if isInitialized {
 		isUpToDate, err := bucket.IsUpToDate(ctx)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "checking if bucket is up to date")
 		}
 		if !isUpToDate {
 			return nil, ErrNeedUpgradeBucket
 		}
 	} else {
-		if err := bucket.Migrate(ctx); err != nil {
-			return nil, err
+		if err := ledgerstore.MigrateBucket(ctx, tx, bucketName); err != nil {
+			return nil, errors.Wrap(err, "migrating bucket")
 		}
 	}
 
 	ledgerExists, err := bucket.HasLedger(ctx, name)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "checking if bucket has ledger")
 	}
 	if ledgerExists {
 		return nil, ErrAlreadyExists
 	}
 
-	store, err := bucket.CreateLedgerStore(ctx, name)
-	if err != nil {
-		return nil, err
+	if err := ledgerstore.InitializeLedgerStore(ctx, tx, name); err != nil {
+		return nil, errors.Wrap(err, "initializing ledger store")
 	}
 
-	_, err = f.systemStore.RegisterLedger(ctx, &systemstore.Ledger{
+	store, err := bucket.GetLedgerStore(name)
+	if err != nil {
+		return nil, errors.Wrap(err, "getting ledger store")
+	}
+
+	_, err = systemstore.RegisterLedger(ctx, tx, &systemstore.Ledger{
 		Name:    name,
 		AddedAt: ledger.Now(),
 		Bucket:  bucketName,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "registring ledger on system store")
 	}
 
-	return store, nil
+	return store, errors.Wrap(tx.Commit(), "committing sql transaction")
 }
 
 func (d *Driver) Initialize(ctx context.Context) error {
@@ -137,13 +151,13 @@ func (d *Driver) Initialize(ctx context.Context) error {
 		return errors.Wrap(err, "connecting to database")
 	}
 
+	if err := systemstore.Migrate(ctx, d.db); err != nil {
+		return errors.Wrap(err, "migrating data")
+	}
+
 	d.systemStore, err = systemstore.Connect(ctx, d.connectionOptions)
 	if err != nil {
 		return errors.Wrap(err, "connecting to system store")
-	}
-
-	if err := d.systemStore.Migrate(ctx); err != nil {
-		return errors.Wrap(err, "migrating data")
 	}
 
 	return nil

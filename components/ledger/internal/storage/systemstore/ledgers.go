@@ -40,20 +40,7 @@ func (s *Store) DeleteLedger(ctx context.Context, name string) error {
 }
 
 func (s *Store) RegisterLedger(ctx context.Context, l *Ledger) (bool, error) {
-	ret, err := s.db.NewInsert().
-		Model(l).
-		Ignore().
-		Exec(ctx)
-	if err != nil {
-		return false, sqlutils.PostgresError(err)
-	}
-
-	affected, err := ret.RowsAffected()
-	if err != nil {
-		return false, sqlutils.PostgresError(err)
-	}
-
-	return affected > 0, nil
+	return RegisterLedger(ctx, s.db, l)
 }
 
 func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
@@ -67,4 +54,21 @@ func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 	}
 
 	return ret, nil
+}
+
+func RegisterLedger(ctx context.Context, db bun.IDB, l *Ledger) (bool, error) {
+	ret, err := db.NewInsert().
+		Model(l).
+		Ignore().
+		Exec(ctx)
+	if err != nil {
+		return false, sqlutils.PostgresError(err)
+	}
+
+	affected, err := ret.RowsAffected()
+	if err != nil {
+		return false, sqlutils.PostgresError(err)
+	}
+
+	return affected > 0, nil
 }
