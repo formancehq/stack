@@ -1,6 +1,8 @@
 package main
 
-import "github.com/formancehq/search/cmd"
+import (
+	"github.com/formancehq/search/cmd"
+)
 
 func main() {
 	cmd.Execute()

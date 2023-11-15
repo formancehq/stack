@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/operator/internal/modules/search"
 	"github.com/formancehq/operator/internal/modules/wallets"
 	"github.com/formancehq/operator/internal/modules/webhooks"
+	"golang.org/x/mod/semver"
 
 	"github.com/formancehq/operator/internal/modules"
 )
@@ -97,6 +98,24 @@ var caddyfileTemplate = template.Must(template.New("caddyfile").Funcs(map[string
 
 func init() {
 	modules.Register(Module)
+}
+
+// When enabled, the audit plugin will be enabled for the gateway.
+// The audit plugin is available since gateway v0.2.0.
+// If the gateway version is not available, the audit plugin will be disabled.
+// Also if not enabled the nats stream will not be created.
+func EnableAuditPlugin(ctx modules.ReconciliationConfig) bool {
+	gatewayVersion := ctx.Versions.Spec.Gateway
+	enable := ctx.Configuration.Spec.Services.Gateway.EnableAuditPlugin
+	if enable == nil {
+		return false
+	}
+
+	if !semver.IsValid(gatewayVersion) {
+		return *enable
+	}
+
+	return *enable && semver.Compare("v0.2.0", gatewayVersion) <= 0
 }
 
 func createCaddyfile(context modules.ServiceInstallConfiguration) string {
@@ -189,9 +208,10 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			}
 			return ""
 		}(),
-		"Port":     gatewayPort,
-		"Fallback": fallback,
-		"Redirect": redirect,
+		"Port":        gatewayPort,
+		"Fallback":    fallback,
+		"Redirect":    redirect,
+		"EnableAudit": EnableAuditPlugin(context.ReconciliationConfig),
 	}); err != nil {
 		panic(err)
 	}
@@ -215,6 +235,7 @@ const caddyfile = `(cors) {
 	}
 }
 
+{{- if .EnableAudit }}
 (audit) {
 	audit {
 		# Kafka publisher
@@ -236,6 +257,7 @@ const caddyfile = `(cors) {
 		{{- end }}
 	}
 }
+{{- end }}
 
 {
 	{{ if .Debug }}debug{{ end }}
@@ -259,7 +281,9 @@ const caddyfile = `(cors) {
 		{{- end }}
 	}
 
+	{{- if .EnableAudit }}
 	import audit
+	{{- end }}
 
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}

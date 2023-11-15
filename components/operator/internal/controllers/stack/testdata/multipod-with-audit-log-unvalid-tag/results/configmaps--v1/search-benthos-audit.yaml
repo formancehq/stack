@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+    gateway_audit.yaml: "input:\n  event_bus:\n    topic: audit\n    consumer_group: search-audit\n\npipeline:\n  processors:\n  - log:\n      message: \"receive message: ${! this }\"\n  - switch_event_type:\n      events:\n      - label: AUDIT\n        processors:\n        - bloblang: |\n            meta id = \"AUDIT-%s\".format(this.payload.id)\n            meta action = \"index\"\n            \n            root = {\n              \"data\": this.payload,\n              \"indexed\": {\n                \"requestPath\": this.payload.request.path,\n                \"requestMethod\": this.payload.request.method,\n                \"responseStatusCode\": this.payload.response.status_code,\n              },\n              \"kind\": \"AUDIT\",\n              \"when\": this.date\n            }\n\n\noutput:\n  resource: elasticsearch\n"
+kind: ConfigMap
+metadata:
+    labels:
+        stack: "true"
+    name: search-benthos-audit
+    namespace: multipod-with-audit-log-unvalid-tag

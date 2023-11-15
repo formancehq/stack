@@ -1,0 +1,17 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: search-v0.7.0-post-upgrade
+    namespace: multipod-with-audit-log-unvalid-tag
+spec:
+    configuration: multipod-with-audit-log-unvalid-tag
+    currentVersion: ""
+    module: search
+    postUpgrade: true
+    targetedVersion: v0.7.0
+    version: multipod-with-audit-log-unvalid-tag
+status:
+    terminated: true
