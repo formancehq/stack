@@ -130,7 +130,7 @@ func applyBalanceQuery(query *bun.SelectQuery, balanceQuery BalanceQuery) *bun.S
 	}
 
 	if !balanceQuery.To.IsZero() {
-		query = query.Where("balance.last_updated_at < ?", balanceQuery.To)
+		query = query.Where("(balance.created_at <= ?)", balanceQuery.To)
 	}
 
 	if balanceQuery.Limit > 0 {
