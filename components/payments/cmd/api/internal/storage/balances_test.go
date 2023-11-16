@@ -73,6 +73,8 @@ func TestListBalances(t *testing.T) {
 	}
 
 	t.Run("list all balances with page size 1", func(t *testing.T) {
+		t.Parallel()
+
 		query, err := storage.Paginate(1, "", nil, nil)
 		require.NoError(t, err)
 
@@ -141,6 +143,8 @@ func TestListBalances(t *testing.T) {
 	})
 
 	t.Run("list all balances with page size 2", func(t *testing.T) {
+		t.Parallel()
+
 		query, err := storage.Paginate(2, "", nil, nil)
 		require.NoError(t, err)
 
@@ -192,6 +196,8 @@ func TestListBalances(t *testing.T) {
 	})
 
 	t.Run("list balances for asset", func(t *testing.T) {
+		t.Parallel()
+
 		query, err := storage.Paginate(15, "", nil, nil)
 		require.NoError(t, err)
 
@@ -208,6 +214,8 @@ func TestListBalances(t *testing.T) {
 	})
 
 	t.Run("list balances for asset and limit", func(t *testing.T) {
+		t.Parallel()
+
 		query, err := storage.Paginate(15, "", nil, nil)
 		require.NoError(t, err)
 
@@ -224,6 +232,8 @@ func TestListBalances(t *testing.T) {
 	})
 
 	t.Run("list balances for asset and time range", func(t *testing.T) {
+		t.Parallel()
+
 		query, err := storage.Paginate(15, "", nil, nil)
 		require.NoError(t, err)
 
@@ -249,6 +259,8 @@ func TestListBalances(t *testing.T) {
 	})
 
 	t.Run("get balances at a precise time", func(t *testing.T) {
+		t.Parallel()
+
 		query, err := storage.Paginate(15, "", nil, nil)
 		require.NoError(t, err)
 
