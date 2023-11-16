@@ -63,12 +63,13 @@ create table transactions (
 
 create table transactions_metadata (
     ledger varchar not null,
-    transaction_id numeric not null, -- references transactions(id),
+    transaction_id numeric not null,
     revision numeric default 0 not null,
     date timestamp not null,
     metadata jsonb not null default '{}'::jsonb,
 
-    primary key (ledger, transaction_id, revision)
+    primary key (ledger, transaction_id, revision),
+    foreign key (ledger, transaction_id) references transactions(ledger, id)
 ) partition by list(ledger);
 
 create table accounts (
@@ -82,18 +83,19 @@ create table accounts (
 
 create table accounts_metadata (
     ledger varchar not null,
-    address varchar, -- references accounts(address),
+    address varchar,
     metadata jsonb default '{}'::jsonb,
     revision numeric default 0,
     date timestamp,
 
-    primary key (ledger, address, revision)
+    primary key (ledger, address, revision),
+    foreign key (ledger, address) references accounts(ledger, address)
 ) partition by list(ledger);;
 
 create table moves (
     ledger varchar not null,
     seq serial not null,
-    transaction_id numeric not null, -- references transactions(id),
+    transaction_id numeric not null,
     account_address varchar not null,
     account_address_array jsonb not null,
     asset varchar not null,
@@ -104,8 +106,9 @@ create table moves (
     post_commit_effective_volumes volumes default null,
     is_source boolean not null,
 
-    primary key (ledger, seq)
-) partition by list(ledger);;
+    primary key (ledger, seq),
+    foreign key (ledger, transaction_id) references transactions(ledger, id)
+) partition by list(ledger);
 
 create type log_type as enum (
 	'NEW_TRANSACTION',
@@ -142,7 +145,6 @@ create index moves_range_dates on moves (account_address, asset, effective_date)
 /** Index requires for read */
 create index transactions_date on transactions (timestamp);
 create index transactions_metadata_metadata on transactions_metadata using gin (metadata);
---create unique index transactions_revisions on transactions_metadata(id desc, revision desc);
 
 create index moves_account_address on moves (account_address);
 create index moves_account_address_array on moves using gin (account_address_array jsonb_ops);
