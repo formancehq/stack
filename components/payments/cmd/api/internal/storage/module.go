@@ -57,7 +57,7 @@ func Module(uri, configEncryptionKey string, debug bool, output io.Writer) fx.Op
 			})
 		}),
 		fx.Provide(func(db *bun.DB) *Storage {
-			return newStorage(db, configEncryptionKey)
+			return NewStorage(db, configEncryptionKey)
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, repo *Storage) {
 			lc.Append(fx.Hook{
