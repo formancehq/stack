@@ -2,10 +2,11 @@ package httpserver
 
 import (
 	"context"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"net"
 	"net/http"
 	"strconv"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"go.uber.org/fx"
 )
@@ -62,14 +63,13 @@ func StartedServer(ctx context.Context, listener net.Listener) {
 	close(si.started)
 }
 
-func StartServer(ctx context.Context, bind string, handler http.Handler, options ...func(server *http.Server)) (func(ctx context.Context) error, error) {
-	listener, err := net.Listen("tcp", bind)
-	if err != nil {
-		return func(ctx context.Context) error {
-			return nil
-		}, err
+func (s *server) StartServer(ctx context.Context, handler http.Handler, options ...func(server *http.Server)) (func(ctx context.Context) error, error) {
+
+	if s.listener == nil {
+		panic("listener is nil")
 	}
-	StartedServer(ctx, listener)
+
+	StartedServer(ctx, s.listener)
 
 	srv := &http.Server{
 		Handler: handler,
@@ -79,7 +79,7 @@ func StartServer(ctx context.Context, bind string, handler http.Handler, options
 	}
 
 	go func() {
-		err := srv.Serve(listener)
+		err := srv.Serve(s.listener)
 		if err != nil && err != http.ErrServerClosed {
 			panic(err)
 		}
@@ -90,15 +90,50 @@ func StartServer(ctx context.Context, bind string, handler http.Handler, options
 	}, nil
 }
 
-func NewHook(addr string, handler http.Handler, options ...func(server *http.Server)) fx.Hook {
+type server struct {
+	listener       net.Listener
+	httpServerOpts []func(server *http.Server)
+}
+
+type serverOpts func(server *server)
+
+func WithListener(listener net.Listener) serverOpts {
+	return func(server *server) {
+		server.listener = listener
+	}
+}
+
+func WithAddress(addr string) serverOpts {
+	return func(server *server) {
+		l, err := net.Listen("tcp", addr)
+		if err != nil {
+			panic(err)
+		}
+		server.listener = l
+	}
+}
+
+func WithHttpServerOpts(opts ...func(server *http.Server)) serverOpts {
+	return func(server *server) {
+		server.httpServerOpts = opts
+	}
+}
+
+func NewHook(handler http.Handler, options ...serverOpts) fx.Hook {
 	var (
 		close func(ctx context.Context) error
 		err   error
 	)
+
+	s := &server{}
+	for _, option := range options {
+		option(s)
+	}
+
 	return fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logging.FromContext(ctx).Infof("Start HTTP server")
-			close, err = StartServer(ctx, addr, handler, options...)
+			close, err = s.StartServer(ctx, handler, s.httpServerOpts...)
 			return err
 		},
 		OnStop: func(ctx context.Context) error {

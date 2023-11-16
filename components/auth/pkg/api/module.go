@@ -47,7 +47,7 @@ func Module(addr, issuer string, serviceInfo api.ServiceInfo) fx.Option {
 			finalRouter.Path("/_healthcheck").HandlerFunc(healthController.Check)
 			finalRouter.PathPrefix("/").Handler(r)
 
-			lc.Append(httpserver.NewHook(addr, finalRouter))
+			lc.Append(httpserver.NewHook(finalRouter, httpserver.WithAddress(addr)))
 		}),
 		fx.Invoke(
 			addInfoRoute,

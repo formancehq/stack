@@ -32,7 +32,7 @@ const (
 func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
-			lc.Append(httpserver.NewHook(bind, m))
+			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
 		}),
 		fx.Supply(serviceInfo),
 		fx.Provide(httpRouter),

@@ -52,7 +52,7 @@ func newServeCommand() *cobra.Command {
 					})
 				}),
 				fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
-					lc.Append(httpserver.NewHook(viper.GetString(listenFlag), router))
+					lc.Append(httpserver.NewHook(router, httpserver.WithAddress(viper.GetString(listenFlag))))
 				}),
 				commonOptions(cmd.OutOrStdout()),
 			}

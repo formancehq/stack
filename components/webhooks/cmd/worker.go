@@ -49,7 +49,7 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
 		fx.Provide(worker.NewWorkerHandler),
 		fx.Invoke(func(lc fx.Lifecycle, h http.Handler) {
-			lc.Append(httpserver.NewHook(viper.GetString(flag.Listen), h))
+			lc.Append(httpserver.NewHook(h, httpserver.WithAddress(viper.GetString(flag.Listen))))
 		}),
 		worker.StartModule(
 			ServiceName,
