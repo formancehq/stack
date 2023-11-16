@@ -2,6 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/stack/tests/integration/internal/modules"
+	"net/http"
 	"reflect"
 	"time"
 
@@ -16,6 +17,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	When("setting metadata on a unknown account", func() {
 		var (
 			msgs               chan *nats.Msg

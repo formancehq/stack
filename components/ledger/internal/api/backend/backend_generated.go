@@ -16,7 +16,9 @@ import (
 	ledger "github.com/formancehq/ledger/internal"
 	engine "github.com/formancehq/ledger/internal/engine"
 	command "github.com/formancehq/ledger/internal/engine/command"
+	driver "github.com/formancehq/ledger/internal/storage/driver"
 	ledgerstore "github.com/formancehq/ledger/internal/storage/ledgerstore"
+	systemstore "github.com/formancehq/ledger/internal/storage/systemstore"
 	api "github.com/formancehq/stack/libs/go-libs/api"
 	metadata "github.com/formancehq/stack/libs/go-libs/metadata"
 	migrations "github.com/formancehq/stack/libs/go-libs/migrations"
@@ -292,25 +294,25 @@ func (m *MockBackend) EXPECT() *MockBackendMockRecorder {
 	return m.recorder
 }
 
-// ConfigureLedger mocks base method.
-func (m *MockBackend) ConfigureLedger(ctx context.Context, name string, configuration Configuration) error {
+// CreateLedger mocks base method.
+func (m *MockBackend) CreateLedger(ctx context.Context, name string, configuration driver.LedgerConfiguration) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConfigureLedger", ctx, name, configuration)
+	ret := m.ctrl.Call(m, "CreateLedger", ctx, name, configuration)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// ConfigureLedger indicates an expected call of ConfigureLedger.
-func (mr *MockBackendMockRecorder) ConfigureLedger(ctx, name, configuration any) *gomock.Call {
+// CreateLedger indicates an expected call of CreateLedger.
+func (mr *MockBackendMockRecorder) CreateLedger(ctx, name, configuration any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfigureLedger", reflect.TypeOf((*MockBackend)(nil).ConfigureLedger), ctx, name, configuration)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLedger", reflect.TypeOf((*MockBackend)(nil).CreateLedger), ctx, name, configuration)
 }
 
 // GetLedger mocks base method.
-func (m *MockBackend) GetLedger(ctx context.Context, name string) (Ledger, error) {
+func (m *MockBackend) GetLedger(ctx context.Context, name string) (*systemstore.Ledger, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLedger", ctx, name)
-	ret0, _ := ret[0].(Ledger)
+	ret0, _ := ret[0].(*systemstore.Ledger)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -319,6 +321,21 @@ func (m *MockBackend) GetLedger(ctx context.Context, name string) (Ledger, error
 func (mr *MockBackendMockRecorder) GetLedger(ctx, name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLedger", reflect.TypeOf((*MockBackend)(nil).GetLedger), ctx, name)
+}
+
+// GetLedgerEngine mocks base method.
+func (m *MockBackend) GetLedgerEngine(ctx context.Context, name string) (Ledger, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLedgerEngine", ctx, name)
+	ret0, _ := ret[0].(Ledger)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLedgerEngine indicates an expected call of GetLedgerEngine.
+func (mr *MockBackendMockRecorder) GetLedgerEngine(ctx, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLedgerEngine", reflect.TypeOf((*MockBackend)(nil).GetLedgerEngine), ctx, name)
 }
 
 // GetVersion mocks base method.
@@ -336,10 +353,10 @@ func (mr *MockBackendMockRecorder) GetVersion() *gomock.Call {
 }
 
 // ListLedgers mocks base method.
-func (m *MockBackend) ListLedgers(ctx context.Context) ([]string, error) {
+func (m *MockBackend) ListLedgers(ctx context.Context) ([]systemstore.Ledger, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListLedgers", ctx)
-	ret0, _ := ret[0].([]string)
+	ret0, _ := ret[0].([]systemstore.Ledger)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -100,7 +100,7 @@ func (m *heartbeat) enqueue(ctx context.Context) error {
 	for _, l := range ledgers {
 		stats := map[string]any{}
 		if err := func() error {
-			store, err := m.backend.GetLedgerStore(ctx, l)
+			store, err := m.backend.GetLedgerStore(ctx, l.Name)
 			if err != nil && err != storageerrors.ErrStoreNotFound {
 				return err
 			}
@@ -123,7 +123,7 @@ func (m *heartbeat) enqueue(ctx context.Context) error {
 		}
 
 		digest := sha256.New()
-		digest.Write([]byte(l))
+		digest.Write([]byte(l.Name))
 		ledgerHash := base64.RawURLEncoding.EncodeToString(digest.Sum(nil))
 
 		ledgersProperty[ledgerHash] = stats

@@ -3,8 +3,12 @@ package driver
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sync"
+
+	ledger "github.com/formancehq/ledger/internal"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 
 	"github.com/formancehq/ledger/internal/storage/ledgerstore"
 
@@ -12,23 +16,39 @@ import (
 
 	"github.com/formancehq/ledger/internal/storage/systemstore"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/pkg/errors"
 )
+
+const defaultBucket = "_default"
+
+var (
+	ErrNeedUpgradeBucket   = errors.New("need to upgrade bucket before add a new ledger on it")
+	ErrLedgerAlreadyExists = errors.New("ledger already exists")
+)
+
+type LedgerConfiguration struct {
+	Bucket string `json:"bucket"`
+}
 
 type Driver struct {
 	systemStore       *systemstore.Store
 	lock              sync.Mutex
 	connectionOptions sqlutils.ConnectionOptions
 	buckets           map[string]*ledgerstore.Bucket
+	db                *bun.DB
 }
 
 func (d *Driver) GetSystemStore() *systemstore.Store {
 	return d.systemStore
 }
 
-func (d *Driver) openBucket(name string) (*ledgerstore.Bucket, error) {
+func (d *Driver) OpenBucket(name string) (*ledgerstore.Bucket, error) {
 
-	b, err := ledgerstore.ConnectToBucket(d.systemStore, d.connectionOptions, name)
+	bucket, ok := d.buckets[name]
+	if ok {
+		return bucket, nil
+	}
+
+	b, err := ledgerstore.ConnectToBucket(d.connectionOptions, name)
 	if err != nil {
 		return nil, err
 	}
@@ -37,109 +57,107 @@ func (d *Driver) openBucket(name string) (*ledgerstore.Bucket, error) {
 	return b, nil
 }
 
-func (d *Driver) createBucket(ctx context.Context, name string) (*ledgerstore.Bucket, error) {
-	if name == systemstore.Schema {
-		return nil, errors.New("reserved name")
-	}
-
-	exists, err := d.systemStore.ExistsBucket(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-	if exists {
-		return nil, sqlutils.ErrBucketAlreadyExists
-	}
-
-	_, err = d.systemStore.RegisterBucket(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-
-	bucket, err := d.openBucket(name)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = bucket.DB().ExecContext(ctx, fmt.Sprintf(`create schema if not exists "%s"`, name))
-	if err != nil {
-		return nil, sqlutils.PostgresError(err)
-	}
-
-	err = bucket.Migrate(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return bucket, err
-}
-
-func (d *Driver) GetBucket(ctx context.Context, name string) (*ledgerstore.Bucket, error) {
-	d.lock.Lock()
-	defer d.lock.Unlock()
-
-	exists, err := d.systemStore.ExistsBucket(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-
-	var ret *ledgerstore.Bucket
-	if !exists {
-		ret, err = d.createBucket(ctx, name)
-	} else {
-		ret, err = d.openBucket(name)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	return ret, nil
-}
-
 func (d *Driver) GetLedgerStore(ctx context.Context, name string) (*ledgerstore.Store, error) {
 	d.lock.Lock()
 	defer d.lock.Unlock()
 
-	const defaultBucketName = "_default"
-
-	l, err := d.systemStore.GetLedger(ctx, name)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, err
-	}
-
-	bucketName := defaultBucketName
-	if l != nil && l.Bucket != "" {
-		bucketName = l.Bucket
-	}
-
-	exists, err := d.systemStore.ExistsBucket(ctx, bucketName)
+	ledgerConfiguration, err := d.systemStore.GetLedger(ctx, name)
 	if err != nil {
 		return nil, err
 	}
 
-	var ret *ledgerstore.Bucket
-	if !exists {
-		ret, err = d.createBucket(ctx, name)
+	bucket, err := d.OpenBucket(ledgerConfiguration.Bucket)
+	if err != nil {
+		return nil, err
+	}
+
+	return bucket.GetLedgerStore(name)
+}
+
+func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configuration LedgerConfiguration) (*ledgerstore.Store, error) {
+
+	tx, err := f.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	bucketName := defaultBucket
+	if configuration.Bucket != "" {
+		bucketName = configuration.Bucket
+	}
+
+	bucket, err := f.OpenBucket(bucketName)
+	if err != nil {
+		return nil, errors.Wrap(err, "opening bucket")
+	}
+
+	isInitialized, err := bucket.IsInitialized(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "checking if bucket is initialized")
+	}
+
+	if isInitialized {
+		isUpToDate, err := bucket.IsUpToDate(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "checking if bucket is up to date")
+		}
+		if !isUpToDate {
+			return nil, ErrNeedUpgradeBucket
+		}
 	} else {
-		ret, err = d.openBucket(name)
-	}
-	if err != nil {
-		return nil, err
+		if err := ledgerstore.MigrateBucket(ctx, tx, bucketName); err != nil {
+			return nil, errors.Wrap(err, "migrating bucket")
+		}
 	}
 
-	return ret.GetLedgerStore(ctx, name)
+	ledgerExists, err := bucket.HasLedger(ctx, name)
+	if err != nil {
+		return nil, errors.Wrap(err, "checking if bucket has ledger")
+	}
+	if ledgerExists {
+		return nil, ErrLedgerAlreadyExists
+	}
+
+	if err := ledgerstore.InitializeLedgerStore(ctx, tx, name); err != nil {
+		return nil, errors.Wrap(err, "initializing ledger store")
+	}
+
+	store, err := bucket.GetLedgerStore(name)
+	if err != nil {
+		return nil, errors.Wrap(err, "getting ledger store")
+	}
+
+	_, err = systemstore.RegisterLedger(ctx, tx, &systemstore.Ledger{
+		Name:    name,
+		AddedAt: ledger.Now(),
+		Bucket:  bucketName,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "registring ledger on system store")
+	}
+
+	return store, errors.Wrap(tx.Commit(), "committing sql transaction")
 }
 
 func (d *Driver) Initialize(ctx context.Context) error {
 	logging.FromContext(ctx).Debugf("Initialize driver")
 
 	var err error
-	d.systemStore, err = systemstore.Connect(ctx, d.connectionOptions)
+	d.db, err = sqlutils.OpenSQLDB(d.connectionOptions)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "connecting to database")
 	}
 
-	if err := d.systemStore.Migrate(ctx); err != nil {
-		return err
+	if err := systemstore.Migrate(ctx, d.db); err != nil {
+		return errors.Wrap(err, "migrating data")
+	}
+
+	d.systemStore, err = systemstore.Connect(ctx, d.connectionOptions)
+	if err != nil {
+		return errors.Wrap(err, "connecting to system store")
 	}
 
 	return nil
@@ -147,18 +165,23 @@ func (d *Driver) Initialize(ctx context.Context) error {
 
 func (d *Driver) UpgradeAllBuckets(ctx context.Context) error {
 	systemStore := d.GetSystemStore()
-	buckets, err := systemStore.ListBuckets(ctx)
+	ledgers, err := systemStore.ListLedgers(ctx)
 	if err != nil {
 		return err
 	}
 
-	for _, name := range buckets {
-		bucket, err := d.GetBucket(ctx, name)
+	buckets := collectionutils.Set[string]{}
+	for _, name := range ledgers {
+		buckets.Put(name.Name)
+	}
+
+	for _, bucket := range collectionutils.Keys(buckets) {
+		bucket, err := d.OpenBucket(bucket)
 		if err != nil {
 			return err
 		}
 
-		logging.FromContext(ctx).Infof("Upgrading storage '%s'", name)
+		logging.FromContext(ctx).Infof("Upgrading bucket '%s'", bucket)
 		if err := bucket.Migrate(ctx); err != nil {
 			return err
 		}
@@ -168,15 +191,16 @@ func (d *Driver) UpgradeAllBuckets(ctx context.Context) error {
 }
 
 func (d *Driver) Close() error {
-	if d.systemStore != nil {
-		if err := d.systemStore.Close(); err != nil {
-			return err
-		}
+	if err := d.systemStore.Close(); err != nil {
+		return err
 	}
 	for _, b := range d.buckets {
 		if err := b.Close(); err != nil {
 			return err
 		}
+	}
+	if err := d.db.Close(); err != nil {
+		return err
 	}
 	return nil
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/bun"
 )
 
-func (s *Store) getMigrator() *migrations.Migrator {
+func Migrate(ctx context.Context, db bun.IDB) error {
 	migrator := migrations.NewMigrator(migrations.WithSchema(Schema, true))
 	migrator.RegisterMigrations(
 		migrations.Migration{
@@ -24,14 +24,6 @@ func (s *Store) getMigrator() *migrations.Migrator {
 				}
 
 				_, err = tx.NewCreateTable().
-					Model((*Buckets)(nil)).
-					IfNotExists().
-					Exec(ctx)
-				if err != nil {
-					return sqlutils.PostgresError(err)
-				}
-
-				_, err = s.db.NewCreateTable().
 					Model((*configuration)(nil)).
 					IfNotExists().
 					Exec(ctx)
@@ -39,5 +31,5 @@ func (s *Store) getMigrator() *migrations.Migrator {
 			},
 		},
 	)
-	return migrator
+	return migrator.Up(ctx, db)
 }

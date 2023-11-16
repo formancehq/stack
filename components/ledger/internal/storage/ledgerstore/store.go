@@ -6,6 +6,8 @@ import (
 	"database/sql"
 	"text/template"
 
+	"github.com/pkg/errors"
+
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
@@ -15,8 +17,7 @@ import (
 )
 
 type Store struct {
-	onDelete func(ctx context.Context) error
-	bucket   *Bucket
+	bucket *Bucket
 
 	name string
 }
@@ -59,59 +60,13 @@ func (store *Store) Delete(ctx context.Context) error {
 		return err
 	}
 
-	if err := store.onDelete(ctx); err != nil {
-		return err
-	}
-
 	return tx.Commit()
 }
 
 func (store *Store) withTransaction(ctx context.Context, callback func(tx bun.Tx) error) error {
-	tx, err := store.bucket.db.BeginTx(ctx, &sql.TxOptions{})
-	if err != nil {
-		return err
-	}
-	if err := callback(tx); err != nil {
-		_ = tx.Rollback()
-		return sqlutils.PostgresError(err)
-	}
-	return tx.Commit()
-}
-
-func (store *Store) Initialize(ctx context.Context) error {
-	tx, err := store.bucket.db.BeginTx(ctx, &sql.TxOptions{})
-	if err != nil {
-		return sqlutils.PostgresError(err)
-	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
-	const sqlScript = `
-		create table "transactions_{{.Ledger}}" partition of transactions for values in ('{{.Ledger}}');
-		create table "transactions_metadata_{{.Ledger}}" partition of transactions_metadata for values in ('{{.Ledger}}');;
-		create table "accounts_{{.Ledger}}" partition of accounts for values in ('{{.Ledger}}');
-		create table "accounts_metadata_{{.Ledger}}" partition of accounts_metadata for values in ('{{.Ledger}}');;
-		create table "moves_{{.Ledger}}" partition of moves for values in ('{{.Ledger}}');;
-		create table "logs_{{.Ledger}}" partition of logs for values in ('{{.Ledger}}');;
-
-		/** Define the trigger which populate table in response to new logs **/
-		create trigger "insert_log_{{.Ledger}}" after insert on "logs_{{.Ledger}}"
-		for each row execute procedure handle_log();
-`
-	buf := bytes.NewBufferString("")
-	if err := template.Must(template.New("init-ledger").Parse(sqlScript)).Execute(buf, map[string]any{
-		"Ledger": store.name,
-	}); err != nil {
-		return sqlutils.PostgresError(err)
-	}
-
-	_, err = tx.ExecContext(ctx, buf.String())
-	if err != nil {
-		return sqlutils.PostgresError(err)
-	}
-
-	return tx.Commit()
+	return store.bucket.db.RunInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+		return callback(tx)
+	})
 }
 
 func (store *Store) IsUpToDate(ctx context.Context) (bool, error) {
@@ -125,11 +80,35 @@ func (store *Store) GetMigrationsInfo(ctx context.Context) ([]migrations.Info, e
 func New(
 	bucket *Bucket,
 	name string,
-	onDelete func(ctx context.Context) error,
 ) (*Store, error) {
 	return &Store{
-		bucket:   bucket,
-		name:     name,
-		onDelete: onDelete,
+		bucket: bucket,
+		name:   name,
 	}, nil
+}
+
+func InitializeLedgerStore(ctx context.Context, db bun.IDB, name string) error {
+	return db.RunInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+		const sqlScript = `
+		create table "transactions_{{.Ledger}}" partition of transactions for values in ('{{.Ledger}}');
+		create table "transactions_metadata_{{.Ledger}}" partition of transactions_metadata for values in ('{{.Ledger}}');;
+		create table "accounts_{{.Ledger}}" partition of accounts for values in ('{{.Ledger}}');
+		create table "accounts_metadata_{{.Ledger}}" partition of accounts_metadata for values in ('{{.Ledger}}');;
+		create table "moves_{{.Ledger}}" partition of moves for values in ('{{.Ledger}}');;
+		create table "logs_{{.Ledger}}" partition of logs for values in ('{{.Ledger}}');;
+
+		/** Define the trigger which populate table in response to new logs **/
+		create trigger "insert_log_{{.Ledger}}" after insert on "logs_{{.Ledger}}"
+		for each row execute procedure handle_log();
+`
+		buf := bytes.NewBufferString("")
+		if err := template.Must(template.New("init-ledger").Parse(sqlScript)).Execute(buf, map[string]any{
+			"Ledger": name,
+		}); err != nil {
+			return errors.Wrap(err, "templating init ledger script")
+		}
+
+		_, err := tx.ExecContext(ctx, buf.String())
+		return errors.Wrap(sqlutils.PostgresError(err), "executing store sql script")
+	})
 }

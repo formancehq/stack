@@ -3,6 +3,8 @@ package analytics
 import (
 	"context"
 
+	"github.com/formancehq/ledger/internal/storage/systemstore"
+
 	storageerrors "github.com/formancehq/ledger/internal/storage/sqlutils"
 
 	"github.com/formancehq/ledger/internal/storage/driver"
@@ -34,7 +36,7 @@ var _ Ledger = (*defaultLedger)(nil)
 
 type Backend interface {
 	AppID(ctx context.Context) (string, error)
-	ListLedgers(ctx context.Context) ([]string, error)
+	ListLedgers(ctx context.Context) ([]systemstore.Ledger, error)
 	GetLedgerStore(ctx context.Context, l string) (Ledger, error)
 }
 
@@ -60,7 +62,7 @@ func (d defaultBackend) AppID(ctx context.Context) (string, error) {
 	return d.appID, nil
 }
 
-func (d defaultBackend) ListLedgers(ctx context.Context) ([]string, error) {
+func (d defaultBackend) ListLedgers(ctx context.Context) ([]systemstore.Ledger, error) {
 	return d.driver.GetSystemStore().ListLedgers(ctx)
 }
 

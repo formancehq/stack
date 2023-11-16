@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
+	"net/http"
 	"sort"
 	"time"
 
@@ -15,6 +16,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	When("listing logs", func() {
 		var (
 			timestamp1 = time.Date(2023, 4, 11, 10, 0, 0, 0, time.UTC)

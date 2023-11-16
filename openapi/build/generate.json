@@ -666,9 +666,50 @@
       }
     },
     "/api/ledger/v2/{ledger}": {
+      "parameters": [
+        {
+          "name": "ledger",
+          "in": "path",
+          "description": "Name of the ledger.",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "ledger001"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a ledger",
+        "operationId": "getLedger",
+        "tags": [
+          "Ledger"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ledger"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
-        "summary": "Configure a ledger",
-        "operationId": "configureLedger",
+        "summary": "Create a ledger",
+        "operationId": "createLedger",
         "tags": [
           "Ledger"
         ],
@@ -676,23 +717,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ConfigureLedgerRequest"
+                "$ref": "#/components/schemas/CreateLedgerRequest"
               }
             }
           }
         },
-        "parameters": [
-          {
-            "name": "ledger",
-            "in": "path",
-            "description": "Name of the ledger.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ledger001"
-            }
-          }
-        ],
         "responses": {
           "204": {
             "description": "OK"
@@ -5457,14 +5486,31 @@
           }
         ]
       },
-      "ConfigureLedgerRequest": {
+      "CreateLedgerRequest": {
         "type": "object",
         "properties": {
           "bucket": {
             "type": "string"
           }
+        }
+      },
+      "Ledger": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "addedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "bucket": {
+            "type": "string"
+          }
         },
         "required": [
+          "name",
+          "addedAt",
           "bucket"
         ]
       },

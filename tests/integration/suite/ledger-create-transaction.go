@@ -19,6 +19,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	When("creating a transaction on a ledger", func() {
 		var (
 			msgs               chan *nats.Msg
@@ -27,6 +34,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			rsp                *shared.CreateTransactionResponse
 		)
 		BeforeEach(func() {
+
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 

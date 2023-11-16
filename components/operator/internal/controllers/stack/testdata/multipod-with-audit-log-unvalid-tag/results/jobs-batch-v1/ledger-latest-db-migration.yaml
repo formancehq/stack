@@ -22,7 +22,7 @@ spec:
         spec:
             containers:
                 - args:
-                    - storage
+                    - buckets
                     - upgrade-all
                   env:
                     - name: POSTGRES_HOST
