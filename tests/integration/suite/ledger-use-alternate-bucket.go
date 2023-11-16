@@ -3,6 +3,7 @@ package suite
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/google/uuid"
@@ -19,9 +20,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			ledger1 = uuid.NewString()
-			response, err := Client().Ledger.ConfigureLedger(TestContext(), operations.ConfigureLedgerRequest{
-				ConfigureLedgerRequest: &shared.ConfigureLedgerRequest{
-					Bucket: "bucket0",
+			response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+				CreateLedgerRequest: &shared.CreateLedgerRequest{
+					Bucket: pointer.For("bucket0"),
 				},
 				Ledger: ledger1,
 			})
@@ -57,9 +58,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				)
 				BeforeEach(func() {
 					ledger2 = uuid.NewString()
-					response, err := Client().Ledger.ConfigureLedger(TestContext(), operations.ConfigureLedgerRequest{
-						ConfigureLedgerRequest: &shared.ConfigureLedgerRequest{
-							Bucket: "bucket0",
+					response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+						CreateLedgerRequest: &shared.CreateLedgerRequest{
+							Bucket: pointer.For("bucket0"),
 						},
 						Ledger: ledger2,
 					})

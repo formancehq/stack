@@ -11,7 +11,8 @@ import (
 
 func NewBucket() *cobra.Command {
 	return &cobra.Command{
-		Use: "buckets",
+		Use:     "buckets",
+		Aliases: []string{"storage"},
 	}
 }
 
@@ -32,7 +33,7 @@ func NewBucketUpgrade() *cobra.Command {
 
 			name := args[0]
 
-			bucket, err := driver.GetBucket(cmd.Context(), name)
+			bucket, err := driver.OpenBucket(name)
 			if err != nil {
 				return err
 			}

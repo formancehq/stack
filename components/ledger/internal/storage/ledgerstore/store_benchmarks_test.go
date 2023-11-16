@@ -229,7 +229,7 @@ func reportMetrics(ctx context.Context, b *testing.B, store *Store) {
 		IdxTupFetch  int    `bun:"idx_tup_fetch"`
 	}
 	ret := make([]stat, 0)
-	err := store.db.NewSelect().
+	err := store.GetDB().NewSelect().
 		Table("pg_stat_user_indexes").
 		Where("schemaname = ?", store.name).
 		Scan(ctx, &ret)
@@ -267,42 +267,42 @@ func reportTableSizes(ctx context.Context, b *testing.B, store *Store) {
 		"transactions", "accounts", "moves", "logs", "transactions_metadata", "accounts_metadata",
 	} {
 		totalRelationSize := ""
-		err := store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_total_relation_size('%s'))`, table)).
+		err := store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_total_relation_size('%s'))`, table)).
 			Scan(&totalRelationSize)
 		require.NoError(b, err)
 
 		tableSize := ""
-		err = store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_table_size('%s'))`, table)).
+		err = store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_table_size('%s'))`, table)).
 			Scan(&tableSize)
 		require.NoError(b, err)
 
 		relationSize := ""
-		err = store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s'))`, table)).
+		err = store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s'))`, table)).
 			Scan(&relationSize)
 		require.NoError(b, err)
 
 		indexesSize := ""
-		err = store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_indexes_size('%s'))`, table)).
+		err = store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_indexes_size('%s'))`, table)).
 			Scan(&indexesSize)
 		require.NoError(b, err)
 
 		mainSize := ""
-		err = store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'main'))`, table)).
+		err = store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'main'))`, table)).
 			Scan(&mainSize)
 		require.NoError(b, err)
 
 		fsmSize := ""
-		err = store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'fsm'))`, table)).
+		err = store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'fsm'))`, table)).
 			Scan(&fsmSize)
 		require.NoError(b, err)
 
 		vmSize := ""
-		err = store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'vm'))`, table)).
+		err = store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'vm'))`, table)).
 			Scan(&vmSize)
 		require.NoError(b, err)
 
 		initSize := ""
-		err = store.db.DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'init'))`, table)).
+		err = store.GetDB().DB.QueryRowContext(ctx, fmt.Sprintf(`select pg_size_pretty(pg_relation_size('%s', 'init'))`, table)).
 			Scan(&initSize)
 		require.NoError(b, err)
 
@@ -328,7 +328,7 @@ func BenchmarkList(b *testing.B) {
 				}
 			}()
 
-			_, err := store.db.Exec("VACUUM FULL ANALYZE")
+			_, err := store.GetDB().Exec("VACUUM FULL ANALYZE")
 			require.NoError(b, err)
 
 			runAllWithPIT := func(b *testing.B, pit *ledger.Time) {

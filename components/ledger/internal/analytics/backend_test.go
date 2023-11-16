@@ -12,6 +12,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	systemstore "github.com/formancehq/ledger/internal/storage/systemstore"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -122,10 +123,10 @@ func (mr *MockBackendMockRecorder) GetLedgerStore(ctx, l any) *gomock.Call {
 }
 
 // ListLedgers mocks base method.
-func (m *MockBackend) ListLedgers(ctx context.Context) ([]string, error) {
+func (m *MockBackend) ListLedgers(ctx context.Context) ([]systemstore.Ledger, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListLedgers", ctx)
-	ret0, _ := ret[0].([]string)
+	ret0, _ := ret[0].([]systemstore.Ledger)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

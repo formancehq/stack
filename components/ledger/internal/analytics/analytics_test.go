@@ -11,6 +11,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/ledger/internal/storage/systemstore"
+
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 	"gopkg.in/segmentio/analytics-go.v3"
@@ -126,7 +128,11 @@ func TestAnalytics(t *testing.T) {
 				EXPECT().
 				ListLedgers(gomock.Any()).
 				AnyTimes().
-				Return([]string{"default"}, nil)
+				Return([]systemstore.Ledger{
+					{
+						Name: "default",
+					},
+				}, nil)
 			backend.
 				EXPECT().
 				AppID(gomock.Any()).

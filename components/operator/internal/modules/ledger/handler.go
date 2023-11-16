@@ -82,7 +82,7 @@ func (l module) Versions() map[string]modules.Version {
 		"v2.0.0": {
 			DatabaseMigration: &modules.DatabaseMigration{
 				Shutdown: true,
-				Command:  []string{"storage", "upgrade-all"},
+				Command:  []string{"buckets", "upgrade-all"},
 				AdditionalEnv: func(ctx modules.ReconciliationConfig) []modules.EnvVar {
 					return []modules.EnvVar{
 						// todo: make ledger v2 use same env vars as other services

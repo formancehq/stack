@@ -6,7 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/formancehq/ledger/internal/api/backend"
+	"github.com/formancehq/ledger/internal/storage/driver"
+
 	v2 "github.com/formancehq/ledger/internal/api/v2"
 	"github.com/formancehq/ledger/internal/opentelemetry/metrics"
 	"github.com/google/uuid"
@@ -23,7 +24,7 @@ func TestConfigureLedger(t *testing.T) {
 	name := uuid.NewString()
 	b.
 		EXPECT().
-		ConfigureLedger(gomock.Any(), name, backend.Configuration{
+		CreateLedger(gomock.Any(), name, driver.LedgerConfiguration{
 			Bucket: "bucket0",
 		}).
 		Return(nil)

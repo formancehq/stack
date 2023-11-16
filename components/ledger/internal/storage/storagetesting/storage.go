@@ -25,7 +25,7 @@ func StorageDriver(t pgtesting.TestingT) *driver.Driver {
 
 	require.NoError(t, d.Initialize(context.Background()))
 	t.Cleanup(func() {
-		_ = d.Close()
+		require.NoError(t, d.Close())
 	})
 
 	return d

@@ -3,6 +3,7 @@ package suite
 import (
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
+	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -14,6 +15,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	When("creating a new workflow which will fail with insufficient fund error", func() {
 		var (
 			createWorkflowResponse *shared.CreateWorkflowResponse

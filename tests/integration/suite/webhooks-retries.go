@@ -22,6 +22,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	Context("the endpoint only returning errors", func() {
 		It("with a retries schedule of [1s,2s], 3 attempts have to be made and all should have a failed status", func() {
 			httpServer := httptest.NewServer(http.HandlerFunc(

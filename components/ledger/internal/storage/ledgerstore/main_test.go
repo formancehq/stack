@@ -2,19 +2,24 @@ package ledgerstore
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/formancehq/ledger/internal/storage/sqlutils"
-	"github.com/formancehq/ledger/internal/storage/systemstore"
-
 	ledger "github.com/formancehq/ledger/internal"
+	"github.com/formancehq/ledger/internal/storage/sqlutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+)
+
+var (
+	bunDB *bun.DB
 )
 
 func TestMain(m *testing.M) {
@@ -22,6 +27,14 @@ func TestMain(m *testing.M) {
 		logging.Error(err)
 		os.Exit(1)
 	}
+
+	db, err := sql.Open("postgres", pgtesting.Server().GetDSN())
+	if err != nil {
+		logging.Error(err)
+		os.Exit(1)
+	}
+
+	bunDB = bun.NewDB(db, pgdialect.New())
 
 	code := m.Run()
 	if err := pgtesting.DestroyPostgresServer(); err != nil {
@@ -42,36 +55,6 @@ func newBucket(t T, hooks ...bun.QueryHook) *Bucket {
 
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
 
-	//li := pq.NewListener(pgDatabase.ConnString(), 10*time.Second, time.Minute, func(event pq.ListenerEventType, err error) {
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//})
-	//
-	//if err := li.Listen("raise_notice"); err != nil {
-	//	panic(err)
-	//}
-	//
-	//go func() {
-	//	for {
-	//		select {
-	//		case n := <-li.Notify:
-	//			// n.Extra contains the payload from the notification
-	//			fmt.Println("notification:", n.Extra)
-	//		case <-time.After(5 * time.Minute):
-	//			if err := li.Ping(); err != nil {
-	//				panic(err)
-	//			}
-	//		}
-	//	}
-	//}()
-	//
-	//defer func() {
-	//	<-time.After(time.Second)
-	//}()
-	//
-	//<-time.After(time.Second)
-
 	connectionOptions := sqlutils.ConnectionOptions{
 		DatabaseSourceName: pgDatabase.ConnString(),
 		Debug:              testing.Verbose(),
@@ -80,14 +63,7 @@ func newBucket(t T, hooks ...bun.QueryHook) *Bucket {
 		ConnMaxIdleTime:    time.Minute,
 	}
 
-	ss, err := systemstore.Connect(ctx, connectionOptions)
-	require.NoError(t, err)
-	t.Cleanup(func() {
-		_ = ss.Close()
-	})
-	require.NoError(t, ss.Migrate(ctx))
-
-	bucket, err := ConnectToBucket(ss, connectionOptions, name, hooks...)
+	bucket, err := ConnectToBucket(connectionOptions, name, hooks...)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = bucket.Close()
@@ -98,14 +74,24 @@ func newBucket(t T, hooks ...bun.QueryHook) *Bucket {
 	return bucket
 }
 
-func newLedgerStore(t *testing.T) *Store {
+func newLedgerStore(t T, hooks ...bun.QueryHook) *Store {
 	t.Helper()
 
 	ledgerName := uuid.NewString()
-	ctx := logging.TestingContext()
 
-	bucket := newBucket(t)
-	store, err := bucket.GetLedgerStore(ctx, ledgerName)
+	_, err := bunDB.Exec(fmt.Sprintf(`create schema if not exists "%s"`, ledgerName))
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		_, err = bunDB.Exec(fmt.Sprintf(`drop schema "%s" cascade`, ledgerName))
+		require.NoError(t, err)
+	})
+
+	bucket := newBucket(t, hooks...)
+
+	require.NoError(t, InitializeLedgerStore(logging.TestingContext(), bucket.db, ledgerName))
+
+	store, err := New(bucket, ledgerName)
 	require.NoError(t, err)
 
 	return store

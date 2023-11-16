@@ -4,6 +4,9 @@ import (
 	_ "embed"
 	"net/http"
 
+	"github.com/formancehq/ledger/internal/storage/systemstore"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+
 	"github.com/formancehq/ledger/internal/api/backend"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 )
@@ -35,8 +38,10 @@ func getInfo(backend backend.Backend) func(w http.ResponseWriter, r *http.Reques
 			Version: backend.GetVersion(),
 			Config: &LedgerConfig{
 				LedgerStorage: &LedgerStorage{
-					Driver:  "postgres",
-					Ledgers: ledgers,
+					Driver: "postgres",
+					Ledgers: collectionutils.Map(ledgers, func(from systemstore.Ledger) string {
+						return from.Name
+					}),
 				},
 			},
 		})

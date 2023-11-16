@@ -18,6 +18,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	When("counting and listing accounts", func() {
 		var (
 			metadata1 = map[string]string{

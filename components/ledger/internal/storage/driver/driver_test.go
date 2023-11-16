@@ -3,8 +3,7 @@ package driver_test
 import (
 	"testing"
 
-	ledger "github.com/formancehq/ledger/internal"
-	"github.com/formancehq/ledger/internal/storage/systemstore"
+	"github.com/formancehq/ledger/internal/storage/driver"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
 
@@ -46,10 +45,7 @@ func TestErrorOnOutdatedBucket(t *testing.T) {
 
 	name := uuid.NewString()
 
-	_, err := d.GetSystemStore().RegisterBucket(ctx, name)
-	require.NoError(t, err)
-
-	b, err := d.GetBucket(ctx, name)
+	b, err := d.OpenBucket(name)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = b.Close()
@@ -67,7 +63,7 @@ func TestGetLedgerFromDefaultBucket(t *testing.T) {
 	ctx := logging.TestingContext()
 
 	name := uuid.NewString()
-	_, err := d.GetLedgerStore(ctx, name)
+	_, err := d.CreateLedgerStore(ctx, name, driver.LedgerConfiguration{})
 	require.NoError(t, err)
 }
 
@@ -79,13 +75,9 @@ func TestGetLedgerFromAlternateBucket(t *testing.T) {
 
 	ledgerName := "ledger0"
 	bucketName := "bucket0"
-	_, err := d.GetSystemStore().RegisterLedger(ctx, &systemstore.Ledger{
-		Name:    ledgerName,
-		AddedAt: ledger.Now(),
-		Bucket:  bucketName,
-	})
-	require.NoError(t, err)
 
-	_, err = d.GetLedgerStore(ctx, ledgerName)
+	_, err := d.CreateLedgerStore(ctx, ledgerName, driver.LedgerConfiguration{
+		Bucket: bucketName,
+	})
 	require.NoError(t, err)
 }

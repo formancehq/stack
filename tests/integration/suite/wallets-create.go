@@ -2,11 +2,10 @@ package suite
 
 import (
 	"fmt"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
-
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
