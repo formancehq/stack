@@ -1,0 +1,17 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: search-v0.10.0-pre-upgrade
+    namespace: multipod-with-audit-log
+spec:
+    configuration: multipod-with-audit-log
+    currentVersion: ""
+    module: search
+    postUpgrade: false
+    targetedVersion: v0.10.0
+    version: multipod-with-audit-log
+status:
+    terminated: true

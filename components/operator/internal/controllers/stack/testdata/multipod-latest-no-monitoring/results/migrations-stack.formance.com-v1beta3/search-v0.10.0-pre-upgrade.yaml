@@ -1,0 +1,17 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: search-v0.10.0-pre-upgrade
+    namespace: multipod-latest-no-monitoring
+spec:
+    configuration: multipod-latest-no-monitoring
+    currentVersion: ""
+    module: search
+    postUpgrade: false
+    targetedVersion: v0.10.0
+    version: multipod-latest-no-monitoring
+status:
+    terminated: true
