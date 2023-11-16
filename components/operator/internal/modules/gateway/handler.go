@@ -267,7 +267,9 @@ const caddyfile = `(cors) {
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
 	order auth before basicauth
 	order versions after metrics
+	{{- if .EnableAudit }}
 	order audit after encode
+	{{- end }}
 }
 
 :{{ .Port }} {
