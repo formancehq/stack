@@ -19,7 +19,7 @@ func StartModule(addr string) fx.Option {
 	options = append(options, fx.Provide(
 		newServerHandler,
 	), fx.Invoke(func(lc fx.Lifecycle, handler http.Handler) {
-		lc.Append(httpserver.NewHook(addr, handler))
+		lc.Append(httpserver.NewHook(handler, httpserver.WithAddress(addr)))
 	}))
 
 	logging.Debugf("starting server with env:")

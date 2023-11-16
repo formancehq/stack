@@ -15,7 +15,7 @@ func Module(serviceInfo sharedapi.ServiceInfo, listen string) fx.Option {
 		fx.Supply(serviceInfo),
 		sharedhealth.Module(),
 		fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
-			lc.Append(httpserver.NewHook(listen, router))
+			lc.Append(httpserver.NewHook(router, httpserver.WithAddress(listen)))
 		}),
 	)
 }

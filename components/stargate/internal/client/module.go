@@ -48,7 +48,7 @@ func Module(
 			}
 
 			l.Infof("HTTP server listening on %s", bind)
-			lc.Append(httpserver.NewHook(bind, h))
+			lc.Append(httpserver.NewHook(h, httpserver.WithAddress(bind)))
 		}),
 
 		fx.Provide(interceptors.NewAuthInterceptor),

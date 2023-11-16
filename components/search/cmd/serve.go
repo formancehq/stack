@@ -165,7 +165,7 @@ func apiModule(serviceName, bind, stack string, serviceInfo api.ServiceInfo, esI
 			return router, nil
 		}, fx.ParamTags(``, `optional:"true"`))),
 		fx.Invoke(func(lc fx.Lifecycle, handler http.Handler) {
-			lc.Append(httpserver.NewHook(bind, handler))
+			lc.Append(httpserver.NewHook(handler, httpserver.WithAddress(bind)))
 		}),
 	)
 }
