@@ -67,16 +67,16 @@ func (c *Extension) StartLedger(configuration LedgerConfiguration) *Ledger {
 		"testid":  configuration.TestID,
 	})
 
-	defer func() {
-		if e := recover(); e != nil {
-			if c.pool != nil && c.resource != nil {
-				if err := c.pool.Purge(c.resource); err != nil {
-					logger.Errorf("unable to clean docker resource: %s", err)
-				}
-			}
-			panic(e)
-		}
-	}()
+	//defer func() {
+	//	if e := recover(); e != nil {
+	//		if c.pool != nil && c.resource != nil {
+	//			if err := c.pool.Purge(c.resource); err != nil {
+	//				logger.Errorf("unable to clean docker resource: %s", err)
+	//			}
+	//		}
+	//		panic(e)
+	//	}
+	//}()
 
 	logger.Infof("Connecting to docker server...")
 	c.pool, err = dockertest.NewPool("")

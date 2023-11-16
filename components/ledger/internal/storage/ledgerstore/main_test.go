@@ -43,7 +43,13 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func newLedgerStore(t *testing.T) *Store {
+type T interface {
+	require.TestingT
+	Helper()
+	Cleanup(func())
+}
+
+func newLedgerStore(t T) *Store {
 	t.Helper()
 
 	ledgerName := uuid.NewString()
