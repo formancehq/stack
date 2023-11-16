@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"context"
+	"errors"
 	"net"
 	"net/http"
 	"strconv"
@@ -66,7 +67,14 @@ func StartedServer(ctx context.Context, listener net.Listener) {
 func (s *server) StartServer(ctx context.Context, handler http.Handler, options ...func(server *http.Server)) (func(ctx context.Context) error, error) {
 
 	if s.listener == nil {
-		panic("listener is nil")
+		if s.address == "" {
+			return nil, errors.New("either address or listener must be provided")
+		}
+		listener, err := net.Listen("tcp", ":0")
+		if err != nil {
+			return nil, err
+		}
+		s.listener = listener
 	}
 
 	StartedServer(ctx, s.listener)
@@ -92,6 +100,7 @@ func (s *server) StartServer(ctx context.Context, handler http.Handler, options 
 
 type server struct {
 	listener       net.Listener
+	address        string
 	httpServerOpts []func(server *http.Server)
 }
 
@@ -105,11 +114,7 @@ func WithListener(listener net.Listener) serverOpts {
 
 func WithAddress(addr string) serverOpts {
 	return func(server *server) {
-		l, err := net.Listen("tcp", addr)
-		if err != nil {
-			panic(err)
-		}
-		server.listener = l
+		server.address = addr
 	}
 }
 
