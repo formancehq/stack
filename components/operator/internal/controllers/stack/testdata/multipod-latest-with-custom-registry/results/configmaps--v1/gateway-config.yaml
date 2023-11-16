@@ -26,7 +26,6 @@ data:
         	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
         	order auth before basicauth
         	order versions after metrics
-        	order audit after encode
         }
 
         :8000 {
