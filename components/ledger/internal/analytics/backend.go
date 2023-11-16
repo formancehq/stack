@@ -3,6 +3,8 @@ package analytics
 import (
 	"context"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+
 	"github.com/formancehq/ledger/internal/storage/systemstore"
 
 	storageerrors "github.com/formancehq/ledger/internal/storage/sqlutils"
@@ -36,7 +38,7 @@ var _ Ledger = (*defaultLedger)(nil)
 
 type Backend interface {
 	AppID(ctx context.Context) (string, error)
-	ListLedgers(ctx context.Context) ([]systemstore.Ledger, error)
+	ListLedgers(ctx context.Context, query systemstore.ListLedgersQuery) (*sharedapi.Cursor[systemstore.Ledger], error)
 	GetLedgerStore(ctx context.Context, l string) (Ledger, error)
 }
 
@@ -62,8 +64,8 @@ func (d defaultBackend) AppID(ctx context.Context) (string, error) {
 	return d.appID, nil
 }
 
-func (d defaultBackend) ListLedgers(ctx context.Context) ([]systemstore.Ledger, error) {
-	return d.driver.GetSystemStore().ListLedgers(ctx)
+func (d defaultBackend) ListLedgers(ctx context.Context, query systemstore.ListLedgersQuery) (*sharedapi.Cursor[systemstore.Ledger], error) {
+	return d.driver.GetSystemStore().ListLedgers(ctx, query)
 }
 
 func (d defaultBackend) GetLedgerStore(ctx context.Context, name string) (Ledger, error) {

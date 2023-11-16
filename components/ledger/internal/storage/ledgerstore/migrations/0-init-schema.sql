@@ -82,7 +82,8 @@ create table transactions_metadata
     date timestamp not null,
     metadata jsonb not null default '{}'::jsonb,
 
-    primary key (ledger, transaction_id, revision)
+    primary key (ledger, transaction_id, revision),
+    foreign key (ledger, transaction_id) references transactions(ledger, id)
 ) partition by list(ledger);
 
 create table accounts
@@ -105,7 +106,8 @@ create table accounts_metadata
     revision numeric default 0,
     date timestamp,
 
-    primary key (ledger, address, revision)
+    primary key (ledger, address, revision),
+    foreign key (ledger, address) references accounts(ledger, address)
 ) partition by list(ledger);
 
 create table moves
@@ -123,7 +125,8 @@ create table moves
     post_commit_effective_volumes volumes default null,
     is_source boolean not null,
 
-    primary key (ledger, seq)
+    primary key (ledger, seq),
+    foreign key (ledger, transaction_id) references transactions(ledger, id)
 ) partition by list(ledger);
 
 create type log_type as enum

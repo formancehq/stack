@@ -5,6 +5,9 @@ import (
 	"database/sql"
 	"sync"
 
+	"github.com/formancehq/ledger/internal/storage/paginate"
+	"github.com/formancehq/stack/libs/go-libs/api"
+
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -164,15 +167,22 @@ func (d *Driver) Initialize(ctx context.Context) error {
 }
 
 func (d *Driver) UpgradeAllBuckets(ctx context.Context) error {
+
 	systemStore := d.GetSystemStore()
-	ledgers, err := systemStore.ListLedgers(ctx)
-	if err != nil {
-		return err
-	}
 
 	buckets := collectionutils.Set[string]{}
-	for _, name := range ledgers {
-		buckets.Put(name.Name)
+	err := paginate.Iterate(ctx, systemstore.NewListLedgersQuery(10),
+		func(ctx context.Context, q systemstore.ListLedgersQuery) (*api.Cursor[systemstore.Ledger], error) {
+			return systemStore.ListLedgers(ctx, q)
+		},
+		func(cursor *api.Cursor[systemstore.Ledger]) error {
+			for _, name := range cursor.Data {
+				buckets.Put(name.Name)
+			}
+			return nil
+		})
+	if err != nil {
+		return err
 	}
 
 	for _, bucket := range collectionutils.Keys(buckets) {

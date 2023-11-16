@@ -3,13 +3,16 @@ package ledger
 import (
 	"fmt"
 
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type ListStore struct {
-	Ledgers []string `json:"ledgers"`
+	Ledgers []shared.Ledger `json:"ledgers"`
 }
 type ListController struct {
 	store *ListStore
@@ -19,7 +22,7 @@ var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
 func NewDefaultListStore() *ListStore {
 	return &ListStore{
-		Ledgers: []string{},
+		Ledgers: []shared.Ledger{},
 	}
 }
 
@@ -64,7 +67,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := ledgerClient.Ledger.V2.GetInfo(cmd.Context())
+	response, err := ledgerClient.Ledger.ListLedgers(cmd.Context(), operations.ListLedgersRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -77,15 +80,15 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Ledgers = response.ConfigInfoResponse.Config.Storage.Ledgers
+	c.store.Ledgers = response.LedgerListResponse.Cursor.Data
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.Ledgers, func(ledger string) []string {
+	tableData := fctl.Map(c.store.Ledgers, func(ledger shared.Ledger) []string {
 		return []string{
-			ledger,
+			ledger.Name,
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"Name"})

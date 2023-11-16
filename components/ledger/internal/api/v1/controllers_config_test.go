@@ -1,14 +1,15 @@
 package v1_test
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	v1 "github.com/formancehq/ledger/internal/api/v1"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+
 	"github.com/formancehq/ledger/internal/storage/systemstore"
 
-	v2 "github.com/formancehq/ledger/internal/api/v2"
 	"github.com/formancehq/ledger/internal/opentelemetry/metrics"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -18,17 +19,19 @@ func TestGetInfo(t *testing.T) {
 	t.Parallel()
 
 	backend, _ := newTestingBackend(t, false)
-	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry())
+	router := v1.NewRouter(backend, nil, metrics.NewNoOpRegistry())
 
 	backend.
 		EXPECT().
-		ListLedgers(gomock.Any()).
-		Return([]systemstore.Ledger{
-			{
-				Name: "a",
-			},
-			{
-				Name: "b",
+		ListLedgers(gomock.Any(), gomock.Any()).
+		Return(&sharedapi.Cursor[systemstore.Ledger]{
+			Data: []systemstore.Ledger{
+				{
+					Name: "a",
+				},
+				{
+					Name: "b",
+				},
 			},
 		}, nil)
 
@@ -44,14 +47,13 @@ func TestGetInfo(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, rec.Code)
 
-	info := v2.ConfigInfo{}
-	require.NoError(t, json.NewDecoder(rec.Body).Decode(&info))
+	info, _ := sharedapi.DecodeSingleResponse[v1.ConfigInfo](t, rec.Body)
 
-	require.EqualValues(t, v2.ConfigInfo{
+	require.EqualValues(t, v1.ConfigInfo{
 		Server:  "ledger",
 		Version: "latest",
-		Config: &v2.LedgerConfig{
-			LedgerStorage: &v2.LedgerStorage{
+		Config: &v1.LedgerConfig{
+			LedgerStorage: &v1.LedgerStorage{
 				Driver:  "postgres",
 				Ledgers: []string{"a", "b"},
 			},
