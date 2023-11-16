@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/formancehq/ledger/internal/storage/sqlutils"
+
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 
 	"github.com/pkg/errors"
@@ -72,7 +74,12 @@ func LedgerMiddleware(
 
 			l, err := resolver.GetLedgerEngine(r.Context(), name)
 			if err != nil {
-				sharedapi.BadRequest(w, sharedapi.ErrorInternal, err)
+				switch {
+				case sqlutils.IsNotFoundError(err):
+					sharedapi.NotFound(w)
+				default:
+					sharedapi.InternalServerError(w, r, err)
+				}
 				return
 			}
 

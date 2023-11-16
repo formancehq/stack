@@ -32,7 +32,7 @@ func createLedger(b backend.Backend) http.HandlerFunc {
 
 		if err := b.CreateLedger(r.Context(), chi.URLParam(r, "ledger"), configuration); err != nil {
 			switch {
-			case errors.Is(err, backend.ErrAlreadyConfigured):
+			case errors.Is(err, driver.ErrLedgerAlreadyExists):
 				sharedapi.BadRequest(w, ErrValidation, err)
 			default:
 				sharedapi.InternalServerError(w, r, err)

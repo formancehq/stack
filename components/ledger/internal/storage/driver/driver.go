@@ -21,8 +21,8 @@ import (
 const defaultBucket = "_default"
 
 var (
-	ErrNeedUpgradeBucket = errors.New("need to upgrade bucket before add a new ledger on it")
-	ErrAlreadyExists     = errors.New("ledger already exists")
+	ErrNeedUpgradeBucket   = errors.New("need to upgrade bucket before add a new ledger on it")
+	ErrLedgerAlreadyExists = errors.New("ledger already exists")
 )
 
 type LedgerConfiguration struct {
@@ -118,7 +118,7 @@ func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configurati
 		return nil, errors.Wrap(err, "checking if bucket has ledger")
 	}
 	if ledgerExists {
-		return nil, ErrAlreadyExists
+		return nil, ErrLedgerAlreadyExists
 	}
 
 	if err := ledgerstore.InitializeLedgerStore(ctx, tx, name); err != nil {

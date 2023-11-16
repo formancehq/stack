@@ -17,6 +17,23 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
+	When("trying to list transactions of a non existent ledger", func() {
+		var response *operations.ListTransactionsResponse
+		BeforeEach(func() {
+			var err error
+			response, err = Client().Ledger.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+				Ledger: "default",
+			})
+			Expect(err).To(BeNil())
+
+		})
+		It("Should fail with a 404", func() {
+			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
+		})
+	})
+})
+
+var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
 		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
 			Ledger: "default",

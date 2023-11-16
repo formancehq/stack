@@ -11,7 +11,8 @@ import (
 
 func NewBucket() *cobra.Command {
 	return &cobra.Command{
-		Use: "buckets",
+		Use:     "buckets",
+		Aliases: []string{"storage"},
 	}
 }
 
