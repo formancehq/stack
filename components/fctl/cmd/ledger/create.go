@@ -70,7 +70,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a new transaction") {
+	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a new ledger") {
 		return nil, fctl.ErrMissingApproval
 	}
 
