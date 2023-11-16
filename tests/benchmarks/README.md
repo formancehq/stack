@@ -1,14 +1,12 @@
 # Benchmarks
 
 ## Deps
-- xk6
-- Task
+- earthly
+
 ## Launch benchmarks
-For v1:
+
+Will run benchmarks against actual branch
+
 ```bash
-task run:v1
-```
-For v2:
-```bash
-task run:v2
+earthly +run
 ```
