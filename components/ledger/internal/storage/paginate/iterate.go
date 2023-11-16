@@ -20,7 +20,7 @@ func Iterate[T any, Q any](ctx context.Context, q Q, iterator func(ctx context.C
 			return err
 		}
 
-		if cursor.Next == "" {
+		if !cursor.HasMore {
 			break
 		}
 
