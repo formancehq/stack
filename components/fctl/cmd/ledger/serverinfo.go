@@ -9,10 +9,8 @@ import (
 )
 
 type ServerInfoStore struct {
-	Server        string   `json:"server"`
-	Version       string   `json:"version"`
-	StorageDriver string   `json:"storageDriver"`
-	Ledgers       []string `json:"ledgers"`
+	Server  string `json:"server"`
+	Version string `json:"version"`
 }
 type ServerInfoController struct {
 	store *ServerInfoStore
@@ -22,10 +20,8 @@ var _ fctl.Controller[*ServerInfoStore] = (*ServerInfoController)(nil)
 
 func NewDefaultServerInfoStore() *ServerInfoStore {
 	return &ServerInfoStore{
-		Server:        "unknown",
-		Version:       "unknown",
-		StorageDriver: "unknown",
-		Ledgers:       []string{},
+		Server:  "unknown",
+		Version: "unknown",
 	}
 }
 
@@ -84,8 +80,6 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 
 	c.store.Server = response.ConfigInfoResponse.Server
 	c.store.Version = response.ConfigInfoResponse.Version
-	c.store.StorageDriver = response.ConfigInfoResponse.Config.Storage.Driver
-	c.store.Ledgers = response.ConfigInfoResponse.Config.Storage.Ledgers
 
 	return c, nil
 }
@@ -94,25 +88,10 @@ func (c *ServerInfoController) Render(cmd *cobra.Command, args []string) error {
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("Server"), fmt.Sprint(c.store.Server)})
 	tableData = append(tableData, []string{pterm.LightCyan("Version"), fmt.Sprint(c.store.Version)})
-	tableData = append(tableData, []string{pterm.LightCyan("Storage driver"), fmt.Sprint(c.store.StorageDriver)})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
-		Render(); err != nil {
-		return err
-	}
-
-	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Ledgers :")
-	if err := pterm.DefaultBulletList.
-		WithWriter(cmd.OutOrStdout()).
-		WithItems(fctl.Map(c.store.Ledgers, func(ledger string) pterm.BulletListItem {
-			return pterm.BulletListItem{
-				Text:        ledger,
-				TextStyle:   pterm.NewStyle(pterm.FgDefault),
-				BulletStyle: pterm.NewStyle(pterm.FgLightCyan),
-			}
-		})).
 		Render(); err != nil {
 		return err
 	}

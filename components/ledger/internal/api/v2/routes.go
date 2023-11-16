@@ -36,6 +36,7 @@ func NewRouter(
 		router.Use(otelchi.Middleware("ledger"))
 		router.Get("/_info", getInfo(b))
 
+		router.Get("/", listLedgers(b))
 		router.Route("/{ledger}", func(router chi.Router) {
 			router.Post("/", createLedger(b))
 			router.Get("/", getLedger(b))

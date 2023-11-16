@@ -1,8 +1,11 @@
 package v1
 
 import (
+	"context"
 	_ "embed"
 	"net/http"
+
+	"github.com/formancehq/ledger/internal/storage/paginate"
 
 	"github.com/formancehq/ledger/internal/storage/systemstore"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -28,9 +31,21 @@ type LedgerStorage struct {
 
 func getInfo(backend backend.Backend) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ledgers, err := backend.ListLedgers(r.Context())
-		if err != nil {
-			panic(err)
+
+		ledgerNames := make([]string, 0)
+		if err := paginate.Iterate(r.Context(), systemstore.NewListLedgersQuery(100),
+			func(ctx context.Context, q systemstore.ListLedgersQuery) (*sharedapi.Cursor[systemstore.Ledger], error) {
+				return backend.ListLedgers(ctx, q)
+			},
+			func(cursor *sharedapi.Cursor[systemstore.Ledger]) error {
+				ledgerNames = append(ledgerNames, collectionutils.Map(cursor.Data, func(from systemstore.Ledger) string {
+					return from.Name
+				})...)
+				return nil
+			},
+		); err != nil {
+			sharedapi.InternalServerError(w, r, err)
+			return
 		}
 
 		sharedapi.Ok(w, ConfigInfo{
@@ -38,10 +53,8 @@ func getInfo(backend backend.Backend) func(w http.ResponseWriter, r *http.Reques
 			Version: backend.GetVersion(),
 			Config: &LedgerConfig{
 				LedgerStorage: &LedgerStorage{
-					Driver: "postgres",
-					Ledgers: collectionutils.Map(ledgers, func(from systemstore.Ledger) string {
-						return from.Name
-					}),
+					Driver:  "postgres",
+					Ledgers: ledgerNames,
 				},
 			},
 		})

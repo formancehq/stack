@@ -3,7 +3,9 @@ package systemstore
 import (
 	"context"
 
+	"github.com/formancehq/ledger/internal/storage/paginate"
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/pkg/errors"
@@ -18,16 +20,30 @@ type Ledger struct {
 	Bucket  string      `bun:"bucket,type:varchar(255)" json:"bucket"`
 }
 
-func (s *Store) ListLedgers(ctx context.Context) ([]Ledger, error) {
-	ret := make([]Ledger, 0)
-	if err := s.db.NewSelect().
-		Model(&ret).
-		Column("ledger", "bucket", "addedat").
-		Scan(ctx); err != nil {
-		return nil, sqlutils.PostgresError(err)
-	}
+type PaginatedQueryOptions struct {
+	PageSize uint64 `json:"pageSize"`
+}
 
-	return ret, nil
+type ListLedgersQuery paginate.OffsetPaginatedQuery[PaginatedQueryOptions]
+
+func (query ListLedgersQuery) WithPageSize(pageSize uint64) ListLedgersQuery {
+	query.PageSize = pageSize
+	return query
+}
+
+func NewListLedgersQuery(pageSize uint64) ListLedgersQuery {
+	return ListLedgersQuery{
+		PageSize: pageSize,
+	}
+}
+
+func (s *Store) ListLedgers(ctx context.Context, q ListLedgersQuery) (*sharedapi.Cursor[Ledger], error) {
+	query := s.db.NewSelect().
+		Table("_system.ledgers").
+		Column("ledger", "bucket", "addedat").
+		Order("addedat asc")
+
+	return paginate.UsingOffset[PaginatedQueryOptions, Ledger](ctx, query, paginate.OffsetPaginatedQuery[PaginatedQueryOptions](q))
 }
 
 func (s *Store) DeleteLedger(ctx context.Context, name string) error {

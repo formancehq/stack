@@ -264,7 +264,7 @@ components:
             - properties:
                 data:
                   items:
-                    $ref: '#/components/schemas/Config'
+                    $ref: '#/components/schemas/WebhooksConfig'
                   type: array
               type: object
               required:
@@ -282,7 +282,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Config'
+            $ref: '#/components/schemas/WebhooksConfig'
 
     ConfigResponse:
       type: object
@@ -290,9 +290,9 @@ components:
         - data
       properties:
         data:
-          $ref: '#/components/schemas/Config'
+          $ref: '#/components/schemas/WebhooksConfig'
 
-    Config:
+    WebhooksConfig:
       properties:
         id:
           type: string
@@ -359,7 +359,7 @@ components:
           type: string
           format: date-time
         config:
-          $ref: '#/components/schemas/Config'
+          $ref: '#/components/schemas/WebhooksConfig'
         payload:
           type: string
           example: '{"data":"test"}'

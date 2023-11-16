@@ -1,6 +1,7 @@
 package driver_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/formancehq/ledger/internal/storage/driver"
@@ -80,4 +81,23 @@ func TestGetLedgerFromAlternateBucket(t *testing.T) {
 		Bucket: bucketName,
 	})
 	require.NoError(t, err)
+}
+
+func TestUpgradeAllBuckets(t *testing.T) {
+	t.Parallel()
+
+	d := storagetesting.StorageDriver(t)
+	ctx := logging.TestingContext()
+
+	count := 30
+
+	for i := 0; i < count; i++ {
+		name := fmt.Sprintf("ledger%d", i)
+		_, err := d.CreateLedgerStore(ctx, name, driver.LedgerConfiguration{
+			Bucket: name,
+		})
+		require.NoError(t, err)
+	}
+
+	require.NoError(t, d.UpgradeAllBuckets(ctx))
 }
