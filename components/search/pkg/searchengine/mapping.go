@@ -5,6 +5,7 @@ import (
 	"context"
 	_ "embed"
 	"encoding/json"
+	"fmt"
 
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/opensearch-project/opensearch-go/opensearchapi"
@@ -29,17 +30,26 @@ func CreateIndex(ctx context.Context, client *opensearch.Client, index string) e
 }
 
 func UpdateMapping(ctx context.Context, client *opensearch.Client, index string) error {
-	indexCreateBody, err := GetIndexDefinition()
+	updateMapping, err := json.Marshal(getMapping())
 	if err != nil {
 		return err
 	}
 
-	_, err = client.Indices.PutMapping(
-		bytes.NewReader(indexCreateBody),
+	res, err := client.Indices.PutMapping(
+		bytes.NewReader(updateMapping),
 		client.Indices.PutMapping.WithContext(ctx),
 		client.Indices.PutMapping.WithIndex(index),
 	)
-	return err
+
+	if err != nil {
+		return err
+	}
+
+	if res.IsError() {
+		return fmt.Errorf("request ended with status : %s", res.Status())
+	}
+
+	return nil
 }
 
 func GetIndexDefinition() ([]byte, error) {
