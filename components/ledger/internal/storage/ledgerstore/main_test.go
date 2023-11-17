@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/uptrace/bun"
 
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/storage/sqlutils"
@@ -78,6 +79,7 @@ func newLedgerStore(t T, hooks ...bun.QueryHook) *Store {
 	t.Helper()
 
 	ledgerName := uuid.NewString()
+	ctx := logging.TestingContext()
 
 	_, err := bunDB.Exec(fmt.Sprintf(`create schema if not exists "%s"`, ledgerName))
 	require.NoError(t, err)
@@ -89,9 +91,7 @@ func newLedgerStore(t T, hooks ...bun.QueryHook) *Store {
 
 	bucket := newBucket(t, hooks...)
 
-	require.NoError(t, InitializeLedgerStore(logging.TestingContext(), bucket.db, ledgerName))
-
-	store, err := New(bucket, ledgerName)
+	store, err := bucket.CreateLedgerStore(ctx, ledgerName)
 	require.NoError(t, err)
 
 	return store
