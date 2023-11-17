@@ -28,6 +28,9 @@ func SearchEnvVars(rc ReconciliationConfig) ContainerEnv {
 	} else {
 		env = env.Append(Env("ES_INDICES", stackv1beta3.DefaultESIndex))
 	}
+	if rc.Configuration.Spec.Services.Search.Debug {
+		env = env.Append(Env("DEBUG", "true"))
+	}
 
 	return env
 }

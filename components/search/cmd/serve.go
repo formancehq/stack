@@ -18,6 +18,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opensearch-project/opensearch-go"
+	"github.com/opensearch-project/opensearch-go/opensearchtransport"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -112,17 +113,25 @@ func newOpensearchClient(openSearchServiceHost string) (*opensearch.Client, erro
 		InsecureSkipVerify: true,
 	}
 
-	if viper.GetBool(app.DebugFlag) {
-		httpTransport = httpclient.NewDebugHTTPTransport(httpTransport)
+	config := opensearch.Config{
+		Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
+		Transport: otelhttp.NewTransport(httpTransport),
+		Username:  viper.GetString(openSearchUsernameFlag),
+		Password:  viper.GetString(openSearchPasswordFlag),
 	}
 
-	return opensearch.NewClient(opensearch.Config{
-		Addresses:            []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
-		Transport:            otelhttp.NewTransport(httpTransport),
-		Username:             viper.GetString(openSearchUsernameFlag),
-		Password:             viper.GetString(openSearchPasswordFlag),
-		UseResponseCheckOnly: true,
-	})
+	if viper.GetBool(app.DebugFlag) {
+		httpTransport = httpclient.NewDebugHTTPTransport(httpTransport)
+		config.Logger = &opensearchtransport.JSONLogger{
+			Output:             os.Stdout,
+			EnableRequestBody:  true,
+			EnableResponseBody: true,
+		}
+	} else {
+		config.UseResponseCheckOnly = true
+	}
+
+	return opensearch.NewClient(config)
 }
 
 func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndex string) fx.Option {
