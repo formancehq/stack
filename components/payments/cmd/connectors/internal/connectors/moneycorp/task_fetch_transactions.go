@@ -97,7 +97,7 @@ func ingestBatch(
 			return fmt.Errorf("failed to parse amount %s", transaction.Attributes.Amount.String())
 		}
 
-		c, err := currency.GetPrecision(transaction.Attributes.Currency)
+		c, err := currency.GetPrecision(supportedCurrenciesWithDecimal, transaction.Attributes.Currency)
 		if err != nil {
 			return err
 		}
@@ -118,7 +118,7 @@ func ingestBatch(
 				Reference:   transaction.ID,
 				ConnectorID: connectorID,
 				Amount:      &amountInt,
-				Asset:       currency.FormatAsset(transaction.Attributes.Currency),
+				Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Attributes.Currency),
 				Type:        paymentType,
 				Status:      models.PaymentStatusSucceeded,
 				Scheme:      models.PaymentSchemeOther,

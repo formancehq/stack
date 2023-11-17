@@ -43,6 +43,10 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 	})
 }
 
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
+}
+
 func (c *Connector) Uninstall(ctx context.Context) error {
 	return nil
 }

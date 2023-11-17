@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
@@ -67,7 +68,7 @@ func ingestRecipientAccountsBatch(
 			CreatedAt:    time.Now(),
 			Reference:    fmt.Sprintf("%d", account.ID),
 			ConnectorID:  connectorID,
-			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", account.Currency)),
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
 			AccountName:  account.HolderName,
 			Type:         models.AccountTypeExternal,
 			RawData:      raw,

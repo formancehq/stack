@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/payments/cmd/connectors/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
@@ -145,7 +146,12 @@ func createTransferInitiationHandler(
 
 			connectorID = connectors[0].ID
 		} else {
-			connectorID = models.MustConnectorIDFromString(payload.ConnectorID)
+			var err error
+			connectorID, err = models.ConnectorIDFromString(payload.ConnectorID)
+			if err != nil {
+				api.BadRequest(w, ErrValidation, err)
+				return
+			}
 		}
 
 		isInstalled, _ := repo.IsInstalledByConnectorID(r.Context(), connectorID)
@@ -225,7 +231,14 @@ func createTransferInitiationHandler(
 
 			err = f(r.Context(), tf)
 			if err != nil {
-				api.InternalServerError(w, r, err)
+				switch {
+				case errors.Is(err, integration.ErrValidation):
+					api.BadRequest(w, ErrValidation, err)
+				case errors.Is(err, integration.ErrConnectorNotFound):
+					api.BadRequest(w, ErrValidation, err)
+				default:
+					api.InternalServerError(w, r, err)
+				}
 				return
 			}
 		}
@@ -341,7 +354,14 @@ func updateTransferInitiationStatusHandler(
 
 			err = f(r.Context(), previousTransferInitiation)
 			if err != nil {
-				api.InternalServerError(w, r, err)
+				switch {
+				case errors.Is(err, integration.ErrValidation):
+					api.BadRequest(w, ErrValidation, err)
+				case errors.Is(err, integration.ErrConnectorNotFound):
+					api.BadRequest(w, ErrValidation, err)
+				default:
+					api.InternalServerError(w, r, err)
+				}
 				return
 			}
 		}

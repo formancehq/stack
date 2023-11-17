@@ -17,4 +17,6 @@ type Connector interface {
 	Resolve(descriptor models.TaskDescriptor) task.Task
 	// InitiateTransfer is used to initiate a transfer from the connector to a bank account.
 	InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
+	// GetSupportedCurrenciesAndDecimals returns a map of supported currencies and their decimals.
+	SupportedCurrenciesAndDecimals() map[string]int
 }

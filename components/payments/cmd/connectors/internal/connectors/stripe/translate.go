@@ -49,6 +49,11 @@ func createBatchElement(
 
 	switch balanceTransaction.Type {
 	case stripe.BalanceTransactionTypeCharge:
+		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Charge.Currency)]
+		if !ok {
+			return ingestion.PaymentBatchElement{}, false
+		}
+
 		payment = models.Payment{
 			ID: models.PaymentID{
 				PaymentReference: models.PaymentReference{
@@ -62,7 +67,7 @@ func createBatchElement(
 			Type:        models.PaymentTypePayIn,
 			Status:      models.PaymentStatusSucceeded,
 			Amount:      big.NewInt(balanceTransaction.Source.Charge.Amount),
-			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
+			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Charge.Currency)),
 			RawData:     rawData,
 			Scheme:      models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
@@ -76,6 +81,11 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypePayout:
+		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Payout.Currency)]
+		if !ok {
+			return ingestion.PaymentBatchElement{}, false
+		}
+
 		payment = models.Payment{
 			ID: models.PaymentID{
 				PaymentReference: models.PaymentReference{
@@ -90,7 +100,7 @@ func createBatchElement(
 			Status:      convertPayoutStatus(balanceTransaction.Source.Payout.Status),
 			Amount:      big.NewInt(balanceTransaction.Source.Payout.Amount),
 			RawData:     rawData,
-			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Payout.Currency)),
+			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Payout.Currency)),
 			Scheme: func() models.PaymentScheme {
 				switch balanceTransaction.Source.Payout.Type {
 				case stripe.PayoutTypeBank:
@@ -112,6 +122,11 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypeTransfer:
+		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Transfer.Currency)]
+		if !ok {
+			return ingestion.PaymentBatchElement{}, false
+		}
+
 		payment = models.Payment{
 			ID: models.PaymentID{
 				PaymentReference: models.PaymentReference{
@@ -126,7 +141,7 @@ func createBatchElement(
 			Status:      models.PaymentStatusSucceeded,
 			Amount:      big.NewInt(balanceTransaction.Source.Transfer.Amount),
 			RawData:     rawData,
-			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Transfer.Currency)),
+			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Transfer.Currency)),
 			Scheme:      models.PaymentSchemeOther,
 			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
 		}
@@ -169,6 +184,11 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypePayment:
+		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Charge.Currency)]
+		if !ok {
+			return ingestion.PaymentBatchElement{}, false
+		}
+
 		payment = models.Payment{
 			ID: models.PaymentID{
 				PaymentReference: models.PaymentReference{
@@ -183,7 +203,7 @@ func createBatchElement(
 			Status:      models.PaymentStatusSucceeded,
 			Amount:      big.NewInt(balanceTransaction.Source.Charge.Amount),
 			RawData:     rawData,
-			Asset:       currency.FormatAsset(string(balanceTransaction.Source.Charge.Currency)),
+			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Charge.Currency)),
 			Scheme:      models.PaymentSchemeOther,
 			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
 		}

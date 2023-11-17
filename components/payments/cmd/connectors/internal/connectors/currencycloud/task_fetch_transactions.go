@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
@@ -32,8 +34,13 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, config 
 	}
 }
 
-func ingestTransactions(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
-	client *client.Client, ingester ingestion.Ingester, metricsRegistry metrics.MetricsRegistry,
+func ingestTransactions(
+	ctx context.Context,
+	logger logging.Logger,
+	connectorID models.ConnectorID,
+	client *client.Client,
+	ingester ingestion.Ingester,
+	metricsRegistry metrics.MetricsRegistry,
 ) error {
 	now := time.Now()
 	defer func() {
@@ -61,15 +68,21 @@ func ingestTransactions(ctx context.Context, logger logging.Logger, connectorID 
 		for _, transaction := range transactions {
 			logger.Info(transaction)
 
+			precision, ok := supportedCurrenciesWithDecimal[transaction.Currency]
+			if !ok {
+				logger.Errorf("currency %s is not supported", transaction.Currency)
+				metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
+				continue
+			}
+
 			var amount big.Float
-			_, ok := amount.SetString(transaction.Amount)
+			_, ok = amount.SetString(transaction.Amount)
 			if !ok {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return fmt.Errorf("failed to parse amount %s", transaction.Amount)
 			}
-
 			var amountInt big.Int
-			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 			var rawData json.RawMessage
 
@@ -96,7 +109,7 @@ func ingestTransactions(ctx context.Context, logger logging.Logger, connectorID 
 					Status:      matchTransactionStatus(transaction.Status),
 					Scheme:      models.PaymentSchemeOther,
 					Amount:      &amountInt,
-					Asset:       models.Asset(fmt.Sprintf("%s/2", transaction.Currency)),
+					Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Currency),
 					RawData:     rawData,
 				},
 			}

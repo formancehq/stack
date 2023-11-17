@@ -21,6 +21,7 @@ import (
 )
 
 var (
+	ErrValidation       = errors.New("validation error")
 	ErrAlreadyScheduled = errors.New("already scheduled")
 	ErrUnableToResolve  = errors.New("unable to resolve task")
 )

@@ -10,19 +10,30 @@ const (
 )
 
 type MetricsRegistry interface {
+	ConnectorCurrencyNotSupported() metric.Int64Counter
 	ConnectorObjects() metric.Int64Counter
 	ConnectorObjectsLatency() metric.Int64Histogram
 	ConnectorObjectsErrors() metric.Int64Counter
 }
 
 type metricsRegistry struct {
-	connectorObjects        metric.Int64Counter
-	connectorObjectsLatency metric.Int64Histogram
-	connectorObjectsErrors  metric.Int64Counter
+	connectorCurrencyNotSupported metric.Int64Counter
+	connectorObjects              metric.Int64Counter
+	connectorObjectsLatency       metric.Int64Histogram
+	connectorObjectsErrors        metric.Int64Counter
 }
 
 func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistry, error) {
 	meter := meterProvider.Meter("payments")
+
+	connectorCurrencyNotSupported, err := meter.Int64Counter(
+		"payments_connectors_currency_not_supported",
+		metric.WithUnit("1"),
+		metric.WithDescription("Currency not supported by connector"),
+	)
+	if err != nil {
+		return nil, err
+	}
 
 	connectorObjects, err := meter.Int64Counter(
 		"payments_connectors_objects",
@@ -52,10 +63,15 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 	}
 
 	return &metricsRegistry{
-		connectorObjects:        connectorObjects,
-		connectorObjectsLatency: connectorObjectLatencies,
-		connectorObjectsErrors:  connectorObjectErrors,
+		connectorCurrencyNotSupported: connectorCurrencyNotSupported,
+		connectorObjects:              connectorObjects,
+		connectorObjectsLatency:       connectorObjectLatencies,
+		connectorObjectsErrors:        connectorObjectErrors,
 	}, nil
+}
+
+func (m *metricsRegistry) ConnectorCurrencyNotSupported() metric.Int64Counter {
+	return m.connectorCurrencyNotSupported
 }
 
 func (m *metricsRegistry) ConnectorObjects() metric.Int64Counter {
@@ -74,6 +90,11 @@ type NoopMetricsRegistry struct{}
 
 func NewNoOpMetricsRegistry() *NoopMetricsRegistry {
 	return &NoopMetricsRegistry{}
+}
+
+func (m *NoopMetricsRegistry) ConnectorCurrencyNotSupported() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("payments").Int64Counter("payments_connectors_currency_not_supported")
+	return counter
 }
 
 func (m *NoopMetricsRegistry) ConnectorObjects() metric.Int64Counter {

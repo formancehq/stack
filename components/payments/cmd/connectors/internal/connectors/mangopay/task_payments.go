@@ -89,8 +89,10 @@ func taskInitiatePayment(logger logging.Logger, mangopayClient *client.Client, t
 			return err
 		}
 
+		// No need to modify the amount since it's already in the correct format
+		// and precision (checked before during API call)
 		var curr string
-		curr, _, err = currency.GetCurrencyAndPrecisionFromAsset(transfer.Asset)
+		curr, _, err = currency.GetCurrencyAndPrecisionFromAsset(supportedCurrenciesWithDecimal, transfer.Asset)
 		if err != nil {
 			return err
 		}

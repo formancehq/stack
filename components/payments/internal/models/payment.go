@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gibson042/canonicaljson-go"
@@ -170,4 +172,18 @@ func (t PaymentScheme) String() string {
 
 func (t Asset) String() string {
 	return string(t)
+}
+
+func GetCurrencyAndPrecisionFromAsset(asset Asset) (string, int64, error) {
+	parts := strings.Split(asset.String(), "/")
+	if len(parts) != 2 {
+		return "", 0, errors.New("invalid asset")
+	}
+
+	precision, err := strconv.ParseInt(parts[1], 10, 64)
+	if err != nil {
+		return "", 0, errors.New("invalid asset precision")
+	}
+
+	return parts[0], precision, nil
 }

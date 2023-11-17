@@ -56,6 +56,10 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return nil
 }
 
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
+}
+
 func (c *Connector) Install(ctx task.ConnectorContext) error {
 	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name: "Main task to periodically fetch users and transactions",
@@ -77,7 +81,6 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 }
 
 func (c *Connector) Uninstall(ctx context.Context) error {
-
 	return nil
 }
 

@@ -84,7 +84,7 @@ func taskInitiatePayment(logger logging.Logger, moneycorpClient *client.Client, 
 
 		var curr string
 		var precision int
-		curr, precision, err = currency.GetCurrencyAndPrecisionFromAsset(transfer.Asset)
+		curr, precision, err = currency.GetCurrencyAndPrecisionFromAsset(supportedCurrenciesWithDecimal, transfer.Asset)
 		if err != nil {
 			return err
 		}

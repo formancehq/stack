@@ -33,6 +33,10 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return errors.New("not implemented")
 }
 
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
+}
+
 // Install executes post-installation steps to read and generate files.
 // It is called after the connector is installed.
 func (c *Connector) Install(ctx task.ConnectorContext) error {

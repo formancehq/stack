@@ -58,6 +58,10 @@ type BuiltConnector struct {
 	initiatePayment func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
 }
 
+func (b *BuiltConnector) SupportedCurrenciesAndDecimals() map[string]int {
+	return map[string]int{}
+}
+
 func (b *BuiltConnector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
 	if b.initiatePayment != nil {
 		return b.initiatePayment(ctx, transfer)

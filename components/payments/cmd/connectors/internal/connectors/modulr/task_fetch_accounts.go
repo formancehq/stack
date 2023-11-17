@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 
@@ -105,20 +107,25 @@ func ingestAccountsBatch(
 			CreatedAt:    openingDate,
 			Reference:    account.ID,
 			ConnectorID:  connectorID,
-			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", account.Currency)),
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
 			AccountName:  account.Name,
 			Type:         models.AccountTypeInternal,
 			RawData:      raw,
 		})
 
+		precision, ok := supportedCurrenciesWithDecimal[account.Currency]
+		if !ok {
+			precision = 0
+		}
+
 		var amount big.Float
-		_, ok := amount.SetString(account.Balance)
+		_, ok = amount.SetString(account.Balance)
 		if !ok {
 			return fmt.Errorf("failed to parse amount %s", account.Balance)
 		}
 
 		var balance big.Int
-		amount.Mul(&amount, big.NewFloat(100)).Int(&balance)
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&balance)
 
 		now := time.Now()
 		balancesBatch = append(balancesBatch, &models.Balance{
@@ -126,7 +133,7 @@ func ingestAccountsBatch(
 				Reference:   account.ID,
 				ConnectorID: connectorID,
 			},
-			Asset:         models.Asset(fmt.Sprintf("%s/2", account.Currency)),
+			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
 			Balance:       &balance,
 			CreatedAt:     now,
 			LastUpdatedAt: now,

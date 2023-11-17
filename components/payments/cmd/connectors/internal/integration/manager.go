@@ -24,6 +24,7 @@ var (
 	ErrNotEnabled        = errors.New("not enabled")
 	ErrAlreadyRunning    = errors.New("already running")
 	ErrConnectorNotFound = errors.New("connector not found")
+	ErrValidation        = errors.New("validation error")
 )
 
 type connectorManager struct {
@@ -359,9 +360,37 @@ func (l *ConnectorsManager[ConnectorConfig]) InitiatePayment(ctx context.Context
 		return ErrConnectorNotFound
 	}
 
+	if err := l.validateAssets(ctx, connectorManager, transfer.ConnectorID, transfer.Asset); err != nil {
+		return err
+	}
+
 	err = connectorManager.connector.InitiatePayment(task.NewConnectorContext(ctx, connectorManager.scheduler), transfer)
 	if err != nil {
 		return fmt.Errorf("initiating transfer: %w", err)
+	}
+
+	return nil
+}
+
+func (l *ConnectorsManager[ConnectorConfig]) validateAssets(
+	ctx context.Context,
+	connectorManager *connectorManager,
+	connectorID models.ConnectorID,
+	asset models.Asset,
+) error {
+	supportedCurrencies := connectorManager.connector.SupportedCurrenciesAndDecimals()
+	currency, precision, err := models.GetCurrencyAndPrecisionFromAsset(asset)
+	if err != nil {
+		return errors.Wrap(ErrValidation, err.Error())
+	}
+
+	supportedPrecision, ok := supportedCurrencies[currency]
+	if !ok {
+		return errors.Wrap(ErrValidation, fmt.Sprintf("currency %s not supported", currency))
+	}
+
+	if precision != int64(supportedPrecision) {
+		return errors.Wrap(ErrValidation, fmt.Sprintf("currency %s has precision %d, but %d is required", currency, precision, supportedPrecision))
 	}
 
 	return nil

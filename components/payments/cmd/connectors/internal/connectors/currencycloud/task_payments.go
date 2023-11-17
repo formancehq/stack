@@ -3,6 +3,7 @@ package currencycloud
 import (
 	"context"
 	"fmt"
+	"math"
 	"math/big"
 	"time"
 
@@ -83,13 +84,14 @@ func taskInitiatePayment(logger logging.Logger, currencyCloudClient *client.Clie
 		}
 
 		var curr string
-		curr, _, err = currency.GetCurrencyAndPrecisionFromAsset(transfer.Asset)
+		var precision int
+		curr, precision, err = currency.GetCurrencyAndPrecisionFromAsset(supportedCurrenciesWithDecimal, transfer.Asset)
 		if err != nil {
 			return err
 		}
 
 		transferAmount := big.NewFloat(0).SetInt(transfer.Amount)
-		transferAmount = transferAmount.Quo(transferAmount, big.NewFloat(100))
+		transferAmount = transferAmount.Quo(transferAmount, big.NewFloat(math.Pow(10, float64(precision))))
 		amount, accuracy := transferAmount.Float64()
 		if accuracy != big.Exact {
 			return errors.New("amount is not accurate, psp does not support big ints")

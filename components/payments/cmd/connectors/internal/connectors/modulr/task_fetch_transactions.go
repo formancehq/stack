@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/big"
 	"strings"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
@@ -25,6 +27,7 @@ var (
 func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
@@ -54,14 +57,21 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 
 			paymentType := matchTransactionType(transaction.Type)
 
+			precision, ok := supportedCurrenciesWithDecimal[transaction.Account.Currency]
+			if !ok {
+				logger.Errorf("currency %s is not supported", transaction.Account.Currency)
+				metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
+				continue
+			}
+
 			var amount big.Float
-			_, ok := amount.SetString(transaction.Amount.String())
+			_, ok = amount.SetString(transaction.Amount.String())
 			if !ok {
 				return fmt.Errorf("failed to parse amount %s", transaction.Amount.String())
 			}
 
 			var amountInt big.Int
-			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
@@ -78,7 +88,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 					Status:      models.PaymentStatusSucceeded,
 					Scheme:      models.PaymentSchemeOther,
 					Amount:      &amountInt,
-					Asset:       models.Asset(fmt.Sprintf("%s/2", transaction.Account.Currency)),
+					Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Account.Currency),
 					RawData:     rawData,
 				},
 			}

@@ -3,9 +3,11 @@ package currencycloud
 import (
 	"context"
 	"fmt"
+	"math"
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
@@ -70,14 +72,19 @@ func ingestBalancesBatch(
 ) error {
 	batch := ingestion.BalanceBatch{}
 	for _, balance := range balances {
+		precision, ok := supportedCurrenciesWithDecimal[balance.Currency]
+		if !ok {
+			precision = 0
+		}
+
 		var amount big.Float
-		_, ok := amount.SetString(balance.Amount)
+		_, ok = amount.SetString(balance.Amount)
 		if !ok {
 			return fmt.Errorf("failed to parse amount %s", balance.Amount)
 		}
 
 		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 		now := time.Now()
 		batch = append(batch, &models.Balance{
@@ -85,7 +92,7 @@ func ingestBalancesBatch(
 				Reference:   balance.AccountID,
 				ConnectorID: connectorID,
 			},
-			Asset:         models.Asset(fmt.Sprintf("%s/2", balance.Currency)),
+			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Currency),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,

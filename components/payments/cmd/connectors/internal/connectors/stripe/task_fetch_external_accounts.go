@@ -89,7 +89,7 @@ func ingestExternalAccountsBatch(
 			CreatedAt:    time.Unix(account.BankAccount.Account.Created, 0),
 			Reference:    account.ID,
 			ConnectorID:  connectorID,
-			DefaultAsset: currency.FormatAsset(string(account.BankAccount.Account.DefaultCurrency)),
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, string(account.BankAccount.Account.DefaultCurrency)),
 			Type:         models.AccountTypeExternal,
 			RawData:      raw,
 		})
