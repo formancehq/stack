@@ -322,7 +322,6 @@ func TestGetBalance(t *testing.T) {
 }
 
 func BenchmarkLogsInsertion(b *testing.B) {
-	const nbTransactionsByBatch = 100
 
 	ctx := logging.TestingContext()
 	store := newLedgerStore(b)
@@ -331,27 +330,46 @@ func BenchmarkLogsInsertion(b *testing.B) {
 
 	var lastLog *ledger.ChainedLog
 	for i := 0; i < b.N; i++ {
+		log := ledger.NewTransactionLog(
+			ledger.NewTransaction().WithPostings(ledger.NewPosting(
+				"world", fmt.Sprintf("user:%d", i), "USD/2", big.NewInt(1000),
+			)).WithID(big.NewInt(int64(i))),
+			map[string]metadata.Metadata{},
+		).ChainLog(lastLog)
+		lastLog = log
+		require.NoError(b, store.InsertLogs(ctx, log))
+	}
+	b.StopTimer()
+}
+
+func BenchmarkLogsInsertionReusingAccount(b *testing.B) {
+
+	ctx := logging.TestingContext()
+	store := newLedgerStore(b)
+
+	b.ResetTimer()
+
+	var lastLog *ledger.ChainedLog
+	for i := 0; i < b.N; i += 2 {
 		batch := make([]*ledger.ChainedLog, 0)
-		appendLog := func(log *ledger.Log) {
+		appendLog := func(log *ledger.Log) *ledger.ChainedLog {
 			chainedLog := log.ChainLog(lastLog)
 			batch = append(batch, chainedLog)
 			lastLog = chainedLog
+			return chainedLog
 		}
-		for j := 0; j < nbTransactionsByBatch; j += 2 {
-			appendLog(ledger.NewTransactionLog(
-				ledger.NewTransaction().WithPostings(ledger.NewPosting(
-					"world", fmt.Sprintf("user:%d", i*nbTransactionsByBatch+j), "USD/2", big.NewInt(1000),
-				)).WithID(big.NewInt(int64(i*nbTransactionsByBatch+j))),
-				map[string]metadata.Metadata{},
-			))
-			appendLog(ledger.NewTransactionLog(
-				ledger.NewTransaction().WithPostings(ledger.NewPosting(
-					fmt.Sprintf("user:%d", i*nbTransactionsByBatch+j+1), "another:account", "USD/2", big.NewInt(1000),
-				)).WithID(big.NewInt(int64(i*nbTransactionsByBatch+j+1))),
-				map[string]metadata.Metadata{},
-			))
-		}
-		require.NoError(b, store.InsertLogs(ctx, batch...))
+		require.NoError(b, store.InsertLogs(ctx, appendLog(ledger.NewTransactionLog(
+			ledger.NewTransaction().WithPostings(ledger.NewPosting(
+				"world", fmt.Sprintf("user:%d", i), "USD/2", big.NewInt(1000),
+			)).WithID(big.NewInt(int64(i))),
+			map[string]metadata.Metadata{},
+		))))
+		require.NoError(b, store.InsertLogs(ctx, appendLog(ledger.NewTransactionLog(
+			ledger.NewTransaction().WithPostings(ledger.NewPosting(
+				fmt.Sprintf("user:%d", i), "another:account", "USD/2", big.NewInt(1000),
+			)).WithID(big.NewInt(int64(i+1))),
+			map[string]metadata.Metadata{},
+		))))
 	}
 	b.StopTimer()
 }
