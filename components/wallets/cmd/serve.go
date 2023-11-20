@@ -74,7 +74,7 @@ func GetAuthenticatedClient(ctx context.Context, clientID, clientSecret, stackUR
 		TokenURL:     stackURL + "/api/auth/oauth/token",
 	}
 	underlyingHTTPClient := &http.Client{
-		Transport: otlp.NewRoundTripper(debug),
+		Transport: otlp.NewRoundTripper(http.DefaultTransport, debug),
 	}
 
 	return clientCredentialsConfig.Client(context.WithValue(ctx, oauth2.HTTPClient, underlyingHTTPClient)), nil

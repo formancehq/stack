@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/api"
 	"github.com/formancehq/auth/pkg/api/authorization"
@@ -21,7 +24,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	zLogging "github.com/zitadel/logging"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -67,10 +69,10 @@ EL/wy5C80pa3jahniqVgO5L6zz0ZLtRIRE7aCtCIu826gctJ1+ShIso=
 `
 )
 
-func otlpHttpClientModule() fx.Option {
+func otlpHttpClientModule(debug bool) fx.Option {
 	return fx.Provide(func() *http.Client {
 		return &http.Client{
-			Transport: otelhttp.NewTransport(http.DefaultTransport, otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
+			Transport: otlp.NewRoundTripper(http.DefaultTransport, debug, otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
 				str := fmt.Sprintf("%s %s", r.Method, r.URL.Path)
 				if len(r.URL.Query()) == 0 {
 					return str
@@ -141,7 +143,7 @@ func newServeCommand() *cobra.Command {
 			zLogging.SetOutput(cmd.OutOrStdout())
 
 			options := []fx.Option{
-				otlpHttpClientModule(),
+				otlpHttpClientModule(viper.GetBool(service.DebugFlag)),
 				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 				fx.Supply(delegatedauth.Config{
 					Issuer:       delegatedIssuer,
