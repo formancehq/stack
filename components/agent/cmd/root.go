@@ -61,108 +61,18 @@ func newK8SConfig() (*rest.Config, error) {
 	return config, nil
 }
 
-var rootCmd = &cobra.Command{
-	SilenceUsage: true,
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		return bindFlagsToViper(cmd)
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		serverAddress := viper.GetString(serverAddressFlag)
-		if serverAddress == "" {
-			return errors.New("missing server address")
-		}
-
-		id := viper.GetString(idFlag)
-		if id == "" {
-			return errors.New("missing id")
-		}
-
-		dialOptions := make([]grpc.DialOption, 0)
-		var credential credentials.TransportCredentials
-		if !viper.GetBool(tlsEnabledFlag) {
-			sharedlogging.FromContext(cmd.Context()).Infof("TLS not enabled")
-			credential = insecure.NewCredentials()
-		} else {
-			sharedlogging.FromContext(cmd.Context()).Infof("TLS enabled")
-			certPool := x509.NewCertPool()
-			if ca := viper.GetString(tlsCACertificateFlag); ca != "" {
-				sharedlogging.FromContext(cmd.Context()).Infof("Load server certificate from config")
-				if !certPool.AppendCertsFromPEM([]byte(ca)) {
-					return fmt.Errorf("failed to add server CA's certificate")
-				}
-			}
-
-			if viper.GetBool(tlsInsecureSkipVerifyFlag) {
-				sharedlogging.FromContext(cmd.Context()).Infof("Disable certificate checks")
-			}
-			credential = credentials.NewTLS(&tls.Config{
-				InsecureSkipVerify: viper.GetBool(tlsInsecureSkipVerifyFlag),
-				RootCAs:            certPool,
-			})
-		}
-		dialOptions = append(dialOptions, grpc.WithTransportCredentials(credential))
-
-		baseUrlString := viper.GetString(baseUrlFlag)
-		if baseUrlString == "" {
-			return errors.New("missing base url")
-		}
-		baseUrl, err := url.Parse(baseUrlString)
-		if err != nil {
-			return err
-		}
-
-		var authenticator innerGrpc.Authenticator
-		switch viper.GetString(authenticationModeFlag) {
-		case "token":
-			token := viper.GetString(authenticationTokenFlag)
-			if token == "" {
-				return errors.New("missing authentication token")
-			}
-			authenticator = innerGrpc.TokenAuthenticator(token)
-		case "bearer":
-			clientSecret := viper.GetString(authenticationClientSecretFlag)
-			if clientSecret == "" {
-				return errors.New("missing client secret")
-			}
-			issuer := viper.GetString(authenticationIssuerFlag)
-			if issuer == "" {
-				return errors.New("missing issuer")
-			}
-
-			authenticator = innerGrpc.BearerAuthenticator(issuer, id, clientSecret)
-		default:
-			return errors.New("authentication mode not specified")
-		}
-
-		options := []fx.Option{
-			fx.Provide(newK8SConfig),
-			fx.NopLogger,
-			k8s.NewModule(viper.GetBool(fakeK8SFlag)),
-			innerGrpc.NewModule(serverAddress, authenticator, innerGrpc.ClientInfo{
-				ID:         id,
-				BaseUrl:    baseUrl,
-				Production: viper.GetBool(productionFlag),
-				Version:    Version,
-			}, dialOptions...),
-			sharedotlptraces.CLITracesModule(viper.GetViper()),
-		}
-
-		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
-	},
-}
-
 func exitWithCode(code int, v ...any) {
 	fmt.Fprintln(os.Stdout, v...)
 	os.Exit(code)
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := NewRootCommand().Execute(); err != nil {
 		exitWithCode(1, err)
 	}
 }
 
-func init() {
+func addFlags(rootCmd *cobra.Command) {
 	var kubeConfigFilePath string
 	if home := homedir.HomeDir(); home != "" {
 		kubeConfigFilePath = filepath.Join(home, ".kube", "config")
@@ -183,4 +93,104 @@ func init() {
 	rootCmd.Flags().BoolP(debugFlag, "d", false, "Debug mode")
 	rootCmd.Flags().Bool(fakeK8SFlag, false, "Fake k8s client")
 	rootCmd.Flags().MarkHidden(fakeK8SFlag)
+}
+
+func NewRootCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		SilenceUsage: true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			return bindFlagsToViper(cmd)
+		},
+		RunE: run,
+	}
+
+	cmd.AddCommand(versionCmd)
+
+	addFlags(cmd)
+	return cmd
+}
+
+func run(cmd *cobra.Command, args []string) error {
+	serverAddress := viper.GetString(serverAddressFlag)
+	if serverAddress == "" {
+		return errors.New("missing server address")
+	}
+
+	id := viper.GetString(idFlag)
+	if id == "" {
+		return errors.New("missing id")
+	}
+
+	dialOptions := make([]grpc.DialOption, 0)
+	var credential credentials.TransportCredentials
+	if !viper.GetBool(tlsEnabledFlag) {
+		sharedlogging.FromContext(cmd.Context()).Infof("TLS not enabled")
+		credential = insecure.NewCredentials()
+	} else {
+		sharedlogging.FromContext(cmd.Context()).Infof("TLS enabled")
+		certPool := x509.NewCertPool()
+		if ca := viper.GetString(tlsCACertificateFlag); ca != "" {
+			sharedlogging.FromContext(cmd.Context()).Infof("Load server certificate from config")
+			if !certPool.AppendCertsFromPEM([]byte(ca)) {
+				return fmt.Errorf("failed to add server CA's certificate")
+			}
+		}
+
+		if viper.GetBool(tlsInsecureSkipVerifyFlag) {
+			sharedlogging.FromContext(cmd.Context()).Infof("Disable certificate checks")
+		}
+		credential = credentials.NewTLS(&tls.Config{
+			InsecureSkipVerify: viper.GetBool(tlsInsecureSkipVerifyFlag),
+			RootCAs:            certPool,
+		})
+	}
+	dialOptions = append(dialOptions, grpc.WithTransportCredentials(credential))
+
+	baseUrlString := viper.GetString(baseUrlFlag)
+	if baseUrlString == "" {
+		return errors.New("missing base url")
+	}
+	baseUrl, err := url.Parse(baseUrlString)
+	if err != nil {
+		return err
+	}
+
+	var authenticator innerGrpc.Authenticator
+	switch viper.GetString(authenticationModeFlag) {
+	case "token":
+		token := viper.GetString(authenticationTokenFlag)
+		if token == "" {
+			return errors.New("missing authentication token")
+		}
+		authenticator = innerGrpc.TokenAuthenticator(token)
+	case "bearer":
+		clientSecret := viper.GetString(authenticationClientSecretFlag)
+		if clientSecret == "" {
+			return errors.New("missing client secret")
+		}
+		issuer := viper.GetString(authenticationIssuerFlag)
+		if issuer == "" {
+			return errors.New("missing issuer")
+		}
+
+		authenticator = innerGrpc.BearerAuthenticator(issuer, id, clientSecret)
+	default:
+		return errors.New("authentication mode not specified")
+	}
+
+	options := []fx.Option{
+		fx.Provide(newK8SConfig),
+		fx.NopLogger,
+		k8s.NewModule(viper.GetBool(fakeK8SFlag)),
+		innerGrpc.NewModule(serverAddress, authenticator, innerGrpc.ClientInfo{
+			ID:         id,
+			BaseUrl:    baseUrl,
+			Production: viper.GetBool(productionFlag),
+			Version:    Version,
+		}, dialOptions...),
+		sharedotlptraces.CLITracesModule(viper.GetViper()),
+	}
+
+	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+
 }
