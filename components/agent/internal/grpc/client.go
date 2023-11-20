@@ -86,11 +86,11 @@ const (
 type client struct {
 	clientInfo     ClientInfo
 	stopChan       chan chan error
-	grpcClient     generated.ServerClient
-	k8sClient      K8SClient
-	connectClient  generated.Server_ConnectClient
 	connectContext context.Context
 	connectCancel  func()
+	grpcClient     generated.ServerClient
+	connectClient  generated.Server_ConnectClient
+	k8sClient      K8SClient
 	authenticator  Authenticator
 }
 

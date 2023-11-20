@@ -6,7 +6,13 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewModule() fx.Option {
+func NewModule(fakeModule bool) fx.Option {
+	if fakeModule {
+		return fx.Options(
+			fx.Supply(fx.Annotate(NewK8SClientMock(), fx.As(new(grpc.K8SClient)))),
+		)
+	}
+
 	return fx.Options(
 		fx.Provide(newClient),
 		fx.Provide(func(client *v1beta3.Client) grpc.K8SClient {

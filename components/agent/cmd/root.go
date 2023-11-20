@@ -46,6 +46,7 @@ const (
 	authenticationClientSecretFlag = "authentication-client-secret"
 	baseUrlFlag                    = "base-url"
 	productionFlag                 = "production"
+	fakeK8SFlag                    = "fake-k8s"
 )
 
 func newK8SConfig() (*rest.Config, error) {
@@ -136,7 +137,7 @@ var rootCmd = &cobra.Command{
 		options := []fx.Option{
 			fx.Provide(newK8SConfig),
 			fx.NopLogger,
-			k8s.NewModule(),
+			k8s.NewModule(viper.GetBool(fakeK8SFlag)),
 			innerGrpc.NewModule(serverAddress, authenticator, innerGrpc.ClientInfo{
 				ID:         id,
 				BaseUrl:    baseUrl,
@@ -180,4 +181,6 @@ func init() {
 	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.Flags().BoolP(debugFlag, "d", false, "Debug mode")
+	rootCmd.Flags().Bool(fakeK8SFlag, false, "Fake k8s client")
+	rootCmd.Flags().MarkHidden(fakeK8SFlag)
 }
