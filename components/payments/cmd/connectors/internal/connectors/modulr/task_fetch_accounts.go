@@ -113,13 +113,12 @@ func ingestAccountsBatch(
 			RawData:      raw,
 		})
 
-		precision, ok := supportedCurrenciesWithDecimal[account.Currency]
-		if !ok {
-			precision = 0
-		}
+		// No need to check if the currency is supported for accounts and
+		// balances.
+		precision, _ := supportedCurrenciesWithDecimal[account.Currency]
 
 		var amount big.Float
-		_, ok = amount.SetString(account.Balance)
+		_, ok := amount.SetString(account.Balance)
 		if !ok {
 			return fmt.Errorf("failed to parse amount %s", account.Balance)
 		}

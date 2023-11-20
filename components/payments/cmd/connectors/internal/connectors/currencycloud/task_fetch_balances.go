@@ -72,13 +72,11 @@ func ingestBalancesBatch(
 ) error {
 	batch := ingestion.BalanceBatch{}
 	for _, balance := range balances {
-		precision, ok := supportedCurrenciesWithDecimal[balance.Currency]
-		if !ok {
-			precision = 0
-		}
+		// No need to check if the currency is supported for accounts and balances.
+		precision := supportedCurrenciesWithDecimal[balance.Currency]
 
 		var amount big.Float
-		_, ok = amount.SetString(balance.Amount)
+		_, ok := amount.SetString(balance.Amount)
 		if !ok {
 			return fmt.Errorf("failed to parse amount %s", balance.Amount)
 		}

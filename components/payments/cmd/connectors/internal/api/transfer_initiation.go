@@ -51,7 +51,7 @@ type createTransferInitiationRequest struct {
 	Validated            bool      `json:"validated"`
 }
 
-func (r *createTransferInitiationRequest) Validate(repo createTransferInitiationRepository) error {
+func (r *createTransferInitiationRequest) Validate() error {
 	if r.Reference == "" {
 		return errors.New("uniqueRequestId is required")
 	}
@@ -110,7 +110,7 @@ func createTransferInitiationHandler(
 			return
 		}
 
-		if err := payload.Validate(repo); err != nil {
+		if err := payload.Validate(); err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
@@ -120,6 +120,7 @@ func createTransferInitiationHandler(
 			status = models.TransferInitiationStatusValidated
 		}
 
+		fmt.Println("TOTO 1")
 		var connectorID models.ConnectorID
 		if payload.ConnectorID == "" {
 			provider, err := models.ConnectorProviderFromString(payload.Provider)
@@ -154,12 +155,14 @@ func createTransferInitiationHandler(
 			}
 		}
 
+		fmt.Println("TOTO 2")
 		isInstalled, _ := repo.IsInstalledByConnectorID(r.Context(), connectorID)
 		if !isInstalled {
 			api.BadRequest(w, ErrValidation, fmt.Errorf("connector %s is not installed", payload.ConnectorID))
 			return
 		}
 
+		fmt.Println("TOTO 3")
 		if payload.SourceAccountID != "" {
 			_, err := repo.GetAccount(r.Context(), payload.SourceAccountID)
 			if err != nil {
@@ -168,12 +171,14 @@ func createTransferInitiationHandler(
 			}
 		}
 
+		fmt.Println("TOTO 4")
 		_, err := repo.GetAccount(r.Context(), payload.DestinationAccountID)
 		if err != nil {
 			handleStorageErrors(w, r, fmt.Errorf("failed to get destination account: %w", err))
 			return
 		}
 
+		fmt.Println("TOTO 5")
 		if payload.ScheduledAt.IsZero() {
 			payload.ScheduledAt = time.Now().UTC()
 		}
@@ -190,6 +195,7 @@ func createTransferInitiationHandler(
 			Description:          payload.Description,
 			DestinationAccountID: models.MustAccountIDFromString(payload.DestinationAccountID),
 			ConnectorID:          connectorID,
+			Provider:             connectorID.Provider,
 			Type:                 models.MustTransferInitiationTypeFromString(payload.Type),
 			Amount:               payload.Amount,
 			Asset:                models.Asset(payload.Asset),
@@ -200,11 +206,13 @@ func createTransferInitiationHandler(
 			tf.SourceAccountID = models.MustAccountIDFromString(payload.SourceAccountID)
 		}
 
+		fmt.Println("TOTO 6")
 		if err := repo.CreateTransferInitiation(r.Context(), tf); err != nil {
 			handleStorageErrors(w, r, err)
 			return
 		}
 
+		fmt.Println("TOTO 7")
 		if err := publisher.Publish(
 			events.TopicPayments,
 			publish.NewMessage(
@@ -216,6 +224,7 @@ func createTransferInitiationHandler(
 			return
 		}
 
+		fmt.Println("TOTO 8")
 		if status == models.TransferInitiationStatusValidated {
 			connector, err := repo.GetConnector(r.Context(), connectorID)
 			if err != nil {
@@ -243,6 +252,7 @@ func createTransferInitiationHandler(
 			}
 		}
 
+		fmt.Println("TOTO 9")
 		data := &transferInitiationResponse{
 			ID:                   tf.ID.String(),
 			CreatedAt:            tf.CreatedAt,
