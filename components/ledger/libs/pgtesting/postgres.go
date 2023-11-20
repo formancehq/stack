@@ -219,7 +219,12 @@ func CreatePostgresServer(opts ...option) error {
 			fmt.Sprintf("POSTGRES_DB=%s", cfg.initialDatabaseName),
 		},
 		Entrypoint: nil,
-		Cmd:        []string{"-c", "superuser-reserved-connections=0"},
+		Cmd: []string{
+			"-c", "superuser-reserved-connections=0",
+			"-c", "enable_partition_pruning=on",
+			"-c", "enable_partitionwise_join=on",
+			"-c", "enable_partitionwise_aggregate=on",
+		},
 	}, cfg.hostConfigOptions...)
 	if err != nil {
 		return errors.Wrap(err, "unable to start postgres server container")
