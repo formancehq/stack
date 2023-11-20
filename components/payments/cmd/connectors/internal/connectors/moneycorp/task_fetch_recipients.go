@@ -89,7 +89,7 @@ func ingestRecipientsBatch(
 			CreatedAt:    createdAt,
 			Reference:    recipient.ID,
 			ConnectorID:  connectorID,
-			DefaultAsset: currency.FormatAsset(recipient.Attributes.BankAccountCurrency),
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, recipient.Attributes.BankAccountCurrency),
 			AccountName:  recipient.Attributes.BankAccountName,
 			Type:         models.AccountTypeExternal,
 			RawData:      raw,

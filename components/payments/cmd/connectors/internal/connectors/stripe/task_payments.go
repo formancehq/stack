@@ -81,7 +81,7 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 		}
 
 		var curr string
-		curr, _, err = currency.GetCurrencyAndPrecisionFromAsset(transfer.Asset)
+		curr, _, err = currency.GetCurrencyAndPrecisionFromAsset(supportedCurrenciesWithDecimal, transfer.Asset)
 		if err != nil {
 			return err
 		}

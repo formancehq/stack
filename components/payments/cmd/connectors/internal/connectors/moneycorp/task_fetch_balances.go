@@ -67,7 +67,7 @@ func ingestBalancesBatch(
 			return fmt.Errorf("failed to parse amount %s", balance.Attributes.AvailableBalance.String())
 		}
 
-		precision, err := currency.GetPrecision(balance.Attributes.CurrencyCode)
+		precision, err := currency.GetPrecision(supportedCurrenciesWithDecimal, balance.Attributes.CurrencyCode)
 		if err != nil {
 			return err
 		}
@@ -81,7 +81,7 @@ func ingestBalancesBatch(
 				Reference:   accountID,
 				ConnectorID: connectorID,
 			},
-			Asset:         currency.FormatAsset(balance.Attributes.CurrencyCode),
+			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Attributes.CurrencyCode),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,

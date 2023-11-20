@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"strconv"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
@@ -55,6 +57,7 @@ func taskFetchProfiles(wiseClient *client.Client) task.Task {
 
 			if err := ingestAccountsBatch(
 				ctx,
+				logger,
 				connectorID,
 				metricsRegistry,
 				ingester,
@@ -103,6 +106,7 @@ func taskFetchProfiles(wiseClient *client.Client) task.Task {
 
 func ingestAccountsBatch(
 	ctx context.Context,
+	logger logging.Logger,
 	connectorID models.ConnectorID,
 	metricsRegistry metrics.MetricsRegistry,
 	ingester ingestion.Ingester,
@@ -121,6 +125,13 @@ func ingestAccountsBatch(
 			return err
 		}
 
+		precision, ok := supportedCurrenciesWithDecimal[balance.Amount.Currency]
+		if !ok {
+			logger.Errorf("currency %s is not supported", balance.Amount.Currency)
+			metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
+			continue
+		}
+
 		accountsBatch = append(accountsBatch, &models.Account{
 			ID: models.AccountID{
 				Reference:   fmt.Sprintf("%d", balance.ID),
@@ -129,7 +140,7 @@ func ingestAccountsBatch(
 			CreatedAt:    balance.CreationTime,
 			Reference:    fmt.Sprintf("%d", balance.ID),
 			ConnectorID:  connectorID,
-			DefaultAsset: models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)),
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Amount.Currency),
 			AccountName:  balance.Name,
 			Type:         models.AccountTypeInternal,
 			Metadata: map[string]string{
@@ -139,13 +150,13 @@ func ingestAccountsBatch(
 		})
 
 		var amount big.Float
-		_, ok := amount.SetString(balance.Amount.Value.String())
+		_, ok = amount.SetString(balance.Amount.Value.String())
 		if !ok {
 			return fmt.Errorf("failed to parse amount %s", balance.Amount.Value.String())
 		}
 
 		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 		now := time.Now()
 		balancesBatch = append(balancesBatch, &models.Balance{
@@ -153,7 +164,7 @@ func ingestAccountsBatch(
 				Reference:   fmt.Sprintf("%d", balance.ID),
 				ConnectorID: connectorID,
 			},
-			Asset:         models.Asset(fmt.Sprintf("%s/2", balance.Amount.Currency)),
+			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Amount.Currency),
 			Balance:       &amountInt,
 			CreatedAt:     now,
 			LastUpdatedAt: now,

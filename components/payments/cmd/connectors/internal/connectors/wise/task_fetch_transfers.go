@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
@@ -64,14 +66,21 @@ func taskFetchTransfers(wiseClient *client.Client, profileID uint64) task.Task {
 				return fmt.Errorf("failed to marshal transfer: %w", err)
 			}
 
+			precision, ok := supportedCurrenciesWithDecimal[transfer.TargetCurrency]
+			if !ok {
+				logger.Errorf("currency %s is not supported", transfer.TargetCurrency)
+				metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
+				continue
+			}
+
 			var amount big.Float
-			_, ok := amount.SetString(transfer.TargetValue.String())
+			_, ok = amount.SetString(transfer.TargetValue.String())
 			if !ok {
 				return fmt.Errorf("failed to parse amount %s", transfer.TargetValue.String())
 			}
 
 			var amountInt big.Int
-			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 			batchElement := ingestion.PaymentBatchElement{
 				Payment: &models.Payment{
@@ -89,7 +98,7 @@ func taskFetchTransfers(wiseClient *client.Client, profileID uint64) task.Task {
 					Status:      matchTransferStatus(transfer.Status),
 					Scheme:      models.PaymentSchemeOther,
 					Amount:      &amountInt,
-					Asset:       models.Asset(fmt.Sprintf("%s/2", transfer.TargetCurrency)),
+					Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, transfer.TargetCurrency),
 					RawData:     rawData,
 				},
 			}

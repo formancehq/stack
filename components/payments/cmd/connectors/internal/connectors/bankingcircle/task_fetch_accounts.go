@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -107,13 +109,17 @@ func ingestAccountsBatch(
 			CreatedAt:    openingDate,
 			Reference:    account.AccountID,
 			ConnectorID:  connectorID,
-			DefaultAsset: models.Asset(account.Currency + "/2"),
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
 			AccountName:  account.AccountDescription,
 			Type:         models.AccountTypeInternal,
 			RawData:      raw,
 		})
 
 		for _, balance := range account.Balances {
+			// No need to check if the currency is supported for accounts and
+			// balances.
+			precision, _ := supportedCurrenciesWithDecimal[balance.Currency]
+
 			var amount big.Float
 			_, ok := amount.SetString(balance.IntraDayAmount.String())
 			if !ok {
@@ -121,7 +127,7 @@ func ingestAccountsBatch(
 			}
 
 			var amountInt big.Int
-			amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 			now := time.Now()
 			balanceBatch = append(balanceBatch, &models.Balance{
@@ -129,10 +135,7 @@ func ingestAccountsBatch(
 					Reference:   account.AccountID,
 					ConnectorID: connectorID,
 				},
-				// Note(polo): same thing as payments
-				// TODO(polo): do a complete pass on all connectors to
-				// normalize the currencies
-				Asset:         models.Asset(balance.Currency + "/2"),
+				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Currency),
 				Balance:       &amountInt,
 				CreatedAt:     now,
 				LastUpdatedAt: now,

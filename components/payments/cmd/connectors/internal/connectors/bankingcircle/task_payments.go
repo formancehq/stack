@@ -3,6 +3,7 @@ package bankingcircle
 import (
 	"context"
 	"errors"
+	"math"
 	"math/big"
 	"time"
 
@@ -82,13 +83,14 @@ func taskInitiatePayment(logger logging.Logger, bankingCircleClient *client.Clie
 		}
 
 		var curr string
-		curr, _, err = currency.GetCurrencyAndPrecisionFromAsset(transfer.Asset)
+		var precision int
+		curr, precision, err = currency.GetCurrencyAndPrecisionFromAsset(supportedCurrenciesWithDecimal, transfer.Asset)
 		if err != nil {
 			return err
 		}
 
 		amount := big.NewFloat(0).SetInt(transfer.Amount)
-		amount = amount.Quo(amount, big.NewFloat(100))
+		amount = amount.Quo(amount, big.NewFloat(math.Pow(10, float64(precision))))
 
 		var sourceAccount *client.Account
 		sourceAccount, err = bankingCircleClient.GetAccount(ctx, transfer.SourceAccountID.Reference)

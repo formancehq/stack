@@ -145,7 +145,7 @@ func ingestAccountsBatch(
 			CreatedAt:    time.Unix(account.Created, 0),
 			Reference:    account.ID,
 			ConnectorID:  connectorID,
-			DefaultAsset: currency.FormatAsset(string(account.DefaultCurrency)),
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, string(account.DefaultCurrency)),
 			Type:         models.AccountTypeInternal,
 			RawData:      raw,
 		})

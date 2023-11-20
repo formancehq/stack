@@ -46,7 +46,7 @@ func balancesTask(account string, client *client.DefaultClient) func(ctx context
 					Reference:   account,
 					ConnectorID: connectorID,
 				},
-				Asset:         currency.FormatAsset(string(balance.Currency)),
+				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, string(balance.Currency)),
 				Balance:       big.NewInt(balance.Value),
 				CreatedAt:     timestamp,
 				LastUpdatedAt: timestamp,

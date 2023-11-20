@@ -79,7 +79,7 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 					CreatedAt:    time.Unix(wallet.CreationDate, 0),
 					Reference:    wallet.ID,
 					ConnectorID:  connectorID,
-					DefaultAsset: currency.FormatAsset(wallet.Currency),
+					DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, wallet.Currency),
 					AccountName:  wallet.Description,
 					// Wallets are internal accounts on our side, since we
 					// can have their balances.
@@ -102,7 +102,7 @@ func taskFetchWallets(logger logging.Logger, client *client.Client, userID strin
 						Reference:   wallet.ID,
 						ConnectorID: connectorID,
 					},
-					Asset:         currency.FormatAsset(wallet.Balance.Currency),
+					Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, wallet.Balance.Currency),
 					Balance:       &amount,
 					CreatedAt:     now,
 					LastUpdatedAt: now,

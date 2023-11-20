@@ -95,7 +95,7 @@ func ingestBatch(
 				Type:        paymentType,
 				Status:      matchPaymentStatus(payment.Status),
 				Scheme:      models.PaymentSchemeOther,
-				Asset:       currency.FormatAsset(payment.DebitedFunds.Currency),
+				Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, payment.DebitedFunds.Currency),
 				RawData:     rawData,
 			},
 		}

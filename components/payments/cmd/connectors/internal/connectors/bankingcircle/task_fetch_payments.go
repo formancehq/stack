@@ -3,10 +3,12 @@ package bankingcircle
 import (
 	"context"
 	"encoding/json"
+	"math"
 	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -46,7 +48,7 @@ func taskFetchPayments(
 				break
 			}
 
-			if err := ingestBatch(ctx, connectorID, ingester, pagedPayments); err != nil {
+			if err := ingestBatch(ctx, logger, metricsRegistry, connectorID, ingester, pagedPayments); err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
@@ -59,6 +61,8 @@ func taskFetchPayments(
 
 func ingestBatch(
 	ctx context.Context,
+	logger logging.Logger,
+	metricsRegistry metrics.MetricsRegistry,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	payments []*client.Payment,
@@ -73,11 +77,17 @@ func ingestBatch(
 
 		paymentType := matchPaymentType(paymentEl.Classification)
 
+		precision, ok := supportedCurrenciesWithDecimal[paymentEl.Transfer.Amount.Currency]
+		if !ok {
+			logger.Errorf("currency %s is not supported", paymentEl.Transfer.Amount.Currency)
+			metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
+			continue
+		}
+
 		var amount big.Float
 		amount.SetFloat64(paymentEl.Transfer.Amount.Amount)
-
 		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(100)).Int(&amountInt)
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
@@ -94,7 +104,7 @@ func ingestBatch(
 				Status:      matchPaymentStatus(paymentEl.Status),
 				Scheme:      models.PaymentSchemeOther,
 				Amount:      &amountInt,
-				Asset:       models.Asset(paymentEl.Transfer.Amount.Currency + "/2"),
+				Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, paymentEl.Transfer.Amount.Currency),
 				RawData:     raw,
 			},
 		}
