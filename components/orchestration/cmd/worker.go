@@ -25,7 +25,7 @@ func stackClientModule() fx.Option {
 				TokenURL:     fmt.Sprintf("%s/api/auth/oauth/token", viper.GetString(stackURLFlag)),
 			}
 			underlyingHTTPClient := &http.Client{
-				Transport: otlp.NewRoundTripper(viper.GetBool(service.DebugFlag)),
+				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),
 			}
 			// TODO: No debug flag for sdk ?
 			// configuration.Debug = viper.GetBool(service.DebugFlag)

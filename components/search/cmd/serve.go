@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/otlp"
+
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/search/pkg/searchhttp"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -23,7 +25,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
 )
@@ -112,10 +113,11 @@ func newOpensearchClient(openSearchServiceHost string) (*opensearch.Client, erro
 	httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
 		InsecureSkipVerify: true,
 	}
+	httpTransport = otlp.NewRoundTripper(httpTransport, viper.GetBool(app.DebugFlag))
 
 	config := opensearch.Config{
 		Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
-		Transport: otelhttp.NewTransport(httpTransport),
+		Transport: httpTransport,
 		Username:  viper.GetString(openSearchUsernameFlag),
 		Password:  viper.GetString(openSearchPasswordFlag),
 	}
