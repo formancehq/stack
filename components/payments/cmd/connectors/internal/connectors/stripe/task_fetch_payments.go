@@ -33,7 +33,7 @@ func fetchPaymentsTask(config TimelineConfig, client *client.DefaultClient) func
 			logger,
 			NewIngester(
 				func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
-					if err := ingestBatch(ctx, connectorID, "", logger, ingester, batch, commitState, tail); err != nil {
+					if err := ingestBatch(ctx, connectorID, "root", logger, ingester, batch, commitState, tail); err != nil {
 						return err
 					}
 					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs)

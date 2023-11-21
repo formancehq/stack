@@ -20,7 +20,7 @@ var (
 	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
-func balancesTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
+func balanceTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
 	ingester ingestion.Ingester, resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry) error {
 	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, ingester ingestion.Ingester,
 		resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry,
@@ -32,7 +32,13 @@ func balancesTask(account string, client *client.DefaultClient) func(ctx context
 			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs)
 		}()
 
-		balances, err := client.ForAccount(account).Balance(ctx)
+		stripeAccount := account
+		if account == "root" {
+			// special case for root account
+			stripeAccount = ""
+		}
+
+		balances, err := client.ForAccount(stripeAccount).Balance(ctx)
 		if err != nil {
 			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
