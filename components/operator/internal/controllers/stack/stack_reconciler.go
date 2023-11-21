@@ -3,10 +3,11 @@ package stack
 import (
 	"context"
 	"fmt"
+	"time"
+
 	appsv1 "k8s.io/api/apps/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-	"time"
 
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/controllerutils"
