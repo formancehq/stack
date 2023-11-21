@@ -24,10 +24,10 @@ type TransactionsListResponse struct {
 
 func (d *DefaultClient) Transactions(ctx context.Context,
 	options ...ClientOption,
-) ([]*Transaction, bool, error) {
+) ([]*Transaction, string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, transactionsEndpoint, nil)
 	if err != nil {
-		return nil, false, errors.Wrap(err, "creating http request")
+		return nil, "", errors.Wrap(err, "creating http request")
 	}
 
 	for _, opt := range options {
@@ -41,12 +41,12 @@ func (d *DefaultClient) Transactions(ctx context.Context,
 
 	httpResponse, err = d.httpClient.Do(req)
 	if err != nil {
-		return nil, false, errors.Wrap(err, "doing request")
+		return nil, "", errors.Wrap(err, "doing request")
 	}
 	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK {
-		return nil, false, fmt.Errorf("unexpected status code: %d", httpResponse.StatusCode)
+		return nil, "", fmt.Errorf("unexpected status code: %d", httpResponse.StatusCode)
 	}
 
 	type listResponse struct {
@@ -58,7 +58,7 @@ func (d *DefaultClient) Transactions(ctx context.Context,
 
 	err = json.NewDecoder(httpResponse.Body).Decode(rsp)
 	if err != nil {
-		return nil, false, errors.Wrap(err, "decoding response")
+		return nil, "", errors.Wrap(err, "decoding response")
 	}
 
 	transactions := make([]*Transaction, 0)
@@ -69,12 +69,12 @@ func (d *DefaultClient) Transactions(ctx context.Context,
 
 			err = json.Unmarshal(item, &transaction)
 			if err != nil {
-				return nil, false, err
+				return nil, "", err
 			}
 
 			transactions = append(transactions, transaction)
 		}
 	}
 
-	return transactions, rsp.NextToken != "", nil
+	return transactions, rsp.NextToken, nil
 }

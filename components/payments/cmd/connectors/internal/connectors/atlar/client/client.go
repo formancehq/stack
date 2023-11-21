@@ -28,8 +28,8 @@ func QueryParam(key, value string) ClientOptionFn {
 }
 
 type Client interface {
-	Accounts(ctx context.Context, options ...ClientOption) ([]*Account, bool, error)
-	Transactions(ctx context.Context, options ...ClientOption) ([]*Transaction, bool, error)
+	Accounts(ctx context.Context, options ...ClientOption) ([]*Account, string, error)
+	Transactions(ctx context.Context, options ...ClientOption) ([]*Transaction, string, error)
 	ForAccount(account string) Client
 }
 
