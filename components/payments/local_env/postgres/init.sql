@@ -1,0 +1,1 @@
+ALTER ROLE payments SET search_path = public;
