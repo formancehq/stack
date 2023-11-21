@@ -23,6 +23,7 @@ func TestLoader(t *testing.T) {
 	assert.Equal(t, 50, loader.AllowTasks())
 	assert.Equal(t, Config{
 		Name:          "ATLAR",
+		BaseUrl:       "https://api.atlar.com",
 		PollingPeriod: connectors.Duration{Duration: 2 * time.Minute},
 		ApiConfig:     ApiConfig{PageSize: 25},
 	}, loader.ApplyDefaults(config))
