@@ -21,7 +21,7 @@ services:
       - ./local_env/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   payments-migrate:
-    image: golang:1.19.3-alpine3.16
+    image: golang:1.20.11-alpine3.18
     command: go run ./ migrate up
     depends_on:
       postgres:
@@ -34,7 +34,7 @@ services:
       POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
 
   payments-api:
-    image: golang:1.19.3-alpine3.16
+    image: golang:1.20.11-alpine3.18
     command: go run ./ api server
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
@@ -58,10 +58,10 @@ services:
       CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
 
   payments-connectors:
-    image: golang:1.19.3-alpine3.16
+    image: golang:1.20.11-alpine3.18
     command: go run ./ connectors server
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/_healthcheck" ]
       interval: 10s
       timeout: 5s
       retries: 5
