@@ -110,7 +110,8 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 
 	// Create our http server for our oidc provider
 	providerHttpServer := &http.Server{
-		Handler: router,
+		Handler:           router,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 	go func() {
 		err := providerHttpServer.Serve(l)
