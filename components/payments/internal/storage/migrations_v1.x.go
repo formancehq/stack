@@ -40,6 +40,18 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TYPE connector_provider ADD VALUE IF NOT EXISTS 'ATLAR';
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 
