@@ -5,6 +5,14 @@ info:
   version: "AUTH_VERSION"
 
 paths:
+  /.well-known/openid-configuration:
+    get:
+      responses:
+        200:
+          description: |
+            OpenID provider configuration.
+            See https://swagger.io/docs/specification/authentication/openid-connect-discovery/ for details
+
   /_info:
     get:
       summary: Get server info
