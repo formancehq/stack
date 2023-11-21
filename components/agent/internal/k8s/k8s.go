@@ -2,6 +2,9 @@ package k8s
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
@@ -22,6 +25,7 @@ func newClient(config *rest.Config) (*clientv1beta3.Client, error) {
 	if crdConfig.UserAgent == "" {
 		crdConfig.UserAgent = rest.DefaultKubernetesUserAgent()
 	}
+	crdConfig.Transport = otlp.NewRoundTripper(http.DefaultTransport, false)
 
 	client, err := rest.RESTClientFor(&crdConfig)
 	if err != nil {
