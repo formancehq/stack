@@ -45,6 +45,10 @@ func (c *Connector) Uninstall(ctx context.Context) error {
 	return nil
 }
 
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
+}
+
 func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	taskDescriptor, err := models.DecodeTaskDescriptor[TaskDescriptor](descriptor)
 	if err != nil {
