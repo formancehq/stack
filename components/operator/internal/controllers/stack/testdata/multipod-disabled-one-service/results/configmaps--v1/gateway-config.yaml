@@ -87,7 +87,7 @@ data:
         				import auth
         			}
         			@transfer-initiations-readmatcher {
-        				path /api/paymentstransfer-initiations*
+        				path /api/payments/transfer-initiations*
         				method GET
         			}
         			handle @transfer-initiations-readmatcher {
@@ -126,7 +126,7 @@ data:
         				import auth
         			}
         			@transfer-initiations-writematcher {
-        				path /api/paymentstransfer-initiations*
+        				path /api/payments/transfer-initiations*
         				method POST DELETE
         			}
         			handle @transfer-initiations-writematcher {
