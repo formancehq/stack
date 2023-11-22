@@ -3,10 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"net/http"
-
-	"github.com/pkg/errors"
+	"time"
 )
 
 const (
@@ -14,7 +11,99 @@ const (
 )
 
 type Transaction struct {
-	Id string `json:"id"`
+	ID             string `json:"id"`
+	OrganizationID string `json:"organizationId"`
+	Amount         struct {
+		Currency    string `json:"currency"`
+		Value       int    `json:"value"`
+		StringValue string `json:"stringValue"`
+	} `json:"amount"`
+	Date      string `json:"date"`
+	ValueDate string `json:"valueDate"`
+	Account   struct {
+		ID          string             `json:"id"`
+		Name        string             `json:"name"`
+		Bank        AccountBank        `json:"bank"`
+		Affiliation AccountAffiliation `json:"affiliation"`
+	} `json:"account"`
+	Counterparty struct {
+		ID             string      `json:"id"`
+		Name           string      `json:"name"`
+		PartyType      string      `json:"partyType"`
+		Identifiers    interface{} `json:"identifiers"`
+		ContactDetails struct {
+			Address struct {
+				StreetName      string      `json:"streetName"`
+				StreetNumber    string      `json:"streetNumber"`
+				PostalCode      string      `json:"postalCode"`
+				City            string      `json:"city"`
+				RawAddressLines interface{} `json:"rawAddressLines"`
+				Country         string      `json:"country"`
+			} `json:"address"`
+		} `json:"contactDetails"`
+	} `json:"counterparty"`
+	CounterpartyDetails struct {
+		Name           string `json:"name"`
+		PartyType      string `json:"partyType"`
+		ContactDetails struct {
+			NationalID string `json:"nationalId"`
+			Address    struct {
+				StreetName      string        `json:"streetName"`
+				StreetNumber    string        `json:"streetNumber"`
+				PostalCode      string        `json:"postalCode"`
+				City            string        `json:"city"`
+				RawAddressLines []interface{} `json:"rawAddressLines"`
+				Country         string        `json:"country"`
+			} `json:"address"`
+			Phone string `json:"phone"`
+			Email string `json:"email"`
+		} `json:"contactDetails"`
+		NationalIdentifier interface{} `json:"nationalIdentifier"`
+		ExternalAccount    struct {
+			Market        string      `json:"market"`
+			Identifier    interface{} `json:"identifier"`
+			RawIdentifier string      `json:"rawIdentifier"`
+			Bank          struct {
+				ID   string `json:"id"`
+				Name string `json:"name"`
+				Bic  string `json:"bic"`
+			} `json:"bank"`
+		} `json:"externalAccount"`
+		MandateReference string `json:"mandateReference"`
+	} `json:"counterpartyDetails"`
+	RemittanceInformation struct {
+		Type  string `json:"type"`
+		Value string `json:"value"`
+	} `json:"remittanceInformation"`
+	Reconciliation struct {
+		Status              string `json:"status"`
+		BookedTransactionID string `json:"bookedTransactionId"`
+	} `json:"reconciliation"`
+	Characteristics struct {
+		BankTransactionCode struct {
+			Domain      string `json:"domain"`
+			Family      string `json:"family"`
+			Description string `json:"description"`
+			Proprietary struct {
+			} `json:"proprietary"`
+		} `json:"bankTransactionCode"`
+		Returned     bool `json:"returned"`
+		ReturnReason struct {
+			OriginalBankTransactionCode struct {
+				Proprietary struct {
+				} `json:"proprietary"`
+			} `json:"originalBankTransactionCode"`
+		} `json:"returnReason"`
+		InstructedAmount struct {
+			Currency    string `json:"currency"`
+			Value       int    `json:"value"`
+			StringValue string `json:"stringValue"`
+		} `json:"instructedAmount"`
+		CurrencyExchange interface{} `json:"currencyExchange"`
+	} `json:"characteristics"`
+	Description string    `json:"description"`
+	Version     int       `json:"version"`
+	Created     time.Time `json:"created"`
 }
 
 type TransactionsListResponse struct {
@@ -25,56 +114,24 @@ type TransactionsListResponse struct {
 func (d *DefaultClient) Transactions(ctx context.Context,
 	options ...ClientOption,
 ) ([]*Transaction, string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, transactionsEndpoint, nil)
-	if err != nil {
-		return nil, "", errors.Wrap(err, "creating http request")
-	}
+	res := RawListResponse{}
 
-	for _, opt := range options {
-		opt.Apply(req)
-	}
+	d.SendGetListRequest(ctx, &res, options...)
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.SetBasicAuth(d.accessKey, d.secret)
+	accounts := make([]*Transaction, 0)
 
-	var httpResponse *http.Response
+	if len(res.Items) > 0 {
+		for _, item := range res.Items {
+			account := &Account{}
 
-	httpResponse, err = d.httpClient.Do(req)
-	if err != nil {
-		return nil, "", errors.Wrap(err, "doing request")
-	}
-	defer httpResponse.Body.Close()
-
-	if httpResponse.StatusCode != http.StatusOK {
-		return nil, "", fmt.Errorf("unexpected status code: %d", httpResponse.StatusCode)
-	}
-
-	type listResponse struct {
-		TransactionsListResponse
-		Items []json.RawMessage `json:"items"`
-	}
-
-	rsp := &listResponse{}
-
-	err = json.NewDecoder(httpResponse.Body).Decode(rsp)
-	if err != nil {
-		return nil, "", errors.Wrap(err, "decoding response")
-	}
-
-	transactions := make([]*Transaction, 0)
-
-	if len(rsp.Items) > 0 {
-		for _, item := range rsp.Items {
-			transaction := &Transaction{}
-
-			err = json.Unmarshal(item, &transaction)
+			err := json.Unmarshal(item, &account)
 			if err != nil {
 				return nil, "", err
 			}
 
-			transactions = append(transactions, transaction)
+			accounts = append(accounts, account)
 		}
 	}
 
-	return transactions, rsp.NextToken, nil
+	return accounts, res.NextToken, nil
 }

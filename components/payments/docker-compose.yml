@@ -11,12 +11,11 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
+      - "${POSTGRES_PORT:-5432}:5432"
     environment:
       POSTGRES_USER: "payments"
       POSTGRES_PASSWORD: "payments"
       POSTGRES_DB: "payments"
-    command: -p ${POSTGRES_PORT:-5432}
     volumes:
       - ./local_env/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -31,7 +30,7 @@ services:
       - ../../libs:/app/libs
     working_dir: /app/components/payments
     environment:
-      POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
+      POSTGRES_URI: postgres://payments:payments@postgres:5432/payments?sslmode=disable
 
   payments-api:
     image: golang:1.20.11-alpine3.18
@@ -54,7 +53,7 @@ services:
     working_dir: /app/components/payments
     environment:
       DEBUG: ${DEBUG:-"true"}
-      POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
+      POSTGRES_URI: postgres://payments:payments@postgres:5432/payments?sslmode=disable
       CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
 
   payments-connectors:
@@ -78,5 +77,5 @@ services:
     working_dir: /app/components/payments
     environment:
       DEBUG: ${DEBUG:-"true"}
-      POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
+      POSTGRES_URI: postgres://payments:payments@postgres:5432/payments?sslmode=disable
       CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
