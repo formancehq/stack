@@ -1,4 +1,3 @@
----
 input:
   event_bus:
     topic: ledger
@@ -6,8 +5,6 @@ input:
 
 pipeline:
   processors:
-  - log:
-      message: "receive message: ${! this }"
   - switch_event_type:
       events:
       - label: COMMITTED_TRANSACTIONS
@@ -15,35 +12,35 @@ pipeline:
         - bloblang: |
             map account {
               root = this.map_each(v -> v.value.map_each(v2 -> {
-                  "action": "upsert",
-                  "id": v.key,
-                  "document": {
-                      "data": {
-                          "address": v.key
-                      },
-                      "indexed": {
-                          "address": v.key
-                      },
-                      "kind": "ACCOUNT"
-                  }
+                "action": "upsert",
+                "id": v.key,
+                "document": {
+                  "data": {
+                    "address": v.key
+                  },
+                  "indexed": {
+                    "address": v.key
+                  },
+                  "kind": "ACCOUNT"
+                }
               }).values()).values().flatten()
             }
 
             map tx {
               root = {
                 "action": "index",
-                "id": if this.exists("txid") { "%s".format(this.txid) } else { "%s".format(this.id) },
+                "id": "%s".format(this.txid),
                 "document": {
                   "data": {
                     "postings": this.postings,
                     "reference": this.reference,
-                    "txid": if this.exists("txid") { this.txid } else { this.id },
+                    "txid": this.txid,
                     "timestamp": this.timestamp,
                     "metadata": if this.metadata { this.metadata } else {{}}
                   },
                   "indexed": {
                     "reference": this.reference,
-                    "txid": if this.exists("txid") { this.txid } else { this.id },
+                    "txid": this.txid,
                     "timestamp": this.timestamp,
                     "asset": this.postings.map_each(p -> p.asset),
                     "source": this.postings.map_each(p -> p.source),
@@ -107,64 +104,28 @@ pipeline:
             root = this.apply("committedTransactions")
         - unarchive:
             format: json_array
-        - bloblang: |
-            meta action = this.action
-            meta id = this.id
-            root = this.document
       - label: SAVED_METADATA
         processors:
         - bloblang: |
-            meta targetType = this.payload.targetType
-            meta targetId = this.payload.targetId
-            meta ledger = this.payload.ledger
-            meta id = "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId)
-            meta action = "upsert"
-            root = this
-        - get_doc:
-            id: ${!meta("id")}
-        - catch:
-          - log:
-              level: INFO
-              message: Document not found, assume it is an account
-          - bloblang: |
-              root = this.assign({
-                "_doc": {
-                  "data": {
-                    "address": meta("targetId"),
-                    "metadata": {}
-                  },
-                  "indexed": {
-                    "address": meta("targetId")
-                  },
-                  "kind": "ACCOUNT", # If not found, so, this is an account
-                }
-              })
-        - bloblang: |
-            root = this._doc.assign({
-              "data": {
-                "metadata": this.payload.metadata,
-                "ledger": this.payload.ledger
-              },
-              "indexed": {
-                "ledger": this.payload.ledger
-              },
-              "ledger": this.payload.ledger,
-              "when": this.date
-            })
-      - label: DELETED_METADATA
-        processors:
-        - bloblang: |
-            meta targetType = this.payload.targetType
-            meta targetId = this.payload.targetId
-            meta ledger = this.payload.ledger
-            meta id = "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId)
-            meta action = "update"
-            root = {
-              "script": {
-                "source": "ctx._doc.metadata.remove('" + this.payload.key + "')",
-                "lang": "painless"
+            root = this.payload.metadata.map_each(item -> {
+              "script": "ctx._source.data.metadata[\"" + item.key + "\"]=\"" + item.value + "\"",
+              "action": "update",
+              "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),
+              "upsert": {
+                "data": { 
+                  "address": this,
+                  "metadata": { item.key: item.value },
+                  "ledger": this.payload.ledger
+                },
+                "indexed": { 
+                  "address": this,
+                  "ledger": this.payload.ledger
+                },
+                "kind": "ACCOUNT"
               }
-            }
+            }).values()
+        - unarchive:
+            format: json_array
 
 output:
   resource: elasticsearch

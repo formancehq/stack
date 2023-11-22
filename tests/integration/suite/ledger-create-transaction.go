@@ -18,7 +18,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
+var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	When("creating a transaction on a ledger", func() {
 		var (
 			msgs               chan *nats.Msg
@@ -236,12 +236,14 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 				g.Expect(res.Cursor.Data).To(HaveLen(2))
 				g.Expect(res.Cursor.Data).To(ContainElements(
 					map[string]any{
-						"address": "world",
-						"ledger":  "default",
+						"address":  "world",
+						"ledger":   "default",
+						"metadata": map[string]any{},
 					},
 					map[string]any{
-						"address": "alice",
-						"ledger":  "default",
+						"address":  "alice",
+						"ledger":   "default",
+						"metadata": map[string]any{},
 					},
 				))
 				return true

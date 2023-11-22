@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	benthosImage = "public.ecr.aws/h9j1u6h3/jeffail/benthos:4.12.1"
+	benthosImage = "public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es"
 )
 
 type module struct{}
@@ -300,10 +300,6 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 					name: "resources",
 					fs:   benthos.Resources,
 				},
-				{
-					name: "streams",
-					fs:   benthos.Streams,
-				},
 			}
 			if ctx.Configuration.Spec.Monitoring != nil {
 				directories = append(directories, directory{
@@ -327,6 +323,42 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 					Mount: true,
 					Data:  data,
 				}
+			}
+
+			data := make(map[string]string)
+			dir, err := fs.ReadDir(benthos.Streams, "streams")
+			if err != nil {
+				panic(err)
+			}
+			for _, serviceDir := range dir {
+				versions, err := fs.ReadDir(benthos.Streams, filepath.Join("streams", serviceDir.Name()))
+				if err != nil {
+					panic(err)
+				}
+
+				var mostRecent string
+				for _, version := range versions {
+					if ctx.Versions.IsLower(serviceDir.Name(), version.Name()) {
+						continue
+					}
+
+					if mostRecent == "" || semver.Compare(version.Name(), mostRecent) > 0 {
+						mostRecent = version.Name()
+					}
+				}
+
+				streamsDir := filepath.Join("streams", serviceDir.Name(), mostRecent)
+
+				streams := make(map[string]string)
+				copyDir(benthos.Streams, streamsDir, streamsDir, &streams)
+
+				for name, stream := range streams {
+					data[name] = stream
+				}
+			}
+			ret["streams"] = modules.Config{
+				Mount: true,
+				Data:  data,
 			}
 			return ret
 		},
