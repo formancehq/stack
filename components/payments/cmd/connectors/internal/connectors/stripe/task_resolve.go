@@ -45,7 +45,7 @@ func (c *Connector) resolveTasks() func(taskDefinition TaskDescriptor) task.Task
 		case taskNameFetchPaymentsForAccounts:
 			return connectedAccountTask(c.cfg.TimelineConfig, taskDescriptor.Account, client)
 		case taskNameFetchBalances:
-			return balancesTask(taskDescriptor.Account, client)
+			return balanceTask(taskDescriptor.Account, client)
 		case taskNameInitiatePayment:
 			return initiatePaymentTask(taskDescriptor.TransferID, client)
 		case taskNameUpdatePaymentStatus:

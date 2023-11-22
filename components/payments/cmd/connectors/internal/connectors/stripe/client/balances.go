@@ -19,10 +19,6 @@ type BalanceResponse struct {
 }
 
 func (d *DefaultClient) Balance(ctx context.Context, options ...ClientOption) (*stripe.Balance, error) {
-	if d.stripeAccount == "" {
-		return nil, errors.New("stripe account is required")
-	}
-
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, balanceEndpoint, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating http request")
@@ -32,7 +28,10 @@ func (d *DefaultClient) Balance(ctx context.Context, options ...ClientOption) (*
 		opt.Apply(req)
 	}
 
-	req.Header.Set("Stripe-Account", d.stripeAccount)
+	if d.stripeAccount != "" {
+		req.Header.Set("Stripe-Account", d.stripeAccount)
+	}
+
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.SetBasicAuth(d.apiKey, "") // gfyrag: really weird authentication right?
 

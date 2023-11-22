@@ -37,6 +37,12 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs)
 		}()
 
+		// Register root account.
+		if err := registerRootAccount(ctx, connectorID, ingester, scheduler); err != nil {
+			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
+			return err
+		}
+
 		tt := NewTimelineTrigger(
 			logger,
 			NewIngester(
@@ -68,7 +74,7 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 							return errors.Wrap(err, "scheduling connected account")
 						}
 
-						balancesTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+						balanceTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 							Name:    "Fetch balance for a specific connected account",
 							Key:     taskNameFetchBalances,
 							Account: account.ID,
@@ -77,7 +83,7 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 							return errors.Wrap(err, "failed to transform task descriptor")
 						}
 
-						err = scheduler.Schedule(ctx, balancesTask, models.TaskSchedulerOptions{
+						err = scheduler.Schedule(ctx, balanceTask, models.TaskSchedulerOptions{
 							ScheduleOption: models.OPTIONS_RUN_NOW,
 							RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 						})
@@ -122,6 +128,45 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 
 		return nil
 	}
+}
+
+func registerRootAccount(
+	ctx context.Context,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	if err := ingester.IngestAccounts(ctx, ingestion.AccountBatch{
+		{
+			ID: models.AccountID{
+				Reference:   "root",
+				ConnectorID: connectorID,
+			},
+			ConnectorID: connectorID,
+			CreatedAt:   time.Now().UTC(),
+			Reference:   "root",
+			Type:        models.AccountTypeInternal,
+		},
+	}); err != nil {
+		return err
+	}
+	balanceTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:    "Fetch balance for the root account",
+		Key:     taskNameFetchBalances,
+		Account: "root",
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to transform task descriptor")
+	}
+	err = scheduler.Schedule(ctx, balanceTask, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return errors.Wrap(err, "scheduling connected account")
+	}
+
+	return nil
 }
 
 func ingestAccountsBatch(

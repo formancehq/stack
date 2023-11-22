@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/big"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -20,9 +21,7 @@ func createBatchElement(
 	account string,
 	forward bool,
 ) (ingestion.PaymentBatchElement, bool) {
-	var payment models.Payment // reference   payments.Referenced
-	// paymentData *payments.Data
-	// adjustment  *payments.Adjustment
+	var payment models.Payment
 
 	defer func() {
 		// DEBUG
@@ -49,7 +48,8 @@ func createBatchElement(
 
 	switch balanceTransaction.Type {
 	case stripe.BalanceTransactionTypeCharge:
-		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Charge.Currency)]
+		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Charge.Currency))
+		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
@@ -67,7 +67,7 @@ func createBatchElement(
 			Type:        models.PaymentTypePayIn,
 			Status:      models.PaymentStatusSucceeded,
 			Amount:      big.NewInt(balanceTransaction.Source.Charge.Amount),
-			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Charge.Currency)),
+			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			RawData:     rawData,
 			Scheme:      models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
@@ -184,7 +184,8 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypePayment:
-		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Charge.Currency)]
+		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Charge.Currency))
+		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
@@ -203,7 +204,7 @@ func createBatchElement(
 			Status:      models.PaymentStatusSucceeded,
 			Amount:      big.NewInt(balanceTransaction.Source.Charge.Amount),
 			RawData:     rawData,
-			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Charge.Currency)),
+			Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			Scheme:      models.PaymentSchemeOther,
 			CreatedAt:   time.Unix(balanceTransaction.Created, 0),
 		}

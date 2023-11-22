@@ -35,6 +35,10 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 		cfg.PollingPeriod = connectors.Duration{Duration: 2 * time.Minute}
 	}
 
+	if cfg.Name == "" {
+		cfg.Name = Name.String()
+	}
+
 	return cfg
 }
 
