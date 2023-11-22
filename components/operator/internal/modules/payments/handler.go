@@ -340,7 +340,7 @@ func paymentsServicesSplitted(
 					Name:    "bank-accounts-read",
 				},
 				{
-					Path:    "transfer-initiations",
+					Path:    "/transfer-initiations",
 					Methods: []string{"GET"},
 					Name:    "transfer-initiations-read",
 				},
@@ -375,7 +375,7 @@ func paymentsServicesSplitted(
 					Name: "configs",
 				},
 				{
-					Path:    "transfer-initiations",
+					Path:    "/transfer-initiations",
 					Methods: []string{"POST", "DELETE"},
 					Name:    "transfer-initiations-write",
 				},
