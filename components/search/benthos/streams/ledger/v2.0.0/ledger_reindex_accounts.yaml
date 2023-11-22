@@ -18,20 +18,22 @@ pipeline:
         "metadata": this.metadata.parse_json()
       })
   - bloblang: |
-      meta action = "upsert"
-      meta id = "ACCOUNT-%s-%s".format(meta("ledger"), this.address)
       root = {
-        "data": {
-          "address": this.address,
-          "ledger": meta("ledger"),
-          "metadata": this.metadata
-        },
-        "indexed": {
-          "address": this.address,
+        "document": {
+          "data": { 
+            "address": this.address,
+            "ledger": meta("ledger"),
+            "metadata": this.metadata
+          },
+          "indexed": {
+            "address": this.address,
+            "ledger": meta("ledger")
+          },
+          "kind": "ACCOUNT",
           "ledger": meta("ledger")
         },
-        "kind": "ACCOUNT",
-        "ledger": meta("ledger")
+        "id": "ACCOUNT-%s-%s".format(meta("ledger"), this.address),
+        "action": "upsert"
       }
 
 output:

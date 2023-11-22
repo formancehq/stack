@@ -3,6 +3,7 @@ package dummypay
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -52,6 +53,10 @@ func taskReadFiles(config Config, fs fs) task.Task {
 					})
 					if err != nil {
 						return fmt.Errorf("failed to schedule task to ingest file '%s': %w", file, err)
+					}
+
+					if err := os.Remove(file); err != nil {
+						return err
 					}
 				}
 			}

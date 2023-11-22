@@ -15,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
+var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	When("setting metadata on a unknown account", func() {
 		var (
 			msgs               chan *nats.Msg

@@ -1,0 +1,164 @@
+input:
+  event_bus:
+    topic: ledger
+    consumer_group: search
+
+pipeline:
+  processors:
+  - log:
+      message: "receive message: ${! this }"
+  - switch_event_type:
+      events:
+      - label: COMMITTED_TRANSACTIONS
+        processors:
+        - bloblang: |
+            
+            map amount {
+              root = [this.amount]
+              let hasDecimals = this.asset.split("/").length() > 1
+              let decimals = if $hasDecimals { this.asset.split("/").index(1).number() } else { 0 }
+              root = if $decimals > 0 {
+                root.append(
+                  this.amount / range(0, $decimals).fold(1, t -> t.tally * 10) # Just a pow...
+                )
+              }
+              root = root.flatten()
+            }
+                
+            map tx {
+              root = {
+                "action": "index",
+                "id": "TRANSACTION-%s-%s".format(this.ledger, this.transaction.id),
+                "document": {
+                  "data": {
+                    "postings": this.transaction.postings,
+                    "reference": this.transaction.reference,
+                    "txid": this.transaction.id,
+                    "timestamp": this.transaction.timestamp,
+                    "metadata": if this.transaction.metadata { this.transaction.metadata } else {{}}
+                  },
+                  "indexed": {
+                    "reference": this.transaction.reference,
+                    "txid": this.transaction.id,
+                    "timestamp": this.transaction.timestamp,
+                    "asset": this.transaction.postings.map_each(p -> p.asset),
+                    "source": this.transaction.postings.map_each(p -> p.source),
+                    "destination": this.transaction.postings.map_each(p -> p.destination),
+                    "amount": this.transaction.postings.map_each(p -> p.apply("amount"))
+                  },
+                  "kind": "TRANSACTION"
+                }
+              }
+            }
+                      
+            map account {
+              root = {
+                "action": "upsert",
+                "id": "ACCOUNT-%s-%s".format(this.ledger, this.account),
+                "document": {
+                  "data": { 
+                    "address": this.account,
+                    "metadata": {}
+                  },
+                  "indexed": { 
+                    "address": this.account
+                  },
+                  "kind": "ACCOUNT"
+                }
+              }
+            }
+                  
+            root = []
+            root = root.append(
+              this.payload.transactions.map_each(transaction -> {
+                "transaction": transaction,
+                "ledger": this.payload.ledger
+              }.apply("tx"))
+            )
+            root = root.append(
+              this.payload.transactions.
+                map_each(transaction -> transaction.postings.map_each(posting -> [
+                  posting.source,
+                  posting.destination
+                ]).
+                flatten().
+                map_each(account -> {
+                  "account": account,
+                  "ledger": this.payload.ledger
+                }.apply("account"))
+              ).
+              flatten()
+            )
+            root = root.append(
+              this.payload.accountMetadata.map_each(item -> item.value.map_each(metadata -> {
+                "script": "ctx._source.data.metadata[\"" + metadata.key + "\"]=\"" + metadata.value + "\"",
+                "action": "update",
+                "id": "ACCOUNT-%s-%s".format(this.payload.ledger, item.key),
+                "upsert": {
+                  "data": { 
+                    "address": item.key,
+                    "metadata": { metadata.key: metadata.value }
+                  },
+                  "indexed": { 
+                    "address": item.key
+                  },
+                  "kind": "ACCOUNT"
+                }
+              }).values()).values().flatten()
+            )
+            root = root.flatten()
+              
+            let overlay = {
+              "data": {
+                "ledger": this.payload.ledger
+              },
+              "indexed": {
+                "ledger": this.payload.ledger  
+              }
+            }
+              
+            root = root.map_each(cmd -> match cmd.action {
+              cmd.action == "update" => if cmd.exists("upsert") { cmd.merge({
+                "upsert": $overlay
+              }) } else { cmd },
+              _ => cmd.merge({
+                "document": $overlay
+              }) 
+            })
+        - log:
+            message: "Computed: ${! this }"
+        - unarchive:
+            format: json_array
+      - label: SAVED_METADATA
+        processors:
+        - bloblang: |
+            root = this.payload.metadata.map_each(item -> {
+              "script": "ctx._source.data.metadata[\"" + item.key + "\"]=\"" + item.value + "\"",
+              "action": "update",
+              "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),
+              "upsert": {
+                "data": { 
+                  "address": this.payload.targetId,
+                  "metadata": { item.key: item.value },
+                  "ledger": this.payload.ledger
+                },
+                "indexed": { 
+                  "address": this.payload.targetId,
+                  "ledger": this.payload.ledger
+                },
+                "kind": "ACCOUNT"
+              }
+            }).values()
+        - unarchive:
+            format: json_array
+      - label: DELETED_METADATA
+        processors:
+        - bloblang: |
+            root = {
+              "script": "ctx._source.data.metadata.remove(\"" + this.payload.key + "\")",
+              "action": "update",
+              "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId)
+            }
+
+output:
+  resource: elasticsearch

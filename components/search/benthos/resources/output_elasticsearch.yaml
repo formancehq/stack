@@ -2,18 +2,29 @@ output_resources:
 - label: elasticsearch
   processors:
   - mapping: |
-      root = this.merge({
-        "stack": env("STACK")
-      })
-      meta id = "%s-%s".format(env("STACK"), meta("id"))
+      root = match {
+        this.action == "update" => if this.exists("upsert") { this.merge({
+          "upsert": {
+            "stack": env("STACK")
+          }
+        }) } else { this },
+        _ => this.merge({
+          "document": {
+            "stack": env("STACK")
+          }
+        })
+      }
+      root.id = "%s-%s".format(env("STACK"), this.id)
+  - log:
+      message: "Will write: ${! this }"
   elasticsearch:
     urls:
     - ${OPENSEARCH_URL}
-    id: ${!meta("id")}
+    id: ${! json().id }
     sniff: false
     healthcheck: false
     index: ${OPENSEARCH_INDEX}
-    action: ${!meta("action")}
+    action: ${! json().action }
     tls:
       enabled: true
       skip_cert_verify: true
@@ -22,5 +33,9 @@ output_resources:
       username: ${BASIC_AUTH_USERNAME}
       password: ${BASIC_AUTH_PASSWORD}
     batching:
-      count: ${OPENSEARCH_BATCHING_COUNT}
-      period: ${OPENSEARCH_BATCHING_PERIOD}
+      count: ${OPENSEARCH_BATCHING_COUNT:10}
+      period: ${OPENSEARCH_BATCHING_PERIOD:1s}
+    multipart: true
+    doc: ${! if json().exists("document") { json("document") } else {""} }
+    script: ${! if json().exists("script") { json("script") } else {""} }
+    upsert: ${! if json().exists("upsert") { json("upsert") } else {""} }
