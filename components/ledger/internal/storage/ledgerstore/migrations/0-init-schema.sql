@@ -168,10 +168,11 @@ as $$
     end;
 $$;
 
+-- given the input : "a:b:c", the function will produce : '{"0": "a", "1": "b", "2": "c", "3": null}'
 create function explode_address(_address varchar)
 	returns jsonb
 	language sql
-	stable
+	immutable
 as $$
     select aggregate_objects(jsonb_build_object(data.number - 1, data.value))
 	from (
