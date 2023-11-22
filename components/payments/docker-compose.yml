@@ -6,7 +6,7 @@ services:
   postgres:
     image: "postgres:14-alpine"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U payments"]
+      test: ["CMD-SHELL", "pg_isready -U payments -p ${POSTGRES_PORT:-5432}"]
       interval: 10s
       timeout: 5s
       retries: 5
