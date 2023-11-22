@@ -108,6 +108,7 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 				)
 				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(response.StatusCode).To(Equal(200))
+
 				return response.Response.Cursor.Data
 			}).Should(BeEmpty())
 		})
