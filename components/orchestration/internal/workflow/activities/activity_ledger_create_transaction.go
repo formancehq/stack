@@ -158,7 +158,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 			return nil, fmt.Errorf("unexpected status code: %d", v.StatusCode)
 		}
 	} else {
-		response, err := a.client.Ledger.
+		response, err := a.client.Ledger.V2.
 			CreateTransaction(
 				ctx,
 				operations.CreateTransactionRequest{

@@ -28,7 +28,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}
 		)
 		BeforeEach(func() {
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -49,7 +49,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -70,7 +70,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			addMetadataResponse, err := Client().Ledger.AddMetadataToAccount(
+			addMetadataResponse, err := Client().Ledger.V2.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: m2,
@@ -82,7 +82,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(addMetadataResponse.StatusCode).To(Equal(204))
 		})
 		It("should be listed on api with ListLogs", func() {
-			response, err := Client().Ledger.ListLogs(
+			response, err := Client().Ledger.V2.ListLogs(
 				TestContext(),
 				operations.ListLogsRequest{
 					Ledger: "default",
@@ -174,7 +174,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			for i := int64(0); i < accountCounts; i++ {
 				now := time.Now().Round(time.Millisecond).UTC()
 
-				response, err := Client().Ledger.CreateTransaction(
+				response, err := Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						PostTransaction: shared.PostTransaction{
@@ -221,7 +221,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				rsp *shared.LogsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.ListLogs(
+				response, err := Client().Ledger.V2.ListLogs(
 					TestContext(),
 					operations.ListLogsRequest{
 						Ledger:   "default",
@@ -245,7 +245,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.ListLogs(
+					response, err := Client().Ledger.V2.ListLogs(
 						TestContext(),
 						operations.ListLogsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -267,7 +267,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.ListLogs(
+						response, err := Client().Ledger.V2.ListLogs(
 							TestContext(),
 							operations.ListLogsRequest{
 								Cursor: rsp.Cursor.Previous,

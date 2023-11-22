@@ -18,7 +18,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			now = time.Now().Round(time.Microsecond).UTC()
 		)
 		BeforeEach(func() {
-			_, err := Client().Ledger.CreateBulk(TestContext(), operations.CreateBulkRequest{
+			_, err := Client().Ledger.V2.CreateBulk(TestContext(), operations.CreateBulkRequest{
 				RequestBody: []shared.BulkElement{
 					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
 						Data: &shared.PostTransaction{
@@ -60,7 +60,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).To(Succeed())
 		})
 		It("should be ok", func() {
-			tx, err := Client().Ledger.GetTransaction(TestContext(), operations.GetTransactionRequest{
+			tx, err := Client().Ledger.V2.GetTransaction(TestContext(), operations.GetTransactionRequest{
 				ID:     big.NewInt(0),
 				Ledger: "default",
 			})
@@ -88,7 +88,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			bulkResponse *operations.CreateBulkResponse
 		)
 		BeforeEach(func() {
-			bulkResponse, err = Client().Ledger.CreateBulk(TestContext(), operations.CreateBulkRequest{
+			bulkResponse, err = Client().Ledger.V2.CreateBulk(TestContext(), operations.CreateBulkRequest{
 				RequestBody: []shared.BulkElement{
 					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
 						Data: &shared.PostTransaction{

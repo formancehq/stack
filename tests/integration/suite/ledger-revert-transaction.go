@@ -29,7 +29,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -60,7 +60,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("transferring funds from destination to another account", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.CreateTransaction(
+				response, err := Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						PostTransaction: shared.PostTransaction{
@@ -88,7 +88,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					response *operations.RevertTransactionResponse
 				)
 				revertTx := func() {
-					response, err = Client().Ledger.RevertTransaction(
+					response, err = Client().Ledger.V2.RevertTransaction(
 						TestContext(),
 						operations.RevertTransactionRequest{
 							Force:  pointer.For(force),
@@ -116,7 +116,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("reverting it", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.RevertTransaction(
+				response, err := Client().Ledger.V2.RevertTransaction(
 					TestContext(),
 					operations.RevertTransactionRequest{
 						Ledger: "default",
@@ -132,7 +132,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeRevertedTransaction)).Should(Succeed())
 			})
 			It("should revert the original transaction", func() {
-				response, err := Client().Ledger.GetTransaction(
+				response, err := Client().Ledger.V2.GetTransaction(
 					TestContext(),
 					operations.GetTransactionRequest{
 						Ledger: "default",
@@ -146,7 +146,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("trying to revert again", func() {
 				It("should be rejected", func() {
-					response, err := Client().Ledger.RevertTransaction(
+					response, err := Client().Ledger.V2.RevertTransaction(
 						TestContext(),
 						operations.RevertTransactionRequest{
 							Ledger: "default",

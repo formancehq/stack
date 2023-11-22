@@ -20,7 +20,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			// Create a transaction
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -44,7 +44,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			rsp = response.CreateTransactionResponse
 
 			// Check existence on api
-			getResponse, err := Client().Ledger.GetTransaction(
+			getResponse, err := Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -59,7 +59,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"foo": "bar",
 			}
 
-			response, err := Client().Ledger.AddMetadataOnTransaction(
+			response, err := Client().Ledger.V2.AddMetadataOnTransaction(
 				TestContext(),
 				operations.AddMetadataOnTransactionRequest{
 					RequestBody: metadata,
@@ -75,7 +75,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"foo": "bar",
 			}
 			BeforeEach(func() {
-				response, err := Client().Ledger.AddMetadataOnTransaction(
+				response, err := Client().Ledger.V2.AddMetadataOnTransaction(
 					TestContext(),
 					operations.AddMetadataOnTransactionRequest{
 						RequestBody: metadata,
@@ -88,7 +88,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			It("should be available on api", func() {
 				// Check existence on api
-				response, err := Client().Ledger.GetTransaction(
+				response, err := Client().Ledger.V2.GetTransaction(
 					TestContext(),
 					operations.GetTransactionRequest{
 						Ledger: "default",

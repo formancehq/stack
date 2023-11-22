@@ -51,7 +51,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusOK))
 
-			createTransactionResponse, err := Client().Ledger.CreateTransaction(
+			createTransactionResponse, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
