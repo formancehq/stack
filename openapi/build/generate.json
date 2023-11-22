@@ -39,6 +39,15 @@
         }
       }
     },
+    "/api/auth/.well-known/openid-configuration": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OpenID provider configuration.\nSee https://swagger.io/docs/specification/authentication/openid-connect-discovery/ for details\n"
+          }
+        }
+      }
+    },
     "/api/auth/_info": {
       "get": {
         "summary": "Get server info",
