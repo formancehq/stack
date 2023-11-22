@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
 
@@ -13,7 +14,7 @@ import (
 type Config struct {
 	Name          string              `json:"name" yaml:"name" bson:"name"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
-	BaseUrl       string              `json:"baseUrl" yaml:"baseUrl" bson:"baseUrl"`
+	BaseUrl       url.URL             `json:"baseUrl,string" yaml:"baseUrl,string" bson:"baseUrl,string"`
 	AccessKey     string              `json:"accessKey" yaml:"accessKey" bson:"accessKey"`
 	Secret        string              `json:"secret" yaml:"secret" bson:"secret"`
 	ApiConfig     `bson:",inline"`
@@ -23,7 +24,7 @@ type Config struct {
 // This is used for logging.
 func (c Config) String() string {
 	return fmt.Sprintf("baseUrl=%s, pollingPeriod=%s, pageSize=%d, accessKey=%s, secret=****",
-		c.BaseUrl, c.PollingPeriod, c.PageSize, c.AccessKey)
+		c.BaseUrl.String(), c.PollingPeriod, c.PageSize, c.AccessKey)
 }
 
 func (c Config) Validate() error {

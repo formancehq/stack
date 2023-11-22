@@ -1,6 +1,7 @@
 package atlar
 
 import (
+	"net/url"
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
@@ -27,8 +28,13 @@ func (l *Loader) Load(logger logging.Logger, config Config) integration.Connecto
 }
 
 func (l *Loader) ApplyDefaults(cfg Config) Config {
-	if cfg.BaseUrl == "" {
-		cfg.BaseUrl = "https://api.atlar.com"
+	defaultUrl := url.URL{}
+	if cfg.BaseUrl == defaultUrl {
+		//"https://api.atlar.com"
+		cfg.BaseUrl = url.URL{
+			Scheme: "https",
+			Host:   "api.atlar.com",
+		}
 	}
 
 	if cfg.PageSize == 0 {

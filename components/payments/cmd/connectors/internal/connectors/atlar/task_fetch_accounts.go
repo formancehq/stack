@@ -10,7 +10,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func FetchAccountsTask(config Config, client *client.DefaultClient) task.Task {
+func FetchAccountsTask(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,

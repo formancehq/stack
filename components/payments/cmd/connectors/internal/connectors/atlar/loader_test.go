@@ -2,6 +2,7 @@ package atlar
 
 import (
 	"context"
+	"net/url"
 	"testing"
 	"time"
 
@@ -21,9 +22,13 @@ func TestLoader(t *testing.T) {
 
 	assert.Equal(t, Name, loader.Name())
 	assert.Equal(t, 50, loader.AllowTasks())
+
+	baseUrl, err := url.Parse("https://api.atlar.com")
+	assert.Nil(t, err)
+
 	assert.Equal(t, Config{
 		Name:          "ATLAR",
-		BaseUrl:       "https://api.atlar.com",
+		BaseUrl:       *baseUrl,
 		PollingPeriod: connectors.Duration{Duration: 2 * time.Minute},
 		ApiConfig:     ApiConfig{PageSize: 25},
 	}, loader.ApplyDefaults(config))

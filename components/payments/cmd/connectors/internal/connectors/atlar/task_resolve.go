@@ -4,6 +4,8 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	httptransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
 )
 
 const (
@@ -22,7 +24,15 @@ type TaskDescriptor struct {
 
 // clientID, apiKey, endpoint string, logger logging
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
-	client := client.NewDefaultClient(config.BaseUrl, config.AccessKey, config.Secret)
+	// client := client.NewClient(config.BaseUrl, config.AccessKey, config.Secret)
+	transport := httptransport.New(
+		config.BaseUrl.Host,
+		config.BaseUrl.Path,
+		[]string{config.BaseUrl.Scheme},
+	)
+	basicAuth := httptransport.BasicAuth(config.AccessKey, config.Secret)
+	transport.DefaultAuthentication = basicAuth
+	client := client.New(transport, strfmt.Default)
 
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		if taskDescriptor.Main {
