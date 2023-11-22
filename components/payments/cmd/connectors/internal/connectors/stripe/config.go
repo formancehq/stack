@@ -50,6 +50,7 @@ type TimelineConfig struct {
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
+	cfg.AddParameter("name", configtemplate.TypeString, true)
 	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
 	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
 	cfg.AddParameter("pageSize", configtemplate.TypeDurationUnsignedInteger, false)
