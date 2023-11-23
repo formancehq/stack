@@ -109,9 +109,15 @@ func BenchmarkList(b *testing.B) {
 			_, err := store.db.Exec("VACUUM ANALYZE")
 			require.NoError(b, err)
 
-			benchmarksReadTransactions(b, ctx, store, info)
-			benchmarksReadAccounts(b, ctx, store)
-			benchmarksGetAggregatedBalances(b, ctx, store)
+			b.Run("transactions", func(b *testing.B) {
+				benchmarksReadTransactions(b, ctx, store, info)
+			})
+			b.Run("accounts", func(b *testing.B) {
+				benchmarksReadAccounts(b, ctx, store)
+			})
+			b.Run("aggregates", func(b *testing.B) {
+				benchmarksGetAggregatedBalances(b, ctx, store)
+			})
 		})
 	}
 }
