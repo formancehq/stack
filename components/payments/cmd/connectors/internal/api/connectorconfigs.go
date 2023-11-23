@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud"
@@ -22,6 +23,7 @@ func connectorConfigsHandler() http.HandlerFunc {
 		// Refactor it when refactoring the HTTP lib.
 
 		configs := configtemplate.BuildConfigs(
+			atlar.Config{},
 			bankingcircle.Config{},
 			currencycloud.Config{},
 			dummypay.Config{},

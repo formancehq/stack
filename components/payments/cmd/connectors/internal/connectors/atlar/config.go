@@ -14,7 +14,7 @@ import (
 type Config struct {
 	Name          string              `json:"name" yaml:"name" bson:"name"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
-	BaseUrl       url.URL             `json:"baseUrl,string" yaml:"baseUrl,string" bson:"baseUrl,string"`
+	BaseUrl       url.URL             `json:"baseUrl" yaml:"baseUrl" bson:"baseUrl"`
 	AccessKey     string              `json:"accessKey" yaml:"accessKey" bson:"accessKey"`
 	Secret        string              `json:"secret" yaml:"secret" bson:"secret"`
 	ApiConfig     `bson:",inline"`
@@ -44,7 +44,41 @@ func (c Config) ConnectorName() string {
 }
 
 func (c Config) Marshal() ([]byte, error) {
-	return json.Marshal(c)
+	type CopyType Config
+
+	basicConfig := struct {
+		BaseUrl string `json:"baseUrl"`
+		CopyType
+	}{
+		BaseUrl:  c.BaseUrl.String(),
+		CopyType: (CopyType)(c),
+	}
+
+	return json.Marshal(basicConfig)
+}
+
+func (c *Config) UnmarshalJSON(data []byte) error {
+	type CopyType Config
+
+	tmp := struct {
+		BaseUrl string `json:"baseUrl"`
+		*CopyType
+	}{
+		CopyType: (*CopyType)(c),
+	}
+
+	err := json.Unmarshal(data, &tmp)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(tmp.BaseUrl)
+	if err != nil {
+		return err
+	}
+	c.BaseUrl = *baseUrl
+
+	return nil
 }
 
 type ApiConfig struct {
