@@ -79,7 +79,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		ID:     txId,
 	}
 
-	response, err := ledgerClient.Ledger.RevertTransaction(cmd.Context(), request)
+	response, err := ledgerClient.Ledger.V2.RevertTransaction(cmd.Context(), request)
 	if response.ErrorResponse != nil {
 		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}

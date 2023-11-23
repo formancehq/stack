@@ -18,7 +18,7 @@ type RevertTransactionRequest struct {
 }
 
 func (a Activities) RevertTransaction(ctx context.Context, request RevertTransactionRequest) (*shared.Transaction, error) {
-	response, err := a.client.Ledger.
+	response, err := a.client.Ledger.V2.
 		RevertTransaction(
 			ctx,
 			operations.RevertTransactionRequest{

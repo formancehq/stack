@@ -136,7 +136,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.ListTransactions(
+	response, err := ledgerClient.Ledger.V2.ListTransactions(
 		cmd.Context(),
 		operations.ListTransactionsRequest{
 			RequestBody: map[string]interface{}{

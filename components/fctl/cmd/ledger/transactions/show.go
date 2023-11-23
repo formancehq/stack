@@ -70,7 +70,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := ledgerClient.Ledger.GetTransaction(cmd.Context(), operations.GetTransactionRequest{
+	response, err := ledgerClient.Ledger.V2.GetTransaction(cmd.Context(), operations.GetTransactionRequest{
 		Ledger: ledger,
 		ID:     txId,
 	})

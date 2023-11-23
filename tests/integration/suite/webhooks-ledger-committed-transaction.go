@@ -47,7 +47,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 
 	When("creating a transaction", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{

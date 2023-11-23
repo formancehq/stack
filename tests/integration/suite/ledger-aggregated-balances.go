@@ -13,7 +13,7 @@ import (
 var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 	When("creating two transactions on a ledger with custom metadata", func() {
 		BeforeEach(func() {
-			_, err := Client().Ledger.CreateBulk(TestContext(), operations.CreateBulkRequest{
+			_, err := Client().Ledger.V2.CreateBulk(TestContext(), operations.CreateBulkRequest{
 				RequestBody: []shared.BulkElement{
 					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
 						Data: &shared.PostTransaction{
@@ -61,7 +61,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			Expect(err).To(Succeed())
 		})
 		It("should be ok when aggregating using the metadata", func() {
-			response, err := Client().Ledger.GetBalancesAggregated(
+			response, err := Client().Ledger.V2.GetBalancesAggregated(
 				TestContext(),
 				operations.GetBalancesAggregatedRequest{
 					RequestBody: map[string]any{

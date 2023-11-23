@@ -66,7 +66,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.GetAccount(cmd.Context(), operations.GetAccountRequest{
+	response, err := ledgerClient.Ledger.V2.GetAccount(cmd.Context(), operations.GetAccountRequest{
 		Address: args[0],
 		Ledger:  ledger,
 	})

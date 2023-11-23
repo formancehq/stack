@@ -106,7 +106,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 				//Then("checking ledger account balance", func() {
 				//	var balancesCursorResponse *shared.BalancesCursorResponse
 				//	BeforeEach(func() {
-				//		reponse, err := Client().Ledger.GetBalances(
+				//		reponse, err := Client().Ledger.V2.GetBalances(
 				//			TestContext(),
 				//			operations.GetBalancesRequest{
 				//				Address: ptr("bank"),

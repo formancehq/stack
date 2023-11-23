@@ -89,7 +89,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 			"$and": body,
 		},
 	}
-	rsp, err := ledgerClient.Ledger.ListAccounts(cmd.Context(), request)
+	rsp, err := ledgerClient.Ledger.V2.ListAccounts(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

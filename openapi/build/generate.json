@@ -645,8 +645,7 @@
     "/api/ledger/v2/_info": {
       "get": {
         "tags": [
-          "Ledger",
-          "Server"
+          "Ledger.V2"
         ],
         "summary": "Show server information",
         "operationId": "getInfo",
@@ -679,7 +678,7 @@
         "summary": "Get information about a ledger",
         "operationId": "getLedgerInfo",
         "tags": [
-          "Ledger"
+          "Ledger.V2"
         ],
         "parameters": [
           {
@@ -722,7 +721,7 @@
         "summary": "Bulk request",
         "operationId": "createBulk",
         "tags": [
-          "Ledger"
+          "Ledger.V2"
         ],
         "parameters": [
           {
@@ -784,8 +783,7 @@
         "summary": "Count the accounts from a ledger",
         "operationId": "countAccounts",
         "tags": [
-          "Ledger",
-          "Accounts"
+          "Ledger.V2"
         ],
         "parameters": [
           {
@@ -848,8 +846,7 @@
         "description": "List accounts from a ledger, sorted by address in descending order.",
         "operationId": "listAccounts",
         "tags": [
-          "Ledger",
-          "Accounts"
+          "Ledger.V2"
         ],
         "parameters": [
           {
@@ -942,8 +939,7 @@
         "summary": "Get account by its address",
         "operationId": "getAccount",
         "tags": [
-          "Ledger",
-          "Accounts"
+          "Ledger.V2"
         ],
         "parameters": [
           {
@@ -1015,8 +1011,7 @@
         "summary": "Add metadata to an account",
         "operationId": "addMetadataToAccount",
         "tags": [
-          "Ledger",
-          "Accounts"
+          "Ledger.V2"
         ],
         "parameters": [
           {
@@ -1091,8 +1086,7 @@
         "description": "Delete metadata by key",
         "operationId": "deleteAccountMetadata",
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "summary": "Delete metadata by key",
         "parameters": [
@@ -1137,8 +1131,7 @@
     "/api/ledger/v2/{ledger}/stats": {
       "get": {
         "tags": [
-          "Ledger",
-          "Stats"
+          "Ledger.V2"
         ],
         "operationId": "readStats",
         "summary": "Get statistics from a ledger",
@@ -1182,8 +1175,7 @@
     "/api/ledger/v2/{ledger}/transactions": {
       "head": {
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "summary": "Count the transactions from a ledger",
         "operationId": "countTransactions",
@@ -1245,8 +1237,7 @@
       },
       "get": {
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "summary": "List transactions from a ledger",
         "description": "List transactions from a ledger, sorted by id in descending order.",
@@ -1338,8 +1329,7 @@
       },
       "post": {
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "summary": "Create a new transaction to a ledger",
         "operationId": "createTransaction",
@@ -1410,8 +1400,7 @@
     "/api/ledger/v2/{ledger}/transactions/{id}": {
       "get": {
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "summary": "Get transaction from a ledger by its ID",
         "operationId": "getTransaction",
@@ -1485,8 +1474,7 @@
     "/api/ledger/v2/{ledger}/transactions/{id}/metadata": {
       "post": {
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "summary": "Set the metadata of a transaction by its ID",
         "operationId": "addMetadataOnTransaction",
@@ -1565,8 +1553,7 @@
         "operationId": "deleteTransactionMetadata",
         "summary": "Delete metadata by key",
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "parameters": [
           {
@@ -1613,8 +1600,7 @@
     "/api/ledger/v2/{ledger}/transactions/{id}/revert": {
       "post": {
         "tags": [
-          "Ledger",
-          "Transactions"
+          "Ledger.V2"
         ],
         "operationId": "revertTransaction",
         "summary": "Revert a ledger transaction by its ID",
@@ -1678,8 +1664,7 @@
     "/api/ledger/v2/{ledger}/aggregate/balances": {
       "get": {
         "tags": [
-          "Ledger",
-          "Balances"
+          "Ledger.V2"
         ],
         "summary": "Get the aggregated balances from selected accounts",
         "operationId": "getBalancesAggregated",
@@ -1741,8 +1726,7 @@
     "/api/ledger/v2/{ledger}/logs": {
       "get": {
         "tags": [
-          "Ledger",
-          "Logs"
+          "Ledger.V2"
         ],
         "summary": "List the logs from a ledger",
         "description": "List the logs from a ledger, sorted by ID in descending order.",
@@ -4622,7 +4606,7 @@
         },
         "required": [
           "driver",
-          "ledgers"
+          "Ledger.V2s"
         ]
       },
       "ledgerMetadata": {

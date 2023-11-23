@@ -33,7 +33,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
-			response, err := Client().Ledger.AddMetadataToAccount(
+			response, err := Client().Ledger.V2.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata1,
@@ -44,7 +44,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			response, err = Client().Ledger.AddMetadataToAccount(
+			response, err = Client().Ledger.V2.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata2,
@@ -55,7 +55,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			createTransactionResponse, err := Client().Ledger.CreateTransaction(
+			createTransactionResponse, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -77,7 +77,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(createTransactionResponse.StatusCode).To(Equal(200))
 		})
 		It("should return a "+string(shared.ErrorsEnumValidation)+" on invalid filter", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Ledger.V2.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -93,7 +93,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumValidation))
 		})
 		It("should be countable on api", func() {
-			response, err := Client().Ledger.CountAccounts(
+			response, err := Client().Ledger.V2.CountAccounts(
 				TestContext(),
 				operations.CountAccountsRequest{
 					Ledger: "default",
@@ -105,7 +105,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 		})
 		It("should be listed on api", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Ledger.V2.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -145,7 +145,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}))
 		})
 		It("should be listed on api using address filters", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Ledger.V2.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -170,7 +170,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Metadata: metadata1,
 			}))
 
-			response, err = Client().Ledger.ListAccounts(
+			response, err = Client().Ledger.V2.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -192,7 +192,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}))
 		})
 		It("should be listed on api using metadata filters", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Ledger.V2.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -217,7 +217,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 
 	When("counting and listing accounts empty", func() {
 		It("should be countable on api even if empty", func() {
-			response, err := Client().Ledger.CountAccounts(
+			response, err := Client().Ledger.V2.CountAccounts(
 				TestContext(),
 				operations.CountAccountsRequest{
 					Ledger: "default",
@@ -230,7 +230,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api even if empty", func() {
-			response, err := Client().Ledger.ListAccounts(
+			response, err := Client().Ledger.V2.ListAccounts(
 				TestContext(),
 				operations.ListAccountsRequest{
 					Ledger: "default",
@@ -257,7 +257,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					"id": fmt.Sprintf("%d", i),
 				}
 
-				response, err := Client().Ledger.AddMetadataToAccount(
+				response, err := Client().Ledger.V2.AddMetadataToAccount(
 					TestContext(),
 					operations.AddMetadataToAccountRequest{
 						RequestBody: m,
@@ -286,7 +286,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				rsp *shared.AccountsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.ListAccounts(
+				response, err := Client().Ledger.V2.ListAccounts(
 					TestContext(),
 					operations.ListAccountsRequest{
 						Ledger:   "default",
@@ -307,7 +307,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.ListAccounts(
+					response, err := Client().Ledger.V2.ListAccounts(
 						TestContext(),
 						operations.ListAccountsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -326,7 +326,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.ListAccounts(
+						response, err := Client().Ledger.V2.ListAccounts(
 							TestContext(),
 							operations.ListAccountsRequest{
 								Ledger: "default",
