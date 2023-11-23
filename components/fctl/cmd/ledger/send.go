@@ -102,7 +102,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	reference := fctl.GetString(cmd, c.referenceFlag)
 
-	response, err := ledgerClient.Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
+	response, err := ledgerClient.Ledger.V2.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata: metadata,
 			Postings: []shared.Posting{

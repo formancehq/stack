@@ -28,7 +28,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(txCount); i++ {
-				response, err := Client().Ledger.CreateTransaction(
+				response, err := Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						PostTransaction: shared.PostTransaction{
@@ -101,7 +101,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				rsp *shared.TransactionsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.ListTransactions(
+				response, err := Client().Ledger.V2.ListTransactions(
 					TestContext(),
 					operations.ListTransactionsRequest{
 						Ledger:   "default",
@@ -125,7 +125,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				BeforeEach(func() {
 
 					// Create a new transaction to ensure cursor is stable
-					_, err := Client().Ledger.CreateTransaction(
+					_, err := Client().Ledger.V2.CreateTransaction(
 						TestContext(),
 						operations.CreateTransactionRequest{
 							PostTransaction: shared.PostTransaction{
@@ -145,7 +145,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					)
 					Expect(err).ToNot(HaveOccurred())
 
-					response, err := Client().Ledger.ListTransactions(
+					response, err := Client().Ledger.V2.ListTransactions(
 						TestContext(),
 						operations.ListTransactionsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -165,7 +165,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.ListTransactions(
+						response, err := Client().Ledger.V2.ListTransactions(
 							TestContext(),
 							operations.ListTransactionsRequest{
 								Cursor: rsp.Cursor.Previous,
@@ -193,7 +193,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				rsp *operations.ListTransactionsResponse
 			)
 			BeforeEach(func() {
-				rsp, err = Client().Ledger.ListTransactions(
+				rsp, err = Client().Ledger.V2.ListTransactions(
 					TestContext(),
 					operations.ListTransactionsRequest{
 						RequestBody: map[string]interface{}{
@@ -230,7 +230,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	)
 	When("creating transactions", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -292,7 +292,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				},
 			}
 
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -354,7 +354,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				},
 			}
 
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -417,7 +417,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}
 		})
 		It("should be countable on api", func() {
-			response, err := Client().Ledger.CountTransactions(
+			response, err := Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -428,7 +428,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -444,7 +444,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -460,7 +460,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -476,7 +476,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("1"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -492,7 +492,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -508,7 +508,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -524,7 +524,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -540,7 +540,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("2"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -556,7 +556,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -572,7 +572,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("2"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -588,7 +588,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("1"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -604,7 +604,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -620,7 +620,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("2"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -636,7 +636,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"]).Should(HaveLen(1))
 			Expect(response.Headers["Count"][0]).Should(Equal("1"))
 
-			response, err = Client().Ledger.CountTransactions(
+			response, err = Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -653,7 +653,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api", func() {
-			response, err := Client().Ledger.ListTransactions(
+			response, err := Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -668,7 +668,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -688,7 +688,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -705,7 +705,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -725,7 +725,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -742,7 +742,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -759,7 +759,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -779,7 +779,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -798,7 +798,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -815,7 +815,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -834,7 +834,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t3))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -852,7 +852,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(1))
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t3))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -869,7 +869,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			transactionCursorResponse = response.TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(0))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -888,7 +888,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -906,7 +906,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(1))
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t1))
 
-			response, err = Client().Ledger.ListTransactions(
+			response, err = Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",
@@ -924,7 +924,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(0))
 		})
 		It("should be gettable on api", func() {
-			response, err := Client().Ledger.GetTransaction(
+			response, err := Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -936,7 +936,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.GetTransactionResponse.Data).Should(Equal(t1))
 
-			response, err = Client().Ledger.GetTransaction(
+			response, err = Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -948,7 +948,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.GetTransactionResponse.Data).Should(Equal(t2))
 
-			response, err = Client().Ledger.GetTransaction(
+			response, err = Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -960,7 +960,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.GetTransactionResponse.Data).Should(Equal(t3))
 
-			response, err = Client().Ledger.GetTransaction(
+			response, err = Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -974,7 +974,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 
 	When("counting and listing transactions empty", func() {
 		It("should be countable on api even if empty", func() {
-			response, err := Client().Ledger.CountTransactions(
+			response, err := Client().Ledger.V2.CountTransactions(
 				TestContext(),
 				operations.CountTransactionsRequest{
 					Ledger: "default",
@@ -986,7 +986,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api even if empty", func() {
-			response, err := Client().Ledger.ListTransactions(
+			response, err := Client().Ledger.V2.ListTransactions(
 				TestContext(),
 				operations.ListTransactionsRequest{
 					Ledger: "default",

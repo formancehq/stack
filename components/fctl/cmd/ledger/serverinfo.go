@@ -69,7 +69,7 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, err
 	}
 
-	response, err := ledgerClient.Ledger.GetInfo(cmd.Context())
+	response, err := ledgerClient.Ledger.V2.GetInfo(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

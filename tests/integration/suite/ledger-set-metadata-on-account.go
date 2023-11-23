@@ -28,7 +28,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
-			response, err := Client().Ledger.AddMetadataToAccount(
+			response, err := Client().Ledger.V2.AddMetadataToAccount(
 				TestContext(),
 				operations.AddMetadataToAccountRequest{
 					RequestBody: metadata,
@@ -43,7 +43,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.GetAccount(
+			response, err := Client().Ledger.V2.GetAccount(
 				TestContext(),
 				operations.GetAccountRequest{
 					Address: "foo",

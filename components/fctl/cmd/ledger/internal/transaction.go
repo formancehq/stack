@@ -28,7 +28,7 @@ func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.Formance, 
 			Ledger:   ledger,
 			PageSize: &pageSize,
 		}
-		response, err := ledgerClient.Ledger.ListTransactions(ctx, request)
+		response, err := ledgerClient.Ledger.V2.ListTransactions(ctx, request)
 		if err != nil {
 			return nil, err
 		}

@@ -31,7 +31,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -59,7 +59,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.GetTransaction(
+			response, err := Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.GetTransactionRequest{
 					Ledger: "default",
@@ -111,7 +111,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			}))
 
-			accResponse, err := Client().Ledger.GetAccount(
+			accResponse, err := Client().Ledger.V2.GetAccount(
 				TestContext(),
 				operations.GetAccountRequest{
 					Address: "alice",
@@ -142,7 +142,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			)
 			BeforeEach(func() {
 				// Create a transaction
-				response, err = Client().Ledger.CreateTransaction(
+				response, err = Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						PostTransaction: shared.PostTransaction{
@@ -253,7 +253,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
-			response, err := Client().Ledger.CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -287,7 +287,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			response *operations.CreateTransactionResponse
 		)
 		createTransaction := func() {
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -326,7 +326,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			response *operations.CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -358,7 +358,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			response *operations.CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -395,7 +395,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			response *operations.CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -424,7 +424,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			response *operations.CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -458,7 +458,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			response *operations.CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
