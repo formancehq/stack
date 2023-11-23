@@ -918,6 +918,7 @@ components:
         metadata:
           key: ""
         pending: true
+
     ServerInfo:
       type: object
       required:

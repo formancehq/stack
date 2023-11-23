@@ -687,6 +687,69 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/CreditWalletRequest'
+
+    CreditWalletRequest:
+      type: object
+      required:
+        - amount
+        - sources
+        - metadata
+      properties:
+        amount:
+          $ref: '#/components/schemas/Monetary'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Metadata associated with the wallet.
+        reference:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+        balance:
+          type: string
+          description: The balance to credit
+      example:
+        amount:
+          asset: USD/2
+          amount: 100
+        metadata:
+          key: ""
+        sources: [ ]
+    LedgerAccountSubject:
+      type: object
+      required:
+        - type
+        - identifier
+      properties:
+        type:
+          type: string
+        identifier:
+          type: string
+    WalletSubject:
+      type: object
+      required:
+        - type
+        - identifier
+      properties:
+        type:
+          type: string
+        identifier:
+          type: string
+        balance:
+          type: string
+    Subject:
+      discriminator:
+        propertyName: type
+        mapping:
+          ACCOUNT: '#/components/schemas/LedgerAccountSubject'
+          WALLET: '#/components/schemas/WalletSubject'
+      oneOf:
+        - $ref: '#/components/schemas/LedgerAccountSubject'
+        - $ref: '#/components/schemas/WalletSubject'
+
     ActivityDebitWallet:
       type: object
       properties:
@@ -694,6 +757,40 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/DebitWalletRequest'
+
+    DebitWalletRequest:
+      type: object
+      required:
+        - amount
+        - metadata
+      properties:
+        amount:
+          $ref: '#/components/schemas/Monetary'
+        pending:
+          type: boolean
+          description: Set to true to create a pending hold. If false, the wallet will be debited immediately.
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Metadata associated with the wallet.
+        description:
+          type: string
+        destination:
+          $ref: '#/components/schemas/Subject'
+        balances:
+          type: array
+          items:
+            type: string
+            description: A targeted balance (use '*' for all)
+      example:
+        amount:
+          asset: USD/2
+          amount: 100
+        metadata:
+          key: ""
+        pending: true
+
     ActivityGetWallet:
       type: object
       required:
@@ -712,14 +809,286 @@ components:
       $ref: '#/components/schemas/AccountResponse'
     ActivityCreateTransactionOutput:
       $ref: '#/components/schemas/CreateTransactionResponse'
+
+    CreateTransactionResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/Transaction'
+      type: object
+      required:
+        - data
+
+    Transaction:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        postings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Posting'
+        reference:
+          type: string
+          example: ref:001
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        id:
+          type: integer
+          format: bigint
+          minimum: 0
+        reverted:
+          type: boolean
+      required:
+        - postings
+        - timestamp
+        - id
+        - metadata
+        - reverted
+
     ActivityRevertTransactionOutput:
       $ref: '#/components/schemas/RevertTransactionResponse'
+
+    RevertTransactionResponse:
+      $ref: '#/components/schemas/CreateTransactionResponse'
+
     ActivityGetPaymentOutput:
       $ref: '#/components/schemas/PaymentResponse'
+
+    PaymentResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Payment'
+    Payment:
+      type: object
+      required:
+        - id
+        - reference
+        - connectorID
+        - sourceAccountID
+        - destinationAccountID
+        - type
+        - status
+        - initialAmount
+        - scheme
+        - asset
+        - createdAt
+        - raw
+        - adjustments
+        - metadata
+      properties:
+        id:
+          type: string
+          example: XXX
+        reference:
+          type: string
+        sourceAccountID:
+          type: string
+        destinationAccountID:
+          type: string
+        connectorID:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Connector'
+        type:
+          type: string
+          enum:
+            - PAY-IN
+            - PAYOUT
+            - TRANSFER
+            - OTHER
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        initialAmount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        scheme:
+          type: string
+          enum:
+            - visa
+            - mastercard
+            - amex
+            - diners
+            - discover
+            - jcb
+            - unionpay
+            - sepa debit
+            - sepa credit
+            - sepa
+            - apple pay
+            - google pay
+            - a2a
+            - ach debit
+            - ach
+            - rtp
+            - unknown
+            - other
+        asset:
+          type: string
+          example: USD
+        createdAt:
+          type: string
+          format: date-time
+        raw:
+          type: object
+          nullable: true
+        adjustments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAdjustment'
+        metadata:
+          $ref: '#/components/schemas/PaymentMetadata'
+
+    Connector:
+      type: string
+      enum:
+        - STRIPE
+        - DUMMY-PAY
+        - WISE
+        - MODULR
+        - CURRENCY-CLOUD
+        - BANKING-CIRCLE
+        - MANGOPAY
+        - MONEYCORP
+
+    PaymentAdjustment:
+      type: object
+      required:
+        - status
+        - amount
+        - date
+        - raw
+        - absolute
+      properties:
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        amount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        date:
+          type: string
+          format: date-time
+        raw:
+          type: object
+        absolute:
+          type: boolean
+
+    PaymentStatus:
+      type: string
+      enum:
+        - PENDING
+        - ACTIVE
+        - TERMINATED
+        - FAILED
+        - SUCCEEDED
+        - CANCELLED
+
+    PaymentMetadata:
+      type: object
+      properties:
+        key:
+          type: string
+      nullable: true
+
     ActivityDebitWalletOutput:
       $ref: '#/components/schemas/DebitWalletResponse'
+
+    DebitWalletResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Hold'
+
+    Hold:
+      type: object
+      required:
+        - id
+        - walletID
+        - metadata
+        - description
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of the hold.
+        walletID:
+          type: string
+          description: The ID of the wallet the hold is associated with.
+        metadata:
+          type: object
+          description: Metadata associated with the hold.
+          additionalProperties:
+            type: string
+        description:
+          type: string
+        destination:
+          $ref: '#/components/schemas/Subject'
+
     ActivityGetWalletOutput:
       $ref: '#/components/schemas/GetWalletResponse'
+
+    GetWalletResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/WalletWithBalances'
+
+    WalletWithBalances:
+      type: object
+      required:
+        - name
+        - id
+        - metadata
+        - createdAt
+        - balances
+        - ledger
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of the wallet.
+        metadata:
+          type: object
+          description: Metadata associated with the wallet.
+          additionalProperties:
+            type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        balances:
+          type: object
+          required:
+            - main
+          properties:
+            main:
+              $ref: '#/components/schemas/AssetHolder'
+        ledger:
+          type: string
+
+    AssetHolder:
+      type: object
+      required:
+        - assets
+      properties:
+        assets:
+          type: object
+          additionalProperties:
+            type: integer
+            format: bigint
+
     WorkflowInstanceHistoryStageInput:
       type: object
       properties:
@@ -758,6 +1127,145 @@ components:
           $ref: '#/components/schemas/ActivityDebitWalletOutput'
         GetWallet:
           $ref: '#/components/schemas/ActivityGetWalletOutput'
+
+    Monetary:
+      type: object
+      required:
+        - asset
+        - amount
+      properties:
+        asset:
+          type: string
+          description: The asset of the monetary value.
+        amount:
+          type: integer
+          format: bigint
+          description: The amount of the monetary value.
+
+    PostTransaction:
+      type: object
+      required:
+        - metadata
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        postings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Posting'
+        script:
+          type: object
+          properties:
+            plain:
+              type: string
+              example: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n"
+            vars:
+              type: object
+              properties: { }
+              additionalProperties: true
+              example: {
+                "user": "users:042"
+              }
+          required:
+            - plain
+        reference:
+          type: string
+          example: ref:001
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      example: { admin: "true" }
+
+    Posting:
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        asset:
+          type: string
+          example: COIN
+        destination:
+          type: string
+          example: users:002
+        source:
+          type: string
+          example: users:001
+      required:
+        - amount
+        - asset
+        - destination
+        - source
+
+    AccountResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Account'
+
+    Account:
+      type: object
+      required:
+        - address
+        - metadata
+      properties:
+        address:
+          type: string
+          example: users:001
+        metadata:
+          type: object
+          properties: { }
+          additionalProperties:
+            type: string
+          example: { admin: "true" }
+        volumes:
+          $ref: '#/components/schemas/Volumes'
+        effectiveVolumes:
+          $ref: '#/components/schemas/Volumes'
+
+    Volume:
+      type: object
+      properties:
+        input:
+          type: integer
+          format: bigint
+        output:
+          type: integer
+          format: bigint
+        balance:
+          type: integer
+          format: bigint
+      required:
+        - input
+        - output
+      example:
+        input: 100
+        output: 20
+        balance: 80
+
+    Volumes:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/Volume'
+      example:
+        USD:
+          input: 100
+          output: 10
+          balance: 90
+        EUR:
+          input: 100
+          output: 10
+          balance: 90
+
   responses:
     ErrorResponse:
       description: General error
