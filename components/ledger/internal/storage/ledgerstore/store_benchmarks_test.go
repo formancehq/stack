@@ -82,6 +82,9 @@ func BenchmarkList(b *testing.B) {
 		require.NoError(b, store.InsertLogs(ctx, lastLog))
 	}
 
+	_, err := store.db.Exec("VACUUM ANALYZE")
+	require.NoError(b, err)
+
 	benchmarksReadTransactions(b, ctx, store, *nbTransactions, nbAccounts)
 	benchmarksReadAccounts(b, ctx, store, nbAccounts)
 	benchmarksGetAggregatedBalances(b, ctx, store, nbAccounts)
