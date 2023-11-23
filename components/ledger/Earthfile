@@ -82,6 +82,7 @@ pre-commit:
 
 bench:
     FROM core+builder-image
+    DO --pass-args core+GO_INSTALL --package=golang.org/x/perf/cmd/benchstat@latest
     COPY (+sources/*) /src
     WORKDIR /src/components/ledger/internal/storage/ledgerstore
     ARG numberOfTransactions=10000
@@ -105,6 +106,7 @@ bench:
             -count=$count \
             -transactions=$numberOfTransactions | tee -a /results.txt
     END
+    RUN benchstat /results.txt
     SAVE ARTIFACT /results.txt
 
 benchstat:
