@@ -4606,7 +4606,7 @@
         },
         "required": [
           "driver",
-          "Ledger.V2s"
+          "ledgers"
         ]
       },
       "ledgerMetadata": {
@@ -4768,7 +4768,7 @@
             "example": "ref:001"
           },
           "metadata": {
-            "$ref": "#/components/schemas/ledgerMetadata"
+            "$ref": "#/components/schemas/orchestrationMetadata"
           },
           "id": {
             "type": "integer",
@@ -4846,7 +4846,7 @@
             "example": "ref:001"
           },
           "metadata": {
-            "$ref": "#/components/schemas/ledgerMetadata"
+            "$ref": "#/components/schemas/orchestrationMetadata"
           }
         }
       },
@@ -4920,7 +4920,7 @@
         ]
       },
       "RevertTransactionResponse": {
-        "$ref": "#/components/schemas/CreateTransactionResponse"
+        "$ref": "#/components/schemas/orchestrationCreateTransactionResponse"
       },
       "GetTransactionResponse": {
         "properties": {
@@ -8660,7 +8660,18 @@
         "$ref": "#/components/schemas/AccountResponse"
       },
       "ActivityCreateTransactionOutput": {
-        "$ref": "#/components/schemas/CreateTransactionResponse"
+        "$ref": "#/components/schemas/orchestrationCreateTransactionResponse"
+      },
+      "orchestrationCreateTransactionResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Transaction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ]
       },
       "ActivityRevertTransactionOutput": {
         "$ref": "#/components/schemas/RevertTransactionResponse"
@@ -8730,6 +8741,15 @@
           "GetWallet": {
             "$ref": "#/components/schemas/ActivityGetWalletOutput"
           }
+        }
+      },
+      "orchestrationMetadata": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "admin": "true"
         }
       }
     },
