@@ -3,6 +3,7 @@ package atlar
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -17,6 +18,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -42,8 +44,10 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsBalancesAttrs)
 		}()
 
+		// Pagination works by cursor token.
 		params := accounts.GetV1AccountsParams{
 			Context: ctx,
+			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
 			params.Token = &token
@@ -62,6 +66,23 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 			if token == "" {
 				break
 			}
+		}
+
+		// Fetch payments after inserting all accounts in order to link them correctly
+		taskPayments, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name: "Fetch payments from Atlar",
+			Key:  taskNameFetchPayments,
+		})
+		if err != nil {
+			return err
+		}
+
+		err = scheduler.Schedule(ctx, taskPayments, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+		})
+		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			return err
 		}
 
 		return nil
