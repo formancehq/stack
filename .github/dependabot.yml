@@ -4,7 +4,7 @@ updates:
     directory: "/components/**"
     schedule:
       interval: daily
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 40
     labels: [ "dependencies" ]
     # Groups are updated together in one pull request
     groups:
