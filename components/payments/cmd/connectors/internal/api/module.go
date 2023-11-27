@@ -7,6 +7,8 @@ import (
 	"runtime/debug"
 	"strconv"
 
+	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
+	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/dummypay"
@@ -79,12 +81,40 @@ func httpServeFunc(handler http.Handler) http.Handler {
 	})
 }
 
-func handleStorageErrors(w http.ResponseWriter, r *http.Request, err error) {
-	if errors.Is(err, storage.ErrDuplicateKeyValue) {
+func handleServiceErrors(w http.ResponseWriter, r *http.Request, err error) {
+	switch {
+	case errors.Is(err, storage.ErrDuplicateKeyValue):
 		api.BadRequest(w, ErrUniqueReference, err)
-	} else if errors.Is(err, storage.ErrNotFound) {
+	case errors.Is(err, storage.ErrNotFound):
 		api.NotFound(w)
-	} else {
+	case errors.Is(err, service.ErrValidation):
+		api.BadRequest(w, ErrValidation, err)
+	case errors.Is(err, service.ErrInvalidID):
+		api.BadRequest(w, ErrInvalidID, err)
+	case errors.Is(err, service.ErrPublish):
+		api.InternalServerError(w, r, err)
+	default:
+		api.InternalServerError(w, r, err)
+	}
+}
+
+func handleConnectorsManagerErrors(w http.ResponseWriter, r *http.Request, err error) {
+	switch {
+	case errors.Is(err, storage.ErrDuplicateKeyValue):
+		api.BadRequest(w, ErrUniqueReference, err)
+	case errors.Is(err, storage.ErrNotFound):
+		api.NotFound(w)
+	case errors.Is(err, manager.ErrAlreadyInstalled):
+		api.BadRequest(w, ErrValidation, err)
+	case errors.Is(err, manager.ErrNotInstalled):
+		api.BadRequest(w, ErrValidation, err)
+	case errors.Is(err, manager.ErrConnectorNotFound):
+		api.BadRequest(w, ErrValidation, err)
+	case errors.Is(err, manager.ErrNotFound):
+		api.NotFound(w)
+	case errors.Is(err, manager.ErrValidation):
+		api.BadRequest(w, ErrValidation, err)
+	default:
 		api.InternalServerError(w, r, err)
 	}
 }

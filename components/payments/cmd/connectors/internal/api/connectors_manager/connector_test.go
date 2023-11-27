@@ -1,9 +1,9 @@
-package integration_test
+package connectors_manager
 
 import (
 	"context"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 )
@@ -36,7 +36,7 @@ func (b *ConnectorBuilder) WithInstall(installFunction func(ctx task.ConnectorCo
 	return b
 }
 
-func (b *ConnectorBuilder) Build() integration.Connector {
+func (b *ConnectorBuilder) Build() connectors.Connector {
 	return &BuiltConnector{
 		name:            b.name,
 		uninstall:       b.uninstall,
@@ -98,4 +98,4 @@ func (b *BuiltConnector) Resolve(name models.TaskDescriptor) task.Task {
 	return nil
 }
 
-var _ integration.Connector = &BuiltConnector{}
+var _ connectors.Connector = &BuiltConnector{}

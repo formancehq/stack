@@ -1,17 +1,13 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 )
-
-type readConnectorsRepository interface {
-	ListConnectors(ctx context.Context) ([]*models.Connector, error)
-}
 
 type readConnectorsResponseElement struct {
 	Provider    models.ConnectorProvider `json:"provider" bson:"provider"`
@@ -19,11 +15,11 @@ type readConnectorsResponseElement struct {
 	Name        string                   `json:"name" bson:"name"`
 }
 
-func readConnectorsHandler(repo readConnectorsRepository) http.HandlerFunc {
+func readConnectorsHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := repo.ListConnectors(r.Context())
+		res, err := b.GetService().ListConnectors(r.Context())
 		if err != nil {
-			handleStorageErrors(w, r, err)
+			handleServiceErrors(w, r, err)
 			return
 		}
 

@@ -136,7 +136,7 @@ func TestMetadata(t *testing.T) {
 			router.ServeHTTP(rec, req)
 
 			require.Equal(t, testCase.expectedStatusCode, rec.Code)
-			if testCase.expectedStatusCode >= 300 && testCase.expectedStatusCode < 200 {
+			if testCase.expectedStatusCode >= 300 || testCase.expectedStatusCode < 200 {
 				err := sharedapi.ErrorResponse{}
 				sharedapi.Decode(t, rec.Body, &err)
 				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)

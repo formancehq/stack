@@ -1,11 +1,10 @@
-package integration_test
+package connectors_manager
 
 import (
 	"context"
 	"encoding/json"
 	"sync"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/payments/internal/models"
 )
 
@@ -100,7 +99,7 @@ func (i *InMemoryConnectorStore) GetConnector(ctx context.Context, connectorID m
 
 	c, ok := i.connectorsByID[connectorID.String()]
 	if !ok {
-		return nil, integration.ErrNotFound
+		return nil, ErrNotFound
 	}
 
 	return &models.Connector{
@@ -124,7 +123,7 @@ func (i *InMemoryConnectorStore) ReadConfig(ctx context.Context, connectorID mod
 	return nil
 }
 
-var _ integration.Repository = &InMemoryConnectorStore{}
+var _ Store = &InMemoryConnectorStore{}
 
 func NewInMemoryStore() *InMemoryConnectorStore {
 	return &InMemoryConnectorStore{

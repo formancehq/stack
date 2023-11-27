@@ -33,8 +33,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.16.0
 	go.uber.org/dig v1.16.1
 	go.uber.org/fx v1.19.1
-	golang.org/x/oauth2 v0.7.0
 	go.uber.org/mock v0.3.0
+	golang.org/x/oauth2 v0.7.0
 	golang.org/x/sync v0.1.0
 )
 

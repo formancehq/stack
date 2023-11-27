@@ -56,8 +56,8 @@ func (s *InMemoryStore) GetTaskByDescriptor(
 func (s *InMemoryStore) ListTasks(ctx context.Context,
 	connectorID models.ConnectorID,
 	pagination storage.PaginatorQuery,
-) ([]models.Task, storage.PaginationDetails, error) {
-	ret := make([]models.Task, 0)
+) ([]*models.Task, storage.PaginationDetails, error) {
+	ret := make([]*models.Task, 0)
 
 	for id, status := range s.statuses {
 		if !strings.HasPrefix(id, fmt.Sprintf("%s/", connectorID)) {
@@ -66,7 +66,7 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 
 		var descriptor models.TaskDescriptor
 
-		ret = append(ret, models.Task{
+		ret = append(ret, &models.Task{
 			Descriptor: descriptor.ToMessage(),
 			Status:     status,
 			Error:      s.errors[id],
@@ -128,13 +128,13 @@ func (s *InMemoryStore) ListTasksByStatus(
 	ctx context.Context,
 	connectorID models.ConnectorID,
 	taskStatus models.TaskStatus,
-) ([]models.Task, error) {
+) ([]*models.Task, error) {
 	all, _, err := s.ListTasks(ctx, connectorID, storage.PaginatorQuery{})
 	if err != nil {
 		return nil, err
 	}
 
-	ret := make([]models.Task, 0)
+	ret := make([]*models.Task, 0)
 
 	for _, v := range all {
 		if v.Status != taskStatus {
