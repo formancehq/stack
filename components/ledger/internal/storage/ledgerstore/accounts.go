@@ -16,20 +16,21 @@ import (
 )
 
 func (store *Store) buildAccountQuery(q PITFilterWithVolumes, query *bun.SelectQuery) *bun.SelectQuery {
+
 	query = query.
 		Column("accounts.address").
 		Table("accounts").
 		Apply(filterPIT(q.PIT, "insertion_date")).
 		Order("accounts.address")
 
-	if q.PIT != nil {
+	if q.PIT != nil && !q.PIT.IsZero() {
 		query = query.
-			DistinctOn("accounts.address").
+			Column("accounts.address").
 			ColumnExpr("accounts_metadata.metadata").
 			Join("left join accounts_metadata on accounts_metadata.address = accounts.address and accounts_metadata.date < ?", q.PIT).
 			Order("revision desc")
 	} else {
-		query = query.ColumnExpr("metadata")
+		query = query.Column("metadata")
 	}
 
 	if q.ExpandVolumes {
@@ -71,7 +72,7 @@ func (store *Store) accountQueryContext(qb query.Builder, q GetAccountsQuery) (s
 			match := metadataRegex.FindAllStringSubmatch(key, 3)
 
 			key := "metadata"
-			if q.Options.Options.PIT != nil {
+			if q.Options.Options.PIT != nil && !q.Options.Options.PIT.IsZero() {
 				key = "accounts_metadata.metadata"
 			}
 

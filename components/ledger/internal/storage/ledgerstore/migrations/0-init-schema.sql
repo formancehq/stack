@@ -33,87 +33,99 @@ from unnest($1) t(x);
 $$;
 
 /** Define types **/
-create type account_with_volumes as (
+create type account_with_volumes as
+(
     address varchar,
     metadata jsonb,
     volumes jsonb
 );
 
-create type volumes as (
-   inputs numeric,
-   outputs numeric
+create type volumes as
+(
+    inputs numeric,
+    outputs numeric
 );
 
-create type volumes_with_asset as (
-      asset varchar,
-      volumes volumes
-  );
+create type volumes_with_asset as
+(
+    asset varchar,
+    volumes volumes
+);
 
 /** Define tables **/
-create table transactions (
-      id numeric not null primary key,
-      timestamp timestamp without time zone not null,
-      reference varchar,
-      reverted_at timestamp without time zone,
-      postings varchar not null,
-      sources jsonb,
-      destinations jsonb,
-      sources_arrays jsonb,
-      destinations_arrays jsonb,
-      metadata jsonb not null default '{}'::jsonb
+create table transactions
+(
+    id numeric not null primary key,
+    timestamp timestamp without time zone not null,
+    reference varchar,
+    reverted_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    postings varchar not null,
+    sources jsonb,
+    destinations jsonb,
+    sources_arrays jsonb,
+    destinations_arrays jsonb,
+    metadata jsonb not null default '{}'::jsonb
 );
 
-create table transactions_metadata (
-       transaction_id numeric not null references transactions(id),
-       revision numeric default 0 not null,
-       date timestamp not null,
-       metadata jsonb not null default '{}'::jsonb,
+create table transactions_metadata
+(
+    transaction_id numeric not null references transactions(id),
+    revision numeric default 0 not null,
+    date timestamp not null,
+    metadata jsonb not null default '{}'::jsonb,
 
-       primary key (transaction_id, revision)
+    primary key (transaction_id, revision)
 );
 
-create table accounts (
-      address varchar primary key,
-      address_array jsonb not null,
-      insertion_date timestamp not null,
-      metadata jsonb not null default '{}'::jsonb
+create table accounts
+(
+    address varchar primary key,
+    address_array jsonb not null,
+    insertion_date timestamp not null,
+    updated_at timestamp not null,
+    metadata jsonb not null default '{}'::jsonb
 );
 
-create table accounts_metadata (
-   address varchar references accounts(address),
-   metadata jsonb default '{}'::jsonb,
-   revision numeric default 0,
-   date timestamp
+create table accounts_metadata
+(
+    address varchar references accounts(address),
+    metadata jsonb not null default '{}'::jsonb,
+    revision numeric default 0,
+    date timestamp
 );
 
-create table moves (
-       seq serial not null primary key ,
-       transaction_id numeric not null references transactions(id),
-       account_address varchar not null,
-       account_address_array jsonb not null,
-       asset varchar not null,
-       amount numeric not null,
-       insertion_date timestamp not null,
-       effective_date timestamp not null,
-       post_commit_volumes volumes not null,
-       post_commit_effective_volumes volumes default null,
-       is_source boolean not null
+create table moves
+(
+    seq serial not null primary key ,
+    transaction_id numeric not null references transactions(id),
+    account_address varchar not null,
+    account_address_array jsonb not null,
+    asset varchar not null,
+    amount numeric not null,
+    insertion_date timestamp not null,
+    effective_date timestamp not null,
+    post_commit_volumes volumes not null,
+    post_commit_effective_volumes volumes default null,
+    is_source boolean not null
 );
 
-create type log_type as enum (
-    'NEW_TRANSACTION',
-    'REVERTED_TRANSACTION',
-    'SET_METADATA',
-    'DELETE_METADATA'
-    );
+create type log_type as enum
+    (
+        'NEW_TRANSACTION',
+        'REVERTED_TRANSACTION',
+        'SET_METADATA',
+        'DELETE_METADATA'
+        );
 
-create table logs (
-      id numeric not null primary key,
-      type log_type not null,
-      hash bytea not null,
-      date timestamp not null,
-      data jsonb not null,
-      idempotency_key varchar(255)
+create table logs
+(
+    id numeric not null primary key,
+    type log_type not null,
+    hash bytea not null,
+    date timestamp not null,
+    data jsonb not null,
+    idempotency_key varchar(255)
 );
 
 /** Define index **/
@@ -214,11 +226,12 @@ with recursive t as (
     select min(asset) as asset
     from moves
     union all
-    select (
-               select min(asset)
-               from moves
-               where asset > t.asset
-           )
+    select
+        (
+            select min(asset)
+            from moves
+            where asset > t.asset
+        )
     from t
     where t.asset is not null
 )
@@ -248,50 +261,26 @@ declare
 begin
     select true from accounts where address = _address into exists;
 
-    insert into accounts(address, address_array, insertion_date, metadata)
-    values (_address, to_json(string_to_array(_address, ':')), _date, coalesce(_metadata, '{}'::jsonb))
+    insert into accounts(address, address_array, insertion_date, metadata, updated_at)
+    values (_address, to_json(string_to_array(_address, ':')), _date, coalesce(_metadata, '{}'::jsonb), _date)
     on conflict (address) do update
-        set metadata = accounts.metadata || coalesce(_metadata, '{}'::jsonb);
+        set metadata = accounts.metadata || coalesce(_metadata, '{}'::jsonb),
+            updated_at = _date
+    where not accounts.metadata @> coalesce(_metadata, '{}'::jsonb);
 
     return exists is null;
 end;
-$$;
-
-create function update_account_metadata(_address varchar, _metadata jsonb, _date timestamp)
-    returns void
-    language plpgsql
-as $$
-    begin
-        insert into accounts_metadata (address, metadata, date, revision)
-        (
-            select _address, accounts_metadata.metadata || coalesce(_metadata, '{}'::jsonb), _date, accounts_metadata.revision + 1
-            from accounts_metadata
-            where address = _address
-            order by revision desc
-            limit 1
-        )
-        union all -- if no metadata
-        select _address, coalesce(_metadata, '{}'::jsonb), _date, 0
-        limit 1;
-    end
 $$;
 
 create function delete_account_metadata(_address varchar, _key varchar, _date timestamp)
     returns void
     language plpgsql
 as $$
-    begin
-        update accounts
-        set metadata = metadata - _key
-        where address = _address;
-
-        insert into accounts_metadata (address, metadata, date, revision)
-        select _address, accounts_metadata.metadata - _key, _date, accounts_metadata.revision + 1
-        from accounts_metadata
-        where address = _address
-        order by revision desc
-        limit 1;
-    end
+begin
+    update accounts
+    set metadata = metadata - _key, updated_at = _date
+    where address = _address;
+end
 $$;
 
 create function update_transaction_metadata(_id numeric, _metadata jsonb, _date timestamp)
@@ -300,24 +289,8 @@ create function update_transaction_metadata(_id numeric, _metadata jsonb, _date 
 as $$
 begin
     update transactions
-    set metadata = metadata || _metadata
+    set metadata = metadata || _metadata, updated_at = _date
     where id = _id; -- todo: add fill factor on transactions table ?
-
-    insert into transactions_metadata (transaction_id, metadata, date, revision)
-        (
-            select originalTX.transaction_id,
-                   originalTX.metadata || _metadata,
-                   _date,
-                   originalTX.revision + 1
-            from transactions_metadata originalTX
-            where transaction_id = _id
-            order by revision desc
-            limit 1
-        )
-    union all (
-        select _id, '{}'::jsonb, null, -1
-    )
-    limit 1;
 end;
 $$;
 
@@ -327,18 +300,8 @@ create function delete_transaction_metadata(_id numeric, _key varchar, _date tim
 as $$
 begin
     update transactions
-    set metadata = metadata - _key
+    set metadata = metadata - _key, updated_at = _date
     where id = _id;
-
-    insert into transactions_metadata (transaction_id, metadata, date, revision)
-    select originalTX.transaction_id,
-           originalTX.metadata - _key,
-           _date,
-           originalTX.revision + 1
-    from transactions_metadata originalTX
-    where transaction_id = _id
-    order by revision desc
-    limit 1;
 end;
 $$;
 
@@ -416,24 +379,26 @@ begin
 
     if not _new_account then
         update moves
-        set post_commit_effective_volumes = (
-                                                 (post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
-                                                 (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
-            )
+        set post_commit_effective_volumes =
+                (
+                     (post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
+                     (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
+                    )
         where account_address = _account_address and asset = _asset and effective_date > _effective_date;
 
         update moves
-        set post_commit_effective_volumes = (
-                                                 (post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
-                                                 (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
-            )
+        set post_commit_effective_volumes =
+                (
+                     (post_commit_effective_volumes).inputs + case when _is_source then 0 else _amount end,
+                     (post_commit_effective_volumes).outputs + case when _is_source then _amount else 0 end
+                    )
         where account_address = _account_address and asset = _asset and effective_date = _effective_date and seq > _seq;
     end if;
 end;
 $$;
 
 create function insert_posting(_transaction_id numeric, _insertion_date timestamp without time zone,
-    _effective_date timestamp without time zone, posting jsonb, _account_metadata jsonb)
+                               _effective_date timestamp without time zone, posting jsonb, _account_metadata jsonb)
     returns void
     language plpgsql
 as $$
@@ -460,8 +425,10 @@ as $$
 declare
     posting jsonb;
 begin
-    insert into transactions (id, timestamp, reference, postings, sources, destinations, sources_arrays, destinations_arrays, metadata)
+    insert into transactions (id, timestamp, updated_at, reference, postings, sources,
+                              destinations, sources_arrays, destinations_arrays, metadata)
     values ((data->>'id')::numeric,
+            (data->>'timestamp')::timestamp without time zone,
             (data->>'timestamp')::timestamp without time zone,
             data->>'reference',
             jsonb_pretty(data->'postings'),
@@ -485,17 +452,17 @@ begin
            );
 
     for posting in (select jsonb_array_elements(data->'postings')) loop
-        -- todo: sometimes the balance is known at commit time (for sources != world), we need to forward the value to populate the pre_commit_aggregated_input and output
-        perform insert_posting((data->>'id')::numeric, _date, (data->>'timestamp')::timestamp without time zone, posting, _account_metadata);
-    end loop;
+            -- todo: sometimes the balance is known at commit time (for sources != world), we need to forward the value to populate the pre_commit_aggregated_input and output
+            perform insert_posting((data->>'id')::numeric, _date, (data->>'timestamp')::timestamp without time zone, posting, _account_metadata);
+        end loop;
 
     if data->'metadata' is not null and data->>'metadata' <> '()' then
-        insert into transactions_metadata (transaction_id, revision, date, metadata) values (
-            (data->>'id')::numeric,
-            0,
-            (data->>'timestamp')::timestamp without time zone,
-            coalesce(data->'metadata', '{}'::jsonb)
-        );
+        insert into transactions_metadata (transaction_id, revision, date, metadata) values
+            (
+                (data->>'id')::numeric,
+                0,
+                (data->>'timestamp')::timestamp without time zone,                                                                           coalesce(data->'metadata', '{}'::jsonb)
+            );
     end if;
 end
 $$;
@@ -517,7 +484,6 @@ begin
             perform update_transaction_metadata((new.data->>'targetId')::numeric, new.data->'metadata', new.date);
         else
             perform upsert_account((new.data->>'targetId')::varchar, new.data -> 'metadata', new.date);
-            perform update_account_metadata((new.data->>'targetId')::varchar, new.data -> 'metadata', new.date);
         end if;
     end if;
     if new.type = 'DELETE_METADATA' then
@@ -532,9 +498,76 @@ begin
 end;
 $$;
 
-/** Define the trigger which populate table in response to new logs **/
 create trigger insert_log after insert on logs
     for each row execute procedure handle_log();
+
+create function update_account_metadata_history() returns trigger
+    security definer
+    language plpgsql
+as $$
+begin
+    insert into accounts_metadata (address, revision, date, metadata) values (new.address, (
+        select revision + 1
+        from accounts_metadata
+        where accounts_metadata.address = new.address
+        order by revision desc
+        limit 1
+    ), new.updated_at, new.metadata);
+
+    return new;
+end;
+$$;
+
+create trigger update_account after update on accounts
+    for each row execute procedure update_account_metadata_history();
+
+create function insert_account_metadata_history() returns trigger
+    security definer
+    language plpgsql
+as $$
+begin
+    insert into accounts_metadata (address, revision, date, metadata) values (new.address, 1, new.insertion_date, new.metadata);
+
+    return new;
+end;
+$$;
+
+create trigger insert_account after insert on accounts
+    for each row execute procedure insert_account_metadata_history();
+
+create function update_transaction_metadata_history() returns trigger
+    security definer
+    language plpgsql
+as $$
+begin
+    insert into transactions_metadata (transaction_id, revision, date, metadata) values (new.id, (
+        select revision + 1
+        from transactions_metadata
+        where transactions_metadata.transaction_id = new.id
+        order by revision desc
+        limit 1
+    ), new.updated_at, new.metadata);
+
+    return new;
+end;
+$$;
+
+create trigger update_transaction after update on transactions
+    for each row execute procedure update_transaction_metadata_history();
+
+create function insert_transaction_metadata_history() returns trigger
+    security definer
+    language plpgsql
+as $$
+begin
+    insert into transactions_metadata (transaction_id, revision, date, metadata) values (new.id, 1, new.timestamp, new.metadata);
+
+    return new;
+end;
+$$;
+
+create trigger insert_transaction after insert on transactions
+    for each row execute procedure insert_transaction_metadata_history();
 
 create or replace function get_all_account_effective_volumes(_account varchar, _before timestamp default null)
     returns setof volumes_with_asset
@@ -573,8 +606,7 @@ with
     ),
     moves as (
         select m.*
-        from all_assets assets
-                 join lateral (
+        from all_assets assets join lateral (
             select *
             from moves s
             where (_before is null or s.insertion_date <= _before) and s.account_address = _account and s.asset = assets.asset
@@ -656,7 +688,7 @@ $$
 select aggregate_objects(jsonb_build_object(data.account_address, data.aggregated))
 from (
          select distinct on (move.account_address, move.asset) move.account_address,
-               volumes_to_jsonb((move.asset, first(move.post_commit_effective_volumes))) as aggregated
+                                                               volumes_to_jsonb((move.asset, first(move.post_commit_effective_volumes))) as aggregated
          from moves move
          where move.transaction_id = tx
          group by move.account_address, move.asset
@@ -671,7 +703,7 @@ $$
 select aggregate_objects(jsonb_build_object(data.account_address, data.aggregated))
 from (
          select distinct on (move.account_address, move.asset) move.account_address,
-               volumes_to_jsonb((move.asset, first(move.post_commit_volumes))) as aggregated
+                                                               volumes_to_jsonb((move.asset, first(move.post_commit_volumes))) as aggregated
          from moves move
          where move.transaction_id = tx
          group by move.account_address, move.asset

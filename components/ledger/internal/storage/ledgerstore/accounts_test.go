@@ -226,6 +226,38 @@ func TestGetAccount(t *testing.T) {
 				},
 			},
 		}, *account)
+
+		account, err = store.GetAccountWithVolumes(ctx, NewGetAccountQuery("world"))
+		require.NoError(t, err)
+		require.Equal(t, ledger.ExpandedAccount{
+			Account: ledger.Account{
+				Address:  "world",
+				Metadata: metadata.Metadata{},
+			},
+		}, *account)
+	})
+
+	t.Run("find account in past", func(t *testing.T) {
+		t.Parallel()
+		account, err := store.GetAccountWithVolumes(ctx, NewGetAccountQuery("multi"))
+		require.NoError(t, err)
+		require.Equal(t, ledger.ExpandedAccount{
+			Account: ledger.Account{
+				Address: "multi",
+				Metadata: metadata.Metadata{
+					"category": "gold",
+				},
+			},
+		}, *account)
+
+		account, err = store.GetAccountWithVolumes(ctx, NewGetAccountQuery("world").WithPIT(ledger.Now()))
+		require.NoError(t, err)
+		require.Equal(t, ledger.ExpandedAccount{
+			Account: ledger.Account{
+				Address:  "world",
+				Metadata: metadata.Metadata{},
+			},
+		}, *account)
 	})
 
 	t.Run("find account with volumes", func(t *testing.T) {

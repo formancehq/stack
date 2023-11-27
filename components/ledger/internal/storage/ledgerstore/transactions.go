@@ -221,7 +221,7 @@ func (store *Store) transactionQueryContext(qb query.Builder, q GetTransactionsQ
 			match := metadataRegex.FindAllStringSubmatch(key, 3)
 
 			key := "metadata"
-			if q.Options.Options.PIT != nil {
+			if q.Options.Options.PIT != nil && !q.Options.Options.PIT.IsZero() {
 				key = "transactions_metadata.metadata"
 			}
 

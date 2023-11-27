@@ -3,7 +3,6 @@ package internal
 import (
 	"bytes"
 	"context"
-	. "github.com/onsi/ginkgo/v2"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -29,7 +28,7 @@ type openapiCheckerRoundTripper struct {
 func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	route, pathParams, err := c.router.FindRoute(req)
 	Expect(errors.Wrapf(err, "retrieving operation for route %s %s", req.Method, req.URL.String())).
-		WithOffset(8).To(Succeed())
+		WithOffset(6).To(Succeed())
 
 	options := &openapi3filter.Options{
 		IncludeResponseStatus: true,
@@ -45,16 +44,16 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 	}
 
 	Expect(errors.Wrap(openapi3filter.ValidateRequest(req.Context(), input), "validating request")).
-		WithOffset(8).To(Succeed())
+		WithOffset(6).To(Succeed())
 
 	_, err = httputil.DumpRequest(req, true)
 	Expect(err).ToNot(HaveOccurred())
 
 	rsp, err := c.underlying.RoundTrip(req)
-	Expect(err).WithOffset(8).To(Succeed())
+	Expect(err).WithOffset(6).To(Succeed())
 
 	data, err := io.ReadAll(rsp.Body)
-	Expect(err).WithOffset(8).To(Succeed())
+	Expect(err).WithOffset(6).To(Succeed())
 
 	rsp.Body = io.NopCloser(bytes.NewBuffer(data))
 
@@ -65,9 +64,7 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 		Body:                   io.NopCloser(bytes.NewBuffer(data)),
 		Options:                options,
 	})
-	if err != nil {
-		Fail(err.Error())
-	}
+	Expect(err).WithOffset(6).To(Succeed())
 
 	return rsp, nil
 }
