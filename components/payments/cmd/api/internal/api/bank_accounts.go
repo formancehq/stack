@@ -1,23 +1,15 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/formancehq/payments/cmd/api/internal/storage"
-	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 )
-
-type bankAccountsRepository interface {
-	ListBankAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.BankAccount, storage.PaginationDetails, error)
-}
 
 type bankAccountResponse struct {
 	ID            string    `json:"id"`
@@ -30,52 +22,19 @@ type bankAccountResponse struct {
 	SwiftBicCode  string    `json:"swiftBicCode,omitempty"`
 }
 
-func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
+func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		var sorter storage.Sorter
-
-		if sortParams := r.URL.Query()["sort"]; sortParams != nil {
-			for _, s := range sortParams {
-				parts := strings.SplitN(s, ":", 2)
-
-				var order storage.SortOrder
-
-				if len(parts) > 1 {
-					//nolint:goconst // allow duplicate string
-					switch parts[1] {
-					case "asc", "ASC":
-						order = storage.SortOrderAsc
-					case "dsc", "desc", "DSC", "DESC":
-						order = storage.SortOrderDesc
-					default:
-						api.BadRequest(w, ErrValidation, errors.New("sort order not well specified, got "+parts[1]))
-						return
-					}
-				}
-
-				column := parts[0]
-
-				sorter.Add(column, order)
-			}
-		}
-
-		pageSize, err := pageSizeQueryParam(r)
+		pagination, err := getPagination(r)
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
+		ret, paginationDetails, err := b.GetService().ListBankAccounts(r.Context(), pagination)
 		if err != nil {
-			api.BadRequest(w, ErrValidation, err)
-			return
-		}
-
-		ret, paginationDetails, err := repo.ListBankAccounts(r.Context(), pagination)
-		if err != nil {
-			handleStorageErrors(w, r, err)
+			handleServiceErrors(w, r, err)
 			return
 		}
 
@@ -107,11 +66,7 @@ func listBankAccountsHandler(repo bankAccountsRepository) http.HandlerFunc {
 	}
 }
 
-type readBankAccountRepository interface {
-	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
-}
-
-func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
+func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -121,9 +76,9 @@ func readBankAccountHandler(repo readBankAccountRepository) http.HandlerFunc {
 			return
 		}
 
-		account, err := repo.GetBankAccount(r.Context(), bankAccountID, true)
+		account, err := b.GetService().GetBankAccount(r.Context(), bankAccountID, true)
 		if err != nil {
-			handleStorageErrors(w, r, err)
+			handleServiceErrors(w, r, err)
 			return
 		}
 

@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
@@ -12,10 +12,10 @@ import (
 )
 
 func httpRouter(
+	b backend.Backend,
 	logger logging.Logger,
-	store *storage.Storage,
 	serviceInfo api.ServiceInfo,
-) (*mux.Router, error) {
+) *mux.Router {
 	rootMux := mux.NewRouter()
 
 	// We have to keep this recovery handler here to ensure that the health
@@ -29,7 +29,7 @@ func httpRouter(
 		})
 	})
 
-	rootMux.Path("/_health").Handler(healthHandler(store))
+	rootMux.Path("/_health").Handler(healthHandler(b))
 
 	subRouter := rootMux.NewRoute().Subrouter()
 	if viper.GetBool(otelTracesFlag) {
@@ -43,19 +43,19 @@ func httpRouter(
 
 	authGroup := subRouter.Name("authenticated").Subrouter()
 
-	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(store))
-	authGroup.Path("/payments/{paymentID}").Methods(http.MethodGet).Handler(readPaymentHandler(store))
-	authGroup.Path("/payments/{paymentID}/metadata").Methods(http.MethodPatch).Handler(updateMetadataHandler(store))
+	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(b))
+	authGroup.Path("/payments/{paymentID}").Methods(http.MethodGet).Handler(readPaymentHandler(b))
+	authGroup.Path("/payments/{paymentID}/metadata").Methods(http.MethodPatch).Handler(updateMetadataHandler(b))
 
-	authGroup.Path("/accounts").Methods(http.MethodGet).Handler(listAccountsHandler(store))
-	authGroup.Path("/accounts/{accountID}").Methods(http.MethodGet).Handler(readAccountHandler(store))
-	authGroup.Path("/accounts/{accountID}/balances").Methods(http.MethodGet).Handler(listBalancesForAccount(store))
+	authGroup.Path("/accounts").Methods(http.MethodGet).Handler(listAccountsHandler(b))
+	authGroup.Path("/accounts/{accountID}").Methods(http.MethodGet).Handler(readAccountHandler(b))
+	authGroup.Path("/accounts/{accountID}/balances").Methods(http.MethodGet).Handler(listBalancesForAccount(b))
 
-	authGroup.Path("/bank-accounts").Methods(http.MethodGet).Handler(listBankAccountsHandler(store))
-	authGroup.Path("/bank-accounts/{bankAccountID}").Methods(http.MethodGet).Handler(readBankAccountHandler(store))
+	authGroup.Path("/bank-accounts").Methods(http.MethodGet).Handler(listBankAccountsHandler(b))
+	authGroup.Path("/bank-accounts/{bankAccountID}").Methods(http.MethodGet).Handler(readBankAccountHandler(b))
 
-	authGroup.Path("/transfer-initiations").Methods(http.MethodGet).Handler(listTransferInitiationsHandler(store))
-	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodGet).Handler(readTransferInitiationHandler(store))
+	authGroup.Path("/transfer-initiations").Methods(http.MethodGet).Handler(listTransferInitiationsHandler(b))
+	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodGet).Handler(readTransferInitiationHandler(b))
 
-	return rootMux, nil
+	return rootMux
 }

@@ -23,7 +23,7 @@ func (s *Storage) CreateTransferInitiation(ctx context.Context, transferInitiati
 	return nil
 }
 
-func (s *Storage) ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error) {
+func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error) {
 	var transferInitiation models.TransferInitiation
 
 	query := s.db.NewSelect().
