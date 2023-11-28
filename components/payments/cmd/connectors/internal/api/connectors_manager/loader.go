@@ -1,13 +1,14 @@
-package integration
+package connectors_manager
 
 import (
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 type Loader[ConnectorConfig models.ConnectorConfigObject] interface {
 	Name() models.ConnectorProvider
-	Load(logger logging.Logger, config ConnectorConfig) Connector
+	Load(logger logging.Logger, config ConnectorConfig) connectors.Connector
 
 	// ApplyDefaults is used to fill default values of the provided configuration object
 	ApplyDefaults(t ConnectorConfig) ConnectorConfig
@@ -19,14 +20,14 @@ type Loader[ConnectorConfig models.ConnectorConfigObject] interface {
 }
 
 type LoaderBuilder[ConnectorConfig models.ConnectorConfigObject] struct {
-	loadFunction  func(logger logging.Logger, config ConnectorConfig) Connector
+	loadFunction  func(logger logging.Logger, config ConnectorConfig) connectors.Connector
 	applyDefaults func(t ConnectorConfig) ConnectorConfig
 	name          models.ConnectorProvider
 	allowedTasks  int
 }
 
 func (b *LoaderBuilder[ConnectorConfig]) WithLoad(loadFunction func(logger logging.Logger,
-	config ConnectorConfig) Connector,
+	config ConnectorConfig) connectors.Connector,
 ) *LoaderBuilder[ConnectorConfig] {
 	b.loadFunction = loadFunction
 
@@ -64,7 +65,7 @@ func NewLoaderBuilder[ConnectorConfig models.ConnectorConfigObject](name models.
 }
 
 type BuiltLoader[ConnectorConfig models.ConnectorConfigObject] struct {
-	loadFunction  func(logger logging.Logger, config ConnectorConfig) Connector
+	loadFunction  func(logger logging.Logger, config ConnectorConfig) connectors.Connector
 	applyDefaults func(t ConnectorConfig) ConnectorConfig
 	name          models.ConnectorProvider
 	allowedTasks  int
@@ -78,7 +79,7 @@ func (b *BuiltLoader[ConnectorConfig]) Name() models.ConnectorProvider {
 	return b.name
 }
 
-func (b *BuiltLoader[ConnectorConfig]) Load(logger logging.Logger, config ConnectorConfig) Connector {
+func (b *BuiltLoader[ConnectorConfig]) Load(logger logging.Logger, config ConnectorConfig) connectors.Connector {
 	if b.loadFunction != nil {
 		return b.loadFunction(logger, config)
 	}

@@ -6,7 +6,6 @@ import (
 	"github.com/formancehq/payments/internal/models"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
@@ -22,7 +21,7 @@ func (l *Loader) Name() models.ConnectorProvider {
 	return Name
 }
 
-func (l *Loader) Load(logger logging.Logger, config Config) integration.Connector {
+func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector {
 	return newConnector(logger, config)
 }
 

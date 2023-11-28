@@ -1,24 +1,18 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"math/big"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
+	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 )
-
-type balancesRepository interface {
-	ListBalances(ctx context.Context, query storage.BalanceQuery) ([]*models.Balance, storage.PaginationDetails, error)
-}
 
 type balancesResponse struct {
 	AccountID     string    `json:"accountId"`
@@ -29,44 +23,11 @@ type balancesResponse struct {
 	Balance       *big.Int  `json:"balance"`
 }
 
-func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
+func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		var sorter storage.Sorter
-
-		if sortParams := r.URL.Query()["sort"]; sortParams != nil {
-			for _, s := range sortParams {
-				parts := strings.SplitN(s, ":", 2)
-
-				var order storage.SortOrder
-
-				if len(parts) > 1 {
-					//nolint:goconst // allow duplicate string
-					switch parts[1] {
-					case "asc", "ASC":
-						order = storage.SortOrderAsc
-					case "dsc", "desc", "DSC", "DESC":
-						order = storage.SortOrderDesc
-					default:
-						api.BadRequest(w, ErrValidation, errors.New("sort order not well specified, got "+parts[1]))
-						return
-					}
-				}
-
-				column := parts[0]
-
-				sorter.Add(column, order)
-			}
-		}
-
-		pageSize, err := pageSizeQueryParam(r)
-		if err != nil {
-			api.BadRequest(w, ErrValidation, err)
-			return
-		}
-
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, nil)
+		pagination, err := getPagination(r)
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
@@ -79,57 +40,17 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 		}
 
 		balanceQuery := storage.NewBalanceQuery(pagination).
-			WithAccountID(accountID).
-			WithCurrency(r.URL.Query().Get("asset"))
+			WithAccountID(accountID)
 
-		var startTimeParsed, endTimeParsed time.Time
-		from, to := r.URL.Query().Get("from"), r.URL.Query().Get("to")
-		if from != "" {
-			startTimeParsed, err = time.Parse(time.RFC3339Nano, from)
-			if err != nil {
-				api.BadRequest(w, ErrValidation, err)
-				return
-			}
-		}
-		if to != "" {
-			endTimeParsed, err = time.Parse(time.RFC3339Nano, to)
-			if err != nil {
-				api.BadRequest(w, ErrValidation, err)
-				return
-			}
-		}
-		if r.URL.Query().Get("limit") != "" {
-			limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64)
-			if err != nil {
-				api.BadRequest(w, ErrValidation, err)
-				return
-			}
-
-			if limit > 0 {
-				balanceQuery = balanceQuery.WithLimit(int(limit))
-			}
-		}
-
-		switch {
-		case startTimeParsed.IsZero() && endTimeParsed.IsZero():
-			balanceQuery = balanceQuery.
-				WithTo(time.Now())
-		case !startTimeParsed.IsZero() && endTimeParsed.IsZero():
-			balanceQuery = balanceQuery.
-				WithFrom(startTimeParsed).
-				WithTo(time.Now())
-		case startTimeParsed.IsZero() && !endTimeParsed.IsZero():
-			balanceQuery = balanceQuery.
-				WithTo(endTimeParsed)
-		default:
-			balanceQuery = balanceQuery.
-				WithFrom(startTimeParsed).
-				WithTo(endTimeParsed)
-		}
-
-		ret, paginationDetails, err := repo.ListBalances(r.Context(), balanceQuery)
+		balanceQuery, err = populateBalanceQueryFromRequest(r, balanceQuery)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			api.BadRequest(w, ErrValidation, err)
+			return
+		}
+
+		ret, paginationDetails, err := b.GetService().ListBalances(r.Context(), balanceQuery)
+		if err != nil {
+			handleServiceErrors(w, r, err)
 			return
 		}
 
@@ -159,4 +80,54 @@ func listBalancesForAccount(repo balancesRepository) http.HandlerFunc {
 			return
 		}
 	}
+}
+
+func populateBalanceQueryFromRequest(r *http.Request, balanceQuery storage.BalanceQuery) (storage.BalanceQuery, error) {
+	balanceQuery = balanceQuery.WithCurrency(r.URL.Query().Get("asset"))
+
+	var startTimeParsed, endTimeParsed time.Time
+	var err error
+
+	from, to := r.URL.Query().Get("from"), r.URL.Query().Get("to")
+	if from != "" {
+		startTimeParsed, err = time.Parse(time.RFC3339Nano, from)
+		if err != nil {
+			return balanceQuery, err
+		}
+	}
+	if to != "" {
+		endTimeParsed, err = time.Parse(time.RFC3339Nano, to)
+		if err != nil {
+			return balanceQuery, err
+		}
+	}
+	if r.URL.Query().Get("limit") != "" {
+		limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64)
+		if err != nil {
+			return balanceQuery, err
+		}
+
+		if limit > 0 {
+			balanceQuery = balanceQuery.WithLimit(int(limit))
+		}
+	}
+
+	switch {
+	case startTimeParsed.IsZero() && endTimeParsed.IsZero():
+		balanceQuery = balanceQuery.
+			WithTo(time.Now())
+	case !startTimeParsed.IsZero() && endTimeParsed.IsZero():
+		balanceQuery = balanceQuery.
+			WithFrom(startTimeParsed).
+			WithTo(time.Now())
+	case startTimeParsed.IsZero() && !endTimeParsed.IsZero():
+		balanceQuery = balanceQuery.
+			WithTo(endTimeParsed)
+	default:
+		balanceQuery = balanceQuery.
+			WithFrom(startTimeParsed).
+			WithTo(endTimeParsed)
+	}
+
+	return balanceQuery, nil
 }

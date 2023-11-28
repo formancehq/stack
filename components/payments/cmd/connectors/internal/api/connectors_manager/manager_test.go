@@ -1,10 +1,10 @@
-package integration_test
+package connectors_manager
 
 import (
 	"context"
 	"testing"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
@@ -25,10 +25,10 @@ func ChanClosed[T any](ch chan T) bool {
 }
 
 type testContext[ConnectorConfig models.ConnectorConfigObject] struct {
-	manager        *integration.ConnectorsManager[ConnectorConfig]
+	manager        *ConnectorsManager[ConnectorConfig]
 	taskStore      task.Repository
-	connectorStore integration.Repository
-	loader         integration.Loader[ConnectorConfig]
+	connectorStore Store
+	loader         Loader[ConnectorConfig]
 	provider       models.ConnectorProvider
 }
 
@@ -47,7 +47,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 	taskStore := task.NewInMemoryStore()
 	managerStore := NewInMemoryStore()
 	provider := models.ConnectorProvider(uuid.New().String())
-	schedulerFactory := integration.TaskSchedulerFactoryFn(func(
+	schedulerFactory := TaskSchedulerFactoryFn(func(
 		connectorID models.ConnectorID,
 		resolver task.Resolver,
 		maxTasks int,
@@ -56,13 +56,13 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 			DefaultContainerFactory, resolver, metrics.NewNoOpMetricsRegistry(), maxTasks)
 	})
 
-	loader := integration.NewLoaderBuilder[ConnectorConfig](provider).
-		WithLoad(func(logger logging.Logger, config ConnectorConfig) integration.Connector {
+	loader := NewLoaderBuilder[ConnectorConfig](provider).
+		WithLoad(func(logger logging.Logger, config ConnectorConfig) connectors.Connector {
 			return builder.Build()
 		}).
 		WithAllowedTasks(1).
 		Build()
-	manager := integration.NewConnectorManager[ConnectorConfig](provider, managerStore, loader, schedulerFactory, nil)
+	manager := NewConnectorManager[ConnectorConfig](provider, managerStore, loader, schedulerFactory, nil)
 
 	callback(&testContext[ConnectorConfig]{
 		manager:        manager,
@@ -93,7 +93,7 @@ func TestInstallConnector(t *testing.T) {
 		_, err = tc.manager.Install(context.TODO(), "test1", models.EmptyConnectorConfig{
 			Name: "test1",
 		})
-		require.Equal(t, integration.ErrAlreadyInstalled, err)
+		require.Equal(t, ErrAlreadyInstalled, err)
 
 		connectors, err := tc.manager.FindAll(context.TODO())
 		require.NoError(t, err)

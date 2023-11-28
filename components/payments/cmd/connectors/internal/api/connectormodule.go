@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
+	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
+	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -22,17 +24,17 @@ type connectorHandler struct {
 	Provider models.ConnectorProvider
 
 	// TODO(polo): refactor to remove this ugly hack to access the connector manager
-	initiatePayment paymentHandler
+	initiatePayment service.PaymentHandler
 }
 
-func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integration.Loader[ConnectorConfig],
+func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.Loader[ConnectorConfig],
 ) fx.Option {
 	return fx.Options(
 		fx.Provide(func(store *storage.Storage,
 			publisher message.Publisher,
 			metricsRegistry metrics.MetricsRegistry,
-		) *integration.ConnectorsManager[ConnectorConfig] {
-			schedulerFactory := integration.TaskSchedulerFactoryFn(func(
+		) *manager.ConnectorsManager[ConnectorConfig] {
+			schedulerFactory := manager.TaskSchedulerFactoryFn(func(
 				connectorID models.ConnectorID, resolver task.Resolver, maxTasks int,
 			) *task.DefaultTaskScheduler {
 				return task.NewDefaultScheduler(connectorID, store, func(ctx context.Context,
@@ -57,22 +59,27 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 				}, resolver, metricsRegistry, maxTasks)
 			})
 
-			return integration.NewConnectorManager(
+			return manager.NewConnectorManager(
 				loader.Name(), store, loader, schedulerFactory, publisher)
 		}),
-		fx.Provide(fx.Annotate(func(cm *integration.ConnectorsManager[ConnectorConfig],
+		fx.Provide(func(cm *manager.ConnectorsManager[ConnectorConfig]) backend.ManagerBackend[ConnectorConfig] {
+			return backend.NewDefaultManagerBackend[ConnectorConfig](cm)
+		}),
+		fx.Provide(fx.Annotate(func(
+			b backend.ManagerBackend[ConnectorConfig],
+			cm *manager.ConnectorsManager[ConnectorConfig],
 		) connectorHandler {
 			return connectorHandler{
-				Handler:         connectorRouter(loader.Name(), cm),
+				Handler:         connectorRouter(loader.Name(), b),
 				Provider:        loader.Name(),
 				initiatePayment: cm.InitiatePayment,
 			}
 		}, fx.ResultTags(`group:"connectorHandlers"`))),
-		fx.Invoke(func(lc fx.Lifecycle, cm *integration.ConnectorsManager[ConnectorConfig]) {
+		fx.Invoke(func(lc fx.Lifecycle, cm *manager.ConnectorsManager[ConnectorConfig]) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					err := cm.Restore(ctx)
-					if err != nil && !errors.Is(err, integration.ErrNotInstalled) {
+					if err != nil && !errors.Is(err, manager.ErrNotInstalled) {
 						return err
 					}
 

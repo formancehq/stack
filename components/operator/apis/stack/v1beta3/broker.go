@@ -17,4 +17,7 @@ type KafkaConfig struct {
 
 type NatsConfig struct {
 	URL string `json:"url"`
+	// +kubebuilder:default:=3
+	// +optional
+	Replicas int `json:"replicas"`
 }

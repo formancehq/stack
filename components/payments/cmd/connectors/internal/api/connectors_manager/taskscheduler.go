@@ -1,4 +1,4 @@
-package integration
+package connectors_manager
 
 import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"

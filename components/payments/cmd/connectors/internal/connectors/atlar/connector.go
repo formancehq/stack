@@ -3,7 +3,7 @@ package atlar
 import (
 	"context"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -63,7 +63,7 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return nil
 }
 
-var _ integration.Connector = &Connector{}
+var _ connectors.Connector = &Connector{}
 
 func newConnector(logger logging.Logger, cfg Config) *Connector {
 	return &Connector{

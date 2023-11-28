@@ -15,6 +15,7 @@ import (
 type PaymentsConnectorsMangoPayStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
+	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsMangoPayController struct {
 	store                *PaymentsConnectorsMangoPayStore
@@ -22,6 +23,8 @@ type PaymentsConnectorsMangoPayController struct {
 	defaultEndpoint      string
 	pollingPeriodFlag    string
 	defaultpollingPeriod string
+	nameFlag             string
+	defaultName          string
 }
 
 func NewDefaultPaymentsConnectorsMangoPayStore() *PaymentsConnectorsMangoPayStore {
@@ -37,6 +40,8 @@ func NewPaymentsConnectorsMangoPayController() *PaymentsConnectorsMangoPayContro
 		defaultEndpoint:      "https://api.sandbox.mangopay.com",
 		pollingPeriodFlag:    "polling-period",
 		defaultpollingPeriod: "2m",
+		nameFlag:             "name",
+		defaultName:          "mangopay",
 	}
 }
 
@@ -47,6 +52,7 @@ func NewMangoPayCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
 		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
+		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
 		fctl.WithController[*PaymentsConnectorsMangoPayStore](c),
 	)
 }
@@ -88,6 +94,7 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 				APIKey:        args[1],
 				Endpoint:      fctl.GetString(cmd, c.endpointFlag),
 				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
+				Name:          fctl.GetString(cmd, c.nameFlag),
 			},
 		},
 	}
@@ -101,13 +108,17 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 	}
 
 	c.store.Success = true
+	c.store.ConnectorName = internal.MangoPayConnector
+
+	if response.ConnectorResponse != nil {
+		c.store.ConnectorID = response.ConnectorResponse.Data.ConnectorID
+	}
 
 	return c, nil
 }
 
 func (c *PaymentsConnectorsMangoPayController) Render(cmd *cobra.Command, args []string) error {
-
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector %s installed!", c.store.ConnectorName)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector %s installed!", c.store.ConnectorName, c.store.ConnectorID)
 
 	return nil
 }

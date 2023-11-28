@@ -46,14 +46,36 @@ type PaginatorQuery struct {
 	sorter       Sorter
 }
 
-func Paginate(pageSize int, token string, sorter Sorter, queryBuilder query.Builder) (PaginatorQuery, error) {
-	if pageSize == 0 {
-		pageSize = defaultPageSize
+func NewPaginatorQuery(pageSize int, sorter Sorter, queryBuilder query.Builder) PaginatorQuery {
+	p := PaginatorQuery{
+		pageSize:     pageSize,
+		queryBuilder: queryBuilder,
+		sorter:       sorter,
 	}
 
-	if pageSize > maxPageSize {
-		pageSize = maxPageSize
+	if p.pageSize == 0 {
+		p.pageSize = defaultPageSize
 	}
+
+	if p.pageSize > maxPageSize {
+		p.pageSize = maxPageSize
+	}
+
+	return p
+}
+
+func (p PaginatorQuery) WithToken(token string) PaginatorQuery {
+	p.token = token
+	return p
+}
+
+func (p PaginatorQuery) WithCursor(cursor baseCursor) PaginatorQuery {
+	p.cursor = cursor
+	return p
+}
+
+func Paginate(pageSize int, token string, sorter Sorter, queryBuilder query.Builder) (PaginatorQuery, error) {
+	p := NewPaginatorQuery(pageSize, sorter, queryBuilder)
 
 	var cursor baseCursor
 
@@ -69,7 +91,10 @@ func Paginate(pageSize int, token string, sorter Sorter, queryBuilder query.Buil
 		}
 	}
 
-	return PaginatorQuery{pageSize, token, queryBuilder, cursor, sorter}, nil
+	p.cursor = cursor
+	p.token = token
+
+	return p, nil
 }
 
 func (p PaginatorQuery) apply(query *bun.SelectQuery, column string) *bun.SelectQuery {
