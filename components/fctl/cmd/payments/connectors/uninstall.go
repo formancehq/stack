@@ -16,36 +16,43 @@ var (
 )
 
 type PaymentsConnectorsUninstallStore struct {
-	Success       bool   `json:"success"`
-	ConnectorName string `json:"connectorName"`
+	Success   bool   `json:"success"`
+	Connector string `json:"connector"`
 }
 type PaymentsConnectorsUninstallController struct {
-	store *PaymentsConnectorsUninstallStore
+	store           *PaymentsConnectorsUninstallStore
+	providerFlag    string
+	connectorIDFlag string
 }
 
 var _ fctl.Controller[*PaymentsConnectorsUninstallStore] = (*PaymentsConnectorsUninstallController)(nil)
 
 func NewDefaultPaymentsConnectorsUninstallStore() *PaymentsConnectorsUninstallStore {
 	return &PaymentsConnectorsUninstallStore{
-		Success:       false,
-		ConnectorName: "",
+		Success:   false,
+		Connector: "",
 	}
 }
 
 func NewPaymentsConnectorsUninstallController() *PaymentsConnectorsUninstallController {
 	return &PaymentsConnectorsUninstallController{
-		store: NewDefaultPaymentsConnectorsUninstallStore(),
+		store:           NewDefaultPaymentsConnectorsUninstallStore(),
+		providerFlag:    "provider",
+		connectorIDFlag: "connectorid",
 	}
 }
 
 func NewUninstallCommand() *cobra.Command {
-	return fctl.NewCommand("uninstall <connector-name>",
+	c := NewPaymentsConnectorsUninstallController()
+	return fctl.NewCommand("uninstall",
 		fctl.WithAliases("uninstall", "u", "un"),
 		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithValidArgs(internal.AllConnectors...),
+		fctl.WithStringFlag(c.providerFlag, "", "Provider name"),
+		fctl.WithStringFlag(c.connectorIDFlag, "", "Connector ID"),
 		fctl.WithShortDescription("Uninstall a connector"),
-		fctl.WithController[*PaymentsConnectorsUninstallStore](NewPaymentsConnectorsUninstallController()),
+		fctl.WithController[*PaymentsConnectorsUninstallStore](c),
 	)
 }
 
@@ -69,34 +76,62 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s'", args[0]) {
-		return nil, fctl.ErrMissingApproval
-	}
-
 	client, err := fctl.NewStackClient(cmd, cfg, stack)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := client.Payments.UninstallConnector(cmd.Context(), operations.UninstallConnectorRequest{
-		Connector: shared.Connector(args[0]),
-	})
-	if err != nil {
-		return nil, err
-	}
+	provider := fctl.GetString(cmd, c.providerFlag)
+	connectorID := fctl.GetString(cmd, c.connectorIDFlag)
+	switch {
+	case provider != "" && connectorID != "":
+		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s' from provider '%s'", connectorID, provider) {
+			return nil, fctl.ErrMissingApproval
+		}
 
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		response, err := client.Payments.UninstallConnectorV1(cmd.Context(), operations.UninstallConnectorV1Request{
+			ConnectorID: connectorID,
+			Connector:   shared.Connector(provider),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if response.StatusCode >= 300 {
+			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		}
+
+		c.store.Connector = connectorID
+	case provider == "" && connectorID == "":
+		return nil, fmt.Errorf("must use either --provider and --connector-id")
+	case connectorID != "":
+		return nil, fmt.Errorf("must use --provider when using --connector-id")
+	case provider != "":
+		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s'", provider) {
+			return nil, fctl.ErrMissingApproval
+		}
+
+		response, err := client.Payments.UninstallConnector(cmd.Context(), operations.UninstallConnectorRequest{
+			Connector: shared.Connector(provider),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if response.StatusCode >= 300 {
+			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		}
+
+		c.store.Connector = provider
 	}
 
 	c.store.Success = true
-	c.store.ConnectorName = args[0]
 
 	return c, nil
 }
 
 // TODO: This need to use the ui.NewListModel
 func (c *PaymentsConnectorsUninstallController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' uninstalled!", c.store.ConnectorName)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' uninstalled!", c.store.Connector)
 	return nil
 }

@@ -15,6 +15,7 @@ import (
 type PaymentsConnectorsCurrencyCloudStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
+	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsCurrencyCloudController struct {
 	store                *PaymentsConnectorsCurrencyCloudStore
@@ -22,6 +23,8 @@ type PaymentsConnectorsCurrencyCloudController struct {
 	defaultEndpoint      string
 	pollingPeriodFlag    string
 	defaultpollingPeriod string
+	nameFlag             string
+	defaultName          string
 }
 
 var _ fctl.Controller[*PaymentsConnectorsCurrencyCloudStore] = (*PaymentsConnectorsCurrencyCloudController)(nil)
@@ -39,6 +42,8 @@ func NewPaymentsConnectorsCurrencyCloudController() *PaymentsConnectorsCurrencyC
 		defaultEndpoint:      "https://devapi.currencycloud.com",
 		pollingPeriodFlag:    "polling-period",
 		defaultpollingPeriod: "2m",
+		nameFlag:             "name",
+		defaultName:          "currencycloud",
 	}
 }
 
@@ -49,6 +54,7 @@ func NewCurrencyCloudCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
 		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
+		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
 		fctl.WithController[*PaymentsConnectorsCurrencyCloudStore](c),
 	)
 }
@@ -58,7 +64,6 @@ func (c *PaymentsConnectorsCurrencyCloudController) GetStore() *PaymentsConnecto
 }
 
 func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
 	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.CurrencyCloudConnector)
 	if err != nil {
 		return nil, fctl.ErrMissingApproval
@@ -77,6 +82,7 @@ func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
 			CurrencyCloudConfig: &shared.CurrencyCloudConfig{
+				Name:          fctl.GetString(cmd, c.nameFlag),
 				APIKey:        args[1],
 				LoginID:       args[0],
 				Endpoint:      endpoint,
@@ -96,12 +102,15 @@ func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args
 	c.store.Success = true
 	c.store.ConnectorName = internal.CurrencyCloudConnector
 
+	if response.ConnectorResponse != nil {
+		c.store.ConnectorID = response.ConnectorResponse.Data.ConnectorID
+	}
+
 	return c, nil
 }
 
 func (c *PaymentsConnectorsCurrencyCloudController) Render(cmd *cobra.Command, args []string) error {
-
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector '%s' installed!", c.store.ConnectorName, c.store.ConnectorID)
 
 	return nil
 }
