@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
@@ -31,3 +32,5 @@ func New(store Store) *Service {
 		store: store,
 	}
 }
+
+var _ backend.Service = (*Service)(nil)

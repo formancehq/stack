@@ -37,7 +37,10 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
 		}),
-		fx.Provide(service.New),
+		fx.Provide(func(store *storage.Storage) service.Store {
+			return store
+		}),
+		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
 		fx.Provide(backend.NewDefaultBackend),
 		fx.Supply(serviceInfo),
 		fx.Provide(httpRouter),

@@ -7,6 +7,7 @@ import (
 	"runtime/debug"
 	"strconv"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle"
@@ -18,6 +19,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
+	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
@@ -45,7 +47,13 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
 		}),
 		fx.Supply(serviceInfo),
-		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, ``, ``, `group:"connectorHandlers"`))),
+		fx.Provide(fx.Annotate(paymentHandlerMap, fx.ParamTags(`group:"connectorHandlers"`))),
+		fx.Provide(func(store *storage.Storage) service.Store {
+			return store
+		}),
+		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
+		fx.Provide(backend.NewDefaultBackend),
+		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, ``, `group:"connectorHandlers"`))),
 		addConnector[dummypay.Config](dummypay.NewLoader()),
 		addConnector[modulr.Config](modulr.NewLoader()),
 		addConnector[stripe.Config](stripe.NewLoader()),
@@ -55,6 +63,14 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 		addConnector[mangopay.Config](mangopay.NewLoader()),
 		addConnector[moneycorp.Config](moneycorp.NewLoader()),
 	)
+}
+
+func paymentHandlerMap(connectorHandlers []connectorHandler) map[models.ConnectorProvider]service.PaymentHandler {
+	m := make(map[models.ConnectorProvider]service.PaymentHandler)
+	for _, h := range connectorHandlers {
+		m[h.Provider] = h.initiatePayment
+	}
+	return m
 }
 
 func httpRecoveryFunc(ctx context.Context, e interface{}) {
