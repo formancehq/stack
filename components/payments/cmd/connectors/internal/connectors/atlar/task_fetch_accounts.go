@@ -18,6 +18,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -105,7 +106,7 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		openingDate, err := time.Parse("2006-01-02T15:04:05.999999999Z", account.Created)
+		openingDate, err := ParseAtlarTimestamp(account.Created)
 		if err != nil {
 			return fmt.Errorf("failed to parse opening date: %w", err)
 		}
@@ -116,12 +117,12 @@ func ingestAccountsBatch(
 				ConnectorID: connectorID,
 			},
 			CreatedAt:    openingDate,
-			Reference:    *filterIbanFromIdentifiers(account.Identifiers).Number,
+			Reference:    *account.ID,
 			ConnectorID:  connectorID,
 			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
 			AccountName:  account.Name,
-			Type:         models.AccountTypeExternal,
-			Metadata:     map[string]string{},
+			Type:         models.AccountTypeInternal,
+			Metadata:     ExtractAccountMetadata(account),
 			RawData:      raw,
 		})
 
@@ -139,7 +140,10 @@ func ingestAccountsBatch(
 		var amountInt big.Int
 		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
-		now := time.Now()
+		balanceTimestamp, err := ParseAtlarTimestamp(balance.Timestamp)
+		if err != nil {
+			return err
+		}
 		balanceBatch = append(balanceBatch, &models.Balance{
 			AccountID: models.AccountID{
 				Reference:   *account.ID,
@@ -147,8 +151,8 @@ func ingestAccountsBatch(
 			},
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *balance.Amount.Currency),
 			Balance:       &amountInt,
-			CreatedAt:     now,
-			LastUpdatedAt: now,
+			CreatedAt:     balanceTimestamp,
+			LastUpdatedAt: balanceTimestamp,
 			ConnectorID:   connectorID,
 		})
 	}
@@ -168,11 +172,25 @@ func ingestAccountsBatch(
 	return nil
 }
 
-func filterIbanFromIdentifiers(identifiers []*atlar_models.AccountIdentifier) *atlar_models.AccountIdentifier {
+func ExtractAccountMetadata(account *atlar_models.Account) metadata.Metadata {
+	result := metadata.Metadata{}
+	result = result.Merge(ComputeAccountMetadataBool("fictive", account.Fictive))
+	result = result.Merge(ComputeAccountMetadata("bank/id", account.Bank.ID))
+	result = result.Merge(ComputeAccountMetadata("bank/name", account.Bank.Name))
+	result = result.Merge(ComputeAccountMetadata("bank/bic", account.Bank.Bic))
+	result = result.Merge(IdentifiersToMetadata(account.Identifiers))
+	result = result.Merge(ComputeAccountMetadata("alias", account.Alias))
+	result = result.Merge(ComputeAccountMetadata("owner/name", account.Owner.Name))
+	return result
+}
+
+func IdentifiersToMetadata(identifiers []*atlar_models.AccountIdentifier) metadata.Metadata {
+	result := metadata.Metadata{}
 	for _, i := range identifiers {
-		if *i.Type == atlar_models.AccountIdentifierTypeIBAN {
-			return i
-		}
+		result = result.Merge(ComputeAccountMetadata(
+			fmt.Sprintf("identifier/%s", *i.Type),
+			*i.Number,
+		))
 	}
-	return nil
+	return result
 }

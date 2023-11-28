@@ -99,22 +99,31 @@ func ingestPaymentsBatch(
 		var amountInt big.Int
 		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
+		createdAt, err := ParseAtlarTimestamp(item.Created)
+		if err != nil {
+			return err
+		}
+
+		paymentId := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: item.ID,
+				Type:      paymentType,
+			},
+			ConnectorID: connectorID,
+		}
+
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
-				ID: models.PaymentID{
-					PaymentReference: models.PaymentReference{
-						Reference: item.ID,
-						Type:      paymentType,
-					},
-					ConnectorID: connectorID,
-				},
+				ID:          paymentId,
 				Reference:   item.ID,
 				Type:        paymentType,
 				ConnectorID: connectorID,
+				CreatedAt:   createdAt,
 				Status:      determinePaymentStatus(item),
 				Scheme:      determinePaymentScheme(item),
 				Amount:      &amountInt,
 				Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, *item.Amount.Currency),
+				Metadata:    ExtractPaymentMetadata(paymentId, item),
 				RawData:     raw,
 			},
 			Update: true,
@@ -153,9 +162,78 @@ func determinePaymentType(item *atlar_models.Transaction) models.PaymentType {
 }
 
 func determinePaymentStatus(item *atlar_models.Transaction) models.PaymentStatus {
+	if item.Reconciliation.Status == atlar_models.ReconciliationDetailsStatusEXPECTED {
+		// A payment initiated by the owner of the accunt through the Atlar API,
+		// which was not yet reconciled with a payment from the statement
+		return models.PaymentStatusPending
+	}
+	if item.Reconciliation.Status == atlar_models.ReconciliationDetailsStatusRECONCILED {
+		return models.PaymentStatusPending
+	}
+	if item.Reconciliation.Status == atlar_models.ReconciliationDetailsStatusBOOKED {
+		return models.PaymentStatusSucceeded
+	}
 	return models.PaymentStatusOther
 }
 
 func determinePaymentScheme(item *atlar_models.Transaction) models.PaymentScheme {
-	return models.PaymentSchemeOther
+	// item.Characteristics.BankTransactionCode.Domain
+	// item.Characteristics.BankTransactionCode.Family
+	// TODO: fees and interest -> models.PaymentSchemeOther with additional info on metadata. Will need example transactions for that
+
+	if *item.Amount.Value > 0 {
+		return models.PaymentSchemeSepaDebit
+	} else if *item.Amount.Value < 0 {
+		return models.PaymentSchemeSepaCredit
+	}
+	return models.PaymentSchemeSepa
+}
+
+func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_models.Transaction) []*models.Metadata {
+	result := []*models.Metadata{}
+	if transaction.Date != "" {
+		result = append(result, ComputePaymentMetadata(paymentId, "date", transaction.Date))
+	}
+	if transaction.ValueDate != "" {
+		result = append(result, ComputePaymentMetadata(paymentId, "valueDate", transaction.ValueDate))
+	}
+	result = append(result, ComputePaymentMetadata(paymentId, "remittanceInformation/type", *transaction.RemittanceInformation.Type))
+	result = append(result, ComputePaymentMetadata(paymentId, "remittanceInformation/value", *transaction.RemittanceInformation.Value))
+	result = append(result, ComputePaymentMetadata(paymentId, "btc/domain", transaction.Characteristics.BankTransactionCode.Domain))
+	result = append(result, ComputePaymentMetadata(paymentId, "btc/familiy", transaction.Characteristics.BankTransactionCode.Family))
+	result = append(result, ComputePaymentMetadata(paymentId, "btc/subfamiliy", transaction.Characteristics.BankTransactionCode.Subfamily))
+	result = append(result, ComputePaymentMetadata(paymentId, "btc/description", transaction.Characteristics.BankTransactionCode.Description))
+	result = append(result, ComputePaymentMetadataBool(paymentId, "returned", transaction.Characteristics.Returned))
+	if transaction.CounterpartyDetails != nil && transaction.CounterpartyDetails.Name != "" {
+		result = append(result, ComputePaymentMetadata(paymentId, "counterparty/nane", transaction.CounterpartyDetails.Name))
+		if transaction.CounterpartyDetails.ExternalAccount != nil && transaction.CounterpartyDetails.ExternalAccount.Identifier != nil {
+			result = append(result, ComputePaymentMetadata(paymentId, "counterparty/bank/bic", transaction.CounterpartyDetails.ExternalAccount.Bank.Bic))
+			result = append(result, ComputePaymentMetadata(paymentId, "counterparty/bank/name", transaction.CounterpartyDetails.ExternalAccount.Bank.Name))
+			result = append(result, ComputePaymentMetadata(paymentId,
+				fmt.Sprintf("counterparty/identifier/%s", transaction.CounterpartyDetails.ExternalAccount.Identifier.Type),
+				transaction.CounterpartyDetails.ExternalAccount.Identifier.Number))
+		}
+	}
+	if transaction.Characteristics.Returned {
+		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/code", transaction.Characteristics.ReturnReason.Code))
+		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/description", transaction.Characteristics.ReturnReason.Description))
+		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/btc/domain", transaction.Characteristics.ReturnReason.OriginalBankTransactionCode.Domain))
+		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/btc/family", transaction.Characteristics.ReturnReason.OriginalBankTransactionCode.Family))
+		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/btc/subfamily", transaction.Characteristics.ReturnReason.OriginalBankTransactionCode.Subfamily))
+		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/btc/description", transaction.Characteristics.ReturnReason.OriginalBankTransactionCode.Description))
+	}
+	result = append(result, ComputePaymentMetadata(paymentId, "reconciliation/status", transaction.Reconciliation.Status))
+	result = append(result, ComputePaymentMetadata(paymentId, "reconciliation/transactableId", transaction.Reconciliation.TransactableID))
+	result = append(result, ComputePaymentMetadata(paymentId, "reconciliation/transactableType", transaction.Reconciliation.TransactableType))
+	if transaction.Characteristics.CurrencyExchange != nil {
+		result = append(result, ComputePaymentMetadata(paymentId, "currencyExchange/sourceCurrency", transaction.Characteristics.CurrencyExchange.SourceCurrency))
+		result = append(result, ComputePaymentMetadata(paymentId, "currencyExchange/targetCurrency", transaction.Characteristics.CurrencyExchange.TargetCurrency))
+		result = append(result, ComputePaymentMetadata(paymentId, "currencyExchange/exchangeRate", transaction.Characteristics.CurrencyExchange.ExchangeRate))
+		result = append(result, ComputePaymentMetadata(paymentId, "currencyExchange/unitCurrency", transaction.Characteristics.CurrencyExchange.UnitCurrency))
+	}
+	if transaction.CounterpartyDetails.MandateReference != "" {
+		result = append(result, ComputePaymentMetadata(paymentId, "mandateReference", transaction.CounterpartyDetails.MandateReference))
+	}
+
+	return result
 }
