@@ -47,7 +47,9 @@ func FetchPaymentsTask(config Config, account string, client *client.Client) tas
 			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
+			limit := int64(config.PageSize)
 			params.Token = &token
+			params.Limit = &limit
 			pagedTransactions, err := client.Transactions.GetV1Transactions(&params)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)

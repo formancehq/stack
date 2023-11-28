@@ -51,7 +51,9 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
+			limit := int64(config.PageSize)
 			params.Token = &token
+			params.Limit = &limit
 			pagedAccounts, err := client.Accounts.GetV1Accounts(&params)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
