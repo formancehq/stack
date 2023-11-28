@@ -163,13 +163,16 @@ create index moves_range_dates on moves (account_address, asset, effective_date)
 
 /** Index requires for read */
 create index transactions_date on transactions (timestamp);
-create index transactions_metadata_metadata on transactions_metadata using gin (metadata jsonb_path_ops);
+--create index transactions_ids on transactions (id);
+create index transactions_metadata_index on transactions using gin (metadata jsonb_path_ops);
 --create unique index transactions_revisions on transactions_metadata(id desc, revision desc);
 create index transactions_sources on transactions using gin (sources jsonb_path_ops);
 create index transactions_destinations on transactions using gin (destinations jsonb_path_ops);
 create index transactions_sources_arrays on transactions using gin (sources_arrays jsonb_path_ops);
 create index transactions_destinations_arrays on transactions using gin (destinations_arrays jsonb_path_ops);
+
 create index transactions_metadata_revisions on transactions_metadata(transaction_id asc, revision desc) include (metadata, date);
+create index transactions_metadata_metadata on transactions_metadata using gin (metadata jsonb_path_ops);
 
 create index moves_account_address on moves (account_address);
 create index moves_account_address_array on moves using gin (account_address_array jsonb_ops);
