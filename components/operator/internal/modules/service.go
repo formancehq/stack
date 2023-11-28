@@ -410,7 +410,7 @@ func (r *serviceReconciler) configureNats() {
 		Name:      topicName,
 		Subjects:  []string{topicName},
 		Retention: nats.InterestPolicy,
-		Replicas:  3,
+		Replicas:  r.Configuration.Spec.Broker.Nats.Replicas,
 	}
 	nc, err := nats.Connect(r.Configuration.Spec.Broker.Nats.URL)
 	if err != nil {
