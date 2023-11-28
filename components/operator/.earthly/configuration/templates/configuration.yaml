@@ -28,6 +28,7 @@ spec:
       secretName: temporal
   broker:
     nats:
+      replicas: 1
       url: nats.default.svc.cluster.local:4222
   services:
     gateway:
