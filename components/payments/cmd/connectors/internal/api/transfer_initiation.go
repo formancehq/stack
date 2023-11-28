@@ -1,25 +1,17 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	"math/big"
 	"net/http"
 	"time"
 
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
-	"github.com/formancehq/payments/cmd/connectors/internal/messages"
-	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
+	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
-
-type paymentHandler func(ctx context.Context, transfer *models.TransferInitiation) error
 
 type transferInitiationResponse struct {
 	ID                   string    `json:"id"`
@@ -37,74 +29,11 @@ type transferInitiationResponse struct {
 	Error                string    `json:"error"`
 }
 
-type createTransferInitiationRequest struct {
-	Reference            string    `json:"reference"`
-	ScheduledAt          time.Time `json:"scheduledAt"`
-	Description          string    `json:"description"`
-	SourceAccountID      string    `json:"sourceAccountID"`
-	DestinationAccountID string    `json:"destinationAccountID"`
-	ConnectorID          string    `json:"connectorID"`
-	Provider             string    `json:"provider"`
-	Type                 string    `json:"type"`
-	Amount               *big.Int  `json:"amount"`
-	Asset                string    `json:"asset"`
-	Validated            bool      `json:"validated"`
-}
-
-func (r *createTransferInitiationRequest) Validate() error {
-	if r.Reference == "" {
-		return errors.New("uniqueRequestId is required")
-	}
-
-	if r.Description == "" {
-		return errors.New("description is required")
-	}
-
-	if r.SourceAccountID != "" {
-		_, err := models.AccountIDFromString(r.SourceAccountID)
-		if err != nil {
-			return err
-		}
-	}
-
-	_, err := models.AccountIDFromString(r.DestinationAccountID)
-	if err != nil {
-		return err
-	}
-
-	_, err = models.TransferInitiationTypeFromString(r.Type)
-	if err != nil {
-		return err
-	}
-
-	if r.Amount == nil {
-		return errors.New("amount is required")
-	}
-
-	if r.Asset == "" {
-		return errors.New("asset is required")
-	}
-
-	return nil
-}
-
-type createTransferInitiationRepository interface {
-	CreateTransferInitiation(ctx context.Context, transferInitiation *models.TransferInitiation) error
-	GetAccount(ctx context.Context, id string) (*models.Account, error)
-	GetConnector(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error)
-	ListConnectorsByProvider(ctx context.Context, provider models.ConnectorProvider) ([]*models.Connector, error)
-	IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)
-}
-
-func createTransferInitiationHandler(
-	repo createTransferInitiationRepository,
-	publisher message.Publisher,
-	paymentHandlers map[models.ConnectorProvider]paymentHandler,
-) http.HandlerFunc {
+func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		payload := &createTransferInitiationRequest{}
+		payload := &service.CreateTransferInitiationRequest{}
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
@@ -115,144 +44,12 @@ func createTransferInitiationHandler(
 			return
 		}
 
-		status := models.TransferInitiationStatusWaitingForValidation
-		if payload.Validated {
-			status = models.TransferInitiationStatusValidated
-		}
-
-		fmt.Println("TOTO 1")
-		var connectorID models.ConnectorID
-		if payload.ConnectorID == "" {
-			provider, err := models.ConnectorProviderFromString(payload.Provider)
-			if err != nil {
-				api.BadRequest(w, ErrValidation, err)
-				return
-			}
-
-			connectors, err := repo.ListConnectorsByProvider(r.Context(), provider)
-			if err != nil {
-				handleStorageErrors(w, r, err)
-				return
-			}
-
-			if len(connectors) == 0 {
-				api.BadRequest(w, ErrValidation, fmt.Errorf("no connector found for provider %s", provider))
-				return
-			}
-
-			if len(connectors) > 1 {
-				api.BadRequest(w, ErrValidation, fmt.Errorf("multiple connectors found for provider %s", provider))
-				return
-			}
-
-			connectorID = connectors[0].ID
-		} else {
-			var err error
-			connectorID, err = models.ConnectorIDFromString(payload.ConnectorID)
-			if err != nil {
-				api.BadRequest(w, ErrValidation, err)
-				return
-			}
-		}
-
-		fmt.Println("TOTO 2")
-		isInstalled, _ := repo.IsInstalledByConnectorID(r.Context(), connectorID)
-		if !isInstalled {
-			api.BadRequest(w, ErrValidation, fmt.Errorf("connector %s is not installed", payload.ConnectorID))
-			return
-		}
-
-		fmt.Println("TOTO 3")
-		if payload.SourceAccountID != "" {
-			_, err := repo.GetAccount(r.Context(), payload.SourceAccountID)
-			if err != nil {
-				handleStorageErrors(w, r, fmt.Errorf("failed to get source account: %w", err))
-				return
-			}
-		}
-
-		fmt.Println("TOTO 4")
-		_, err := repo.GetAccount(r.Context(), payload.DestinationAccountID)
+		tf, err := b.GetService().CreateTransferInitiation(r.Context(), payload)
 		if err != nil {
-			handleStorageErrors(w, r, fmt.Errorf("failed to get destination account: %w", err))
+			handleServiceErrors(w, r, err)
 			return
 		}
 
-		fmt.Println("TOTO 5")
-		if payload.ScheduledAt.IsZero() {
-			payload.ScheduledAt = time.Now().UTC()
-		}
-
-		createdAt := time.Now()
-		tf := &models.TransferInitiation{
-			ID: models.TransferInitiationID{
-				Reference:   payload.Reference,
-				ConnectorID: connectorID,
-			},
-			CreatedAt:            createdAt,
-			UpdatedAt:            createdAt, // When created, should be the same
-			ScheduledAt:          payload.ScheduledAt,
-			Description:          payload.Description,
-			DestinationAccountID: models.MustAccountIDFromString(payload.DestinationAccountID),
-			ConnectorID:          connectorID,
-			Provider:             connectorID.Provider,
-			Type:                 models.MustTransferInitiationTypeFromString(payload.Type),
-			Amount:               payload.Amount,
-			Asset:                models.Asset(payload.Asset),
-			Status:               status,
-		}
-
-		if payload.SourceAccountID != "" {
-			tf.SourceAccountID = models.MustAccountIDFromString(payload.SourceAccountID)
-		}
-
-		fmt.Println("TOTO 6")
-		if err := repo.CreateTransferInitiation(r.Context(), tf); err != nil {
-			handleStorageErrors(w, r, err)
-			return
-		}
-
-		fmt.Println("TOTO 7")
-		if err := publisher.Publish(
-			events.TopicPayments,
-			publish.NewMessage(
-				r.Context(),
-				messages.NewEventSavedTransferInitiations(tf),
-			),
-		); err != nil {
-			api.InternalServerError(w, r, err)
-			return
-		}
-
-		fmt.Println("TOTO 8")
-		if status == models.TransferInitiationStatusValidated {
-			connector, err := repo.GetConnector(r.Context(), connectorID)
-			if err != nil {
-				handleStorageErrors(w, r, err)
-				return
-			}
-
-			f, ok := paymentHandlers[connector.Provider]
-			if !ok {
-				api.InternalServerError(w, r, fmt.Errorf("no payment handler for provider %v", payload.ConnectorID))
-				return
-			}
-
-			err = f(r.Context(), tf)
-			if err != nil {
-				switch {
-				case errors.Is(err, integration.ErrValidation):
-					api.BadRequest(w, ErrValidation, err)
-				case errors.Is(err, integration.ErrConnectorNotFound):
-					api.BadRequest(w, ErrValidation, err)
-				default:
-					api.InternalServerError(w, r, err)
-				}
-				return
-			}
-		}
-
-		fmt.Println("TOTO 9")
 		data := &transferInitiationResponse{
 			ID:                   tf.ID.String(),
 			CreatedAt:            tf.CreatedAt,
@@ -261,7 +58,7 @@ func createTransferInitiationHandler(
 			Description:          tf.Description,
 			SourceAccountID:      tf.SourceAccountID.String(),
 			DestinationAccountID: tf.DestinationAccountID.String(),
-			ConnectorID:          connectorID.String(),
+			ConnectorID:          tf.ConnectorID.String(),
 			Type:                 tf.Type.String(),
 			Amount:               tf.Amount,
 			Asset:                tf.Asset.String(),
@@ -279,163 +76,27 @@ func createTransferInitiationHandler(
 	}
 }
 
-type udateTransferInitiationStatusRepository interface {
-	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
-	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
-	GetAccount(ctx context.Context, id string) (*models.Account, error)
-}
-
-type updateTransferInitiationStatusRequest struct {
-	Status string `json:"status"`
-}
-
-func updateTransferInitiationStatusHandler(
-	repo udateTransferInitiationStatusRepository,
-	publisher message.Publisher,
-	paymentHandlers map[models.ConnectorProvider]paymentHandler,
-) http.HandlerFunc {
+func updateTransferInitiationStatusHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		payload := &updateTransferInitiationStatusRequest{}
+		payload := &service.UpdateTransferInitiationStatusRequest{}
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
-		status, err := models.TransferInitiationStatusFromString(payload.Status)
-		if err != nil {
+		if err := payload.Validate(); err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		switch status {
-		case models.TransferInitiationStatusWaitingForValidation:
-			api.BadRequest(w, ErrValidation, errors.New("cannot set back transfer initiation status to waiting for validation"))
-			return
-		case models.TransferInitiationStatusFailed,
-			models.TransferInitiationStatusProcessed,
-			models.TransferInitiationStatusProcessing:
-			api.BadRequest(w, ErrValidation, errors.New("either VALIDATED or REJECTED status can be set"))
-			return
-		default:
-		}
-
-		transferID, err := models.TransferInitiationIDFromString((mux.Vars(r)["transferID"]))
-		if err != nil {
-			api.BadRequest(w, ErrInvalidID, err)
-			return
-		}
-
-		previousTransferInitiation, err := repo.ReadTransferInitiation(r.Context(), transferID)
-		if err != nil {
-			handleStorageErrors(w, r, err)
-			return
-		}
-
-		if previousTransferInitiation.Status != models.TransferInitiationStatusWaitingForValidation {
-			api.BadRequest(w, ErrValidation, errors.New("only waiting for validation transfer initiation can be updated"))
-			return
-		}
-		previousTransferInitiation.Status = status
-		previousTransferInitiation.Attempts++
-
-		err = repo.UpdateTransferInitiationPaymentsStatus(r.Context(), transferID, nil, status, "", previousTransferInitiation.Attempts, time.Now())
-		if err != nil {
-			handleStorageErrors(w, r, err)
-			return
-		}
-
-		if err := publisher.Publish(
-			events.TopicPayments,
-			publish.NewMessage(
-				r.Context(),
-				messages.NewEventSavedTransferInitiations(previousTransferInitiation),
-			),
-		); err != nil {
-			api.InternalServerError(w, r, err)
-			return
-		}
-
-		if status == models.TransferInitiationStatusValidated {
-			f, ok := paymentHandlers[previousTransferInitiation.Provider]
-			if !ok {
-				api.InternalServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
-				return
-			}
-
-			err = f(r.Context(), previousTransferInitiation)
-			if err != nil {
-				switch {
-				case errors.Is(err, integration.ErrValidation):
-					api.BadRequest(w, ErrValidation, err)
-				case errors.Is(err, integration.ErrConnectorNotFound):
-					api.BadRequest(w, ErrValidation, err)
-				default:
-					api.InternalServerError(w, r, err)
-				}
-				return
-			}
-		}
-
-		w.WriteHeader(http.StatusNoContent)
-	}
-}
-
-type retryTransferInitiationRepository interface {
-	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
-	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
-}
-
-func retryTransferInitiationHandler(
-	repo retryTransferInitiationRepository,
-	publisher message.Publisher,
-	paymentHandlers map[models.ConnectorProvider]paymentHandler,
-) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		transferID, err := models.TransferInitiationIDFromString((mux.Vars(r)["transferID"]))
-		if err != nil {
-			api.BadRequest(w, ErrInvalidID, err)
-			return
-		}
-
-		previousTransferInitiation, err := repo.ReadTransferInitiation(r.Context(), transferID)
-		if err != nil {
-			handleStorageErrors(w, r, err)
-			return
-		}
-
-		if previousTransferInitiation.Status != models.TransferInitiationStatusFailed {
-			api.BadRequest(w, ErrValidation, errors.New("only failed transfer initiation can be updated"))
-			return
-		}
-		previousTransferInitiation.Status = models.TransferInitiationStatusProcessing
-		previousTransferInitiation.Attempts++
-
-		err = repo.UpdateTransferInitiationPaymentsStatus(r.Context(), transferID, nil, models.TransferInitiationStatusProcessing, "", previousTransferInitiation.Attempts, time.Now())
-		if err != nil {
-			handleStorageErrors(w, r, err)
-			return
-		}
-
-		if err := publisher.Publish(
-			events.TopicPayments,
-			publish.NewMessage(
-				r.Context(),
-				messages.NewEventSavedTransferInitiations(previousTransferInitiation),
-			),
-		); err != nil {
-			api.InternalServerError(w, r, err)
-			return
-		}
-
-		f, ok := paymentHandlers[previousTransferInitiation.Provider]
+		transferID, ok := mux.Vars(r)["transferID"]
 		if !ok {
-			api.InternalServerError(w, r, errors.New("no payment handler for provider "+previousTransferInitiation.Provider.String()))
+			api.BadRequest(w, ErrInvalidID, errors.New("missing transferID"))
 			return
 		}
 
-		err = f(r.Context(), previousTransferInitiation)
-		if err != nil {
-			api.InternalServerError(w, r, err)
+		if err := b.GetService().UpdateTransferInitiationStatus(r.Context(), transferID, payload); err != nil {
+			handleServiceErrors(w, r, err)
 			return
 		}
 
@@ -443,48 +104,33 @@ func retryTransferInitiationHandler(
 	}
 }
 
-type deleteTransferInitiationRepository interface {
-	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
-	DeleteTransferInitiation(ctx context.Context, id models.TransferInitiationID) error
+func retryTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		transferID, ok := mux.Vars(r)["transferID"]
+		if !ok {
+			api.BadRequest(w, ErrInvalidID, errors.New("missing transferID"))
+			return
+		}
+
+		if err := b.GetService().RetryTransferInitiation(r.Context(), transferID); err != nil {
+			handleServiceErrors(w, r, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
 }
 
-func deleteTransferInitiationHandler(
-	repo deleteTransferInitiationRepository,
-	publisher message.Publisher,
-) http.HandlerFunc {
+func deleteTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		transferID, err := models.TransferInitiationIDFromString(mux.Vars(r)["transferID"])
-		if err != nil {
-			api.BadRequest(w, ErrInvalidID, err)
+		transferID, ok := mux.Vars(r)["transferID"]
+		if !ok {
+			api.BadRequest(w, ErrInvalidID, errors.New("missing transferID"))
 			return
 		}
 
-		tf, err := repo.ReadTransferInitiation(r.Context(), transferID)
-		if err != nil {
-			handleStorageErrors(w, r, err)
-			return
-		}
-
-		if tf.Status != models.TransferInitiationStatusWaitingForValidation {
-			api.BadRequest(w, ErrValidation, errors.New("cannot delete transfer initiation not waiting for validation"))
-			return
-		}
-
-		err = repo.DeleteTransferInitiation(r.Context(), transferID)
-		if err != nil {
-			handleStorageErrors(w, r, err)
-
-			return
-		}
-
-		if err := publisher.Publish(
-			events.TopicPayments,
-			publish.NewMessage(
-				r.Context(),
-				messages.NewEventDeleteTransferInitiation(tf.ID),
-			),
-		); err != nil {
-			api.InternalServerError(w, r, err)
+		if err := b.GetService().DeleteTransferInitiation(r.Context(), transferID); err != nil {
+			handleServiceErrors(w, r, err)
 			return
 		}
 

@@ -1,4 +1,4 @@
-package integration
+package connectors_manager
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/formancehq/payments/internal/models"
 )
 
-type Repository interface {
+type Store interface {
 	ListConnectors(ctx context.Context) ([]*models.Connector, error)
 	IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)
 	IsInstalledByConnectorName(ctx context.Context, name string) (bool, error)

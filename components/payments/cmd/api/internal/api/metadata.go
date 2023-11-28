@@ -1,10 +1,11 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/payments/cmd/api/internal/api/backend"
+	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
@@ -12,13 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type updateMetadataRepository interface {
-	UpdatePaymentMetadata(ctx context.Context, paymentID models.PaymentID, metadata map[string]string) error
-}
-
-type updateMetadataRequest map[string]string
-
-func updateMetadataHandler(repo updateMetadataRepository) http.HandlerFunc {
+func updateMetadataHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		paymentID, err := models.PaymentIDFromString(mux.Vars(r)["paymentID"])
 		if err != nil {
@@ -26,8 +21,7 @@ func updateMetadataHandler(repo updateMetadataRepository) http.HandlerFunc {
 			return
 		}
 
-		var metadata updateMetadataRequest
-
+		var metadata service.UpdateMetadataRequest
 		if r.ContentLength == 0 {
 			api.BadRequest(w, ErrMissingBody, errors.New("body is required"))
 			return
@@ -35,13 +29,13 @@ func updateMetadataHandler(repo updateMetadataRepository) http.HandlerFunc {
 
 		err = json.NewDecoder(r.Body).Decode(&metadata)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			api.BadRequest(w, ErrInvalidBody, err)
 			return
 		}
 
-		err = repo.UpdatePaymentMetadata(r.Context(), *paymentID, metadata)
+		err = b.GetService().UpdatePaymentMetadata(r.Context(), *paymentID, metadata)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleServiceErrors(w, r, err)
 			return
 		}
 

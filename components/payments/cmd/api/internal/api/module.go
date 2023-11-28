@@ -7,6 +7,8 @@ import (
 	"runtime/debug"
 	"strconv"
 
+	"github.com/formancehq/payments/cmd/api/internal/api/backend"
+	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
@@ -26,6 +28,7 @@ const (
 	ErrNotFound        = "NOT_FOUND"
 	ErrInvalidID       = "INVALID_ID"
 	ErrMissingBody     = "MISSING_BODY"
+	ErrInvalidBody     = "INVALID_BODY"
 	ErrValidation      = "VALIDATION"
 )
 
@@ -34,6 +37,11 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
 		}),
+		fx.Provide(func(store *storage.Storage) service.Store {
+			return store
+		}),
+		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
+		fx.Provide(backend.NewDefaultBackend),
 		fx.Supply(serviceInfo),
 		fx.Provide(httpRouter),
 	)
@@ -63,12 +71,15 @@ func httpServeFunc(handler http.Handler) http.Handler {
 	})
 }
 
-func handleStorageErrors(w http.ResponseWriter, r *http.Request, err error) {
-	if errors.Is(err, storage.ErrDuplicateKeyValue) {
+func handleServiceErrors(w http.ResponseWriter, r *http.Request, err error) {
+	switch {
+	case errors.Is(err, storage.ErrDuplicateKeyValue):
 		api.BadRequest(w, ErrUniqueReference, err)
-	} else if errors.Is(err, storage.ErrNotFound) {
+	case errors.Is(err, storage.ErrNotFound):
 		api.NotFound(w)
-	} else {
+	case errors.Is(err, service.ErrValidation):
+		api.BadRequest(w, ErrValidation, err)
+	default:
 		api.InternalServerError(w, r, err)
 	}
 }

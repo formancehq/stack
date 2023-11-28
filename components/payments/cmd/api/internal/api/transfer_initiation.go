@@ -1,18 +1,15 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"math/big"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 )
 
 type transferInitiationResponse struct {
@@ -38,11 +35,12 @@ type transferInitiationPaymentsResponse struct {
 	Error     string    `json:"error"`
 }
 
-type readTransferInitiationRepository interface {
-	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
+type readTransferInitiationResponse struct {
+	transferInitiationResponse
+	RelatedPayments []*transferInitiationPaymentsResponse `json:"relatedPayments"`
 }
 
-func readTransferInitiationHandler(repo readTransferInitiationRepository) http.HandlerFunc {
+func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -52,16 +50,10 @@ func readTransferInitiationHandler(repo readTransferInitiationRepository) http.H
 			return
 		}
 
-		ret, err := repo.ReadTransferInitiation(r.Context(), transferID)
+		ret, err := b.GetService().ReadTransferInitiation(r.Context(), transferID)
 		if err != nil {
-			handleStorageErrors(w, r, err)
-
+			handleServiceErrors(w, r, err)
 			return
-		}
-
-		type readTransferInitiationResponse struct {
-			transferInitiationResponse
-			RelatedPayments []*transferInitiationPaymentsResponse `json:"relatedPayments"`
 		}
 
 		data := &readTransferInitiationResponse{
@@ -101,63 +93,19 @@ func readTransferInitiationHandler(repo readTransferInitiationRepository) http.H
 	}
 }
 
-type listTransferInitiationsRepository interface {
-	ListTransferInitiations(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.TransferInitiation, storage.PaginationDetails, error)
-}
-
-func listTransferInitiationsHandler(repo listTransferInitiationsRepository) http.HandlerFunc {
+func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		qb, err := getQueryBuilder(r)
+		pagination, err := getPagination(r)
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		var sorter storage.Sorter
-
-		if sortParams := r.URL.Query()["sort"]; sortParams != nil {
-			for _, s := range sortParams {
-				parts := strings.SplitN(s, ":", 2)
-
-				var order storage.SortOrder
-
-				if len(parts) > 1 {
-					//nolint:goconst // allow duplicate string
-					switch parts[1] {
-					case "asc", "ASC":
-						order = storage.SortOrderAsc
-					case "dsc", "desc", "DSC", "DESC":
-						order = storage.SortOrderDesc
-					default:
-						api.BadRequest(w, ErrValidation, errors.New("sort order not well specified, got "+parts[1]))
-						return
-					}
-				}
-
-				column := parts[0]
-
-				sorter.Add(column, order)
-			}
-		}
-
-		pageSize, err := pageSizeQueryParam(r)
+		ret, paginationDetails, err := b.GetService().ListTransferInitiations(r.Context(), pagination)
 		if err != nil {
-			api.BadRequest(w, ErrValidation, err)
-			return
-		}
-
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, qb)
-		if err != nil {
-			api.BadRequest(w, ErrValidation, err)
-			return
-		}
-
-		ret, paginationDetails, err := repo.ListTransferInitiations(r.Context(), pagination)
-		if err != nil {
-			handleStorageErrors(w, r, err)
-
+			handleServiceErrors(w, r, err)
 			return
 		}
 

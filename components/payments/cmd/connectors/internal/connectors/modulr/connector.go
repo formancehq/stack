@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -94,7 +94,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
 }
 
-var _ integration.Connector = &Connector{}
+var _ connectors.Connector = &Connector{}
 
 func newConnector(logger logging.Logger, cfg Config) *Connector {
 	return &Connector{

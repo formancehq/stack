@@ -3,9 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
-	"github.com/formancehq/payments/cmd/connectors/internal/storage"
+	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -16,11 +14,10 @@ import (
 
 func httpRouter(
 	logger logging.Logger,
-	store *storage.Storage,
+	b backend.ServiceBackend,
 	serviceInfo api.ServiceInfo,
-	publisher message.Publisher,
 	connectorHandlers []connectorHandler,
-) (*mux.Router, error) {
+) *mux.Router {
 	rootMux := mux.NewRouter()
 
 	// We have to keep this recovery handler here to ensure that the health
@@ -34,7 +31,7 @@ func httpRouter(
 		})
 	})
 
-	rootMux.Path("/_health").Handler(healthHandler(store))
+	rootMux.Path("/_health").Handler(healthHandler(b))
 
 	subRouter := rootMux.NewRoute().Subrouter()
 	if viper.GetBool(otelTracesFlag) {
@@ -48,18 +45,14 @@ func httpRouter(
 
 	authGroup := subRouter.Name("authenticated").Subrouter()
 
-	authGroup.Path("/bank-accounts").Methods(http.MethodPost).Handler(createBankAccountHandler(store, publisher))
+	authGroup.Path("/bank-accounts").Methods(http.MethodPost).Handler(createBankAccountHandler(b))
 
-	paymentsHandlers := make(map[models.ConnectorProvider]paymentHandler)
-	for _, h := range connectorHandlers {
-		paymentsHandlers[h.Provider] = h.initiatePayment
-	}
-	authGroup.Path("/transfer-initiations").Methods(http.MethodPost).Handler(createTransferInitiationHandler(store, publisher, paymentsHandlers))
-	authGroup.Path("/transfer-initiations/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(store, publisher, paymentsHandlers))
-	authGroup.Path("/transfer-initiations/{transferID}/retry").Methods(http.MethodPost).Handler(retryTransferInitiationHandler(store, publisher, paymentsHandlers))
-	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(store, publisher))
+	authGroup.Path("/transfer-initiations").Methods(http.MethodPost).Handler(createTransferInitiationHandler(b))
+	authGroup.Path("/transfer-initiations/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(b))
+	authGroup.Path("/transfer-initiations/{transferID}/retry").Methods(http.MethodPost).Handler(retryTransferInitiationHandler(b))
+	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodDelete).Handler(deleteTransferInitiationHandler(b))
 
-	authGroup.HandleFunc("/connectors", readConnectorsHandler(store))
+	authGroup.HandleFunc("/connectors", readConnectorsHandler(b))
 
 	connectorGroup := authGroup.PathPrefix("/connectors").Subrouter()
 	connectorGroup.Path("/configs").Handler(connectorConfigsHandler())
@@ -72,28 +65,28 @@ func httpRouter(
 			http.StripPrefix("/connectors", h.Handler))
 	}
 
-	return rootMux, nil
+	return rootMux
 }
 
 func connectorRouter[Config models.ConnectorConfigObject](
 	provider models.ConnectorProvider,
-	manager *integration.ConnectorsManager[Config],
+	b backend.ManagerBackend[Config],
 ) *mux.Router {
 	r := mux.NewRouter()
 
-	addRoute(r, provider, "", http.MethodPost, install(manager))
-	addRoute(r, provider, "/{connectorID}", http.MethodDelete, uninstall(manager, V1))
-	addRoute(r, provider, "/{connectorID}/config", http.MethodGet, readConfig(manager, V1))
-	addRoute(r, provider, "/{connectorID}/reset", http.MethodPost, reset(manager, V1))
-	addRoute(r, provider, "/{connectorID}/tasks", http.MethodGet, listTasks(manager, V1))
-	addRoute(r, provider, "/{connectorID}/tasks/{taskID}", http.MethodGet, readTask(manager, V1))
+	addRoute(r, provider, "", http.MethodPost, install(b))
+	addRoute(r, provider, "/{connectorID}", http.MethodDelete, uninstall(b, V1))
+	addRoute(r, provider, "/{connectorID}/config", http.MethodGet, readConfig(b, V1))
+	addRoute(r, provider, "/{connectorID}/reset", http.MethodPost, reset(b, V1))
+	addRoute(r, provider, "/{connectorID}/tasks", http.MethodGet, listTasks(b, V1))
+	addRoute(r, provider, "/{connectorID}/tasks/{taskID}", http.MethodGet, readTask(b, V1))
 
 	// Deprecated routes
-	addRoute(r, provider, "", http.MethodDelete, uninstall(manager, V0))
-	addRoute(r, provider, "/config", http.MethodGet, readConfig(manager, V0))
-	addRoute(r, provider, "/reset", http.MethodPost, reset(manager, V0))
-	addRoute(r, provider, "/tasks", http.MethodGet, listTasks(manager, V0))
-	addRoute(r, provider, "/tasks/{taskID}", http.MethodGet, readTask(manager, V0))
+	addRoute(r, provider, "", http.MethodDelete, uninstall(b, V0))
+	addRoute(r, provider, "/config", http.MethodGet, readConfig(b, V0))
+	addRoute(r, provider, "/reset", http.MethodPost, reset(b, V0))
+	addRoute(r, provider, "/tasks", http.MethodGet, listTasks(b, V0))
+	addRoute(r, provider, "/tasks/{taskID}", http.MethodGet, readTask(b, V0))
 
 	return r
 }

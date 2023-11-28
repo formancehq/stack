@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/integration"
+	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -21,56 +21,24 @@ const (
 	V1 APIVersion = iota
 )
 
-func getConnectorID[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
-	r *http.Request,
-	apiVersion APIVersion,
-) (models.ConnectorID, error) {
-	switch apiVersion {
-	case V0:
-		connectors := connectorManager.Connectors()
-		if len(connectors) == 0 {
-			return models.ConnectorID{}, fmt.Errorf("no connectors installed")
-		}
-
-		if len(connectors) > 1 {
-			return models.ConnectorID{}, fmt.Errorf("more than one connectors installed")
-		}
-
-		for id := range connectors {
-			return models.MustConnectorIDFromString(id), nil
-		}
-
-	case V1:
-		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
-		if err != nil {
-			return models.ConnectorID{}, err
-		}
-
-		return connectorID, nil
-	}
-
-	return models.ConnectorID{}, fmt.Errorf("unknown API version")
-}
-
 func readConfig[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
+	b backend.ManagerBackend[Config],
 	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
+		connectorID, err := getConnectorID(b, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		if connectorNotInstalled(connectorManager, connectorID, w, r) {
+		if connectorNotInstalled(b, connectorID, w, r) {
 			return
 		}
 
-		config, err := connectorManager.ReadConfig(r.Context(), connectorID)
+		config, err := b.GetManager().ReadConfig(r.Context(), connectorID)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleConnectorsManagerErrors(w, r, err)
 			return
 		}
 
@@ -95,17 +63,17 @@ type listTasksResponseElement struct {
 }
 
 func listTasks[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
+	b backend.ManagerBackend[Config],
 	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
+		connectorID, err := getConnectorID(b, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		if connectorNotInstalled(connectorManager, connectorID, w, r) {
+		if connectorNotInstalled(b, connectorID, w, r) {
 			return
 		}
 
@@ -121,9 +89,9 @@ func listTasks[Config models.ConnectorConfigObject](
 			return
 		}
 
-		tasks, paginationDetails, err := connectorManager.ListTasksStates(r.Context(), connectorID, pagination)
+		tasks, paginationDetails, err := b.GetManager().ListTasksStates(r.Context(), connectorID, pagination)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleConnectorsManagerErrors(w, r, err)
 			return
 		}
 
@@ -157,17 +125,13 @@ func listTasks[Config models.ConnectorConfigObject](
 }
 
 func readTask[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
+	b backend.ManagerBackend[Config],
 	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
+		connectorID, err := getConnectorID(b, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
-			return
-		}
-
-		if connectorNotInstalled(connectorManager, connectorID, w, r) {
 			return
 		}
 
@@ -177,9 +141,13 @@ func readTask[Config models.ConnectorConfigObject](
 			return
 		}
 
-		task, err := connectorManager.ReadTaskState(r.Context(), connectorID, taskID)
+		if connectorNotInstalled(b, connectorID, w, r) {
+			return
+		}
+
+		task, err := b.GetManager().ReadTaskState(r.Context(), connectorID, taskID)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleConnectorsManagerErrors(w, r, err)
 			return
 		}
 
@@ -204,23 +172,23 @@ func readTask[Config models.ConnectorConfigObject](
 }
 
 func uninstall[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
+	b backend.ManagerBackend[Config],
 	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
+		connectorID, err := getConnectorID(b, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		if connectorNotInstalled(connectorManager, connectorID, w, r) {
+		if connectorNotInstalled(b, connectorID, w, r) {
 			return
 		}
 
-		err = connectorManager.Uninstall(r.Context(), connectorID)
+		err = b.GetManager().Uninstall(r.Context(), connectorID)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleConnectorsManagerErrors(w, r, err)
 			return
 		}
 
@@ -232,9 +200,7 @@ type installResponse struct {
 	ConnectorID string `json:"connectorID"`
 }
 
-func install[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
-) http.HandlerFunc {
+func install[Config models.ConnectorConfigObject](b backend.ManagerBackend[Config]) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var config Config
 		if r.ContentLength > 0 {
@@ -245,9 +211,9 @@ func install[Config models.ConnectorConfigObject](
 			}
 		}
 
-		connectorID, err := connectorManager.Install(r.Context(), config.ConnectorName(), config)
+		connectorID, err := b.GetManager().Install(r.Context(), config.ConnectorName(), config)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleConnectorsManagerErrors(w, r, err)
 			return
 		}
 
@@ -264,23 +230,23 @@ func install[Config models.ConnectorConfigObject](
 }
 
 func reset[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
+	b backend.ManagerBackend[Config],
 	apiVersion APIVersion,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := getConnectorID(connectorManager, r, apiVersion)
+		connectorID, err := getConnectorID(b, r, apiVersion)
 		if err != nil {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		if connectorNotInstalled(connectorManager, connectorID, w, r) {
+		if connectorNotInstalled(b, connectorID, w, r) {
 			return
 		}
 
-		err = connectorManager.Reset(r.Context(), connectorID)
+		err = b.GetManager().Reset(r.Context(), connectorID)
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleConnectorsManagerErrors(w, r, err)
 			return
 		}
 
@@ -289,20 +255,52 @@ func reset[Config models.ConnectorConfigObject](
 }
 
 func connectorNotInstalled[Config models.ConnectorConfigObject](
-	connectorManager *integration.ConnectorsManager[Config],
+	b backend.ManagerBackend[Config],
 	connectorID models.ConnectorID,
 	w http.ResponseWriter, r *http.Request,
 ) bool {
-	installed, err := connectorManager.IsInstalled(r.Context(), connectorID)
+	installed, err := b.GetManager().IsInstalled(r.Context(), connectorID)
 	if err != nil {
-		handleStorageErrors(w, r, err)
+		handleConnectorsManagerErrors(w, r, err)
 		return true
 	}
 
 	if !installed {
-		api.BadRequest(w, ErrValidation, integration.ErrNotInstalled)
+		api.BadRequest(w, ErrValidation, fmt.Errorf("connector not installed"))
 		return true
 	}
 
 	return false
+}
+
+func getConnectorID[Config models.ConnectorConfigObject](
+	b backend.ManagerBackend[Config],
+	r *http.Request,
+	apiVersion APIVersion,
+) (models.ConnectorID, error) {
+	switch apiVersion {
+	case V0:
+		connectors := b.GetManager().Connectors()
+		if len(connectors) == 0 {
+			return models.ConnectorID{}, fmt.Errorf("no connectors installed")
+		}
+
+		if len(connectors) > 1 {
+			return models.ConnectorID{}, fmt.Errorf("more than one connectors installed")
+		}
+
+		for id := range connectors {
+			return models.MustConnectorIDFromString(id), nil
+		}
+
+	case V1:
+		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
+		if err != nil {
+			return models.ConnectorID{}, err
+		}
+
+		return connectorID, nil
+	}
+
+	return models.ConnectorID{}, fmt.Errorf("unknown API version")
 }

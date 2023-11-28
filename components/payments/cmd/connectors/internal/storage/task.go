@@ -82,8 +82,8 @@ func (s *Storage) CreateTask(ctx context.Context, connectorID models.ConnectorID
 	return nil
 }
 
-func (s *Storage) ListTasksByStatus(ctx context.Context, connectorID models.ConnectorID, status models.TaskStatus) ([]models.Task, error) {
-	var tasks []models.Task
+func (s *Storage) ListTasksByStatus(ctx context.Context, connectorID models.ConnectorID, status models.TaskStatus) ([]*models.Task, error) {
+	var tasks []*models.Task
 
 	err := s.db.NewSelect().Model(&tasks).
 		Where("connector_id = ?", connectorID).
@@ -96,8 +96,8 @@ func (s *Storage) ListTasksByStatus(ctx context.Context, connectorID models.Conn
 	return tasks, nil
 }
 
-func (s *Storage) ListTasks(ctx context.Context, connectorID models.ConnectorID, pagination PaginatorQuery) ([]models.Task, PaginationDetails, error) {
-	var tasks []models.Task
+func (s *Storage) ListTasks(ctx context.Context, connectorID models.ConnectorID, pagination PaginatorQuery) ([]*models.Task, PaginationDetails, error) {
+	var tasks []*models.Task
 
 	query := s.db.NewSelect().Model(&tasks).
 		Where("connector_id = ?", connectorID)

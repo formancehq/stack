@@ -2,15 +2,13 @@ package api
 
 import (
 	"net/http"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 )
 
-type healthRepository interface {
-	Ping() error
-}
-
-func healthHandler(repo healthRepository) http.HandlerFunc {
+func healthHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := repo.Ping(); err != nil {
+		if err := b.GetService().Ping(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 
 			return
