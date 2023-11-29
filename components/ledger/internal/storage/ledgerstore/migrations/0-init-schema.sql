@@ -68,6 +68,9 @@ create table transactions
     metadata jsonb not null default '{}'::jsonb
 );
 
+alter table transactions alter column sources set statistics 1000;
+alter table transactions alter column destinations set statistics 1000;
+
 create table transactions_metadata
 (
     transaction_id numeric not null references transactions(id),
