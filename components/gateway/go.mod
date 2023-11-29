@@ -8,7 +8,7 @@ require (
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0
 	github.com/caddyserver/caddy/v2 v2.7.5
 	github.com/hashicorp/go-retryablehttp v0.7.2
-	github.com/nats-io/nats.go v1.23.0
+	github.com/nats-io/nats.go v1.28.0
 	github.com/xdg-go/scram v1.1.2
 	github.com/zitadel/oidc v1.13.0
 	go.uber.org/zap v1.25.0
@@ -42,7 +42,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mastercactapus/proxyprotocol v0.0.4 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nats-io/nkeys v0.3.0 // indirect
+	github.com/nats-io/nkeys v0.4.4 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect

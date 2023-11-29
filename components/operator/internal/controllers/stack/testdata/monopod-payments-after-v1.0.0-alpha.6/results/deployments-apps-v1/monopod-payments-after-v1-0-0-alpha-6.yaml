@@ -650,6 +650,12 @@ spec:
                       value: stacks
                     - name: KAFKA_ADDRESS
                       value: kafka:1234
+                    - name: BASIC_AUTH_ENABLED
+                      value: "false"
+                    - name: BASIC_AUTH_USERNAME
+                      value: username
+                    - name: BASIC_AUTH_PASSWORD
+                      value: password
                     - name: OPEN_SEARCH_SERVICE
                       value: elasticsearch:9200
                     - name: OPEN_SEARCH_SCHEME
@@ -732,6 +738,12 @@ spec:
                       value: stacks
                     - name: KAFKA_ADDRESS
                       value: kafka:1234
+                    - name: BASIC_AUTH_ENABLED
+                      value: "false"
+                    - name: BASIC_AUTH_USERNAME
+                      value: username
+                    - name: BASIC_AUTH_PASSWORD
+                      value: password
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
