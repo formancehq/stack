@@ -24,7 +24,6 @@ type TaskDescriptor struct {
 
 // clientID, apiKey, endpoint string, logger logging
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
-	// client := client.NewClient(config.BaseUrl, config.AccessKey, config.Secret)
 	transport := httptransport.New(
 		config.BaseUrl.Host,
 		config.BaseUrl.Path,
