@@ -25,7 +25,10 @@ func newClient(config *rest.Config) (*clientv1beta3.Client, error) {
 	if crdConfig.UserAgent == "" {
 		crdConfig.UserAgent = rest.DefaultKubernetesUserAgent()
 	}
-	crdConfig.Transport = otlp.NewRoundTripper(http.DefaultTransport, false)
+	
+	config.Wrap(func(rt http.RoundTripper) http.RoundTripper {
+		return otlp.NewRoundTripper(rt, false)
+	})
 
 	client, err := rest.RESTClientFor(&crdConfig)
 	if err != nil {
