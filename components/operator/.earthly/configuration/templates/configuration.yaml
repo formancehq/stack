@@ -72,7 +72,7 @@ spec:
         port: 9200
         scheme: http
         basicAuth:
-          fromSecret: elasticsearch
+          secretName: elasticsearch
     webhooks:
       postgres:
         credentialsFromSecret: postgres
