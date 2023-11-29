@@ -479,6 +479,14 @@ func elasticSearchEnvVars(stack *stackv1beta3.Stack, configuration *stackv1beta3
 				modules.EnvFromSecret("BASIC_AUTH_PASSWORD", configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.SecretName, "password"),
 			)
 		}
+	} else {
+		// Even if basic auth is not enabled, we need to set the env vars
+		// to avoid benthos to crash due to linting errors
+		ret = ret.Append(
+			modules.Env("BASIC_AUTH_ENABLED", "false"),
+			modules.Env("BASIC_AUTH_USERNAME", "username"),
+			modules.Env("BASIC_AUTH_PASSWORD", "password"),
+		)
 	}
 	return ret
 }
