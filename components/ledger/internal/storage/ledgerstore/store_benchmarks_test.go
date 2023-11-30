@@ -24,7 +24,7 @@ import (
 
 var nbTransactions = flag.Int("transactions", 10000, "number of transactions to create")
 var batch = flag.Int("batch", 1000, "logs batching")
-var ledgers = flag.Int("ledger", 100, "number of ledger for multi ledgers benchmarks")
+var ledgers = flag.Int("ledgers", 100, "number of ledger for multi ledgers benchmarks")
 
 type bunContextHook struct{}
 
@@ -205,7 +205,7 @@ var scenarios = []scenario{
 				}
 			}
 
-			for i := 0; i < 9; i++ {
+			for i := 0; i < *ledgers; i++ {
 				store := newLedgerStore(b)
 				loadData(store)
 			}
