@@ -1,21 +1,29 @@
 package views
 
 import (
-	"errors"
-
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 func DisplayStripeConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config, ok := connectorConfig.Data.(*shared.StripeConfig)
-	if !ok {
-		return errors.New("invalid stripe connector config")
-	}
+	config := connectorConfig.Data.(map[string]interface{})
 
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
+	tableData = append(tableData, []string{pterm.LightCyan("Name:"), func() string {
+		name, ok := config["name"].(string)
+		if !ok {
+			return ""
+		}
+		return name
+	}()})
+	tableData = append(tableData, []string{pterm.LightCyan("API key:"), func() string {
+		apiKey, ok := config["apiKey"].(string)
+		if !ok {
+			return ""
+		}
+		return apiKey
+	}()})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).

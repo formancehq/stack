@@ -1,8 +1,8 @@
 package internal
 
 const (
-	BankingCircleConnector = "bankingcircle"
-	CurrencyCloudConnector = "currencycloud"
+	BankingCircleConnector = "banking-circle"
+	CurrencyCloudConnector = "currency-cloud"
 	ModulrConnector        = "modulr"
 	StripeConnector        = "stripe"
 	WiseConnector          = "wise"

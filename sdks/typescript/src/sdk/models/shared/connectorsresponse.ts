@@ -12,6 +12,10 @@ export class ConnectorsResponseData extends SpeakeasyBase {
   connectorID: string;
 
   @SpeakeasyMetadata()
+  @Expose({ name: "enabled" })
+  enabled?: boolean;
+
+  @SpeakeasyMetadata()
   @Expose({ name: "name" })
   name: string;
 

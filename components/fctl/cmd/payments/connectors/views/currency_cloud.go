@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+func DisplayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
 	config := connectorConfig.Data.(map[string]interface{})
 
 	tableData := pterm.TableData{}
@@ -22,15 +22,14 @@ func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorCo
 		if !ok {
 			return ""
 		}
-
 		return apiKey
 	}()})
-	tableData = append(tableData, []string{pterm.LightCyan("API secret:"), func() string {
-		apiSecret, ok := config["apiSecret"].(string)
+	tableData = append(tableData, []string{pterm.LightCyan("Login ID:"), func() string {
+		loginID, ok := config["loginID"].(string)
 		if !ok {
 			return ""
 		}
-		return apiSecret
+		return loginID
 	}()})
 	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
 		endpoint, ok := config["endpoint"].(string)

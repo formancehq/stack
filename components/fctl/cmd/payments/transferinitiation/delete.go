@@ -3,6 +3,7 @@ package transferinitiation
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -16,7 +17,13 @@ type DeleteStore struct {
 }
 
 type DeleteController struct {
+	PaymentsVersion versions.Version
+
 	store *DeleteStore
+}
+
+func (c *DeleteController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*DeleteStore] = (*DeleteController)(nil)
@@ -31,11 +38,12 @@ func NewDeleteController() *DeleteController {
 	}
 }
 func NewDeleteCommand() *cobra.Command {
+	c := NewDeleteController()
 	return fctl.NewCommand("delete <transferID>",
 		fctl.WithAliases("d"),
 		fctl.WithShortDescription("Delete a transfer Initiation"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*DeleteStore](NewDeleteController()),
+		fctl.WithController[*DeleteStore](c),
 	)
 }
 
@@ -44,6 +52,14 @@ func (c *DeleteController) GetStore() *DeleteStore {
 }
 
 func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
+	}
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving config")
