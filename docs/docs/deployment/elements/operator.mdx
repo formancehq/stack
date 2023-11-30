@@ -105,14 +105,6 @@ helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
 --set agent.enabled=false
 ```
 
-<!-- ```bash
-helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
---version 0.3.1 \
---namespace formance-system \
---create-namespace \
---values region.values.yaml
-``` -->
-
 This will deploy the operator in your cluster, and allow you to start using it with the CRDs mentioned below.
 
 ### Configuration
