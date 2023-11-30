@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -14,10 +15,11 @@ func TestCreateBankAccounts(t *testing.T) {
 	t.Parallel()
 
 	type testCase struct {
-		name          string
-		req           *CreateBankAccountRequest
-		errorPublish  bool
-		expectedError error
+		name                          string
+		req                           *CreateBankAccountRequest
+		expectedError                 error
+		noBankAccountCreateHandler    bool
+		errorBankAccountCreateHandler error
 	}
 
 	connectorNotFound := models.ConnectorID{
@@ -25,6 +27,7 @@ func TestCreateBankAccounts(t *testing.T) {
 		Provider:  models.ConnectorProviderCurrencyCloud,
 	}
 
+	var ErrOther = errors.New("other error")
 	testCases := []testCase{
 		{
 			name: "nominal",
@@ -33,7 +36,7 @@ func TestCreateBankAccounts(t *testing.T) {
 				IBAN:          "FR7630006000011234567890189",
 				SwiftBicCode:  "HBUKGB4B",
 				Country:       "FR",
-				ConnectorID:   connectorBankingCircle.ID.String(),
+				ConnectorID:   connectorDummyPay.ID.String(),
 				Name:          "test_nominal",
 			},
 		},
@@ -62,7 +65,7 @@ func TestCreateBankAccounts(t *testing.T) {
 			expectedError: ErrValidation,
 		},
 		{
-			name: "create bank account on another connector than BankingCircle",
+			name: "no connector handler",
 			req: &CreateBankAccountRequest{
 				AccountNumber: "0112345678",
 				IBAN:          "FR7630006000011234567890189",
@@ -71,20 +74,47 @@ func TestCreateBankAccounts(t *testing.T) {
 				ConnectorID:   connectorDummyPay.ID.String(),
 				Name:          "test_nominal",
 			},
-			expectedError: ErrValidation,
+			noBankAccountCreateHandler: true,
+			expectedError:              ErrValidation,
 		},
 		{
-			name: "publish error",
+			name: "connector handler error validation",
 			req: &CreateBankAccountRequest{
 				AccountNumber: "0112345678",
 				IBAN:          "FR7630006000011234567890189",
 				SwiftBicCode:  "HBUKGB4B",
 				Country:       "FR",
-				ConnectorID:   connectorBankingCircle.ID.String(),
+				ConnectorID:   connectorDummyPay.ID.String(),
 				Name:          "test_nominal",
 			},
-			errorPublish:  true,
-			expectedError: ErrPublish,
+			errorBankAccountCreateHandler: manager.ErrValidation,
+			expectedError:                 ErrValidation,
+		},
+		{
+			name: "connector handler error connector not found",
+			req: &CreateBankAccountRequest{
+				AccountNumber: "0112345678",
+				IBAN:          "FR7630006000011234567890189",
+				SwiftBicCode:  "HBUKGB4B",
+				Country:       "FR",
+				ConnectorID:   connectorDummyPay.ID.String(),
+				Name:          "test_nominal",
+			},
+			errorBankAccountCreateHandler: manager.ErrConnectorNotFound,
+			expectedError:                 ErrValidation,
+		},
+		{
+			name: "connector handler other error",
+			req: &CreateBankAccountRequest{
+				AccountNumber: "0112345678",
+				IBAN:          "FR7630006000011234567890189",
+				SwiftBicCode:  "HBUKGB4B",
+				Country:       "FR",
+				ConnectorID:   connectorDummyPay.ID.String(),
+				Name:          "test_nominal",
+			},
+			errorBankAccountCreateHandler: ErrOther,
+			expectedError:                 ErrOther,
 		},
 	}
 
@@ -94,14 +124,22 @@ func TestCreateBankAccounts(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			m := &MockPublisher{}
+			var handlers map[models.ConnectorProvider]*ConnectorHandlers
+			if !tc.noBankAccountCreateHandler {
+				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
+					models.ConnectorProviderDummyPay: {
+						BankAccountHandler: func(ctx context.Context, bankAccount *models.BankAccount) error {
+							if tc.errorBankAccountCreateHandler != nil {
+								return tc.errorBankAccountCreateHandler
+							}
 
-			var errPublish error
-			if tc.errorPublish {
-				errPublish = errors.New("publish error")
+							return nil
+						},
+					},
+				}
 			}
 
-			service := New(&MockStore{}, m.WithError(errPublish), nil)
+			service := New(&MockStore{}, &MockPublisher{}, handlers)
 
 			_, err := service.CreateBankAccount(context.Background(), tc.req)
 			if tc.expectedError != nil {

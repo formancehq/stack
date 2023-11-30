@@ -363,6 +363,25 @@ func (l *ConnectorsManager[ConnectorConfig]) InitiatePayment(ctx context.Context
 	return nil
 }
 
+func (l *ConnectorsManager[ConnectorConfig]) CreateExternalBankAccount(ctx context.Context, bankAccount *models.BankAccount) error {
+	connectorManager, err := l.getManager(bankAccount.ConnectorID)
+	if err != nil {
+		return ErrConnectorNotFound
+	}
+
+	err = connectorManager.connector.CreateExternalBankAccount(task.NewConnectorContext(ctx, connectorManager.scheduler), bankAccount)
+	if err != nil {
+		switch {
+		case errors.Is(err, connectors.ErrNotImplemented):
+			return errors.Wrap(ErrValidation, "bank account creation not implemented for this connector")
+		default:
+			return fmt.Errorf("creating bank account: %w", err)
+		}
+	}
+
+	return nil
+}
+
 func (l *ConnectorsManager[ConnectorConfig]) validateAssets(
 	ctx context.Context,
 	connectorManager *ConnectorManager,

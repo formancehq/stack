@@ -118,7 +118,7 @@ func ingestAccountsBatch(
 		for _, balance := range account.Balances {
 			// No need to check if the currency is supported for accounts and
 			// balances.
-			precision, _ := supportedCurrenciesWithDecimal[balance.Currency]
+			precision := supportedCurrenciesWithDecimal[balance.Currency]
 
 			var amount big.Float
 			_, ok := amount.SetString(balance.IntraDayAmount.String())

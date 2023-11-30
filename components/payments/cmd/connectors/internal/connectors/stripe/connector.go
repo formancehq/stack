@@ -25,6 +25,15 @@ type Connector struct {
 	cfg    Config
 }
 
+func newConnector(logger logging.Logger, cfg Config) *Connector {
+	return &Connector{
+		logger: logger.WithFields(map[string]any{
+			"component": "connector",
+		}),
+		cfg: cfg,
+	}
+}
+
 func (c *Connector) Install(ctx task.ConnectorContext) error {
 	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name: "Main task to periodically fetch transactions",
@@ -43,10 +52,6 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 	})
 }
 
-func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
-	return supportedCurrenciesWithDecimal
-}
-
 func (c *Connector) Uninstall(ctx context.Context) error {
 	return nil
 }
@@ -58,6 +63,10 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	}
 
 	return c.resolveTasks()(taskDescriptor)
+}
+
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
@@ -91,13 +100,8 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return nil
 }
 
-var _ connectors.Connector = &Connector{}
-
-func newConnector(logger logging.Logger, cfg Config) *Connector {
-	return &Connector{
-		logger: logger.WithFields(map[string]any{
-			"component": "connector",
-		}),
-		cfg: cfg,
-	}
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	return connectors.ErrNotImplemented
 }
+
+var _ connectors.Connector = &Connector{}

@@ -24,7 +24,8 @@ type connectorHandler struct {
 	Provider models.ConnectorProvider
 
 	// TODO(polo): refactor to remove this ugly hack to access the connector manager
-	initiatePayment service.PaymentHandler
+	initiatePayment           service.PaymentHandler
+	createExternalBankAccount service.BankAccountHandler
 }
 
 func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.Loader[ConnectorConfig],
@@ -70,9 +71,10 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 			cm *manager.ConnectorsManager[ConnectorConfig],
 		) connectorHandler {
 			return connectorHandler{
-				Handler:         connectorRouter(loader.Name(), b),
-				Provider:        loader.Name(),
-				initiatePayment: cm.InitiatePayment,
+				Handler:                   connectorRouter(loader.Name(), b),
+				Provider:                  loader.Name(),
+				initiatePayment:           cm.InitiatePayment,
+				createExternalBankAccount: cm.CreateExternalBankAccount,
 			}
 		}, fx.ResultTags(`group:"connectorHandlers"`))),
 		fx.Invoke(func(lc fx.Lifecycle, cm *manager.ConnectorsManager[ConnectorConfig]) {

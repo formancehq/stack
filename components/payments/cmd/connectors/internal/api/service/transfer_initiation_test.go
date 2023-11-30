@@ -273,15 +273,17 @@ func TestCreateTransferInitiation(t *testing.T) {
 				errPublish = errors.New("publish error")
 			}
 
-			var handlers map[models.ConnectorProvider]PaymentHandler
+			var handlers map[models.ConnectorProvider]*ConnectorHandlers
 			if !tc.noPaymentsHandler {
-				handlers = map[models.ConnectorProvider]PaymentHandler{
-					models.ConnectorProviderDummyPay: func(ctx context.Context, transfer *models.TransferInitiation) error {
-						if tc.errorPaymentHandler != nil {
-							return tc.errorPaymentHandler
-						}
+				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
+					models.ConnectorProviderDummyPay: {
+						PaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
+							if tc.errorPaymentHandler != nil {
+								return tc.errorPaymentHandler
+							}
 
-						return nil
+							return nil
+						},
 					},
 				}
 			}
@@ -448,15 +450,17 @@ func TestUpdateTransferInitiationStatus(t *testing.T) {
 				errPublish = errors.New("publish error")
 			}
 
-			var handlers map[models.ConnectorProvider]PaymentHandler
+			var handlers map[models.ConnectorProvider]*ConnectorHandlers
 			if !tc.noPaymentsHandler {
-				handlers = map[models.ConnectorProvider]PaymentHandler{
-					models.ConnectorProviderDummyPay: func(ctx context.Context, transfer *models.TransferInitiation) error {
-						if tc.errorPaymentHandler != nil {
-							return tc.errorPaymentHandler
-						}
+				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
+					models.ConnectorProviderDummyPay: {
+						PaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
+							if tc.errorPaymentHandler != nil {
+								return tc.errorPaymentHandler
+							}
 
-						return nil
+							return nil
+						},
 					},
 				}
 			}
@@ -532,15 +536,17 @@ func TestRetryTransferInitiation(t *testing.T) {
 				errPublish = errors.New("publish error")
 			}
 
-			var handlers map[models.ConnectorProvider]PaymentHandler
+			var handlers map[models.ConnectorProvider]*ConnectorHandlers
 			if !tc.noPaymentsHandler {
-				handlers = map[models.ConnectorProvider]PaymentHandler{
-					models.ConnectorProviderDummyPay: func(ctx context.Context, transfer *models.TransferInitiation) error {
-						if tc.errorPaymentHandler != nil {
-							return tc.errorPaymentHandler
-						}
+				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
+					models.ConnectorProviderDummyPay: {
+						PaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
+							if tc.errorPaymentHandler != nil {
+								return tc.errorPaymentHandler
+							}
 
-						return nil
+							return nil
+						},
 					},
 				}
 			}

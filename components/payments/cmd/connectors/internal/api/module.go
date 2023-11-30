@@ -47,7 +47,7 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
 		}),
 		fx.Supply(serviceInfo),
-		fx.Provide(fx.Annotate(paymentHandlerMap, fx.ParamTags(`group:"connectorHandlers"`))),
+		fx.Provide(fx.Annotate(connectorsHandlerMap, fx.ParamTags(`group:"connectorHandlers"`))),
 		fx.Provide(func(store *storage.Storage) service.Store {
 			return store
 		}),
@@ -65,10 +65,18 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 	)
 }
 
-func paymentHandlerMap(connectorHandlers []connectorHandler) map[models.ConnectorProvider]service.PaymentHandler {
-	m := make(map[models.ConnectorProvider]service.PaymentHandler)
+func connectorsHandlerMap(connectorHandlers []connectorHandler) map[models.ConnectorProvider]*service.ConnectorHandlers {
+	m := make(map[models.ConnectorProvider]*service.ConnectorHandlers)
 	for _, h := range connectorHandlers {
-		m[h.Provider] = h.initiatePayment
+		if handlers, ok := m[h.Provider]; ok {
+			handlers.PaymentHandler = h.initiatePayment
+			handlers.BankAccountHandler = h.createExternalBankAccount
+		} else {
+			m[h.Provider] = &service.ConnectorHandlers{
+				PaymentHandler:     h.initiatePayment,
+				BankAccountHandler: h.createExternalBankAccount,
+			}
+		}
 	}
 	return m
 }

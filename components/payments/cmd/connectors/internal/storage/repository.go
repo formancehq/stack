@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/extra/bundebug"
 )
@@ -27,4 +28,5 @@ func (s *Storage) debug() {
 type Reader interface {
 	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
+	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
 }

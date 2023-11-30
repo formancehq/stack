@@ -10,6 +10,7 @@ import (
 )
 
 type PaymentHandler func(ctx context.Context, transfer *models.TransferInitiation) error
+type BankAccountHandler func(ctx context.Context, bankAccount *models.BankAccount) error
 
 type Store interface {
 	Ping() error
@@ -33,19 +34,24 @@ type Store interface {
 }
 
 type Service struct {
-	store           Store
-	publisher       message.Publisher
-	paymentHandlers map[models.ConnectorProvider]PaymentHandler
+	store             Store
+	publisher         message.Publisher
+	connectorHandlers map[models.ConnectorProvider]*ConnectorHandlers
+}
+
+type ConnectorHandlers struct {
+	PaymentHandler     PaymentHandler
+	BankAccountHandler BankAccountHandler
 }
 
 func New(
 	store Store,
 	publisher message.Publisher,
-	paymentHandlers map[models.ConnectorProvider]PaymentHandler,
+	connectorHandlers map[models.ConnectorProvider]*ConnectorHandlers,
 ) *Service {
 	return &Service{
-		store:           store,
-		publisher:       publisher,
-		paymentHandlers: paymentHandlers,
+		store:             store,
+		publisher:         publisher,
+		connectorHandlers: connectorHandlers,
 	}
 }
