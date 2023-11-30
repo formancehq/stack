@@ -10,7 +10,14 @@ func DisplayWiseConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConf
 	config := connectorConfig.Data.WiseConfig
 
 	tableData := pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("Name:"), config.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
+	tableData = append(tableData, []string{pterm.LightCyan("Polling Period:"), func() string {
+		if config.PollingPeriod == nil {
+			return ""
+		}
+		return *config.PollingPeriod
+	}()})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).

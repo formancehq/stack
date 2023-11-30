@@ -105,6 +105,10 @@ func (c *PaymentsGetConfigController) Render(cmd *cobra.Command, args []string) 
 		err = views.DisplayCurrencyCloudConfig(cmd, c.store.ConnectorConfig)
 	case internal.WiseConnector:
 		err = views.DisplayWiseConfig(cmd, c.store.ConnectorConfig)
+	case internal.MangoPayConnector:
+		err = views.DisplayMangopayConfig(cmd, c.store.ConnectorConfig)
+	case internal.MoneycorpConnector:
+		err = views.DisplayMoneycorpConfig(cmd, c.store.ConnectorConfig)
 	default:
 		pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("Connection unknown.")
 	}

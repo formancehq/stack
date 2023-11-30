@@ -6,12 +6,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func DisplayStripeConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
-	config := connectorConfig.Data.StripeConfig
+func DisplayMoneycorpConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+	config := connectorConfig.Data.MoneycorpConfig
 
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("Name:"), config.Name})
+	tableData = append(tableData, []string{pterm.LightCyan("ClientID:"), config.ClientID})
 	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
+	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), config.Endpoint})
 	tableData = append(tableData, []string{pterm.LightCyan("Polling Period:"), func() string {
 		if config.PollingPeriod == nil {
 			return ""
