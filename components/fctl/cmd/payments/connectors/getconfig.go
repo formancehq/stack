@@ -59,9 +59,6 @@ func NewGetConfigCommand() *cobra.Command {
 		fctl.WithStringFlag("connector-id", "", "Connector ID"),
 		fctl.WithShortDescription(fmt.Sprintf("Read a connector config (Connectors available: %s)", connectorsAvailable)),
 		fctl.WithController[*PaymentsGetConfigStore](c),
-		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			return versions.GetPaymentsVersion(cmd, args, c)
-		}),
 	)
 }
 
@@ -70,6 +67,10 @@ func (c *PaymentsGetConfigController) GetStore() *PaymentsGetConfigStore {
 }
 
 func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
 	provider := fctl.GetString(cmd, c.providerNameFlag)
 	connectorID := fctl.GetString(cmd, c.connectorIDFlag)
 

@@ -60,9 +60,6 @@ func NewUninstallCommand() *cobra.Command {
 		fctl.WithStringFlag(c.connectorIDFlag, "", "Connector ID"),
 		fctl.WithShortDescription("Uninstall a connector"),
 		fctl.WithController[*PaymentsConnectorsUninstallStore](c),
-		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			return versions.GetPaymentsVersion(cmd, args, c)
-		}),
 	)
 }
 
@@ -71,6 +68,10 @@ func (c *PaymentsConnectorsUninstallController) GetStore() *PaymentsConnectorsUn
 }
 
 func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err

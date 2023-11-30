@@ -44,9 +44,6 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*CreateStore](c),
-		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			return versions.GetPaymentsVersion(cmd, args, c)
-		}),
 	)
 }
 
@@ -55,6 +52,10 @@ func (c *CreateController) GetStore() *CreateStore {
 }
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
 	if c.PaymentsVersion < versions.V1 {
 		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
 	}

@@ -45,6 +45,10 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
 	if c.PaymentsVersion < versions.V1 {
 		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
 	}
@@ -120,8 +124,5 @@ func NewListCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithShortDescription("List transfer initiation"),
 		fctl.WithController[*ListStore](c),
-		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			return versions.GetPaymentsVersion(cmd, args, c)
-		}),
 	)
 }

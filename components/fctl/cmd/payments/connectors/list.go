@@ -47,9 +47,6 @@ func NewListCommand() *cobra.Command {
 		fctl.WithAliases("ls", "l"),
 		fctl.WithShortDescription("List all enabled connectors"),
 		fctl.WithController[*PaymentsConnectorsListStore](c),
-		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			return versions.GetPaymentsVersion(cmd, args, c)
-		}),
 	)
 }
 
@@ -58,6 +55,10 @@ func (c *PaymentsConnectorsListController) GetStore() *PaymentsConnectorsListSto
 }
 
 func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
