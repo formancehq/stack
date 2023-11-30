@@ -40,7 +40,15 @@ func GetPaymentsVersion(cmd *cobra.Command, args []string, controller VersionCon
 		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	res := semver.Compare(response.ServerInfo.Version, "1.0.0-rc.1")
+	version := "v" + response.ServerInfo.Version
+
+	if !semver.IsValid(version) {
+		// last version for commits
+		controller.SetVersion(V1)
+		return nil
+	}
+
+	res := semver.Compare(version, "v1.0.0-rc.1")
 	switch res {
 	case 0, 1:
 		controller.SetVersion(V1)

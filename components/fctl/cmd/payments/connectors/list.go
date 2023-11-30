@@ -59,6 +59,8 @@ func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string
 		return nil, err
 	}
 
+	fmt.Println("Payments Version:", c.PaymentsVersion)
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
