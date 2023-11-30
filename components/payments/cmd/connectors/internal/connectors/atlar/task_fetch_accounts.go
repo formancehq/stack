@@ -9,9 +9,6 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
-	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client/accounts"
-	atlar_models "github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/models"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
@@ -20,6 +17,9 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
+	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
+	"github.com/get-momo/atlar-v1-go-client/client/accounts"
+	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -30,7 +30,7 @@ var (
 	balancesAttrs         = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
-func FetchAccountsTask(config Config, client *client.Client) task.Task {
+func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,

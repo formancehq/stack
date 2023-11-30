@@ -1,9 +1,9 @@
 package atlar
 
 import (
-	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 )
@@ -31,7 +31,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 	)
 	basicAuth := httptransport.BasicAuth(config.AccessKey, config.Secret)
 	transport.DefaultAuthentication = basicAuth
-	client := client.New(transport, strfmt.Default)
+	client := atlar_client.New(transport, strfmt.Default)
 
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		if taskDescriptor.Main {
