@@ -35,7 +35,7 @@ func (c *CreateBankAccountRequest) Validate() error {
 	}
 
 	if c.ConnectorID == "" {
-		return errors.New("connectorId must be provided")
+		return errors.New("connectorID must be provided")
 	}
 
 	return nil
