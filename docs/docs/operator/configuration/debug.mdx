@@ -1,35 +1,31 @@
 ---
-title: Activate a debug mode
-pagination_next: null
-pagination_prev: null
-# hide_table_of_contents: true
-# the above sets the doc column width to 100% when set to true,
-# landing a less-than-ideal look
-toc_min_heading_level: 3
+title: Debug mode
 ---
 import GettingHelp from '@site/docs/partials/_getting_help.mdx';
 import WIP from '@site/docs/partials/_wip.mdx';
 
-# Activate a debug mode
+# Activating the debug mode
 
-<WIP />
-
-## Introduction
-It's possible to switch an entire stack to debug mode, and get additional information on how individual components work. This is useful for debugging purposes.
+It is possible to switch an entire stack to debug mode, in order to obtain additional information on individual components and how they work; which can typically be useful for debugging purposes.
 
 
-## How do I advance to debug mode?
-For advance to debug mode, you need to edit the `stack.yml` file of your Kubernetes cluster.
+## Setting up debug mode
+
+In order to activate the debug mode, you'll simply need to edit the `stack.yml` file for a given stack, and add the following lines:
+
 ```yaml
 debug: true
 dev: true
 ```
 
-## Full example
+## Example
+
 ```bash
 kubectl edit stack stack1
 ```
-And edit the `stack.yml` file of your Kubernetes cluster.
+
+And edit file accordingly:
+
 ```yaml
 apiVersion: stack.formance.com/v1beta3
 kind: Stack

@@ -38,85 +38,14 @@ const sidebars = {
           type: 'doc',
           id: 'guides/newSandbox',
         },
-        {
-          type: 'doc',
-          id: 'getting-started/invite',
-        }
       ],
     },
     {
-      label: 'Products',
+      label: 'Components',
       type: 'category',
       collapsible: true,
       collapsed: false,
       items: [
-        {
-          label: 'Flows (beta)',
-          type: 'category',
-          collapsible: true,
-          collapsed: true,
-          items: [
-            {
-              type: 'doc',
-              id: 'flows/index',
-              label: 'Introduction',
-            },
-            {
-              type: 'doc',
-              id: 'flows/definition',
-              label: 'Workflows definition',
-            },
-            {
-              type: 'doc',
-              id: 'flows/execution',
-              label: 'Workflows execution',
-            },
-            {
-              type: 'category',
-              label: 'Stages reference',
-              collapsible: true,
-              collapsed: false,
-              items: [
-                {
-                  type: 'doc',
-                  id: 'flows/stages/send',
-                  label: 'Send',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/stages/wait-event',
-                  label: 'Waiting for events',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/stages/wait-delay',
-                  label: 'Waiting for a delay',
-                }
-              ],
-            },
-            {
-              type: 'category',
-              label: 'Examples',
-              items: [
-                {
-                  type: 'doc',
-                  id: 'flows/examples/ledger-to-ledger',
-                  label: 'Ledger to Ledger',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/examples/payment-to-wallet',
-                  label: 'Payment to Wallet',
-                },
-                {
-                  type: 'doc',
-                  id: 'flows/examples/stripe-payout',
-                  label: 'Ledger to Payout',
-                }
-              ],
-            }
-          ],
-        },
         {
           label: 'Ledger',
           type: 'category',
@@ -135,13 +64,13 @@ const sidebars = {
               collapsed: true,
               link: { type: 'doc', id: 'ledger/get-started/index' },
               items: [
-                {
-                  type: 'doc',
-                  id: 'ledger/get-started/installation',
-                  customProps: {
-                    // icon: '💾',
-                  }
-                },
+                // {
+                //   type: 'doc',
+                //   id: 'ledger/get-started/installation',
+                //   customProps: {
+                //     // icon: '💾',
+                //   }
+                // },
                 {
                   label: 'Hello World',
                   type: 'category',
@@ -245,13 +174,12 @@ const sidebars = {
               items: [
                 {
                   type: 'doc',
-                  id: 'ledger/advanced/publisher',
-                  label: 'Publishing to HTTP / Kafka'
+                  id: 'ledger/advanced/asset-conversion',
+                  label: 'Currency conversion',
                 },
                 {
                   type: 'doc',
-                  id: 'ledger/advanced/asset-conversion',
-                  label: 'Currency conversion',
+                  id: 'ledger/advanced/scale',
                 },
               ],
             },
@@ -267,8 +195,7 @@ const sidebars = {
                 'ledger/operations/storages',
                 'ledger/operations/upgrade',
                 'ledger/operations/authentication',
-                'ledger/operations/using-the-control-dashboard',
-                'ledger/api/sdks'
+                // 'ledger/api/sdks'
               ],
             },
             {
@@ -278,56 +205,28 @@ const sidebars = {
               collapsed: true,
               items: [
                 'ledger/reference/ledgers',
-                'ledger/reference/accounts',
-                'ledger/reference/transactions',
-                'ledger/reference/architecture',
+                'ledger/reference/accounting-model',
+                // 'ledger/reference/accounts',
+                // 'ledger/reference/transactions',
+                // 'ledger/reference/architecture',
                 'ledger/reference/concurrency-model',
-                {
-                  label: 'Numscript',
-                  type: 'category',
-                  collapsible: true,
-                  collapsed: true,
-                  items: [
-                    'ledger/reference/numscript/machine',
-                    'ledger/reference/numscript/postings',
-                    'ledger/reference/numscript/sources',
-                    'ledger/reference/numscript/destinations',
-                    'ledger/reference/numscript/variables',
-                    'ledger/reference/numscript/metadata',
-                    'ledger/reference/numscript/rounding',
-                  ],
-                },
+                'ledger/advanced/publisher',
+                'ledger/reference/performance',
               ],
             },
-          ],
-        },
-        {
-          label: 'Operator',
-          type: 'category',
-          collapsible: true,
-          collapsed: true,
-          items: [
             {
-              type: 'doc',
-              id: 'operator/index',
-              label: 'Introduction',
-            },
-            {
+              label: 'Numscript',
               type: 'category',
-              label: 'Configuration',
+              collapsible: true,
+              collapsed: true,
               items: [
-                {
-                  type: 'doc',
-                  id: 'operator/configuration/debug',
-                },
-                {
-                  type: 'doc',
-                  id: 'operator/configuration/disable-service',
-                },
-                {
-                  type: 'doc',
-                  id: 'operator/configuration/disable-stack',
-                },
+                'ledger/reference/numscript/machine',
+                'ledger/reference/numscript/postings',
+                'ledger/reference/numscript/sources',
+                'ledger/reference/numscript/destinations',
+                'ledger/reference/numscript/variables',
+                'ledger/reference/numscript/metadata',
+                'ledger/reference/numscript/rounding',
               ],
             },
           ],
@@ -399,7 +298,7 @@ const sidebars = {
           ]
         },
         {
-          label: 'Wallets (beta)',
+          label: 'Wallets',
           type: 'category',
           collapsible: true,
           collapsed: true,
@@ -450,7 +349,93 @@ const sidebars = {
           ]
         },
         {
-          label: 'Webhooks',
+          label: 'Flows',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'flows/index',
+              label: 'Introduction',
+            },
+            {
+              type: 'doc',
+              id: 'flows/definition',
+              label: 'Workflows definition',
+            },
+            {
+              type: 'doc',
+              id: 'flows/execution',
+              label: 'Workflows execution',
+            },
+            {
+              type: 'category',
+              label: 'Stages reference',
+              collapsible: true,
+              collapsed: false,
+              items: [
+                {
+                  type: 'doc',
+                  id: 'flows/stages/send',
+                  label: 'Send',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/stages/wait-event',
+                  label: 'Waiting for events',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/stages/wait-delay',
+                  label: 'Waiting for a delay',
+                }
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Examples',
+              items: [
+                {
+                  type: 'doc',
+                  id: 'flows/examples/ledger-to-ledger',
+                  label: 'Ledger to Ledger',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/examples/payment-to-wallet',
+                  label: 'Payment to Wallet',
+                },
+                {
+                  type: 'doc',
+                  id: 'flows/examples/stripe-payout',
+                  label: 'Ledger to Payout',
+                }
+              ],
+            }
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Platform',
+      items: [
+        {
+          type: 'doc',
+          id: 'stack/architecture',
+        },
+        {
+          type: 'doc',
+          id: 'stack/authentication/index',
+          label: 'Authentication',
+        },
+        {
+          type: 'doc',
+          id: 'getting-started/invite',
+        },
+        {
+          label: 'Events',
           type: 'category',
           collapsible: true,
           collapsed: true,
@@ -458,10 +443,19 @@ const sidebars = {
             {
               type: 'doc',
               id: 'webhooks/index',
-              label: 'Introduction',
+              label: 'Webhooks',
             },
           ],
-        }
+        },
+        {
+          type: 'doc',
+          id: 'stack/sdk/index',
+          label: 'SDKs',
+        },
+        {
+          type: 'doc',
+          id: 'stack/versions',
+        },
       ],
     },
     {
@@ -474,7 +468,19 @@ const sidebars = {
       items: [
         {
           type: 'category',
-          label: 'CloudPrem',
+          label: 'Formance Cloud',
+          link: { type: 'doc', id: 'deployment/cloud/intro' },
+          items: [
+            {
+              type: 'doc',
+              id: 'deployment/cloud/regions',
+              label: 'Regions',
+            },
+          ]
+        },
+        {
+          type: 'category',
+          label: 'Formance CloudPrem',
           link: { type: 'doc', id: 'deployment/cloudprem/intro' },
           items: [
             {
@@ -497,7 +503,7 @@ const sidebars = {
         },
         {
           type: 'category',
-          label: 'Elements',
+          label: 'Formance Elements',
           link: {
             type: 'doc',
             id: 'deployment/elements/intro',
@@ -505,20 +511,58 @@ const sidebars = {
           items: [
             {
               type: 'doc',
-              id: 'deployment/elements/kubernetes',
+              id: 'deployment/elements/cluster-config',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/elements/operator',
             }
           ],
         },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'SDKs',
-      items: [
+        {
+          label: 'K8S operator manual',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'operator/upgrade',
+              label: 'Upgrade',
+            },
+            {
+              type: 'category',
+              label: 'Configuration',
+              items: [
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/debug',
+                },
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/disable-service',
+                },
+                {
+                  type: 'doc',
+                  id: 'operator/configuration/disable-stack',
+                },
+              ],
+            }
+          ],
+        },
         {
           type: 'doc',
-          id: 'stack/sdk/index',
+          id: 'deployment/upgrade',
         },
+        {
+          type: 'doc',
+          id: 'deployment/backups',
+        },
+        // {
+        //   type: 'doc',
+        //   id: 'stack/capacity',
+        //   label: 'Capacity planning',
+        // }
       ],
     },
     {
@@ -529,17 +573,16 @@ const sidebars = {
       items: [
         {
           type: 'doc',
-          id: 'stack/architecture',
-        },
-        {
-          type: 'doc',
-          id: 'stack/authentication/index',
-          label: 'Authentication',
-        },
-        {
-          type: 'doc',
           id: 'stack/unambiguous-monetary-notation',
-          label: 'Monetary Notation (UMN)',
+          label: 'Monetary notation (UMN)',
+        },
+        {
+          type: 'doc',
+          id: 'stack/releases',
+        },
+        {
+          type: 'doc',
+          id: 'stack/security',
         }
       ],
     },

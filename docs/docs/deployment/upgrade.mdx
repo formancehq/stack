@@ -1,0 +1,45 @@
+---
+title: Upgrade management
+---
+
+<!-- ## Releases notification -->
+
+When self-hosting a Formance deployment, you are in charge of managing the upgrade process of your deployment. The operator has been designed to make this process as smooth as possible, but there are still a few things to keep in mind when upgrading your deployment which we will cover in this section.
+
+:::info
+Make sure to check the [release notes](https://github.com/formancehq/stack/releases) of the version you are upgrading to, as they may contain important information regarding the upgrade process.
+:::
+
+## Upgrade process
+
+### Operator upgrade
+
+The first thing to do when you are headed towards upgrading your Formance deployment is to upgrade the operator. As the one in charge of managing the whole deployment, having an up to date operator will guarantee that it is able to manage the latest versions of the components it will be in charge of deploying.
+
+The operator can be upgraded with Helm, following the instructions in the dedicated operator upgrade [section](/operator/upgrade).
+
+Once your operator is up to date, you can move on to upgrading the components of your deployment themselves.
+
+### Components upgrade
+
+The upgrade process is handled by the operator, which will take care of upgrading the components one by one, as per specified in the `versions` CRD. Any migration that needs to be performed will be handled by the operator as well.
+
+As a result, the primary action on your side is to update the `versions` CRD to the version you want to upgrade to. The operator will then take care of the rest. The following command can be used to update the `versions` CRD:
+
+```bash
+kubectl edit stack stack1
+```
+
+You can find the latest assemblage of components versions in the stack versions [section](/stack/versions).
+
+:::warning
+Do not update the versions CRD unless you are ready to upgrade your deployment.
+:::
+
+Once updated, the operator will start the upgrade process. You can follow the process in the `status` section of the `stack` CRD. The status will be updated in real time, and will indicate the health status of the various services, such as whether they are `healthy` or not.
+
+For each component, a [rolling upgrade](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/) will be performed, meaning that the component will be upgraded one by one, and the service will be kept running during the upgrade process.
+
+:::info
+Note that the rollout process is managed by Kubernetes, and as such, the operator has no control over it. As a result, the upgrade process may be interrupted by Kubernetes, and a service may be unavailable for a short period of time.
+:::
