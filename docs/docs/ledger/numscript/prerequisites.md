@@ -32,7 +32,8 @@ First, create a file called `seed.num` with the following contents:
 )`}></NumscriptBlock>
 
 
-:::info Wow, that's really complex! I don't understand.
+
+:::info Wow, that's really complex!
 Broadly speaking, this Numscript will place 1000 coins in all the accounts we will use in these guides.
 
 But really, right now, **don't worry about understanding this complicated bit of Numscript**. This script is only necessary to set up the Dunshire ledger we'll use in the following guides, and there is no need to fully understand it yet.

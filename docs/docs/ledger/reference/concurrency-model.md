@@ -1,7 +1,6 @@
 ---
-title: Concurrency Model
+title: Concurrency model
 ---
-# Concurrency Model
 
 Transactions commited to the ledger are fully atomic and serialized, supported by two separate and ordered concurrency-control mechanisms preventing effectively race-conditions to happen:
 

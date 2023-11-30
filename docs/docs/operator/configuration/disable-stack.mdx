@@ -15,20 +15,23 @@ import WIP from '@site/docs/partials/_wip.mdx';
 <WIP />
 
 ## Introduction
-In the Stack object of your Kubernetes cluster, you can disable stack you don't want to deploy.
+In the Stack object of your Kubernetes cluster, you can disable stack you don't want to deploy anymore.
 
-## How do I disable a stack?
-To disable a stack, you need to edit the `stack.yml` file of your Kubernetes cluster.
-By example, you need to add the following lines in the `stack.yml` file:
+## Configuration
+
+In order to disable a stack, you need to edit the `stack.yml` file of your Kubernetes cluster and add the following parameter:
 ```yaml
 disabled: true
 ```
 
-## Full example
+## Example
+
+Let's first open the stack configuration file:
 ```bash
 kubectl edit stack stack1
 ```
-And edit the `stack.yml` file of your Kubernetes cluster.
+
+And add to the `stack.yml` file the following parameter:
 ```yaml
 apiVersion: stack.formance.com/v1beta3
 kind: Stack
