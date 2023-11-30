@@ -95,6 +95,7 @@ func TestReadConnectors(t *testing.T) {
 					Provider:    listConnectorsResponse[0].Provider,
 					ConnectorID: listConnectorsResponse[0].ID.String(),
 					Name:        "c1",
+					Enabled:     true,
 				},
 			}
 

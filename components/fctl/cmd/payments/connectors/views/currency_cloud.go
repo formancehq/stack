@@ -10,6 +10,7 @@ func DisplayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.Conn
 	config := connectorConfig.Data.CurrencyCloudConfig
 
 	tableData := pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("Name:"), config.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
 	tableData = append(tableData, []string{pterm.LightCyan("Login ID:"), config.LoginID})
 	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
@@ -17,6 +18,12 @@ func DisplayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.Conn
 			return ""
 		}
 		return *config.Endpoint
+	}()})
+	tableData = append(tableData, []string{pterm.LightCyan("Polling Period:"), func() string {
+		if config.PollingPeriod == nil {
+			return ""
+		}
+		return *config.PollingPeriod
 	}()})
 
 	if err := pterm.DefaultTable.

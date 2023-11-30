@@ -13,6 +13,7 @@ type readConnectorsResponseElement struct {
 	Provider    models.ConnectorProvider `json:"provider" bson:"provider"`
 	ConnectorID string                   `json:"connectorID" bson:"connectorID"`
 	Name        string                   `json:"name" bson:"name"`
+	Enabled     bool                     `json:"enabled" bson:"enabled"`
 }
 
 func readConnectorsHandler(b backend.ServiceBackend) http.HandlerFunc {
@@ -30,6 +31,7 @@ func readConnectorsHandler(b backend.ServiceBackend) http.HandlerFunc {
 				Provider:    res[i].Provider,
 				ConnectorID: res[i].ID.String(),
 				Name:        res[i].Name,
+				Enabled:     true,
 			}
 		}
 
