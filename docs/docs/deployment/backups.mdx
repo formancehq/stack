@@ -4,9 +4,13 @@ title: Backups management
 
 When deploying the Formance Platform in production on your own infrastructure, you are responsible for the deployment of a proper backup mechanism. This mechanism will typically be based on the specifics of the cloud provider you are using. Let's discuss however some general principles that should be followed.
 
+
+PostgreSQL databases must be backed up first. The OpenSearch / ElasticSearch cluster can be completely rebuilt from the data in the PostgreSQL databases.    
+If you're using Flows, you also need to back up Temporal data correctly (or use their Cloud version). 
+
 ## Snapshots
 
-TBD
+We recommend using snapshots. This will enable you to restore all your data at once and have a consistent backup. Most cloud providers support snapshot backups on their databases. 
 
 ## Replication
 
