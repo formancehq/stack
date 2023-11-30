@@ -3,6 +3,7 @@ package transferinitiation
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -15,7 +16,13 @@ type RetryStore struct {
 	Success    bool   `json:"success"`
 }
 type RetryController struct {
+	PaymentsVersion versions.Version
+
 	store *RetryStore
+}
+
+func (c *RetryController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*RetryStore] = (*RetryController)(nil)
@@ -31,11 +38,12 @@ func NewRetryController() *RetryController {
 }
 
 func NewRetryCommand() *cobra.Command {
+	c := NewRetryController()
 	return fctl.NewCommand("retry <transferID>",
 		fctl.WithShortDescription("Retry a failed transfer initiation"),
 		fctl.WithAliases("r"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*RetryStore](NewRetryController()),
+		fctl.WithController[*RetryStore](c),
 	)
 }
 
@@ -44,6 +52,14 @@ func (c *RetryController) GetStore() *RetryStore {
 }
 
 func (c *RetryController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
+	}
+
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
 		return nil, err

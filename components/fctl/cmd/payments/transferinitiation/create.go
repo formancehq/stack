@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
@@ -15,7 +16,13 @@ type CreateStore struct {
 	TransferInitiationId string `json:"transferInitiationId"`
 }
 type CreateController struct {
+	PaymentsVersion versions.Version
+
 	store *CreateStore
+}
+
+func (c *CreateController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*CreateStore] = (*CreateController)(nil)
@@ -31,11 +38,12 @@ func NewCreateController() *CreateController {
 }
 
 func NewCreateCommand() *cobra.Command {
+	c := NewCreateController()
 	return fctl.NewCommand("create <file>|-",
 		fctl.WithShortDescription("Create a transfer initiation"),
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*CreateStore](NewCreateController()),
+		fctl.WithController[*CreateStore](c),
 	)
 }
 
@@ -44,6 +52,13 @@ func (c *CreateController) GetStore() *CreateStore {
 }
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
+	}
 
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {

@@ -120,7 +120,11 @@ func (c *PaymentsConnectorsMoneycorpController) Run(cmd *cobra.Command, args []s
 }
 
 func (c *PaymentsConnectorsMoneycorpController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector %s installed!", c.store.ConnectorName, c.store.ConnectorID)
+	if c.store.ConnectorID == "" {
+		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector installed!", c.store.ConnectorName)
+	} else {
+		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector '%s' installed!", c.store.ConnectorName, c.store.ConnectorID)
+	}
 
 	return nil
 }

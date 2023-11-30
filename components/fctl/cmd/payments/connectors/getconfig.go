@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	"github.com/formancehq/fctl/cmd/payments/connectors/views"
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -18,10 +19,20 @@ var (
 
 type PaymentsGetConfigStore struct {
 	ConnectorConfig *shared.ConnectorConfigResponse `json:"connectorConfig"`
+	Provider        string                          `json:"provider"`
+	ConnectorID     string                          `json:"connectorId"`
 }
 type PaymentsGetConfigController struct {
+	PaymentsVersion versions.Version
+
 	store *PaymentsGetConfigStore
-	args  []string
+
+	providerNameFlag string
+	connectorIDFlag  string
+}
+
+func (c *PaymentsGetConfigController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*PaymentsGetConfigStore] = (*PaymentsGetConfigController)(nil)
@@ -32,17 +43,22 @@ func NewDefaultPaymentsGetConfigStore() *PaymentsGetConfigStore {
 
 func NewPaymentsGetConfigController() *PaymentsGetConfigController {
 	return &PaymentsGetConfigController{
-		store: NewDefaultPaymentsGetConfigStore(),
+		store:            NewDefaultPaymentsGetConfigStore(),
+		providerNameFlag: "provider",
+		connectorIDFlag:  "connector-id",
 	}
 }
 
 func NewGetConfigCommand() *cobra.Command {
-	return fctl.NewCommand("get-config <connector-name>",
+	c := NewPaymentsGetConfigController()
+	return fctl.NewCommand("get-config",
 		fctl.WithAliases("getconfig", "getconf", "gc", "get", "g"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithValidArgs(connectorsAvailable...),
+		fctl.WithStringFlag("provider", "", "Provider name"),
+		fctl.WithStringFlag("connector-id", "", "Connector ID"),
 		fctl.WithShortDescription(fmt.Sprintf("Read a connector config (Connectors available: %s)", connectorsAvailable)),
-		fctl.WithController[*PaymentsGetConfigStore](NewPaymentsGetConfigController()),
+		fctl.WithController[*PaymentsGetConfigStore](c),
 	)
 }
 
@@ -51,6 +67,12 @@ func (c *PaymentsGetConfigController) GetStore() *PaymentsGetConfigStore {
 }
 
 func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	provider := fctl.GetString(cmd, c.providerNameFlag)
+	connectorID := fctl.GetString(cmd, c.connectorIDFlag)
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -72,19 +94,51 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 		return nil, err
 	}
 
-	response, err := client.Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
-		Connector: shared.Connector(args[0]),
-	})
-	if err != nil {
-		return nil, err
-	}
+	switch c.PaymentsVersion {
+	case versions.V0:
+		if provider == "" {
+			return nil, fmt.Errorf("provider is required")
+		}
 
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
+		response, err := client.Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
+			Connector: shared.Connector(provider),
+		})
+		if err != nil {
+			return nil, err
+		}
 
-	c.args = args
-	c.store.ConnectorConfig = response.ConnectorConfigResponse
+		if response.StatusCode >= 300 {
+			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		}
+
+		c.store.Provider = provider
+		c.store.ConnectorConfig = response.ConnectorConfigResponse
+
+	case versions.V1:
+		if provider == "" {
+			return nil, fmt.Errorf("provider is required")
+		}
+
+		if connectorID == "" {
+			return nil, fmt.Errorf("connector-id is required")
+		}
+
+		response, err := client.Payments.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
+			Connector:   shared.Connector(provider),
+			ConnectorID: connectorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if response.StatusCode >= 300 {
+			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		}
+
+		c.store.Provider = provider
+		c.store.ConnectorID = connectorID
+		c.store.ConnectorConfig = response.ConnectorConfigResponse
+	}
 
 	return c, err
 
@@ -94,7 +148,7 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 func (c *PaymentsGetConfigController) Render(cmd *cobra.Command, args []string) error {
 	var err error
 
-	switch c.args[0] {
+	switch c.store.Provider {
 	case internal.StripeConnector:
 		err = views.DisplayStripeConfig(cmd, c.store.ConnectorConfig)
 	case internal.ModulrConnector:

@@ -3,6 +3,7 @@ package connectors
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
@@ -17,7 +18,13 @@ type PaymentsConnectorsListStore struct {
 	Connectors []shared.ConnectorsResponseData `json:"connectors"`
 }
 type PaymentsConnectorsListController struct {
+	PaymentsVersion versions.Version
+
 	store *PaymentsConnectorsListStore
+}
+
+func (c *PaymentsConnectorsListController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*PaymentsConnectorsListStore] = (*PaymentsConnectorsListController)(nil)
@@ -35,10 +42,11 @@ func NewPaymentsConnectorsListController() *PaymentsConnectorsListController {
 }
 
 func NewListCommand() *cobra.Command {
+	c := NewPaymentsConnectorsListController()
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls", "l"),
 		fctl.WithShortDescription("List all enabled connectors"),
-		fctl.WithController[*PaymentsConnectorsListStore](NewPaymentsConnectorsListController()),
+		fctl.WithController[*PaymentsConnectorsListStore](c),
 	)
 }
 
@@ -47,6 +55,9 @@ func (c *PaymentsConnectorsListController) GetStore() *PaymentsConnectorsListSto
 }
 
 func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -88,13 +99,28 @@ func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string
 
 func (c *PaymentsConnectorsListController) Render(cmd *cobra.Command, args []string) error {
 	tableData := fctl.Map(c.store.Connectors, func(connector shared.ConnectorsResponseData) []string {
-		return []string{
-			string(connector.Provider),
-			connector.Name,
-			connector.ConnectorID,
+		switch c.PaymentsVersion {
+		case versions.V1:
+			return []string{
+				string(connector.Provider),
+				connector.Name,
+				connector.ConnectorID,
+			}
+		default:
+			// V0
+			return []string{
+				string(connector.Provider),
+			}
 		}
+
 	})
-	tableData = fctl.Prepend(tableData, []string{"Provider", "Name", "ConnectorID"})
+	switch c.PaymentsVersion {
+	case versions.V1:
+		tableData = fctl.Prepend(tableData, []string{"Provider", "Name", "ConnectorID"})
+	default:
+		tableData = fctl.Prepend(tableData, []string{"Provider"})
+	}
+
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
