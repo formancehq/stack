@@ -154,7 +154,7 @@ func ingestAccountsBatch(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *balance.Amount.Currency),
 			Balance:       &amountInt,
 			CreatedAt:     balanceTimestamp,
-			LastUpdatedAt: balanceTimestamp,
+			LastUpdatedAt: time.Now().UTC(),
 			ConnectorID:   connectorID,
 		})
 	}
