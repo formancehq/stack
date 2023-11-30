@@ -45,7 +45,7 @@ func NewPaymentsConnectorsUninstallController() *PaymentsConnectorsUninstallCont
 	return &PaymentsConnectorsUninstallController{
 		store:           NewDefaultPaymentsConnectorsUninstallStore(),
 		providerFlag:    "provider",
-		connectorIDFlag: "connectorid",
+		connectorIDFlag: "connector-id",
 	}
 }
 
@@ -96,6 +96,14 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 	connectorID := fctl.GetString(cmd, c.connectorIDFlag)
 	switch c.PaymentsVersion {
 	case versions.V1:
+		if provider == "" {
+			return nil, fmt.Errorf("missing provider")
+		}
+
+		if connectorID == "" {
+			return nil, fmt.Errorf("missing connector ID")
+		}
+
 		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s' from provider '%s'", connectorID, provider) {
 			return nil, fctl.ErrMissingApproval
 		}
@@ -114,6 +122,10 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 
 		c.store.Connector = connectorID
 	case versions.V0:
+		if provider == "" {
+			return nil, fmt.Errorf("missing provider")
+		}
+
 		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s'", provider) {
 			return nil, fctl.ErrMissingApproval
 		}

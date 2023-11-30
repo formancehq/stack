@@ -96,8 +96,12 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 
 	switch c.PaymentsVersion {
 	case versions.V0:
+		if provider == "" {
+			return nil, fmt.Errorf("provider is required")
+		}
+
 		response, err := client.Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
-			Connector: shared.Connector(args[0]),
+			Connector: shared.Connector(provider),
 		})
 		if err != nil {
 			return nil, err
@@ -111,6 +115,14 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 		c.store.ConnectorConfig = response.ConnectorConfigResponse
 
 	case versions.V1:
+		if provider == "" {
+			return nil, fmt.Errorf("provider is required")
+		}
+
+		if connectorID == "" {
+			return nil, fmt.Errorf("connector-id is required")
+		}
+
 		response, err := client.Payments.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
 			Connector:   shared.Connector(provider),
 			ConnectorID: connectorID,

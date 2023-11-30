@@ -59,8 +59,6 @@ func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string
 		return nil, err
 	}
 
-	fmt.Println("Payments Version:", c.PaymentsVersion)
-
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -101,13 +99,28 @@ func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string
 
 func (c *PaymentsConnectorsListController) Render(cmd *cobra.Command, args []string) error {
 	tableData := fctl.Map(c.store.Connectors, func(connector shared.ConnectorsResponseData) []string {
-		return []string{
-			string(connector.Provider),
-			connector.Name,
-			connector.ConnectorID,
+		switch c.PaymentsVersion {
+		case versions.V1:
+			return []string{
+				string(connector.Provider),
+				connector.Name,
+				connector.ConnectorID,
+			}
+		default:
+			// V0
+			return []string{
+				string(connector.Provider),
+			}
 		}
+
 	})
-	tableData = fctl.Prepend(tableData, []string{"Provider", "Name", "ConnectorID"})
+	switch c.PaymentsVersion {
+	case versions.V1:
+		tableData = fctl.Prepend(tableData, []string{"Provider", "Name", "ConnectorID"})
+	default:
+		tableData = fctl.Prepend(tableData, []string{"Provider"})
+	}
+
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
