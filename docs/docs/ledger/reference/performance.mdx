@@ -2,9 +2,9 @@
 title: Performance model
 ---
 
-When building an application on top of Formance Ledger that is set out for scale, it is important to understand the performance characteristics of the ledger.
+When building an application on top of Formance Ledger that is set out for scale, it is important to understand the performance characteristics of the ledger. This document summarizes the cost model for each type of ledger operation.
 
-### Cost of queries
+### Costs breakdown
 
 | Request pattern (Ledger v1) | Complexity model |
 | --- | --- |
@@ -15,7 +15,9 @@ When building an application on top of Formance Ledger that is set out for scale
 | Point query • transactions | O(1) |
 | Range query • transactions | O(Log(N)) |
 
-The complexity model is based on the querying cost and doesn't take into account the networking cost.
+:::info
+The complexity model is based on the in-process cost, and doesn't take into account the networking cost.
+:::
 
 ### Data volume
 
@@ -24,3 +26,5 @@ In the architecting for scale [section](/ledger/advanced/scale), we outline diff
 ## Benchmarking
 
 Formance Ledger releases are tested against our load testing [suite](https://github.com/formancehq/stack/tree/main/tests/). The suite can be run locally by following the instruction in the repository.
+
+Should you venture out common patterns and ledger architectures, you can customize the suite to have it fit the best your use case and bring the ledger into the least favorable cost-wise conditions.

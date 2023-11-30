@@ -452,6 +452,10 @@ const sidebars = {
           id: 'stack/sdk/index',
           label: 'SDKs',
         },
+        {
+          type: 'doc',
+          id: 'stack/versions',
+        },
       ],
     },
     {
@@ -507,7 +511,11 @@ const sidebars = {
           items: [
             {
               type: 'doc',
-              id: 'deployment/elements/kubernetes',
+              id: 'deployment/elements/cluster-config',
+            },
+            {
+              type: 'doc',
+              id: 'deployment/elements/operator',
             }
           ],
         },
@@ -550,11 +558,11 @@ const sidebars = {
           type: 'doc',
           id: 'deployment/backups',
         },
-        {
-          type: 'doc',
-          id: 'stack/capacity',
-          label: 'Capacity planning',
-        },
+        // {
+        //   type: 'doc',
+        //   id: 'stack/capacity',
+        //   label: 'Capacity planning',
+        // }
       ],
     },
     {

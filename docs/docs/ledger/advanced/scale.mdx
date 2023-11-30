@@ -35,6 +35,8 @@ In this transaction, we are attempting to increase the balance of `@payments:123
 
 As we can see here, the exact cost of this transaction will depend on the number of accounts that are being sourced from, but it will be at least `O(1) + W` and at most `O(3) + W`. This is because the transaction will need to read the balance of at least one account, and at most three accounts, and then commit the computed transaction to the ledger.
 
+When optimizing for write throughput, it is important to keep in mind this cost breakdown and to design your transactions accordingly.
+
 
 <!-- The exact cost of this transaction will depend on the number of accounts that are being sourced from, but it will be at least `O(1) + W` and at most `O(3) + W`. This is because the transaction will need to read the balance of each of the three accounts, and then write the new balance to the destination account. -->
 
