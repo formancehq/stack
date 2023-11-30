@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -20,9 +21,15 @@ type PaymentsConnectorsUninstallStore struct {
 	Connector string `json:"connector"`
 }
 type PaymentsConnectorsUninstallController struct {
+	PaymentsVersion versions.Version
+
 	store           *PaymentsConnectorsUninstallStore
 	providerFlag    string
 	connectorIDFlag string
+}
+
+func (c *PaymentsConnectorsUninstallController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*PaymentsConnectorsUninstallStore] = (*PaymentsConnectorsUninstallController)(nil)
@@ -53,6 +60,9 @@ func NewUninstallCommand() *cobra.Command {
 		fctl.WithStringFlag(c.connectorIDFlag, "", "Connector ID"),
 		fctl.WithShortDescription("Uninstall a connector"),
 		fctl.WithController[*PaymentsConnectorsUninstallStore](c),
+		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
+			return versions.GetPaymentsVersion(cmd, args, c)
+		}),
 	)
 }
 
@@ -83,8 +93,8 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 
 	provider := fctl.GetString(cmd, c.providerFlag)
 	connectorID := fctl.GetString(cmd, c.connectorIDFlag)
-	switch {
-	case provider != "" && connectorID != "":
+	switch c.PaymentsVersion {
+	case versions.V1:
 		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s' from provider '%s'", connectorID, provider) {
 			return nil, fctl.ErrMissingApproval
 		}
@@ -102,11 +112,7 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 		}
 
 		c.store.Connector = connectorID
-	case provider == "" && connectorID == "":
-		return nil, fmt.Errorf("must use either --provider and --connector-id")
-	case connectorID != "":
-		return nil, fmt.Errorf("must use --provider when using --connector-id")
-	case provider != "":
+	case versions.V0:
 		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s'", provider) {
 			return nil, fctl.ErrMissingApproval
 		}

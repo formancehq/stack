@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
@@ -15,7 +16,13 @@ type CreateStore struct {
 	BankAccountID string `json:"bankAccountId"`
 }
 type CreateController struct {
+	PaymentsVersion versions.Version
+
 	store *CreateStore
+}
+
+func (c *CreateController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*CreateStore] = (*CreateController)(nil)
@@ -31,11 +38,15 @@ func NewCreateController() *CreateController {
 }
 
 func NewCreateCommand() *cobra.Command {
+	c := NewCreateController()
 	return fctl.NewCommand("create <file>|-",
 		fctl.WithShortDescription("Create a bank account"),
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*CreateStore](NewCreateController()),
+		fctl.WithController[*CreateStore](c),
+		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
+			return versions.GetPaymentsVersion(cmd, args, c)
+		}),
 	)
 }
 
@@ -44,6 +55,10 @@ func (c *CreateController) GetStore() *CreateStore {
 }
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
+	}
+
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
 		return nil, err

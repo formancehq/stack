@@ -3,6 +3,7 @@ package connectors
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
@@ -17,7 +18,13 @@ type PaymentsConnectorsListStore struct {
 	Connectors []shared.ConnectorsResponseData `json:"connectors"`
 }
 type PaymentsConnectorsListController struct {
+	PaymentsVersion versions.Version
+
 	store *PaymentsConnectorsListStore
+}
+
+func (c *PaymentsConnectorsListController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*PaymentsConnectorsListStore] = (*PaymentsConnectorsListController)(nil)
@@ -35,10 +42,14 @@ func NewPaymentsConnectorsListController() *PaymentsConnectorsListController {
 }
 
 func NewListCommand() *cobra.Command {
+	c := NewPaymentsConnectorsListController()
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls", "l"),
 		fctl.WithShortDescription("List all enabled connectors"),
-		fctl.WithController[*PaymentsConnectorsListStore](NewPaymentsConnectorsListController()),
+		fctl.WithController[*PaymentsConnectorsListStore](c),
+		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
+			return versions.GetPaymentsVersion(cmd, args, c)
+		}),
 	)
 }
 
@@ -47,7 +58,6 @@ func (c *PaymentsConnectorsListController) GetStore() *PaymentsConnectorsListSto
 }
 
 func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err

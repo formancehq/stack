@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -15,7 +16,13 @@ type ShowStore struct {
 	BankAccount *shared.BankAccount `json:"bankAccount"`
 }
 type ShowController struct {
+	PaymentsVersion versions.Version
+
 	store *ShowStore
+}
+
+func (c *ShowController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*ShowStore] = (*ShowController)(nil)
@@ -31,11 +38,15 @@ func NewShowController() *ShowController {
 }
 
 func NewShowCommand() *cobra.Command {
+	c := NewShowController()
 	return fctl.NewCommand("get <bankAccountID>",
 		fctl.WithShortDescription("Get bank account"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithAliases("sh", "s"),
-		fctl.WithController[*ShowStore](NewShowController()),
+		fctl.WithController[*ShowStore](c),
+		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
+			return versions.GetPaymentsVersion(cmd, args, c)
+		}),
 	)
 }
 
@@ -44,6 +55,10 @@ func (c *ShowController) GetStore() *ShowStore {
 }
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
+	}
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
