@@ -63,11 +63,11 @@ fctl payments accounts list
 If all goes well, you should see:
 
 ```
-ID                     | AccountName | CreatedAt            | Provider       | DefaultAsset | DefaultCurrency | Reference | Type
-<Internal Formance ID> | Name 1      | 2023-08-28T09:58:34Z | <ProviderName> | EUR/2        | EUR/2           | Ref1      | INTERNAL
-<Internal Formance ID> | Name 2      | 2023-08-14T09:26:07Z | <ProviderName> |              |                 | Ref2      | EXTERNAL
-<Internal Formance ID> | Name 3      | 2023-07-25T11:48:44Z | <ProviderName> | USD/2        | USD/2           | Ref3      | INTERNAL
-<Internal Formance ID> | Name 4      | 2021-03-25T15:11:17Z | <ProviderName> | EUR/2        | EUR/2           | Ref4      | INTERNAL
+ID                     | AccountName | CreatedAt            | ConnectorID       | DefaultAsset | DefaultCurrency | Reference | Type
+<Internal Formance ID> | Name 1      | 2023-08-28T09:58:34Z | <ConnectorID>     | EUR/2        | EUR/2           | Ref1      | INTERNAL
+<Internal Formance ID> | Name 2      | 2023-08-14T09:26:07Z | <ConnectorID>     |              |                 | Ref2      | EXTERNAL
+<Internal Formance ID> | Name 3      | 2023-07-25T11:48:44Z | <ConnectorID>     | USD/2        | USD/2           | Ref3      | INTERNAL
+<Internal Formance ID> | Name 4      | 2021-03-25T15:11:17Z | <ConnectorID>     | EUR/2        | EUR/2           | Ref4      | INTERNAL
 ```
 
 In order to fetch the details of a specific account, you can use the following
@@ -84,7 +84,7 @@ If all goes well, you should see:
 ID              | <Internal Formance ID>
 AccountName     | Name 1
 CreatedAt       | 2023-08-28T09:58:34Z
-Provider        | <ProviderName>
+ConnectorID     | <ConnectorID>
 DefaultAsset    | EUR/2
 Reference       | Ref1
 Type            | INTERNAL

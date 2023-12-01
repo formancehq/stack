@@ -42,8 +42,8 @@ fctl payments transfer_initiation list
 If there are some transfer initiations, you will see the following:
 
 ```
-ID                                         | CreatedAt            | UpdatedAt            | Description | Source Account ID     | Destination Account ID | Provider       | Type     | Amount | Asset | Status                 | Error
-<Formance Internal Transfer Initiation ID> | 2019-05-15T14:00:00Z | 2019-05-15T14:00:00Z | description | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | TRANSFER | 300    | EUR/2 | WAITING_FOR_VALIDATION |
+ID                                         | CreatedAt            | UpdatedAt            | Description | Source Account ID     | Destination Account ID | ConnectorID   | Type     | Amount | Asset | Status                 | Error
+<Formance Internal Transfer Initiation ID> | 2019-05-15T14:00:00Z | 2019-05-15T14:00:00Z | description | <Formance Account ID> | <Formance Account ID>  | <ConnectorID> | TRANSFER | 300    | EUR/2 | WAITING_FOR_VALIDATION |
 ```
 
 ## Viewing a Transfer Initiation details
@@ -64,7 +64,7 @@ UpdatedAt            | 2019-05-15T14:00:00Z
 Description          | description
 SourceAccountID      | <Formance Account ID>
 DestinationAccountID | <Formance Account ID>
-Provider             | <ProviderName>
+ConnectorID          | <ConnectorID>
 Type                 | TRANSFER
 Amount               | 300
 Asset                | EUR/2
@@ -89,6 +89,7 @@ With transfer_initiation.json being:
     "destinationAccountID": "<Internal Account ID>" ,
     "description": "description",
     "provider": "ProviderName",
+    "connectorID": "<ConnectorID>",
     "type": "TRANSFER",
     "amount": 300,
     "asset": "EUR/2",
@@ -108,9 +109,11 @@ Similar to the `sourceAccountID`, the correct internal formance account ID
 should be provided. It can be found in the account details.
 - `description`: A description of the transfer initiation. This field allows you
 to provide additional information about the purpose or nature of the transfer.
-- `provider`: The name of the payment service provider that will be used to move
-funds. It is important to specify the exact name of the provider to ensure a
-smooth transfer process.
+- `provider` or `ConnectorID`: You have to specify either the name of the
+payment service provider or the connector ID. If you specify the name of the
+payment service provider, the connector ID will be automatically retrieved from
+the database, but it will fail with a validation error if you have more than
+one connector for this payment service provider.
 - `type`: The type of transfer initiation. This field determines whether the
 transfer is a "TRANSFER" or a "PAYOUT". If it is a "TRANSFER" type, the funds
 will be moved between INTERNAL accounts. Both the source and destination
