@@ -7,6 +7,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/google/uuid"
 )
 
 type Ingester interface {
@@ -15,6 +16,7 @@ type Ingester interface {
 	IngestBalances(ctx context.Context, batch BalanceBatch, checkIfAccountExists bool) error
 	UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
 	AddTransferInitiationPaymentID(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, updatedAt time.Time) error
+	LinkBankAccountWithAccount(ctx context.Context, bankAccount *models.BankAccount, accountID *models.AccountID) error
 }
 
 type DefaultIngester struct {
@@ -31,6 +33,7 @@ type Repository interface {
 	UpdateTaskState(ctx context.Context, connectorID models.ConnectorID, descriptor models.TaskDescriptor, state json.RawMessage) error
 	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
 	AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time) error
+	LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error
 }
 
 func NewDefaultIngester(
@@ -46,3 +49,5 @@ func NewDefaultIngester(
 		publisher:  publisher,
 	}
 }
+
+var _ Ingester = (*DefaultIngester)(nil)

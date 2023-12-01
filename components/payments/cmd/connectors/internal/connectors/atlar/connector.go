@@ -58,9 +58,12 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
 }
 
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	return connectors.ErrNotImplemented
+}
+
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	// TODO: this is a stub
-	return nil
+	return connectors.ErrNotImplemented
 }
 
 var _ connectors.Connector = &Connector{}

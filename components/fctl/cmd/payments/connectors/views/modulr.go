@@ -10,6 +10,7 @@ func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorCo
 	config := connectorConfig.Data.ModulrConfig
 
 	tableData := pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("Name:"), config.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
 	tableData = append(tableData, []string{pterm.LightCyan("API secret:"), config.APISecret})
 	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
@@ -17,6 +18,12 @@ func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorCo
 			return ""
 		}
 		return *config.Endpoint
+	}()})
+	tableData = append(tableData, []string{pterm.LightCyan("Polling Period:"), func() string {
+		if config.PollingPeriod == nil {
+			return ""
+		}
+		return *config.PollingPeriod
 	}()})
 
 	if err := pterm.DefaultTable.

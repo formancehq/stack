@@ -3,6 +3,7 @@ package transferinitiation
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -17,7 +18,13 @@ type UpdateStatusStore struct {
 	Success    bool   `json:"success"`
 }
 type UpdateStatusController struct {
+	PaymentsVersion versions.Version
+
 	store *UpdateStatusStore
+}
+
+func (c *UpdateStatusController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*UpdateStatusStore] = (*UpdateStatusController)(nil)
@@ -33,11 +40,12 @@ func NewUpdateStatusController() *UpdateStatusController {
 }
 
 func NewUpdateStatusCommand() *cobra.Command {
+	c := NewUpdateStatusController()
 	return fctl.NewCommand("update_status <transferID> <status>",
 		fctl.WithShortDescription("Update the status of a transfer initiation"),
 		fctl.WithAliases("u"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithController[*UpdateStatusStore](NewUpdateStatusController()),
+		fctl.WithController[*UpdateStatusStore](c),
 	)
 }
 
@@ -46,6 +54,14 @@ func (c *UpdateStatusController) GetStore() *UpdateStatusStore {
 }
 
 func (c *UpdateStatusController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
+	}
+
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
 	if err != nil {
 		return nil, err

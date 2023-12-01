@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -16,7 +17,13 @@ type ListStore struct {
 }
 
 type ListController struct {
+	PaymentsVersion versions.Version
+
 	store *ListStore
+}
+
+func (c *ListController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
@@ -38,6 +45,13 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
+	}
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -104,10 +118,11 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 }
 
 func NewListCommand() *cobra.Command {
+	c := NewListController()
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithShortDescription("List transfer initiation"),
-		fctl.WithController[*ListStore](NewListController()),
+		fctl.WithController[*ListStore](c),
 	)
 }

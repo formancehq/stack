@@ -8,7 +8,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -28,13 +27,14 @@ type Connector struct {
 	fs     fs
 }
 
-func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	// TODO implement me
-	return errors.New("not implemented")
-}
-
-func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
-	return supportedCurrenciesWithDecimal
+func newConnector(logger logging.Logger, cfg Config, fs fs) *Connector {
+	return &Connector{
+		logger: logger.WithFields(map[string]any{
+			"component": "connector",
+		}),
+		cfg: cfg,
+		fs:  fs,
+	}
 }
 
 // Install executes post-installation steps to read and generate files.
@@ -94,14 +94,18 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return handleResolve(c.cfg, taskDescriptor, c.fs)
 }
 
-var _ connectors.Connector = &Connector{}
-
-func newConnector(logger logging.Logger, cfg Config, fs fs) *Connector {
-	return &Connector{
-		logger: logger.WithFields(map[string]any{
-			"component": "connector",
-		}),
-		cfg: cfg,
-		fs:  fs,
-	}
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
 }
+
+func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
+	// TODO implement me
+	return connectors.ErrNotImplemented
+}
+
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	// TODO implement me
+	return connectors.ErrNotImplemented
+}
+
+var _ connectors.Connector = &Connector{}

@@ -6,23 +6,26 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/google/uuid"
 )
 
 const (
-	taskNameMain                = "main"
-	taskNameFetchPayments       = "fetch-payments"
-	taskNameFetchAccounts       = "fetch-accounts"
-	taskNameInitiatePayment     = "initiate-payment"
-	taskNameUpdatePaymentStatus = "update-payment-status"
+	taskNameMain                  = "main"
+	taskNameFetchPayments         = "fetch-payments"
+	taskNameFetchAccounts         = "fetch-accounts"
+	taskNameInitiatePayment       = "initiate-payment"
+	taskNameUpdatePaymentStatus   = "update-payment-status"
+	taskNameCreateExternalAccount = "create-external-account"
 )
 
 // TaskDescriptor is the definition of a task.
 type TaskDescriptor struct {
-	Name       string `json:"name" yaml:"name" bson:"name"`
-	Key        string `json:"key" yaml:"key" bson:"key"`
-	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
-	PaymentID  string `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
-	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
+	Name          string    `json:"name" yaml:"name" bson:"name"`
+	Key           string    `json:"key" yaml:"key" bson:"key"`
+	TransferID    string    `json:"transferID" yaml:"transferID" bson:"transferID"`
+	PaymentID     string    `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
+	BankAccountID uuid.UUID `json:"bankAccountID" yaml:"bankAccountID" bson:"bankAccountID"`
+	Attempt       int       `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
@@ -57,6 +60,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskInitiatePayment(logger, bankingCircleClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
 			return taskUpdatePaymentStatus(logger, bankingCircleClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
+		case taskNameCreateExternalAccount:
+			return taskCreateExternalAccount(logger, bankingCircleClient, taskDescriptor.BankAccountID)
 		}
 
 		// This should never happen.
