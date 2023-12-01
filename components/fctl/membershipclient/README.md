@@ -153,6 +153,7 @@ Class | Method | HTTP request | Description
  - [Stack](docs/Stack.md)
  - [StackAllOf](docs/StackAllOf.md)
  - [StackData](docs/StackData.md)
+ - [StackLifeCycle](docs/StackLifeCycle.md)
  - [UpdatableUserData](docs/UpdatableUserData.md)
  - [UpdateUserResponse](docs/UpdateUserResponse.md)
  - [User](docs/User.md)

@@ -4,7 +4,6 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ClientID** | **string** |  | 
 **OrganizationID** | **string** |  | 
 **CreatorID** | **string** |  | 
 **Secret** | Pointer to [**PrivateRegionAllOfSecret**](PrivateRegionAllOfSecret.md) |  | [optional] 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 
 ### NewPrivateRegionAllOf
 
-`func NewPrivateRegionAllOf(clientID string, organizationID string, creatorID string, ) *PrivateRegionAllOf`
+`func NewPrivateRegionAllOf(organizationID string, creatorID string, ) *PrivateRegionAllOf`
 
 NewPrivateRegionAllOf instantiates a new PrivateRegionAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -27,26 +26,6 @@ will change when the set of required properties is changed
 NewPrivateRegionAllOfWithDefaults instantiates a new PrivateRegionAllOf object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetClientID
-
-`func (o *PrivateRegionAllOf) GetClientID() string`
-
-GetClientID returns the ClientID field if non-nil, zero value otherwise.
-
-### GetClientIDOk
-
-`func (o *PrivateRegionAllOf) GetClientIDOk() (*string, bool)`
-
-GetClientIDOk returns a tuple with the ClientID field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetClientID
-
-`func (o *PrivateRegionAllOf) SetClientID(v string)`
-
-SetClientID sets ClientID field to given value.
-
 
 ### GetOrganizationID
 

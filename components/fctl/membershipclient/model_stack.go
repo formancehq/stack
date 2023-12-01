@@ -23,6 +23,12 @@ type Stack struct {
 	// Stack name
 	Name string `json:"name"`
 	Metadata map[string]string `json:"metadata"`
+	Status string `json:"status"`
+	State string `json:"state"`
+	ExpectedStatus string `json:"expectedStatus"`
+	LastStateUpdate time.Time `json:"lastStateUpdate"`
+	LastExpectedStatusUpdate time.Time `json:"lastExpectedStatusUpdate"`
+	LastStatusUpdate time.Time `json:"lastStatusUpdate"`
 	// Stack ID
 	Id string `json:"id"`
 	// Organization ID
@@ -35,33 +41,27 @@ type Stack struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	DisabledAt *time.Time `json:"disabledAt,omitempty"`
-	Status string `json:"status"`
-	State string `json:"state"`
-	ExpectedStatus string `json:"expectedStatus"`
-	LastStateUpdate time.Time `json:"lastStateUpdate"`
-	LastExpectedStatusUpdate time.Time `json:"lastExpectedStatusUpdate"`
-	LastStatusUpdate time.Time `json:"lastStatusUpdate"`
 }
 
 // NewStack instantiates a new Stack object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, stargateEnabled bool, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time) *Stack {
+func NewStack(name string, metadata map[string]string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, id string, organizationId string, uri string, regionID string, stargateEnabled bool) *Stack {
 	this := Stack{}
 	this.Name = name
 	this.Metadata = metadata
-	this.Id = id
-	this.OrganizationId = organizationId
-	this.Uri = uri
-	this.RegionID = regionID
-	this.StargateEnabled = stargateEnabled
 	this.Status = status
 	this.State = state
 	this.ExpectedStatus = expectedStatus
 	this.LastStateUpdate = lastStateUpdate
 	this.LastExpectedStatusUpdate = lastExpectedStatusUpdate
 	this.LastStatusUpdate = lastStatusUpdate
+	this.Id = id
+	this.OrganizationId = organizationId
+	this.Uri = uri
+	this.RegionID = regionID
+	this.StargateEnabled = stargateEnabled
 	return &this
 }
 
@@ -119,6 +119,150 @@ func (o *Stack) GetMetadataOk() (*map[string]string, bool) {
 // SetMetadata sets field value
 func (o *Stack) SetMetadata(v map[string]string) {
 	o.Metadata = v
+}
+
+// GetStatus returns the Status field value
+func (o *Stack) GetStatus() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetStatusOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *Stack) SetStatus(v string) {
+	o.Status = v
+}
+
+// GetState returns the State field value
+func (o *Stack) GetState() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.State
+}
+
+// GetStateOk returns a tuple with the State field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetStateOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.State, true
+}
+
+// SetState sets field value
+func (o *Stack) SetState(v string) {
+	o.State = v
+}
+
+// GetExpectedStatus returns the ExpectedStatus field value
+func (o *Stack) GetExpectedStatus() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.ExpectedStatus
+}
+
+// GetExpectedStatusOk returns a tuple with the ExpectedStatus field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetExpectedStatusOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.ExpectedStatus, true
+}
+
+// SetExpectedStatus sets field value
+func (o *Stack) SetExpectedStatus(v string) {
+	o.ExpectedStatus = v
+}
+
+// GetLastStateUpdate returns the LastStateUpdate field value
+func (o *Stack) GetLastStateUpdate() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.LastStateUpdate
+}
+
+// GetLastStateUpdateOk returns a tuple with the LastStateUpdate field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetLastStateUpdateOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.LastStateUpdate, true
+}
+
+// SetLastStateUpdate sets field value
+func (o *Stack) SetLastStateUpdate(v time.Time) {
+	o.LastStateUpdate = v
+}
+
+// GetLastExpectedStatusUpdate returns the LastExpectedStatusUpdate field value
+func (o *Stack) GetLastExpectedStatusUpdate() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.LastExpectedStatusUpdate
+}
+
+// GetLastExpectedStatusUpdateOk returns a tuple with the LastExpectedStatusUpdate field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetLastExpectedStatusUpdateOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.LastExpectedStatusUpdate, true
+}
+
+// SetLastExpectedStatusUpdate sets field value
+func (o *Stack) SetLastExpectedStatusUpdate(v time.Time) {
+	o.LastExpectedStatusUpdate = v
+}
+
+// GetLastStatusUpdate returns the LastStatusUpdate field value
+func (o *Stack) GetLastStatusUpdate() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.LastStatusUpdate
+}
+
+// GetLastStatusUpdateOk returns a tuple with the LastStatusUpdate field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetLastStatusUpdateOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.LastStatusUpdate, true
+}
+
+// SetLastStatusUpdate sets field value
+func (o *Stack) SetLastStatusUpdate(v time.Time) {
+	o.LastStatusUpdate = v
 }
 
 // GetId returns the Id field value
@@ -337,150 +481,6 @@ func (o *Stack) SetDisabledAt(v time.Time) {
 	o.DisabledAt = &v
 }
 
-// GetStatus returns the Status field value
-func (o *Stack) GetStatus() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *Stack) GetStatusOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *Stack) SetStatus(v string) {
-	o.Status = v
-}
-
-// GetState returns the State field value
-func (o *Stack) GetState() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.State
-}
-
-// GetStateOk returns a tuple with the State field value
-// and a boolean to check if the value has been set.
-func (o *Stack) GetStateOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.State, true
-}
-
-// SetState sets field value
-func (o *Stack) SetState(v string) {
-	o.State = v
-}
-
-// GetExpectedStatus returns the ExpectedStatus field value
-func (o *Stack) GetExpectedStatus() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.ExpectedStatus
-}
-
-// GetExpectedStatusOk returns a tuple with the ExpectedStatus field value
-// and a boolean to check if the value has been set.
-func (o *Stack) GetExpectedStatusOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.ExpectedStatus, true
-}
-
-// SetExpectedStatus sets field value
-func (o *Stack) SetExpectedStatus(v string) {
-	o.ExpectedStatus = v
-}
-
-// GetLastStateUpdate returns the LastStateUpdate field value
-func (o *Stack) GetLastStateUpdate() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.LastStateUpdate
-}
-
-// GetLastStateUpdateOk returns a tuple with the LastStateUpdate field value
-// and a boolean to check if the value has been set.
-func (o *Stack) GetLastStateUpdateOk() (*time.Time, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.LastStateUpdate, true
-}
-
-// SetLastStateUpdate sets field value
-func (o *Stack) SetLastStateUpdate(v time.Time) {
-	o.LastStateUpdate = v
-}
-
-// GetLastExpectedStatusUpdate returns the LastExpectedStatusUpdate field value
-func (o *Stack) GetLastExpectedStatusUpdate() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.LastExpectedStatusUpdate
-}
-
-// GetLastExpectedStatusUpdateOk returns a tuple with the LastExpectedStatusUpdate field value
-// and a boolean to check if the value has been set.
-func (o *Stack) GetLastExpectedStatusUpdateOk() (*time.Time, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.LastExpectedStatusUpdate, true
-}
-
-// SetLastExpectedStatusUpdate sets field value
-func (o *Stack) SetLastExpectedStatusUpdate(v time.Time) {
-	o.LastExpectedStatusUpdate = v
-}
-
-// GetLastStatusUpdate returns the LastStatusUpdate field value
-func (o *Stack) GetLastStatusUpdate() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.LastStatusUpdate
-}
-
-// GetLastStatusUpdateOk returns a tuple with the LastStatusUpdate field value
-// and a boolean to check if the value has been set.
-func (o *Stack) GetLastStatusUpdateOk() (*time.Time, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.LastStatusUpdate, true
-}
-
-// SetLastStatusUpdate sets field value
-func (o *Stack) SetLastStatusUpdate(v time.Time) {
-	o.LastStatusUpdate = v
-}
-
 func (o Stack) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -493,6 +493,12 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
 	toSerialize["metadata"] = o.Metadata
+	toSerialize["status"] = o.Status
+	toSerialize["state"] = o.State
+	toSerialize["expectedStatus"] = o.ExpectedStatus
+	toSerialize["lastStateUpdate"] = o.LastStateUpdate
+	toSerialize["lastExpectedStatusUpdate"] = o.LastExpectedStatusUpdate
+	toSerialize["lastStatusUpdate"] = o.LastStatusUpdate
 	toSerialize["id"] = o.Id
 	toSerialize["organizationId"] = o.OrganizationId
 	toSerialize["uri"] = o.Uri
@@ -507,12 +513,6 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DisabledAt) {
 		toSerialize["disabledAt"] = o.DisabledAt
 	}
-	toSerialize["status"] = o.Status
-	toSerialize["state"] = o.State
-	toSerialize["expectedStatus"] = o.ExpectedStatus
-	toSerialize["lastStateUpdate"] = o.LastStateUpdate
-	toSerialize["lastExpectedStatusUpdate"] = o.LastExpectedStatusUpdate
-	toSerialize["lastStatusUpdate"] = o.LastStatusUpdate
 	return toSerialize, nil
 }
 

@@ -26,7 +26,6 @@ type PrivateRegion struct {
 	Active bool `json:"active"`
 	LastPing *time.Time `json:"lastPing,omitempty"`
 	Name string `json:"name"`
-	ClientID string `json:"clientID"`
 	OrganizationID string `json:"organizationID"`
 	CreatorID string `json:"creatorID"`
 	Secret *PrivateRegionAllOfSecret `json:"secret,omitempty"`
@@ -36,14 +35,13 @@ type PrivateRegion struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateRegion(id string, baseUrl string, createdAt string, active bool, name string, clientID string, organizationID string, creatorID string) *PrivateRegion {
+func NewPrivateRegion(id string, baseUrl string, createdAt string, active bool, name string, organizationID string, creatorID string) *PrivateRegion {
 	this := PrivateRegion{}
 	this.Id = id
 	this.BaseUrl = baseUrl
 	this.CreatedAt = createdAt
 	this.Active = active
 	this.Name = name
-	this.ClientID = clientID
 	this.OrganizationID = organizationID
 	this.CreatorID = creatorID
 	return &this
@@ -209,30 +207,6 @@ func (o *PrivateRegion) SetName(v string) {
 	o.Name = v
 }
 
-// GetClientID returns the ClientID field value
-func (o *PrivateRegion) GetClientID() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.ClientID
-}
-
-// GetClientIDOk returns a tuple with the ClientID field value
-// and a boolean to check if the value has been set.
-func (o *PrivateRegion) GetClientIDOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.ClientID, true
-}
-
-// SetClientID sets field value
-func (o *PrivateRegion) SetClientID(v string) {
-	o.ClientID = v
-}
-
 // GetOrganizationID returns the OrganizationID field value
 func (o *PrivateRegion) GetOrganizationID() string {
 	if o == nil {
@@ -331,7 +305,6 @@ func (o PrivateRegion) ToMap() (map[string]interface{}, error) {
 		toSerialize["lastPing"] = o.LastPing
 	}
 	toSerialize["name"] = o.Name
-	toSerialize["clientID"] = o.ClientID
 	toSerialize["organizationID"] = o.OrganizationID
 	toSerialize["creatorID"] = o.CreatorID
 	if !IsNil(o.Secret) {

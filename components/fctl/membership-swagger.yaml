@@ -683,8 +683,6 @@ components:
       - $ref: '#/components/schemas/Region'
       - type: object
         properties:
-          clientID:
-            type: string
           organizationID:
             type: string
           creatorID:
@@ -699,7 +697,6 @@ components:
             required:
             - lastDigits
         required:
-        - clientID
         - organizationID
         - creatorID
     PublicRegion:
@@ -752,6 +749,12 @@ components:
           ownerId:
             type: string
             description: Owner ID
+          availableStacks:
+            type: integer
+            description: Number of available stacks
+          availableSandboxes:
+            type: integer
+            description: Number of available sandboxes
     StackData:
       type: object
       required:
@@ -765,6 +768,47 @@ components:
           type: object
           additionalProperties:
             type: string
+    StackLifeCycle:
+      type: object
+      required:
+        - status
+        - state
+        - expectedStatus
+        - lastStateUpdate
+        - lastExpectedStatusUpdate
+        - lastStatusUpdate
+      properties:
+        status:
+          type: string
+          enum:
+          - UNKNOWN
+          - PROGRESSING
+          - READY
+          - DISABLED
+          - DELETED
+        state:
+          type: string
+          enum:
+          - ACTIVE
+          - DISABLED
+          - DELETED
+        expectedStatus:
+          type: string
+          enum:
+          - UNKNOWN
+          - PROGRESSING
+          - READY
+          - DISABLED
+          - DELETED
+        lastStateUpdate:
+          type: string
+          format: date-time
+        lastExpectedStatusUpdate:
+          type: string
+          format: date-time
+        lastStatusUpdate:
+          type: string
+          format: date-time
     BillingPortal:
       type: object
       required:
@@ -784,6 +828,7 @@ components:
     Stack:
       allOf:
       - $ref: '#/components/schemas/StackData'
+      - $ref: '#/components/schemas/StackLifeCycle'
       - type: object
         required:
         - id
@@ -791,12 +836,6 @@ components:
         - uri
         - regionID
         - stargateEnabled
-        - status
-        - state
-        - expectedStatus
-        - lastStateUpdate
-        - lastExpectedStatusUpdate
-        - lastStatusUpdate
         properties:
           id:
             type: string
@@ -819,37 +858,6 @@ components:
             type: string
             format: date-time
           disabledAt:
-            type: string
-            format: date-time
-          status:
-            type: string
-            enum:
-            - UNKNOWN
-            - PROGRESSING
-            - READY
-            - DISABLED
-            - DELETED
-          state:
-            type: string
-            enum:
-            - ACTIVE
-            - DISABLED
-            - DELETED
-          expectedStatus:
-            type: string
-            enum:
-            - UNKNOWN
-            - PROGRESSING
-            - READY
-            - DISABLED
-            - DELETED
-          lastStateUpdate:
-            type: string
-            format: date-time
-          lastExpectedStatusUpdate:
-            type: string
-            format: date-time
-          lastStatusUpdate:
             type: string
             format: date-time
     UpdatableUserData:
@@ -966,12 +974,12 @@ components:
     Error:
       type: object
       properties:
-        error_code:
+        errorCode:
           type: string
-        error_message:
+        errorMessage:
           type: string
       required:
-      - error_code
+      - errorCode
     Invitation:
       type: object
       properties:

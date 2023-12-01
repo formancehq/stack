@@ -7,6 +7,8 @@ Name | Type | Description | Notes
 **Name** | **string** | Organization name | 
 **Id** | **string** | Organization ID | 
 **OwnerId** | **string** | Owner ID | 
+**AvailableStacks** | Pointer to **int32** | Number of available stacks | [optional] 
+**AvailableSandboxes** | Pointer to **int32** | Number of available sandboxes | [optional] 
 
 ## Methods
 
@@ -86,6 +88,56 @@ and a boolean to check if the value has been set.
 
 SetOwnerId sets OwnerId field to given value.
 
+
+### GetAvailableStacks
+
+`func (o *Organization) GetAvailableStacks() int32`
+
+GetAvailableStacks returns the AvailableStacks field if non-nil, zero value otherwise.
+
+### GetAvailableStacksOk
+
+`func (o *Organization) GetAvailableStacksOk() (*int32, bool)`
+
+GetAvailableStacksOk returns a tuple with the AvailableStacks field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAvailableStacks
+
+`func (o *Organization) SetAvailableStacks(v int32)`
+
+SetAvailableStacks sets AvailableStacks field to given value.
+
+### HasAvailableStacks
+
+`func (o *Organization) HasAvailableStacks() bool`
+
+HasAvailableStacks returns a boolean if a field has been set.
+
+### GetAvailableSandboxes
+
+`func (o *Organization) GetAvailableSandboxes() int32`
+
+GetAvailableSandboxes returns the AvailableSandboxes field if non-nil, zero value otherwise.
+
+### GetAvailableSandboxesOk
+
+`func (o *Organization) GetAvailableSandboxesOk() (*int32, bool)`
+
+GetAvailableSandboxesOk returns a tuple with the AvailableSandboxes field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAvailableSandboxes
+
+`func (o *Organization) SetAvailableSandboxes(v int32)`
+
+SetAvailableSandboxes sets AvailableSandboxes field to given value.
+
+### HasAvailableSandboxes
+
+`func (o *Organization) HasAvailableSandboxes() bool`
+
+HasAvailableSandboxes returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

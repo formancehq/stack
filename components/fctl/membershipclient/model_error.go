@@ -19,8 +19,8 @@ var _ MappedNullable = &Error{}
 
 // Error struct for Error
 type Error struct {
-	ErrorCode string `json:"error_code"`
-	ErrorMessage *string `json:"error_message,omitempty"`
+	ErrorCode string `json:"errorCode"`
+	ErrorMessage *string `json:"errorMessage,omitempty"`
 }
 
 // NewError instantiates a new Error object
@@ -107,9 +107,9 @@ func (o Error) MarshalJSON() ([]byte, error) {
 
 func (o Error) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["error_code"] = o.ErrorCode
+	toSerialize["errorCode"] = o.ErrorCode
 	if !IsNil(o.ErrorMessage) {
-		toSerialize["error_message"] = o.ErrorMessage
+		toSerialize["errorMessage"] = o.ErrorMessage
 	}
 	return toSerialize, nil
 }
