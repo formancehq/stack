@@ -20,15 +20,10 @@ jobs:
           fetch-depth: 0
       - name: Setup Env
         uses: ./.github/actions/env
-        with:
-          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - run: >
           earthly 
           --no-output 
-          --allow-privileged 
-          --use-inline-cache 
-          --save-inline-cache 
-          --push 
+          --allow-privileged
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY 
           --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY 
           --secret GITHUB_TOKEN=$GITHUB_TOKEN 
@@ -50,15 +45,16 @@ jobs:
           fetch-depth: 0
       - name: Setup Env
         uses: ./.github/actions/env
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          registry: ghcr.io
+          username: "NumaryBot"
+          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - run: >
           earthly 
           --no-output 
           --allow-privileged 
-          --use-inline-cache 
-          --save-inline-cache 
-          --push 
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY 
           --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY 
           --secret GITHUB_TOKEN=$GITHUB_TOKEN 
