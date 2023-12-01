@@ -9,11 +9,12 @@ import (
 )
 
 type ConnectorBuilder struct {
-	name            string
-	uninstall       func(ctx context.Context) error
-	resolve         func(descriptor models.TaskDescriptor) task.Task
-	install         func(ctx task.ConnectorContext) error
-	initiatePayment func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
+	name                      string
+	uninstall                 func(ctx context.Context) error
+	resolve                   func(descriptor models.TaskDescriptor) task.Task
+	install                   func(ctx task.ConnectorContext) error
+	initiatePayment           func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
+	createExternalBankAccount func(ctx task.ConnectorContext, account *models.BankAccount) error
 }
 
 func (b *ConnectorBuilder) WithUninstall(
@@ -38,11 +39,12 @@ func (b *ConnectorBuilder) WithInstall(installFunction func(ctx task.ConnectorCo
 
 func (b *ConnectorBuilder) Build() connectors.Connector {
 	return &BuiltConnector{
-		name:            b.name,
-		uninstall:       b.uninstall,
-		resolve:         b.resolve,
-		install:         b.install,
-		initiatePayment: b.initiatePayment,
+		name:                      b.name,
+		uninstall:                 b.uninstall,
+		resolve:                   b.resolve,
+		install:                   b.install,
+		initiatePayment:           b.initiatePayment,
+		createExternalBankAccount: b.createExternalBankAccount,
 	}
 }
 
@@ -51,11 +53,12 @@ func NewConnectorBuilder() *ConnectorBuilder {
 }
 
 type BuiltConnector struct {
-	name            string
-	uninstall       func(ctx context.Context) error
-	resolve         func(name models.TaskDescriptor) task.Task
-	install         func(ctx task.ConnectorContext) error
-	initiatePayment func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
+	name                      string
+	uninstall                 func(ctx context.Context) error
+	resolve                   func(name models.TaskDescriptor) task.Task
+	install                   func(ctx task.ConnectorContext) error
+	initiatePayment           func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
+	createExternalBankAccount func(ctx task.ConnectorContext, account *models.BankAccount) error
 }
 
 func (b *BuiltConnector) SupportedCurrenciesAndDecimals() map[string]int {
@@ -65,6 +68,14 @@ func (b *BuiltConnector) SupportedCurrenciesAndDecimals() map[string]int {
 func (b *BuiltConnector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
 	if b.initiatePayment != nil {
 		return b.initiatePayment(ctx, transfer)
+	}
+
+	return nil
+}
+
+func (b *BuiltConnector) CreateExternalBankAccount(ctx task.ConnectorContext, account *models.BankAccount) error {
+	if b.createExternalBankAccount != nil {
+		return b.createExternalBankAccount(ctx, account)
 	}
 
 	return nil
