@@ -25,6 +25,10 @@ type ListOrganizationExpandedResponseDataInner struct {
 	Id string `json:"id"`
 	// Owner ID
 	OwnerId string `json:"ownerId"`
+	// Number of available stacks
+	AvailableStacks *int32 `json:"availableStacks,omitempty"`
+	// Number of available sandboxes
+	AvailableSandboxes *int32 `json:"availableSandboxes,omitempty"`
 	TotalStacks *int32 `json:"totalStacks,omitempty"`
 	TotalUsers *int32 `json:"totalUsers,omitempty"`
 	Owner *User `json:"owner,omitempty"`
@@ -120,6 +124,70 @@ func (o *ListOrganizationExpandedResponseDataInner) GetOwnerIdOk() (*string, boo
 // SetOwnerId sets field value
 func (o *ListOrganizationExpandedResponseDataInner) SetOwnerId(v string) {
 	o.OwnerId = v
+}
+
+// GetAvailableStacks returns the AvailableStacks field value if set, zero value otherwise.
+func (o *ListOrganizationExpandedResponseDataInner) GetAvailableStacks() int32 {
+	if o == nil || IsNil(o.AvailableStacks) {
+		var ret int32
+		return ret
+	}
+	return *o.AvailableStacks
+}
+
+// GetAvailableStacksOk returns a tuple with the AvailableStacks field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListOrganizationExpandedResponseDataInner) GetAvailableStacksOk() (*int32, bool) {
+	if o == nil || IsNil(o.AvailableStacks) {
+		return nil, false
+	}
+	return o.AvailableStacks, true
+}
+
+// HasAvailableStacks returns a boolean if a field has been set.
+func (o *ListOrganizationExpandedResponseDataInner) HasAvailableStacks() bool {
+	if o != nil && !IsNil(o.AvailableStacks) {
+		return true
+	}
+
+	return false
+}
+
+// SetAvailableStacks gets a reference to the given int32 and assigns it to the AvailableStacks field.
+func (o *ListOrganizationExpandedResponseDataInner) SetAvailableStacks(v int32) {
+	o.AvailableStacks = &v
+}
+
+// GetAvailableSandboxes returns the AvailableSandboxes field value if set, zero value otherwise.
+func (o *ListOrganizationExpandedResponseDataInner) GetAvailableSandboxes() int32 {
+	if o == nil || IsNil(o.AvailableSandboxes) {
+		var ret int32
+		return ret
+	}
+	return *o.AvailableSandboxes
+}
+
+// GetAvailableSandboxesOk returns a tuple with the AvailableSandboxes field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListOrganizationExpandedResponseDataInner) GetAvailableSandboxesOk() (*int32, bool) {
+	if o == nil || IsNil(o.AvailableSandboxes) {
+		return nil, false
+	}
+	return o.AvailableSandboxes, true
+}
+
+// HasAvailableSandboxes returns a boolean if a field has been set.
+func (o *ListOrganizationExpandedResponseDataInner) HasAvailableSandboxes() bool {
+	if o != nil && !IsNil(o.AvailableSandboxes) {
+		return true
+	}
+
+	return false
+}
+
+// SetAvailableSandboxes gets a reference to the given int32 and assigns it to the AvailableSandboxes field.
+func (o *ListOrganizationExpandedResponseDataInner) SetAvailableSandboxes(v int32) {
+	o.AvailableSandboxes = &v
 }
 
 // GetTotalStacks returns the TotalStacks field value if set, zero value otherwise.
@@ -231,6 +299,12 @@ func (o ListOrganizationExpandedResponseDataInner) ToMap() (map[string]interface
 	toSerialize["name"] = o.Name
 	toSerialize["id"] = o.Id
 	toSerialize["ownerId"] = o.OwnerId
+	if !IsNil(o.AvailableStacks) {
+		toSerialize["availableStacks"] = o.AvailableStacks
+	}
+	if !IsNil(o.AvailableSandboxes) {
+		toSerialize["availableSandboxes"] = o.AvailableSandboxes
+	}
 	if !IsNil(o.TotalStacks) {
 		toSerialize["totalStacks"] = o.TotalStacks
 	}

@@ -10,7 +10,6 @@ Name | Type | Description | Notes
 **Active** | **bool** |  | 
 **LastPing** | Pointer to **time.Time** |  | [optional] 
 **Name** | **string** |  | 
-**ClientID** | **string** |  | 
 **OrganizationID** | **string** |  | 
 **CreatorID** | **string** |  | 
 **Secret** | Pointer to [**PrivateRegionAllOfSecret**](PrivateRegionAllOfSecret.md) |  | [optional] 
@@ -19,7 +18,7 @@ Name | Type | Description | Notes
 
 ### NewPrivateRegion
 
-`func NewPrivateRegion(id string, baseUrl string, createdAt string, active bool, name string, clientID string, organizationID string, creatorID string, ) *PrivateRegion`
+`func NewPrivateRegion(id string, baseUrl string, createdAt string, active bool, name string, organizationID string, creatorID string, ) *PrivateRegion`
 
 NewPrivateRegion instantiates a new PrivateRegion object
 This constructor will assign default values to properties that have it defined,
@@ -157,26 +156,6 @@ and a boolean to check if the value has been set.
 `func (o *PrivateRegion) SetName(v string)`
 
 SetName sets Name field to given value.
-
-
-### GetClientID
-
-`func (o *PrivateRegion) GetClientID() string`
-
-GetClientID returns the ClientID field if non-nil, zero value otherwise.
-
-### GetClientIDOk
-
-`func (o *PrivateRegion) GetClientIDOk() (*string, bool)`
-
-GetClientIDOk returns a tuple with the ClientID field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetClientID
-
-`func (o *PrivateRegion) SetClientID(v string)`
-
-SetClientID sets ClientID field to given value.
 
 
 ### GetOrganizationID

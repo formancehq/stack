@@ -833,6 +833,47 @@ components:
       - metadata
       - name
       type: object
+    StackLifeCycle:
+      properties:
+        status:
+          enum:
+          - UNKNOWN
+          - PROGRESSING
+          - READY
+          - DISABLED
+          - DELETED
+          type: string
+        state:
+          enum:
+          - ACTIVE
+          - DISABLED
+          - DELETED
+          type: string
+        expectedStatus:
+          enum:
+          - UNKNOWN
+          - PROGRESSING
+          - READY
+          - DISABLED
+          - DELETED
+          type: string
+        lastStateUpdate:
+          format: date-time
+          type: string
+        lastExpectedStatusUpdate:
+          format: date-time
+          type: string
+        lastStatusUpdate:
+          format: date-time
+          type: string
+      required:
+      - expectedStatus
+      - lastExpectedStatusUpdate
+      - lastStateUpdate
+      - lastStatusUpdate
+      - state
+      - status
+      type: object
     BillingPortal:
       example:
         url: url
@@ -856,6 +897,7 @@ components:
     Stack:
       allOf:
       - $ref: '#/components/schemas/StackData'
+      - $ref: '#/components/schemas/StackLifeCycle'
       - $ref: '#/components/schemas/Stack_allOf'
     UpdatableUserData:
       example:
@@ -1003,12 +1045,12 @@ components:
       type: object
     Error:
       properties:
-        error_code:
+        errorCode:
           type: string
-        error_message:
+        errorMessage:
           type: string
       required:
-      - error_code
+      - errorCode
       type: object
     Invitation:
       example:
@@ -1132,8 +1174,6 @@ components:
       example: null
     PrivateRegion_allOf:
       properties:
-        clientID:
-          type: string
         organizationID:
           type: string
         creatorID:
@@ -1141,7 +1181,6 @@ components:
         secret:
           $ref: '#/components/schemas/PrivateRegion_allOf_secret'
       required:
-      - clientID
       - creatorID
       - organizationID
       type: object
@@ -1180,6 +1219,12 @@ components:
         ownerId:
           description: Owner ID
           type: string
+        availableStacks:
+          description: Number of available stacks
+          type: integer
+        availableSandboxes:
+          description: Number of available sandboxes
+          type: integer
       required:
       - id
       - ownerId
@@ -1210,48 +1255,11 @@ components:
         disabledAt:
           format: date-time
           type: string
-        status:
-          enum:
-          - UNKNOWN
-          - PROGRESSING
-          - READY
-          - DISABLED
-          - DELETED
-          type: string
-        state:
-          enum:
-          - ACTIVE
-          - DISABLED
-          - DELETED
-          type: string
-        expectedStatus:
-          enum:
-          - UNKNOWN
-          - PROGRESSING
-          - READY
-          - DISABLED
-          - DELETED
-          type: string
-        lastStateUpdate:
-          format: date-time
-          type: string
-        lastExpectedStatusUpdate:
-          format: date-time
-          type: string
-        lastStatusUpdate:
-          format: date-time
-          type: string
       required:
-      - expectedStatus
       - id
-      - lastExpectedStatusUpdate
-      - lastStateUpdate
-      - lastStatusUpdate
       - organizationId
       - regionID
       - stargateEnabled
-      - state
-      - status
       - uri
       type: object
       example: null

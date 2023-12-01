@@ -19,7 +19,6 @@ var _ MappedNullable = &PrivateRegionAllOf{}
 
 // PrivateRegionAllOf struct for PrivateRegionAllOf
 type PrivateRegionAllOf struct {
-	ClientID string `json:"clientID"`
 	OrganizationID string `json:"organizationID"`
 	CreatorID string `json:"creatorID"`
 	Secret *PrivateRegionAllOfSecret `json:"secret,omitempty"`
@@ -29,9 +28,8 @@ type PrivateRegionAllOf struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateRegionAllOf(clientID string, organizationID string, creatorID string) *PrivateRegionAllOf {
+func NewPrivateRegionAllOf(organizationID string, creatorID string) *PrivateRegionAllOf {
 	this := PrivateRegionAllOf{}
-	this.ClientID = clientID
 	this.OrganizationID = organizationID
 	this.CreatorID = creatorID
 	return &this
@@ -43,30 +41,6 @@ func NewPrivateRegionAllOf(clientID string, organizationID string, creatorID str
 func NewPrivateRegionAllOfWithDefaults() *PrivateRegionAllOf {
 	this := PrivateRegionAllOf{}
 	return &this
-}
-
-// GetClientID returns the ClientID field value
-func (o *PrivateRegionAllOf) GetClientID() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.ClientID
-}
-
-// GetClientIDOk returns a tuple with the ClientID field value
-// and a boolean to check if the value has been set.
-func (o *PrivateRegionAllOf) GetClientIDOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.ClientID, true
-}
-
-// SetClientID sets field value
-func (o *PrivateRegionAllOf) SetClientID(v string) {
-	o.ClientID = v
 }
 
 // GetOrganizationID returns the OrganizationID field value
@@ -159,7 +133,6 @@ func (o PrivateRegionAllOf) MarshalJSON() ([]byte, error) {
 
 func (o PrivateRegionAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["clientID"] = o.ClientID
 	toSerialize["organizationID"] = o.OrganizationID
 	toSerialize["creatorID"] = o.CreatorID
 	if !IsNil(o.Secret) {
