@@ -15,6 +15,7 @@ type bankAccountResponse struct {
 	CreatedAt     time.Time `json:"createdAt"`
 	Country       string    `json:"country"`
 	ConnectorID   string    `json:"connectorID"`
+	Provider      string    `json:"provider,omitempty"`
 	AccountID     string    `json:"accountId,omitempty"`
 	Iban          string    `json:"iban,omitempty"`
 	AccountNumber string    `json:"accountNumber,omitempty"`
@@ -50,6 +51,7 @@ func createBankAccountHandler(
 			CreatedAt:   bankAccount.CreatedAt,
 			Country:     bankAccount.Country,
 			ConnectorID: bankAccountRequest.ConnectorID,
+			Provider:    bankAccount.ConnectorID.Provider.String(),
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{

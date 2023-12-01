@@ -212,6 +212,7 @@ func TestCreateBankAccounts(t *testing.T) {
 				Country:     createBankAccountResponse.Country,
 				ConnectorID: createBankAccountResponse.ConnectorID.String(),
 				AccountID:   createBankAccountResponse.AccountID.String(),
+				Provider:    createBankAccountResponse.ConnectorID.Provider.String(),
 			}
 
 			backend, mockService := newServiceTestingBackend(t)

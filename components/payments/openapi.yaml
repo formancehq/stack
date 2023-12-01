@@ -1335,6 +1335,8 @@ components:
           type: string
         connectorID:
           type: string
+        provider:
+          type: string
         iban:
           type: string
         accountNumber:

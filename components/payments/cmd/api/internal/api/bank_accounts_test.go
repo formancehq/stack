@@ -187,6 +187,7 @@ func TestListBankAccounts(t *testing.T) {
 					Country:     listBankAccountsResponse[0].Country,
 					ConnectorID: listBankAccountsResponse[0].ConnectorID.String(),
 					AccountID:   listBankAccountsResponse[0].AccountID.String(),
+					Provider:    listBankAccountsResponse[0].ConnectorID.Provider.String(),
 				},
 				{
 					ID:          listBankAccountsResponse[1].ID.String(),
@@ -194,6 +195,7 @@ func TestListBankAccounts(t *testing.T) {
 					Country:     listBankAccountsResponse[1].Country,
 					ConnectorID: listBankAccountsResponse[1].ConnectorID.String(),
 					AccountID:   listBankAccountsResponse[1].AccountID.String(),
+					Provider:    listBankAccountsResponse[1].ConnectorID.Provider.String(),
 				},
 			}
 			expectedPaginationDetails := storage.PaginationDetails{
@@ -333,6 +335,7 @@ func TestGetBankAccount(t *testing.T) {
 				CreatedAt:     getBankAccountResponse.CreatedAt,
 				Country:       getBankAccountResponse.Country,
 				ConnectorID:   getBankAccountResponse.ConnectorID.String(),
+				Provider:      getBankAccountResponse.ConnectorID.Provider.String(),
 				AccountID:     getBankAccountResponse.AccountID.String(),
 				Iban:          "FR76*******************0188",
 				AccountNumber: "13************300",

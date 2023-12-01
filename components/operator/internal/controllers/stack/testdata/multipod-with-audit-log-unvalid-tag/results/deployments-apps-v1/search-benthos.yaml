@@ -20,7 +20,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: ZfCuMGQfh-rJxVRAMiZgcFAX6YGuJTDmlkhAcqgjeGw=
+                stack.formance.cloud/volumes-hash: HwuOZshluD9ZlUDdE6Qjdk6WThO5yki7neGzghRew50=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: search-benthos
