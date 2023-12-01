@@ -77,20 +77,20 @@ fctl payments payments list
 If all goes well, you should see:
 
 ```
-ID                      | Type     | Amount    | Asset | Status    | Scheme            | Reference | Source Account ID     | Destination Account ID | Provider       | Created at
-<Formance Internal ID>  | TRANSFER | 300       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref1      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-10-03T13:58:43Z
-<Formance Internal ID>  | TRANSFER | 30000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref2      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:45:15Z
-<Formance Internal ID>  | TRANSFER | 10000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref3      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:44:52Z
-<Formance Internal ID>  | TRANSFER | 30000000  | EUR/2 | FAILED    | <Payment Scheme>  | Ref4      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:43:36Z
-<Formance Internal ID>  | PAYOUT   | 10000000  | EUR/2 | FAILED    | <Payment Scheme>  | Ref5      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:41:51Z
-<Formance Internal ID>  | PAY-IN   | 10000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref6      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:40:36Z
-<Formance Internal ID>  | PAY-IN   | 10000000  | USD/2 | SUCCEEDED | <Payment Scheme>  | Ref7      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:40:05Z
-<Formance Internal ID>  | TRANSFER | 100000000 | EUR/2 | FAILED    | <Payment Scheme>  | Ref8      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:39:15Z
-<Formance Internal ID>  | PAY-IN   | 20000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref9      | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:37:46Z
-<Formance Internal ID>  | TRANSFER | 100000000 | EUR/2 | FAILED    | <Payment Scheme>  | Ref10     | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:36:01Z
-<Formance Internal ID>  | TRANSFER | 100000000 | EUR/2 | FAILED    | <Payment Scheme>  | Ref11     | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:35:17Z
-<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref12     | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T12:02:18Z
-<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref13     | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-28T10:35:12Z
-<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref14     | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-27T11:51:51Z
-<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref15     | <Formance Account ID> | <Formance Account ID>  | <ProviderName> | 2023-09-27T11:50:41Z
+ID                      | Type     | Amount    | Asset | Status    | Scheme            | Reference | Source Account ID     | Destination Account ID | ConnectorID    | Created at
+<Formance Internal ID>  | TRANSFER | 300       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref1      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-10-03T13:58:43Z
+<Formance Internal ID>  | TRANSFER | 30000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref2      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:45:15Z
+<Formance Internal ID>  | TRANSFER | 10000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref3      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:44:52Z
+<Formance Internal ID>  | TRANSFER | 30000000  | EUR/2 | FAILED    | <Payment Scheme>  | Ref4      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:43:36Z
+<Formance Internal ID>  | PAYOUT   | 10000000  | EUR/2 | FAILED    | <Payment Scheme>  | Ref5      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:41:51Z
+<Formance Internal ID>  | PAY-IN   | 10000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref6      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:40:36Z
+<Formance Internal ID>  | PAY-IN   | 10000000  | USD/2 | SUCCEEDED | <Payment Scheme>  | Ref7      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:40:05Z
+<Formance Internal ID>  | TRANSFER | 100000000 | EUR/2 | FAILED    | <Payment Scheme>  | Ref8      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:39:15Z
+<Formance Internal ID>  | PAY-IN   | 20000000  | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref9      | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:37:46Z
+<Formance Internal ID>  | TRANSFER | 100000000 | EUR/2 | FAILED    | <Payment Scheme>  | Ref10     | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:36:01Z
+<Formance Internal ID>  | TRANSFER | 100000000 | EUR/2 | FAILED    | <Payment Scheme>  | Ref11     | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:35:17Z
+<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref12     | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T12:02:18Z
+<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref13     | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-28T10:35:12Z
+<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref14     | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-27T11:51:51Z
+<Formance Internal ID>  | TRANSFER | 100       | EUR/2 | SUCCEEDED | <Payment Scheme>  | Ref15     | <Formance Account ID> | <Formance Account ID>  | <ConnectorID>  | 2023-09-27T11:50:41Z
 ```

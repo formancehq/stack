@@ -41,6 +41,7 @@ config is valid before loading the connector with it.
 
 ```go
 type ConnectorConfigObject interface {
+	ConnectorName() string
 	Validate() error
 	Marshal() ([]byte, error)
 }
@@ -74,10 +75,14 @@ func (l *Loader) AllowTasks() int {
 
 // ApplyDefaults applies default values to the configuration.
 func (l *Loader) ApplyDefaults(cfg Config) Config {
+	if cfg.name == "" {
+		cfg.name = "example"
+	}
+
 	return cfg
 }
 
-func (l *Loader) Load(logger logging.Logger, config Config) integration.Connector {
+func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector {
 	return nil // Will be updated in the next section
 }
 
@@ -85,7 +90,13 @@ func NewLoader() *Loader {
 	return &Loader{}
 }
 
-type Config struct{}
+type Config struct{
+	name string
+}
+
+func (c Config) ConnectorName() string {
+	return c.name
+}
 
 func (c Config) Validate() error {
 	return nil
@@ -99,7 +110,7 @@ func (c Config) Marshal() ([]byte, error) {
 In this example, the name of the connector is "example", and the `Config`
 struct is empty. We will add logic to these structs later.
 
-To integrate the connector into the core, we need to edit the `internal/app/api/module.go`
+To integrate the connector into the core, we need to edit the `cmd/connectors/internal/api/module.go`
 file and add the following code to the end of the `HTTPModule()` method:
 ```go
     ...
@@ -111,7 +122,7 @@ As you may have noticed, the ```Loader``` has method named ```Load``` :
 
 ```go
 //...
-Load(logger logging.Logger, config Config) integration.Connector
+Load(logger logging.Logger, config Config) connectors.Connector
 //...
 ```
 
@@ -131,6 +142,10 @@ type Connector interface {
 	Resolve(descriptor models.TaskDescriptor) task.Task
 	// InitiateTransfer is used to initiate a transfer from the connector to a bank account.
 	InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
+	// CreateExternalBankAccount is used to create a bank account on the connector side.
+	CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error
+	// GetSupportedCurrenciesAndDecimals returns a map of supported currencies and their decimals.
+	SupportedCurrenciesAndDecimals() map[string]int
 }
 ```
 
@@ -153,6 +168,14 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return errors.New("not implemented")
 }
 
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	return errors.New("not implemented")
+}
+
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return currency.ISO4217Currencies
+}
+
 func (c *Connector) Install(ctx task.ConnectorContext) error {
 	return nil
 }
@@ -165,7 +188,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return nil // Will be updated in the next section
 }
 
-var _ integration.Connector = &Connector{}
+var _ connectors.Connector = &Connector{}
 
 func newConnector(logger logging.Logger, cfg Config) *Connector {
 	return &Connector{
@@ -181,14 +204,14 @@ Then, we need to modify our loader:
 
 ```go
 // Load returns the connector.
-func (l *Loader) Load(logger logging.Logger, config Config) integration.Connector {
+func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector {
 	return newConnector(logger, config)
 }
 ```
 
 Since the connector's name is an enum, you will need to add it at different places:
 
-- `internal/app/storage/migrations.go`: Add a new migration adding the connector
+- `internal/storage/migration_v1.x.go`: Add a new migration adding the connector
 enum to the postgres enum:
 ```go
 migrations.Migration{
@@ -205,15 +228,16 @@ migrations.Migration{
 },
 ```
 
-- `internal/app/models/connector.go`: Add the enum to the `ConnectorProvider` type:
+- `internal/models/connector.go`: Add the enum to the `ConnectorProvider` type:
 ```go
 ConnectorProviderExample       ConnectorProvider = "EXAMPLE"
 ```
 
+Don't forget to update all enum functions below the enum definition.
+
 After running the service, you should see output like this:
 ```bash
-stack-all-in-one-1  | [payments_1	] time="11-10-9108 11:19:03.400081" level=info msg="Restoring state" component=connector-manager provider=EXAMPLE
-stack-all-in-one-1  | [payments_1	] time="11-10-9108 11:19:03.407083" level=info msg="Not installed, skip" component=connector-manager provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:38:13.439134" level=info msg="Restoring state for all connectors" component=connector-manager provider=EXAMPLE
 ```
 
 This indicates that your connector is properly integrated. You can install it using this command:
@@ -225,8 +249,8 @@ curl http://localhost:8080/connectors/example -X POST
 The service should display output like this:
 
 ```bash
-stack-all-in-one-1  | [payments_1	] time="11-10-9108 11:21:17.541070" level=info msg="Install connector EXAMPLE" component=connector-manager config="{}" provider=EXAMPLE
-stack-all-in-one-1  | [payments_1	] time="11-10-9108 11:21:17.614472" level=info msg="Connector installed" component=connector-manager provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:40:04.072596" level=info msg="Install connector " component=connector-manager config="{}" provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:40:04.095978" level=info msg="Connector installed" component=connector-manager provider=EXAMPLE
 ```
 
 To uninstall your connector, you can now use the following command:
@@ -238,9 +262,9 @@ curl http://localhost:8080/connectors/example -X DELETE
 The service should display output like this:
 
 ```bash
-stack-all-in-one-1  | [payments_1	] time="11-10-9108 11:22:03.019270" level=info msg="Uninstalling connector" component=connector-manager provider=EXAMPLE
-stack-all-in-one-1  | [payments_1	] time="11-10-9108 11:22:03.021531" level=info msg="Stopping scheduler..." component=scheduler provider=EXAMPLE
-stack-all-in-one-1  | [payments_1	] time="11-10-9108 11:22:03.048005" level=info msg="Connector uninstalled" component=connector-manager provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:54:32.216901" level=info msg="Uninstalling connector: {<connectorID> EXAMPLE}" component=connector-manager provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:54:32.216928" level=info msg="Stopping scheduler..." component=scheduler connectorID="{<connectorID> EXAMPLE}"
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:54:32.221242" level=info msg="Connector {<ConnectorID> EXAMPLE} uninstalled" component=connector-manager provider=EXAMPLE
 ```
 
 This indicates that your connector has been successfully uninstalled. You can
@@ -250,6 +274,7 @@ It's to time to add a bit of logic to our connector.
 
 ```go
 type Config struct {
+	name string
 	Directory string
 }
 
@@ -421,13 +446,19 @@ curl request to install the connector:
 curl http://localhost:8080/connectors/example -X POST -d '{"directory": "/tmp/payments"}'
 ```
 
+You should see something like this in the curl response:
+```json
+{"data":{"connectorID":"<connectorID>>"}}
+```
+Don't forget to note the connectorID, as we will need it later.
+
 This instructs the connector to watch the directory `/tmp/payments`. You should
 see something like this in the app logs:
 ```bash
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:01:11.159048" level=info msg="Install connector EXAMPLE" component=connector-manager config="{/tmp/payments}" provider=EXAMPLE
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:01:11.553498" level=info msg="Connector installed" component=connector-manager provider=EXAMPLE
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:01:11.554236" level=info msg="Opening directory '/tmp/payments'..." component=scheduler provider=EXAMPLE task-id=03611faa-56c3-4340-bf34-12bf2f88444a
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:01:11.555722" level=error msg="Task terminated with error: open /tmp/payments: no such file or directory" component=scheduler provider=EXAMPLE task-id=03611faa-56c3-4340-bf34-12bf2f88444a
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:40:04.072596" level=info msg="Install connector " component=connector-manager config="{ /tmp/payments}" provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:40:04.095978" level=info msg="Connector installed" component=connector-manager provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:40:04.096143" level=info msg="Opening directory '/tmp/payments'..." component=scheduler connectorID="{63976463-040a-44c2-9d17-eed95a19331b EXAMPLE}" task-id=6b545863-889c-4418-98b2-8e1a85ed9a49
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:40:04.096267" level=error msg="Task terminated with error: open /tmp/payments: no such file or directory" component=scheduler connectorID="{63976463-040a-44c2-9d17-eed95a19331b EXAMPLE}" task-id=6b545863-889c-4418-98b2-8e1a85ed9a49
 ```
 
 As expected, the task triggers an error because the `/tmp/payments` directory
@@ -435,7 +466,7 @@ does not exist (yet).
 
 You can see the tasks on the API as well:
 ```bash
-curl http://localhost:8080/connectors/example/tasks | jq .
+curl http://localhost:8080/connectors/example/<connectorID>/tasks | jq .
 ```
 
 which should return something like this:
@@ -447,7 +478,7 @@ which should return something like this:
         "data":[
             {
                 "id":"03611faa-56c3-4340-bf34-12bf2f88444a",
-                "connectorID":"6ad145ba-195a-4b66-a5ca-1fad1dc9099a",
+                "connectorID":"<connectorID>",
                 "createdAt":"2023-10-09T12:01:11Z",
                 "updatedAt":"2023-10-09T12:01:11Z",
                 "descriptor":"directory",
@@ -472,10 +503,10 @@ docker exec stack-all-in-one-1 mkdir /tmp/payments
 
 After a few seconds, you should see thoses logs lines:
 ```bash
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:08:40.212514" level=info msg="Connector installed" component=connector-manager provider=EXAMPLE
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:08:40.214342" level=info msg="Opening directory '/tmp/payments'..." component=scheduler provider=EXAMPLE task-id=6ef6e460-d756-4e95-ba76-b3aa6f924703
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:08:40.215043" level=info msg="Found 0 files" component=scheduler provider=EXAMPLE task-id=6ef6e460-d756-4e95-ba76-b3aa6f924703
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:08:40.215067" level=info msg="Starting task..." component=scheduler provider=EXAMPLE task-id=6ef6e460-d756-4e95-ba76-b3aa6f924703
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:47:44.627235" level=info msg="Connector installed" component=connector-manager provider=EXAMPLE
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:47:44.627353" level=info msg="Opening directory '/tmp/payments'..." component=scheduler connectorID="{93b44ff6-d939-473d-ba59-c754c7cd8777 EXAMPLE}" task-id=68942fb0-0abb-48e9-9e37-04d4f81c510d
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:47:44.627492" level=info msg="Found 0 files" component=scheduler connectorID="{93b44ff6-d939-473d-ba59-c754c7cd8777 EXAMPLE}" task-id=68942fb0-0abb-48e9-9e37-04d4f81c510d
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:47:44.627512" level=info msg="Starting task..." component=scheduler connectorID="{93b44ff6-d939-473d-ba59-c754c7cd8777 EXAMPLE}" task-id=68942fb0-0abb-48e9-9e37-04d4f81c510d
 ```
 
 Ok, now we have a directory to watch. Let's add some files to it:
@@ -494,10 +525,10 @@ docker cp /tmp/test.json stack-all-in-one-1:/tmp/payments/test.json
 
 Now you should see something like this in the logs:
 ```bash
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:12:12.744728" level=info msg="Opening directory '/tmp/payments'..." component=scheduler provider=EXAMPLE task-id=866f65ef-f846-4735-bb9b-f810586c303e
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:12:12.745453" level=info msg="Found 1 files" component=scheduler provider=EXAMPLE task-id=866f65ef-f846-4735-bb9b-f810586c303e
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:12:12.837924" level=info msg="Starting task..." component=scheduler provider=EXAMPLE task-id=b500d467-a1fe-4d15-a2e4-6b3d18834497
-stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:12:12.838669" level=error msg="Task terminated with error: not implemented" component=scheduler provider=EXAMPLE task-id=b500d467-a1fe-4d15-a2e4-6b3d18834497
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:57:38.178945" level=info msg="Opening directory '/tmp/payments'..." component=scheduler connectorID="{c283ee56-b62c-4403-ac02-759da8d96c05 EXAMPLE}" task-id=675e9627-7aca-4108-a8a2-494532eb9910
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:57:48.178829" level=info msg="Found 1 files" component=scheduler connectorID="{c283ee56-b62c-4403-ac02-759da8d96c05 EXAMPLE}" task-id=675e9627-7aca-4108-a8a2-494532eb9910
+stack-all-in-one-1  | [payments_1	] time="12-12-1128 12:57:58.192963" level=info msg="Starting task..." component=scheduler connectorID="{c283ee56-b62c-4403-ac02-759da8d96c05 EXAMPLE}" task-id=33e944bc-31dd-40c6-a987-41e50d3161a3
+stack-all-in-one-1  | [payments_1	] time="12-10-9108 12:12:12.838669" level=error msg="Task terminated with error: not implemented" component=scheduler connectorID="{c283ee56-b62c-4403-ac02-759da8d96c05 EXAMPLE}" task-id=33e944bc-31dd-40c6-a987-41e50d3161a3
 ```
 
 The logs show that our connector properly detected the file and triggered a
@@ -512,6 +543,7 @@ Let's implement the second task. We will simply read the file and ingest its con
 ```go
     return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		logger logging.Logger,
 		ingester ingestion.Ingester,
 	) error {
@@ -536,7 +568,7 @@ Let's implement the second task. We will simply read the file and ingest its con
 			return err
 		}
 
-		return ingester.IngestPayments(ctx, ingestion.PaymentBatch{
+		return ingester.IngestPayments(ctx, connectorID, ingestion.PaymentBatch{
 			{
 				Payment: &models.Payment{
 					ID: models.PaymentID{
@@ -544,15 +576,16 @@ Let's implement the second task. We will simply read the file and ingest its con
 							Reference: jsonPayment.Reference,
 							Type:      models.PaymentType(jsonPayment.Type),
 						},
-						Provider: models.ConnectorProviderExample,
+						ConnectorID: connectorID,
 					},
-					CreatedAt: jsonPayment.CreatedAt,
-					Reference: jsonPayment.Reference,
-					Amount:    jsonPayment.Amount,
-					Type:      models.PaymentType(jsonPayment.Type),
-					Status:    models.PaymentStatus(jsonPayment.Status),
-					Scheme:    models.PaymentScheme(jsonPayment.Scheme),
-					Asset:     models.Asset(jsonPayment.Asset),
+					CreatedAt:   jsonPayment.CreatedAt,
+					Reference:   jsonPayment.Reference,
+					Amount:      jsonPayment.Amount,
+					ConnectorID: connectorID,
+					Type:        models.PaymentType(jsonPayment.Type),
+					Status:      models.PaymentStatus(jsonPayment.Status),
+					Scheme:      models.PaymentScheme(jsonPayment.Scheme),
+					Asset:       models.Asset(jsonPayment.Asset),
 				},
 			},
 		}, struct{}{})
@@ -589,7 +622,7 @@ curl http://localhost:8080/payments | jq
         "id": "eyJQcm92aWRlciI6IkVYQU1QTEUiLCJSZWZlcmVuY2UiOiJ0ZXN0IiwiVHlwZSI6IlRSQU5TRkVSIn0=",
         "reference": "test",
         "type": "TRANSFER",
-        "provider": "EXAMPLE",
+        "connectorID": "<connectorID>",
         "status": "SUCCEEDED",
         "initialAmount": 100,
         "scheme": "visa",
@@ -608,7 +641,7 @@ that is responsible for saving the payment object in the database.
 
 In the code of the second task, you may have noticed the following part:
 ```go
-return ingester.IngestPayments(ctx, ingestion.PaymentBatch{
+return ingester.IngestPayments(ctx, connectorID, ingestion.PaymentBatch{
 			{
 				Payment: &models.Payment{
 					ID: models.PaymentID{
@@ -616,15 +649,16 @@ return ingester.IngestPayments(ctx, ingestion.PaymentBatch{
 							Reference: jsonPayment.Reference,
 							Type:      models.PaymentType(jsonPayment.Type),
 						},
-						Provider: models.ConnectorProviderExample,
+						ConnectorID: connectorID,
 					},
-					CreatedAt: jsonPayment.CreatedAt,
-					Reference: jsonPayment.Reference,
-					Amount:    jsonPayment.Amount,
-					Type:      models.PaymentType(jsonPayment.Type),
-					Status:    models.PaymentStatus(jsonPayment.Status),
-					Scheme:    models.PaymentScheme(jsonPayment.Scheme),
-					Asset:     models.Asset(jsonPayment.Asset),
+					CreatedAt:   jsonPayment.CreatedAt,
+					Reference:   jsonPayment.Reference,
+					Amount:      jsonPayment.Amount,
+					ConnectorID: connectorID,
+					Type:        models.PaymentType(jsonPayment.Type),
+					Status:      models.PaymentStatus(jsonPayment.Status),
+					Scheme:      models.PaymentScheme(jsonPayment.Scheme),
+					Asset:       models.Asset(jsonPayment.Asset),
 				},
 			},
 		}, struct{}{})
@@ -660,10 +694,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/formancehq/payments/internal/app/ingestion"
-	"github.com/formancehq/payments/internal/app/integration"
-	"github.com/formancehq/payments/internal/app/models"
-	"github.com/formancehq/payments/internal/app/task"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
+	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
+	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
@@ -681,10 +716,14 @@ func (l *Loader) AllowTasks() int {
 
 // ApplyDefaults applies default values to the configuration.
 func (l *Loader) ApplyDefaults(cfg Config) Config {
+	if cfg.name == "" {
+		cfg.name = "example"
+	}
+
 	return cfg
 }
 
-func (l *Loader) Load(logger logging.Logger, config Config) integration.Connector {
+func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector {
 	return newConnector(logger, config)
 }
 
@@ -693,7 +732,12 @@ func NewLoader() *Loader {
 }
 
 type Config struct {
+	name string
 	Directory string
+}
+
+func (c Config) ConnectorName() string {
+	return c.name
 }
 
 func (c Config) Validate() error {
@@ -717,6 +761,14 @@ type Connector struct {
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
 	return errors.New("not implemented")
+}
+
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	return errors.New("not implemented")
+}
+
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return currency.ISO4217Currencies
 }
 
 type TaskDescriptor string
@@ -786,6 +838,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 
 	return func(
 		ctx context.Context,
+		connectorID models.ConnectorID,
 		logger logging.Logger,
 		ingester ingestion.Ingester,
 	) error {
@@ -810,7 +863,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 			return err
 		}
 
-		return ingester.IngestPayments(ctx, ingestion.PaymentBatch{
+		return ingester.IngestPayments(ctx, connectorID, ingestion.PaymentBatch{
 			{
 				Payment: &models.Payment{
 					ID: models.PaymentID{
@@ -818,22 +871,23 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 							Reference: jsonPayment.Reference,
 							Type:      models.PaymentType(jsonPayment.Type),
 						},
-						Provider: models.ConnectorProviderExample,
+						ConnectorID: connectorID,
 					},
-					CreatedAt: jsonPayment.CreatedAt,
-					Reference: jsonPayment.Reference,
-					Amount:    jsonPayment.Amount,
-					Type:      models.PaymentType(jsonPayment.Type),
-					Status:    models.PaymentStatus(jsonPayment.Status),
-					Scheme:    models.PaymentScheme(jsonPayment.Scheme),
-					Asset:     models.Asset(jsonPayment.Asset),
+					CreatedAt:   jsonPayment.CreatedAt,
+					Reference:   jsonPayment.Reference,
+					Amount:      jsonPayment.Amount,
+					ConnectorID: connectorID,
+					Type:        models.PaymentType(jsonPayment.Type),
+					Status:      models.PaymentStatus(jsonPayment.Status),
+					Scheme:      models.PaymentScheme(jsonPayment.Scheme),
+					Asset:       models.Asset(jsonPayment.Asset),
 				},
 			},
 		}, struct{}{})
 	}
 }
 
-var _ integration.Connector = &Connector{}
+var _ connectors.Connector = &Connector{}
 
 func newConnector(logger logging.Logger, cfg Config) *Connector {
 	return &Connector{
