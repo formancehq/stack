@@ -15,6 +15,7 @@ import (
 type PaymentsConnectorsMoneycorpStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
+	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsMoneycorpController struct {
 	store                *PaymentsConnectorsMoneycorpStore
@@ -22,6 +23,8 @@ type PaymentsConnectorsMoneycorpController struct {
 	defaultEndpoint      string
 	pollingPeriodFlag    string
 	defaultpollingPeriod string
+	nameFlag             string
+	defaultName          string
 }
 
 func NewDefaultPaymentsConnectorsMoneycorpStore() *PaymentsConnectorsMoneycorpStore {
@@ -37,6 +40,8 @@ func NewPaymentsConnectorsMoneycorpController() *PaymentsConnectorsMoneycorpCont
 		defaultEndpoint:      "https://sandbox-corpapi.moneycorp.com",
 		pollingPeriodFlag:    "polling-period",
 		defaultpollingPeriod: "2m",
+		nameFlag:             "name",
+		defaultName:          "moneycorp",
 	}
 }
 func NewMoneycorpCommand() *cobra.Command {
@@ -47,6 +52,7 @@ func NewMoneycorpCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
 		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
+		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
 		fctl.WithController[*PaymentsConnectorsMoneycorpStore](c),
 	)
 }
@@ -82,7 +88,8 @@ func (c *PaymentsConnectorsMoneycorpController) Run(cmd *cobra.Command, args []s
 
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorMoneycorp,
-		RequestBody: shared.MoneycorpConfig{
+		RequestBody: &shared.MoneycorpConfig{
+			Name:          fctl.GetString(cmd, c.nameFlag),
 			ClientID:      args[0],
 			APIKey:        args[1],
 			Endpoint:      fctl.GetString(cmd, c.endpointFlag),
@@ -101,13 +108,21 @@ func (c *PaymentsConnectorsMoneycorpController) Run(cmd *cobra.Command, args []s
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector installed!")
 
 	c.store.Success = true
+	c.store.ConnectorName = internal.MoneycorpConnector
+
+	if response.ConnectorResponse != nil {
+		c.store.ConnectorID = response.ConnectorResponse.Data.ConnectorID
+	}
 
 	return c, nil
 }
 
 func (c *PaymentsConnectorsMoneycorpController) Render(cmd *cobra.Command, args []string) error {
-
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector %s installed!", c.store.ConnectorName)
+	if c.store.ConnectorID == "" {
+		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector installed!", c.store.ConnectorName)
+	} else {
+		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector '%s' installed!", c.store.ConnectorName, c.store.ConnectorID)
+	}
 
 	return nil
 }

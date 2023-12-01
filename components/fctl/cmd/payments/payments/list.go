@@ -87,7 +87,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			payment.Reference,
 			payment.SourceAccountID,
 			payment.DestinationAccountID,
-			string(payment.ConnectorID),
+			payment.ConnectorID,
 			payment.CreatedAt.Format(time.RFC3339),
 		}
 	})

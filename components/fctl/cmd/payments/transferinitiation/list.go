@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -16,7 +17,13 @@ type ListStore struct {
 }
 
 type ListController struct {
+	PaymentsVersion versions.Version
+
 	store *ListStore
+}
+
+func (c *ListController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
@@ -38,6 +45,13 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
+	}
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -82,10 +96,11 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			tf.ID,
 			tf.CreatedAt.Format(time.RFC3339),
 			tf.UpdatedAt.Format(time.RFC3339),
+			tf.ScheduledAt.Format(time.RFC3339),
 			tf.Description,
 			tf.SourceAccountID,
 			tf.DestinationAccountID,
-			string(tf.ConnectorID),
+			tf.ConnectorID,
 			string(tf.Type),
 			fmt.Sprint(tf.Amount),
 			tf.Asset,
@@ -93,7 +108,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			tf.Error,
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "UpdatedAt", "Description", "Source Account ID",
+	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "UpdatedAt", "ScheduledAt", "Description", "Source Account ID",
 		"Destination Account ID", "ConnectorID", "Type", "Amount", "Asset", "Status", "Error"})
 	return pterm.DefaultTable.
 		WithHasHeader().
@@ -103,10 +118,11 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 }
 
 func NewListCommand() *cobra.Command {
+	c := NewListController()
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithShortDescription("List transfer initiation"),
-		fctl.WithController[*ListStore](NewListController()),
+		fctl.WithController[*ListStore](c),
 	)
 }

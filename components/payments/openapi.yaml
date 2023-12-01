@@ -883,6 +883,8 @@ components:
                 type: string
               connectorID:
                 type: string
+              enabled:
+                type: boolean
     BankAccountResponse:
       type: object
       required:

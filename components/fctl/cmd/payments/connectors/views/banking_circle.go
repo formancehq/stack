@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+func DisplayBankingCircleConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
 	config := connectorConfig.Data.(map[string]interface{})
 
 	tableData := pterm.TableData{}
@@ -17,20 +17,19 @@ func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorCo
 		}
 		return name
 	}()})
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), func() string {
-		apiKey, ok := config["apiKey"].(string)
+	tableData = append(tableData, []string{pterm.LightCyan("Username:"), func() string {
+		username, ok := config["username"].(string)
 		if !ok {
 			return ""
 		}
-
-		return apiKey
+		return username
 	}()})
-	tableData = append(tableData, []string{pterm.LightCyan("API secret:"), func() string {
-		apiSecret, ok := config["apiSecret"].(string)
+	tableData = append(tableData, []string{pterm.LightCyan("Password:"), func() string {
+		password, ok := config["password"].(string)
 		if !ok {
 			return ""
 		}
-		return apiSecret
+		return password
 	}()})
 	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
 		endpoint, ok := config["endpoint"].(string)
@@ -38,6 +37,13 @@ func DisplayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorCo
 			return ""
 		}
 		return endpoint
+	}()})
+	tableData = append(tableData, []string{pterm.LightCyan("Authorization endpoint:"), func() string {
+		authorizationEndpoint, ok := config["authorizationEndpoint"].(string)
+		if !ok {
+			return ""
+		}
+		return authorizationEndpoint
 	}()})
 
 	if err := pterm.DefaultTable.
