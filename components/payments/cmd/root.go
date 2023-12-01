@@ -27,6 +27,8 @@ func NewRootCommand() *cobra.Command {
 		DisableAutoGenTag: true,
 	}
 
+	fmt.Println("TEST")
+
 	version := newVersion()
 	root.AddCommand(version)
 
