@@ -975,6 +975,7 @@ components:
         - BANKING-CIRCLE
         - MANGOPAY
         - MONEYCORP
+        - ATLAR
     TransferInitiationStatus:
       type: string
       enum:
@@ -994,6 +995,7 @@ components:
         - $ref: '#/components/schemas/BankingCircleConfig'
         - $ref: '#/components/schemas/MangoPayConfig'
         - $ref: '#/components/schemas/MoneycorpConfig'
+        - $ref: '#/components/schemas/AtlarConfig'
     StripeConfig:
       type: object
       required:
@@ -1201,6 +1203,48 @@ components:
           type: string
           example: 'XXX'
           description: 'The endpoint to use for the API. Defaults to https://devapi.currencycloud.com'
+    AtlarConfig:
+      type: object
+      required:
+        - name
+        - accessKey
+        - secret
+      properties:
+        name:
+          type: string
+          example: 'My Atlar Account'
+        baseUrl:
+          type: string
+          example: https://api.example.com
+          default: https://api.atlar.com
+          description: |
+            The base URL the client uses for making requests towards the Atlar API.
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector tries to fetch new Transaction objects from the Atlar API.
+          default: '120s'
+        accessKey:
+          type: string
+          example: XXX
+          description: |
+            The access key used by the connector for authorizing requests to the Atlar API.
+            You can obtain it along with the associated secret from the Atlar dashboard.
+        secret:
+          type: string
+          example: XXX
+          description: |
+            The secret used by the connector for authorizing requests to the Atlar API.
+            You can obtain it along with the associated access key from the Atlar dashboard.
+        pageSize:
+          type: integer
+          format: int64
+          minimum: 0
+          description: |
+            Number of items to fetch when querying paginated APIs.
+          default: 25
+          example: 50
     TransferInitiation:
       type: object
       required:

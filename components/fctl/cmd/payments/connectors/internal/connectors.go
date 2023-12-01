@@ -1,6 +1,7 @@
 package internal
 
 const (
+	AtlarConnector         = "atlar"
 	BankingCircleConnector = "bankingcircle"
 	CurrencyCloudConnector = "currencycloud"
 	ModulrConnector        = "modulr"
@@ -11,6 +12,7 @@ const (
 )
 
 var AllConnectors = []string{
+	AtlarConnector,
 	BankingCircleConnector,
 	CurrencyCloudConnector,
 	ModulrConnector,
