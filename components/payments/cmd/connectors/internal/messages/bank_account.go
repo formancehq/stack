@@ -11,6 +11,7 @@ type bankAccountMessagePayload struct {
 	ID            string    `json:"id"`
 	CreatedAt     time.Time `json:"createdAt"`
 	ConnectorID   string    `json:"connectorId"`
+	Provider      string    `json:"provider"`
 	Name          string    `json:"name"`
 	AccountNumber string    `json:"accountNumber"`
 	IBAN          string    `json:"iban"`
@@ -26,6 +27,7 @@ func NewEventSavedBankAccounts(bankAccount *models.BankAccount) events.EventMess
 		ID:            bankAccount.ID.String(),
 		CreatedAt:     bankAccount.CreatedAt,
 		ConnectorID:   bankAccount.ConnectorID.String(),
+		Provider:      bankAccount.ConnectorID.Provider.String(),
 		Name:          bankAccount.Name,
 		AccountNumber: bankAccount.AccountNumber,
 		IBAN:          bankAccount.IBAN,
