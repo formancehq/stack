@@ -40,22 +40,12 @@ func (b *Bucket) Close() error {
 	return b.db.Close()
 }
 
-func (b *Bucket) createLedgerStore(ctx context.Context, name string) (*Store, error) {
-	store, err := New(b, name)
-	if err != nil {
-		return nil, err
-	}
-
-	err = InitializeLedgerStore(ctx, b.db, name)
-	if err != nil {
-		return nil, err
-	}
-
-	return store, err
+func (b *Bucket) createLedgerStore(name string) (*Store, error) {
+	return New(b, name)
 }
 
-func (b *Bucket) CreateLedgerStore(ctx context.Context, name string) (*Store, error) {
-	return b.createLedgerStore(ctx, name)
+func (b *Bucket) CreateLedgerStore(name string) (*Store, error) {
+	return b.createLedgerStore(name)
 }
 
 func (b *Bucket) GetLedgerStore(name string) (*Store, error) {

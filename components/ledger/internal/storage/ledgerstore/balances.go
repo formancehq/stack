@@ -78,15 +78,15 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q GetAggregatedBa
 					moves = moves.Join(`join lateral (	
 						select metadata
 						from accounts_metadata am 
-						where am.address = moves.account_address and (? is null or date <= ?) and ledger = ?
+						where am.accounts_seq = moves.accounts_seq and (? is null or date <= ?)
 						order by revision desc 
 						limit 1
-					) am on true`, q.Options.Options.PIT, q.Options.Options.PIT, store.name)
+					) am on true`, q.Options.Options.PIT, q.Options.Options.PIT)
 				} else {
 					moves = moves.Join(`join lateral (	
 						select metadata
 						from accounts a 
-						where a.address = moves.account_address
+						where a.seq = moves.accounts_seq
 					) accounts on true`)
 				}
 			}

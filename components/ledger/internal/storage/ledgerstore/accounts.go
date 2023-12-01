@@ -28,7 +28,7 @@ func (store *Store) buildAccountQuery(q PITFilterWithVolumes, query *bun.SelectQ
 		query = query.
 			Column("accounts.address").
 			ColumnExpr("accounts_metadata.metadata").
-			Join("left join accounts_metadata on accounts_metadata.address = accounts.address and accounts_metadata.date < ? and accounts_metadata.ledger = accounts.ledger", q.PIT).
+			Join("left join accounts_metadata on accounts_metadata.accounts_seq = accounts.seq and accounts_metadata.date < ?", q.PIT).
 			Order("revision desc")
 	} else {
 		query = query.Column("metadata")

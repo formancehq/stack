@@ -81,17 +81,17 @@ func newLedgerStore(t T, hooks ...bun.QueryHook) *Store {
 	ledgerName := uuid.NewString()
 	ctx := logging.TestingContext()
 
-	_, err := bunDB.Exec(fmt.Sprintf(`create schema if not exists "%s"`, ledgerName))
+	_, err := bunDB.ExecContext(ctx, fmt.Sprintf(`create schema if not exists "%s"`, ledgerName))
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
-		_, err = bunDB.Exec(fmt.Sprintf(`drop schema "%s" cascade`, ledgerName))
+		_, err = bunDB.ExecContext(ctx, fmt.Sprintf(`drop schema "%s" cascade`, ledgerName))
 		require.NoError(t, err)
 	})
 
 	bucket := newBucket(t, hooks...)
 
-	store, err := bucket.CreateLedgerStore(ctx, ledgerName)
+	store, err := bucket.CreateLedgerStore(ledgerName)
 	require.NoError(t, err)
 
 	return store

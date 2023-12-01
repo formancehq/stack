@@ -122,7 +122,7 @@ func TestGetAccounts(t *testing.T) {
 
 	t.Run("list with effective volumes using PIT", func(t *testing.T) {
 		t.Parallel()
-		accounts, err := store.GetAccountsWithVolumes(context.Background(), NewGetAccountsQuery(NewPaginatedQueryOptions(PITFilterWithVolumes{
+		accounts, err := store.GetAccountsWithVolumes(ctx, NewGetAccountsQuery(NewPaginatedQueryOptions(PITFilterWithVolumes{
 			PITFilter: PITFilter{
 				PIT: &now,
 			},

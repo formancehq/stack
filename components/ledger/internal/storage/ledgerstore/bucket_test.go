@@ -18,10 +18,10 @@ func TestBuckets(t *testing.T) {
 		ledger0 = uuid.NewString()
 		ledger1 = uuid.NewString()
 	)
-	ledger0Store, err := bucket.CreateLedgerStore(ctx, ledger0)
+	ledger0Store, err := bucket.CreateLedgerStore(ledger0)
 	require.NoError(t, err)
 
-	ledger1Store, err := bucket.CreateLedgerStore(ctx, ledger1)
+	ledger1Store, err := bucket.CreateLedgerStore(ledger1)
 	require.NoError(t, err)
 
 	txLedger0 := ledger.Transaction{

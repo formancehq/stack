@@ -124,10 +124,6 @@ func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configurati
 		return nil, ErrLedgerAlreadyExists
 	}
 
-	if err := ledgerstore.InitializeLedgerStore(ctx, tx, name); err != nil {
-		return nil, errors.Wrap(err, "initializing ledger store")
-	}
-
 	store, err := bucket.GetLedgerStore(name)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting ledger store")
