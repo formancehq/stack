@@ -411,6 +411,7 @@ data:
                                 "id": this.payload.id,
                                 "createdAt": this.payload.createdAt,
                                 "connectorId": this.payload.connectorId,
+                                "provider": this.payload.provider,
                                 "name": this.payload.name,
                                 "accountNumber": this.payload.accountNumber,
                                 "iban": this.payload.iban,
