@@ -164,12 +164,12 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 			return nil, newStorageError(err, "getting connector")
 		}
 
-		f, ok := s.paymentHandlers[connector.Provider]
+		handlers, ok := s.connectorHandlers[connector.Provider]
 		if !ok {
 			return nil, errors.Wrap(ErrValidation, fmt.Sprintf("no payment handler for provider %v", connector.Provider))
 		}
 
-		err = f(ctx, tf)
+		err = handlers.PaymentHandler(ctx, tf)
 		if err != nil {
 			switch {
 			case errors.Is(err, manager.ErrValidation):
@@ -245,12 +245,12 @@ func (s *Service) UpdateTransferInitiationStatus(ctx context.Context, id string,
 	}
 
 	if status == models.TransferInitiationStatusValidated {
-		f, ok := s.paymentHandlers[previousTransferInitiation.Provider]
+		handlers, ok := s.connectorHandlers[previousTransferInitiation.Provider]
 		if !ok {
 			return errors.Wrap(ErrValidation, fmt.Sprintf("no payment handler for provider %v", previousTransferInitiation.Provider))
 		}
 
-		err = f(ctx, previousTransferInitiation)
+		err = handlers.PaymentHandler(ctx, previousTransferInitiation)
 		if err != nil {
 			switch {
 			case errors.Is(err, manager.ErrValidation):
@@ -298,12 +298,12 @@ func (s *Service) RetryTransferInitiation(ctx context.Context, id string) error 
 		return errors.Wrap(ErrPublish, err.Error())
 	}
 
-	f, ok := s.paymentHandlers[previousTransferInitiation.Provider]
+	handlers, ok := s.connectorHandlers[previousTransferInitiation.Provider]
 	if !ok {
 		return errors.Wrap(ErrValidation, fmt.Sprintf("no payment handler for provider %v", previousTransferInitiation.Provider))
 	}
 
-	err = f(ctx, previousTransferInitiation)
+	err = handlers.PaymentHandler(ctx, previousTransferInitiation)
 	if err != nil {
 		switch {
 		case errors.Is(err, manager.ErrValidation):

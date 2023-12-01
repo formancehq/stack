@@ -25,39 +25,13 @@ type Connector struct {
 	cfg    Config
 }
 
-func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	// Detach the context since we're launching an async task and we're mostly
-	// coming from a HTTP request.
-	detachedCtx, _ := contextutil.Detached(ctx.Context())
-	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-		Name:       "Initiate payment",
-		Key:        taskNameInitiatePayment,
-		TransferID: transfer.ID.String(),
-	})
-	if err != nil {
-		return err
+func newConnector(logger logging.Logger, cfg Config) *Connector {
+	return &Connector{
+		logger: logger.WithFields(map[string]any{
+			"component": "connector",
+		}),
+		cfg: cfg,
 	}
-
-	scheduleOption := models.OPTIONS_RUN_NOW_SYNC
-	scheduledAt := transfer.ScheduledAt
-	if !scheduledAt.IsZero() {
-		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
-	}
-
-	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
-		ScheduleOption: scheduleOption,
-		ScheduleAt:     scheduledAt,
-		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-	})
-	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-		return err
-	}
-
-	return nil
-}
-
-func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
-	return supportedCurrenciesWithDecimal
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
@@ -93,13 +67,60 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
 }
 
-var _ connectors.Connector = &Connector{}
-
-func newConnector(logger logging.Logger, cfg Config) *Connector {
-	return &Connector{
-		logger: logger.WithFields(map[string]any{
-			"component": "connector",
-		}),
-		cfg: cfg,
-	}
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
 }
+
+func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, _ := contextutil.Detached(ctx.Context())
+	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:       "Initiate payment",
+		Key:        taskNameInitiatePayment,
+		TransferID: transfer.ID.String(),
+	})
+	if err != nil {
+		return err
+	}
+
+	scheduleOption := models.OPTIONS_RUN_NOW_SYNC
+	scheduledAt := transfer.ScheduledAt
+	if !scheduledAt.IsZero() {
+		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
+	}
+
+	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: scheduleOption,
+		ScheduleAt:     scheduledAt,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:          "Initiate bank account creation",
+		Key:           taskNameCreateExternalAccount,
+		BankAccountID: bankAccount.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	err = ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
+}
+
+var _ connectors.Connector = &Connector{}

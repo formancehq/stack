@@ -4,11 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/messages"
+	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/pkg/errors"
 )
 
@@ -54,10 +52,9 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 		return nil, newStorageError(err, "getting connector")
 	}
 
-	if connector.Provider != models.ConnectorProviderBankingCircle {
-		// For now, bank accounts can only be created for BankingCircle
-		// in the future, we will support other providers
-		return nil, errors.Wrap(ErrValidation, "provider not supported")
+	handlers, ok := s.connectorHandlers[connector.Provider]
+	if !ok || handlers.BankAccountHandler == nil {
+		return nil, errors.Wrap(ErrValidation, "no bank account handler for connector")
 	}
 
 	bankAccount := &models.BankAccount{
@@ -74,43 +71,15 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 		return nil, newStorageError(err, "creating bank account")
 	}
 
-	// BankingCircle does not have external accounts so we need to create
-	// one by hand
-	if connector.Provider == models.ConnectorProviderBankingCircle {
-		accountID := models.AccountID{
-			Reference:   bankAccount.ID.String(),
-			ConnectorID: connector.ID,
+	if err := handlers.BankAccountHandler(ctx, bankAccount); err != nil {
+		switch {
+		case errors.Is(err, manager.ErrValidation):
+			return nil, errors.Wrap(ErrValidation, err.Error())
+		case errors.Is(err, manager.ErrConnectorNotFound):
+			return nil, errors.Wrap(ErrValidation, err.Error())
+		default:
+			return nil, err
 		}
-		err = s.store.UpsertAccounts(ctx, []*models.Account{
-			{
-				ID:          accountID,
-				CreatedAt:   time.Now(),
-				Reference:   bankAccount.ID.String(),
-				ConnectorID: connector.ID,
-				AccountName: bankAccount.Name,
-				Type:        models.AccountTypeExternalFormance,
-			},
-		})
-		if err != nil {
-			return nil, newStorageError(err, "upserting accounts")
-		}
-
-		err = s.store.LinkBankAccountWithAccount(ctx, bankAccount.ID, &accountID)
-		if err != nil {
-			return nil, newStorageError(err, "linking bank account with account")
-		}
-
-		bankAccount.AccountID = &accountID
-	}
-
-	if err := s.publisher.Publish(
-		events.TopicPayments,
-		publish.NewMessage(
-			ctx,
-			messages.NewEventSavedBankAccounts(bankAccount),
-		),
-	); err != nil {
-		return nil, errors.Wrap(ErrPublish, err.Error())
 	}
 
 	return bankAccount, nil
