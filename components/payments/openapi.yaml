@@ -975,6 +975,7 @@ components:
         - BANKING-CIRCLE
         - MANGOPAY
         - MONEYCORP
+        - ATLAR
     TransferInitiationStatus:
       type: string
       enum:
