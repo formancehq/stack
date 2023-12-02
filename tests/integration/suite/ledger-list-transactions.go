@@ -21,7 +21,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		var response *operations.ListTransactionsResponse
 		BeforeEach(func() {
 			var err error
-			response, err = Client().Ledger.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+			response, err = Client().Ledger.V2.ListTransactions(TestContext(), operations.ListTransactionsRequest{
 				Ledger: "default",
 			})
 			Expect(err).To(BeNil())

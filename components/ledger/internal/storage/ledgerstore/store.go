@@ -3,6 +3,7 @@ package ledgerstore
 import (
 	"context"
 	"database/sql"
+
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 
 	_ "github.com/jackc/pgx/v5/stdlib"

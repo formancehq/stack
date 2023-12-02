@@ -70,24 +70,6 @@ func (b *Bucket) IsInitialized(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
-func (b *Bucket) HasLedger(ctx context.Context, name string) (bool, error) {
-	row := b.db.QueryRowContext(ctx, `
-		select tablename
-		from pg_tables
-		where schemaname = ? and tablename  = ?
-	`, b.name, "transactions_"+name)
-	if row.Err() != nil {
-		return false, sqlutils.PostgresError(row.Err())
-	}
-	var t string
-	if err := row.Scan(&t); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return false, nil
-		}
-	}
-	return true, nil
-}
-
 func registerMigrations(migrator *migrations.Migrator, name string) {
 	migrator.RegisterMigrations(
 		migrations.Migration{

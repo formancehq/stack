@@ -32,7 +32,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		Then("Creating a tx on this ledger", func() {
 			BeforeEach(func() {
 				// Create a transaction
-				response, err := Client().Ledger.CreateTransaction(
+				response, err := Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.CreateTransactionRequest{
 						PostTransaction: shared.PostTransaction{
@@ -70,7 +70,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Then("Creating another tx on this new ledger", func() {
 					BeforeEach(func() {
 						// Create a transaction
-						response, err := Client().Ledger.CreateTransaction(
+						response, err := Client().Ledger.V2.CreateTransaction(
 							TestContext(),
 							operations.CreateTransactionRequest{
 								PostTransaction: shared.PostTransaction{
@@ -91,14 +91,14 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Expect(response.StatusCode).To(Equal(200))
 					})
 					It("should have one tx on both ledger", func() {
-						response, err := Client().Ledger.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+						response, err := Client().Ledger.V2.ListTransactions(TestContext(), operations.ListTransactionsRequest{
 							Ledger: ledger1,
 						})
 						Expect(err).ToNot(HaveOccurred())
 						Expect(response.StatusCode).To(Equal(200))
 						Expect(response.TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
 
-						response, err = Client().Ledger.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+						response, err = Client().Ledger.V2.ListTransactions(TestContext(), operations.ListTransactionsRequest{
 							Ledger: ledger2,
 						})
 						Expect(err).ToNot(HaveOccurred())

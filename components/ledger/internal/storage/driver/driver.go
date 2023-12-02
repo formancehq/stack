@@ -87,6 +87,12 @@ func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configurati
 		_ = tx.Rollback()
 	}()
 
+	if _, err := f.systemStore.GetLedger(ctx, name); err == nil {
+		return nil, ErrLedgerAlreadyExists
+	} else if !sqlutils.IsNotFoundError(err) {
+		return nil, err
+	}
+
 	bucketName := defaultBucket
 	if configuration.Bucket != "" {
 		bucketName = configuration.Bucket
@@ -114,14 +120,6 @@ func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configurati
 		if err := ledgerstore.MigrateBucket(ctx, tx, bucketName); err != nil {
 			return nil, errors.Wrap(err, "migrating bucket")
 		}
-	}
-
-	ledgerExists, err := bucket.HasLedger(ctx, name)
-	if err != nil {
-		return nil, errors.Wrap(err, "checking if bucket has ledger")
-	}
-	if ledgerExists {
-		return nil, ErrLedgerAlreadyExists
 	}
 
 	store, err := bucket.GetLedgerStore(name)

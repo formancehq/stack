@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/uptrace/bun/dialect/pgdialect"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/uptrace/bun/dialect/pgdialect"
 
 	"github.com/uptrace/bun"
 
