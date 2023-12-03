@@ -132,6 +132,100 @@ paths:
         '204':
           $ref: '#/components/responses/NoContent'
 
+  /pools:
+    get:
+      summary: List Pools
+      operationId: listPools
+      tags:
+        - Payments
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Query'
+      responses:
+        '200':
+          $ref: '#/components/responses/Pools'
+    post:
+      summary: Create a Pool
+      tags:
+        - Payments
+      operationId: createPool
+      description: Create a Pool
+      requestBody:
+        $ref: '#/components/requestBodies/Pool'
+      responses:
+        '200':
+          $ref: '#/components/responses/Pool'
+  /pools/{poolId}:
+    get:
+      summary: Get a Pool
+      tags:
+        - Payments
+      operationId: getPool
+      parameters:
+        - $ref: '#/components/parameters/PoolId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Pool'
+    delete:
+      summary: Delete a Pool
+      operationId: deletePool
+      tags:
+        - Payments
+      description: Delete a pool by its id.
+      parameters:
+        - $ref: '#/components/parameters/PoolId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+  /pools/{poolId}/accounts:
+    post:
+      summary: Add an account to a pool
+      tags:
+        - Payments
+      operationId: addAccountToPool
+      description: Add an account to a pool
+      parameters:
+        - $ref: '#/components/parameters/PoolId'
+      requestBody:
+        $ref: '#/components/requestBodies/AddAccountToPool'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+  /pools/{poolId}/accounts/{accountId}:
+    delete:
+      summary: Remove an account from a pool
+      operationId: removeAccountFromPool
+      tags:
+        - Payments
+      description: Remove an account from a pool by its id.
+      parameters:
+        - $ref: '#/components/parameters/PoolId'
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+  /pools/{poolId}/balances:
+    get:
+      summary: Get pool balances
+      operationId: getPoolBalances
+      tags:
+        - Payments
+      parameters:
+        - $ref: '#/components/parameters/PoolId'
+        - name: at
+          in: query
+          description: |
+            Filter balances by date.
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          $ref: '#/components/responses/PoolBalances'
+
   /accounts:
     get:
       summary: List accounts
@@ -509,6 +603,14 @@ components:
       description: The connector ID.
       example: XXX
       required: true
+    PoolId:
+      name: poolId
+      in: path
+      schema:
+        type: string
+      description: The pool ID.
+      example: XXX
+      required: true
     TransferId:
       name: transferId
       in: path
@@ -563,6 +665,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentResponse'
+    Pools:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolsCursor'
+    Pool:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolResponse'
+    PoolBalances:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolBalance'
     TransferInitiations:
       description: OK
       content:
@@ -667,6 +787,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentMetadata'
+    Pool:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolRequest'
+    AddAccountToPool:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddAccountToPoolRequest'
     TransferInitiation:
       required: true
       content:
@@ -733,6 +865,22 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/Payment'
+    PoolsCursor:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/CursorBase'
+            - type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Pool'
     TransferInitiationsCursor:
       type: object
       required:
@@ -837,6 +985,20 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Payment'
+    PoolBalancesResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/PoolBalances'
+    PoolResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Pool'
     TransferInitiationResponse:
       type: object
       required:
@@ -1453,6 +1615,44 @@ components:
         key:
           type: string
       nullable: true
+    Pool:
+      type: object
+      required:
+        - id
+        - name
+        - accounts
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        accounts:
+          type: array
+          items:
+            type: string
+    PoolBalances:
+      type: object
+      required:
+        - balances
+      properties:
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/PoolBalance'
+    PoolBalance:
+      type: object
+      required:
+        - amount
+        - asset
+      properties:
+        amount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        asset:
+          type: string
+          example: USD
     Account:
       type: object
       required:
@@ -1710,6 +1910,25 @@ components:
           type: string
         swiftBicCode:
           type: string
+    AddAccountToPoolRequest:
+      type: object
+      required:
+        - accountID
+      properties:
+        accountID:
+          type: string
+    PoolRequest:
+      type: object
+      required:
+        - name
+        - accountIDs
+      properties:
+        name:
+          type: string
+        accountIDs:
+          type: array
+          items:
+            type: string
     TransferInitiationRequest:
       type: object
       required:

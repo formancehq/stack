@@ -53,14 +53,14 @@ func TestMetadata(t *testing.T) {
 			name:               "missing body",
 			paymentID:          paymentID.String(),
 			expectedStatusCode: http.StatusBadRequest,
-			expectedErrorCode:  ErrMissingBody,
+			expectedErrorCode:  ErrMissingOrInvalidBody,
 		},
 		{
 			name:               "invalid body",
 			paymentID:          paymentID.String(),
 			body:               "invalid",
 			expectedStatusCode: http.StatusBadRequest,
-			expectedErrorCode:  ErrInvalidBody,
+			expectedErrorCode:  ErrMissingOrInvalidBody,
 		},
 		{
 			name:               "invalid paymentID",

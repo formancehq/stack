@@ -24,12 +24,11 @@ const (
 	otelTracesFlag = "otel-traces"
 	serviceName    = "Payments"
 
-	ErrUniqueReference = "CONFLICT"
-	ErrNotFound        = "NOT_FOUND"
-	ErrInvalidID       = "INVALID_ID"
-	ErrMissingBody     = "MISSING_BODY"
-	ErrInvalidBody     = "INVALID_BODY"
-	ErrValidation      = "VALIDATION"
+	ErrUniqueReference      = "CONFLICT"
+	ErrNotFound             = "NOT_FOUND"
+	ErrInvalidID            = "INVALID_ID"
+	ErrMissingOrInvalidBody = "MISSING_OR_INVALID_BODY"
+	ErrValidation           = "VALIDATION"
 )
 
 func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {

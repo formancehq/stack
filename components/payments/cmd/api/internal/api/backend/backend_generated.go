@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	service "github.com/formancehq/payments/cmd/api/internal/api/service"
 	storage "github.com/formancehq/payments/cmd/api/internal/storage"
 	models "github.com/formancehq/payments/internal/models"
 	gomock "github.com/golang/mock/gomock"
@@ -35,6 +36,49 @@ func NewMockService(ctrl *gomock.Controller) *MockService {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
+}
+
+// AddAccountToPool mocks base method.
+func (m *MockService) AddAccountToPool(ctx context.Context, poolID string, req *service.AddAccountToPoolRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddAccountToPool", ctx, poolID, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddAccountToPool indicates an expected call of AddAccountToPool.
+func (mr *MockServiceMockRecorder) AddAccountToPool(ctx, poolID, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAccountToPool", reflect.TypeOf((*MockService)(nil).AddAccountToPool), ctx, poolID, req)
+}
+
+// CreatePool mocks base method.
+func (m *MockService) CreatePool(ctx context.Context, req *service.CreatePoolRequest) (*models.Pool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePool", ctx, req)
+	ret0, _ := ret[0].(*models.Pool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePool indicates an expected call of CreatePool.
+func (mr *MockServiceMockRecorder) CreatePool(ctx, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePool", reflect.TypeOf((*MockService)(nil).CreatePool), ctx, req)
+}
+
+// DeletePool mocks base method.
+func (m *MockService) DeletePool(ctx context.Context, poolID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePool", ctx, poolID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePool indicates an expected call of DeletePool.
+func (mr *MockServiceMockRecorder) DeletePool(ctx, poolID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePool", reflect.TypeOf((*MockService)(nil).DeletePool), ctx, poolID)
 }
 
 // GetAccount mocks base method.
@@ -80,6 +124,36 @@ func (m *MockService) GetPayment(ctx context.Context, id string) (*models.Paymen
 func (mr *MockServiceMockRecorder) GetPayment(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPayment", reflect.TypeOf((*MockService)(nil).GetPayment), ctx, id)
+}
+
+// GetPool mocks base method.
+func (m *MockService) GetPool(ctx context.Context, poolID string) (*models.Pool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPool", ctx, poolID)
+	ret0, _ := ret[0].(*models.Pool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPool indicates an expected call of GetPool.
+func (mr *MockServiceMockRecorder) GetPool(ctx, poolID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPool", reflect.TypeOf((*MockService)(nil).GetPool), ctx, poolID)
+}
+
+// GetPoolBalance mocks base method.
+func (m *MockService) GetPoolBalance(ctx context.Context, poolID, atTime string) (*service.GetPoolBalanceResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPoolBalance", ctx, poolID, atTime)
+	ret0, _ := ret[0].(*service.GetPoolBalanceResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPoolBalance indicates an expected call of GetPoolBalance.
+func (mr *MockServiceMockRecorder) GetPoolBalance(ctx, poolID, atTime interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPoolBalance", reflect.TypeOf((*MockService)(nil).GetPoolBalance), ctx, poolID, atTime)
 }
 
 // ListAccounts mocks base method.
@@ -146,6 +220,22 @@ func (mr *MockServiceMockRecorder) ListPayments(ctx, pagination interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPayments", reflect.TypeOf((*MockService)(nil).ListPayments), ctx, pagination)
 }
 
+// ListPools mocks base method.
+func (m *MockService) ListPools(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Pool, storage.PaginationDetails, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPools", ctx, pagination)
+	ret0, _ := ret[0].([]*models.Pool)
+	ret1, _ := ret[1].(storage.PaginationDetails)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListPools indicates an expected call of ListPools.
+func (mr *MockServiceMockRecorder) ListPools(ctx, pagination interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPools", reflect.TypeOf((*MockService)(nil).ListPools), ctx, pagination)
+}
+
 // ListTransferInitiations mocks base method.
 func (m *MockService) ListTransferInitiations(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.TransferInitiation, storage.PaginationDetails, error) {
 	m.ctrl.T.Helper()
@@ -189,6 +279,20 @@ func (m *MockService) ReadTransferInitiation(ctx context.Context, id models.Tran
 func (mr *MockServiceMockRecorder) ReadTransferInitiation(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadTransferInitiation", reflect.TypeOf((*MockService)(nil).ReadTransferInitiation), ctx, id)
+}
+
+// RemoveAccountFromPool mocks base method.
+func (m *MockService) RemoveAccountFromPool(ctx context.Context, poolID, accountID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveAccountFromPool", ctx, poolID, accountID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveAccountFromPool indicates an expected call of RemoveAccountFromPool.
+func (mr *MockServiceMockRecorder) RemoveAccountFromPool(ctx, poolID, accountID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveAccountFromPool", reflect.TypeOf((*MockService)(nil).RemoveAccountFromPool), ctx, poolID, accountID)
 }
 
 // UpdatePaymentMetadata mocks base method.

@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"math/big"
+	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
@@ -15,6 +17,21 @@ func (m *MockStore) Ping() error {
 }
 func (m *MockStore) ListBalances(ctx context.Context, query storage.BalanceQuery) ([]*models.Balance, storage.PaginationDetails, error) {
 	return nil, storage.PaginationDetails{}, nil
+}
+
+func (m *MockStore) GetBalancesAt(ctx context.Context, accountID models.AccountID, atTime time.Time) ([]*models.Balance, error) {
+	return []*models.Balance{
+		{
+			AccountID: accountID,
+			Asset:     "EUR/2",
+			Balance:   big.NewInt(100),
+		},
+		{
+			AccountID: accountID,
+			Asset:     "USD/2",
+			Balance:   big.NewInt(150),
+		},
+	}, nil
 }
 
 func (m *MockStore) ListAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Account, storage.PaginationDetails, error) {
@@ -51,4 +68,57 @@ func (m *MockStore) ListTransferInitiations(ctx context.Context, pagination stor
 
 func (m *MockStore) GetTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error) {
 	return nil, nil
+}
+
+func (m *MockStore) CreatePool(ctx context.Context, pool *models.Pool) error {
+	return nil
+}
+
+func (m *MockStore) AddAccountsToPool(ctx context.Context, poolAccounts []*models.PoolAccounts) error {
+	return nil
+}
+
+func (m *MockStore) AddAccountToPool(ctx context.Context, poolAccount *models.PoolAccounts) error {
+	return nil
+}
+
+func (m *MockStore) RemoveAccountFromPool(ctx context.Context, poolAccount *models.PoolAccounts) error {
+	return nil
+}
+
+func (m *MockStore) ListPools(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Pool, storage.PaginationDetails, error) {
+	return nil, storage.PaginationDetails{}, nil
+}
+
+func (m *MockStore) GetPool(ctx context.Context, poolID uuid.UUID) (*models.Pool, error) {
+	return &models.Pool{
+		ID:   poolID,
+		Name: "test",
+		PoolAccounts: []*models.PoolAccounts{
+			{
+				PoolID: poolID,
+				AccountID: models.AccountID{
+					Reference: "acc1",
+					ConnectorID: models.ConnectorID{
+						Reference: uuid.New(),
+						Provider:  models.ConnectorProviderDummyPay,
+					},
+				},
+			},
+			{
+				PoolID: poolID,
+				AccountID: models.AccountID{
+					Reference: "acc2",
+					ConnectorID: models.ConnectorID{
+						Reference: uuid.New(),
+						Provider:  models.ConnectorProviderDummyPay,
+					},
+				},
+			},
+		},
+	}, nil
+}
+
+func (m *MockStore) DeletePool(ctx context.Context, poolID uuid.UUID) error {
+	return nil
 }
