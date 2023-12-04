@@ -16,6 +16,17 @@ paths:
           $ref: '#/components/responses/ServerInfo'
 
   /payments:
+    post:
+      summary: Create a payment
+      tags:
+        - Payments
+      operationId: createPayment
+      description: Create a payment
+      requestBody:
+        $ref: '#/components/requestBodies/Payment'
+      responses:
+        '200':
+          $ref: '#/components/responses/Payment'
     get:
       summary: List payments
       operationId: listPayments
@@ -787,6 +798,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentMetadata'
+    Payment:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentRequest'
     Pool:
       required: true
       content:
@@ -1537,12 +1554,7 @@ components:
         provider:
           $ref: '#/components/schemas/Connector'
         type:
-          type: string
-          enum:
-            - PAY-IN
-            - PAYOUT
-            - TRANSFER
-            - OTHER
+          $ref: '#/components/schemas/PaymentType'
         status:
           $ref: '#/components/schemas/PaymentStatus'
         initialAmount:
@@ -1551,26 +1563,7 @@ components:
           minimum: 0
           example: 100
         scheme:
-          type: string
-          enum:
-            - visa
-            - mastercard
-            - amex
-            - diners
-            - discover
-            - jcb
-            - unionpay
-            - sepa debit
-            - sepa credit
-            - sepa
-            - apple pay
-            - google pay
-            - a2a
-            - ach debit
-            - ach
-            - rtp
-            - unknown
-            - other
+          $ref: '#/components/schemas/PaymentScheme'
         asset:
           type: string
           example: USD
@@ -1929,6 +1922,43 @@ components:
           type: array
           items:
             type: string
+    PaymentRequest:
+      type: object
+      required:
+        - reference
+        - connectorID
+        - createdAt
+        - amount
+        - type
+        - status
+        - scheme
+        - asset
+      properties:
+        reference:
+          type: string
+        connectorID:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        amount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        type:
+          $ref: '#/components/schemas/PaymentType'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        scheme:
+          $ref: '#/components/schemas/PaymentScheme'
+        asset:
+          type: string
+          example: USD
+        sourceAccountID:
+          type: string
+        destinationAccountID:
+          type: string
     TransferInitiationRequest:
       type: object
       required:
@@ -1985,6 +2015,34 @@ components:
             - FAILED
             - REJECTED
             - VALIDATED
+    PaymentType:
+      type: string
+      enum:
+        - PAY-IN
+        - PAYOUT
+        - TRANSFER
+        - OTHER
+    PaymentScheme:
+      type: string
+      enum:
+        - visa
+        - mastercard
+        - amex
+        - diners
+        - discover
+        - jcb
+        - unionpay
+        - sepa debit
+        - sepa credit
+        - sepa
+        - apple pay
+        - google pay
+        - a2a
+        - ach debit
+        - ach
+        - rtp
+        - unknown
+        - other
     PaymentStatus:
       type: string
       enum:
