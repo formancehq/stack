@@ -19,4 +19,5 @@ class ActivityStripeTransfer:
     r"""A set of key/value pairs that you can attach to a transfer object.
     It can be useful for storing additional information about the transfer in a structured format.
     """
+    waiting_validation: Optional[bool] = dataclasses.field(default=None, metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('waitingValidation'), 'exclude': lambda f: f is None }})
     

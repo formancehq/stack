@@ -32,4 +32,8 @@ export class ActivityStripeTransfer extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "metadata" })
   metadata?: Record<string, any>;
+
+  @SpeakeasyMetadata()
+  @Expose({ name: "waitingValidation" })
+  waitingValidation?: boolean;
 }

@@ -630,6 +630,10 @@ components:
         destination:
           type: string
           example: acct_1Gqj58KZcSIg2N2q
+        waitingValidation:
+          type: boolean
+          example: false
+          default: false
         metadata:
           type: object
           description: |
