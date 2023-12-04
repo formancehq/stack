@@ -19,6 +19,7 @@ type Service interface {
 	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
 	ListTransferInitiations(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.TransferInitiation, storage.PaginationDetails, error)
 	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
+	CreatePayment(ctx context.Context, req *service.CreatePaymentRequest) (*models.Payment, error)
 	ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error)
 	GetPayment(ctx context.Context, id string) (*models.Payment, error)
 	UpdatePaymentMetadata(ctx context.Context, paymentID models.PaymentID, metadata map[string]string) error

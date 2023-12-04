@@ -48,7 +48,7 @@ func TestCreatePool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{})
+	service := New(&MockStore{}, &MockPublisher{})
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -89,7 +89,7 @@ func TestGetPool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{})
+	service := New(&MockStore{}, &MockPublisher{})
 
 	for _, tc := range testCases {
 		tc := tc
@@ -146,7 +146,7 @@ func TestAddAccountToPool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{})
+	service := New(&MockStore{}, &MockPublisher{})
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -205,7 +205,7 @@ func TestRemoveAccountFromPool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{})
+	service := New(&MockStore{}, &MockPublisher{})
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -245,7 +245,7 @@ func TestDeletePool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{})
+	service := New(&MockStore{}, &MockPublisher{})
 
 	for _, tc := range testCases {
 		tc := tc
@@ -295,7 +295,7 @@ func TestGetPoolBalance(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{})
+	service := New(&MockStore{}, &MockPublisher{})
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {

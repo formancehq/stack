@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
@@ -11,12 +12,14 @@ import (
 
 type Store interface {
 	Ping() error
+	IsConnectorInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)
 	ListAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Account, storage.PaginationDetails, error)
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 	ListBalances(ctx context.Context, balanceQuery storage.BalanceQuery) ([]*models.Balance, storage.PaginationDetails, error)
 	GetBalancesAt(ctx context.Context, accountID models.AccountID, at time.Time) ([]*models.Balance, error)
 	ListBankAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.BankAccount, storage.PaginationDetails, error)
 	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
+	UpsertPayments(ctx context.Context, payments []*models.Payment) error
 	ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error)
 	GetPayment(ctx context.Context, id string) (*models.Payment, error)
 	UpdatePaymentMetadata(ctx context.Context, paymentID models.PaymentID, metadata map[string]string) error
@@ -32,11 +35,13 @@ type Store interface {
 }
 
 type Service struct {
-	store Store
+	store     Store
+	publisher message.Publisher
 }
 
-func New(store Store) *Service {
+func New(store Store, publisher message.Publisher) *Service {
 	return &Service{
-		store: store,
+		store:     store,
+		publisher: publisher,
 	}
 }

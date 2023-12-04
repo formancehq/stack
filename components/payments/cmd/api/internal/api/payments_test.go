@@ -1,6 +1,8 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/big"
@@ -20,6 +22,454 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
+
+func TestCreatePayments(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		name               string
+		req                *service.CreatePaymentRequest
+		expectedStatusCode int
+		expectedErrorCode  string
+		serviceError       error
+	}
+
+	connectorID := models.ConnectorID{
+		Reference: uuid.New(),
+		Provider:  models.ConnectorProviderDummyPay,
+	}
+
+	sourceAccountID := models.AccountID{
+		Reference:   "acc1",
+		ConnectorID: connectorID,
+	}
+
+	destinationAccountID := models.AccountID{
+		Reference:   "acc2",
+		ConnectorID: connectorID,
+	}
+
+	testCases := []testCase{
+		{
+			name: "nomimal",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+		},
+		{
+			name: "no source account id, but should still pass",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				DestinationAccountID: destinationAccountID.String(),
+			},
+		},
+		{
+			name: "no destination account id, but should still pass",
+			req: &service.CreatePaymentRequest{
+				Reference:       "test",
+				ConnectorID:     connectorID.String(),
+				CreatedAt:       time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:          big.NewInt(100),
+				Type:            string(models.PaymentTypeTransfer),
+				Status:          string(models.PaymentStatusSucceeded),
+				Scheme:          string(models.PaymentSchemeOther),
+				Asset:           "EUR/2",
+				SourceAccountID: sourceAccountID.String(),
+			},
+		},
+		{
+			name: "missing reference",
+			req: &service.CreatePaymentRequest{
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing createdAt",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "created at to zero",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Time{},
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing connectorID",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing amount",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing type",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "invalid type",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 "invalid",
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing status",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "invalid status",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               "invalid",
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing scheme",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "invalid scheme",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               "invalid",
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing asset",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "invalid asset",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "invalid",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "err validation from backend",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			serviceError:       service.ErrValidation,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "ErrNotFound from storage",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			serviceError:       storage.ErrNotFound,
+			expectedStatusCode: http.StatusNotFound,
+			expectedErrorCode:  ErrNotFound,
+		},
+		{
+			name: "ErrDuplicateKeyValue from storage",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			serviceError:       storage.ErrDuplicateKeyValue,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrUniqueReference,
+		},
+		{
+			name: "other storage errors from storage",
+			req: &service.CreatePaymentRequest{
+				Reference:            "test",
+				ConnectorID:          connectorID.String(),
+				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Amount:               big.NewInt(100),
+				Type:                 string(models.PaymentTypeTransfer),
+				Status:               string(models.PaymentStatusSucceeded),
+				Scheme:               string(models.PaymentSchemeOther),
+				Asset:                "EUR/2",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+			},
+			serviceError:       errors.New("some error"),
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedErrorCode:  sharedapi.ErrorInternal,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.expectedStatusCode == 0 {
+				testCase.expectedStatusCode = http.StatusOK
+			}
+
+			createPaymentResponse := &models.Payment{
+				ID: models.PaymentID{
+					PaymentReference: models.PaymentReference{
+						Reference: testCase.req.Reference,
+						Type:      models.PaymentTypeTransfer,
+					},
+					ConnectorID: connectorID,
+				},
+				ConnectorID:          connectorID,
+				CreatedAt:            testCase.req.CreatedAt,
+				Reference:            testCase.req.Reference,
+				Amount:               testCase.req.Amount,
+				Type:                 models.PaymentTypeTransfer,
+				Status:               models.PaymentStatusSucceeded,
+				Scheme:               models.PaymentSchemeOther,
+				Asset:                models.Asset("EUR/2"),
+				SourceAccountID:      &sourceAccountID,
+				DestinationAccountID: &destinationAccountID,
+			}
+
+			expectedCreatePaymentResponse := &paymentResponse{
+				ID: models.PaymentID{
+					PaymentReference: models.PaymentReference{
+						Reference: "test",
+						Type:      models.PaymentTypeTransfer,
+					},
+					ConnectorID: connectorID,
+				}.String(),
+				Reference:            "test",
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+				Type:                 string(createPaymentResponse.Type),
+				Provider:             createPaymentResponse.ConnectorID.Provider,
+				ConnectorID:          createPaymentResponse.ConnectorID.String(),
+				Status:               createPaymentResponse.Status,
+				InitialAmount:        createPaymentResponse.Amount,
+				Scheme:               createPaymentResponse.Scheme,
+				Asset:                createPaymentResponse.Asset.String(),
+				CreatedAt:            createPaymentResponse.CreatedAt,
+				Adjustments:          make([]paymentAdjustment, len(createPaymentResponse.Adjustments)),
+			}
+
+			backend, mockService := newTestingBackend(t)
+			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
+				mockService.EXPECT().
+					CreatePayment(gomock.Any(), testCase.req).
+					Return(createPaymentResponse, nil)
+			}
+			if testCase.serviceError != nil {
+				mockService.EXPECT().
+					CreatePayment(gomock.Any(), testCase.req).
+					Return(nil, testCase.serviceError)
+			}
+
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+
+			var body []byte
+			if testCase.req != nil {
+				var err error
+				body, err = json.Marshal(testCase.req)
+				require.NoError(t, err)
+			}
+
+			req := httptest.NewRequest(http.MethodPost, "/payments", bytes.NewReader(body))
+			rec := httptest.NewRecorder()
+
+			router.ServeHTTP(rec, req)
+
+			require.Equal(t, testCase.expectedStatusCode, rec.Code)
+			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
+				var resp sharedapi.BaseResponse[paymentResponse]
+				sharedapi.Decode(t, rec.Body, &resp)
+				require.Equal(t, expectedCreatePaymentResponse, resp.Data)
+			} else {
+				err := sharedapi.ErrorResponse{}
+				sharedapi.Decode(t, rec.Body, &err)
+				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
+			}
+		})
+	}
+}
 
 func TestPayments(t *testing.T) {
 	t.Parallel()
