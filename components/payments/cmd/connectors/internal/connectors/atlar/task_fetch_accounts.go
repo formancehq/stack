@@ -19,6 +19,8 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/accounts"
+	"github.com/get-momo/atlar-v1-go-client/client/counterparties"
+	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -46,15 +48,15 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		}()
 
 		// Pagination works by cursor token.
-		params := accounts.GetV1AccountsParams{
+		accounts_params := accounts.GetV1AccountsParams{
 			Context: ctx,
 			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
 			limit := int64(config.PageSize)
-			params.Token = &token
-			params.Limit = &limit
-			pagedAccounts, err := client.Accounts.GetV1Accounts(&params)
+			accounts_params.Token = &token
+			accounts_params.Limit = &limit
+			pagedAccounts, err := client.Accounts.GetV1Accounts(&accounts_params)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
@@ -63,6 +65,32 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 			token = pagedAccounts.Payload.NextToken
 
 			if err := ingestAccountsBatch(ctx, connectorID, ingester, metricsRegistry, pagedAccounts); err != nil {
+				return err
+			}
+
+			if token == "" {
+				break
+			}
+		}
+
+		// Pagination works by cursor token.
+		external_accounts_params := external_accounts.GetV1ExternalAccountsParams{
+			Context: ctx,
+			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
+		}
+		for token := ""; ; {
+			limit := int64(config.PageSize)
+			accounts_params.Token = &token
+			accounts_params.Limit = &limit
+			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&external_accounts_params)
+			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
+				return err
+			}
+
+			token = pagedExternalAccounts.Payload.NextToken
+
+			if err := ingestExternalAccountsBatch(ctx, connectorID, ingester, metricsRegistry, pagedExternalAccounts, client); err != nil {
 				return err
 			}
 
@@ -108,7 +136,7 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		openingDate, err := ParseAtlarTimestamp(account.Created)
+		createdAt, err := ParseAtlarTimestamp(account.Created)
 		if err != nil {
 			return fmt.Errorf("failed to parse opening date: %w", err)
 		}
@@ -118,7 +146,7 @@ func ingestAccountsBatch(
 				Reference:   *account.ID,
 				ConnectorID: connectorID,
 			},
-			CreatedAt:    openingDate,
+			CreatedAt:    createdAt,
 			Reference:    *account.ID,
 			ConnectorID:  connectorID,
 			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
@@ -194,5 +222,84 @@ func IdentifiersToMetadata(identifiers []*atlar_models.AccountIdentifier) metada
 			*i.Number,
 		))
 	}
+	return result
+}
+
+type AtlarExternalAccountAndCounterparty struct {
+	ExternalAccount atlar_models.ExternalAccount `json:"externalAccount" yaml:"externalAccount" bson:"externalAccount"`
+	Counterparty    atlar_models.Counterparty    `json:"counterparty" yaml:"counterparty" bson:"counterparty"`
+}
+
+func ingestExternalAccountsBatch(
+	ctx context.Context,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	metricsRegistry metrics.MetricsRegistry,
+	pagedExternalAccounts *external_accounts.GetV1ExternalAccountsOK,
+	client *atlar_client.Rest,
+) error {
+	accountsBatch := ingestion.AccountBatch{}
+
+	for _, externalAccount := range pagedExternalAccounts.Payload.Items {
+		counterparty_params := counterparties.GetV1CounterpartiesIDParams{
+			Context: ctx,
+			ID:      externalAccount.CounterpartyID,
+		}
+		counterparty_response, err := client.Counterparties.GetV1CounterpartiesID(&counterparty_params)
+		if err != nil {
+			return err
+		}
+		counterparty := counterparty_response.Payload
+
+		raw, err := json.Marshal(AtlarExternalAccountAndCounterparty{ExternalAccount: *externalAccount, Counterparty: *counterparty})
+		if err != nil {
+			return err
+		}
+
+		createdAt, err := ParseAtlarTimestamp(externalAccount.Created)
+		if err != nil {
+			return fmt.Errorf("failed to parse opening date: %w", err)
+		}
+
+		accountsBatch = append(accountsBatch, &models.Account{
+			ID: models.AccountID{
+				Reference:   externalAccount.ID,
+				ConnectorID: connectorID,
+			},
+			CreatedAt:    createdAt,
+			Reference:    externalAccount.ID,
+			ConnectorID:  connectorID,
+			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, "EUR"), // TODO: infer information from market information in externalAccount.identifiers
+			AccountName:  counterparty.Name,                                           // TODO: is that okay? External accounts do not have a name at Atlar.
+			Type:         models.AccountTypeExternal,
+			Metadata:     ExtractExternalAccountAndCounterpartyMetadata(externalAccount, counterparty),
+			RawData:      raw,
+		})
+	}
+
+	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
+		return err
+	}
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs)
+
+	return nil
+}
+
+func ExtractExternalAccountAndCounterpartyMetadata(externalAccount *atlar_models.ExternalAccount, counterparty *atlar_models.Counterparty) metadata.Metadata {
+	result := metadata.Metadata{}
+	result = result.Merge(ComputeAccountMetadata("bank/id", externalAccount.Bank.ID))
+	result = result.Merge(ComputeAccountMetadata("bank/name", externalAccount.Bank.Name))
+	result = result.Merge(ComputeAccountMetadata("bank/bic", externalAccount.Bank.Bic))
+	result = result.Merge(IdentifiersToMetadata(externalAccount.Identifiers))
+	result = result.Merge(ComputeAccountMetadata("owner/name", counterparty.Name))
+	result = result.Merge(ComputeAccountMetadata("owner/type", counterparty.PartyType))
+	result = result.Merge(ComputeAccountMetadata("owner/contact/email", counterparty.ContactDetails.Email))
+	result = result.Merge(ComputeAccountMetadata("owner/contact/phone", counterparty.ContactDetails.Phone))
+	result = result.Merge(ComputeAccountMetadata("owner/contact/address/streetName", counterparty.ContactDetails.Address.StreetName))
+	result = result.Merge(ComputeAccountMetadata("owner/contact/address/streetNumber", counterparty.ContactDetails.Address.StreetNumber))
+	result = result.Merge(ComputeAccountMetadata("owner/contact/address/city", counterparty.ContactDetails.Address.City))
+	result = result.Merge(ComputeAccountMetadata("owner/contact/address/postalCode", counterparty.ContactDetails.Address.PostalCode))
+	result = result.Merge(ComputeAccountMetadata("owner/contact/address/country", counterparty.ContactDetails.Address.Country))
 	return result
 }
