@@ -24,10 +24,6 @@ func (c Config) Validate() error {
 		return ErrMissingAPIKey
 	}
 
-	if c.LiveEndpointPrefix == "" {
-		return ErrMissingLiveEndpointPrefix
-	}
-
 	if c.Name == "" {
 		return ErrMissingName
 	}
