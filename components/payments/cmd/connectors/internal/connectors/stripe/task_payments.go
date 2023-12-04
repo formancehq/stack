@@ -215,6 +215,11 @@ func updatePaymentStatusTask(
 		switch transfer.Type {
 		case models.TransferInitiationTypeTransfer:
 			// Nothing to do
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+			if err != nil {
+				return err
+			}
+
 			return nil
 
 		case models.TransferInitiationTypePayout:
@@ -259,7 +264,7 @@ func getTransfer(
 	}
 
 	if expand {
-		if transfer.SourceAccountID.Reference != "" {
+		if transfer.SourceAccountID != nil {
 			sourceAccount, err := reader.GetAccount(ctx, transfer.SourceAccountID.String())
 			if err != nil {
 				return nil, err

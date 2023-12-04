@@ -117,10 +117,6 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		return nil, newStorageError(err, "getting destination account")
 	}
 
-	if req.ScheduledAt.IsZero() {
-		req.ScheduledAt = time.Now().UTC()
-	}
-
 	createdAt := time.Now()
 	tf := &models.TransferInitiation{
 		ID: models.TransferInitiationID{
@@ -141,7 +137,8 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 	}
 
 	if req.SourceAccountID != "" {
-		tf.SourceAccountID = models.MustAccountIDFromString(req.SourceAccountID)
+		sID := models.MustAccountIDFromString(req.SourceAccountID)
+		tf.SourceAccountID = &sID
 	}
 
 	if err := s.store.CreateTransferInitiation(ctx, tf); err != nil {

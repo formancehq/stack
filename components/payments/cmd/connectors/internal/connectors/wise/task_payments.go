@@ -306,7 +306,7 @@ func getTransfer(
 	}
 
 	if expand {
-		if transfer.SourceAccountID.Reference != "" {
+		if transfer.SourceAccountID != nil {
 			sourceAccount, err := reader.GetAccount(ctx, transfer.SourceAccountID.String())
 			if err != nil {
 				return nil, err

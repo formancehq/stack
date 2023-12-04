@@ -12,10 +12,15 @@ import (
 )
 
 func (s *Storage) CreateTransferInitiation(ctx context.Context, transferInitiation *models.TransferInitiation) error {
-	_, err := s.db.NewInsert().
-		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error").
-		Model(transferInitiation).
-		Exec(ctx)
+	query := s.db.NewInsert().
+		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error").
+		Model(transferInitiation)
+
+	if transferInitiation.SourceAccountID != nil {
+		query = query.Column("source_account_id")
+	}
+
+	_, err := query.Exec(ctx)
 	if err != nil {
 		return e("failed to create transfer initiation", err)
 	}

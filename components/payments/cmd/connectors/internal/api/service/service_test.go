@@ -42,7 +42,7 @@ var (
 		UpdatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 		Description: "test",
 		Type:        models.TransferInitiationTypeTransfer,
-		SourceAccountID: models.AccountID{
+		SourceAccountID: &models.AccountID{
 			Reference:   "acc1",
 			ConnectorID: connectorDummyPay.ID,
 		},
@@ -68,7 +68,7 @@ var (
 		UpdatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 		Description: "test",
 		Type:        models.TransferInitiationTypeTransfer,
-		SourceAccountID: models.AccountID{
+		SourceAccountID: &models.AccountID{
 			Reference:   "acc1",
 			ConnectorID: connectorDummyPay.ID,
 		},
