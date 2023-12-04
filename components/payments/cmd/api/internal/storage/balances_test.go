@@ -292,3 +292,72 @@ func TestListBalances(t *testing.T) {
 		require.False(t, paginationDetails.HasMore)
 	})
 }
+
+func TestGetBalanceAt(t *testing.T) {
+	t.Parallel()
+
+	store := newStore(t)
+
+	connectorID := installConnector(t, store)
+	accounts := insertAccounts(t, store, connectorID)
+	balancesPerAccountAndAssets := make(map[string]map[string][]*models.Balance)
+	for _, account := range accounts {
+		if balancesPerAccountAndAssets[account.String()] == nil {
+			balancesPerAccountAndAssets[account.String()] = make(map[string][]*models.Balance)
+		}
+
+		balances := insertBalances(t, store, account)
+		for _, balance := range balances {
+			balancesPerAccountAndAssets[account.String()][balance.Asset.String()] = append(balancesPerAccountAndAssets[account.String()][balance.Asset.String()], balance)
+		}
+	}
+
+	// Should have only one EUR/2 balance of 100
+	t.Run("get balance at 10:15", func(t *testing.T) {
+		balances, err := store.GetBalancesAt(context.Background(), accounts[0], time.Date(2023, 11, 14, 10, 15, 0, 0, time.UTC))
+		require.NoError(t, err)
+		require.Len(t, balances, 1)
+		balances[0].CreatedAt = balances[0].CreatedAt.UTC()
+		balances[0].LastUpdatedAt = balances[0].LastUpdatedAt.UTC()
+		require.Equal(t, balancesPerAccountAndAssets[accounts[0].String()]["EUR/2"][0], balances[0])
+		require.Equal(t, big.NewInt(100), balances[0].Balance)
+	})
+
+	t.Run("get balance at 11:15", func(t *testing.T) {
+		balances, err := store.GetBalancesAt(context.Background(), accounts[0], time.Date(2023, 11, 14, 11, 15, 0, 0, time.UTC))
+		require.NoError(t, err)
+		require.Len(t, balances, 2)
+		balances[0].CreatedAt = balances[0].CreatedAt.UTC()
+		balances[0].LastUpdatedAt = balances[0].LastUpdatedAt.UTC()
+		require.Equal(t, balancesPerAccountAndAssets[accounts[0].String()]["EUR/2"][1], balances[0])
+		require.Equal(t, big.NewInt(200), balances[0].Balance)
+		balances[1].CreatedAt = balances[1].CreatedAt.UTC()
+		balances[1].LastUpdatedAt = balances[1].LastUpdatedAt.UTC()
+		require.Equal(t, balancesPerAccountAndAssets[accounts[0].String()]["USD/2"][0], balances[1])
+		require.Equal(t, big.NewInt(1000), balances[1].Balance)
+	})
+
+	t.Run("get balance at 11:45", func(t *testing.T) {
+		balances, err := store.GetBalancesAt(context.Background(), accounts[0], time.Date(2023, 11, 14, 11, 45, 0, 0, time.UTC))
+		require.NoError(t, err)
+		require.Len(t, balances, 2)
+		balances[0].CreatedAt = balances[0].CreatedAt.UTC()
+		balances[0].LastUpdatedAt = balances[0].LastUpdatedAt.UTC()
+		require.Equal(t, balancesPerAccountAndAssets[accounts[0].String()]["EUR/2"][2], balances[0])
+		require.Equal(t, big.NewInt(150), balances[0].Balance)
+		balances[1].CreatedAt = balances[1].CreatedAt.UTC()
+		balances[1].LastUpdatedAt = balances[1].LastUpdatedAt.UTC()
+		require.Equal(t, balancesPerAccountAndAssets[accounts[0].String()]["USD/2"][0], balances[1])
+		require.Equal(t, big.NewInt(1000), balances[1].Balance)
+	})
+
+	t.Run("get balance at 12:00", func(t *testing.T) {
+		balances, err := store.GetBalancesAt(context.Background(), accounts[0], time.Date(2023, 11, 14, 12, 0, 0, 0, time.UTC))
+		require.NoError(t, err)
+		require.Len(t, balances, 1)
+		balances[0].CreatedAt = balances[0].CreatedAt.UTC()
+		balances[0].LastUpdatedAt = balances[0].LastUpdatedAt.UTC()
+		require.Equal(t, balancesPerAccountAndAssets[accounts[0].String()]["USD/2"][0], balances[0])
+		require.Equal(t, big.NewInt(1000), balances[0].Balance)
+	})
+}

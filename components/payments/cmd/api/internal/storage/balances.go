@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
@@ -155,7 +156,8 @@ func (s *Storage) GetBalanceAtByCurrency(ctx context.Context, accountID models.A
 		Model(&balance).
 		Where("account_id = ?", accountID).
 		Where("currency = ?", currency).
-		Where("last_updated_at <= ?", at).
+		Where("created_at <= ?", at).
+		Where("last_updated_at >= ?", at).
 		Order("last_updated_at DESC").
 		Limit(1).
 		Scan(ctx)
@@ -176,6 +178,9 @@ func (s *Storage) GetBalancesAt(ctx context.Context, accountID models.AccountID,
 	for _, currency := range currencies {
 		balance, err := s.GetBalanceAtByCurrency(ctx, accountID, currency, at)
 		if err != nil {
+			if errors.Is(err, ErrNotFound) {
+				continue
+			}
 			return nil, fmt.Errorf("failed to get balance: %w", err)
 		}
 
