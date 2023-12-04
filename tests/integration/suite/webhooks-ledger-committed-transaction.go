@@ -15,6 +15,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	var (
 		httpServer *httptest.Server
 		called     chan struct{}

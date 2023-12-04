@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
+	"net/http"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -16,6 +17,13 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledger}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
 	When("creating a new workflow", func() {
 		var (
 			createWorkflowResponse *shared.CreateWorkflowResponse
