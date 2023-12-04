@@ -56,8 +56,8 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE TABLE IF NOT EXISTS accounts.pool_accounts (
-						pool_id uuid NOT NULL,
-						account_id uuid NOT NULL,
+						pool_id uuid NOT NULL DEFAULT gen_random_uuid(),
+						account_id CHARACTER VARYING NOT NULL,
 						CONSTRAINT pool_accounts_pk PRIMARY KEY (pool_id, account_id)
 					);
 
