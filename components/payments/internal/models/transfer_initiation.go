@@ -161,7 +161,7 @@ type TransferInitiation struct {
 
 	Type TransferInitiationType
 
-	SourceAccountID      AccountID
+	SourceAccountID      *AccountID
 	DestinationAccountID AccountID
 	Provider             ConnectorProvider
 	ConnectorID          ConnectorID

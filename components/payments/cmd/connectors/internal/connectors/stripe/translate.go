@@ -37,7 +37,9 @@ func createBatchElement(
 		return ingestion.PaymentBatchElement{}, false
 	}
 
-	if balanceTransaction.Source.Payout == nil && balanceTransaction.Source.Charge == nil {
+	if balanceTransaction.Source.Payout == nil &&
+		balanceTransaction.Source.Charge == nil &&
+		balanceTransaction.Source.Transfer == nil {
 		return ingestion.PaymentBatchElement{}, false
 	}
 
@@ -81,7 +83,8 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypePayout:
-		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Payout.Currency)]
+		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Payout.Currency))
+		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
@@ -122,7 +125,8 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypeTransfer:
-		_, ok := supportedCurrenciesWithDecimal[string(balanceTransaction.Source.Transfer.Currency)]
+		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Transfer.Currency))
+		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
@@ -131,13 +135,13 @@ func createBatchElement(
 			ID: models.PaymentID{
 				PaymentReference: models.PaymentReference{
 					Reference: balanceTransaction.ID,
-					Type:      models.PaymentTypePayOut,
+					Type:      models.PaymentTypeTransfer,
 				},
 				ConnectorID: connectorID,
 			},
 			Reference:   balanceTransaction.ID,
 			ConnectorID: connectorID,
-			Type:        models.PaymentTypePayOut,
+			Type:        models.PaymentTypeTransfer,
 			Status:      models.PaymentStatusSucceeded,
 			Amount:      big.NewInt(balanceTransaction.Source.Transfer.Amount),
 			RawData:     rawData,

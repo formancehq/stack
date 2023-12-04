@@ -323,7 +323,7 @@ func TestCreateTransferInitiations(t *testing.T) {
 				UpdatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 				Description:          "test_nominal",
 				Type:                 models.TransferInitiationTypeTransfer,
-				SourceAccountID:      sourceAccountID,
+				SourceAccountID:      &sourceAccountID,
 				DestinationAccountID: destinationAccountID,
 				Provider:             models.ConnectorProviderDummyPay,
 				ConnectorID:          connectorID,

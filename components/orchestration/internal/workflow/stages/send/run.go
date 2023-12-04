@@ -19,15 +19,15 @@ const (
 	moveFromLedgerMetadata = "orchestration/move-from-ledger"
 )
 
-func extractStripeConnectID(metadataKey string, metadata map[string]string) (string, error) {
-	stripeConnectID, ok := metadata[metadataKey]
+func extractFormanceAccountID(metadataKey string, metadata map[string]string) (string, error) {
+	formanceAccountID, ok := metadata[metadataKey]
 	if !ok {
-		return "", fmt.Errorf("expected '%s' metadata containing connected account ID", metadataKey)
+		return "", fmt.Errorf("expected '%s' metadata containing formance account ID", metadataKey)
 	}
-	if stripeConnectID == "" {
-		return "", errors.New("stripe connect ID empty")
+	if formanceAccountID == "" {
+		return "", errors.New("formance account ID empty")
 	}
-	return stripeConnectID, nil
+	return formanceAccountID, nil
 }
 
 func justError[T any](v T, err error) error {
@@ -190,16 +190,17 @@ func runWalletToPayment(ctx workflow.Context, connectorID *string, source *Walle
 		return errors.Wrapf(err, "reading account: %s", source.ID)
 	}
 
-	stripeConnectID, err := extractStripeConnectID(destination.Metadata, wallet.Metadata)
+	formanceAccountID, err := extractFormanceAccountID(destination.Metadata, wallet.Metadata)
 	if err != nil {
 		return err
 	}
 
 	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.ActivityStripeTransfer{
-		Amount:      amount.Amount,
-		Asset:       &amount.Asset,
-		Destination: &stripeConnectID,
-		ConnectorID: connectorID,
+		Amount:            amount.Amount,
+		Asset:             &amount.Asset,
+		Destination:       &formanceAccountID,
+		WaitingValidation: &destination.WaitingValidation,
+		ConnectorID:       connectorID,
 	}); err != nil {
 		return err
 	}
@@ -356,16 +357,17 @@ func runAccountToPayment(ctx workflow.Context, connectorID *string, source *Ledg
 	if err != nil {
 		return errors.Wrapf(err, "reading account: %s", source.ID)
 	}
-	stripeConnectID, err := extractStripeConnectID(destination.Metadata, account.Metadata)
+	formanceAccountID, err := extractFormanceAccountID(destination.Metadata, account.Metadata)
 	if err != nil {
 		return err
 	}
 
 	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.ActivityStripeTransfer{
-		Amount:      amount.Amount,
-		Asset:       &amount.Asset,
-		Destination: &stripeConnectID,
-		ConnectorID: connectorID,
+		Amount:            amount.Amount,
+		Asset:             &amount.Asset,
+		Destination:       &formanceAccountID,
+		WaitingValidation: &destination.WaitingValidation,
+		ConnectorID:       connectorID,
 	}); err != nil {
 		return err
 	}

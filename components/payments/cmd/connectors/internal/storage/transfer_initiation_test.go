@@ -73,7 +73,7 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 		Provider:             models.ConnectorProviderDummyPay,
 		Amount:               big.NewInt(150),
 		Asset:                models.Asset("USD/2"),
-		SourceAccountID:      acc1ID,
+		SourceAccountID:      &acc1ID,
 		DestinationAccountID: acc2ID,
 		Status:               models.TransferInitiationStatusWaitingForValidation,
 	}
@@ -82,7 +82,7 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 	err := store.CreateTransferInitiation(context.Background(), t1)
 	require.Error(t, err)
 
-	t1.SourceAccountID = acc1ID
+	t1.SourceAccountID = &acc1ID
 	t1.DestinationAccountID = acc2ID
 	err = store.CreateTransferInitiation(context.Background(), t1)
 	require.NoError(t, err)

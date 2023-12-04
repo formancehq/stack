@@ -292,11 +292,13 @@ func getTransfer(
 	}
 
 	if expand {
-		sourceAccount, err := reader.GetAccount(ctx, transfer.SourceAccountID.String())
-		if err != nil {
-			return nil, err
+		if transfer.SourceAccountID != nil {
+			sourceAccount, err := reader.GetAccount(ctx, transfer.SourceAccountID.String())
+			if err != nil {
+				return nil, err
+			}
+			transfer.SourceAccount = sourceAccount
 		}
-		transfer.SourceAccount = sourceAccount
 
 		destinationAccount, err := reader.GetAccount(ctx, transfer.DestinationAccountID.String())
 		if err != nil {
