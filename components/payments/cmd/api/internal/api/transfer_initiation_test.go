@@ -161,7 +161,7 @@ func TestListTransferInitiations(t *testing.T) {
 					UpdatedAt:   time.Date(2023, 11, 22, 8, 30, 0, 0, time.UTC),
 					Description: "test1",
 					Type:        models.TransferInitiationTypePayout,
-					SourceAccountID: models.AccountID{
+					SourceAccountID: &models.AccountID{
 						Reference:   "acc1",
 						ConnectorID: connectorID,
 					},
@@ -205,7 +205,7 @@ func TestListTransferInitiations(t *testing.T) {
 					UpdatedAt:   time.Date(2023, 11, 22, 9, 30, 0, 0, time.UTC),
 					Description: "test2",
 					Type:        models.TransferInitiationTypeTransfer,
-					SourceAccountID: models.AccountID{
+					SourceAccountID: &models.AccountID{
 						Reference:   "acc3",
 						ConnectorID: connectorID,
 					},
@@ -398,7 +398,7 @@ func TestGetTransferInitiation(t *testing.T) {
 					UpdatedAt:   time.Date(2023, 11, 22, 8, 30, 0, 0, time.UTC),
 					Description: "test1",
 					Type:        models.TransferInitiationTypePayout,
-					SourceAccountID: models.AccountID{
+					SourceAccountID: &models.AccountID{
 						Reference:   "acc1",
 						ConnectorID: connectorID,
 					},
@@ -469,7 +469,7 @@ func TestGetTransferInitiation(t *testing.T) {
 					UpdatedAt:   time.Date(2023, 11, 22, 9, 30, 0, 0, time.UTC),
 					Description: "test2",
 					Type:        models.TransferInitiationTypeTransfer,
-					SourceAccountID: models.AccountID{
+					SourceAccountID: &models.AccountID{
 						Reference:   "acc3",
 						ConnectorID: connectorID,
 					},
