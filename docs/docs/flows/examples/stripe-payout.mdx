@@ -7,7 +7,7 @@ import { PostingsGraph } from '@site/src/components/Graphviz';
 In this example, we're going to create a workflow that will transfer funds from a ledger account to a Stripe Connect account by leveraging the `send` stage.
 
 :::info
-To initiate a transfer from a ledger account to a Stripe Connect account, you must have set the `stripeConnectID` metadata key on the ledger account metadata to identify the Stripe Connect account to initiate the transfer to.
+To initiate a transfer from a ledger account to a Stripe Connect account, you must have set the `formanceAccountID` metadata key on the ledger account metadata to identify the formance account ID related to the Stripe Connect account to initiate the transfer to.
 :::
 
 ## What's happening in this example?
@@ -47,7 +47,7 @@ Prior to creating and executing this workflow, you'll need to have the following
 
 * The Stripe connector set up and configured with a write-able API key
 * A ledger account provisioned with funds,
-* and a `stripeConnectID` metadata key set on it - corresponding to the Stripe Connect account you want to transfer funds to
+* and a `formanceAccountID` metadata key set on it - corresponding to the formance account related Stripe Connect account you want to transfer funds to
 
 ## Workflow definition
 

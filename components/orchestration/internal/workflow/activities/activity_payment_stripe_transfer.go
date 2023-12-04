@@ -27,7 +27,7 @@ func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityS
 		Provider:             &provider,
 		Type:                 shared.TransferInitiationRequestTypeTransfer,
 		Reference:            activityInfo.WorkflowExecution.ID + activityInfo.ActivityID,
-		Validated:            validated, // No need to validate
+		Validated:            validated,
 	}
 
 	response, err := a.client.Payments.
