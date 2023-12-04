@@ -11,17 +11,23 @@ import (
 )
 
 func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityStripeTransfer) error {
+	validated := true
+	if request.WaitingValidation != nil && *request.WaitingValidation {
+		validated = false
+	}
+
 	activityInfo := activity.GetInfo(ctx)
 	provider := shared.ConnectorStripe
 	ti := shared.TransferInitiationRequest{
 		Amount:               request.Amount,
 		Asset:                *request.Asset,
 		DestinationAccountID: *request.Destination,
+		Description:          "Stripe Transfer",
 		ConnectorID:          request.ConnectorID,
 		Provider:             &provider,
 		Type:                 shared.TransferInitiationRequestTypeTransfer,
 		Reference:            activityInfo.WorkflowExecution.ID + activityInfo.ActivityID,
-		Validated:            true, // No need to validate
+		Validated:            validated, // No need to validate
 	}
 
 	response, err := a.client.Payments.

@@ -687,10 +687,11 @@ var (
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
 					mock.Anything, shared.ActivityStripeTransfer{
-						Amount:      big.NewInt(100),
-						Asset:       pointer.For("USD"),
-						Destination: pointer.For("abcd"),
-						ConnectorID: nil,
+						Amount:            big.NewInt(100),
+						Asset:             pointer.For("USD"),
+						Destination:       pointer.For("abcd"),
+						ConnectorID:       nil,
+						WaitingValidation: pointer.For(false),
 					},
 				},
 				Returns: []any{nil},
@@ -1026,10 +1027,11 @@ var (
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
 					mock.Anything, shared.ActivityStripeTransfer{
-						Amount:      big.NewInt(100),
-						Asset:       pointer.For("USD"),
-						Destination: pointer.For("abcd"),
-						ConnectorID: nil,
+						Amount:            big.NewInt(100),
+						Asset:             pointer.For("USD"),
+						Destination:       pointer.For("abcd"),
+						ConnectorID:       nil,
+						WaitingValidation: pointer.For(false),
 					},
 				},
 				Returns: []any{nil},

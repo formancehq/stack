@@ -25,8 +25,9 @@ type PaymentSource struct {
 }
 
 type PaymentDestination struct {
-	PSP      string `json:"psp"`
-	Metadata string `json:"metadata" spec:"default:stripeConnectID"`
+	PSP               string `json:"psp"`
+	Metadata          string `json:"metadata" spec:"default:formanceAccountID"`
+	WaitingValidation bool   `json:"waitingValidation" spec:"default:false"`
 }
 
 type Source struct {
