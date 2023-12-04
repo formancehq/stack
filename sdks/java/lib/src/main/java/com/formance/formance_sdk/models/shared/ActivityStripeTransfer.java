@@ -59,5 +59,14 @@ public class ActivityStripeTransfer {
         return this;
     }
     
+    @JsonInclude(Include.NON_ABSENT)
+    @JsonProperty("waitingValidation")
+    public Boolean waitingValidation;
+
+    public ActivityStripeTransfer withWaitingValidation(Boolean waitingValidation) {
+        this.waitingValidation = waitingValidation;
+        return this;
+    }
+    
     public ActivityStripeTransfer(){}
 }

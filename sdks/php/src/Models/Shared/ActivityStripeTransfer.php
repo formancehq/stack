@@ -44,6 +44,11 @@ class ActivityStripeTransfer
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
     public ?array $metadata = null;
     
+	#[\JMS\Serializer\Annotation\SerializedName('waitingValidation')]
+    #[\JMS\Serializer\Annotation\Type('bool')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?bool $waitingValidation = null;
+    
 	public function __construct()
 	{
 		$this->amount = null;
@@ -51,5 +56,6 @@ class ActivityStripeTransfer
 		$this->connectorID = null;
 		$this->destination = null;
 		$this->metadata = null;
+		$this->waitingValidation = null;
 	}
 }

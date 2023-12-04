@@ -682,9 +682,10 @@ var (
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
 					mock.Anything, shared.ActivityStripeTransfer{
-						Amount:      big.NewInt(100),
-						Asset:       ptrString("USD"),
-						Destination: ptrString("abcd"),
+						Amount:            big.NewInt(100),
+						Asset:             ptrString("USD"),
+						Destination:       ptrString("abcd"),
+						WaitingValidation: ptrBool(false),
 					},
 				},
 				Returns: []any{nil},
@@ -1019,9 +1020,10 @@ var (
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
 					mock.Anything, shared.ActivityStripeTransfer{
-						Amount:      big.NewInt(100),
-						Asset:       ptrString("USD"),
-						Destination: ptrString("abcd"),
+						Amount:            big.NewInt(100),
+						Asset:             ptrString("USD"),
+						Destination:       ptrString("abcd"),
+						WaitingValidation: ptrBool(false),
 					},
 				},
 				Returns: []any{nil},
@@ -1068,4 +1070,8 @@ func TestSend(t *testing.T) {
 
 func ptrString(s string) *string {
 	return &s
+}
+
+func ptrBool(b bool) *bool {
+	return &b
 }
