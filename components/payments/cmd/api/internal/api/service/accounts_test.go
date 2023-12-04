@@ -11,6 +11,8 @@ import (
 )
 
 func TestGetAccount(t *testing.T) {
+	t.Parallel()
+
 	type testCase struct {
 		name          string
 		accountID     string

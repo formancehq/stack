@@ -11,6 +11,8 @@ import (
 )
 
 func TestGetPayment(t *testing.T) {
+	t.Parallel()
+
 	type testCase struct {
 		name          string
 		paymentID     string

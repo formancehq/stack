@@ -23,13 +23,13 @@ func updateMetadataHandler(b backend.Backend) http.HandlerFunc {
 
 		var metadata service.UpdateMetadataRequest
 		if r.ContentLength == 0 {
-			api.BadRequest(w, ErrMissingBody, errors.New("body is required"))
+			api.BadRequest(w, ErrMissingOrInvalidBody, errors.New("body is required"))
 			return
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&metadata)
 		if err != nil {
-			api.BadRequest(w, ErrInvalidBody, err)
+			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 

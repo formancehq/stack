@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
@@ -131,4 +132,60 @@ func (b BalanceQuery) WithLimit(limit int) BalanceQuery {
 	b.Limit = limit
 
 	return b
+}
+
+func (s *Storage) ListBalanceCurrencies(ctx context.Context, accountID models.AccountID) ([]string, error) {
+	var currencies []string
+
+	err := s.db.NewSelect().
+		ColumnExpr("DISTINCT currency").
+		Model(&models.Balance{}).
+		Where("account_id = ?", accountID).
+		Scan(ctx, &currencies)
+	if err != nil {
+		return nil, e("failed to list balance currencies", err)
+	}
+
+	return currencies, nil
+}
+
+func (s *Storage) GetBalanceAtByCurrency(ctx context.Context, accountID models.AccountID, currency string, at time.Time) (*models.Balance, error) {
+	var balance models.Balance
+
+	err := s.db.NewSelect().
+		Model(&balance).
+		Where("account_id = ?", accountID).
+		Where("currency = ?", currency).
+		Where("created_at <= ?", at).
+		Where("last_updated_at >= ?", at).
+		Order("last_updated_at DESC").
+		Limit(1).
+		Scan(ctx)
+	if err != nil {
+		return nil, e("failed to get balance", err)
+	}
+
+	return &balance, nil
+}
+
+func (s *Storage) GetBalancesAt(ctx context.Context, accountID models.AccountID, at time.Time) ([]*models.Balance, error) {
+	currencies, err := s.ListBalanceCurrencies(ctx, accountID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list balance currencies: %w", err)
+	}
+
+	var balances []*models.Balance
+	for _, currency := range currencies {
+		balance, err := s.GetBalanceAtByCurrency(ctx, accountID, currency, at)
+		if err != nil {
+			if errors.Is(err, ErrNotFound) {
+				continue
+			}
+			return nil, fmt.Errorf("failed to get balance: %w", err)
+		}
+
+		balances = append(balances, balance)
+	}
+
+	return balances, nil
 }

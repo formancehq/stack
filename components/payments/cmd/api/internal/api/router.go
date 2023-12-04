@@ -57,5 +57,13 @@ func httpRouter(
 	authGroup.Path("/transfer-initiations").Methods(http.MethodGet).Handler(listTransferInitiationsHandler(b))
 	authGroup.Path("/transfer-initiations/{transferID}").Methods(http.MethodGet).Handler(readTransferInitiationHandler(b))
 
+	authGroup.Path("/pools").Methods(http.MethodPost).Handler(createPoolHandler(b))
+	authGroup.Path("/pools").Methods(http.MethodGet).Handler(listPoolHandler(b))
+	authGroup.Path("/pools/{poolID}").Methods(http.MethodGet).Handler(getPoolHandler(b))
+	authGroup.Path("/pools/{poolID}").Methods(http.MethodDelete).Handler(deletePoolHandler(b))
+	authGroup.Path("/pools/{poolID}/accounts").Methods(http.MethodPost).Handler(addAccountToPoolHandler(b))
+	authGroup.Path("/pools/{poolID}/accounts/{accountID}").Methods(http.MethodDelete).Handler(removeAccountFromPoolHandler(b))
+	authGroup.Path("/pools/{poolID}/balances").Methods(http.MethodGet).Handler(getPoolBalances(b))
+
 	return rootMux
 }

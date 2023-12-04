@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 
+	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
@@ -21,6 +22,13 @@ type Service interface {
 	ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error)
 	GetPayment(ctx context.Context, id string) (*models.Payment, error)
 	UpdatePaymentMetadata(ctx context.Context, paymentID models.PaymentID, metadata map[string]string) error
+	CreatePool(ctx context.Context, req *service.CreatePoolRequest) (*models.Pool, error)
+	AddAccountToPool(ctx context.Context, poolID string, req *service.AddAccountToPoolRequest) error
+	RemoveAccountFromPool(ctx context.Context, poolID string, accountID string) error
+	ListPools(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Pool, storage.PaginationDetails, error)
+	GetPool(ctx context.Context, poolID string) (*models.Pool, error)
+	GetPoolBalance(ctx context.Context, poolID string, atTime string) (*service.GetPoolBalanceResponse, error)
+	DeletePool(ctx context.Context, poolID string) error
 }
 
 type Backend interface {

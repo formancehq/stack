@@ -52,6 +52,45 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					CREATE TABLE IF NOT EXISTS accounts.pool_accounts (
+						pool_id uuid NOT NULL DEFAULT gen_random_uuid(),
+						account_id CHARACTER VARYING NOT NULL,
+						CONSTRAINT pool_accounts_pk PRIMARY KEY (pool_id, account_id)
+					);
+
+					CREATE TABLE IF NOT EXISTS accounts.pools (
+						id uuid NOT NULL,
+						name text NOT NULL UNIQUE,
+						created_at timestamp with time zone NOT NULL DEFAULT NOW() CHECK (created_at<=NOW()),
+						CONSTRAINT pools_pk PRIMARY KEY (id)
+					);
+
+					ALTER TABLE accounts.pool_accounts ADD CONSTRAINT pool_accounts_pool_id
+					FOREIGN KEY (pool_id)
+					REFERENCES accounts.pools (id)
+					ON DELETE CASCADE
+					NOT DEFERRABLE
+					INITIALLY IMMEDIATE
+					;
+
+					ALTER TABLE accounts.pool_accounts ADD CONSTRAINT pool_accounts_account_id
+					FOREIGN KEY (account_id)
+					REFERENCES accounts.account (id)
+					ON DELETE CASCADE
+					NOT DEFERRABLE
+					INITIALLY IMMEDIATE
+					;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 
