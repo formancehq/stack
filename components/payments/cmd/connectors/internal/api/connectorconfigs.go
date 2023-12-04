@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/adyen"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
@@ -24,6 +25,7 @@ func connectorConfigsHandler() http.HandlerFunc {
 
 		configs := configtemplate.BuildConfigs(
 			atlar.Config{},
+			adyen.Config{},
 			bankingcircle.Config{},
 			currencycloud.Config{},
 			dummypay.Config{},
