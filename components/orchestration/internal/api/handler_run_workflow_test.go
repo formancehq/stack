@@ -15,7 +15,7 @@ import (
 )
 
 func TestRunWorkflow(t *testing.T) {
-	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
+	test(t, func(router *chi.Mux, m Backend, db *bun.DB) {
 		w, err := m.Create(context.TODO(), workflow.Config{
 			Stages: []workflow.RawStage{},
 		})
@@ -31,7 +31,7 @@ func TestRunWorkflow(t *testing.T) {
 }
 
 func TestRunWorkflowWaitEvent(t *testing.T) {
-	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
+	test(t, func(router *chi.Mux, m Backend, db *bun.DB) {
 		w, err := m.Create(context.TODO(), workflow.Config{
 			Stages: []workflow.RawStage{
 				map[string]map[string]any{

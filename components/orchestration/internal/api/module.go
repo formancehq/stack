@@ -7,5 +7,6 @@ import (
 func NewModule() fx.Option {
 	return fx.Options(
 		fx.Provide(newRouter),
+		fx.Provide(newDefaultBackend),
 	)
 }

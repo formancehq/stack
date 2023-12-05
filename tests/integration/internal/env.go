@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"io"
 	"os"
 
@@ -30,7 +31,7 @@ func (e *env) Setup(ctx context.Context) error {
 
 	e.sqlConn, err = pgx.Connect(ctx, GetPostgresDSNString())
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "connecting to database '%s'", GetPostgresDSNString())
 	}
 
 	e.dockerPool, err = dockertest.NewPool("")
@@ -53,9 +54,12 @@ func (e *env) Setup(ctx context.Context) error {
 }
 
 func (e *env) Teardown(ctx context.Context) error {
-	if err := e.dockerClient.Close(); err != nil {
-		return err
+	if e.dockerClient != nil {
+		if err := e.dockerClient.Close(); err != nil {
+			return err
+		}
 	}
+
 	// TODO: Purge docker pool resources
 	if e.sqlConn != nil {
 		return e.sqlConn.Close(ctx)

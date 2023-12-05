@@ -1,6 +1,7 @@
 package orchestration
 
 import (
+	"fmt"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )
@@ -47,6 +48,54 @@ func (o module) Versions() map[string]modules.Version {
 						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Env:   orchestrationEnvVars(resolveContext),
+								Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+								Args:  []string{"worker"},
+								Resources: modules.GetResourcesWithDefault(
+									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
+									modules.ResourceSizeSmall(),
+								),
+							}
+						},
+					},
+				}
+			},
+		},
+		"v0.2.0": {
+			Services: func(ctx modules.ReconciliationConfig) modules.Services {
+				return modules.Services{
+					{
+						Port: 8080,
+						AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
+							return stackv1beta3.NewClientConfiguration()
+						},
+						ExposeHTTP:              modules.DefaultExposeHTTP,
+						HasVersionEndpoint:      true,
+						InjectPostgresVariables: true,
+						Annotations:             ctx.Configuration.Spec.Services.Orchestration.Annotations.Service,
+						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
+							return modules.Container{
+								Env:   orchestrationEnvVars(resolveContext),
+								Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+								Resources: modules.GetResourcesWithDefault(
+									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
+									modules.ResourceSizeSmall(),
+								),
+							}
+						},
+					},
+					{
+						Name:                    "worker",
+						InjectPostgresVariables: true,
+						Liveness:                modules.LivenessDisable,
+						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
+							env := orchestrationEnvVars(resolveContext)
+							env = append(env, modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "orchestration")...)
+
+							// TODO(gfyrag): Make more generic
+							env = append(env, modules.Env("TOPICS", fmt.Sprintf("%s-ledger %s-payments",
+								resolveContext.Stack.Name, resolveContext.Stack.Name)))
+							return modules.Container{
+								Env:   env,
 								Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
 								Args:  []string{"worker"},
 								Resources: modules.GetResourcesWithDefault(

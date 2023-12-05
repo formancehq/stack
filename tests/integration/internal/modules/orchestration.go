@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"fmt"
 	"github.com/formancehq/orchestration/cmd"
 	"github.com/formancehq/stack/tests/integration/internal"
 )
@@ -20,6 +21,11 @@ var Orchestration = internal.NewModule("orchestration").
 					"--temporal-address=" + internal.GetTemporalAddress(),
 					"--temporal-task-queue=" + test.ID(),
 					"--worker",
+					"--publisher-nats-enabled",
+					"--publisher-nats-client-id=ledger",
+					"--publisher-nats-url=" + internal.GetNatsAddress(),
+					fmt.Sprintf("--topics=%s-ledger", test.ID()),
+					fmt.Sprintf("--topics=%s-payments", test.ID()),
 				}
 			}),
 	)

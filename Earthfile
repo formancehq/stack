@@ -40,6 +40,7 @@ build-final-spec:
     SAVE ARTIFACT build/generate-with-version.json AS LOCAL openapi/build/generate.json
 
 build-sdk:
+    BUILD --pass-args +build-final-spec # Force output of the final spec
     FROM core+base-image
     WORKDIR /src
     RUN apk update && apk add yq

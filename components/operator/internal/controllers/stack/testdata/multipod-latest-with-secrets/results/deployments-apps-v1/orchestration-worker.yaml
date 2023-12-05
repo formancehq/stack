@@ -99,6 +99,14 @@ spec:
                         secretKeyRef:
                             key: tls.crt
                             name: temporal
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka1:1234 kafka2:1234
+                    - name: TOPICS
+                      value: multipod-latest-with-secrets-ledger multipod-latest-with-secrets-payments
                   image: ghcr.io/formancehq/orchestration:latest
                   imagePullPolicy: Always
                   name: orchestration-worker

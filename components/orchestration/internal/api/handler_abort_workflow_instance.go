@@ -3,13 +3,12 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
-func abortWorkflowInstance(m *workflow.Manager) http.HandlerFunc {
+func abortWorkflowInstance(backend Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := m.AbortRun(r.Context(), instanceID(r)); err != nil {
+		if err := backend.AbortRun(r.Context(), instanceID(r)); err != nil {
 			api.InternalServerError(w, r, err)
 			return
 		}

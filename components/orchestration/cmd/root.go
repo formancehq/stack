@@ -5,8 +5,13 @@ import (
 	"io"
 	"os"
 
+	"github.com/formancehq/orchestration/internal/triggers"
+	"github.com/formancehq/orchestration/internal/workflow"
+
+	"github.com/formancehq/orchestration/internal/temporalclient"
+	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/formancehq/orchestration/internal/temporal"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -31,6 +36,7 @@ const (
 	temporalSSLClientKeyFlag  = "temporal-ssl-client-key"
 	temporalSSLClientCertFlag = "temporal-ssl-client-cert"
 	temporalTaskQueueFlag     = "temporal-task-queue"
+	topicsFlag                = "topics"
 	listenFlag                = "listen"
 	postgresDSNFlag           = "postgres-dsn"
 	workerFlag                = "worker"
@@ -53,7 +59,10 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
 	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
 	cmd.PersistentFlags().String(postgresDSNFlag, "", "Postgres address")
-	cmd.AddCommand(newServeCommand(), newWorkerCommand(), newVersionCommand())
+	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
+	cmd.AddCommand(newServeCommand(), newVersionCommand(), newWorkerCommand())
+
+	publish.InitCLIFlags(cmd)
 
 	return cmd
 }
@@ -72,12 +81,15 @@ func Execute() {
 func commonOptions(output io.Writer) fx.Option {
 	return fx.Options(
 		otlptraces.CLITracesModule(viper.GetViper()),
-		temporal.NewClientModule(
+		temporalclient.NewModule(
 			viper.GetString(temporalAddressFlag),
 			viper.GetString(temporalNamespaceFlag),
 			viper.GetString(temporalSSLClientCertFlag),
 			viper.GetString(temporalSSLClientKeyFlag),
 		),
 		storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag), output),
+		publish.CLIPublisherModule(viper.GetViper(), "orchestration"),
+		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
+		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
 	)
 }

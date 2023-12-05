@@ -440,6 +440,14 @@ spec:
                       value: mocked-secret
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: TOPICS
+                      value: monopod-ledgerv1-ledger monopod-ledgerv1-payments
                   image: ghcr.io/formancehq/orchestration:latest
                   imagePullPolicy: Always
                   name: orchestration-worker
