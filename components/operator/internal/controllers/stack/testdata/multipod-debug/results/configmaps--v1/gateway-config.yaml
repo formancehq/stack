@@ -70,9 +70,19 @@ data:
         			}
         			@paymentsmatcher {
         				path /api/payments/payments*
-        				method GET PATCH
+        				method POST GET PATCH
         			}
         			handle @paymentsmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy payments-api:8080
+        				import cors
+        				import auth
+        			}
+        			@matcher {
+        				path /api/payments/pools*
+        				method POST GET DELETE
+        			}
+        			handle @matcher {
         				uri strip_prefix /api/payments
         				reverse_proxy payments-api:8080
         				import cors
