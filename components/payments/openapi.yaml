@@ -1604,9 +1604,13 @@ components:
             type: boolean
     PaymentMetadata:
       type: object
-      properties:
-        key:
-          type: string
+      additionalProperties:
+        type: string
+      nullable: true
+    AccountMetadata:
+      type: object
+      additionalProperties:
+        type: string
       nullable: true
     Pool:
       type: object
@@ -1657,6 +1661,7 @@ components:
         - defaultAsset
         - accountName
         - type
+        - metadata
         - raw
       properties:
         id:
@@ -1677,6 +1682,8 @@ components:
           type: string
         type:
           type: string
+        metadata:
+          $ref: '#/components/schemas/AccountMetadata'
         raw:
           type: object
           nullable: true
