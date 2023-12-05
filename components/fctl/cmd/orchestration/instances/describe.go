@@ -136,7 +136,7 @@ func subjectName(src shared.Subject) string {
 	}
 }
 
-func printMetadata(metadata map[string]string) []pterm.BulletListItem {
+func printMetadata(metadata map[string]any) []pterm.BulletListItem {
 	ret := make([]pterm.BulletListItem, 0)
 	ret = append(ret, historyItemDetails("Added metadata:"))
 	for k, v := range metadata {

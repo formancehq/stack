@@ -28,13 +28,13 @@ type Event struct {
 	Name string `json:"name"`
 }
 
-type Manager struct {
+type WorkflowManager struct {
 	db             *bun.DB
 	temporalClient client.Client
 	taskQueue      string
 }
 
-func (m *Manager) Create(ctx context.Context, config Config) (*Workflow, error) {
+func (m *WorkflowManager) Create(ctx context.Context, config Config) (*Workflow, error) {
 
 	if err := config.Validate(); err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (m *Manager) Create(ctx context.Context, config Config) (*Workflow, error) 
 	return &workflow, nil
 }
 
-func (m *Manager) DeleteWorkflow(ctx context.Context, id string) error {
+func (m *WorkflowManager) DeleteWorkflow(ctx context.Context, id string) error {
 
 	var workflow Workflow
 
@@ -73,14 +73,14 @@ func (m *Manager) DeleteWorkflow(ctx context.Context, id string) error {
 	return nil
 }
 
-func (m *Manager) RunWorkflow(ctx context.Context, id string, variables map[string]string) (Instance, error) {
+func (m *WorkflowManager) RunWorkflow(ctx context.Context, id string, variables map[string]string) (*Instance, error) {
 
 	workflow := Workflow{}
 	if err := m.db.NewSelect().
 		Where("id = ?", id).
 		Model(&workflow).
 		Scan(ctx); err != nil {
-		return Instance{}, err
+		return nil, err
 	}
 
 	instance := NewInstance(id)
@@ -89,7 +89,7 @@ func (m *Manager) RunWorkflow(ctx context.Context, id string, variables map[stri
 		NewInsert().
 		Model(&instance).
 		Exec(ctx); err != nil {
-		return Instance{}, err
+		return nil, err
 	}
 
 	_, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
@@ -101,13 +101,13 @@ func (m *Manager) RunWorkflow(ctx context.Context, id string, variables map[stri
 		Variables: variables,
 	})
 	if err != nil {
-		return Instance{}, err
+		return nil, err
 	}
 
-	return instance, nil
+	return &instance, nil
 }
 
-func (m *Manager) Wait(ctx context.Context, instanceID string) error {
+func (m *WorkflowManager) Wait(ctx context.Context, instanceID string) error {
 	if err := m.temporalClient.
 		GetWorkflow(ctx, instanceID, "").
 		Get(ctx, nil); err != nil {
@@ -119,7 +119,7 @@ func (m *Manager) Wait(ctx context.Context, instanceID string) error {
 	return nil
 }
 
-func (m *Manager) ListWorkflows(ctx context.Context) ([]Workflow, error) {
+func (m *WorkflowManager) ListWorkflows(ctx context.Context) ([]Workflow, error) {
 	workflows := make([]Workflow, 0)
 	if err := m.db.NewSelect().
 		Model(&workflows).
@@ -130,7 +130,7 @@ func (m *Manager) ListWorkflows(ctx context.Context) ([]Workflow, error) {
 	return workflows, nil
 }
 
-func (m *Manager) ReadWorkflow(ctx context.Context, id string) (Workflow, error) {
+func (m *WorkflowManager) ReadWorkflow(ctx context.Context, id string) (Workflow, error) {
 	var workflow Workflow
 	if err := m.db.NewSelect().
 		Model(&workflow).
@@ -141,7 +141,7 @@ func (m *Manager) ReadWorkflow(ctx context.Context, id string) (Workflow, error)
 	return workflow, nil
 }
 
-func (m *Manager) PostEvent(ctx context.Context, instanceID string, event Event) error {
+func (m *WorkflowManager) PostEvent(ctx context.Context, instanceID string, event Event) error {
 	stage := Stage{}
 	if err := m.db.NewSelect().
 		Model(&stage).
@@ -160,7 +160,7 @@ func (m *Manager) PostEvent(ctx context.Context, instanceID string, event Event)
 	return nil
 }
 
-func (m *Manager) AbortRun(ctx context.Context, instanceID string) error {
+func (m *WorkflowManager) AbortRun(ctx context.Context, instanceID string) error {
 	instance := Instance{}
 	if err := m.db.NewSelect().
 		Model(&instance).
@@ -172,7 +172,7 @@ func (m *Manager) AbortRun(ctx context.Context, instanceID string) error {
 	return m.temporalClient.CancelWorkflow(ctx, instanceID, "")
 }
 
-func (m *Manager) ListInstances(ctx context.Context, workflowID string, running bool) ([]Instance, error) {
+func (m *WorkflowManager) ListInstances(ctx context.Context, workflowID string, running bool) ([]Instance, error) {
 	instances := make([]Instance, 0)
 	query := m.db.NewSelect().Model(&instances)
 
@@ -200,7 +200,7 @@ type StageHistory struct {
 	TerminatedAt *time.Time     `json:"terminatedAt,omitempty"`
 }
 
-func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([]StageHistory, error) {
+func (m *WorkflowManager) ReadInstanceHistory(ctx context.Context, instanceID string) ([]StageHistory, error) {
 	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, instanceID, "",
 		false, enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
 	ret := make([]StageHistory, 0)
@@ -263,7 +263,7 @@ type ActivityHistory struct {
 	NextExecution *time.Time     `json:"nextExecution,omitempty"`
 }
 
-func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage int) ([]*ActivityHistory, error) {
+func (m *WorkflowManager) ReadStageHistory(ctx context.Context, instanceID string, stage int) ([]*ActivityHistory, error) {
 	stageID := fmt.Sprintf("%s-%d", instanceID, stage)
 	described, err := m.temporalClient.DescribeWorkflowExecution(ctx, stageID, "")
 	if err != nil {
@@ -346,7 +346,7 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 	return ret, nil
 }
 
-func (m *Manager) GetInstance(ctx context.Context, instanceID string) (*Instance, error) {
+func (m *WorkflowManager) GetInstance(ctx context.Context, instanceID string) (*Instance, error) {
 	occurrence := Instance{}
 	err := m.db.NewSelect().
 		Model(&occurrence).
@@ -362,8 +362,8 @@ func (m *Manager) GetInstance(ctx context.Context, instanceID string) (*Instance
 	return &occurrence, nil
 }
 
-func NewManager(db *bun.DB, temporalClient client.Client, taskQueue string) *Manager {
-	return &Manager{
+func NewManager(db *bun.DB, temporalClient client.Client, taskQueue string) *WorkflowManager {
+	return &WorkflowManager{
 		db:             db,
 		temporalClient: temporalClient,
 		taskQueue:      taskQueue,

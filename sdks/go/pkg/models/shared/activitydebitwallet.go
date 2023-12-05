@@ -3,6 +3,6 @@
 package shared
 
 type ActivityDebitWallet struct {
-	Data *DebitWalletRequest `json:"data,omitempty"`
-	ID   *string             `json:"id,omitempty"`
+	Data *OrchestrationDebitWalletRequest `json:"data,omitempty"`
+	ID   *string                          `json:"id,omitempty"`
 }

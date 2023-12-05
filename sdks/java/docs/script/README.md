@@ -26,7 +26,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolores") {{
+                .setSecurity(new Security("totam") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -40,16 +40,12 @@ public class Application {
                             )
                             ") {{
                                 metadata = new java.util.HashMap<String, Object>() {{
-                                    put("quam", "dolor");
-                                    put("vero", "nostrum");
-                                    put("hic", "recusandae");
-                                    put("omnis", "facilis");
+                                    put("eaque", "quis");
+                                    put("nesciunt", "eos");
                                 }};
                                 reference = "order_1234";
                                 vars = new java.util.HashMap<String, Object>() {{
-                                    put("voluptatem", "porro");
-                                    put("consequuntur", "blanditiis");
-                                    put("error", "eaque");
+                                    put("dolores", "minus");
                                 }};
                             }};, "ledger001") {{
                 preview = true;

@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ActivityDebitWallet {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")
-    public DebitWalletRequest data;
+    public OrchestrationDebitWalletRequest data;
 
-    public ActivityDebitWallet withData(DebitWalletRequest data) {
+    public ActivityDebitWallet withData(OrchestrationDebitWalletRequest data) {
         this.data = data;
         return this;
     }

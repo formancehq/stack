@@ -7,6 +7,13 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+const (
+	ErrorCodeValidation        = "VALIDATION"
+	ErrorCodeConflict          = "CONFLICT"
+	ErrorCodeNoScript          = "NO_SCRIPT"
+	ErrorCodeCompilationFailed = "COMPILATION_FAILED"
+)
+
 func InfiniteRetryContext(ctx workflow.Context) workflow.Context {
 	return workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
@@ -15,13 +22,10 @@ func InfiniteRetryContext(ctx workflow.Context) workflow.Context {
 			BackoffCoefficient: 2,
 			MaximumInterval:    100 * time.Second,
 			NonRetryableErrorTypes: []string{
-				//"INTERNAL",
-				//"INSUFFICIENT_FUND",
-				"VALIDATION",
-				"CONFLICT",
-				"NO_SCRIPT",
-				"COMPILATION_FAILED",
-				//"METADATA_OVERRIDE",
+				ErrorCodeValidation,
+				ErrorCodeConflict,
+				ErrorCodeNoScript,
+				ErrorCodeCompilationFailed,
 			},
 		},
 	})

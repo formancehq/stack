@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
-func runWorkflow(m *workflow.Manager) http.HandlerFunc {
+func runWorkflow(backend Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		input := make(map[string]string)
 		if r.ContentLength > 0 {
@@ -18,7 +18,7 @@ func runWorkflow(m *workflow.Manager) http.HandlerFunc {
 				return
 			}
 		}
-		instance, err := m.RunWorkflow(r.Context(), workflowID(r), input)
+		instance, err := backend.RunWorkflow(r.Context(), workflowID(r), input)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
@@ -29,12 +29,12 @@ func runWorkflow(m *workflow.Manager) http.HandlerFunc {
 				*workflow.Instance
 				Error string `json:"error,omitempty"`
 			}{
-				Instance: &instance,
+				Instance: instance,
 			}
-			if err := m.Wait(r.Context(), instance.ID); err != nil {
+			if err := backend.Wait(r.Context(), instance.ID); err != nil {
 				ret.Error = err.Error()
 			}
-			ret.Instance, err = m.GetInstance(r.Context(), instance.ID)
+			ret.Instance, err = backend.GetInstance(r.Context(), instance.ID)
 			if err != nil {
 				panic(err)
 			}

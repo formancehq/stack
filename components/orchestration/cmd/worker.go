@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/orchestration/internal/triggers"
+
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/orchestration/internal/temporal"
+	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
@@ -43,7 +45,8 @@ func stackClientModule() fx.Option {
 func workerOptions() fx.Option {
 	return fx.Options(
 		stackClientModule(),
-		temporal.NewWorkerModule(viper.GetString(temporalTaskQueueFlag)),
+		temporalworker.NewWorkerModule(viper.GetString(temporalTaskQueueFlag)),
+		triggers.NewListenerModule(viper.GetString(temporalTaskQueueFlag), viper.GetStringSlice(topicsFlag)),
 	)
 }
 

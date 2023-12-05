@@ -8,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ActivityGetAccountOutput {
     @JsonProperty("data")
-    public AccountWithVolumesAndBalances data;
+    public OrchestrationAccount data;
 
-    public ActivityGetAccountOutput withData(AccountWithVolumesAndBalances data) {
+    public ActivityGetAccountOutput withData(OrchestrationAccount data) {
         this.data = data;
         return this;
     }
     
-    public ActivityGetAccountOutput(@JsonProperty("data") AccountWithVolumesAndBalances data) {
+    public ActivityGetAccountOutput(@JsonProperty("data") OrchestrationAccount data) {
         this.data = data;
   }
 }

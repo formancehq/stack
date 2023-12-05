@@ -99,7 +99,7 @@ var _ = Given("An empty environment", func() {
 						Input: shared.WorkflowInstanceHistoryStageInput{
 							CreateTransaction: &shared.ActivityCreateTransaction{
 								Ledger: ptr("default"),
-								Data: &shared.PostTransaction{
+								Data: &shared.OrchestrationPostTransaction{
 									Postings: []shared.Posting{{
 										Amount:      big.NewInt(100),
 										Asset:       "EUR/2",

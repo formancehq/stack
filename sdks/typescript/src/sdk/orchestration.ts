@@ -94,6 +94,86 @@ export class Orchestration {
   }
 
   /**
+   * Create trigger
+   *
+   * @remarks
+   * Create trigger
+   */
+  async createTrigger(
+    req: shared.TriggerData,
+    config?: AxiosRequestConfig
+  ): Promise<operations.CreateTriggerResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new shared.TriggerData(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string =
+      baseURL.replace(/\/$/, "") + "/api/orchestration/triggers";
+
+    let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+    try {
+      [reqBodyHeaders, reqBody] = utils.serializeRequestBody(
+        req,
+        "request",
+        "json"
+      );
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        throw new Error(`Error serializing request body, cause: ${e.message}`);
+      }
+    }
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...reqBodyHeaders, ...config?.headers };
+    headers["Accept"] = "application/json;q=1, application/json;q=0";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "post",
+      headers: headers,
+      data: reqBody,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.CreateTriggerResponse =
+      new operations.CreateTriggerResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 201:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.createTriggerResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.CreateTriggerResponse
+          );
+        }
+        break;
+      default:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.error = utils.objectToClass(httpRes?.data, shared.ErrorT);
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
    * Create workflow
    *
    * @remarks
@@ -162,6 +242,68 @@ export class Orchestration {
             shared.CreateWorkflowResponse
           );
         }
+        break;
+      default:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.error = utils.objectToClass(httpRes?.data, shared.ErrorT);
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Delete trigger
+   *
+   * @remarks
+   * Read trigger
+   */
+  async deleteTrigger(
+    req: operations.DeleteTriggerRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.DeleteTriggerResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.DeleteTriggerRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/orchestration/triggers/{triggerID}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "delete",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.DeleteTriggerResponse =
+      new operations.DeleteTriggerResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 204:
         break;
       default:
         if (utils.matchContentType(contentType, `application/json`)) {
@@ -574,6 +716,134 @@ export class Orchestration {
   }
 
   /**
+   * List triggers
+   *
+   * @remarks
+   * List triggers
+   */
+  async listTriggers(
+    config?: AxiosRequestConfig
+  ): Promise<operations.ListTriggersResponse> {
+    const baseURL: string = this._serverURL;
+    const url: string =
+      baseURL.replace(/\/$/, "") + "/api/orchestration/triggers";
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json;q=1, application/json;q=0";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.ListTriggersResponse =
+      new operations.ListTriggersResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.listTriggersResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.ListTriggersResponse
+          );
+        }
+        break;
+      default:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.error = utils.objectToClass(httpRes?.data, shared.ErrorT);
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * List triggers occurrences
+   *
+   * @remarks
+   * List triggers occurrences
+   */
+  async listTriggersOccurrences(
+    req: operations.ListTriggersOccurrencesRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.ListTriggersOccurrencesResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.ListTriggersOccurrencesRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/orchestration/triggers/{triggerID}/occurrences",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json;q=1, application/json;q=0";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.ListTriggersOccurrencesResponse =
+      new operations.ListTriggersOccurrencesResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.listTriggersOccurrencesResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.ListTriggersOccurrencesResponse
+          );
+        }
+        break;
+      default:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.error = utils.objectToClass(httpRes?.data, shared.ErrorT);
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
    * List registered workflows
    *
    * @remarks
@@ -676,6 +946,74 @@ export class Orchestration {
           res.serverInfo = utils.objectToClass(
             httpRes?.data,
             shared.ServerInfo
+          );
+        }
+        break;
+      default:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.error = utils.objectToClass(httpRes?.data, shared.ErrorT);
+        }
+        break;
+    }
+
+    return res;
+  }
+
+  /**
+   * Read trigger
+   *
+   * @remarks
+   * Read trigger
+   */
+  async readTrigger(
+    req: operations.ReadTriggerRequest,
+    config?: AxiosRequestConfig
+  ): Promise<operations.ReadTriggerResponse> {
+    if (!(req instanceof utils.SpeakeasyBase)) {
+      req = new operations.ReadTriggerRequest(req);
+    }
+
+    const baseURL: string = this._serverURL;
+    const url: string = utils.generateURL(
+      baseURL,
+      "/api/orchestration/triggers/{triggerID}",
+      req
+    );
+
+    const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+    const headers = { ...config?.headers };
+    headers["Accept"] = "application/json;q=1, application/json;q=0";
+    headers[
+      "user-agent"
+    ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
+      url: url,
+      method: "get",
+      headers: headers,
+      ...config,
+    });
+
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
+
+    const res: operations.ReadTriggerResponse =
+      new operations.ReadTriggerResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.readTriggerResponse = utils.objectToClass(
+            httpRes?.data,
+            shared.ReadTriggerResponse
           );
         }
         break;

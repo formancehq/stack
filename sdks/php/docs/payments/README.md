@@ -61,7 +61,7 @@ try {
     $request->transferRequest->asset = 'USD';
     $request->transferRequest->destination = 'acct_1Gqj58KZcSIg2N2q';
     $request->transferRequest->source = 'acct_1Gqj58KZcSIg2N2q';
-    $request->connector = Connector::STRIPE;
+    $request->connector = Connector::CURRENCY_CLOUD;
 
     $response = $sdk->payments->connectorsTransfer($request);
 
@@ -94,12 +94,12 @@ $sdk = SDK::builder()
 
 try {
     $request = new BankAccountRequest();
-    $request->accountNumber = 'corporis';
-    $request->connectorID = 'dolore';
+    $request->accountNumber = 'voluptates';
+    $request->connectorID = 'quasi';
     $request->country = 'GB';
-    $request->iban = 'iusto';
+    $request->iban = 'repudiandae';
     $request->name = 'My account';
-    $request->swiftBicCode = 'dicta';
+    $request->swiftBicCode = 'sint';
 
     $response = $sdk->payments->createBankAccount($request);
 
@@ -134,15 +134,15 @@ $sdk = SDK::builder()
 
 try {
     $request = new TransferInitiationRequest();
-    $request->amount = 688661;
+    $request->amount = 83112;
     $request->asset = 'USD';
-    $request->connectorID = 'enim';
-    $request->description = 'accusamus';
-    $request->destinationAccountID = 'commodi';
-    $request->provider = Connector::MONEYCORP;
+    $request->connectorID = 'itaque';
+    $request->description = 'incidunt';
+    $request->destinationAccountID = 'enim';
+    $request->provider = Connector::STRIPE;
     $request->reference = 'XXX';
-    $request->scheduledAt = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-10-13T20:38:16.426Z');
-    $request->sourceAccountID = 'quidem';
+    $request->scheduledAt = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-04-26T02:10:00.226Z');
+    $request->sourceAccountID = 'explicabo';
     $request->type = TransferInitiationRequestType::PAYOUT;
     $request->validated = false;
 
@@ -177,7 +177,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new DeleteTransferInitiationRequest();
-    $request->transferId = 'excepturi';
+    $request->transferId = 'distinctio';
 
     $response = $sdk->payments->deleteTransferInitiation($request);
 
@@ -210,19 +210,18 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetAccountBalancesRequest();
-    $request->accountId = 'pariatur';
-    $request->asset = 'modi';
+    $request->accountId = 'quibusdam';
+    $request->asset = 'labore';
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->from = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2021-12-15T00:41:38.329Z');
-    $request->limit = 916723;
-    $request->pageSize = 93940;
+    $request->from = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-10-26T03:14:36.345Z');
+    $request->limit = 397821;
+    $request->pageSize = 586513;
     $request->sort = [
-        'sint',
-        'veritatis',
-        'itaque',
-        'incidunt',
+        'perferendis',
+        'magni',
+        'assumenda',
     ];
-    $request->to = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-12-28T14:02:06.064Z');
+    $request->to = DateTime::createFromFormat('Y-m-d\TH:i:sP', '2022-12-30T06:52:02.282Z');
 
     $response = $sdk->payments->getAccountBalances($request);
 
@@ -255,7 +254,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetBankAccountRequest();
-    $request->bankAccountId = 'est';
+    $request->bankAccountId = 'fugit';
 
     $response = $sdk->payments->getBankAccount($request);
 
@@ -291,8 +290,8 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetConnectorTaskRequest();
-    $request->connector = Connector::MANGOPAY;
-    $request->taskId = 'explicabo';
+    $request->connector = Connector::BANKING_CIRCLE;
+    $request->taskId = 'excepturi';
 
     $response = $sdk->payments->getConnectorTask($request);
 
@@ -326,9 +325,9 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetConnectorTaskV1Request();
-    $request->connector = Connector::BANKING_CIRCLE;
-    $request->connectorId = 'distinctio';
-    $request->taskId = 'quibusdam';
+    $request->connector = Connector::WISE;
+    $request->connectorId = 'facilis';
+    $request->taskId = 'tempore';
 
     $response = $sdk->payments->getConnectorTaskV1($request);
 
@@ -394,7 +393,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetTransferInitiationRequest();
-    $request->transferId = 'modi';
+    $request->transferId = 'delectus';
 
     $response = $sdk->payments->getTransferInitiation($request);
 
@@ -428,12 +427,13 @@ $sdk = SDK::builder()
 
 try {
     $request = new InstallConnectorRequest();
-    $request->requestBody = new DummyPayConfig();
-    $request->requestBody->directory = '/tmp/dummypay';
-    $request->requestBody->fileGenerationPeriod = '60s';
-    $request->requestBody->filePollingPeriod = '60s';
-    $request->requestBody->name = 'My DummyPay Account';
-    $request->connector = Connector::MODULR;
+    $request->requestBody = new ModulrConfig();
+    $request->requestBody->apiKey = 'XXX';
+    $request->requestBody->apiSecret = 'XXX';
+    $request->requestBody->endpoint = 'XXX';
+    $request->requestBody->name = 'My Modulr Account';
+    $request->requestBody->pollingPeriod = '60s';
+    $request->connector = Connector::DUMMY_PAY;
 
     $response = $sdk->payments->installConnector($request);
 
@@ -496,11 +496,11 @@ $sdk = SDK::builder()
 try {
     $request = new ListBankAccountsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 586513;
+    $request->pageSize = 756107;
     $request->sort = [
-        'perferendis',
-        'magni',
-        'assumenda',
+        'aliquid',
+        'provident',
+        'necessitatibus',
     ];
 
     $response = $sdk->payments->listBankAccounts($request);
@@ -566,9 +566,9 @@ $sdk = SDK::builder()
 
 try {
     $request = new ListConnectorTasksRequest();
-    $request->connector = Connector::WISE;
+    $request->connector = Connector::CURRENCY_CLOUD;
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 4695;
+    $request->pageSize = 638921;
 
     $response = $sdk->payments->listConnectorTasks($request);
 
@@ -603,9 +603,9 @@ $sdk = SDK::builder()
 try {
     $request = new ListConnectorTasksV1Request();
     $request->connector = Connector::DUMMY_PAY;
-    $request->connectorId = 'dolorum';
+    $request->connectorId = 'debitis';
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 569618;
+    $request->pageSize = 952749;
 
     $response = $sdk->payments->listConnectorTasksV1($request);
 
@@ -639,11 +639,10 @@ $sdk = SDK::builder()
 try {
     $request = new ListPaymentsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 270008;
+    $request->pageSize = 680056;
     $request->sort = [
-        'tempore',
-        'labore',
-        'delectus',
+        'in',
+        'illum',
     ];
 
     $response = $sdk->payments->listPayments($request);
@@ -678,13 +677,10 @@ $sdk = SDK::builder()
 try {
     $request = new ListTransferInitiationsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 433288;
-    $request->query = 'non';
+    $request->pageSize = 978571;
+    $request->query = 'rerum';
     $request->sort = [
-        'sint',
-        'aliquid',
-        'provident',
-        'necessitatibus',
+        'magnam',
     ];
 
     $response = $sdk->payments->listTransferInitiations($request);
@@ -718,7 +714,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new PaymentsgetAccountRequest();
-    $request->accountId = 'sint';
+    $request->accountId = 'cumque';
 
     $response = $sdk->payments->paymentsgetAccount($request);
 
@@ -781,9 +777,10 @@ $sdk = SDK::builder()
 try {
     $request = new PaymentslistAccountsRequest();
     $request->cursor = 'aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==';
-    $request->pageSize = 638921;
+    $request->pageSize = 813798;
     $request->sort = [
-        'debitis',
+        'aliquid',
+        'laborum',
     ];
 
     $response = $sdk->payments->paymentslistAccounts($request);
@@ -854,8 +851,8 @@ $sdk = SDK::builder()
 
 try {
     $request = new ReadConnectorConfigV1Request();
-    $request->connector = Connector::BANKING_CIRCLE;
-    $request->connectorId = 'in';
+    $request->connector = Connector::DUMMY_PAY;
+    $request->connectorId = 'occaecati';
 
     $response = $sdk->payments->readConnectorConfigV1($request);
 
@@ -893,7 +890,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new ResetConnectorRequest();
-    $request->connector = Connector::MODULR;
+    $request->connector = Connector::WISE;
 
     $response = $sdk->payments->resetConnector($request);
 
@@ -929,8 +926,8 @@ $sdk = SDK::builder()
 
 try {
     $request = new ResetConnectorV1Request();
-    $request->connector = Connector::MANGOPAY;
-    $request->connectorId = 'maiores';
+    $request->connector = Connector::MONEYCORP;
+    $request->connectorId = 'delectus';
 
     $response = $sdk->payments->resetConnectorV1($request);
 
@@ -963,7 +960,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new RetryTransferInitiationRequest();
-    $request->transferId = 'rerum';
+    $request->transferId = 'quidem';
 
     $response = $sdk->payments->retryTransferInitiation($request);
 
@@ -999,8 +996,8 @@ $sdk = SDK::builder()
 try {
     $request = new UdpateTransferInitiationStatusRequest();
     $request->updateTransferInitiationStatusRequest = new UpdateTransferInitiationStatusRequest();
-    $request->updateTransferInitiationStatusRequest->status = UpdateTransferInitiationStatusRequestStatus::WAITING_FOR_VALIDATION;
-    $request->transferId = 'magnam';
+    $request->updateTransferInitiationStatusRequest->status = UpdateTransferInitiationStatusRequestStatus::FAILED;
+    $request->transferId = 'nam';
 
     $response = $sdk->payments->udpateTransferInitiationStatus($request);
 
@@ -1036,7 +1033,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new UninstallConnectorRequest();
-    $request->connector = Connector::MANGOPAY;
+    $request->connector = Connector::BANKING_CIRCLE;
 
     $response = $sdk->payments->uninstallConnector($request);
 
@@ -1070,8 +1067,8 @@ $sdk = SDK::builder()
 
 try {
     $request = new UninstallConnectorV1Request();
-    $request->connector = Connector::MANGOPAY;
-    $request->connectorId = 'ea';
+    $request->connector = Connector::CURRENCY_CLOUD;
+    $request->connectorId = 'deleniti';
 
     $response = $sdk->payments->uninstallConnectorV1($request);
 
@@ -1106,8 +1103,8 @@ $sdk = SDK::builder()
 try {
     $request = new UpdateMetadataRequest();
     $request->paymentMetadata = new PaymentMetadata();
-    $request->paymentMetadata->key = 'aliquid';
-    $request->paymentId = 'laborum';
+    $request->paymentMetadata->key = 'sapiente';
+    $request->paymentId = 'amet';
 
     $response = $sdk->payments->updateMetadata($request);
 

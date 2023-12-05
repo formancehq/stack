@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "v1.0.20231204"
+    "version": "v1.0.20231207"
   },
   "servers": [
     {
@@ -3794,6 +3794,151 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ServerInfo"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orchestration/triggers": {
+      "get": {
+        "summary": "List triggers",
+        "operationId": "listTriggers",
+        "description": "List triggers",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of triggers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTriggersResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create trigger",
+        "operationId": "createTrigger",
+        "description": "Create trigger",
+        "tags": [
+          "Orchestration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created trigger",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTriggerResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orchestration/triggers/{triggerID}": {
+      "parameters": [
+        {
+          "name": "triggerID",
+          "description": "The trigger id",
+          "in": "path",
+          "schema": {
+            "type": "string"
+          },
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Read trigger",
+        "operationId": "readTrigger",
+        "description": "Read trigger",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "200": {
+            "description": "A specific trigger",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadTriggerResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete trigger",
+        "operationId": "deleteTrigger",
+        "description": "Read trigger",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "204": {
+            "description": "Trigger deleted"
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orchestration/triggers/{triggerID}/occurrences": {
+      "parameters": [
+        {
+          "name": "triggerID",
+          "description": "The trigger id",
+          "in": "path",
+          "schema": {
+            "type": "string"
+          },
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "List triggers occurrences",
+        "operationId": "listTriggersOccurrences",
+        "description": "List triggers occurrences",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of triggers occurrences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTriggersOccurrencesResponse"
                 }
               }
             }
@@ -8291,6 +8436,99 @@
           "data"
         ]
       },
+      "TriggerData": {
+        "type": "object",
+        "required": [
+          "event",
+          "workflowID"
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "workflowID": {
+            "type": "string"
+          },
+          "filter": {
+            "type": "string"
+          },
+          "vars": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "Trigger": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TriggerData"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "createdAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "TriggerOccurrence": {
+        "type": "object",
+        "required": [
+          "triggerID",
+          "workflowInstanceID",
+          "date"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "workflowInstanceID": {
+            "type": "string"
+          },
+          "triggerID": {
+            "type": "string"
+          }
+        }
+      },
+      "ListTriggersOccurrencesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/TriggerOccurrence"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ListTriggersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Trigger"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
       "ReadWorkflowResponse": {
         "type": "object",
         "required": [
@@ -8313,6 +8551,17 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Workflow"
+          }
+        }
+      },
+      "CreateTriggerResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trigger"
           }
         }
       },
@@ -8583,7 +8832,7 @@
             "type": "string"
           },
           "data": {
-            "$ref": "#/components/schemas/PostTransaction"
+            "$ref": "#/components/schemas/orchestrationPostTransaction"
           }
         }
       },
@@ -8631,8 +8880,49 @@
             "type": "string"
           },
           "data": {
-            "$ref": "#/components/schemas/CreditWalletRequest"
+            "$ref": "#/components/schemas/orchestrationCreditWalletRequest"
           }
+        }
+      },
+      "orchestrationCreditWalletRequest": {
+        "type": "object",
+        "required": [
+          "amount",
+          "sources",
+          "metadata"
+        ],
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Monetary"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Metadata associated with the wallet."
+          },
+          "reference": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Subject"
+            }
+          },
+          "balance": {
+            "type": "string",
+            "description": "The balance to credit"
+          }
+        },
+        "example": {
+          "amount": {
+            "asset": "USD/2",
+            "amount": 100
+          },
+          "metadata": {
+            "key": ""
+          },
+          "sources": []
         }
       },
       "ActivityDebitWallet": {
@@ -8642,8 +8932,52 @@
             "type": "string"
           },
           "data": {
-            "$ref": "#/components/schemas/DebitWalletRequest"
+            "$ref": "#/components/schemas/orchestrationDebitWalletRequest"
           }
+        }
+      },
+      "orchestrationDebitWalletRequest": {
+        "type": "object",
+        "required": [
+          "amount",
+          "metadata"
+        ],
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Monetary"
+          },
+          "pending": {
+            "type": "boolean",
+            "description": "Set to true to create a pending hold. If false, the wallet will be debited immediately."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Metadata associated with the wallet."
+          },
+          "description": {
+            "type": "string"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/Subject"
+          },
+          "balances": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "A targeted balance (use '*' for all)"
+            }
+          }
+        },
+        "example": {
+          "amount": {
+            "asset": "USD/2",
+            "amount": 100
+          },
+          "metadata": {
+            "key": ""
+          },
+          "pending": true
         }
       },
       "ActivityGetWallet": {
@@ -8669,13 +9003,72 @@
         }
       },
       "ActivityGetAccountOutput": {
-        "$ref": "#/components/schemas/AccountResponse"
+        "$ref": "#/components/schemas/orchestrationAccountResponse"
       },
       "ActivityCreateTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionsResponse"
+        "$ref": "#/components/schemas/CreateTransactionResponse"
+      },
+      "CreateTransactionResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/orchestrationTransaction"
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ]
+      },
+      "orchestrationTransaction": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "postings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Posting"
+            }
+          },
+          "reference": {
+            "type": "string",
+            "example": "ref:001"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/orchestrationMetadata"
+          },
+          "txid": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "preCommitVolumes": {
+            "$ref": "#/components/schemas/AggregatedVolumes"
+          },
+          "postCommitVolumes": {
+            "$ref": "#/components/schemas/AggregatedVolumes"
+          }
+        },
+        "required": [
+          "postings",
+          "timestamp",
+          "txid"
+        ]
       },
       "ActivityRevertTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionResponse"
+        "$ref": "#/components/schemas/RevertTransactionResponse"
+      },
+      "RevertTransactionResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/orchestrationTransaction"
+          }
+        }
       },
       "ActivityGetPaymentOutput": {
         "$ref": "#/components/schemas/PaymentResponse"
@@ -8741,6 +9134,104 @@
           },
           "GetWallet": {
             "$ref": "#/components/schemas/ActivityGetWalletOutput"
+          }
+        }
+      },
+      "orchestrationPostTransaction": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "postings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Posting"
+            }
+          },
+          "script": {
+            "type": "object",
+            "properties": {
+              "plain": {
+                "type": "string",
+                "example": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n"
+              },
+              "vars": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true,
+                "example": {
+                  "user": "users:042"
+                }
+              }
+            },
+            "required": [
+              "plain"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "example": "ref:001"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/orchestrationMetadata"
+          }
+        }
+      },
+      "orchestrationMetadata": {
+        "type": "object",
+        "additionalProperties": true,
+        "example": {
+          "admin": "true"
+        }
+      },
+      "orchestrationAccountResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/orchestrationAccount"
+          }
+        }
+      },
+      "ReadTriggerResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trigger"
+          }
+        }
+      },
+      "orchestrationAccount": {
+        "type": "object",
+        "required": [
+          "address",
+          "metadata"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "users:001"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": true,
+            "example": {
+              "admin": "true"
+            }
+          },
+          "volumes": {
+            "$ref": "#/components/schemas/Volumes"
+          },
+          "effectiveVolumes": {
+            "$ref": "#/components/schemas/Volumes"
           }
         }
       }

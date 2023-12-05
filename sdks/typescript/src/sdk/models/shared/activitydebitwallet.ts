@@ -3,14 +3,14 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { DebitWalletRequest } from "./debitwalletrequest";
+import { OrchestrationDebitWalletRequest } from "./orchestrationdebitwalletrequest";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityDebitWallet extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "data" })
-  @Type(() => DebitWalletRequest)
-  data?: DebitWalletRequest;
+  @Type(() => OrchestrationDebitWalletRequest)
+  data?: OrchestrationDebitWalletRequest;
 
   @SpeakeasyMetadata()
   @Expose({ name: "id" })

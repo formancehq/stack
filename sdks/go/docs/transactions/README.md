@@ -42,50 +42,6 @@ func main() {
             Transactions: []shared.TransactionData{
                 shared.TransactionData{
                     Metadata: map[string]interface{}{
-                        "sint": "accusantium",
-                        "mollitia": "reiciendis",
-                        "mollitia": "ad",
-                    },
-                    Postings: []shared.Posting{
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                    },
-                    Reference: formance.String("ref:001"),
-                    Timestamp: types.MustTimeFromString("2022-02-07T18:15:06.372Z"),
-                },
-                shared.TransactionData{
-                    Metadata: map[string]interface{}{
-                        "nemo": "quasi",
-                    },
-                    Postings: []shared.Posting{
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                        shared.Posting{
-                            Amount: big.NewInt(100),
-                            Asset: "COIN",
-                            Destination: "users:002",
-                            Source: "users:001",
-                        },
-                    },
-                    Reference: formance.String("ref:001"),
-                    Timestamp: types.MustTimeFromString("2020-04-29T08:15:14.819Z"),
-                },
-                shared.TransactionData{
-                    Metadata: map[string]interface{}{
                         "maxime": "deleniti",
                         "facilis": "in",
                     },
@@ -99,6 +55,67 @@ func main() {
                     },
                     Reference: formance.String("ref:001"),
                     Timestamp: types.MustTimeFromString("2022-01-30T09:19:56.236Z"),
+                },
+                shared.TransactionData{
+                    Metadata: map[string]interface{}{
+                        "expedita": "nihil",
+                        "repellat": "quibusdam",
+                    },
+                    Postings: []shared.Posting{
+                        shared.Posting{
+                            Amount: big.NewInt(100),
+                            Asset: "COIN",
+                            Destination: "users:002",
+                            Source: "users:001",
+                        },
+                    },
+                    Reference: formance.String("ref:001"),
+                    Timestamp: types.MustTimeFromString("2020-05-25T09:38:49.528Z"),
+                },
+                shared.TransactionData{
+                    Metadata: map[string]interface{}{
+                        "consequuntur": "praesentium",
+                    },
+                    Postings: []shared.Posting{
+                        shared.Posting{
+                            Amount: big.NewInt(100),
+                            Asset: "COIN",
+                            Destination: "users:002",
+                            Source: "users:001",
+                        },
+                        shared.Posting{
+                            Amount: big.NewInt(100),
+                            Asset: "COIN",
+                            Destination: "users:002",
+                            Source: "users:001",
+                        },
+                        shared.Posting{
+                            Amount: big.NewInt(100),
+                            Asset: "COIN",
+                            Destination: "users:002",
+                            Source: "users:001",
+                        },
+                    },
+                    Reference: formance.String("ref:001"),
+                    Timestamp: types.MustTimeFromString("2022-11-16T19:20:12.159Z"),
+                },
+                shared.TransactionData{
+                    Metadata: map[string]interface{}{
+                        "illum": "pariatur",
+                        "maxime": "ea",
+                        "excepturi": "odit",
+                        "ea": "accusantium",
+                    },
+                    Postings: []shared.Posting{
+                        shared.Posting{
+                            Amount: big.NewInt(100),
+                            Asset: "COIN",
+                            Destination: "users:002",
+                            Source: "users:001",
+                        },
+                    },
+                    Reference: formance.String("ref:001"),
+                    Timestamp: types.MustTimeFromString("2020-11-28T07:34:18.392Z"),
                 },
             },
         },
@@ -140,8 +157,8 @@ func main() {
     ctx := context.Background()
     res, err := s.Transactions.AddMetadataOnTransaction(ctx, operations.AddMetadataOnTransactionRequest{
         RequestBody: map[string]interface{}{
-            "expedita": "nihil",
-            "repellat": "quibusdam",
+            "voluptate": "autem",
+            "nam": "eaque",
         },
         Ledger: "ledger001",
         Txid: 1234,
@@ -184,17 +201,17 @@ func main() {
     res, err := s.Transactions.CountTransactions(ctx, operations.CountTransactionsRequest{
         Account: formance.String("users:001"),
         Destination: formance.String("users:001"),
-        EndTime: types.MustTimeFromString("2022-02-04T19:17:08.641Z"),
+        EndTime: types.MustTimeFromString("2021-11-26T18:45:44.366Z"),
         Ledger: "ledger001",
         Metadata: map[string]interface{}{
-            "accusantium": "consequuntur",
-            "praesentium": "natus",
-            "magni": "sunt",
-            "quo": "illum",
+            "perferendis": "fugiat",
+            "amet": "aut",
+            "cumque": "corporis",
+            "hic": "libero",
         },
         Reference: formance.String("ref:001"),
         Source: formance.String("users:001"),
-        StartTime: types.MustTimeFromString("2020-07-30T23:39:27.609Z"),
+        StartTime: types.MustTimeFromString("2022-08-28T17:02:52.151Z"),
     })
     if err != nil {
         log.Fatal(err)
@@ -234,20 +251,14 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Transactions.CreateTransaction(ctx, operations.CreateTransactionRequest{
-        IdempotencyKey: formance.String("ea"),
+        IdempotencyKey: formance.String("quis"),
         PostTransaction: shared.PostTransaction{
             Metadata: map[string]interface{}{
-                "odit": "ea",
-                "accusantium": "ab",
-                "maiores": "quidem",
+                "dignissimos": "eaque",
+                "quis": "nesciunt",
+                "eos": "perferendis",
             },
             Postings: []shared.Posting{
-                shared.Posting{
-                    Amount: big.NewInt(100),
-                    Asset: "COIN",
-                    Destination: "users:002",
-                    Source: "users:001",
-                },
                 shared.Posting{
                     Amount: big.NewInt(100),
                     Asset: "COIN",
@@ -266,11 +277,13 @@ func main() {
             )
             ",
                 Vars: map[string]interface{}{
-                    "autem": "nam",
-                    "eaque": "pariatur",
+                    "quam": "dolor",
+                    "vero": "nostrum",
+                    "hic": "recusandae",
+                    "omnis": "facilis",
                 },
             },
-            Timestamp: types.MustTimeFromString("2022-01-09T22:25:53.570Z"),
+            Timestamp: types.MustTimeFromString("2022-12-08T18:10:54.422Z"),
         },
         Ledger: "ledger001",
         Preview: formance.Bool(true),
@@ -350,18 +363,20 @@ func main() {
     ctx := context.Background()
     res, err := s.Transactions.ListTransactions(ctx, operations.ListTransactionsRequest{
         Account: formance.String("users:001"),
-        After: formance.String("perferendis"),
+        After: formance.String("porro"),
         Cursor: formance.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Destination: formance.String("users:001"),
-        EndTime: types.MustTimeFromString("2022-04-23T08:05:27.776Z"),
+        EndTime: types.MustTimeFromString("2022-07-02T11:46:10.299Z"),
         Ledger: "ledger001",
         Metadata: map[string]interface{}{
-            "cumque": "corporis",
+            "eaque": "occaecati",
+            "rerum": "adipisci",
+            "asperiores": "earum",
         },
-        PageSize: formance.Int64(944124),
+        PageSize: formance.Int64(267262),
         Reference: formance.String("ref:001"),
         Source: formance.String("users:001"),
-        StartTime: types.MustTimeFromString("2021-07-02T12:00:47.197Z"),
+        StartTime: types.MustTimeFromString("2021-08-23T06:19:56.211Z"),
     })
     if err != nil {
         log.Fatal(err)

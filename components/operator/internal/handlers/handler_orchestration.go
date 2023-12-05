@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )
@@ -50,6 +51,48 @@ func init() {
 							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 								return modules.Container{
 									Env:       orchestrationEnvVars(resolveContext),
+									Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+									Args:      []string{"worker"},
+									Resources: modules.ResourceSizeSmall(),
+								}
+							},
+						},
+					}
+				},
+			},
+			"v0.2.0": {
+				Services: func(ctx modules.ModuleContext) modules.Services {
+					return modules.Services{
+						{
+							Port: 8080,
+							AuthConfiguration: func(resolveContext modules.ModuleContext) stackv1beta3.ClientConfiguration {
+								return stackv1beta3.NewClientConfiguration()
+							},
+							ExposeHTTP:              true,
+							HasVersionEndpoint:      true,
+							InjectPostgresVariables: true,
+							Annotations:             ctx.Configuration.Spec.Services.Orchestration.Annotations.Service,
+							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+								return modules.Container{
+									Env:       orchestrationEnvVars(resolveContext),
+									Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+									Resources: modules.ResourceSizeSmall(),
+								}
+							},
+						},
+						{
+							Name:                    "worker",
+							InjectPostgresVariables: true,
+							Liveness:                modules.LivenessDisable,
+							Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+								env := orchestrationEnvVars(resolveContext)
+								env = append(env, modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "orchestration")...)
+
+								// TODO(gfyrag): Make more generic
+								env = append(env, modules.Env("TOPICS", fmt.Sprintf("%s-ledger %s-payments",
+									resolveContext.Stack.Name, resolveContext.Stack.Name)))
+								return modules.Container{
+									Env:       env,
 									Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
 									Args:      []string{"worker"},
 									Resources: modules.ResourceSizeSmall(),

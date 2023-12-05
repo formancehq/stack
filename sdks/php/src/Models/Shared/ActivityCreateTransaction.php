@@ -12,9 +12,9 @@ namespace formance\stack\Models\Shared;
 class ActivityCreateTransaction
 {
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\PostTransaction')]
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\OrchestrationPostTransaction')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?PostTransaction $data = null;
+    public ?OrchestrationPostTransaction $data = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('ledger')]
     #[\JMS\Serializer\Annotation\Type('string')]

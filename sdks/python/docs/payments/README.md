@@ -56,7 +56,7 @@ req = operations.ConnectorsTransferRequest(
         destination='acct_1Gqj58KZcSIg2N2q',
         source='acct_1Gqj58KZcSIg2N2q',
     ),
-    connector=shared.Connector.CURRENCY_CLOUD,
+    connector=shared.Connector.WISE,
 )
 
 res = s.payments.connectors_transfer(req)
@@ -82,12 +82,12 @@ s = sdk.SDK(
 )
 
 req = shared.BankAccountRequest(
-    account_number='voluptates',
-    connector_id='quasi',
+    account_number='consequatur',
+    connector_id='est',
     country='GB',
-    iban='repudiandae',
+    iban='quibusdam',
     name='My account',
-    swift_bic_code='sint',
+    swift_bic_code='explicabo',
 )
 
 res = s.payments.create_bank_account(req)
@@ -114,15 +114,15 @@ s = sdk.SDK(
 )
 
 req = shared.TransferInitiationRequest(
-    amount=83112,
+    amount=647174,
     asset='USD',
-    connector_id='itaque',
-    description='incidunt',
-    destination_account_id='enim',
-    provider=shared.Connector.STRIPE,
+    connector_id='distinctio',
+    description='quibusdam',
+    destination_account_id='labore',
+    provider=shared.Connector.WISE,
     reference='XXX',
-    scheduled_at=dateutil.parser.isoparse('2021-04-26T02:10:00.226Z'),
-    source_account_id='explicabo',
+    scheduled_at=dateutil.parser.isoparse('2022-08-08T19:05:24.174Z'),
+    source_account_id='cupiditate',
     type=shared.TransferInitiationRequestType.PAYOUT,
     validated=False,
 )
@@ -150,7 +150,7 @@ s = sdk.SDK(
 )
 
 req = operations.DeleteTransferInitiationRequest(
-    transfer_id='distinctio',
+    transfer_id='perferendis',
 )
 
 res = s.payments.delete_transfer_initiation(req)
@@ -177,18 +177,18 @@ s = sdk.SDK(
 )
 
 req = operations.GetAccountBalancesRequest(
-    account_id='quibusdam',
-    asset='labore',
+    account_id='magni',
+    asset='assumenda',
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    from_=dateutil.parser.isoparse('2022-10-26T03:14:36.345Z'),
-    limit=397821,
-    page_size=586513,
+    from_=dateutil.parser.isoparse('2022-12-30T06:52:02.282Z'),
+    limit=146441,
+    page_size=677817,
     sort=[
-        'perferendis',
-        'magni',
-        'assumenda',
+        'tempora',
+        'facilis',
+        'tempore',
     ],
-    to=dateutil.parser.isoparse('2022-12-30T06:52:02.282Z'),
+    to=dateutil.parser.isoparse('2022-01-14T19:13:42.009Z'),
 )
 
 res = s.payments.get_account_balances(req)
@@ -214,7 +214,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetBankAccountRequest(
-    bank_account_id='fugit',
+    bank_account_id='eum',
 )
 
 res = s.payments.get_bank_account(req)
@@ -242,8 +242,8 @@ s = sdk.SDK(
 )
 
 req = operations.GetConnectorTaskRequest(
-    connector=shared.Connector.BANKING_CIRCLE,
-    task_id='excepturi',
+    connector=shared.Connector.DUMMY_PAY,
+    task_id='eligendi',
 )
 
 res = s.payments.get_connector_task(req)
@@ -269,9 +269,9 @@ s = sdk.SDK(
 )
 
 req = operations.GetConnectorTaskV1Request(
-    connector=shared.Connector.WISE,
-    connector_id='facilis',
-    task_id='tempore',
+    connector=shared.Connector.CURRENCY_CLOUD,
+    connector_id='aliquid',
+    task_id='provident',
 )
 
 res = s.payments.get_connector_task_v1(req)
@@ -297,7 +297,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetPaymentRequest(
-    payment_id='labore',
+    payment_id='necessitatibus',
 )
 
 res = s.payments.get_payment(req)
@@ -323,7 +323,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetTransferInitiationRequest(
-    transfer_id='delectus',
+    transfer_id='sint',
 )
 
 res = s.payments.get_transfer_initiation(req)
@@ -349,12 +349,15 @@ s = sdk.SDK(
 )
 
 req = operations.InstallConnectorRequest(
-    request_body=shared.ModulrConfig(
-        api_key='XXX',
-        api_secret='XXX',
+    request_body=shared.BankingCircleConfig(
+        authorization_endpoint='XXX',
         endpoint='XXX',
-        name='My Modulr Account',
+        name='My Banking Circle Account',
+        password='XXX',
         polling_period='60s',
+        user_certificate='XXX',
+        user_certificate_key='XXX',
+        username='XXX',
     ),
     connector=shared.Connector.DUMMY_PAY,
 )
@@ -406,11 +409,12 @@ s = sdk.SDK(
 
 req = operations.ListBankAccountsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=756107,
+    page_size=891555,
     sort=[
-        'aliquid',
-        'provident',
-        'necessitatibus',
+        'dolorum',
+        'in',
+        'in',
+        'illum',
     ],
 )
 
@@ -462,9 +466,9 @@ s = sdk.SDK(
 )
 
 req = operations.ListConnectorTasksRequest(
-    connector=shared.Connector.CURRENCY_CLOUD,
+    connector=shared.Connector.MONEYCORP,
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=638921,
+    page_size=699479,
 )
 
 res = s.payments.list_connector_tasks(req)
@@ -490,10 +494,10 @@ s = sdk.SDK(
 )
 
 req = operations.ListConnectorTasksV1Request(
-    connector=shared.Connector.DUMMY_PAY,
-    connector_id='debitis',
+    connector=shared.Connector.STRIPE,
+    connector_id='magnam',
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=952749,
+    page_size=767024,
 )
 
 res = s.payments.list_connector_tasks_v1(req)
@@ -520,10 +524,10 @@ s = sdk.SDK(
 
 req = operations.ListPaymentsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=680056,
+    page_size=813798,
     sort=[
-        'in',
-        'illum',
+        'aliquid',
+        'laborum',
     ],
 )
 
@@ -551,10 +555,12 @@ s = sdk.SDK(
 
 req = operations.ListTransferInitiationsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=978571,
-    query='rerum',
+    page_size=881104,
+    query='non',
     sort=[
-        'magnam',
+        'enim',
+        'accusamus',
+        'delectus',
     ],
 )
 
@@ -581,7 +587,7 @@ s = sdk.SDK(
 )
 
 req = operations.PaymentsgetAccountRequest(
-    account_id='cumque',
+    account_id='quidem',
 )
 
 res = s.payments.paymentsget_account(req)
@@ -631,10 +637,11 @@ s = sdk.SDK(
 
 req = operations.PaymentslistAccountsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=813798,
+    page_size=588465,
     sort=[
-        'aliquid',
-        'laborum',
+        'id',
+        'blanditiis',
+        'deleniti',
     ],
 )
 
@@ -690,7 +697,7 @@ s = sdk.SDK(
 
 req = operations.ReadConnectorConfigV1Request(
     connector=shared.Connector.DUMMY_PAY,
-    connector_id='occaecati',
+    connector_id='deserunt',
 )
 
 res = s.payments.read_connector_config_v1(req)
@@ -720,7 +727,7 @@ s = sdk.SDK(
 )
 
 req = operations.ResetConnectorRequest(
-    connector=shared.Connector.WISE,
+    connector=shared.Connector.MODULR,
 )
 
 res = s.payments.reset_connector(req)
@@ -748,8 +755,8 @@ s = sdk.SDK(
 )
 
 req = operations.ResetConnectorV1Request(
-    connector=shared.Connector.MONEYCORP,
-    connector_id='delectus',
+    connector=shared.Connector.MODULR,
+    connector_id='natus',
 )
 
 res = s.payments.reset_connector_v1(req)
@@ -775,7 +782,7 @@ s = sdk.SDK(
 )
 
 req = operations.RetryTransferInitiationRequest(
-    transfer_id='quidem',
+    transfer_id='omnis',
 )
 
 res = s.payments.retry_transfer_initiation(req)
@@ -802,9 +809,9 @@ s = sdk.SDK(
 
 req = operations.UdpateTransferInitiationStatusRequest(
     update_transfer_initiation_status_request=shared.UpdateTransferInitiationStatusRequest(
-        status=shared.UpdateTransferInitiationStatusRequestStatus.FAILED,
+        status=shared.UpdateTransferInitiationStatusRequestStatus.PROCESSED,
     ),
-    transfer_id='nam',
+    transfer_id='perferendis',
 )
 
 res = s.payments.udpate_transfer_initiation_status(req)
@@ -832,7 +839,7 @@ s = sdk.SDK(
 )
 
 req = operations.UninstallConnectorRequest(
-    connector=shared.Connector.BANKING_CIRCLE,
+    connector=shared.Connector.MODULR,
 )
 
 res = s.payments.uninstall_connector(req)
@@ -858,8 +865,8 @@ s = sdk.SDK(
 )
 
 req = operations.UninstallConnectorV1Request(
-    connector=shared.Connector.CURRENCY_CLOUD,
-    connector_id='deleniti',
+    connector=shared.Connector.WISE,
+    connector_id='distinctio',
 )
 
 res = s.payments.uninstall_connector_v1(req)
@@ -886,9 +893,9 @@ s = sdk.SDK(
 
 req = operations.UpdateMetadataRequest(
     payment_metadata=shared.PaymentMetadata(
-        key='sapiente',
+        key='id',
     ),
-    payment_id='amet',
+    payment_id='labore',
 )
 
 res = s.payments.update_metadata(req)

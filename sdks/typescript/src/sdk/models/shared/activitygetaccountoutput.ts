@@ -3,12 +3,12 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { AccountWithVolumesAndBalances } from "./accountwithvolumesandbalances";
+import { OrchestrationAccount } from "./orchestrationaccount";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityGetAccountOutput extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "data" })
-  @Type(() => AccountWithVolumesAndBalances)
-  data: AccountWithVolumesAndBalances;
+  @Type(() => OrchestrationAccount)
+  data: OrchestrationAccount;
 }

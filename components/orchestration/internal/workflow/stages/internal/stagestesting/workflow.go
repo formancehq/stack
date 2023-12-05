@@ -29,6 +29,8 @@ type WorkflowTestCase[T stages.Stage] struct {
 
 func RunWorkflowTest[T stages.Stage](t *testing.T, testCase WorkflowTestCase[T]) {
 	t.Run(testCase.Name, func(t *testing.T) {
+		t.Parallel()
+
 		testSuite := &testsuite.WorkflowTestSuite{}
 
 		env := testSuite.NewTestWorkflowEnvironment()

@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: monopod-latest
 spec:
-    clusterIP: 10.0.0.12
+    clusterIP: 10.0.0.62
     clusterIPs:
-        - 10.0.0.12
+        - 10.0.0.62
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

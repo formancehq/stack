@@ -96,15 +96,20 @@ func main() {
 ### [Orchestration](docs/orchestration/README.md)
 
 * [CancelEvent](docs/orchestration/README.md#cancelevent) - Cancel a running workflow
+* [CreateTrigger](docs/orchestration/README.md#createtrigger) - Create trigger
 * [CreateWorkflow](docs/orchestration/README.md#createworkflow) - Create workflow
+* [DeleteTrigger](docs/orchestration/README.md#deletetrigger) - Delete trigger
 * [DeleteWorkflow](docs/orchestration/README.md#deleteworkflow) - Delete a flow by id
 * [GetInstance](docs/orchestration/README.md#getinstance) - Get a workflow instance by id
 * [GetInstanceHistory](docs/orchestration/README.md#getinstancehistory) - Get a workflow instance history by id
 * [GetInstanceStageHistory](docs/orchestration/README.md#getinstancestagehistory) - Get a workflow instance stage history
 * [GetWorkflow](docs/orchestration/README.md#getworkflow) - Get a flow by id
 * [ListInstances](docs/orchestration/README.md#listinstances) - List instances of a workflow
+* [ListTriggers](docs/orchestration/README.md#listtriggers) - List triggers
+* [ListTriggersOccurrences](docs/orchestration/README.md#listtriggersoccurrences) - List triggers occurrences
 * [ListWorkflows](docs/orchestration/README.md#listworkflows) - List registered workflows
 * [OrchestrationgetServerInfo](docs/orchestration/README.md#orchestrationgetserverinfo) - Get server info
+* [ReadTrigger](docs/orchestration/README.md#readtrigger) - Read trigger
 * [RunWorkflow](docs/orchestration/README.md#runworkflow) - Run workflow
 * [SendEvent](docs/orchestration/README.md#sendevent) - Send an event to a running workflow
 

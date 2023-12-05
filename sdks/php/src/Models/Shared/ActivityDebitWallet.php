@@ -12,9 +12,9 @@ namespace formance\stack\Models\Shared;
 class ActivityDebitWallet
 {
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\DebitWalletRequest')]
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\OrchestrationDebitWalletRequest')]
     #[\JMS\Serializer\Annotation\SkipWhenEmpty]
-    public ?DebitWalletRequest $data = null;
+    public ?OrchestrationDebitWalletRequest $data = null;
     
 	#[\JMS\Serializer\Annotation\SerializedName('id')]
     #[\JMS\Serializer\Annotation\Type('string')]

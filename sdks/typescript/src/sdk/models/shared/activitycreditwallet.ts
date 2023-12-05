@@ -3,14 +3,14 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { CreditWalletRequest } from "./creditwalletrequest";
+import { OrchestrationCreditWalletRequest } from "./orchestrationcreditwalletrequest";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityCreditWallet extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "data" })
-  @Type(() => CreditWalletRequest)
-  data?: CreditWalletRequest;
+  @Type(() => OrchestrationCreditWalletRequest)
+  data?: OrchestrationCreditWalletRequest;
 
   @SpeakeasyMetadata()
   @Expose({ name: "id" })

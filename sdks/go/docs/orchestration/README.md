@@ -3,15 +3,20 @@
 ### Available Operations
 
 * [CancelEvent](#cancelevent) - Cancel a running workflow
+* [CreateTrigger](#createtrigger) - Create trigger
 * [CreateWorkflow](#createworkflow) - Create workflow
+* [DeleteTrigger](#deletetrigger) - Delete trigger
 * [DeleteWorkflow](#deleteworkflow) - Delete a flow by id
 * [GetInstance](#getinstance) - Get a workflow instance by id
 * [GetInstanceHistory](#getinstancehistory) - Get a workflow instance history by id
 * [GetInstanceStageHistory](#getinstancestagehistory) - Get a workflow instance stage history
 * [GetWorkflow](#getworkflow) - Get a flow by id
 * [ListInstances](#listinstances) - List instances of a workflow
+* [ListTriggers](#listtriggers) - List triggers
+* [ListTriggersOccurrences](#listtriggersoccurrences) - List triggers occurrences
 * [ListWorkflows](#listworkflows) - List registered workflows
 * [OrchestrationgetServerInfo](#orchestrationgetserverinfo) - Get server info
+* [ReadTrigger](#readtrigger) - Read trigger
 * [RunWorkflow](#runworkflow) - Run workflow
 * [SendEvent](#sendevent) - Send an event to a running workflow
 
@@ -52,6 +57,48 @@ func main() {
 }
 ```
 
+## CreateTrigger
+
+Create trigger
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Orchestration.CreateTrigger(ctx, shared.TriggerData{
+        Event: "id",
+        Filter: formance.String("possimus"),
+        Vars: map[string]interface{}{
+            "quasi": "error",
+        },
+        WorkflowID: "temporibus",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.CreateTriggerResponse != nil {
+        // handle response
+    }
+}
+```
+
 ## CreateWorkflow
 
 Create a workflow
@@ -77,13 +124,9 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.CreateWorkflow(ctx, shared.CreateWorkflowRequest{
-        Name: formance.String("Miss Rufus Ankunding"),
+        Name: formance.String("Ryan Witting"),
         Stages: []map[string]interface{}{
             map[string]interface{}{
-                "reiciendis": "voluptatibus",
-            },
-            map[string]interface{}{
-                "nihil": "praesentium",
                 "voluptatibus": "ipsa",
                 "omnis": "voluptate",
                 "cum": "perferendis",
@@ -98,6 +141,43 @@ func main() {
     }
 
     if res.CreateWorkflowResponse != nil {
+        // handle response
+    }
+}
+```
+
+## DeleteTrigger
+
+Read trigger
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Orchestration.DeleteTrigger(ctx, operations.DeleteTriggerRequest{
+        TriggerID: "maiores",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
         // handle response
     }
 }
@@ -128,7 +208,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.DeleteWorkflow(ctx, operations.DeleteWorkflowRequest{
-        FlowID: "maiores",
+        FlowID: "dicta",
     })
     if err != nil {
         log.Fatal(err)
@@ -165,7 +245,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetInstance(ctx, operations.GetInstanceRequest{
-        InstanceID: "dicta",
+        InstanceID: "corporis",
     })
     if err != nil {
         log.Fatal(err)
@@ -202,7 +282,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetInstanceHistory(ctx, operations.GetInstanceHistoryRequest{
-        InstanceID: "corporis",
+        InstanceID: "dolore",
     })
     if err != nil {
         log.Fatal(err)
@@ -239,8 +319,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetInstanceStageHistory(ctx, operations.GetInstanceStageHistoryRequest{
-        InstanceID: "dolore",
-        Number: 480894,
+        InstanceID: "iusto",
+        Number: 118727,
     })
     if err != nil {
         log.Fatal(err)
@@ -277,7 +357,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Orchestration.GetWorkflow(ctx, operations.GetWorkflowRequest{
-        FlowID: "dicta",
+        FlowID: "harum",
     })
     if err != nil {
         log.Fatal(err)
@@ -315,13 +395,84 @@ func main() {
     ctx := context.Background()
     res, err := s.Orchestration.ListInstances(ctx, operations.ListInstancesRequest{
         Running: formance.Bool(false),
-        WorkflowID: formance.String("harum"),
+        WorkflowID: formance.String("enim"),
     })
     if err != nil {
         log.Fatal(err)
     }
 
     if res.ListRunsResponse != nil {
+        // handle response
+    }
+}
+```
+
+## ListTriggers
+
+List triggers
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Orchestration.ListTriggers(ctx)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.ListTriggersResponse != nil {
+        // handle response
+    }
+}
+```
+
+## ListTriggersOccurrences
+
+List triggers occurrences
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Orchestration.ListTriggersOccurrences(ctx, operations.ListTriggersOccurrencesRequest{
+        TriggerID: "accusamus",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.ListTriggersOccurrencesResponse != nil {
         // handle response
     }
 }
@@ -395,6 +546,43 @@ func main() {
 }
 ```
 
+## ReadTrigger
+
+Read trigger
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"context"
+	"log"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+)
+
+func main() {
+    s := formance.New(
+        formance.WithSecurity(shared.Security{
+            Authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Orchestration.ReadTrigger(ctx, operations.ReadTriggerRequest{
+        TriggerID: "commodi",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.ReadTriggerResponse != nil {
+        // handle response
+    }
+}
+```
+
 ## RunWorkflow
 
 Run workflow
@@ -421,11 +609,13 @@ func main() {
     ctx := context.Background()
     res, err := s.Orchestration.RunWorkflow(ctx, operations.RunWorkflowRequest{
         RequestBody: map[string]string{
-            "accusamus": "commodi",
-            "repudiandae": "quae",
+            "quae": "ipsum",
+            "quidem": "molestias",
+            "excepturi": "pariatur",
+            "modi": "praesentium",
         },
         Wait: formance.Bool(false),
-        WorkflowID: "ipsum",
+        WorkflowID: "rem",
     })
     if err != nil {
         log.Fatal(err)
@@ -463,9 +653,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Orchestration.SendEvent(ctx, operations.SendEventRequest{
         RequestBody: &operations.SendEventRequestBody{
-            Name: "Virgil Mante",
+            Name: "Carl Waelchi DVM",
         },
-        InstanceID: "praesentium",
+        InstanceID: "incidunt",
     })
     if err != nil {
         log.Fatal(err)

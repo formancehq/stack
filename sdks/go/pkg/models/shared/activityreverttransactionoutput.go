@@ -3,5 +3,5 @@
 package shared
 
 type ActivityRevertTransactionOutput struct {
-	Data Transaction `json:"data"`
+	Data *OrchestrationTransaction `json:"data,omitempty"`
 }

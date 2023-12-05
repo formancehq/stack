@@ -431,6 +431,14 @@ spec:
                       value: orchestration
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: BROKER
+                      value: kafka
+                    - name: PUBLISHER_KAFKA_ENABLED
+                      value: "true"
+                    - name: PUBLISHER_KAFKA_BROKER
+                      value: kafka:1234
+                    - name: TOPICS
+                      value: monopod-search-before-v0-7-0-ledger monopod-search-before-v0-7-0-payments
                   image: ghcr.io/formancehq/orchestration:latest
                   imagePullPolicy: Always
                   name: orchestration-worker
@@ -1016,8 +1024,8 @@ spec:
                   name: search-benthos-templates
 status:
     conditions:
-        - lastTransitionTime: "2023-08-11T09:21:36Z"
-          lastUpdateTime: "2023-08-11T09:21:36Z"
+        - lastTransitionTime: "2023-12-07T09:12:20Z"
+          lastUpdateTime: "2023-12-07T09:12:20Z"
           status: "True"
           type: Available
     observedGeneration: 1

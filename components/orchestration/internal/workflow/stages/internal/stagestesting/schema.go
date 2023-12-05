@@ -19,6 +19,8 @@ type SchemaTestCase struct {
 
 func TestSchema(t *testing.T, stageName string, testCase SchemaTestCase) {
 	t.Run(testCase.Name, func(t *testing.T) {
+		t.Parallel()
+
 		variables := testCase.Variables
 		if variables == nil {
 			variables = map[string]string{}

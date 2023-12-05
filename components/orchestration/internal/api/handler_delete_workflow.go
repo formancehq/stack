@@ -13,7 +13,7 @@ var (
 	ErrEmptyID = errors.New("ID is empty")
 )
 
-func deleteWorkflow(m *workflow.Manager) http.HandlerFunc {
+func deleteWorkflow(backend Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := workflowID(r)
 
@@ -23,7 +23,7 @@ func deleteWorkflow(m *workflow.Manager) http.HandlerFunc {
 			return
 		}
 
-		err = m.DeleteWorkflow(r.Context(), workflowID(r))
+		err = backend.DeleteWorkflow(r.Context(), workflowID(r))
 
 		if errors.Is(err, workflow.ErrWorkflowNotFound) {
 			api.NotFound(w)
