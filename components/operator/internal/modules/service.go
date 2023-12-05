@@ -294,6 +294,10 @@ type ExposeHTTP struct {
 	Name    string
 }
 
+type Topics struct {
+	Name string
+}
+
 type Path struct {
 	Path    string
 	Methods []string
@@ -327,7 +331,7 @@ type Service struct {
 	Secrets                 func(resolveContext ServiceInstallConfiguration) Secrets
 	Container               func(resolveContext ContainerResolutionConfiguration) Container
 	InitContainer           func(resolveContext ContainerResolutionConfiguration) []Container
-	NeedTopic               bool
+	Topics                  *Topics
 	Replicas                *int32
 
 	EnvPrefix string
@@ -366,7 +370,7 @@ func (r *serviceReconciler) prepare() {
 func (r *serviceReconciler) reconcile(ctx context.Context, config ServiceInstallConfiguration) error {
 
 	// TODO: Use a job
-	if r.Configuration.Spec.Broker.Nats != nil && r.service.NeedTopic {
+	if r.Configuration.Spec.Broker.Nats != nil && r.service.Topics != nil {
 		r.configureNats()
 	}
 

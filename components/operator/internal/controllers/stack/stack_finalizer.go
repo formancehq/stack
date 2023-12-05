@@ -152,8 +152,8 @@ func (f *StackFinalizer) retrieveModuleTopic() []string {
 		for _, v := range mod.Versions() {
 			services := v.Services(*f.reconcileConf)
 			for _, service := range services {
-				if service.NeedTopic {
-					subjectSet.Put(service.Name)
+				if service.Topics != nil {
+					subjectSet.Put(service.Topics.Name)
 					break
 				}
 			}
