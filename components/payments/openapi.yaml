@@ -1522,6 +1522,13 @@ components:
           type: string
         swiftBicCode:
           type: string
+        metadata:
+          $ref: '#/components/schemas/BankAccountMetadata'
+    BankAccountMetadata:
+      type: object
+      additionalProperties:
+        type: string
+      nullable: true
     Payment:
       type: object
       required:
@@ -1910,6 +1917,8 @@ components:
           type: string
         swiftBicCode:
           type: string
+        metadata:
+          $ref: '#/components/schemas/BankAccountMetadata'
     AddAccountToPoolRequest:
       type: object
       required:
