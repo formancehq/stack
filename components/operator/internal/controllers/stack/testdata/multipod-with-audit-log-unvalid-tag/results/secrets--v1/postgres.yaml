@@ -10,5 +10,5 @@ metadata:
     labels:
         stack.formance.cloud/copied-secret: "true"
     name: postgres
-    namespace: multipod-with-audit-log
+    namespace: multipod-with-audit-log-unvalid-tag
 type: Opaque

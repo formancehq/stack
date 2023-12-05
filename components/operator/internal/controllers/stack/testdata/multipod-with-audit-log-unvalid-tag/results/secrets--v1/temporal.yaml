@@ -10,5 +10,5 @@ metadata:
     labels:
         stack.formance.cloud/copied-secret: "true"
     name: temporal
-    namespace: multipod-with-audit-log
+    namespace: multipod-with-audit-log-unvalid-tag
 type: kubernetes.io/tls
