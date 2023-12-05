@@ -6,24 +6,25 @@ input:
 pipeline:
   processors:
   - log:
-      message: "receive message: ${! this }"
+      message: "receive audit message: ${! this.payload.id }"
   - switch_event_type:
       events:
       - label: AUDIT
         processors:
         - bloblang: |
-            meta id = "AUDIT-%s".format(this.payload.id)
-            meta action = "index"
-            
             root = {
-              "data": this.payload,
-              "indexed": {
-                "requestPath": this.payload.request.path,
-                "requestMethod": this.payload.request.method,
-                "responseStatusCode": this.payload.response.status_code,
+              "document": {
+                "data": this.payload,
+                "indexed": {
+                  "requestPath": this.payload.request.path,
+                  "requestMethod": this.payload.request.method,
+                  "responseStatusCode": this.payload.response.status_code,
+                },
+                "kind": "AUDIT",
+                "when": this.date
               },
-              "kind": "AUDIT",
-              "when": this.date
+              "action": "index",
+              "id": "AUDIT-%s".format(this.payload.id)
             }
 
 
