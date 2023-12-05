@@ -2,15 +2,16 @@ name: Default - Release
 on:
   push:
     tags:
-      - 'components/*/v*.*.*'
+      - '*/*/v*.*.*'
 
 jobs:
   Extract:
     name: Extract
     runs-on: "formance-runner"
     outputs:
+      type: ${{ steps.extract3.outputs.type }}
       service: ${{ steps.extract.outputs.service }}
-      version: ${{ steps.extract.outputs.version }}
+      version: ${{ steps.extract2.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,6 +25,9 @@ jobs:
       - name: Extract version name
         id: extract2
         run: echo "version=$(node .github/actions/extract-in-tag/version.js ${{ github.ref_name }})" >> $GITHUB_OUTPUT
+      - name: Extract type name
+        id: extract3
+        run: echo "type=$(node .github/actions/extract-in-tag/type.js ${{ github.ref_name }})" >> $GITHUB_OUTPUT
 
   Release:
     runs-on: "formance-runner"
@@ -41,7 +45,17 @@ jobs:
           registry: ghcr.io
           username: "NumaryBot"
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: "earthly --no-output --allow-privileged --secret GITHUB_TOKEN=$GITHUB_TOKEN --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY --secret FURY_TOKEN=$FURY_TOKEN --secret GORELEASER_KEY=$GORELEASER_KEY --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY +goreleaser --mode=release --component=${{ needs.Extract.outputs.service }}"
+      - run: >
+          earthly 
+          --no-output 
+          --allow-privileged 
+          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY 
+          --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY 
+          --secret GITHUB_TOKEN=$GITHUB_TOKEN 
+          --secret FURY_TOKEN=$FURY_TOKEN 
+          --secret GORELEASER_KEY=$GORELEASER_KEY
+          ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
+          +goreleaser --mode=release --type=${{ needs.Extract.outputs.type }} --component=${{ needs.Extract.outputs.service }}
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
