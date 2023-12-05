@@ -7,8 +7,9 @@ import (
 )
 
 type ShowStore struct {
-	Id    string `json:"id"`
-	Email string `json:"email"`
+	Id      string `json:"id"`
+	Email   string `json:"email"`
+	IsAdmin bool   `json:"is_admin"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -62,6 +63,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	c.store.Id = userResponse.Data.Id
 	c.store.Email = userResponse.Data.Email
+	c.store.IsAdmin = userResponse.Data.IsAdmin
 
 	return c, nil
 }

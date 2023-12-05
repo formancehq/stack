@@ -1282,8 +1282,12 @@ components:
         role:
           description: User role
           type: string
+        isAdmin:
+          description: Is the user an admin of the organization
+          type: boolean
       required:
       - id
+      - isAdmin
       type: object
       example: null
     CreateStackRequest_allOf:

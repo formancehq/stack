@@ -25,16 +25,19 @@ type User struct {
 	Id string `json:"id"`
 	// User role
 	Role *string `json:"role,omitempty"`
+	// Is the user an admin of the organization
+	IsAdmin bool `json:"isAdmin"`
 }
 
 // NewUser instantiates a new User object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUser(email string, id string) *User {
+func NewUser(email string, id string, isAdmin bool) *User {
 	this := User{}
 	this.Email = email
 	this.Id = id
+	this.IsAdmin = isAdmin
 	return &this
 }
 
@@ -158,6 +161,30 @@ func (o *User) SetRole(v string) {
 	o.Role = &v
 }
 
+// GetIsAdmin returns the IsAdmin field value
+func (o *User) GetIsAdmin() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.IsAdmin
+}
+
+// GetIsAdminOk returns a tuple with the IsAdmin field value
+// and a boolean to check if the value has been set.
+func (o *User) GetIsAdminOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.IsAdmin, true
+}
+
+// SetIsAdmin sets field value
+func (o *User) SetIsAdmin(v bool) {
+	o.IsAdmin = v
+}
+
 func (o User) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -176,6 +203,7 @@ func (o User) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Role) {
 		toSerialize["role"] = o.Role
 	}
+	toSerialize["isAdmin"] = o.IsAdmin
 	return toSerialize, nil
 }
 

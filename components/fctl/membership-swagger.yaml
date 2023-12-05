@@ -885,6 +885,7 @@ components:
       - type: object
         required:
         - id
+        - isAdmin
         properties:
           id:
             type: string
@@ -892,6 +893,9 @@ components:
           role:
             type: string
             description: User role
+          isAdmin:
+            type: boolean
+            description: Is the user an admin of the organization
     OrganizationArray:
       type: array
       items:

@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"github.com/formancehq/fctl/cmd/auth/users"
 	"github.com/formancehq/fctl/cmd/cloud/organizations/invitations"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -14,6 +15,7 @@ func NewCommand() *cobra.Command {
 			NewListCommand(),
 			NewCreateCommand(),
 			NewDeleteCommand(),
+			users.NewCommand(),
 			invitations.NewCommand(),
 		),
 	)

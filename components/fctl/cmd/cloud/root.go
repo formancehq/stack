@@ -4,7 +4,6 @@ import (
 	"github.com/formancehq/fctl/cmd/cloud/me"
 	"github.com/formancehq/fctl/cmd/cloud/organizations"
 	"github.com/formancehq/fctl/cmd/cloud/regions"
-	"github.com/formancehq/fctl/cmd/cloud/users"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +15,6 @@ func NewCommand() *cobra.Command {
 		fctl.WithChildCommands(
 			organizations.NewCommand(),
 			me.NewCommand(),
-			users.NewCommand(),
 			regions.NewCommand(),
 			NewGeneratePersonalTokenCommand(),
 		),

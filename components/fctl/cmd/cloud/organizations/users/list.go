@@ -8,8 +8,9 @@ import (
 )
 
 type User struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+	ID      string `json:"id"`
+	Email   string `json:"email"`
+	IsAdmin bool   `json:"is_admin"`
 }
 
 type ListStore struct {
@@ -68,6 +69,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return User{
 			i.Id,
 			i.Email,
+			i.IsAdmin,
 		}
 	})
 
@@ -80,10 +82,11 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return []string{
 			i.ID,
 			i.Email,
+			fctl.BoolToString(i.IsAdmin),
 		}
 	})
 
-	tableData := fctl.Prepend(usersRow, []string{"ID", "Email"})
+	tableData := fctl.Prepend(usersRow, []string{"ID", "Email", "IsAdmin"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
