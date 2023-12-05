@@ -1608,6 +1608,11 @@ components:
         key:
           type: string
       nullable: true
+    AccountMetadata:
+      type: object
+      additionalProperties:
+        type: string
+      nullable: true
     Pool:
       type: object
       required:
@@ -1679,7 +1684,7 @@ components:
         type:
           type: string
         metadata:
-          $ref: '#/components/schemas/PaymentMetadata'
+          $ref: '#/components/schemas/AccountMetadata'
         raw:
           type: object
           nullable: true
