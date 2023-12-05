@@ -56,7 +56,7 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE TABLE IF NOT EXISTS accounts.pool_accounts (
-						pool_id uuid NOT NULL DEFAULT gen_random_uuid(),
+						pool_id uuid NOT NULL,
 						account_id CHARACTER VARYING NOT NULL,
 						CONSTRAINT pool_accounts_pk PRIMARY KEY (pool_id, account_id)
 					);
@@ -95,6 +95,18 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					ALTER TYPE connector_provider ADD VALUE IF NOT EXISTS 'ADYEN';
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE accounts.pools ALTER COLUMN id SET DEFAULT gen_random_uuid();
 				`)
 				if err != nil {
 					return err

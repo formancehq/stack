@@ -48,6 +48,8 @@ func (s *Storage) AddAccountToPool(ctx context.Context, poolAccount *models.Pool
 func (s *Storage) RemoveAccountFromPool(ctx context.Context, poolAccount *models.PoolAccounts) error {
 	_, err := s.db.NewDelete().
 		Model(poolAccount).
+		Where("pool_id = ?", poolAccount.PoolID).
+		Where("account_id = ?", poolAccount.AccountID).
 		Exec(ctx)
 	if err != nil {
 		return e("failed to remove account from pool", err)
@@ -63,7 +65,7 @@ func (s *Storage) ListPools(ctx context.Context, pagination PaginatorQuery) ([]*
 		Model(&pools).
 		Relation("PoolAccounts")
 
-	query = pagination.apply(query, "pools.created_at")
+	query = pagination.apply(query, "pool.created_at")
 
 	err := query.Scan(ctx)
 	if err != nil {
@@ -94,7 +96,7 @@ func (s *Storage) ListPools(ctx context.Context, pagination PaginatorQuery) ([]*
 
 		query = s.db.NewSelect().Model(&pools)
 
-		hasPrevious, err = pagination.hasPrevious(ctx, query, "pools.created_at", firstReference)
+		hasPrevious, err = pagination.hasPrevious(ctx, query, "pool.created_at", firstReference)
 		if err != nil {
 			return nil, PaginationDetails{}, e("failed to check if there is a previous page", err)
 		}

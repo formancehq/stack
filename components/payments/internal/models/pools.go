@@ -17,7 +17,7 @@ type PoolAccounts struct {
 type Pool struct {
 	bun.BaseModel `bun:"accounts.pools"`
 
-	ID        uuid.UUID `bun:",pk,notnull"`
+	ID        uuid.UUID `bun:",pk,nullzero"`
 	Name      string
 	CreatedAt time.Time
 
