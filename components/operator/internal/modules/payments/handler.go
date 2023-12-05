@@ -326,8 +326,12 @@ func paymentsServicesSplitted(
 			Paths: []modules.Path{
 				{
 					Path:    "/payments",
-					Methods: []string{"GET", "PATCH"},
+					Methods: []string{"POST", "GET", "PATCH"},
 					Name:    "payments",
+				},
+				{
+					Path:    "/pools",
+					Methods: []string{"POST", "GET", "DELETE"},
 				},
 				{
 					Path:    "/accounts",
