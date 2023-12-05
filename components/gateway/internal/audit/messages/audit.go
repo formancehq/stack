@@ -1,10 +1,13 @@
 package messages
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
@@ -42,6 +45,7 @@ func NewHttpResponse(
 
 type Payload struct {
 	ID       string       `json:"id"`
+	Identity string       `json:"identity"`
 	Request  HttpRequest  `json:"request"`
 	Response HttpResponse `json:"response"`
 }
@@ -50,9 +54,33 @@ func NewAuditMessagePayload(
 	request HttpRequest,
 	response HttpResponse,
 ) publish.EventMessage {
+	identity := ""
+
+	if request.Header != nil {
+		tokenString := strings.Replace(strings.Replace(request.Header.Get("Authorization"), "Bearer ", "", 1), "bearer ", "", 1)
+		token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+		if err != nil {
+			_ = fmt.Errorf("error for Parse %s", err)
+		}
+		if token != nil {
+			if claims, ok := token.Claims.(jwt.MapClaims); ok {
+				identity = fmt.Sprint(claims["sub"])
+			} else {
+				fmt.Printf("error get claims JWT token: %s", err)
+				fmt.Printf("\n")
+			}
+		}
+
+		request.Header.Del("Authorization")
+	}
+
+	if request.Path == "/api/auth/oauth/token" {
+		response.Body = ""
+	}
 
 	payload := Payload{
 		ID:       uuid.New().String(),
+		Identity: identity,
 		Request:  request,
 		Response: response,
 	}

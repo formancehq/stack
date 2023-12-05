@@ -16,6 +16,7 @@ pipeline:
               "document": {
                 "data": this.payload,
                 "indexed": {
+                  "identity": this.payload.identity,
                   "requestPath": this.payload.request.path,
                   "requestMethod": this.payload.request.method,
                   "responseStatusCode": this.payload.response.status_code,
