@@ -12,16 +12,17 @@ import (
 )
 
 type accountResponse struct {
-	ID              string      `json:"id"`
-	Reference       string      `json:"reference"`
-	CreatedAt       time.Time   `json:"createdAt"`
-	ConnectorID     string      `json:"connectorID"`
-	Provider        string      `json:"provider"`
-	DefaultCurrency string      `json:"defaultCurrency"` // Deprecated: should be removed soon
-	DefaultAsset    string      `json:"defaultAsset"`
-	AccountName     string      `json:"accountName"`
-	Type            string      `json:"type"`
-	Raw             interface{} `json:"raw"`
+	ID              string            `json:"id"`
+	Reference       string            `json:"reference"`
+	CreatedAt       time.Time         `json:"createdAt"`
+	ConnectorID     string            `json:"connectorID"`
+	Provider        string            `json:"provider"`
+	DefaultCurrency string            `json:"defaultCurrency"` // Deprecated: should be removed soon
+	DefaultAsset    string            `json:"defaultAsset"`
+	AccountName     string            `json:"accountName"`
+	Type            string            `json:"type"`
+	Metadata        map[string]string `json:"metadata"`
+	Raw             interface{}       `json:"raw"`
 }
 
 func listAccountsHandler(b backend.Backend) http.HandlerFunc {
@@ -62,6 +63,14 @@ func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 
 			if ret[i].Connector != nil {
 				data[i].Provider = ret[i].Connector.Provider.String()
+			}
+
+			if ret[i].Metadata != nil {
+				metadata := make(map[string]string)
+				for k, v := range ret[i].Metadata {
+					metadata[k] = v
+				}
+				data[i].Metadata = metadata
 			}
 		}
 
@@ -112,6 +121,14 @@ func readAccountHandler(b backend.Backend) http.HandlerFunc {
 
 		if account.Connector != nil {
 			data.Provider = account.Connector.Provider.String()
+		}
+
+		if account.Metadata != nil {
+			metadata := make(map[string]string)
+			for k, v := range account.Metadata {
+				metadata[k] = v
+			}
+			data.Metadata = metadata
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[accountResponse]{
