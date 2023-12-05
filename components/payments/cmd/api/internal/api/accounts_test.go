@@ -154,6 +154,9 @@ func TestListAccounts(t *testing.T) {
 					CreatedAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 					Reference: "acc1",
 					Type:      models.AccountTypeInternal,
+					Metadata: map[string]string{
+						"foo": "bar",
+					},
 					Connector: &models.Connector{
 						Provider: models.ConnectorProviderDummyPay,
 					},
@@ -184,6 +187,7 @@ func TestListAccounts(t *testing.T) {
 					DefaultAsset:    listAccountsResponse[0].DefaultAsset.String(),
 					AccountName:     listAccountsResponse[0].AccountName,
 					Type:            listAccountsResponse[0].Type.String(),
+					Metadata:        listAccountsResponse[0].Metadata,
 				},
 				{
 					ID:              listAccountsResponse[1].ID.String(),
@@ -336,6 +340,9 @@ func TestGetAccount(t *testing.T) {
 					CreatedAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 					Reference: "acc1",
 					Type:      models.AccountTypeInternal,
+					Metadata: map[string]string{
+						"foo": "bar",
+					},
 					Connector: &models.Connector{
 						Provider: models.ConnectorProviderDummyPay,
 					},
@@ -350,6 +357,7 @@ func TestGetAccount(t *testing.T) {
 					DefaultCurrency: getAccountResponse.DefaultAsset.String(),
 					DefaultAsset:    getAccountResponse.DefaultAsset.String(),
 					AccountName:     getAccountResponse.AccountName,
+					Metadata:        getAccountResponse.Metadata,
 					Type:            getAccountResponse.Type.String(),
 				}
 			} else {
