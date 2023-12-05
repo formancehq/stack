@@ -1604,9 +1604,8 @@ components:
             type: boolean
     PaymentMetadata:
       type: object
-      properties:
-        key:
-          type: string
+      additionalProperties:
+        type: string
       nullable: true
     AccountMetadata:
       type: object
