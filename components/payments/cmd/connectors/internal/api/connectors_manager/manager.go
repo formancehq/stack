@@ -7,9 +7,9 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
-	"github.com/formancehq/payments/cmd/connectors/internal/messages"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/logging"

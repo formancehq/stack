@@ -40,7 +40,7 @@ func TestGetAccount(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{})
+	service := New(&MockStore{}, &MockPublisher{})
 
 	for _, tc := range testCases {
 		tc := tc

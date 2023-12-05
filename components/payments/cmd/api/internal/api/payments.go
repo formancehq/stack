@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
+	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
@@ -38,6 +39,61 @@ type paymentAdjustment struct {
 	Absolute bool                 `json:"absolute" bson:"absolute"`
 }
 
+func createPaymentHandler(b backend.Backend) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		var req service.CreatePaymentRequest
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			api.BadRequest(w, ErrMissingOrInvalidBody, err)
+			return
+		}
+
+		if err := req.Validate(); err != nil {
+			api.BadRequest(w, ErrValidation, err)
+			return
+		}
+
+		payment, err := b.GetService().CreatePayment(r.Context(), &req)
+		if err != nil {
+			handleServiceErrors(w, r, err)
+			return
+		}
+
+		data := paymentResponse{
+			ID:            payment.ID.String(),
+			Reference:     payment.Reference,
+			Type:          payment.Type.String(),
+			ConnectorID:   payment.ConnectorID.String(),
+			Provider:      payment.ConnectorID.Provider,
+			Status:        payment.Status,
+			InitialAmount: payment.Amount,
+			Scheme:        payment.Scheme,
+			Asset:         payment.Asset.String(),
+			CreatedAt:     payment.CreatedAt,
+			Raw:           payment.RawData,
+			Adjustments:   make([]paymentAdjustment, len(payment.Adjustments)),
+		}
+
+		if payment.SourceAccountID != nil {
+			data.SourceAccountID = payment.SourceAccountID.String()
+		}
+
+		if payment.DestinationAccountID != nil {
+			data.DestinationAccountID = payment.DestinationAccountID.String()
+		}
+
+		err = json.NewEncoder(w).Encode(api.BaseResponse[paymentResponse]{
+			Data: &data,
+		})
+		if err != nil {
+			api.InternalServerError(w, r, err)
+			return
+		}
+	}
+}
+
 func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -62,6 +118,7 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 				Reference:     ret[i].Reference,
 				Type:          ret[i].Type.String(),
 				ConnectorID:   ret[i].ConnectorID.String(),
+				Provider:      ret[i].Connector.Provider,
 				Status:        ret[i].Status,
 				InitialAmount: ret[i].Amount,
 				Scheme:        ret[i].Scheme,

@@ -52,6 +52,21 @@ func (mr *MockServiceMockRecorder) AddAccountToPool(ctx, poolID, req interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAccountToPool", reflect.TypeOf((*MockService)(nil).AddAccountToPool), ctx, poolID, req)
 }
 
+// CreatePayment mocks base method.
+func (m *MockService) CreatePayment(ctx context.Context, req *service.CreatePaymentRequest) (*models.Payment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePayment", ctx, req)
+	ret0, _ := ret[0].(*models.Payment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePayment indicates an expected call of CreatePayment.
+func (mr *MockServiceMockRecorder) CreatePayment(ctx, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePayment", reflect.TypeOf((*MockService)(nil).CreatePayment), ctx, req)
+}
+
 // CreatePool mocks base method.
 func (m *MockService) CreatePool(ctx context.Context, req *service.CreatePoolRequest) (*models.Pool, error) {
 	m.ctrl.T.Helper()

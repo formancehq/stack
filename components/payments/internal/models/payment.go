@@ -162,12 +162,87 @@ func (t PaymentType) String() string {
 	return string(t)
 }
 
+func PaymentTypeFromString(value string) (PaymentType, error) {
+	switch value {
+	case "PAY-IN":
+		return PaymentTypePayIn, nil
+	case "PAYOUT":
+		return PaymentTypePayOut, nil
+	case "TRANSFER":
+		return PaymentTypeTransfer, nil
+	case "OTHER":
+		return PaymentTypeOther, nil
+	default:
+		return "", errors.New("invalid payment type")
+	}
+}
+
 func (t PaymentStatus) String() string {
 	return string(t)
 }
 
+func PaymentStatusFromString(value string) (PaymentStatus, error) {
+	switch value {
+	case "PENDING":
+		return PaymentStatusPending, nil
+	case "SUCCEEDED":
+		return PaymentStatusSucceeded, nil
+	case "CANCELLED":
+		return PaymentStatusCancelled, nil
+	case "FAILED":
+		return PaymentStatusFailed, nil
+	case "OTHER":
+		return PaymentStatusOther, nil
+	default:
+		return "", errors.New("invalid payment status")
+	}
+}
+
 func (t PaymentScheme) String() string {
 	return string(t)
+}
+
+func PaymentSchemeFromString(value string) (PaymentScheme, error) {
+	switch strings.ToLower(value) {
+	case "unknown":
+		return PaymentSchemeUnknown, nil
+	case "other":
+		return PaymentSchemeOther, nil
+	case "visa":
+		return PaymentSchemeCardVisa, nil
+	case "mastercard":
+		return PaymentSchemeCardMasterCard, nil
+	case "amex":
+		return PaymentSchemeCardAmex, nil
+	case "diners":
+		return PaymentSchemeCardDiners, nil
+	case "discover":
+		return PaymentSchemeCardDiscover, nil
+	case "jcb":
+		return PaymentSchemeCardJCB, nil
+	case "unionpay":
+		return PaymentSchemeCardUnionPay, nil
+	case "sepa debit":
+		return PaymentSchemeSepaDebit, nil
+	case "sepa credit":
+		return PaymentSchemeSepaCredit, nil
+	case "sepa":
+		return PaymentSchemeSepa, nil
+	case "apple pay":
+		return PaymentSchemeApplePay, nil
+	case "google pay":
+		return PaymentSchemeGooglePay, nil
+	case "a2a":
+		return PaymentSchemeA2A, nil
+	case "ach debit":
+		return PaymentSchemeACHDebit, nil
+	case "ach":
+		return PaymentSchemeACH, nil
+	case "rtp":
+		return PaymentSchemeRTP, nil
+	default:
+		return "", errors.New("invalid payment scheme")
+	}
 }
 
 func (t Asset) String() string {

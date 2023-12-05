@@ -43,6 +43,7 @@ func httpRouter(
 
 	authGroup := subRouter.Name("authenticated").Subrouter()
 
+	authGroup.Path("/payments").Methods(http.MethodPost).Handler(createPaymentHandler(b))
 	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(b))
 	authGroup.Path("/payments/{paymentID}").Methods(http.MethodGet).Handler(readPaymentHandler(b))
 	authGroup.Path("/payments/{paymentID}/metadata").Methods(http.MethodPatch).Handler(updateMetadataHandler(b))

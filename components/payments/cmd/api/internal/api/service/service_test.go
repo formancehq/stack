@@ -5,16 +5,29 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 )
 
-type MockStore struct{}
+type MockStore struct {
+	isConnectorInstalled bool
+}
+
+func (m *MockStore) WithIsConnectorInstalled(isConnectorInstalled bool) *MockStore {
+	m.isConnectorInstalled = isConnectorInstalled
+	return m
+}
 
 func (m *MockStore) Ping() error {
 	return nil
 }
+
+func (m *MockStore) IsConnectorInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error) {
+	return m.isConnectorInstalled, nil
+}
+
 func (m *MockStore) ListBalances(ctx context.Context, query storage.BalanceQuery) ([]*models.Balance, storage.PaginationDetails, error) {
 	return nil, storage.PaginationDetails{}, nil
 }
@@ -48,6 +61,10 @@ func (m *MockStore) ListBankAccounts(ctx context.Context, pagination storage.Pag
 
 func (m *MockStore) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error) {
 	return nil, nil
+}
+
+func (m *MockStore) UpsertPayments(ctx context.Context, payments []*models.Payment) error {
+	return nil
 }
 
 func (m *MockStore) ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error) {
@@ -120,5 +137,22 @@ func (m *MockStore) GetPool(ctx context.Context, poolID uuid.UUID) (*models.Pool
 }
 
 func (m *MockStore) DeletePool(ctx context.Context, poolID uuid.UUID) error {
+	return nil
+}
+
+type MockPublisher struct {
+	errorToSend error
+}
+
+func (m *MockPublisher) WithError(err error) *MockPublisher {
+	m.errorToSend = err
+	return m
+}
+
+func (m *MockPublisher) Publish(topic string, messages ...*message.Message) error {
+	return m.errorToSend
+}
+
+func (m *MockPublisher) Close() error {
 	return nil
 }
