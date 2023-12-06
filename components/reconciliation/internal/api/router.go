@@ -1,0 +1,34 @@
+package api
+
+import (
+	"net/http"
+
+	"github.com/formancehq/reconciliation/internal/api/backend"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/go-chi/chi/v5"
+	"github.com/riandyrn/otelchi"
+)
+
+func newRouter(
+	b backend.Backend,
+	serviceInfo api.ServiceInfo,
+	healthController *health.HealthController) *chi.Mux {
+	r := chi.NewRouter()
+	r.Use(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			handler.ServeHTTP(w, r)
+		})
+	})
+	r.Get("/_healthcheck", healthController.Check)
+	r.Get("/_info", api.InfoHandler(serviceInfo))
+
+	r.Group(func(r chi.Router) {
+		r.Use(otelchi.Middleware("reconciliation"))
+
+		r.Post("/reconciliation", reconciliationHandler(b))
+	})
+
+	return r
+}
