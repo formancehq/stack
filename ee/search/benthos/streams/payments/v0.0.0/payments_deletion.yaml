@@ -24,6 +24,11 @@ pipeline:
                           },
                           {
                             "match": {
+                              "kind": "PAYMENT_POOL"
+                            }
+                          },
+                          {
+                            "match": {
                               "kind": "PAYMENT_ACCOUNT"
                             }
                           },
@@ -49,6 +54,33 @@ pipeline:
                       "match": {
                         "indexed.connectorId": this.payload.connectorId
                       }
+                    },
+                    {
+                      "match": {
+                        "stack": env("STACK")
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+
+      - label: DELETED_POOL
+        processors:
+        - bloblang: |
+            root = {
+              "query": {
+                "bool": {
+                  "must": [
+                    {
+                      "match": {
+                        "kind": "PAYMENT_POOL"
+                      }
+                    },
+                    {
+                      "match": {
+                        "indexed.id": this.payload.id
+                      } 
                     },
                     {
                       "match": {
