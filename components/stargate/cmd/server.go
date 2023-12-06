@@ -34,7 +34,6 @@ func newServer() *cobra.Command {
 		Short:        "Launch server",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publish.InitNatsCliFlags(cmd)
 			return app.New(cmd.OutOrStdout(), resolveServerOptions(
 				viper.GetViper(),
 			)...).Run(cmd.Context())
