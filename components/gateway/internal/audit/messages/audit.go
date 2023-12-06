@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 const (
@@ -51,6 +52,7 @@ type Payload struct {
 }
 
 func NewAuditMessagePayload(
+	logger *zap.Logger,
 	request HttpRequest,
 	response HttpResponse,
 ) publish.EventMessage {
@@ -60,7 +62,7 @@ func NewAuditMessagePayload(
 		tokenString := strings.Replace(strings.Replace(request.Header.Get("Authorization"), "Bearer ", "", 1), "bearer ", "", 1)
 		token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
 		if err != nil {
-			_ = fmt.Errorf("error for Parse %s", err)
+			logger.Error(fmt.Sprintf("error for Parse %s", err))
 		}
 		if token != nil {
 			if claims, ok := token.Claims.(jwt.MapClaims); ok {
