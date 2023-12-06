@@ -29,7 +29,7 @@ spec:
   broker:
     nats:
       replicas: 1
-      hostname: nats.nats.svc.cluster.local
+      hostname: nats.default.svc.cluster.local
   services:
     gateway:
       enableAuditPlugin: true
