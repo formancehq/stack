@@ -8,7 +8,6 @@ import (
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/reconciliation/internal/api"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -19,17 +18,6 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
-
-func healthCheckModule() fx.Option {
-	return fx.Options(
-		health.Module(),
-		health.ProvideHealthCheck(func() health.NamedCheck {
-			return health.NewNamedCheck("default", health.CheckFn(func(ctx context.Context) error {
-				return nil
-			}))
-		}),
-	)
-}
 
 func stackClientModule() fx.Option {
 	return fx.Options(

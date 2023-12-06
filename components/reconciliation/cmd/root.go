@@ -2,14 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
 
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"go.uber.org/fx"
 )
 
 var (
@@ -57,11 +53,4 @@ func Execute() {
 	if err := NewRootCommand().Execute(); err != nil {
 		exitWithCode(1, err)
 	}
-}
-
-func commonOptions(output io.Writer) fx.Option {
-	return fx.Options(
-		otlptraces.CLITracesModule(viper.GetViper()),
-		// storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag), output),
-	)
 }
