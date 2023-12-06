@@ -216,115 +216,7 @@ data:
 
         output:
           resource: elasticsearch
-    payments_deletion.yaml: |
-        input:
-          event_bus:
-            topic: payments
-            consumer_group: search-payments-resets
-
-        pipeline:
-          processors:
-          - switch_event_type:
-              events:
-              - label: CONNECTOR_RESET
-                processors:
-                - bloblang: |
-                    root = {
-                      "query": {
-                        "bool": {
-                          "must": [
-                            {
-                              "bool": {
-                                "should": [
-                                  {
-                                    "match": {
-                                      "kind": "PAYMENT"
-                                    }
-                                  },
-                                  {
-                                    "match": {
-                                      "kind": "PAYMENT_ACCOUNT"
-                                    }
-                                  },
-                                  {
-                                    "match": {
-                                      "kind": "PAYMENT_BALANCE"
-                                    }
-                                  },
-                                  {
-                                    "match": {
-                                      "kind": "PAYMENT_BANK_ACCOUNT"
-                                    }
-                                  },
-                                  {
-                                    "match": {
-                                      "kind": "PAYMENT_TRANSFER_INITIATION"
-                                    }
-                                  }
-                                ]
-                              }
-                            },
-                            {
-                              "match": {
-                                "indexed.connectorId": this.payload.connectorId
-                              }
-                            },
-                            {
-                              "match": {
-                                "stack": env("STACK")
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-
-              - label: DELETED_TRANSFER_INITIATION
-                processors:
-                - bloblang: |
-                    root = {
-                      "query": {
-                        "bool": {
-                          "must": [
-                            {
-                              "match": {
-                                "kind": "PAYMENT_TRANSFER_INITIATION"
-                              }
-                            },
-                            {
-                              "should": [
-                                {
-                                  "match": {
-                                    "indexed.id": this.payload.id
-                                  }
-                                },
-                                {
-                                  "match": {
-                                    "indexed.provider": this.payload.provider
-                                  }
-                                }
-                              ]
-                            },
-                            {
-                              "match": {
-                                "stack": env("STACK")
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-
-        output:
-          http_client:
-            url: ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}/_delete_by_query
-            verb: POST
-            headers:
-              Content-Type: application/json
-            basic_auth:
-              enabled: ${BASIC_AUTH_ENABLED}
-              username: ${BASIC_AUTH_USERNAME}
-              password: ${BASIC_AUTH_PASSWORD}
+    payments_deletion.yaml: "input:\n  event_bus:\n    topic: payments\n    consumer_group: search-payments-resets\n\npipeline:\n  processors:\n  - switch_event_type:\n      events:\n      - label: CONNECTOR_RESET\n        processors:\n        - bloblang: |\n            root = {\n              \"query\": {\n                \"bool\": {\n                  \"must\": [\n                    {\n                      \"bool\": {\n                        \"should\": [\n                          {\n                            \"match\": {\n                              \"kind\": \"PAYMENT\"\n                            }\n                          },\n                          {\n                            \"match\": {\n                              \"kind\": \"PAYMENT_POOL\"\n                            }\n                          },\n                          {\n                            \"match\": {\n                              \"kind\": \"PAYMENT_ACCOUNT\"\n                            }\n                          },\n                          {\n                            \"match\": {\n                              \"kind\": \"PAYMENT_BALANCE\"\n                            }\n                          },\n                          {\n                            \"match\": {\n                              \"kind\": \"PAYMENT_BANK_ACCOUNT\"\n                            }\n                          },\n                          {\n                            \"match\": {\n                              \"kind\": \"PAYMENT_TRANSFER_INITIATION\"\n                            }\n                          }\n                        ]\n                      }\n                    },\n                    {\n                      \"match\": {\n                        \"indexed.connectorId\": this.payload.connectorId\n                      }\n                    },\n                    {\n                      \"match\": {\n                        \"stack\": env(\"STACK\")\n                      }\n                    }\n                  ]\n                }\n              }\n            }\n\n      - label: DELETED_POOL\n        processors:\n        - bloblang: |\n            root = {\n              \"query\": {\n                \"bool\": {\n                  \"must\": [\n                    {\n                      \"match\": {\n                        \"kind\": \"PAYMENT_POOL\"\n                      }\n                    },\n                    {\n                      \"match\": {\n                        \"indexed.id\": this.payload.id\n                      } \n                    },\n                    {\n                      \"match\": {\n                        \"stack\": env(\"STACK\")\n                      }\n                    }\n                  ]\n                }\n              }\n            }\n\n      - label: DELETED_TRANSFER_INITIATION\n        processors:\n        - bloblang: |\n            root = {\n              \"query\": {\n                \"bool\": {\n                  \"must\": [\n                    {\n                      \"match\": {\n                        \"kind\": \"PAYMENT_TRANSFER_INITIATION\"\n                      }\n                    },\n                    {\n                      \"should\": [\n                        {\n                          \"match\": {\n                            \"indexed.id\": this.payload.id\n                          }\n                        },\n                        {\n                          \"match\": {\n                            \"indexed.provider\": this.payload.provider\n                          }\n                        }\n                      ]\n                    },\n                    {\n                      \"match\": {\n                        \"stack\": env(\"STACK\")\n                      }\n                    }\n                  ]\n                }\n              }\n            }\n\noutput:\n  http_client:\n    url: ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}/_delete_by_query\n    verb: POST\n    headers:\n      Content-Type: application/json\n    basic_auth:\n      enabled: ${BASIC_AUTH_ENABLED}\n      username: ${BASIC_AUTH_USERNAME}\n      password: ${BASIC_AUTH_PASSWORD}\n"
     payments_ingestion.yaml: |
         input:
           event_bus:
@@ -425,6 +317,24 @@ data:
                         },
                         "action": "index",
                         "id": "PAYMENT-BANK-ACCOUNT-%s".format(this.payload.id)
+                      }
+              - label: SAVED_POOL
+                processors:
+                - bloblang: |
+                      root = {
+                        "document": {
+                            "data": this.payload,
+                            "indexed": {
+                                "id": this.payload.id,
+                                "createdAt": this.payload.createdAt,
+                                "name": this.payload.name,
+                                "accountIDs": this.payload.accountIDs,
+                            },
+                            "kind": "PAYMENT_POOL",
+                            "when": this.date
+                        },
+                        "action": "index",
+                        "id": "PAYMENT-POOL-%s".format(this.payload.id)
                       }
               - label: SAVED_TRANSFER_INITIATION
                 processors:
