@@ -6,7 +6,10 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
@@ -57,6 +60,12 @@ func (s *Service) CreatePool(
 	}
 	pool.PoolAccounts = poolAccounts
 
+	err = s.publisher.Publish(events.TopicPayments,
+		publish.NewMessage(ctx, messages.NewEventSavedPool(pool)))
+	if err != nil {
+		return nil, errors.Wrap(err, "publishing message")
+	}
+
 	return pool, nil
 }
 
@@ -87,10 +96,25 @@ func (s *Service) AddAccountToPool(
 		return errors.Wrap(ErrValidation, err.Error())
 	}
 
-	return newStorageError(s.store.AddAccountToPool(ctx, &models.PoolAccounts{
+	if err := s.store.AddAccountToPool(ctx, &models.PoolAccounts{
 		PoolID:    id,
 		AccountID: *aID,
-	}), "adding account to pool")
+	}); err != nil {
+		return newStorageError(err, "adding account to pool")
+	}
+
+	pool, err := s.store.GetPool(ctx, id)
+	if err != nil {
+		return newStorageError(err, "getting pool")
+	}
+
+	err = s.publisher.Publish(events.TopicPayments,
+		publish.NewMessage(ctx, messages.NewEventSavedPool(pool)))
+	if err != nil {
+		return errors.Wrap(err, "publishing message")
+	}
+
+	return nil
 }
 
 func (s *Service) RemoveAccountFromPool(
@@ -108,10 +132,25 @@ func (s *Service) RemoveAccountFromPool(
 		return errors.Wrap(ErrValidation, err.Error())
 	}
 
-	return newStorageError(s.store.RemoveAccountFromPool(ctx, &models.PoolAccounts{
+	if err := s.store.RemoveAccountFromPool(ctx, &models.PoolAccounts{
 		PoolID:    id,
 		AccountID: *aID,
-	}), "removing account from pool")
+	}); err != nil {
+		return newStorageError(err, "removing account from pool")
+	}
+
+	pool, err := s.store.GetPool(ctx, id)
+	if err != nil {
+		return newStorageError(err, "getting pool")
+	}
+
+	err = s.publisher.Publish(events.TopicPayments,
+		publish.NewMessage(ctx, messages.NewEventSavedPool(pool)))
+	if err != nil {
+		return errors.Wrap(err, "publishing message")
+	}
+
+	return nil
 }
 
 func (s *Service) ListPools(
@@ -204,5 +243,15 @@ func (s *Service) DeletePool(
 		return errors.Wrap(ErrValidation, err.Error())
 	}
 
-	return newStorageError(s.store.DeletePool(ctx, id), "deleting pool")
+	if err := s.store.DeletePool(ctx, id); err != nil {
+		return newStorageError(err, "deleting pool")
+	}
+
+	err = s.publisher.Publish(events.TopicPayments,
+		publish.NewMessage(ctx, messages.NewEventDeletePool(id)))
+	if err != nil {
+		return errors.Wrap(err, "publishing message")
+	}
+
+	return nil
 }
