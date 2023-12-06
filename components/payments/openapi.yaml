@@ -693,7 +693,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PoolBalance'
+            $ref: '#/components/schemas/PoolBalancesResponse'
     TransferInitiations:
       description: OK
       content:

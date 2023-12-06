@@ -100,12 +100,13 @@ type StackStargateConfig struct {
 
 type StackServicesSpec struct {
 	// +optional
-	Ledger        StackServicePropertiesSpec `json:"ledger,omitempty"`
-	Orchestration StackServicePropertiesSpec `json:"orchestration,omitempty"`
-	Payments      StackServicePropertiesSpec `json:"payments,omitempty"`
-	Wallets       StackServicePropertiesSpec `json:"wallets,omitempty"`
-	Webhooks      StackServicePropertiesSpec `json:"webhooks,omitempty"`
-	Control       StackServicePropertiesSpec `json:"control,omitempty"`
+	Ledger         StackServicePropertiesSpec `json:"ledger,omitempty"`
+	Orchestration  StackServicePropertiesSpec `json:"orchestration,omitempty"`
+	Reconciliation StackServicePropertiesSpec `json:"reconciliation,omitempty"`
+	Payments       StackServicePropertiesSpec `json:"payments,omitempty"`
+	Wallets        StackServicePropertiesSpec `json:"wallets,omitempty"`
+	Webhooks       StackServicePropertiesSpec `json:"webhooks,omitempty"`
+	Control        StackServicePropertiesSpec `json:"control,omitempty"`
 }
 
 type StackServicePropertiesSpec struct {

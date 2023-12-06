@@ -1950,6 +1950,11 @@ spec:
                       disabled:
                         type: boolean
                     type: object
+                  reconciliation:
+                    properties:
+                      disabled:
+                        type: boolean
+                    type: object
                   wallets:
                     properties:
                       disabled:

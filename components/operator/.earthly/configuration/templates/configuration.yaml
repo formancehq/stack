@@ -54,6 +54,8 @@ spec:
         host: postgres-postgresql.formance.svc.cluster.local
         port: 5432
         disableSSLMode: true
+    reconciliation:
+      debug: true
     payments:
       postgres:
         credentialsFromSecret: postgres

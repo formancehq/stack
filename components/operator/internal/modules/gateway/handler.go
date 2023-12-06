@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/operator/internal/modules/ledger"
 	"github.com/formancehq/operator/internal/modules/orchestration"
 	"github.com/formancehq/operator/internal/modules/payments"
+	"github.com/formancehq/operator/internal/modules/reconciliation"
 	"github.com/formancehq/operator/internal/modules/search"
 	"github.com/formancehq/operator/internal/modules/wallets"
 	"github.com/formancehq/operator/internal/modules/webhooks"
@@ -36,6 +37,7 @@ func (g module) DependsOn() []modules.Module {
 		control.Module,
 		ledger.Module,
 		orchestration.Module,
+		reconciliation.Module,
 		payments.Module,
 		search.Module,
 		wallets.Module,
