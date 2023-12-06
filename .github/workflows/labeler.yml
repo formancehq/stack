@@ -8,15 +8,15 @@ on:
       - synchronize
 
 jobs:
-  Triage:
-    permissions:
-      contents: read
-      pull-requests: write
-    runs-on: formance-runner
-    steps:
-      - uses: actions/labeler@v5
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+#  Triage:
+#    permissions:
+#      contents: read
+#      pull-requests: write
+#    runs-on: formance-runner
+#    steps:
+#      - uses: actions/labeler@v5
+#        with:
+#          repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
   PR:
     name: Check PR Title
