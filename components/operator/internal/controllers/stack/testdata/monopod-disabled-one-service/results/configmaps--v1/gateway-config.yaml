@@ -41,7 +41,7 @@ data:
         			}
         			handle @authmatcher {
         				uri strip_prefix /api/auth
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10002
 
         				import cors
         			}
@@ -51,7 +51,7 @@ data:
         			}
         			handle @paymentsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth
         			}
@@ -61,7 +61,7 @@ data:
         			}
         			handle @matcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth
         			}
@@ -71,7 +71,7 @@ data:
         			}
         			handle @accountsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth
         			}
@@ -81,7 +81,7 @@ data:
         			}
         			handle @bank-accounts-readmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth
         			}
@@ -91,7 +91,7 @@ data:
         			}
         			handle @transfer-initiations-readmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth
         			}
@@ -101,7 +101,7 @@ data:
         			}
         			handle @payments-apimatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
 
         				import cors
         				import auth
@@ -111,7 +111,7 @@ data:
         			}
         			handle @connectorsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth
         			}
@@ -120,7 +120,7 @@ data:
         			}
         			handle @configsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth
         			}
@@ -130,7 +130,7 @@ data:
         			}
         			handle @transfer-initiations-writematcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth
         			}
@@ -140,7 +140,7 @@ data:
         			}
         			handle @bank-accounts-writematcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth
         			}
@@ -150,18 +150,7 @@ data:
         			}
         			handle @payments-connectorsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
-
-        				import cors
-        				import auth
-        			}
-
-        			@reconciliationmatcher {
-        				path /api/reconciliation*
-        			}
-        			handle @reconciliationmatcher {
-        				uri strip_prefix /api/reconciliation
-        				reverse_proxy 127.0.0.1:10002
+        				reverse_proxy 127.0.0.1:10004
 
         				import cors
         				import auth
@@ -172,7 +161,7 @@ data:
         			}
         			handle @searchmatcher {
         				uri strip_prefix /api/search
-        				reverse_proxy 127.0.0.1:10006
+        				reverse_proxy 127.0.0.1:10005
 
         				import cors
         				import auth
@@ -205,7 +194,7 @@ data:
         			}
         			handle @webhooksmatcher {
         				uri strip_prefix /api/webhooks
-        				reverse_proxy 127.0.0.1:10007
+        				reverse_proxy 127.0.0.1:10006
 
         				import cors
         				import auth
@@ -216,13 +205,12 @@ data:
         			region "us-west-1"
         			env "staging"
         			endpoints {
-        				auth http://127.0.0.1:10003/_info http://127.0.0.1:10003/_healthcheck
-        				payments-api http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
-        				payments-connectors http://127.0.0.1:10005/_info http://127.0.0.1:10005/_health
-        				reconciliation http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
-        				search http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
+        				auth http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
+        				payments-api http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
+        				payments-connectors http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
+        				search http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
         				wallets http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
-        				webhooks http://127.0.0.1:10007/_info http://127.0.0.1:10007/_healthcheck
+        				webhooks http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
         			}
         		}
         	}
