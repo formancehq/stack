@@ -12,18 +12,18 @@ github:
     - any-glob-to-any-file: ".github/*"
 
 # Apps
-'apps/fctl':
+'components/fctl':
   - changed-files:
-    - any-glob-to-any-file: "apps/fctl/*"
-'apps/ledger':
+    - any-glob-to-any-file: "components/fctl/*"
+'components/ledger':
   - changed-files:
-    - any-glob-to-any-file: "apps/ledger/*"
-'apps/operator':
+    - any-glob-to-any-file: "components/ledger/*"
+'components/operator':
   - changed-files:
-    - any-glob-to-any-file: "apps/operator/*"
-'apps/payments':
+    - any-glob-to-any-file: "components/operator/*"
+'components/payments':
   - changed-files:
-    - any-glob-to-any-file: "apps/payments/*"
+    - any-glob-to-any-file: "components/payments/*"
 
 # EE
 'ee/agent':

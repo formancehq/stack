@@ -76,7 +76,7 @@ Formance is transitioning to a unified public facing monorepo (this one) that im
 
 ```
 formancehq/stack/
-  |- apps      # Stack services in OSS
+  |- components      # Stack services in OSS
   |- ee        # Stack services in EE Licence
   |- docs      # Exhaustive documentation deployed at docs.formance.com
   |- config    # Boilerplate configuration for stack dependencies

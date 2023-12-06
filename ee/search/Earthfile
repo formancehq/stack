@@ -52,7 +52,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --apps=search) .
+    COPY --pass-args (ee+tidy/go.* --components=search) .
     WORKDIR /src/ee/search
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd

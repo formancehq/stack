@@ -12,7 +12,7 @@ sources:
     COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
     COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
-    COPY --pass-args (stack+sources/out --LOCATION=apps) /src/apps
+    COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     SAVE ARTIFACT /src
 

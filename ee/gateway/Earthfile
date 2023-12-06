@@ -46,7 +46,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --apps=gateway) .
+    COPY --pass-args (ee+tidy/go.* --components=gateway) .
     WORKDIR /src/ee/gateway
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT internal AS LOCAL internal

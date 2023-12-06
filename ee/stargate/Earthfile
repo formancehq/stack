@@ -64,7 +64,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --apps=stargate) .
+    COPY --pass-args (ee+tidy/go.* --components=stargate) .
     WORKDIR /src/ee/stargate
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd

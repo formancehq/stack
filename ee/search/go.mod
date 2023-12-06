@@ -80,4 +80,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/ledger => ../../apps/ledger
+replace github.com/formancehq/ledger => ../../components/ledger

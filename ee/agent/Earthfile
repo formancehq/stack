@@ -11,7 +11,7 @@ FROM core+base-image
 sources:
     WORKDIR src
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
-    COPY (../../apps/operator+sources/*) /src
+    COPY (../../components/operator+sources/*) /src
     WORKDIR /src/ee/agent
     COPY go.* .
     COPY --dir cmd internal .
@@ -42,7 +42,7 @@ tests:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --apps=agent) .
+    COPY --pass-args (ee+tidy/go.* --components=agent) .
     WORKDIR /src/ee/agent
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd

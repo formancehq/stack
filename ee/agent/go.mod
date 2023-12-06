@@ -121,8 +121,8 @@ require (
 
 replace (
 	github.com/formancehq/membership-api/client => ./client
-	github.com/formancehq/operator => ../../apps/operator
-	github.com/formancehq/payments => ../../apps/payments
+	github.com/formancehq/operator => ../../components/operator
+	github.com/formancehq/payments => ../../components/payments
 	github.com/formancehq/search => ../search
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 	github.com/zitadel/oidc/v2 => github.com/formancehq/oidc/v2 v2.0.0-20230524073911-09bdd1dca291

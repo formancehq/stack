@@ -53,7 +53,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --apps=orchestration) .
+    COPY --pass-args (ee+tidy/go.* --components=orchestration) .
     WORKDIR /src/ee/orchestration
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd

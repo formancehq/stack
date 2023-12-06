@@ -27,9 +27,9 @@ build-final-spec:
     COPY openapi/base.yaml .
     COPY openapi/package.* .
     RUN npm install
-    WORKDIR /src/apps
+    WORKDIR /src/components
     FOR c IN ledger payments
-        COPY apps/$c/openapi.yaml $c/openapi.yaml
+        COPY components/$c/openapi.yaml $c/openapi.yaml
     END
     WORKDIR /src/ee
     FOR c IN auth webhooks search wallets orchestration
@@ -58,11 +58,11 @@ build-sdk:
 
 goreleaser:
     FROM core+builder-image
-    ARG --required apps
+    ARG --required components
     ARG --required type
     COPY . /src
     COPY (+build-sdk/go --LANG=go) /src/sdks/go
-    WORKDIR /src/$type/$apps
+    WORKDIR /src/$type/$components
     ARG mode=local
     LET buildArgs = --clean
     IF [ "$mode" = "local" ]
@@ -88,17 +88,17 @@ goreleaser:
 
 all-ci-goreleaser:
     LOCALLY
-    FOR component IN $(cd ./apps && ls -d */)
-      BUILD --pass-args +goreleaser --type=apps --apps=$component --mode=ci
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
     END
     FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args +goreleaser --type=ee --apps=$component --mode=ci
+      BUILD --pass-args +goreleaser --type=ee --components=$component --mode=ci
     END
 
 build-all:
     LOCALLY
-    FOR component IN $(cd ./apps && ls -d */)
-      BUILD --pass-args ./apps/${component}+build-image
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+build-image
     END
     FOR component IN $(cd ./ee && ls -d */)
       BUILD --pass-args ./ee/${component}+build-image
@@ -107,33 +107,37 @@ build-all:
 deploy-all:
     LOCALLY
     WAIT
-        BUILD --pass-args ./apps/+deploy --apps=operator
+        BUILD --pass-args ./components/+deploy --components=operator
     END
-    FOR component IN $(cd ./apps && ls -d */)
+    FOR component IN $(cd ./components && ls -d */)
       IF [ "$component" != "operator" ]
-        BUILD --pass-args ./apps/+deploy --apps=$component
+        BUILD --pass-args ./components/+deploy --components=$component
       END
     END
     FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/+deploy --apps=$component
+        BUILD --pass-args ./ee/+deploy --components=$component
     END
 
 tidy-all:
     LOCALLY
-    BUILD --pass-args ./libs/go-libs+tidy
+    WAIT
+      BUILD --pass-args ./libs/go-libs+tidy
+    END
     BUILD --pass-args ./tests/integration+tidy
-    FOR component IN $(cd ./apps && ls -d */)
-      BUILD --pass-args ./apps+tidy --apps=$component
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components+tidy --components=$component
     END
     FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args ./ee+tidy --apps=$component
+      BUILD --pass-args ./ee+tidy --components=$component
     END
 
 tests-all:
     LOCALLY
-    BUILD --pass-args +tidy-all
-    FOR component IN $(cd ./apps && ls -d */)
-      BUILD --pass-args ./apps/${component}+tests
+    WAIT
+      BUILD --pass-args +tidy-all
+    END
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+tests
     END
     FOR component IN $(cd ./ee && ls -d */)
       BUILD --pass-args ./ee/${component}+tests
@@ -141,9 +145,11 @@ tests-all:
 
 lint-all:
     LOCALLY
-    BUILD --pass-args +tidy-all
-    FOR component IN $(cd ./apps && ls -d */)
-      BUILD --pass-args ./apps/${component}+lint
+    WAIT
+      BUILD --pass-args +tidy-all
+    END
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+lint
     END
     FOR component IN $(cd ./ee && ls -d */)
       BUILD --pass-args ./ee/${component}+lint
@@ -161,8 +167,8 @@ pre-commit:
     BUILD --pass-args +build-final-spec
     BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
-    FOR component IN $(cd ./apps && ls -d */)
-      BUILD --pass-args ./apps/${component}+pre-commit
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+pre-commit
     END
     FOR component IN $(cd ./ee && ls -d */)
       BUILD --pass-args ./ee/${component}+pre-commit

@@ -13,7 +13,7 @@
       }
     },
     {
-      "inputFile": "./../apps/ledger/openapi.yaml",
+      "inputFile": "./../components/ledger/openapi.yaml",
       "pathModification":{
         "prepend": "/api/ledger"
       },
@@ -22,7 +22,7 @@
       }
     },
     {
-      "inputFile": "./../apps/payments/openapi.yaml",
+      "inputFile": "./../components/payments/openapi.yaml",
       "pathModification":{
         "prepend": "/api/payments"
       },
