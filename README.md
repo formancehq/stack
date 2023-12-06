@@ -5,7 +5,6 @@ Formance is a highly modular developer platform to build and operate complex mon
 - **Formance Ledger** - Programmable double-entry, immutable source of truth to record internal financial transactions and money movements
 - **Formance Payments** - Unified API and data layer for payments processing
 - **Formance Numscript** - DSL and virtual machine monetary computations and transactions modeling
-- **Formance Control** - Web application dashboard for payments operators with unified views on all your data
 
 ## ⚡️ Getting started with Formance Cloud Sandbox
 
@@ -59,17 +58,7 @@ cd stack
 docker compose up
 ```
 
-You can now open your browser and go to http://localhost to connect to the application. The Stack's API is exposed at http://localhost/api.
-You should use either use the pre-configured Github App (only for local testing) or the User/Password method to connect to the application, with the provisioned credentials:
-
-```
-User:     demo@formance.com
-Password: demo
-```
-
-### Caveats
-
-- Authentication won't work with Safari.
+The Stack's API is exposed at http://localhost/api.
 
 ## ☁️ Cloud Native Deployment
 
@@ -87,7 +76,8 @@ Formance is transitioning to a unified public facing monorepo (this one) that im
 
 ```
 formancehq/stack/
-  |- services  # Stack services imported as fixed-version submodules
+  |- apps      # Stack services in OSS
+  |- ee        # Stack services in EE Licence
   |- docs      # Exhaustive documentation deployed at docs.formance.com
   |- config    # Boilerplate configuration for stack dependencies
 ```
@@ -98,5 +88,5 @@ The Formance Stack is built on open-source, battle tested technologies including
 
 - **PostgreSQL** - Main storage backend
 - **Redis** - Caching and services instances syncing
-- **Kafka/Redpanda** - Cross-services async communication
+- **Kafka/NATS** - Cross-services async communication
 - **Traefik** - Main HTTP gateway
