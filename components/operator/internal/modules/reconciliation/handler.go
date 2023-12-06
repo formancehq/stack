@@ -11,6 +11,10 @@ func (o module) Name() string {
 	return "reconciliation"
 }
 
+func (o module) IsEE() bool {
+	return true
+}
+
 func (o module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
