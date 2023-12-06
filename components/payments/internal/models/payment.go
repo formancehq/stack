@@ -91,20 +91,20 @@ func (pid *PaymentID) Scan(value interface{}) error {
 type Payment struct {
 	bun.BaseModel `bun:"payments.payment"`
 
-	ID          PaymentID   `bun:",pk,nullzero"`
+	ID          PaymentID   `bun:",pk,type:character varying,nullzero"`
 	ConnectorID ConnectorID `bun:",nullzero"`
 	CreatedAt   time.Time   `bun:",nullzero"`
 	Reference   string
-	Amount      *big.Int `bun:"type:numeric"`
-	Type        PaymentType
-	Status      PaymentStatus
+	Amount      *big.Int      `bun:"type:numeric"`
+	Type        PaymentType   `bun:",type:payment_type"`
+	Status      PaymentStatus `bun:",type:payment_status"`
 	Scheme      PaymentScheme
 	Asset       Asset
 
 	RawData json.RawMessage
 
-	SourceAccountID      *AccountID `bun:",nullzero"`
-	DestinationAccountID *AccountID `bun:",nullzero"`
+	SourceAccountID      *AccountID `bun:",type:character varying,nullzero"`
+	DestinationAccountID *AccountID `bun:",type:character varying,nullzero"`
 
 	Adjustments []*Adjustment `bun:"rel:has-many,join:id=payment_id"`
 	Metadata    []*Metadata   `bun:"rel:has-many,join:id=payment_id"`

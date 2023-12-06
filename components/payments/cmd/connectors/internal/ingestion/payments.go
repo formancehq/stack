@@ -53,8 +53,14 @@ func (i *DefaultIngester) IngestPayments(
 		allPayments = append(allPayments, payment)
 	}
 
-	if err := i.repo.UpsertPayments(ctx, allPayments); err != nil {
+	idsInserted, err := i.store.UpsertPayments(ctx, allPayments)
+	if err != nil {
 		return fmt.Errorf("error upserting payments: %w", err)
+	}
+
+	idsInsertedMap := make(map[string]struct{}, len(idsInserted))
+	for idx := range idsInserted {
+		idsInsertedMap[idsInserted[idx].String()] = struct{}{}
 	}
 
 	taskState, err := json.Marshal(commitState)
@@ -62,11 +68,16 @@ func (i *DefaultIngester) IngestPayments(
 		return fmt.Errorf("error marshaling task state: %w", err)
 	}
 
-	if err = i.repo.UpdateTaskState(ctx, connectorID, i.descriptor, taskState); err != nil {
+	if err = i.store.UpdateTaskState(ctx, connectorID, i.descriptor, taskState); err != nil {
 		return fmt.Errorf("error updating task state: %w", err)
 	}
 
 	for paymentIdx := range allPayments {
+		_, ok := idsInsertedMap[allPayments[paymentIdx].ID.String()]
+		if !ok {
+			// No need to publish an event for an already existing payment
+			continue
+		}
 		err = i.publisher.Publish(events.TopicPayments,
 			publish.NewMessage(ctx, messages.NewEventSavedPayments(i.provider, allPayments[paymentIdx])))
 		if err != nil {
