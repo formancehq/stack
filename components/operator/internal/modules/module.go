@@ -44,6 +44,21 @@ type Module interface {
 	Versions() map[string]Version
 }
 
+// As standard modules are always enabled, EE modules are, by default disabled.
+// To enable an ee module, it must be explicitely defined with disabled == false,
+// either in global configuration, or per stack
+type EEModule interface {
+	IsEE() bool
+}
+
+func IsEE(m Module) bool {
+	eeModule, ok := m.(EEModule)
+	if ok {
+		ok = eeModule.IsEE()
+	}
+	return ok
+}
+
 type DependsOnAwareModule interface {
 	Module
 	DependsOn() []Module

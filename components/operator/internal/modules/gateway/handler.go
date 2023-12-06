@@ -189,7 +189,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		fallback = *context.Configuration.Spec.Services.Gateway.Fallback
 		redirect = true
 	} else {
-		if !context.IsDisabled("control") {
+		if !context.IsDisabled("control", false) {
 			fallback = fmt.Sprintf("control:%d", servicesMap["control"].Port)
 		}
 	}
