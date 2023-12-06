@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/Shopify/sarama"
 	"github.com/ThreeDotsLabs/watermill"
@@ -25,6 +26,7 @@ import (
 	"github.com/formancehq/stack/components/gateway/internal/audit/messages"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"go.uber.org/zap"
 )
 
@@ -49,9 +51,11 @@ type Audit struct {
 	PublisherKafkaSASLMechanism    string `json:"publisher_kafka_sasl_mechanism,omitempty"`
 	PublisherKafkaSASLScramSHASize int    `json:"publisher_kafka_sasl_scram_sha_size,omitempty"`
 
-	PublisherNatsEnabled  bool   `json:"publisher_nats_enabled,omitempty"`
-	PublisherNatsURL      string `json:"publisher_nats_url,omitempty"`
-	PublisherNatsClientId string `json:"publisher_nats_client_id,omitempty"`
+	PublisherNatsEnabled           bool          `json:"publisher_nats_enabled,omitempty"`
+	PublisherNatsURL               string        `json:"publisher_nats_url,omitempty"`
+	PublisherNatsClientId          string        `json:"publisher_nats_client_id,omitempty"`
+	PublisherNatsMaxReconnects     int           `json:"publisher_nats_max_reconnects,omitempty"`
+	PublisherNatsMaxReconnectsWait time.Duration `json:"publisher_nats_max_reconnects_wait,omitempty"`
 }
 
 // Implements the caddy.Module interface.
@@ -137,7 +141,27 @@ func parseAuditCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, e
 				if !h.AllArgs(&a.PublisherNatsClientId) {
 					return nil, h.Errf("expected one string value for publisher_nats_client_id")
 				}
+			case "publisher_nats_max_reconnects":
+				var publisherNatsMaxReconnects string
+				if !h.AllArgs(&publisherNatsMaxReconnects) {
+					return nil, h.Errf("expected one boolean value")
+				}
 
+				res, err := strconv.ParseInt(publisherNatsMaxReconnects, 10, 32)
+				if err != nil {
+					return nil, h.Errf("failed to parse publisher_nats_max_reconnects: %v", err)
+				}
+				a.PublisherNatsMaxReconnects = int(res)
+			case "publisher_nats_max_reconnects_wait":
+				var publisherNatsMaxReconnectsWait string
+				if !h.AllArgs(&publisherNatsMaxReconnectsWait) {
+					return nil, h.Errf("expected one boolean value")
+				}
+				res, err := time.ParseDuration(publisherNatsMaxReconnectsWait)
+				if err != nil {
+					return nil, h.Errf("failed to parse publisher_nats_max_reconnects_wait: %v", err)
+				}
+				a.PublisherNatsMaxReconnectsWait = res
 			default:
 				return nil, h.Errf("unrecognized option: %s", key)
 			}
@@ -177,7 +201,7 @@ func (a *Audit) Provision(ctx caddy.Context) error {
 	}
 
 	if a.PublisherNatsEnabled {
-		return a.provisionNatsPublisher()
+		return a.provisionNatsPublisher(ctx)
 	}
 
 	return nil
@@ -196,6 +220,16 @@ func (a *Audit) provisionNatsPublisher() error {
 
 	natsOptions := []nats.Option{
 		nats.Name(a.PublisherNatsClientId),
+		nats.MaxReconnects(a.PublisherNatsMaxReconnects),
+		nats.ReconnectWait(a.PublisherNatsMaxReconnectsWait),
+		nats.ClosedHandler(func(c *nats.Conn) {
+			a.logger.Info("nats connection closed")
+			err := caddy.Stop()
+			if err != nil {
+				a.logger.Error("failed to stop caddy", zap.Error(err))
+				panic(err)
+			}
+		}),
 	}
 
 	publisherConfig := wNats.PublisherConfig{

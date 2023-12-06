@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	app "github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/nats-io/nats.go"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/metric"
@@ -33,6 +34,7 @@ func newServer() *cobra.Command {
 		Short:        "Launch server",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			publish.InitNatsCliFlags(cmd)
 			return app.New(cmd.OutOrStdout(), resolveServerOptions(
 				viper.GetViper(),
 			)...).Run(cmd.Context())
@@ -50,7 +52,13 @@ func resolveServerOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option 
 
 		// HTTP and GRPC APIs need to be started with a NATS conn, so we need to
 		// create a NATS conn first.
-		publish.NatsModule(v.GetString(publish.PublisherNatsClientIDFlag), v.GetString(publish.PublisherNatsURLFlag), serverServiceName),
+		publish.NatsModule(
+			v.GetString(publish.PublisherNatsURLFlag),
+			serverServiceName,
+			nats.Name(v.GetString(publish.PublisherNatsClientIDFlag)),
+			nats.MaxReconnects(v.GetInt(publish.PublisherNatsMaxReconnectFlag)),
+			nats.ReconnectWait(v.GetDuration(publish.PublisherNatsReconnectWaitFlag)),
+		),
 
 		fx.Provide(func() controllers.StargateControllerConfig {
 			return controllers.NewStargateControllerConfig(

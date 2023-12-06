@@ -7009,13 +7009,6 @@
         },
         "nullable": true
       },
-      "AccountMetadata": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "string"
-        },
-        "nullable": true
-      },
       "Pool": {
         "type": "object",
         "required": [
@@ -9635,7 +9628,7 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/orchestrationPaymentMetadata"
+            "$ref": "#/components/schemas/PaymentMetadata"
           }
         }
       },
@@ -9651,15 +9644,6 @@
           "MANGOPAY",
           "MONEYCORP"
         ]
-      },
-      "orchestrationPaymentMetadata": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          }
-        },
-        "nullable": true
       },
       "ActivityDebitWalletOutput": {
         "$ref": "#/components/schemas/DebitWalletResponse"
@@ -9817,7 +9801,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PoolBalancesResponse"
+              "$ref": "#/components/schemas/PoolBalance"
             }
           }
         }

@@ -256,6 +256,8 @@ const caddyfile = `(cors) {
 		publisher_nats_enabled {$PUBLISHER_NATS_ENABLED:true}
 		publisher_nats_url {$PUBLISHER_NATS_URL:nats://nats:4222}
 		publisher_nats_client_id {$PUBLISHER_NATS_CLIENT_ID:gateway}
+		publisher_nats_max_reconnects {$PUBLISHER_NATS_MAX_RECONNECTS:30}
+		publisher_nats_max_reconnects_wait {$PUBLISHER_NATS_MAX_RECONNECT_WAIT:2s}
 		{{- end }}
 	}
 }
