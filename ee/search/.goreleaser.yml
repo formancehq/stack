@@ -3,7 +3,7 @@ includes:
   - from_file:
       path: ./../../.goreleaser.default.yaml
 monorepo:
-  tag_prefix: components/search/
+  tag_prefix: ee/search/
   dir: ./
 
 builds:

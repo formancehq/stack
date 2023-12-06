@@ -3,7 +3,7 @@ includes:
   - from_file:
       path: ./../../.goreleaser.default.yaml
 monorepo:
-  tag_prefix: components/stargate/
+  tag_prefix: ee/stargate/
   dir: ./
 
 builds:
