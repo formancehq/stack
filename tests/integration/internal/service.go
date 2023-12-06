@@ -26,6 +26,7 @@ type cobraCommandService struct {
 	command     func() *cobra.Command
 	name        string
 	cancel      func()
+	started     bool
 	appContext  context.Context
 	running     bool
 }

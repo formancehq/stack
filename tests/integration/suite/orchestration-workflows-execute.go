@@ -97,6 +97,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 						Expect(response.StatusCode).To(Equal(200))
 
 						instanceResponse = response.GetWorkflowInstanceResponse
+
 						return response.GetWorkflowInstanceResponse.Data.Terminated
 					}).Should(BeTrue())
 				})

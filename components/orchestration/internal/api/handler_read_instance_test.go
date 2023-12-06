@@ -16,7 +16,7 @@ import (
 )
 
 func TestGetInstance(t *testing.T) {
-	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
+	test(t, func(router *chi.Mux, m Backend, db *bun.DB) {
 		w, err := m.Create(context.TODO(), workflow.Config{
 			Stages: []workflow.RawStage{},
 		})

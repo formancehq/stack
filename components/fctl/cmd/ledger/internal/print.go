@@ -58,7 +58,12 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.ExpandedTransact
 	if err := printCommonInformation(
 		out,
 		transaction.ID,
-		*transaction.Reference,
+		func() string {
+			if transaction.Reference == nil {
+				return ""
+			}
+			return *transaction.Reference
+		}(),
 		transaction.Postings,
 		transaction.Timestamp,
 	); err != nil {

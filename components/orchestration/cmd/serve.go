@@ -5,7 +5,6 @@ import (
 
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -43,7 +42,6 @@ func newServeCommand() *cobra.Command {
 					}
 				}),
 				api.NewModule(),
-				workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 				fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
 					lifecycle.Append(fx.Hook{
 						OnStart: func(ctx context.Context) error {

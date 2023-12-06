@@ -78,5 +78,31 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				if _, err := tx.Exec(`
+					create table triggers (
+					    id varchar primary key,
+					    workflow_id varchar references workflows(id),
+					    filter varchar null,
+					    event varchar not null,
+					    vars jsonb,
+					    created_at timestamp not null default now(),
+					    deleted_at timestamp default null
+					);
+					create table triggers_occurrences (
+					    workflow_instance_id varchar references workflow_instances(id),
+					    trigger_id varchar references triggers(id),
+					    event_id varchar not null,
+					    date timestamp not null default now(),
+					    event jsonb not null,
+					    primary key (trigger_id, event_id)
+					);
+				`); err != nil {
+					return err
+				}
+				return nil
+			},
+		},
 	)
 }

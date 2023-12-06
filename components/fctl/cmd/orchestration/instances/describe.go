@@ -1,7 +1,6 @@
 package instances
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"time"
@@ -154,38 +153,12 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 
 	listItems := make([]pterm.BulletListItem, 0)
 
-	buf, err := json.Marshal(history.Input)
-	if err != nil {
-		return err
-	}
-
-	var (
-		stageSend      shared.StageSend
-		stageDelay     shared.StageDelay
-		stageWaitEvent shared.StageWaitEvent
-	)
-
-	err = json.Unmarshal(buf, &stageSend)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(buf, &stageDelay)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(buf, &stageWaitEvent)
-	if err != nil {
-		return err
-	}
-
-	switch {
-	case stageSend.Amount != nil && stageSend.Source != nil && stageSend.Destination != nil:
+	switch history.Input.Type {
+	case shared.StageTypeStageSend:
 		printHistoryBaseInfo(cmd.OutOrStdout(), "send", i, history)
-		cyanWriter.Printfln("Send %v %s from %s to %s", stageSend.Amount.Amount,
-			stageSend.Amount.Asset, stageSourceName(stageSend.Source),
-			stageDestinationName(stageSend.Destination))
+		cyanWriter.Printfln("Send %v %s from %s to %s", history.Input.StageSend.Amount.Amount,
+			history.Input.StageSend.Amount.Asset, stageSourceName(history.Input.StageSend.Source),
+			stageDestinationName(history.Input.StageSend.Destination))
 		fctl.Println()
 
 		stageResponse, err := client.Orchestration.GetInstanceStageHistory(cmd.Context(), operations.GetInstanceStageHistoryRequest{
@@ -291,17 +264,17 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 				listItems = append(listItems, historyItemError(*historyStage.Error))
 			}
 		}
-	case stageDelay.Duration != nil && stageDelay.Until != nil:
+	case shared.StageTypeStageDelay:
 		printHistoryBaseInfo(cmd.OutOrStdout(), "delay", i, history)
 		switch {
-		case stageDelay.Duration != nil:
-			listItems = append(listItems, historyItemTitle("Pause workflow for a delay of %s", *stageDelay.Duration))
-		case stageDelay.Until != nil:
-			listItems = append(listItems, historyItemTitle("Pause workflow until %s", *stageDelay.Until))
+		case history.Input.StageDelay.Duration != nil:
+			listItems = append(listItems, historyItemTitle("Pause workflow for a delay of %s", *history.Input.StageDelay.Duration))
+		case history.Input.StageDelay.Until != nil:
+			listItems = append(listItems, historyItemTitle("Pause workflow until %s", *history.Input.StageDelay.Until))
 		}
-	case stageWaitEvent.Event != "":
+	case shared.StageTypeStageWaitEvent:
 		printHistoryBaseInfo(cmd.OutOrStdout(), "wait_event", i, history)
-		listItems = append(listItems, historyItemTitle("Waiting event '%s'", stageWaitEvent.Event))
+		listItems = append(listItems, historyItemTitle("Waiting event '%s'", history.Input.StageWaitEvent.Event))
 		if history.Error == nil {
 			if history.Terminated {
 				listItems = append(listItems, historyItemDetails("Event received!"))

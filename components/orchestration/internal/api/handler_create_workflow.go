@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func createWorkflow(m *workflow.Manager) http.HandlerFunc {
+func createWorkflow(m Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		config := workflow.Config{}

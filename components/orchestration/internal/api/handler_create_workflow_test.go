@@ -6,14 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 )
 
 func TestCreateWorkflow(t *testing.T) {
-	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
+	test(t, func(router *chi.Mux, m Backend, db *bun.DB) {
 		req := httptest.NewRequest(http.MethodPost, "/workflows", bytes.NewBufferString(`{"stages": []}`))
 		rec := httptest.NewRecorder()
 
