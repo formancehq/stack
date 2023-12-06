@@ -7,6 +7,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.2.0
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0
 	github.com/caddyserver/caddy/v2 v2.7.5
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/hashicorp/go-retryablehttp v0.7.2
 	github.com/nats-io/nats.go v1.28.0
 	github.com/xdg-go/scram v1.1.2

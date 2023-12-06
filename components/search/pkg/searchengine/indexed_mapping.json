@@ -61,5 +61,8 @@
   },
   "responseStatusCode" : {
     "type": "short"
+  },
+  "identity" : {
+    "type": "keyword"
   }
 }
