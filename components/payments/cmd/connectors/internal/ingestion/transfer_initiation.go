@@ -17,7 +17,7 @@ func (i *DefaultIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Con
 	tf.Attempts = attempts
 	tf.UpdatedAt = updatedAt
 
-	if err := i.repo.UpdateTransferInitiationPaymentsStatus(ctx, tf.ID, paymentID, tf.Status, tf.Error, tf.Attempts, tf.UpdatedAt); err != nil {
+	if err := i.store.UpdateTransferInitiationPaymentsStatus(ctx, tf.ID, paymentID, tf.Status, tf.Error, tf.Attempts, tf.UpdatedAt); err != nil {
 		return err
 	}
 
@@ -46,7 +46,7 @@ func (i *DefaultIngester) AddTransferInitiationPaymentID(ctx context.Context, tf
 		Status:               models.TransferInitiationStatusProcessing,
 	})
 
-	if err := i.repo.AddTransferInitiationPaymentID(ctx, tf.ID, paymentID, updatedAt); err != nil {
+	if err := i.store.AddTransferInitiationPaymentID(ctx, tf.ID, paymentID, updatedAt); err != nil {
 		return err
 	}
 

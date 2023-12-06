@@ -28,7 +28,7 @@ func (i *DefaultIngester) IngestBalances(ctx context.Context, batch BalanceBatch
 		"startingAt": startingAt,
 	}).Debugf("Ingest balances batch")
 
-	if err := i.repo.InsertBalances(ctx, batch, checkIfAccountExists); err != nil {
+	if err := i.store.InsertBalances(ctx, batch, checkIfAccountExists); err != nil {
 		return fmt.Errorf("error inserting balances: %w", err)
 	}
 

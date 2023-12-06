@@ -28,7 +28,7 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 		"startingAt": startingAt,
 	}).Debugf("Ingest accounts batch")
 
-	if err := i.repo.UpsertAccounts(ctx, batch); err != nil {
+	if err := i.store.UpsertAccounts(ctx, batch); err != nil {
 		return fmt.Errorf("error upserting accounts: %w", err)
 	}
 

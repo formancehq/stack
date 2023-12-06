@@ -87,14 +87,27 @@ func testCreatePayments(t *testing.T, store *storage.Storage) {
 		},
 	}
 
-	err := store.UpsertPayments(context.Background(), []*models.Payment{pFail})
+	ids, err := store.UpsertPayments(context.Background(), []*models.Payment{pFail})
 	require.Error(t, err)
+	require.Len(t, ids, 0)
 
-	err = store.UpsertPayments(context.Background(), []*models.Payment{p1})
+	ids, err = store.UpsertPayments(context.Background(), []*models.Payment{p1})
 	require.NoError(t, err)
+	require.Len(t, ids, 1)
 
-	err = store.UpsertPayments(context.Background(), []*models.Payment{p2})
+	ids, err = store.UpsertPayments(context.Background(), []*models.Payment{p2})
 	require.NoError(t, err)
+	require.Len(t, ids, 1)
+
+	p1.Status = models.PaymentStatusPending
+	p2.Status = models.PaymentStatusSucceeded
+	ids, err = store.UpsertPayments(context.Background(), []*models.Payment{p1, p2})
+	require.NoError(t, err)
+	require.Len(t, ids, 2)
+
+	ids, err = store.UpsertPayments(context.Background(), []*models.Payment{p1, p2})
+	require.NoError(t, err)
+	require.Len(t, ids, 0)
 
 	testGetPayment(t, store, *p1ID, p1, nil)
 	testGetPayment(t, store, *p2ID, p2, nil)
@@ -142,8 +155,9 @@ func testUpdatePayment(t *testing.T, store *storage.Storage) {
 	p1.Scheme = models.PaymentSchemeCardVisa
 	p1.Asset = models.Asset("USD/2")
 
-	err := store.UpsertPayments(context.Background(), []*models.Payment{p1})
+	ids, err := store.UpsertPayments(context.Background(), []*models.Payment{p1})
 	require.NoError(t, err)
+	require.Len(t, ids, 1)
 
 	payment, err := store.GetPayment(context.Background(), p1ID.String())
 	require.NoError(t, err)

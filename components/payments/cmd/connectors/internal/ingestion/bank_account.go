@@ -10,7 +10,7 @@ import (
 )
 
 func (i *DefaultIngester) LinkBankAccountWithAccount(ctx context.Context, bankAccount *models.BankAccount, accountID *models.AccountID) error {
-	if err := i.repo.LinkBankAccountWithAccount(ctx, bankAccount.ID, accountID); err != nil {
+	if err := i.store.LinkBankAccountWithAccount(ctx, bankAccount.ID, accountID); err != nil {
 		return err
 	}
 
