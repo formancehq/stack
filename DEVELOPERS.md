@@ -6,7 +6,7 @@ And you need [direnv](https://direnv.net/).
 ## How to start developing
 To use Earthly and dev environments in Kubernetes, you need the following environment variables (in .direnv/.env):
 Environment variables are split into several pieces:
-- Project config: License of the various tools used in the repository
+- Project config: License of the various tools used in the repository (Not required for local development)
     - SPEAKEASY_API_KEY: License for [Speakeasy](https://www.speakeasyapi.dev/)
     - GITHUB_TOKEN: Github token for actions
     - GORELEASER_KEY: Github token for releases
@@ -15,7 +15,7 @@ Environment variables are split into several pieces:
     - FORMANCE_DEV_KUBE_API_SERVER_ADDRESS: dev cluster address
     - FORMANCE_DEV_TLD: dev domain to access the stack
     - FORMANCE_DEV_GHCR_REGISTRY: Registry for images
-    - FORMANCE_DEV_USER: User for images
+    - FORMANCE_DEV_USER: Your username
 - Admin config: only for our DNS configuration with Route53
     - FORMANCE_AWS_KEY_ID: AWS Key ID
     - FORMANCE_AWS_SECRET_KEY: AWS Secret Key
