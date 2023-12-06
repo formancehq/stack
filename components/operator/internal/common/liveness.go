@@ -24,10 +24,11 @@ func LivenessEndpoint(str string) *corev1.Probe {
 	if err != nil {
 		return nil
 	}
-	port, err := strconv.Atoi(url.Port())
+	port, err := strconv.ParseInt(url.Port(), 10, 64)
 	if err != nil {
 		return nil
 	}
+
 	return liveness(
 		newProbeHandler(
 			int32(port),

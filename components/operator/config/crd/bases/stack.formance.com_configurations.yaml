@@ -4138,13 +4138,21 @@ spec:
                     type: object
                   nats:
                     properties:
+                      hostname:
+                        type: string
+                      monitoringPort:
+                        default: 8222
+                        format: int32
+                        type: integer
+                      port:
+                        default: 4222
+                        format: int32
+                        type: integer
                       replicas:
                         default: 3
                         type: integer
-                      url:
-                        type: string
                     required:
-                    - url
+                    - hostname
                     type: object
                 type: object
               ingress:

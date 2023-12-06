@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -326,7 +327,7 @@ type Service struct {
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
 	Liveness                Liveness
-	LivenessEndpoint        string
+	LivenessEndpoint        *string
 	AuthConfiguration       func(config ReconciliationConfig) stackv1beta3.ClientConfiguration
 	Configs                 func(resolveContext ServiceInstallConfiguration) Configs
 	Secrets                 func(resolveContext ServiceInstallConfiguration) Secrets
@@ -417,7 +418,8 @@ func (r *serviceReconciler) configureNats() {
 		Retention: nats.InterestPolicy,
 		Replicas:  r.Configuration.Spec.Broker.Nats.Replicas,
 	}
-	nc, err := nats.Connect(r.Configuration.Spec.Broker.Nats.URL)
+	port := strconv.FormatInt(int64(r.Configuration.Spec.Broker.Nats.Port), 10)
+	nc, err := nats.Connect(r.Configuration.Spec.Broker.Nats.Hostname + ":" + port)
 	if err != nil {
 		logging.Error(err)
 	}
@@ -596,8 +598,8 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 			c.LivenessProbe = common.LegacyLiveness(r.GetUsedPort())
 		}
 
-		if r.service.LivenessEndpoint != "" {
-			c.LivenessProbe = common.LivenessEndpoint(r.service.LivenessEndpoint)
+		if r.service.LivenessEndpoint != nil {
+			c.LivenessProbe = common.LivenessEndpoint(*r.service.LivenessEndpoint)
 		}
 
 		if r.usedPort != 0 {

@@ -49,14 +49,14 @@ func (g module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return modules.Services{{
+				service := &modules.Service{
 					Port: gatewayPort,
 					ExposeHTTP: &modules.ExposeHTTP{
 						Path: "/",
 					},
-					Liveness:         modules.LivenessDisable,
-					LivenessEndpoint: "nats://" + ctx.Configuration.Spec.Broker.Nats.URL + "/healthz",
-					Annotations:      ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
+					Liveness:    modules.LivenessDisable,
+					Topics:      &modules.Topics{Name: "audit"},
+					Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
 					Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {
 						return modules.Configs{
 							"config": modules.Config{
@@ -84,7 +84,19 @@ func (g module) Versions() map[string]modules.Version {
 							),
 						}
 					},
-				}}
+				}
+
+				if ctx.Configuration.Spec.Broker.Nats != nil {
+					livenessEndpoint := fmt.Sprintf(
+						"nats://%s:%d/%s",
+						ctx.Configuration.Spec.Broker.Nats.Hostname,
+						ctx.Configuration.Spec.Broker.Nats.MonitoringPort,
+						"healthz",
+					)
+
+					service.LivenessEndpoint = &livenessEndpoint
+				}
+				return modules.Services{service}
 			},
 		},
 	}

@@ -2,6 +2,7 @@ package modules
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
@@ -65,8 +66,10 @@ func ElasticSearchEnvVars(stack *stackv1beta3.Stack, configuration *stackv1beta3
 		}
 	}
 	if configuration.Spec.Broker.Nats != nil {
+
+		port := strconv.FormatInt(int64(configuration.Spec.Broker.Nats.Port), 10)
 		ret = ret.Append(
-			Env("NATS_URL", configuration.Spec.Broker.Nats.URL),
+			Env("NATS_URL", configuration.Spec.Broker.Nats.Hostname+":"+port),
 		)
 	}
 	if configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {

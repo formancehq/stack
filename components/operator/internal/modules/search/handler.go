@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"golang.org/x/mod/semver"
@@ -460,8 +461,9 @@ func elasticSearchEnvVars(stack *stackv1beta3.Stack, configuration *stackv1beta3
 		}
 	}
 	if configuration.Spec.Broker.Nats != nil {
+		port := strconv.FormatInt(int64(configuration.Spec.Broker.Nats.Port), 10)
 		ret = ret.Append(
-			modules.Env("NATS_URL", configuration.Spec.Broker.Nats.URL),
+			modules.Env("NATS_URL", configuration.Spec.Broker.Nats.Hostname+":"+port),
 		)
 	}
 	if configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
