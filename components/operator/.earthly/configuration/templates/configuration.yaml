@@ -34,7 +34,7 @@ spec:
     gateway:
       enableAuditPlugin: true
       fallback: {{ .Values.gateway.fallback}}
-      livenessEndpoint: http://nats.default.svc.cluster.local:8222/healthz
+      livenessEndpoint: http://nats-headless.default.svc.cluster.local:8222/healthz
     control:
       disabled: true
     auth:
