@@ -53,6 +53,7 @@ func (g module) Versions() map[string]modules.Version {
 						Path: "/",
 					},
 					Liveness:    modules.LivenessDisable,
+					Topics:      &modules.Topics{Name: "audit"},
 					Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
 					Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {
 						return modules.Configs{

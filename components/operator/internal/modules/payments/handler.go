@@ -45,7 +45,7 @@ func (p module) Versions() map[string]modules.Version {
 					HasVersionEndpoint:      true,
 					ListenEnvVar:            "LISTEN",
 					ExposeHTTP:              modules.DefaultExposeHTTP,
-					NeedTopic:               true,
+					Topics:                  &modules.Topics{Name: p.Name()},
 					Liveness:                modules.LivenessLegacy,
 					Annotations:             ctx.Configuration.Spec.Services.Payments.Annotations.Service,
 					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
@@ -81,7 +81,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.6.7": {
@@ -95,7 +95,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.6.8": {
@@ -109,7 +109,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.7.0": {
@@ -123,7 +123,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.8.0": {
@@ -137,7 +137,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.8.1": {
@@ -151,7 +151,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.9.0": {
@@ -164,7 +164,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.9.1": {
@@ -177,7 +177,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.9.4": {
@@ -190,7 +190,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v0.10.0": {
@@ -203,7 +203,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v1.0.0-alpha.1": {
@@ -216,7 +216,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v1.0.0-alpha.3": {
@@ -229,7 +229,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(paymentsEnvVars)
+				return paymentsServices(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v1.0.0-alpha.6": {
@@ -242,7 +242,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServicesSplitted(paymentsEnvVars)
+				return paymentsServicesSplitted(p.Name(), paymentsEnvVars)
 			},
 		},
 		"v1.0.0-beta.3": {
@@ -266,7 +266,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServicesSplitted(paymentsEnvVars)
+				return paymentsServicesSplitted(p.Name(), paymentsEnvVars)
 			},
 		},
 	}
@@ -291,6 +291,7 @@ func paymentsEnvVars(resolveContext modules.ContainerResolutionConfiguration) mo
 }
 
 func paymentsServices(
+	serviceName string,
 	env func(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv,
 ) modules.Services {
 	return modules.Services{{
@@ -298,7 +299,7 @@ func paymentsServices(
 		HasVersionEndpoint:      true,
 		ListenEnvVar:            "LISTEN",
 		ExposeHTTP:              modules.DefaultExposeHTTP,
-		NeedTopic:               true,
+		Topics:                  &modules.Topics{Name: serviceName},
 		Liveness:                modules.LivenessLegacy,
 		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 			return modules.Container{
@@ -314,6 +315,7 @@ func paymentsServices(
 }
 
 func paymentsServicesSplitted(
+	serviceName string,
 	env func(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv,
 ) modules.Services {
 	return modules.Services{
@@ -349,8 +351,8 @@ func paymentsServicesSplitted(
 					Name:    "transfer-initiations-read",
 				},
 			},
-			NeedTopic: true,
-			Liveness:  modules.LivenessLegacy,
+			Topics:   &modules.Topics{Name: serviceName},
+			Liveness: modules.LivenessLegacy,
 			Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 				return modules.Container{
 					Args:  []string{"api", "serve"},
@@ -389,8 +391,8 @@ func paymentsServicesSplitted(
 					Name:    "bank-accounts-write",
 				},
 			},
-			NeedTopic: true,
-			Liveness:  modules.LivenessLegacy,
+			Topics:   &modules.Topics{Name: serviceName},
+			Liveness: modules.LivenessLegacy,
 			Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 				return modules.Container{
 					Args:  []string{"connectors", "serve"},

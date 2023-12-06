@@ -30,7 +30,7 @@ func (l module) Versions() map[string]modules.Version {
 					InjectPostgresVariables: true,
 					HasVersionEndpoint:      true,
 					ExposeHTTP:              modules.DefaultExposeHTTP,
-					NeedTopic:               true,
+					Topics:                  &modules.Topics{Name: l.Name()},
 					Annotations:             ctx.Configuration.Spec.Services.Ledger.Annotations.Service,
 					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						env := modules.NewEnv().Append(
@@ -117,7 +117,7 @@ func (l module) Versions() map[string]modules.Version {
 					InjectPostgresVariables: true,
 					HasVersionEndpoint:      true,
 					ExposeHTTP:              modules.DefaultExposeHTTP,
-					NeedTopic:               true,
+					Topics:                  &modules.Topics{Name: l.Name()},
 					Container:               createContainer(modules.NewEnv()),
 				}
 				ret := modules.Services{&main}
