@@ -29,11 +29,12 @@ spec:
   broker:
     nats:
       replicas: 1
-      hostname: nats.default.svc.cluster.local
+      url: nats.default.svc.cluster.local:4222
   services:
     gateway:
       enableAuditPlugin: true
       fallback: {{ .Values.gateway.fallback}}
+      livenessEndpoint: http://nats.default.svc.cluster.local:8222/healthz
     control:
       disabled: true
     auth:

@@ -1,7 +1,6 @@
 package modules
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
@@ -35,12 +34,10 @@ func BrokerEnvVarsWithPrefix(broker v1beta3.Broker, serviceName string) Containe
 			)
 		}
 	} else {
-		port := strconv.FormatInt(int64(broker.Nats.Port), 10)
-
 		ret = ret.Append(
 			Env("BROKER", "nats"),
 			Env("PUBLISHER_NATS_ENABLED", "true"),
-			Env("PUBLISHER_NATS_URL", broker.Nats.Hostname+":"+port),
+			Env("PUBLISHER_NATS_URL", broker.Nats.URL),
 			Env("PUBLISHER_NATS_CLIENT_ID", serviceName),
 		)
 	}

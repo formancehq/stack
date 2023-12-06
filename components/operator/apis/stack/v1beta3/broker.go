@@ -16,17 +16,8 @@ type KafkaConfig struct {
 }
 
 type NatsConfig struct {
-	Hostname string `json:"hostname"`
-
-	// +kubebuilder:default:=4222
-	// +optional
-	Port int32 `json:"port"`
-
+	URL string `json:"url"`
 	// +kubebuilder:default:=3
 	// +optional
 	Replicas int `json:"replicas"`
-
-	// +kubebuilder:default:=8222
-	// +optional
-	MonitoringPort int32 `json:"monitoringPort,omitempty"`
 }

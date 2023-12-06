@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -418,8 +417,7 @@ func (r *serviceReconciler) configureNats() {
 		Retention: nats.InterestPolicy,
 		Replicas:  r.Configuration.Spec.Broker.Nats.Replicas,
 	}
-	port := strconv.FormatInt(int64(r.Configuration.Spec.Broker.Nats.Port), 10)
-	nc, err := nats.Connect(r.Configuration.Spec.Broker.Nats.Hostname + ":" + port)
+	nc, err := nats.Connect(r.Configuration.Spec.Broker.Nats.URL)
 	if err != nil {
 		logging.Error(err)
 	}
