@@ -46,7 +46,7 @@ var Search = internal.NewModule("search").
 			}).
 			WithMounts(func(test *internal.Test) []string {
 				return []string{
-					test.Workdir() + "/../../../components/search/benthos:/config",
+					test.Workdir() + "/../../../ee/search/benthos:/config",
 				}
 			}).
 			WithHealthCheck(func(test *internal.Test, resource *dockertest.Resource) bool {
