@@ -3,9 +3,6 @@ package atlar
 import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
-	httptransport "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
 )
 
 const (
@@ -24,14 +21,7 @@ type TaskDescriptor struct {
 
 // clientID, apiKey, endpoint string, logger logging
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
-	transport := httptransport.New(
-		config.BaseUrl.Host,
-		config.BaseUrl.Path,
-		[]string{config.BaseUrl.Scheme},
-	)
-	basicAuth := httptransport.BasicAuth(config.AccessKey, config.Secret)
-	transport.DefaultAuthentication = basicAuth
-	client := atlar_client.New(transport, strfmt.Default)
+	client := createAtlarClient(&config)
 
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		if taskDescriptor.Main {

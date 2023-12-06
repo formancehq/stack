@@ -48,15 +48,15 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		}()
 
 		// Pagination works by cursor token.
-		accounts_params := accounts.GetV1AccountsParams{
+		accountsParams := accounts.GetV1AccountsParams{
 			Context: ctx,
 			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
 			limit := int64(config.PageSize)
-			accounts_params.Token = &token
-			accounts_params.Limit = &limit
-			pagedAccounts, err := client.Accounts.GetV1Accounts(&accounts_params)
+			accountsParams.Token = &token
+			accountsParams.Limit = &limit
+			pagedAccounts, err := client.Accounts.GetV1Accounts(&accountsParams)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
@@ -74,15 +74,15 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		}
 
 		// Pagination works by cursor token.
-		external_accounts_params := external_accounts.GetV1ExternalAccountsParams{
+		externalAccountsParams := external_accounts.GetV1ExternalAccountsParams{
 			Context: ctx,
 			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
 			limit := int64(config.PageSize)
-			accounts_params.Token = &token
-			accounts_params.Limit = &limit
-			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&external_accounts_params)
+			accountsParams.Token = &token
+			accountsParams.Limit = &limit
+			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&externalAccountsParams)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
@@ -218,7 +218,7 @@ func IdentifiersToMetadata(identifiers []*atlar_models.AccountIdentifier) metada
 	result := metadata.Metadata{}
 	for _, i := range identifiers {
 		result = result.Merge(ComputeAccountMetadata(
-			fmt.Sprintf("identifier/%s", *i.Type),
+			fmt.Sprintf("identifier/%s/%s", *i.Market, *i.Type),
 			*i.Number,
 		))
 	}
@@ -241,11 +241,11 @@ func ingestExternalAccountsBatch(
 	accountsBatch := ingestion.AccountBatch{}
 
 	for _, externalAccount := range pagedExternalAccounts.Payload.Items {
-		counterparty_params := counterparties.GetV1CounterpartiesIDParams{
+		counterpartyParams := counterparties.GetV1CounterpartiesIDParams{
 			Context: ctx,
 			ID:      externalAccount.CounterpartyID,
 		}
-		counterparty_response, err := client.Counterparties.GetV1CounterpartiesID(&counterparty_params)
+		counterparty_response, err := client.Counterparties.GetV1CounterpartiesID(&counterpartyParams)
 		if err != nil {
 			return err
 		}
