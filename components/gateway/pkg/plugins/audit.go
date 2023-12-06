@@ -201,7 +201,7 @@ func (a *Audit) Provision(ctx caddy.Context) error {
 	}
 
 	if a.PublisherNatsEnabled {
-		return a.provisionNatsPublisher(ctx)
+		return a.provisionNatsPublisher()
 	}
 
 	return nil
