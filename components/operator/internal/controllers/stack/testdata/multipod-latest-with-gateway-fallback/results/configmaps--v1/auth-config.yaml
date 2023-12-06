@@ -17,6 +17,15 @@ data:
               PostLogoutRedirectUris: []
               scopes:
                 - openid
+              id: reconciliation
+              secrets:
+                - mocked-secret
+            - public: false
+              description: null
+              redirectUris: []
+              PostLogoutRedirectUris: []
+              scopes:
+                - openid
               id: wallets
               secrets:
                 - mocked-secret

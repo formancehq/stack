@@ -95,6 +95,8 @@ spec:
                 type: string
               payments:
                 type: string
+              reconciliation:
+                type: string
               search:
                 type: string
               stargate:

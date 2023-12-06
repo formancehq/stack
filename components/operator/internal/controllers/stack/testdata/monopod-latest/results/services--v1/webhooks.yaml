@@ -13,9 +13,9 @@ spec:
     ports:
         - appProtocol: http
           name: http
-          port: 10007
+          port: 10008
           protocol: TCP
-          targetPort: 10007
+          targetPort: 10008
     selector:
         app.kubernetes.io/name: monopod-latest
     sessionAffinity: None

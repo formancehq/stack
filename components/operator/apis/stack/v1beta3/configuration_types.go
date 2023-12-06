@@ -31,14 +31,15 @@ import (
 // Fields order is important.
 // For example, auth must be defined later as other services create static auth clients which must be used by auth.
 type ConfigurationServicesSpec struct {
-	Control       ControlSpec       `json:"control,omitempty"`
-	Ledger        LedgerSpec        `json:"ledger,omitempty"`
-	Payments      PaymentsSpec      `json:"payments,omitempty"`
-	Webhooks      WebhooksSpec      `json:"webhooks,omitempty"`
-	Wallets       WalletsSpec       `json:"wallets,omitempty"`
-	Orchestration OrchestrationSpec `json:"orchestration,omitempty"`
-	Search        SearchSpec        `json:"search,omitempty"`
-	Auth          AuthSpec          `json:"auth,omitempty"`
+	Control        ControlSpec        `json:"control,omitempty"`
+	Ledger         LedgerSpec         `json:"ledger,omitempty"`
+	Payments       PaymentsSpec       `json:"payments,omitempty"`
+	Reconciliation ReconciliationSpec `json:"reconciliation,omitempty"`
+	Webhooks       WebhooksSpec       `json:"webhooks,omitempty"`
+	Wallets        WalletsSpec        `json:"wallets,omitempty"`
+	Orchestration  OrchestrationSpec  `json:"orchestration,omitempty"`
+	Search         SearchSpec         `json:"search,omitempty"`
+	Auth           AuthSpec           `json:"auth,omitempty"`
 
 	// +optional
 	Gateway  GatewaySpec  `json:"gateway,omitempty"`

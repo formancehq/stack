@@ -10,6 +10,7 @@ spec:
   ledger: local
   orchestration: local
   payments: local
+  reconciliation: local
   search: local
   wallets: local
   webhooks: local

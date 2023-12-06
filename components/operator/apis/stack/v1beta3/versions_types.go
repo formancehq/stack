@@ -46,6 +46,8 @@ type VersionsSpec struct {
 	Gateway string `json:"gateway"`
 	// +optional
 	Stargate string `json:"stargate"`
+	// +optional
+	Reconciliation string `json:"reconciliation"`
 }
 
 // VersionsStatus defines the observed state of Versions

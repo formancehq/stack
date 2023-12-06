@@ -179,6 +179,17 @@ data:
         				import auth
         			}
 
+        			@reconciliationmatcher {
+        				path /api/reconciliation*
+        			}
+        			handle @reconciliationmatcher {
+        				uri strip_prefix /api/reconciliation
+        				reverse_proxy reconciliation:8080
+
+        				import cors
+        				import auth
+        			}
+
         			@searchmatcher {
         				path /api/search*
         			}
@@ -233,6 +244,7 @@ data:
         				orchestration http://orchestration:8080/_info http://orchestration:8080/_healthcheck
         				payments-api http://payments-api:8080/_info http://payments-api:8080/_health
         				payments-connectors http://payments-connectors:8080/_info http://payments-connectors:8080/_health
+        				reconciliation http://reconciliation:8080/_info http://reconciliation:8080/_healthcheck
         				search http://search:8080/_info http://search:8080/_healthcheck
         				wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
         				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck

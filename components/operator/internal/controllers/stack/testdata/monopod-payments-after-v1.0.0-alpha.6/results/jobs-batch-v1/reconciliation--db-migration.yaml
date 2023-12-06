@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: reconciliation--db-migration
+    namespace: monopod-payments-after-v1-0-0-alpha-6
+spec:
+    backoffLimit: 6
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+        matchLabels: {}
+    suspend: false
+    template:
+        metadata:
+            creationTimestamp: null
+            labels:
+                job-name: reconciliation--db-migration
+        spec:
+            containers:
+                - args:
+                    - migrate
+                    - up
+                  env:
+                    - name: POSTGRES_HOST
+                    - name: POSTGRES_PORT
+                      value: "0"
+                    - name: POSTGRES_DATABASE
+                      value: monopod-payments-after-v1-0-0-alpha-6-reconciliation
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)
+                  image: ghcr.io/formancehq/reconciliation:latest
+                  imagePullPolicy: Always
+                  name: migrate
+                  resources: {}
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: OnFailure
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+status:
+    succeeded: 1

@@ -11,6 +11,7 @@ import (
 
 	"github.com/formancehq/operator/internal/modules/control"
 	"github.com/formancehq/operator/internal/modules/orchestration"
+	"github.com/formancehq/operator/internal/modules/reconciliation"
 	"github.com/formancehq/operator/internal/modules/wallets"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
@@ -25,6 +26,7 @@ func (a module) DependsOn() []modules.Module {
 		control.Module,
 		orchestration.Module,
 		wallets.Module,
+		reconciliation.Module,
 	}
 }
 

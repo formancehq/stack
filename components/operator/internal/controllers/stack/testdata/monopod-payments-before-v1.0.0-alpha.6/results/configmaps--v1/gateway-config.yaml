@@ -41,7 +41,7 @@ data:
         			}
         			handle @authmatcher {
         				uri strip_prefix /api/auth
-        				reverse_proxy 127.0.0.1:10002
+        				reverse_proxy 127.0.0.1:10003
 
         				import cors
         			}
@@ -51,7 +51,7 @@ data:
         			}
         			handle @ledgermatcher {
         				uri strip_prefix /api/ledger
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10004
 
         				import cors
         				import auth
@@ -73,7 +73,18 @@ data:
         			}
         			handle @paymentsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10005
+
+        				import cors
+        				import auth
+        			}
+
+        			@reconciliationmatcher {
+        				path /api/reconciliation*
+        			}
+        			handle @reconciliationmatcher {
+        				uri strip_prefix /api/reconciliation
+        				reverse_proxy 127.0.0.1:10002
 
         				import cors
         				import auth
@@ -84,7 +95,7 @@ data:
         			}
         			handle @searchmatcher {
         				uri strip_prefix /api/search
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10006
 
         				import cors
         				import auth
@@ -117,7 +128,7 @@ data:
         			}
         			handle @webhooksmatcher {
         				uri strip_prefix /api/webhooks
-        				reverse_proxy 127.0.0.1:10006
+        				reverse_proxy 127.0.0.1:10007
 
         				import cors
         				import auth
@@ -128,13 +139,14 @@ data:
         			region "us-west-1"
         			env "staging"
         			endpoints {
-        				auth http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
-        				ledger http://127.0.0.1:10003/_info http://127.0.0.1:10003/_healthcheck
+        				auth http://127.0.0.1:10003/_info http://127.0.0.1:10003/_healthcheck
+        				ledger http://127.0.0.1:10004/_info http://127.0.0.1:10004/_healthcheck
         				orchestration http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
-        				payments http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
-        				search http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
+        				payments http://127.0.0.1:10005/_info http://127.0.0.1:10005/_health
+        				reconciliation http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
+        				search http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
         				wallets http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
-        				webhooks http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
+        				webhooks http://127.0.0.1:10007/_info http://127.0.0.1:10007/_healthcheck
         			}
         		}
         	}
