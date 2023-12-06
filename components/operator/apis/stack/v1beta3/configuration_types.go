@@ -54,18 +54,28 @@ func (in *ConfigurationServicesSpec) List() []string {
 	return ret
 }
 
-func (in *ConfigurationServicesSpec) IsDisabled(service string) bool {
+func (in *ConfigurationServicesSpec) getDisabledProperty(service string) *bool {
 	valueOf := reflect.ValueOf(in).Elem().FieldByName(strcase.ToCamel(service))
 	if valueOf.IsValid() {
 		_, ok := valueOf.Type().FieldByName("CommonServiceProperties")
 		if !ok {
-			return false
+			return nil
 		}
 		commonServiceProperties := valueOf.FieldByName("CommonServiceProperties")
 		properties := commonServiceProperties.Interface().(CommonServiceProperties)
-		return properties.Disabled != nil && *properties.Disabled
+		return properties.Disabled
 	}
-	return false
+	return nil
+}
+
+func (in *ConfigurationServicesSpec) IsExplicitlyDisabled(service string) bool {
+	disabled := in.getDisabledProperty(service)
+	return disabled != nil && *disabled
+}
+
+func (in *ConfigurationServicesSpec) IsExplicitlyEnabled(service string) bool {
+	disabled := in.getDisabledProperty(service)
+	return disabled != nil && !*disabled
 }
 
 // TODO: Handle validation

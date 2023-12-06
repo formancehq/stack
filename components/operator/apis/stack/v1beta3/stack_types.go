@@ -138,13 +138,23 @@ type StackSpec struct {
 	Services StackServicesSpec `json:"services,omitempty"`
 }
 
-func (in *StackServicesSpec) IsDisabled(service string) bool {
+func (in *StackServicesSpec) getDisabledProperty(service string) *bool {
 	valueOf := reflect.ValueOf(in).Elem().FieldByName(strcase.ToCamel(service))
 	if valueOf.IsValid() {
 		properties := valueOf.Interface().(StackServicePropertiesSpec)
-		return properties.Disabled != nil && *properties.Disabled
+		return properties.Disabled
 	}
-	return false
+	return nil
+}
+
+func (in *StackServicesSpec) IsExplicitlyDisabled(service string) bool {
+	disabled := in.getDisabledProperty(service)
+	return disabled != nil && *disabled
+}
+
+func (in *StackServicesSpec) IsExplicitlyEnabled(service string) bool {
+	disabled := in.getDisabledProperty(service)
+	return disabled != nil && !*disabled
 }
 
 type ControlAuthentication struct {
