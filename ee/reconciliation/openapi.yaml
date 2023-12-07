@@ -1,0 +1,416 @@
+openapi: 3.0.3
+info:
+  title: Reconciliation API
+  version: "RECONCILIATION_VERSION"
+
+# ---------------------- PATHS ----------------------
+paths:
+  /_info:
+    get:
+      summary: Get server info
+      operationId: getServerInfo
+      tags:
+        - Reconciliation
+      responses:
+        200:
+          $ref: '#/components/responses/ServerInfo'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /policies:
+    post:
+      summary: Create a policy
+      tags:
+        - Reconciliation
+      operationId: createPolicy
+      description: Create a policy
+      requestBody:
+        $ref: '#/components/requestBodies/Policy'
+      responses:
+        201:
+          $ref: '#/components/responses/Policy'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      summary: List policies
+      operationId: listPolicies
+      tags:
+        - Reconciliation
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          $ref: '#/components/responses/Policies'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /policies/{policyID}:
+    delete:
+      summary: Delete a policy
+      operationId: deletePolicy
+      tags:
+        - Reconciliation
+      description: Delete a policy by its id.
+      parameters:
+        - $ref: '#/components/parameters/PolicyID'
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      summary: Get a policy
+      tags:
+        - Reconciliation
+      operationId: getPolicy
+      parameters:
+        - $ref: '#/components/parameters/PolicyID'
+      responses:
+        200:
+          $ref: '#/components/responses/Policy'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /policies/{policyID}/reconciliation:
+    post:
+      summary: Reconcile using a policy
+      tags:
+        - Reconciliation
+      operationId: reconcile
+      description: Reconcile using a policy
+      parameters:
+        - $ref: '#/components/parameters/PolicyID'
+      requestBody:
+        $ref: '#/components/requestBodies/Reconciliation'
+      responses:
+        200:
+          $ref: '#/components/responses/Reconciliation'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /reconciliations:
+    get:
+      summary: List reconciliations
+      operationId: listReconciliations
+      tags:
+        - Reconciliation
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          $ref: '#/components/responses/Reconciliations'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /reconciliations/{reconciliationID}:
+    get:
+      summary: Get a reconciliation
+      tags:
+        - Reconciliation
+      operationId: getReconciliation
+      parameters:
+        - $ref: '#/components/parameters/ReconciliationID'
+      responses:
+        200:
+          $ref: '#/components/responses/Reconciliation'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+# ---------------------- COMPONENTS ----------------------
+components:
+  # ---------------------- PARAMETERS ----------------------
+  parameters:
+    PageSize:
+      name: pageSize
+      in: query
+      description: |
+            The maximum number of results to return per page.
+      example: 100
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 1000
+    Cursor:
+      name: cursor
+      in: query
+      description: |
+        Parameter used in pagination requests. Maximum page size is set to 15.
+        Set to the value of next for the next page of results.
+        Set to the value of previous for the previous page of results.
+        No other parameters can be set when this parameter is set.
+      schema:
+        type: string
+        example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+    PolicyID:
+      name: policyID
+      in: path
+      schema:
+        type: string
+      description: The policy ID.
+      example: XXX
+      required: true
+    ReconciliationID:
+      name: reconciliationID
+      in: path
+      schema:
+        type: string
+      description: The reconciliation ID.
+      example: XXX
+      required: true
+
+  # ---------------------- RESPONSES ----------------------
+  responses:
+    NoContent:
+      description: No content
+    ServerInfo:
+      description: Server information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServerInfo'
+    Policies:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoliciesCursorResponse'
+    Policy:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PolicyResponse'
+    Reconciliations:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReconciliationsCursorResponse'
+    Reconciliation:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReconciliationResponse'
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  # ---------------------- REQUESTS ----------------------
+  requestBodies:
+    Policy:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PolicyRequest'
+    Reconciliation:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReconciliationRequest'
+  
+  # ---------------------- SCHEMAS ----------------------
+  schemas:
+    # ---------------------- CURSORS ----------------------
+    PoliciesCursorResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          type: object
+          required:
+            - pageSize
+            - hasMore
+            - data
+          properties:
+            pageSize:
+              type: integer
+              format: int64
+              minimum: 1
+              maximum: 1000
+              example: 15
+            hasMore:
+              type: boolean
+              example: false
+            previous:
+              type: string
+              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+            next:
+              type: string
+              example: ""
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Policy'
+    ReconciliationsCursorResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          type: object
+          required:
+            - pageSize
+            - hasMore
+            - data
+          properties:
+            pageSize:
+              type: integer
+              format: int64
+              minimum: 1
+              maximum: 1000
+              example: 15
+            hasMore:
+              type: boolean
+              example: false
+            previous:
+              type: string
+              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+            next:
+              type: string
+              example: ""
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Reconciliation'
+    # ---------------------- RESPONSES ----------------------
+    ServerInfo:
+      type: object
+      required:
+      - version
+      properties:
+        version:
+          type: string
+    PolicyRequest:
+      type: object
+      required:
+        - name
+        - ledgerName
+        - ledgerQuery
+        - paymentsPoolID
+      properties:
+        name:
+          type: string
+          example: "XXX"
+        ledgerName:
+          type: string
+          example: "default"
+        ledgerQuery:
+          type: string
+          example: "{\"$match\": {\"metadata[reconciliation]\": \"pool:main\"}}"
+        paymentsPoolID:
+          type: string
+          example: "XXX"
+    PolicyResponse:
+      type: object
+      required:
+        - data
+      properties:
+        policy:
+          $ref: '#/components/schemas/Policy'
+    ReconciliationRequest:
+      type: object
+      required:
+        - at
+      properties:
+        at:
+          type: string
+          format: date-time
+          example: "2021-01-01T00:00:00.000Z"
+    ReconciliationResponse:
+      type: object
+      required:
+        - data
+      properties:
+        reconciliation:
+          $ref: '#/components/schemas/Reconciliation'
+    Policy:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - ledgerName
+        - ledgerQuery
+        - paymentsPoolID
+      properties:
+        id:
+          type: string
+          example: "XXX"
+        name:
+          type: string
+          example: "XXX"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2021-01-01T00:00:00.000Z"
+        ledgerName:
+          type: string
+          example: "default"
+        ledgerQuery:
+          type: string
+          example: "{\"$match\": {\"metadata[reconciliation]\": \"pool:main\"}}"
+        paymentsPoolID:
+          type: string
+          example: "XXX"
+    Reconciliation:
+      type: object
+      required:
+        - id
+        - policyID
+        - createdAt
+        - reconciledAt
+        - status
+        - paymentsBalances
+        - ledgerBalances
+      properties:
+        id:
+          type: string
+          example: "XXX"
+        policyID:
+          type: string
+          example: "XXX"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2021-01-01T00:00:00.000Z"
+        reconciledAt:
+          type: string
+          format: date-time
+          example: "2021-01-01T00:00:00.000Z"
+        status:
+          type: string
+          example: "COMPLETED"
+        paymentsBalances:
+          type: object
+          additionalProperties:
+            type: integer
+            format: bigint
+        ledgerBalances:
+          type: object
+          additionalProperties:
+            type: integer
+            format: bigint
+        error:
+          type: string
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - errorMessage
+      properties:
+        errorCode:
+          type: string
+          example: "VALIDATION"
+        errorMessage:
+          type: string
+        details:
+          type: string

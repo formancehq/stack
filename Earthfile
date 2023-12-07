@@ -32,7 +32,7 @@ build-final-spec:
         COPY components/$c/openapi.yaml $c/openapi.yaml
     END
     WORKDIR /src/ee
-    FOR c IN auth webhooks search wallets orchestration
+    FOR c IN auth webhooks search wallets orchestration reconciliation
         COPY ee/$c/openapi.yaml $c/openapi.yaml
     END
     WORKDIR /src/openapi

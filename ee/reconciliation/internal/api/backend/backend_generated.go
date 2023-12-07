@@ -9,6 +9,9 @@ import (
 	reflect "reflect"
 
 	service "github.com/formancehq/reconciliation/internal/api/service"
+	models "github.com/formancehq/reconciliation/internal/models"
+	storage "github.com/formancehq/reconciliation/internal/storage"
+	api "github.com/formancehq/stack/libs/go-libs/api"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,19 +38,108 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// Reconciliation mocks base method.
-func (m *MockService) Reconciliation(ctx context.Context, req *service.ReconciliationRequest) (*service.ReconciliationResponse, error) {
+// CreatePolicy mocks base method.
+func (m *MockService) CreatePolicy(ctx context.Context, req *service.CreatePolicyRequest) (*models.Policy, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Reconciliation", ctx, req)
-	ret0, _ := ret[0].(*service.ReconciliationResponse)
+	ret := m.ctrl.Call(m, "CreatePolicy", ctx, req)
+	ret0, _ := ret[0].(*models.Policy)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePolicy indicates an expected call of CreatePolicy.
+func (mr *MockServiceMockRecorder) CreatePolicy(ctx, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolicy", reflect.TypeOf((*MockService)(nil).CreatePolicy), ctx, req)
+}
+
+// DeletePolicy mocks base method.
+func (m *MockService) DeletePolicy(ctx context.Context, id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePolicy", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePolicy indicates an expected call of DeletePolicy.
+func (mr *MockServiceMockRecorder) DeletePolicy(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePolicy", reflect.TypeOf((*MockService)(nil).DeletePolicy), ctx, id)
+}
+
+// GetPolicy mocks base method.
+func (m *MockService) GetPolicy(ctx context.Context, id string) (*models.Policy, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPolicy", ctx, id)
+	ret0, _ := ret[0].(*models.Policy)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPolicy indicates an expected call of GetPolicy.
+func (mr *MockServiceMockRecorder) GetPolicy(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPolicy", reflect.TypeOf((*MockService)(nil).GetPolicy), ctx, id)
+}
+
+// GetReconciliation mocks base method.
+func (m *MockService) GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetReconciliation", ctx, id)
+	ret0, _ := ret[0].(*models.Reconciliation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetReconciliation indicates an expected call of GetReconciliation.
+func (mr *MockServiceMockRecorder) GetReconciliation(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReconciliation", reflect.TypeOf((*MockService)(nil).GetReconciliation), ctx, id)
+}
+
+// ListPolicies mocks base method.
+func (m *MockService) ListPolicies(ctx context.Context, q storage.GetPoliciesQuery) (*api.Cursor[models.Policy], error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPolicies", ctx, q)
+	ret0, _ := ret[0].(*api.Cursor[models.Policy])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPolicies indicates an expected call of ListPolicies.
+func (mr *MockServiceMockRecorder) ListPolicies(ctx, q interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPolicies", reflect.TypeOf((*MockService)(nil).ListPolicies), ctx, q)
+}
+
+// ListReconciliations mocks base method.
+func (m *MockService) ListReconciliations(ctx context.Context, q storage.GetReconciliationsQuery) (*api.Cursor[models.Reconciliation], error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListReconciliations", ctx, q)
+	ret0, _ := ret[0].(*api.Cursor[models.Reconciliation])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListReconciliations indicates an expected call of ListReconciliations.
+func (mr *MockServiceMockRecorder) ListReconciliations(ctx, q interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReconciliations", reflect.TypeOf((*MockService)(nil).ListReconciliations), ctx, q)
+}
+
+// Reconciliation mocks base method.
+func (m *MockService) Reconciliation(ctx context.Context, policyID string, req *service.ReconciliationRequest) (*models.Reconciliation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Reconciliation", ctx, policyID, req)
+	ret0, _ := ret[0].(*models.Reconciliation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Reconciliation indicates an expected call of Reconciliation.
-func (mr *MockServiceMockRecorder) Reconciliation(ctx, req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) Reconciliation(ctx, policyID, req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reconciliation", reflect.TypeOf((*MockService)(nil).Reconciliation), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reconciliation", reflect.TypeOf((*MockService)(nil).Reconciliation), ctx, policyID, req)
 }
 
 // MockBackend is a mock of Backend interface.

@@ -2,11 +2,14 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/reconciliation/internal/api"
+	"github.com/formancehq/reconciliation/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
@@ -55,7 +58,13 @@ func newServeCommand(version string) *cobra.Command {
 
 func runServer(version string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
+		databaseOptions, err := prepareDatabaseOptions(cmd.OutOrStdout())
+		if err != nil {
+			return err
+		}
+
 		options := make([]fx.Option, 0)
+		options = append(options, databaseOptions)
 
 		options = append(options,
 			otlptraces.CLITracesModule(viper.GetViper()),
@@ -71,4 +80,13 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 
 		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	}
+}
+
+func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
+	postgresURI := viper.GetString(postgresURIFlag)
+	if postgresURI == "" {
+		return nil, errors.New("missing postgres uri")
+	}
+
+	return storage.Module(postgresURI, viper.GetBool(service.DebugFlag), output), nil
 }

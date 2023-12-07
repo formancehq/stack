@@ -20,6 +20,7 @@ const (
 	stackClientIDFlag     = "stack-client-id"
 	stackClientSecretFlag = "stack-client-secret"
 	listenFlag            = "listen"
+	postgresURIFlag       = "postgres-uri"
 )
 
 func NewRootCommand() *cobra.Command {
