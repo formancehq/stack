@@ -1,0 +1,344 @@
+apiVersion: v1
+data:
+    ledger_ingestion.yaml: "input:\n  event_bus:\n    topic: ledger\n    consumer_group: search\n\npipeline:\n  processors:\n  - log:\n      message: \"receive message: ${! this }\"\n  - switch_event_type:\n      events:\n      - label: COMMITTED_TRANSACTIONS\n        processors:\n        - bloblang: |\n            \n            map amount {\n              root = [this.amount]\n              let hasDecimals = this.asset.split(\"/\").length() > 1\n              let decimals = if $hasDecimals { this.asset.split(\"/\").index(1).number() } else { 0 }\n              root = if $decimals > 0 {\n                root.append(\n                  this.amount / range(0, $decimals).fold(1, t -> t.tally * 10) # Just a pow...\n                )\n              }\n              root = root.flatten()\n            }\n                \n            map tx {\n              root = {\n                \"action\": \"index\",\n                \"id\": \"TRANSACTION-%s-%s\".format(this.ledger, this.transaction.id),\n                \"document\": {\n                  \"data\": {\n                    \"postings\": this.transaction.postings,\n                    \"reference\": this.transaction.reference,\n                    \"txid\": this.transaction.id,\n                    \"timestamp\": this.transaction.timestamp,\n                    \"metadata\": if this.transaction.metadata { this.transaction.metadata } else {{}}\n                  },\n                  \"indexed\": {\n                    \"reference\": this.transaction.reference,\n                    \"txid\": this.transaction.id,\n                    \"timestamp\": this.transaction.timestamp,\n                    \"asset\": this.transaction.postings.map_each(p -> p.asset),\n                    \"source\": this.transaction.postings.map_each(p -> p.source),\n                    \"destination\": this.transaction.postings.map_each(p -> p.destination),\n                    \"amount\": this.transaction.postings.map_each(p -> p.apply(\"amount\"))\n                  },\n                  \"kind\": \"TRANSACTION\"\n                }\n              }\n            }\n                      \n            map account {\n              root = {\n                \"action\": \"upsert\",\n                \"id\": \"ACCOUNT-%s-%s\".format(this.ledger, this.account),\n                \"document\": {\n                  \"data\": { \n                    \"address\": this.account,\n                    \"metadata\": {}\n                  },\n                  \"indexed\": { \n                    \"address\": this.account\n                  },\n                  \"kind\": \"ACCOUNT\"\n                }\n              }\n            }\n                  \n            root = []\n            root = root.append(\n              this.payload.transactions.map_each(transaction -> {\n                \"transaction\": transaction,\n                \"ledger\": this.payload.ledger\n              }.apply(\"tx\"))\n            )\n            root = root.append(\n              this.payload.transactions.\n                map_each(transaction -> transaction.postings.map_each(posting -> [\n                  posting.source,\n                  posting.destination\n                ]).\n                flatten().\n                map_each(account -> {\n                  \"account\": account,\n                  \"ledger\": this.payload.ledger\n                }.apply(\"account\"))\n              ).\n              flatten()\n            )\n            root = root.append(\n              this.payload.accountMetadata.map_each(item -> item.value.map_each(metadata -> {\n                \"script\": \"ctx._source.data.metadata[\\\"\" + metadata.key + \"\\\"]=\\\"\" + metadata.value + \"\\\"\",\n                \"action\": \"update\",\n                \"id\": \"ACCOUNT-%s-%s\".format(this.payload.ledger, item.key),\n                \"upsert\": {\n                  \"data\": { \n                    \"address\": item.key,\n                    \"metadata\": { metadata.key: metadata.value }\n                  },\n                  \"indexed\": { \n                    \"address\": item.key\n                  },\n                  \"kind\": \"ACCOUNT\"\n                }\n              }).values()).values().flatten()\n            )\n            root = root.flatten()\n              \n            let overlay = {\n              \"data\": {\n                \"ledger\": this.payload.ledger\n              },\n              \"indexed\": {\n                \"ledger\": this.payload.ledger  \n              }\n            }\n              \n            root = root.map_each(cmd -> match cmd.action {\n              cmd.action == \"update\" => if cmd.exists(\"upsert\") { cmd.merge({\n                \"upsert\": $overlay\n              }) } else { cmd },\n              _ => cmd.merge({\n                \"document\": $overlay\n              }) \n            })\n        - log:\n            message: \"Computed: ${! this }\"\n        - unarchive:\n            format: json_array\n      - label: SAVED_METADATA\n        processors:\n        - bloblang: |\n            root = this.payload.metadata.map_each(item -> {\n              \"script\": \"ctx._source.data.metadata[\\\"\" + item.key + \"\\\"]=\\\"\" + item.value + \"\\\"\",\n              \"action\": \"update\",\n              \"id\": \"%s-%s-%s\".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),\n              \"upsert\": {\n                \"data\": { \n                  \"address\": this.payload.targetId,\n                  \"metadata\": { item.key: item.value },\n                  \"ledger\": this.payload.ledger\n                },\n                \"indexed\": { \n                  \"address\": this.payload.targetId,\n                  \"ledger\": this.payload.ledger\n                },\n                \"kind\": \"ACCOUNT\"\n              }\n            }).values()\n        - unarchive:\n            format: json_array\n      - label: DELETED_METADATA\n        processors:\n        - bloblang: |\n            root = {\n              \"script\": \"ctx._source.data.metadata.remove(\\\"\" + this.payload.key + \"\\\")\",\n              \"action\": \"update\",\n              \"id\": \"%s-%s-%s\".format(this.payload.targetType, this.payload.ledger, this.payload.targetId)\n            }\n\noutput:\n  resource: elasticsearch\n"
+    ledger_reindex.yaml: |
+        input:
+          http_server:
+            path: /
+
+        output:
+          broker:
+            outputs:
+            - http_client:
+                verb: POST
+                url: http://localhost:4195/ledger_reindex_transactions
+            - http_client:
+                verb: POST
+                url: http://localhost:4195/ledger_reindex_accounts
+    ledger_reindex_accounts.yaml: "input:\n  http_server:\n    path: /\n\npipeline:\n  processors:\n  - bloblang: |\n      meta ledger = this.ledger\n  - postgres_query:\n      service: ledger\n      query: |\n        select address, metadata\n        from \"${! meta(\"ledger\") }\".accounts\n  - unarchive:\n      format: json_array\n  - bloblang: |\n      root = this.assign({\n        \"metadata\": this.metadata.parse_json()\n      })\n  - bloblang: |\n      root = {\n        \"document\": {\n          \"data\": { \n            \"address\": this.address,\n            \"ledger\": meta(\"ledger\"),\n            \"metadata\": this.metadata\n          },\n          \"indexed\": {\n            \"address\": this.address,\n            \"ledger\": meta(\"ledger\")\n          },\n          \"kind\": \"ACCOUNT\",\n          \"ledger\": meta(\"ledger\")\n        },\n        \"id\": \"ACCOUNT-%s-%s\".format(meta(\"ledger\"), this.address),\n        \"action\": \"upsert\"\n      }\n\noutput:\n  resource: elasticsearch\n"
+    ledger_reindex_all.yaml: |
+        input:
+          http_server:
+            path: /
+
+        pipeline:
+          processors:
+          - postgres_query:
+              service: ledger
+              query: 'select * from "_system".ledgers'
+          - unarchive:
+              format: json_array
+          - log:
+              message: "Process ledger: ${! this.ledger }"
+
+        output:
+          broker:
+            outputs:
+            - http_client:
+                verb: POST
+                url: http://localhost:4195/ledger_reindex
+    ledger_reindex_transactions.yaml: |
+        input:
+          http_server:
+            path: /
+
+        pipeline:
+          processors:
+          - bloblang: |
+              meta ledger = this.ledger
+          - postgres_query:
+              service: ledger
+              query: |
+                select id::varchar as id, timestamp, reference, metadata, postings
+                from "${! meta("ledger") }".transactions;
+          - unarchive:
+              format: json_array
+          - bloblang: |
+              root = this.assign({
+                "postings": this.postings.parse_json(),
+                "metadata": this.metadata.parse_json()
+              })
+          - bloblang: |
+                root = {
+                  "id": "TRANSACTION-%s-%s".format(meta("ledger"), this.id),
+                  "action": "upsert",
+                  "document": {
+                    "data": {
+                      "postings": this.postings,
+                      "reference": this.reference,
+                      "txid": this.id,
+                      "timestamp": this.timestamp,
+                      "metadata": if this.metadata { this.metadata } else {{}},
+                      "ledger": meta("ledger")
+                    },
+                    "indexed": {
+                      "reference": this.reference,
+                      "txid": this.id,
+                      "timestamp": this.timestamp,
+                      "asset": this.postings.map_each(p -> p.asset),
+                      "source": this.postings.map_each(p -> p.source),
+                      "destination": this.postings.map_each(p -> p.destination),
+                      "amount": this.postings.map_each(p -> if p.asset.contains("/") {
+                        [
+                          p.amount,
+                          p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) # amount / pow(10, decimal part of asset)
+                        ]
+                      } else { [ p.amount ] }).flatten().map_each(v -> "%v".format(v)),
+                      "ledger": meta("ledger")
+                    },
+                    "kind": "TRANSACTION",
+                    "ledger": meta("ledger")
+                  }
+                }
+
+        output:
+          resource: elasticsearch
+    payments_deletion.yaml: |
+        input:
+          event_bus:
+            topic: payments
+            consumer_group: search-payments-resets
+
+        pipeline:
+          processors:
+          - switch_event_type:
+              events:
+              - label: CONNECTOR_RESET
+                processors:
+                - bloblang: |
+                    root = {
+                      "query": {
+                        "bool": {
+                          "must": [
+                            {
+                              "bool": {
+                                "should": [
+                                  {
+                                    "match": {
+                                      "kind": "PAYMENT"
+                                    }
+                                  },
+                                  {
+                                    "match": {
+                                      "kind": "PAYMENT_ACCOUNT"
+                                    }
+                                  },
+                                  {
+                                    "match": {
+                                      "kind": "PAYMENT_BALANCE"
+                                    }
+                                  },
+                                  {
+                                    "match": {
+                                      "kind": "PAYMENT_BANK_ACCOUNT"
+                                    }
+                                  },
+                                  {
+                                    "match": {
+                                      "kind": "PAYMENT_TRANSFER_INITIATION"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "match": {
+                                "indexed.connectorId": this.payload.connectorId
+                              }
+                            },
+                            {
+                              "match": {
+                                "stack": env("STACK")
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+
+              - label: DELETED_TRANSFER_INITIATION
+                processors:
+                - bloblang: |
+                    root = {
+                      "query": {
+                        "bool": {
+                          "must": [
+                            {
+                              "match": {
+                                "kind": "PAYMENT_TRANSFER_INITIATION"
+                              }
+                            },
+                            {
+                              "should": [
+                                {
+                                  "match": {
+                                    "indexed.id": this.payload.id
+                                  }
+                                },
+                                {
+                                  "match": {
+                                    "indexed.provider": this.payload.provider
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "match": {
+                                "stack": env("STACK")
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+
+        output:
+          http_client:
+            url: ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}/_delete_by_query
+            verb: POST
+            headers:
+              Content-Type: application/json
+            basic_auth:
+              enabled: ${BASIC_AUTH_ENABLED}
+              username: ${BASIC_AUTH_USERNAME}
+              password: ${BASIC_AUTH_PASSWORD}
+    payments_ingestion.yaml: |
+        input:
+          event_bus:
+            topic: payments
+            consumer_group: search
+
+        pipeline:
+          processors:
+          - switch_event_type:
+              events:
+              - label: SAVED_PAYMENT
+                processors:
+                - bloblang: |
+                      root = {
+                          "document": {
+                            "data": this.payload,
+                            "indexed": {
+                                "id": this.payload.id,
+                                "reference": this.payload.reference,
+                                "provider": this.payload.provider,
+                                "createdAt": this.payload.createdAt,
+                                "connectorId": this.payload.connectorId,
+                                "type": this.payload.type,
+                                "status": this.payload.status,
+                                "scheme": this.payload.scheme,
+                                "asset": this.payload.asset,
+                                "initialAmount": this.payload.initialAmount
+                            },
+                            "kind": "PAYMENT",
+                            "when": this.date
+                          },
+                          "action": "index",
+                          "id": "PAYMENT-%s".format(this.payload.id)
+                      }
+              - label: SAVED_ACCOUNT
+                processors:
+                - bloblang: |
+                      root = {
+                        "document": {
+                            "data": this.payload,
+                            "indexed": {
+                                "id": this.payload.id,
+                                "provider": this.payload.provider,
+                                "createdAt": this.payload.createdAt,
+                                "reference": this.payload.reference,
+                                "connectorId": this.payload.connectorId,
+                                "defaultAsset": this.payload.defaultAsset,
+                                "accountName": this.payload.accountName,
+                                "type": this.payload.type
+                            },
+                            "kind": "PAYMENT_ACCOUNT",
+                            "when": this.date
+                        },
+                        "action": "index",
+                        "id": "PAYMENT-ACCOUNT-%s".format(this.payload.id)
+                      }
+              - label: SAVED_BALANCE
+                processors:
+                - bloblang: |
+                      root = {
+                          "document": {
+                            "data": this.payload,
+                            "indexed": {
+                                "accountId": this.payload.accountID,
+                                "provider": this.payload.provider,
+                                "connectorId": this.payload.connectorId,
+                                "createdAt": this.payload.createdAt,
+                                "asset": this.payload.asset,
+                                "balance": this.payload.balance
+                            },
+                            "kind": "PAYMENT_BALANCE",
+                            "when": this.date
+                          },
+                          "action": "index",
+                          "id": "PAYMENT-BALANCE-%s-%s".format(this.payload.accountId, this.payload.asset)
+                        }
+              - label: SAVED_BANK_ACCOUNT
+                processors:
+                - bloblang: |
+                      root = {
+                        "document": {
+                            "data": this.payload,
+                            "indexed": {
+                                "id": this.payload.id,
+                                "createdAt": this.payload.createdAt,
+                                "connectorId": this.payload.connectorId,
+                                "provider": this.payload.provider,
+                                "name": this.payload.name,
+                                "accountNumber": this.payload.accountNumber,
+                                "iban": this.payload.iban,
+                                "swiftBicCode": this.payload.swiftBicCode,
+                                "country": this.payload.country,
+                                "provider": this.payload.provider,
+                                "accountId": this.payload.accountID
+                            },
+                            "kind": "PAYMENT_BANK_ACCOUNT",
+                            "when": this.date
+                        },
+                        "action": "index",
+                        "id": "PAYMENT-BANK-ACCOUNT-%s".format(this.payload.id)
+                      }
+              - label: SAVED_TRANSFER_INITIATION
+                processors:
+                - bloblang: |
+                      root = {
+                       "document": {
+                            "data": this.payload,
+                            "indexed": {
+                                "id": this.payload.id,
+                                "createdAt": this.payload.createdAt,
+                                "scheduledAt": this.payload.scheduledAt,
+                                "updatedAt": this.payload.updatedAt,
+                                "connectorId": this.payload.connectorId,
+                                "description": this.payload.description,
+                                "type": this.payload.type,
+                                "provider": this.payload.provider,
+                                "sourceAccountId": this.payload.sourceAccountID,
+                                "destinationAccountId": this.payload.destinationAccountID,
+                                "amount": this.payload.amount,
+                                "asset": this.payload.asset,
+                                "attempts": this.payload.attempts,
+                                "status": this.payload.status,
+                                "error": this.payload.error,
+                                "relatedPayment": this.payload.relatedPayment
+                            },
+                            "kind": "PAYMENT_TRANSFER_INITIATION",
+                            "when": this.date
+                       },
+                       "action": "index",
+                       "id": "PAYMENT-TRANSFER-INITIATION-%s".format(this.payload.id)
+                      }
+
+        output:
+          resource: elasticsearch
+kind: ConfigMap
+metadata:
+    labels:
+        stack: "true"
+    name: search-benthos-streams
+    namespace: multipod-latest-with-check-scopes
