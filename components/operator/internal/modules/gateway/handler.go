@@ -49,14 +49,15 @@ func (g module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return modules.Services{{
+				service := &modules.Service{
 					Port: gatewayPort,
 					ExposeHTTP: &modules.ExposeHTTP{
 						Path: "/",
 					},
-					Liveness:    modules.LivenessDisable,
-					Topics:      &modules.Topics{Name: "audit"},
-					Annotations: ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
+					Liveness:         modules.LivenessDisable,
+					LivenessEndpoint: ctx.Configuration.Spec.Services.Gateway.LivenessEndpoint,
+					Topics:           &modules.Topics{Name: "audit"},
+					Annotations:      ctx.Configuration.Spec.Services.Gateway.Annotations.Service,
 					Configs: func(resolveContext modules.ServiceInstallConfiguration) modules.Configs {
 						return modules.Configs{
 							"config": modules.Config{
@@ -84,7 +85,9 @@ func (g module) Versions() map[string]modules.Version {
 							),
 						}
 					},
-				}}
+				}
+
+				return modules.Services{service}
 			},
 		},
 	}
@@ -256,6 +259,8 @@ const caddyfile = `(cors) {
 		publisher_nats_enabled {$PUBLISHER_NATS_ENABLED:true}
 		publisher_nats_url {$PUBLISHER_NATS_URL:nats://nats:4222}
 		publisher_nats_client_id {$PUBLISHER_NATS_CLIENT_ID:gateway}
+		publisher_nats_max_reconnects {$PUBLISHER_NATS_MAX_RECONNECTS:30}
+		publisher_nats_max_reconnects_wait {$PUBLISHER_NATS_MAX_RECONNECT_WAIT:2s}
 		{{- end }}
 	}
 }

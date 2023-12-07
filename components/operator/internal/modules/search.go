@@ -65,6 +65,7 @@ func ElasticSearchEnvVars(stack *stackv1beta3.Stack, configuration *stackv1beta3
 		}
 	}
 	if configuration.Spec.Broker.Nats != nil {
+
 		ret = ret.Append(
 			Env("NATS_URL", configuration.Spec.Broker.Nats.URL),
 		)

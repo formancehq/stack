@@ -10,7 +10,6 @@ func NewClient(natsConfig *v1beta3.NatsConfig, clientId string) (*nats.Conn, err
 	options := []nats.Option{
 		nats.Name(clientId),
 	}
-
 	conn, err := nats.Connect(natsConfig.URL, options...)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot connect to nats-core")
