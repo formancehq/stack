@@ -3,15 +3,20 @@
 ### Available Operations
 
 * [cancelEvent](#cancelevent) - Cancel a running workflow
+* [createTrigger](#createtrigger) - Create trigger
 * [createWorkflow](#createworkflow) - Create workflow
+* [deleteTrigger](#deletetrigger) - Delete trigger
 * [deleteWorkflow](#deleteworkflow) - Delete a flow by id
 * [getInstance](#getinstance) - Get a workflow instance by id
 * [getInstanceHistory](#getinstancehistory) - Get a workflow instance history by id
 * [getInstanceStageHistory](#getinstancestagehistory) - Get a workflow instance stage history
 * [getWorkflow](#getworkflow) - Get a flow by id
 * [listInstances](#listinstances) - List instances of a workflow
+* [listTriggers](#listtriggers) - List triggers
+* [listTriggersOccurrences](#listtriggersoccurrences) - List triggers occurrences
 * [listWorkflows](#listworkflows) - List registered workflows
 * [orchestrationgetServerInfo](#orchestrationgetserverinfo) - Get server info
+* [readTrigger](#readtrigger) - Read trigger
 * [runWorkflow](#runworkflow) - Run workflow
 * [sendEvent](#sendevent) - Send an event to a running workflow
 
@@ -48,6 +53,45 @@ try {
 }
 ```
 
+## createTrigger
+
+Create trigger
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Shared\TriggerData;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new TriggerData();
+    $request->event = 'numquam';
+    $request->filter = 'commodi';
+    $request->vars = [
+        'molestiae' => 'velit',
+        'error' => 'quia',
+    ];
+    $request->workflowID = 'quis';
+
+    $response = $sdk->orchestration->createTrigger($request);
+
+    if ($response->createTriggerResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
 ## createWorkflow
 
 Create a workflow
@@ -69,25 +113,63 @@ $sdk = SDK::builder()
 
 try {
     $request = new CreateWorkflowRequest();
-    $request->name = 'Lucy Konopelski';
+    $request->name = 'Kayla O'Kon';
     $request->stages = [
         [
-            'quis' => 'vitae',
+            'tenetur' => 'ipsam',
         ],
         [
-            'animi' => 'enim',
-            'odit' => 'quo',
-            'sequi' => 'tenetur',
+            'possimus' => 'aut',
+            'quasi' => 'error',
+            'temporibus' => 'laborum',
         ],
         [
-            'id' => 'possimus',
-            'aut' => 'quasi',
+            'reiciendis' => 'voluptatibus',
+        ],
+        [
+            'nihil' => 'praesentium',
+            'voluptatibus' => 'ipsa',
+            'omnis' => 'voluptate',
+            'cum' => 'perferendis',
         ],
     ];
 
     $response = $sdk->orchestration->createWorkflow($request);
 
     if ($response->createWorkflowResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
+## deleteTrigger
+
+Read trigger
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\DeleteTriggerRequest;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new DeleteTriggerRequest();
+    $request->triggerID = 'doloremque';
+
+    $response = $sdk->orchestration->deleteTrigger($request);
+
+    if ($response->statusCode === 200) {
         // handle response
     }
 } catch (Exception $e) {
@@ -116,7 +198,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new DeleteWorkflowRequest();
-    $request->flowId = 'error';
+    $request->flowId = 'reprehenderit';
 
     $response = $sdk->orchestration->deleteWorkflow($request);
 
@@ -149,7 +231,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetInstanceRequest();
-    $request->instanceID = 'temporibus';
+    $request->instanceID = 'ut';
 
     $response = $sdk->orchestration->getInstance($request);
 
@@ -182,7 +264,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetInstanceHistoryRequest();
-    $request->instanceID = 'laborum';
+    $request->instanceID = 'maiores';
 
     $response = $sdk->orchestration->getInstanceHistory($request);
 
@@ -215,8 +297,8 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetInstanceStageHistoryRequest();
-    $request->instanceID = 'quasi';
-    $request->number = 971945;
+    $request->instanceID = 'dicta';
+    $request->number = 359444;
 
     $response = $sdk->orchestration->getInstanceStageHistory($request);
 
@@ -249,7 +331,7 @@ $sdk = SDK::builder()
 
 try {
     $request = new GetWorkflowRequest();
-    $request->flowId = 'voluptatibus';
+    $request->flowId = 'dolore';
 
     $response = $sdk->orchestration->getWorkflow($request);
 
@@ -283,11 +365,73 @@ $sdk = SDK::builder()
 try {
     $request = new ListInstancesRequest();
     $request->running = false;
-    $request->workflowID = 'vero';
+    $request->workflowID = 'iusto';
 
     $response = $sdk->orchestration->listInstances($request);
 
     if ($response->listRunsResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
+## listTriggers
+
+List triggers
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $response = $sdk->orchestration->listTriggers();
+
+    if ($response->listTriggersResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
+## listTriggersOccurrences
+
+List triggers occurrences
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\ListTriggersOccurrencesRequest;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new ListTriggersOccurrencesRequest();
+    $request->triggerID = 'dicta';
+
+    $response = $sdk->orchestration->listTriggersOccurrences($request);
+
+    if ($response->listTriggersOccurrencesResponse !== null) {
         // handle response
     }
 } catch (Exception $e) {
@@ -353,6 +497,39 @@ try {
 }
 ```
 
+## readTrigger
+
+Read trigger
+
+### Example Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+require_once 'vendor/autoload.php';
+
+use \formance\stack\SDK;
+use \formance\stack\Models\Shared\Security;
+use \formance\stack\Models\Operations\ReadTriggerRequest;
+
+$sdk = SDK::builder()
+    ->build();
+
+try {
+    $request = new ReadTriggerRequest();
+    $request->triggerID = 'harum';
+
+    $response = $sdk->orchestration->readTrigger($request);
+
+    if ($response->readTriggerResponse !== null) {
+        // handle response
+    }
+} catch (Exception $e) {
+    // handle exception
+}
+```
+
 ## runWorkflow
 
 Run workflow
@@ -375,11 +552,11 @@ $sdk = SDK::builder()
 try {
     $request = new RunWorkflowRequest();
     $request->requestBody = [
-        'praesentium' => 'voluptatibus',
-        'ipsa' => 'omnis',
+        'accusamus' => 'commodi',
+        'repudiandae' => 'quae',
     ];
     $request->wait = false;
-    $request->workflowID = 'voluptate';
+    $request->workflowID = 'ipsum';
 
     $response = $sdk->orchestration->runWorkflow($request);
 
@@ -414,8 +591,8 @@ $sdk = SDK::builder()
 try {
     $request = new SendEventRequest();
     $request->requestBody = new SendEventRequestBody();
-    $request->requestBody->name = 'Thomas Batz';
-    $request->instanceID = 'maiores';
+    $request->requestBody->name = 'Virgil Mante';
+    $request->instanceID = 'praesentium';
 
     $response = $sdk->orchestration->sendEvent($request);
 

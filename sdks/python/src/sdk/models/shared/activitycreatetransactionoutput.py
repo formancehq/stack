@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import dataclasses
-from ..shared import transaction as shared_transaction
+from ..shared import orchestrationtransaction as shared_orchestrationtransaction
 from dataclasses_json import Undefined, dataclass_json
 from sdk import utils
 
@@ -11,5 +11,5 @@ from sdk import utils
 @dataclasses.dataclass
 class ActivityCreateTransactionOutput:
     
-    data: list[shared_transaction.Transaction] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
+    data: list[shared_orchestrationtransaction.OrchestrationTransaction] = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     

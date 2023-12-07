@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/orchestration/internal/triggers"
+
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/health"
@@ -69,17 +71,19 @@ func newMockedClient(t *testing.T, db *bun.DB) *mockedClient {
 	}
 }
 
-func test(t *testing.T, fn func(router *chi.Mux, m *workflow.Manager, db *bun.DB)) {
+func test(t *testing.T, fn func(router *chi.Mux, backend Backend, db *bun.DB)) {
 	t.Parallel()
 
 	database := pgtesting.NewPostgresDatabase(t)
 	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
 	require.NoError(t, storage.Migrate(context.Background(), db))
-	manager := workflow.NewManager(db, newMockedClient(t, db), "default")
-	router := newRouter(manager, ServiceInfo{
+	workflowManager := workflow.NewManager(db, newMockedClient(t, db), "default")
+	triggersManager := triggers.NewManager(db)
+	backend := newDefaultBackend(triggersManager, workflowManager)
+	router := newRouter(backend, ServiceInfo{
 		Version: "test",
 	}, &health.HealthController{})
-	fn(router, manager, db)
+	fn(router, backend, db)
 }
 
 func TestMain(m *testing.M) {

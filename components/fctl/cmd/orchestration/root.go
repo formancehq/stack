@@ -2,6 +2,7 @@ package orchestration
 
 import (
 	"github.com/formancehq/fctl/cmd/orchestration/instances"
+	"github.com/formancehq/fctl/cmd/orchestration/triggers"
 	"github.com/formancehq/fctl/cmd/orchestration/workflows"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -15,6 +16,7 @@ func NewCommand() *cobra.Command {
 		fctl.WithChildCommands(
 			instances.NewCommand(),
 			workflows.NewCommand(),
+			triggers.NewCommand(),
 		),
 	)
 }

@@ -378,7 +378,7 @@ func testKeepOnlyLastDocument(t *testing.T) {
 	now := time.Now().Round(time.Hour)
 	for i := 0; i < 10; i++ {
 		insertAccount(t, "quickstart", fmt.Sprintf("account%d", i), now, core.Account{
-			Address: fmt.Sprintf("user:00%d", i),
+			Address: core.AccountAddress(fmt.Sprintf("user:00%d", i)),
 		})
 	}
 	for i := 0; i < 20; i++ {

@@ -32,50 +32,6 @@ sdk.transactions.createTransactions({
     transactions: [
       {
         metadata: {
-          "sint": "accusantium",
-          "mollitia": "reiciendis",
-          "mollitia": "ad",
-        },
-        postings: [
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-        ],
-        reference: "ref:001",
-        timestamp: new Date("2022-02-07T18:15:06.372Z"),
-      },
-      {
-        metadata: {
-          "nemo": "quasi",
-        },
-        postings: [
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-        ],
-        reference: "ref:001",
-        timestamp: new Date("2020-04-29T08:15:14.819Z"),
-      },
-      {
-        metadata: {
           "maxime": "deleniti",
           "facilis": "in",
         },
@@ -89,6 +45,67 @@ sdk.transactions.createTransactions({
         ],
         reference: "ref:001",
         timestamp: new Date("2022-01-30T09:19:56.236Z"),
+      },
+      {
+        metadata: {
+          "expedita": "nihil",
+          "repellat": "quibusdam",
+        },
+        postings: [
+          {
+            amount: 100,
+            asset: "COIN",
+            destination: "users:002",
+            source: "users:001",
+          },
+        ],
+        reference: "ref:001",
+        timestamp: new Date("2020-05-25T09:38:49.528Z"),
+      },
+      {
+        metadata: {
+          "consequuntur": "praesentium",
+        },
+        postings: [
+          {
+            amount: 100,
+            asset: "COIN",
+            destination: "users:002",
+            source: "users:001",
+          },
+          {
+            amount: 100,
+            asset: "COIN",
+            destination: "users:002",
+            source: "users:001",
+          },
+          {
+            amount: 100,
+            asset: "COIN",
+            destination: "users:002",
+            source: "users:001",
+          },
+        ],
+        reference: "ref:001",
+        timestamp: new Date("2022-11-16T19:20:12.159Z"),
+      },
+      {
+        metadata: {
+          "illum": "pariatur",
+          "maxime": "ea",
+          "excepturi": "odit",
+          "ea": "accusantium",
+        },
+        postings: [
+          {
+            amount: 100,
+            asset: "COIN",
+            destination: "users:002",
+            source: "users:001",
+          },
+        ],
+        reference: "ref:001",
+        timestamp: new Date("2020-11-28T07:34:18.392Z"),
       },
     ],
   },
@@ -119,8 +136,8 @@ const sdk = new SDK({
 
 sdk.transactions.addMetadataOnTransaction({
   requestBody: {
-    "expedita": "nihil",
-    "repellat": "quibusdam",
+    "voluptate": "autem",
+    "nam": "eaque",
   },
   ledger: "ledger001",
   txid: 1234,
@@ -151,17 +168,17 @@ const sdk = new SDK({
 sdk.transactions.countTransactions({
   account: "users:001",
   destination: "users:001",
-  endTime: new Date("2022-02-04T19:17:08.641Z"),
+  endTime: new Date("2021-11-26T18:45:44.366Z"),
   ledger: "ledger001",
   metadata: {
-    "accusantium": "consequuntur",
-    "praesentium": "natus",
-    "magni": "sunt",
-    "quo": "illum",
+    "perferendis": "fugiat",
+    "amet": "aut",
+    "cumque": "corporis",
+    "hic": "libero",
   },
   reference: "ref:001",
   source: "users:001",
-  startTime: new Date("2020-07-30T23:39:27.609Z"),
+  startTime: new Date("2022-08-28T17:02:52.151Z"),
 }).then((res: CountTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -187,20 +204,14 @@ const sdk = new SDK({
 });
 
 sdk.transactions.createTransaction({
-  idempotencyKey: "ea",
+  idempotencyKey: "quis",
   postTransaction: {
     metadata: {
-      "odit": "ea",
-      "accusantium": "ab",
-      "maiores": "quidem",
+      "dignissimos": "eaque",
+      "quis": "nesciunt",
+      "eos": "perferendis",
     },
     postings: [
-      {
-        amount: 100,
-        asset: "COIN",
-        destination: "users:002",
-        source: "users:001",
-      },
       {
         amount: 100,
         asset: "COIN",
@@ -219,11 +230,13 @@ sdk.transactions.createTransaction({
     )
     ",
       vars: {
-        "autem": "nam",
-        "eaque": "pariatur",
+        "quam": "dolor",
+        "vero": "nostrum",
+        "hic": "recusandae",
+        "omnis": "facilis",
       },
     },
-    timestamp: new Date("2022-01-09T22:25:53.570Z"),
+    timestamp: new Date("2022-12-08T18:10:54.422Z"),
   },
   ledger: "ledger001",
   preview: true,
@@ -280,18 +293,20 @@ const sdk = new SDK({
 
 sdk.transactions.listTransactions({
   account: "users:001",
-  after: "perferendis",
+  after: "porro",
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   destination: "users:001",
-  endTime: new Date("2022-04-23T08:05:27.776Z"),
+  endTime: new Date("2022-07-02T11:46:10.299Z"),
   ledger: "ledger001",
   metadata: {
-    "cumque": "corporis",
+    "eaque": "occaecati",
+    "rerum": "adipisci",
+    "asperiores": "earum",
   },
-  pageSize: 944124,
+  pageSize: 267262,
   reference: "ref:001",
   source: "users:001",
-  startTime: new Date("2021-07-02T12:00:47.197Z"),
+  startTime: new Date("2021-08-23T06:19:56.211Z"),
 }).then((res: ListTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response

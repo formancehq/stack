@@ -14,10 +14,10 @@ class ActivityCreateTransactionOutput
     /**
      * $data
      * 
-     * @var array<\formance\stack\Models\Shared\Transaction> $data
+     * @var array<\formance\stack\Models\Shared\OrchestrationTransaction> $data
      */
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\Transaction>')]
+    #[\JMS\Serializer\Annotation\Type('array<formance\stack\Models\Shared\OrchestrationTransaction>')]
     public array $data;
     
 	public function __construct()

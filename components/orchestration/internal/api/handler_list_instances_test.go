@@ -16,7 +16,7 @@ import (
 )
 
 func TestListInstances(t *testing.T) {
-	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
+	test(t, func(router *chi.Mux, m Backend, db *bun.DB) {
 		// Create a workflow with 10 instances
 		w := workflow.New(workflow.Config{})
 		_, err := db.NewInsert().Model(&w).Exec(context.TODO())

@@ -12,11 +12,12 @@ namespace formance\stack\Models\Shared;
 class ActivityRevertTransactionOutput
 {
 	#[\JMS\Serializer\Annotation\SerializedName('data')]
-    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\Transaction')]
-    public Transaction $data;
+    #[\JMS\Serializer\Annotation\Type('formance\stack\Models\Shared\OrchestrationTransaction')]
+    #[\JMS\Serializer\Annotation\SkipWhenEmpty]
+    public ?OrchestrationTransaction $data = null;
     
 	public function __construct()
 	{
-		$this->data = new \formance\stack\Models\Shared\Transaction();
+		$this->data = null;
 	}
 }

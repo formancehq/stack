@@ -121,15 +121,20 @@ try {
 ### [orchestration](docs/orchestration/README.md)
 
 * [cancelEvent](docs/orchestration/README.md#cancelevent) - Cancel a running workflow
+* [createTrigger](docs/orchestration/README.md#createtrigger) - Create trigger
 * [createWorkflow](docs/orchestration/README.md#createworkflow) - Create workflow
+* [deleteTrigger](docs/orchestration/README.md#deletetrigger) - Delete trigger
 * [deleteWorkflow](docs/orchestration/README.md#deleteworkflow) - Delete a flow by id
 * [getInstance](docs/orchestration/README.md#getinstance) - Get a workflow instance by id
 * [getInstanceHistory](docs/orchestration/README.md#getinstancehistory) - Get a workflow instance history by id
 * [getInstanceStageHistory](docs/orchestration/README.md#getinstancestagehistory) - Get a workflow instance stage history
 * [getWorkflow](docs/orchestration/README.md#getworkflow) - Get a flow by id
 * [listInstances](docs/orchestration/README.md#listinstances) - List instances of a workflow
+* [listTriggers](docs/orchestration/README.md#listtriggers) - List triggers
+* [listTriggersOccurrences](docs/orchestration/README.md#listtriggersoccurrences) - List triggers occurrences
 * [listWorkflows](docs/orchestration/README.md#listworkflows) - List registered workflows
 * [orchestrationgetServerInfo](docs/orchestration/README.md#orchestrationgetserverinfo) - Get server info
+* [readTrigger](docs/orchestration/README.md#readtrigger) - Read trigger
 * [runWorkflow](docs/orchestration/README.md#runworkflow) - Run workflow
 * [sendEvent](docs/orchestration/README.md#sendevent) - Send an event to a running workflow
 

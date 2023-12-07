@@ -178,6 +178,7 @@ req = shared.ConfigUser(
     event_types=[
         'TYPE1',
         'TYPE1',
+        'TYPE1',
     ],
     secret='V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3',
 )

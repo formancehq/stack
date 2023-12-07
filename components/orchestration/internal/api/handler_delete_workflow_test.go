@@ -16,7 +16,7 @@ import (
 )
 
 func TestDeleteWorkflow(t *testing.T) {
-	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
+	test(t, func(router *chi.Mux, m Backend, db *bun.DB) {
 		// Create a workflow
 		req := httptest.NewRequest(http.MethodPost, "/workflows", bytes.NewBufferString(`{"stages": []}`))
 		rec := httptest.NewRecorder()

@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: multipod-service-annotation
 spec:
-    clusterIP: 10.0.0.228
+    clusterIP: 10.0.0.150
     clusterIPs:
-        - 10.0.0.228
+        - 10.0.0.150
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

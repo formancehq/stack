@@ -759,8 +759,8 @@ spec:
                   name: search-benthos-templates
 status:
     conditions:
-        - lastTransitionTime: "2023-08-11T09:21:34Z"
-          lastUpdateTime: "2023-08-11T09:21:34Z"
+        - lastTransitionTime: "2023-12-07T09:12:18Z"
+          lastUpdateTime: "2023-12-07T09:12:18Z"
           status: "True"
           type: Available
     observedGeneration: 1

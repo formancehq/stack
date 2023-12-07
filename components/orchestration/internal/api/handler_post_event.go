@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
-func postEventToWorkflowInstance(m *workflow.Manager) http.HandlerFunc {
+func postEventToWorkflowInstance(backend Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		event := workflow.Event{}
 		if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
@@ -16,7 +16,7 @@ func postEventToWorkflowInstance(m *workflow.Manager) http.HandlerFunc {
 			return
 		}
 
-		if err := m.PostEvent(r.Context(), instanceID(r), event); err != nil {
+		if err := backend.PostEvent(r.Context(), instanceID(r), event); err != nil {
 			api.InternalServerError(w, r, err)
 			return
 		}

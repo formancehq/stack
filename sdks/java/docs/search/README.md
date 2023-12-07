@@ -23,7 +23,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("occaecati") {{
+                .setSecurity(new Security("quam") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -31,25 +31,25 @@ public class Application {
             com.formance.formance_sdk.models.shared.Query req = new Query() {{
                 after = new String[]{{
                     add("users:002"),
-                    add("users:002"),
-                    add("users:002"),
                 }};
                 cursor = "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=";
                 ledgers = new String[]{{
                     add("quickstart"),
+                    add("quickstart"),
+                    add("quickstart"),
+                    add("quickstart"),
                 }};
-                pageSize = 992397L;
+                pageSize = 345352L;
                 policy = "OR";
                 raw = new java.util.HashMap<String, Object>() {{
-                    put("modi", "iste");
-                    put("dolorum", "deleniti");
-                    put("pariatur", "provident");
-                    put("nobis", "libero");
+                    put("recusandae", "omnis");
+                    put("facilis", "perspiciatis");
+                    put("voluptatem", "porro");
+                    put("consequuntur", "blanditiis");
                 }};
                 sort = "txid:asc";
-                target = "delectus";
+                target = "error";
                 terms = new String[]{{
-                    add("destination=central_bank1"),
                     add("destination=central_bank1"),
                 }};
             }};            
@@ -83,7 +83,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("quos") {{
+                .setSecurity(new Security("occaecati") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();

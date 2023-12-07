@@ -3,15 +3,20 @@
 ### Available Operations
 
 * [cancelEvent](#cancelevent) - Cancel a running workflow
+* [createTrigger](#createtrigger) - Create trigger
 * [createWorkflow](#createworkflow) - Create workflow
+* [deleteTrigger](#deletetrigger) - Delete trigger
 * [deleteWorkflow](#deleteworkflow) - Delete a flow by id
 * [getInstance](#getinstance) - Get a workflow instance by id
 * [getInstanceHistory](#getinstancehistory) - Get a workflow instance history by id
 * [getInstanceStageHistory](#getinstancestagehistory) - Get a workflow instance stage history
 * [getWorkflow](#getworkflow) - Get a flow by id
 * [listInstances](#listinstances) - List instances of a workflow
+* [listTriggers](#listtriggers) - List triggers
+* [listTriggersOccurrences](#listtriggersoccurrences) - List triggers occurrences
 * [listWorkflows](#listworkflows) - List registered workflows
 * [orchestrationgetServerInfo](#orchestrationgetserverinfo) - Get server info
+* [readTrigger](#readtrigger) - Read trigger
 * [runWorkflow](#runworkflow) - Run workflow
 * [sendEvent](#sendevent) - Send an event to a running workflow
 
@@ -41,6 +46,37 @@ sdk.orchestration.cancelEvent({
 });
 ```
 
+## createTrigger
+
+Create trigger
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { CreateTriggerResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ErrorErrorCode } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.orchestration.createTrigger({
+  event: "id",
+  filter: "possimus",
+  vars: {
+    "quasi": "error",
+  },
+  workflowID: "temporibus",
+}).then((res: CreateTriggerResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
 ## createWorkflow
 
 Create a workflow
@@ -59,13 +95,9 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.createWorkflow({
-  name: "Miss Rufus Ankunding",
+  name: "Ryan Witting",
   stages: [
     {
-      "reiciendis": "voluptatibus",
-    },
-    {
-      "nihil": "praesentium",
       "voluptatibus": "ipsa",
       "omnis": "voluptate",
       "cum": "perferendis",
@@ -75,6 +107,32 @@ sdk.orchestration.createWorkflow({
     },
   ],
 }).then((res: CreateWorkflowResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## deleteTrigger
+
+Read trigger
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { DeleteTriggerResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ErrorErrorCode } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.orchestration.deleteTrigger({
+  triggerID: "maiores",
+}).then((res: DeleteTriggerResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -99,7 +157,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.deleteWorkflow({
-  flowId: "maiores",
+  flowId: "dicta",
 }).then((res: DeleteWorkflowResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -125,7 +183,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstance({
-  instanceID: "dicta",
+  instanceID: "corporis",
 }).then((res: GetInstanceResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -151,7 +209,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstanceHistory({
-  instanceID: "corporis",
+  instanceID: "dolore",
 }).then((res: GetInstanceHistoryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -177,8 +235,8 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getInstanceStageHistory({
-  instanceID: "dolore",
-  number: 480894,
+  instanceID: "iusto",
+  number: 118727,
 }).then((res: GetInstanceStageHistoryResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -204,7 +262,7 @@ const sdk = new SDK({
 });
 
 sdk.orchestration.getWorkflow({
-  flowId: "dicta",
+  flowId: "harum",
 }).then((res: GetWorkflowResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -231,8 +289,58 @@ const sdk = new SDK({
 
 sdk.orchestration.listInstances({
   running: false,
-  workflowID: "harum",
+  workflowID: "enim",
 }).then((res: ListInstancesResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## listTriggers
+
+List triggers
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { ListTriggersResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ErrorErrorCode } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.orchestration.listTriggers().then((res: ListTriggersResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## listTriggersOccurrences
+
+List triggers occurrences
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { ListTriggersOccurrencesResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ErrorErrorCode } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.orchestration.listTriggersOccurrences({
+  triggerID: "accusamus",
+}).then((res: ListTriggersOccurrencesResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -287,6 +395,32 @@ sdk.orchestration.orchestrationgetServerInfo().then((res: OrchestrationgetServer
 });
 ```
 
+## readTrigger
+
+Read trigger
+
+### Example Usage
+
+```typescript
+import { SDK } from "@formance/formance-sdk";
+import { ReadTriggerResponse } from "@formance/formance-sdk/dist/sdk/models/operations";
+import { ErrorErrorCode } from "@formance/formance-sdk/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    authorization: "Bearer YOUR_ACCESS_TOKEN_HERE",
+  },
+});
+
+sdk.orchestration.readTrigger({
+  triggerID: "commodi",
+}).then((res: ReadTriggerResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
 ## runWorkflow
 
 Run workflow
@@ -306,11 +440,13 @@ const sdk = new SDK({
 
 sdk.orchestration.runWorkflow({
   requestBody: {
-    "accusamus": "commodi",
-    "repudiandae": "quae",
+    "quae": "ipsum",
+    "quidem": "molestias",
+    "excepturi": "pariatur",
+    "modi": "praesentium",
   },
   wait: false,
-  workflowID: "ipsum",
+  workflowID: "rem",
 }).then((res: RunWorkflowResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -337,9 +473,9 @@ const sdk = new SDK({
 
 sdk.orchestration.sendEvent({
   requestBody: {
-    name: "Virgil Mante",
+    name: "Carl Waelchi DVM",
   },
-  instanceID: "praesentium",
+  instanceID: "incidunt",
 }).then((res: SendEventResponse) => {
   if (res.statusCode == 200) {
     // handle response

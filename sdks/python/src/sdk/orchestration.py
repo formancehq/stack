@@ -50,6 +50,39 @@ class Orchestration:
         return res
 
     
+    def create_trigger(self, request: shared.TriggerData) -> operations.CreateTriggerResponse:
+        r"""Create trigger
+        Create trigger
+        """
+        base_url = self._server_url
+        
+        url = base_url.removesuffix('/') + '/api/orchestration/triggers'
+        headers = {}
+        req_content_type, data, form = utils.serialize_request_body(request, "request", 'json')
+        if req_content_type not in ('multipart/form-data', 'multipart/mixed'):
+            headers['content-type'] = req_content_type
+        headers['Accept'] = 'application/json;q=1, application/json;q=0'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('POST', url, data=data, files=form, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.CreateTriggerResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 201:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.CreateTriggerResponse])
+                res.create_trigger_response = out
+        else:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.Error])
+                res.error = out
+
+        return res
+
+    
     def create_workflow(self, request: shared.CreateWorkflowRequest) -> operations.CreateWorkflowResponse:
         r"""Create workflow
         Create a workflow
@@ -75,6 +108,34 @@ class Orchestration:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.CreateWorkflowResponse])
                 res.create_workflow_response = out
+        else:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.Error])
+                res.error = out
+
+        return res
+
+    
+    def delete_trigger(self, request: operations.DeleteTriggerRequest) -> operations.DeleteTriggerResponse:
+        r"""Delete trigger
+        Read trigger
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.DeleteTriggerRequest, base_url, '/api/orchestration/triggers/{triggerID}', request)
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('DELETE', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.DeleteTriggerResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 204:
+            pass
         else:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.Error])
@@ -262,6 +323,66 @@ class Orchestration:
         return res
 
     
+    def list_triggers(self) -> operations.ListTriggersResponse:
+        r"""List triggers
+        List triggers
+        """
+        base_url = self._server_url
+        
+        url = base_url.removesuffix('/') + '/api/orchestration/triggers'
+        headers = {}
+        headers['Accept'] = 'application/json;q=1, application/json;q=0'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.ListTriggersResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.ListTriggersResponse])
+                res.list_triggers_response = out
+        else:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.Error])
+                res.error = out
+
+        return res
+
+    
+    def list_triggers_occurrences(self, request: operations.ListTriggersOccurrencesRequest) -> operations.ListTriggersOccurrencesResponse:
+        r"""List triggers occurrences
+        List triggers occurrences
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.ListTriggersOccurrencesRequest, base_url, '/api/orchestration/triggers/{triggerID}/occurrences', request)
+        headers = {}
+        headers['Accept'] = 'application/json;q=1, application/json;q=0'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.ListTriggersOccurrencesResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.ListTriggersOccurrencesResponse])
+                res.list_triggers_occurrences_response = out
+        else:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.Error])
+                res.error = out
+
+        return res
+
+    
     def list_workflows(self) -> operations.ListWorkflowsResponse:
         r"""List registered workflows
         List registered workflows
@@ -312,6 +433,36 @@ class Orchestration:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.ServerInfo])
                 res.server_info = out
+        else:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.Error])
+                res.error = out
+
+        return res
+
+    
+    def read_trigger(self, request: operations.ReadTriggerRequest) -> operations.ReadTriggerResponse:
+        r"""Read trigger
+        Read trigger
+        """
+        base_url = self._server_url
+        
+        url = utils.generate_url(operations.ReadTriggerRequest, base_url, '/api/orchestration/triggers/{triggerID}', request)
+        headers = {}
+        headers['Accept'] = 'application/json;q=1, application/json;q=0'
+        headers['user-agent'] = f'speakeasy-sdk/{self._language} {self._sdk_version} {self._gen_version}'
+        
+        client = self._security_client
+        
+        http_res = client.request('GET', url, headers=headers)
+        content_type = http_res.headers.get('Content-Type')
+
+        res = operations.ReadTriggerResponse(status_code=http_res.status_code, content_type=content_type, raw_response=http_res)
+        
+        if http_res.status_code == 200:
+            if utils.match_content_type(content_type, 'application/json'):
+                out = utils.unmarshal_json(http_res.text, Optional[shared.ReadTriggerResponse])
+                res.read_trigger_response = out
         else:
             if utils.match_content_type(content_type, 'application/json'):
                 out = utils.unmarshal_json(http_res.text, Optional[shared.Error])

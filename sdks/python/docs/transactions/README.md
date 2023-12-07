@@ -32,50 +32,6 @@ req = operations.CreateTransactionsRequest(
         transactions=[
             shared.TransactionData(
                 metadata={
-                    "sint": 'accusantium',
-                    "mollitia": 'reiciendis',
-                    "mollitia": 'ad',
-                },
-                postings=[
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                ],
-                reference='ref:001',
-                timestamp=dateutil.parser.isoparse('2022-02-07T18:15:06.372Z'),
-            ),
-            shared.TransactionData(
-                metadata={
-                    "nemo": 'quasi',
-                },
-                postings=[
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                    shared.Posting(
-                        amount=100,
-                        asset='COIN',
-                        destination='users:002',
-                        source='users:001',
-                    ),
-                ],
-                reference='ref:001',
-                timestamp=dateutil.parser.isoparse('2020-04-29T08:15:14.819Z'),
-            ),
-            shared.TransactionData(
-                metadata={
                     "maxime": 'deleniti',
                     "facilis": 'in',
                 },
@@ -89,6 +45,67 @@ req = operations.CreateTransactionsRequest(
                 ],
                 reference='ref:001',
                 timestamp=dateutil.parser.isoparse('2022-01-30T09:19:56.236Z'),
+            ),
+            shared.TransactionData(
+                metadata={
+                    "expedita": 'nihil',
+                    "repellat": 'quibusdam',
+                },
+                postings=[
+                    shared.Posting(
+                        amount=100,
+                        asset='COIN',
+                        destination='users:002',
+                        source='users:001',
+                    ),
+                ],
+                reference='ref:001',
+                timestamp=dateutil.parser.isoparse('2020-05-25T09:38:49.528Z'),
+            ),
+            shared.TransactionData(
+                metadata={
+                    "consequuntur": 'praesentium',
+                },
+                postings=[
+                    shared.Posting(
+                        amount=100,
+                        asset='COIN',
+                        destination='users:002',
+                        source='users:001',
+                    ),
+                    shared.Posting(
+                        amount=100,
+                        asset='COIN',
+                        destination='users:002',
+                        source='users:001',
+                    ),
+                    shared.Posting(
+                        amount=100,
+                        asset='COIN',
+                        destination='users:002',
+                        source='users:001',
+                    ),
+                ],
+                reference='ref:001',
+                timestamp=dateutil.parser.isoparse('2022-11-16T19:20:12.159Z'),
+            ),
+            shared.TransactionData(
+                metadata={
+                    "illum": 'pariatur',
+                    "maxime": 'ea',
+                    "excepturi": 'odit',
+                    "ea": 'accusantium',
+                },
+                postings=[
+                    shared.Posting(
+                        amount=100,
+                        asset='COIN',
+                        destination='users:002',
+                        source='users:001',
+                    ),
+                ],
+                reference='ref:001',
+                timestamp=dateutil.parser.isoparse('2020-11-28T07:34:18.392Z'),
             ),
         ],
     ),
@@ -119,8 +136,8 @@ s = sdk.SDK(
 
 req = operations.AddMetadataOnTransactionRequest(
     request_body={
-        "expedita": 'nihil',
-        "repellat": 'quibusdam',
+        "voluptate": 'autem',
+        "nam": 'eaque',
     },
     ledger='ledger001',
     txid=1234,
@@ -152,17 +169,17 @@ s = sdk.SDK(
 req = operations.CountTransactionsRequest(
     account='users:001',
     destination='users:001',
-    end_time=dateutil.parser.isoparse('2022-02-04T19:17:08.641Z'),
+    end_time=dateutil.parser.isoparse('2021-11-26T18:45:44.366Z'),
     ledger='ledger001',
     metadata={
-        "accusantium": 'consequuntur',
-        "praesentium": 'natus',
-        "magni": 'sunt',
-        "quo": 'illum',
+        "perferendis": 'fugiat',
+        "amet": 'aut',
+        "cumque": 'corporis',
+        "hic": 'libero',
     },
     reference='ref:001',
     source='users:001',
-    start_time=dateutil.parser.isoparse('2020-07-30T23:39:27.609Z'),
+    start_time=dateutil.parser.isoparse('2022-08-28T17:02:52.151Z'),
 )
 
 res = s.transactions.count_transactions(req)
@@ -189,20 +206,14 @@ s = sdk.SDK(
 )
 
 req = operations.CreateTransactionRequest(
-    idempotency_key='ea',
+    idempotency_key='quis',
     post_transaction=shared.PostTransaction(
         metadata={
-            "odit": 'ea',
-            "accusantium": 'ab',
-            "maiores": 'quidem',
+            "dignissimos": 'eaque',
+            "quis": 'nesciunt',
+            "eos": 'perferendis',
         },
         postings=[
-            shared.Posting(
-                amount=100,
-                asset='COIN',
-                destination='users:002',
-                source='users:001',
-            ),
             shared.Posting(
                 amount=100,
                 asset='COIN',
@@ -221,11 +232,13 @@ req = operations.CreateTransactionRequest(
         )
         ',
             vars={
-                "autem": 'nam',
-                "eaque": 'pariatur',
+                "quam": 'dolor',
+                "vero": 'nostrum',
+                "hic": 'recusandae',
+                "omnis": 'facilis',
             },
         ),
-        timestamp=dateutil.parser.isoparse('2022-01-09T22:25:53.570Z'),
+        timestamp=dateutil.parser.isoparse('2022-12-08T18:10:54.422Z'),
     ),
     ledger='ledger001',
     preview=True,
@@ -283,18 +296,20 @@ s = sdk.SDK(
 
 req = operations.ListTransactionsRequest(
     account='users:001',
-    after='perferendis',
+    after='porro',
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
     destination='users:001',
-    end_time=dateutil.parser.isoparse('2022-04-23T08:05:27.776Z'),
+    end_time=dateutil.parser.isoparse('2022-07-02T11:46:10.299Z'),
     ledger='ledger001',
     metadata={
-        "cumque": 'corporis',
+        "eaque": 'occaecati',
+        "rerum": 'adipisci',
+        "asperiores": 'earum',
     },
-    page_size=944124,
+    page_size=267262,
     reference='ref:001',
     source='users:001',
-    start_time=dateutil.parser.isoparse('2021-07-02T12:00:47.197Z'),
+    start_time=dateutil.parser.isoparse('2021-08-23T06:19:56.211Z'),
 )
 
 res = s.transactions.list_transactions(req)

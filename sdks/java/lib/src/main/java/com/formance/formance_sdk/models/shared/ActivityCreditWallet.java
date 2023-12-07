@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ActivityCreditWallet {
     @JsonInclude(Include.NON_ABSENT)
     @JsonProperty("data")
-    public CreditWalletRequest data;
+    public OrchestrationCreditWalletRequest data;
 
-    public ActivityCreditWallet withData(CreditWalletRequest data) {
+    public ActivityCreditWallet withData(OrchestrationCreditWalletRequest data) {
         this.data = data;
         return this;
     }

@@ -3,5 +3,5 @@
 package shared
 
 type ActivityGetAccountOutput struct {
-	Data AccountWithVolumesAndBalances `json:"data"`
+	Data OrchestrationAccount `json:"data"`
 }

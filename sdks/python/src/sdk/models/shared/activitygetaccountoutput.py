@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import dataclasses
-from ..shared import accountwithvolumesandbalances as shared_accountwithvolumesandbalances
+from ..shared import orchestrationaccount as shared_orchestrationaccount
 from dataclasses_json import Undefined, dataclass_json
 from sdk import utils
 
@@ -11,5 +11,5 @@ from sdk import utils
 @dataclasses.dataclass
 class ActivityGetAccountOutput:
     
-    data: shared_accountwithvolumesandbalances.AccountWithVolumesAndBalances = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
+    data: shared_orchestrationaccount.OrchestrationAccount = dataclasses.field(metadata={'dataclasses_json': { 'letter_case': utils.get_field_name('data') }})
     

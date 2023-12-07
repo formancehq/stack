@@ -58,7 +58,12 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.Transaction) err
 	if err := printCommonInformation(
 		out,
 		transaction.Txid,
-		*transaction.Reference,
+		func() string {
+			if transaction.Reference == nil {
+				return ""
+			}
+			return *transaction.Reference
+		}(),
 		transaction.Postings,
 		transaction.Timestamp,
 	); err != nil {
@@ -98,10 +103,14 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.Transaction) err
 
 func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
 
+	reference := ""
+	if transaction.Reference != nil {
+		reference = *transaction.Reference
+	}
 	if err := printCommonInformation(
 		out,
 		transaction.Txid,
-		*transaction.Reference,
+		reference,
 		transaction.Postings,
 		transaction.Timestamp,
 	); err != nil {
@@ -113,7 +122,7 @@ func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
 	}
 	return nil
 }
-func PrintMetadata(out io.Writer, metadata Metadata) error {
+func PrintMetadata(out io.Writer, metadata map[string]any) error {
 	fctl.Section.WithWriter(out).Println("Metadata")
 	if len(metadata) == 0 {
 		fmt.Println("No metadata.")

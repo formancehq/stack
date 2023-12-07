@@ -198,7 +198,7 @@ var _ = Given("An empty environment", func() {
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Input).To(Equal(shared.WorkflowInstanceHistoryStageInput{
 								CreateTransaction: &shared.ActivityCreateTransaction{
 									Ledger: ptr("default"),
-									Data: &shared.PostTransaction{
+									Data: &shared.OrchestrationPostTransaction{
 										Postings: postings,
 										Metadata: nil,
 									},
@@ -218,7 +218,7 @@ var _ = Given("An empty environment", func() {
 							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].PostCommitVolumes = nil
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.ActivityCreateTransactionOutput{
-									Data: []shared.Transaction{{
+									Data: []shared.OrchestrationTransaction{{
 										Postings:  postings,
 										Reference: ptr(""),
 									}},

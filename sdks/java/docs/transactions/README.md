@@ -32,7 +32,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolorem") {{
+                .setSecurity(new Security("asperiores") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -51,9 +51,22 @@ public class Application {
                                                                         destination = "users:002";
                                                                         source = "users:001";
                                                                     }}),
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
                                                                 }}) {{
                                                     metadata = new java.util.HashMap<String, Object>() {{
-                                                        put("ipsum", "hic");
+                                                        put("iste", "dolorum");
+                                                        put("deleniti", "pariatur");
                                                     }};
                                                     postings = new com.formance.formance_sdk.models.shared.Posting[]{{
                                                         add(new Posting(100L, "COIN", "users:002", "users:001") {{
@@ -76,7 +89,119 @@ public class Application {
                                                         }}),
                                                     }};
                                                     reference = "ref:001";
-                                                    timestamp = OffsetDateTime.parse("2022-02-04T23:02:58.199Z");
+                                                    timestamp = OffsetDateTime.parse("2020-10-23T12:23:35.067Z");
+                                                }}),
+                                                add(new TransactionData(                new com.formance.formance_sdk.models.shared.Posting[]{{
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
+                                                                }}) {{
+                                                    metadata = new java.util.HashMap<String, Object>() {{
+                                                        put("quos", "aliquid");
+                                                        put("dolorem", "dolorem");
+                                                    }};
+                                                    postings = new com.formance.formance_sdk.models.shared.Posting[]{{
+                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                            amount = 100L;
+                                                            asset = "COIN";
+                                                            destination = "users:002";
+                                                            source = "users:001";
+                                                        }}),
+                                                    }};
+                                                    reference = "ref:001";
+                                                    timestamp = OffsetDateTime.parse("2022-10-13T03:45:19.154Z");
+                                                }}),
+                                                add(new TransactionData(                new com.formance.formance_sdk.models.shared.Posting[]{{
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
+                                                                }}) {{
+                                                    metadata = new java.util.HashMap<String, Object>() {{
+                                                        put("cum", "voluptate");
+                                                        put("dignissimos", "reiciendis");
+                                                        put("amet", "dolorum");
+                                                    }};
+                                                    postings = new com.formance.formance_sdk.models.shared.Posting[]{{
+                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                            amount = 100L;
+                                                            asset = "COIN";
+                                                            destination = "users:002";
+                                                            source = "users:001";
+                                                        }}),
+                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                            amount = 100L;
+                                                            asset = "COIN";
+                                                            destination = "users:002";
+                                                            source = "users:001";
+                                                        }}),
+                                                    }};
+                                                    reference = "ref:001";
+                                                    timestamp = OffsetDateTime.parse("2022-12-10T19:39:51.391Z");
+                                                }}),
+                                                add(new TransactionData(                new com.formance.formance_sdk.models.shared.Posting[]{{
+                                                                    add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                                        amount = 100L;
+                                                                        asset = "COIN";
+                                                                        destination = "users:002";
+                                                                        source = "users:001";
+                                                                    }}),
+                                                                }}) {{
+                                                    metadata = new java.util.HashMap<String, Object>() {{
+                                                        put("odio", "quaerat");
+                                                        put("accusamus", "quidem");
+                                                    }};
+                                                    postings = new com.formance.formance_sdk.models.shared.Posting[]{{
+                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                            amount = 100L;
+                                                            asset = "COIN";
+                                                            destination = "users:002";
+                                                            source = "users:001";
+                                                        }}),
+                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                            amount = 100L;
+                                                            asset = "COIN";
+                                                            destination = "users:002";
+                                                            source = "users:001";
+                                                        }}),
+                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                            amount = 100L;
+                                                            asset = "COIN";
+                                                            destination = "users:002";
+                                                            source = "users:001";
+                                                        }}),
+                                                        add(new Posting(100L, "COIN", "users:002", "users:001") {{
+                                                            amount = 100L;
+                                                            asset = "COIN";
+                                                            destination = "users:002";
+                                                            source = "users:001";
+                                                        }}),
+                                                    }};
+                                                    reference = "ref:001";
+                                                    timestamp = OffsetDateTime.parse("2022-05-20T13:18:59.478Z");
                                                 }}),
                                             }});, "ledger001");            
 
@@ -110,14 +235,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("reiciendis") {{
+                .setSecurity(new Security("atque") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             AddMetadataOnTransactionRequest req = new AddMetadataOnTransactionRequest("ledger001", 1234L) {{
                 requestBody = new java.util.HashMap<String, Object>() {{
-                    put("dolorum", "numquam");
+                    put("fugiat", "ab");
                 }};
             }};            
 
@@ -152,7 +277,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("veritatis") {{
+                .setSecurity(new Security("soluta") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -160,14 +285,14 @@ public class Application {
             CountTransactionsRequest req = new CountTransactionsRequest("ledger001") {{
                 account = "users:001";
                 destination = "users:001";
-                endTime = OffsetDateTime.parse("2022-12-11T09:46:30.457Z");
+                endTime = OffsetDateTime.parse("2022-01-16T14:59:31.978Z");
                 metadata = new java.util.HashMap<String, Object>() {{
-                    put("odio", "quaerat");
-                    put("accusamus", "quidem");
+                    put("dolorum", "deleniti");
+                    put("omnis", "necessitatibus");
                 }};
                 reference = "ref:001";
                 source = "users:001";
-                startTime = OffsetDateTime.parse("2021-11-13T08:40:53.559Z");
+                startTime = OffsetDateTime.parse("2021-01-08T01:15:41.988Z");
             }};            
 
             CountTransactionsResponse res = sdk.transactions.countTransactions(req);
@@ -204,14 +329,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("natus") {{
+                .setSecurity(new Security("nihil") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             CreateTransactionRequest req = new CreateTransactionRequest(                new PostTransaction() {{
                                 metadata = new java.util.HashMap<String, Object>() {{
-                                    put("atque", "sit");
+                                    put("voluptate", "id");
                                 }};
                                 postings = new com.formance.formance_sdk.models.shared.Posting[]{{
                                     add(new Posting(100L, "COIN", "users:002", "users:001") {{
@@ -249,12 +374,13 @@ public class Application {
                                 )
                                 ") {{
                                     vars = new java.util.HashMap<String, Object>() {{
-                                        put("soluta", "dolorum");
+                                        put("aspernatur", "perferendis");
+                                        put("amet", "optio");
                                     }};
                                 }};;
-                                timestamp = OffsetDateTime.parse("2022-07-19T09:36:55.923Z");
+                                timestamp = OffsetDateTime.parse("2022-01-15T13:56:57.287Z");
                             }};, "ledger001") {{
-                idempotencyKey = "dolorum";
+                idempotencyKey = "saepe";
                 preview = true;
             }};            
 
@@ -288,7 +414,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("deleniti") {{
+                .setSecurity(new Security("suscipit") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -326,25 +452,26 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("omnis") {{
+                .setSecurity(new Security("deserunt") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
             ListTransactionsRequest req = new ListTransactionsRequest("ledger001") {{
                 account = "users:001";
-                after = "necessitatibus";
+                after = "provident";
                 cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==";
                 destination = "users:001";
-                endTime = OffsetDateTime.parse("2021-01-08T01:15:41.988Z");
+                endTime = OffsetDateTime.parse("2022-03-03T16:00:55.670Z");
                 metadata = new java.util.HashMap<String, Object>() {{
-                    put("ipsum", "voluptate");
-                    put("id", "saepe");
+                    put("similique", "alias");
+                    put("at", "quaerat");
+                    put("tempora", "vel");
                 }};
-                pageSize = 263322L;
+                pageSize = 798047L;
                 reference = "ref:001";
                 source = "users:001";
-                startTime = OffsetDateTime.parse("2022-12-24T11:05:48.936Z");
+                startTime = OffsetDateTime.parse("2022-06-11T17:29:13.872Z");
             }};            
 
             ListTransactionsResponse res = sdk.transactions.listTransactions(req);
@@ -377,7 +504,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("amet") {{
+                .setSecurity(new Security("dolorum") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();

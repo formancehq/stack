@@ -3,14 +3,14 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { PostTransaction } from "./posttransaction";
+import { OrchestrationPostTransaction } from "./orchestrationposttransaction";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityCreateTransaction extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "data" })
-  @Type(() => PostTransaction)
-  data?: PostTransaction;
+  @Type(() => OrchestrationPostTransaction)
+  data?: OrchestrationPostTransaction;
 
   @SpeakeasyMetadata()
   @Expose({ name: "ledger" })

@@ -293,6 +293,11 @@ func startOrchestration() {
 		"--temporal-address="+getTemporalAddress(),
 		"--temporal-task-queue="+actualTestID,
 		"--worker",
+		"--publisher-nats-enabled",
+		"--publisher-nats-client-id=ledger",
+		"--publisher-nats-url="+natsAddress(),
+		fmt.Sprintf("--topics=%s-ledger", actualTestID),
+		fmt.Sprintf("--topics=%s-payments", actualTestID),
 	)
 	command.SetArgs(args)
 	orchestrationPort, orchestrationCancel, orchestrationErrCh = runAndWaitPort("orchestration", command)

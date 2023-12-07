@@ -40,7 +40,7 @@ req = operations.ConfirmHoldRequest(
         amount=100,
         final=True,
     ),
-    hold_id='dolores',
+    hold_id='deleniti',
 )
 
 res = s.wallets.confirm_hold(req)
@@ -68,11 +68,11 @@ s = sdk.SDK(
 
 req = operations.CreateBalanceRequest(
     create_balance_request=shared.CreateBalanceRequest(
-        expires_at=dateutil.parser.isoparse('2022-06-24T19:43:09.208Z'),
-        name='Cynthia Hayes',
-        priority=18521,
+        expires_at=dateutil.parser.isoparse('2021-03-26T01:09:56.415Z'),
+        name='Randolph Wintheiser',
+        priority=398221,
     ),
-    id='2c73d5fe-9b90-4c28-909b-3fe49a8d9cbf',
+    id='33323f9b-77f3-4a41-8067-4ebf69280d1b',
 )
 
 res = s.wallets.create_balance(req)
@@ -99,10 +99,11 @@ s = sdk.SDK(
 
 req = shared.CreateWalletRequest(
     metadata={
-        "quos": 'aliquid',
-        "dolorem": 'dolorem',
+        "iusto": 'voluptate',
+        "dolorum": 'deleniti',
+        "omnis": 'necessitatibus',
     },
-    name='Norma Erdman',
+    name='Emmett Kovacek',
 )
 
 res = s.wallets.create_wallet(req)
@@ -130,39 +131,36 @@ s = sdk.SDK(
 req = operations.CreditWalletRequest(
     credit_wallet_request=shared.CreditWalletRequest(
         amount=shared.Monetary(
-            amount=739551,
-            asset='voluptate',
+            amount=663078,
+            asset='saepe',
         ),
-        balance='dignissimos',
+        balance='eius',
         metadata={
-            "amet": 'dolorum',
-            "numquam": 'veritatis',
-            "ipsa": 'ipsa',
-            "iure": 'odio',
+            "perferendis": 'amet',
         },
-        reference='quaerat',
+        reference='optio',
         sources=[
-            shared.WalletSubject(
-                balance='voluptatibus',
-                identifier='voluptas',
-                type='natus',
-            ),
             shared.LedgerAccountSubject(
-                identifier='atque',
-                type='sit',
+                identifier='saepe',
+                type='suscipit',
             ),
             shared.WalletSubject(
-                balance='ab',
-                identifier='soluta',
-                type='dolorum',
+                balance='provident',
+                identifier='minima',
+                type='repellendus',
+            ),
+            shared.WalletSubject(
+                balance='similique',
+                identifier='alias',
+                type='at',
             ),
             shared.LedgerAccountSubject(
-                identifier='voluptate',
-                type='dolorum',
+                identifier='tempora',
+                type='vel',
             ),
         ],
     ),
-    id='89ebf737-ae42-403c-a5e6-a95d8a0d446c',
+    id='ce2af7a7-3cf3-4be4-93f8-70b326b5a734',
 )
 
 res = s.wallets.credit_wallet(req)
@@ -190,25 +188,28 @@ s = sdk.SDK(
 req = operations.DebitWalletRequest(
     debit_wallet_request=shared.DebitWalletRequest(
         amount=shared.Monetary(
-            amount=885338,
-            asset='qui',
+            amount=186458,
+            asset='cupiditate',
         ),
         balances=[
-            'a',
-            'esse',
-            'harum',
+            'pariatur',
+            'soluta',
+            'dicta',
+            'laborum',
         ],
-        description='iusto',
+        description='totam',
         destination=shared.LedgerAccountSubject(
-            identifier='quisquam',
-            type='tenetur',
+            identifier='aspernatur',
+            type='dolores',
         ),
         metadata={
-            "tempore": 'accusamus',
+            "facilis": 'aliquid',
+            "quam": 'molestias',
+            "temporibus": 'qui',
         },
         pending=False,
     ),
-    id='453f870b-326b-45a7-b429-cdb1a8422bb6',
+    id='322715bf-0cbb-41e3-9b8b-90f3443a1108',
 )
 
 res = s.wallets.debit_wallet(req)
@@ -234,8 +235,8 @@ s = sdk.SDK(
 )
 
 req = operations.GetBalanceRequest(
-    balance_name='quam',
-    id='9d232271-5bf0-4cbb-9e31-b8b90f3443a1',
+    balance_name='itaque',
+    id='0adcf4b9-2187-49fc-a953-f73ef7fbc7ab',
 )
 
 res = s.wallets.get_balance(req)
@@ -261,7 +262,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetHoldRequest(
-    hold_id='quae',
+    hold_id='vero',
 )
 
 res = s.wallets.get_hold(req)
@@ -289,10 +290,11 @@ s = sdk.SDK(
 req = operations.GetHoldsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
     metadata={
-        "quas": 'itaque',
+        "dolore": 'quibusdam',
+        "illum": 'sequi',
     },
-    page_size=9240,
-    wallet_id='est',
+    page_size=617877,
+    wallet_id='impedit',
 )
 
 res = s.wallets.get_holds(req)
@@ -317,8 +319,8 @@ s = sdk.SDK(
 
 req = operations.GetTransactionsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
-    page_size=833038,
-    wallet_id='porro',
+    page_size=13236,
+    wallet_id='voluptatibus',
 )
 
 res = s.wallets.get_transactions(req)
@@ -344,7 +346,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetWalletRequest(
-    id='f4b92187-9fce-4953-b73e-f7fbc7abd74d',
+    id='5d2cff7c-70a4-4562-ad43-6813f16d9f5f',
 )
 
 res = s.wallets.get_wallet(req)
@@ -370,7 +372,7 @@ s = sdk.SDK(
 )
 
 req = operations.GetWalletSummaryRequest(
-    id='d39c0f5d-2cff-47c7-8a45-626d436813f1',
+    id='ce6c5561-46c3-4e25-8fb0-08c42e141aac',
 )
 
 res = s.wallets.get_wallet_summary(req)
@@ -396,7 +398,7 @@ s = sdk.SDK(
 )
 
 req = operations.ListBalancesRequest(
-    id='6d9f5fce-6c55-4614-ac3e-250fb008c42e',
+    id='366c8dd6-b144-4290-b474-778a7bd466d2',
 )
 
 res = s.wallets.list_balances(req)
@@ -424,10 +426,12 @@ s = sdk.SDK(
 req = operations.ListWalletsRequest(
     cursor='aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==',
     metadata={
-        "non": 'et',
+        "quisquam": 'veritatis',
+        "ipsa": 'id',
+        "quidem": 'neque',
     },
-    name='Neal Schroeder',
-    page_size=420539,
+    name='Dallas Sanford',
+    page_size=178367,
 )
 
 res = s.wallets.list_wallets(req)
@@ -455,13 +459,11 @@ s = sdk.SDK(
 req = operations.UpdateWalletRequest(
     request_body=operations.UpdateWalletRequestBody(
         metadata={
-            "quas": 'assumenda',
-            "nulla": 'voluptas',
-            "libero": 'quasi',
-            "tempora": 'numquam',
+            "ab": 'cupiditate',
+            "consequatur": 'tempora',
         },
     ),
-    id='29074747-78a7-4bd4-a6d2-8c10ab3cdca4',
+    id='e523c7e0-bc71-478e-8796-f2a70c688282',
 )
 
 res = s.wallets.update_wallet(req)
@@ -487,7 +489,7 @@ s = sdk.SDK(
 )
 
 req = operations.VoidHoldRequest(
-    hold_id='eos',
+    hold_id='fuga',
 )
 
 res = s.wallets.void_hold(req)

@@ -3,6 +3,6 @@
 package shared
 
 type ActivityCreateTransaction struct {
-	Data   *PostTransaction `json:"data,omitempty"`
-	Ledger *string          `json:"ledger,omitempty"`
+	Data   *OrchestrationPostTransaction `json:"data,omitempty"`
+	Ledger *string                       `json:"ledger,omitempty"`
 }

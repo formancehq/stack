@@ -26,9 +26,8 @@ s = sdk.SDK(
 req = operations.RunScriptRequest(
     script=shared.Script(
         metadata={
-            "nisi": 'vel',
-            "natus": 'omnis',
-            "molestiae": 'perferendis',
+            "suscipit": 'natus',
+            "nobis": 'eum',
         },
         plain='vars {
     account $user
@@ -40,8 +39,10 @@ req = operations.RunScriptRequest(
     ',
         reference='order_1234',
         vars={
-            "magnam": 'distinctio',
-            "id": 'labore',
+            "aspernatur": 'architecto',
+            "magnam": 'et',
+            "excepturi": 'ullam',
+            "provident": 'quos',
         },
     ),
     ledger='ledger001',

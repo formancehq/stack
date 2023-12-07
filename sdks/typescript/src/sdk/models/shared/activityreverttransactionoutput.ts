@@ -3,12 +3,12 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { Transaction } from "./transaction";
+import { OrchestrationTransaction } from "./orchestrationtransaction";
 import { Expose, Type } from "class-transformer";
 
 export class ActivityRevertTransactionOutput extends SpeakeasyBase {
   @SpeakeasyMetadata()
   @Expose({ name: "data" })
-  @Type(() => Transaction)
-  data: Transaction;
+  @Type(() => OrchestrationTransaction)
+  data?: OrchestrationTransaction;
 }

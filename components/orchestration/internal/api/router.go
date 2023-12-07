@@ -3,14 +3,13 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/riandyrn/otelchi"
 )
 
-func newRouter(m *workflow.Manager, info ServiceInfo, healthController *health.HealthController) *chi.Mux {
+func newRouter(backend Backend, info ServiceInfo, healthController *health.HealthController) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(func(handler http.Handler) http.Handler {
@@ -24,27 +23,36 @@ func newRouter(m *workflow.Manager, info ServiceInfo, healthController *health.H
 	r.Group(func(r chi.Router) {
 		// Plug middleware to handle traces
 		r.Use(otelchi.Middleware("orchestration"))
+		r.Route("/triggers", func(r chi.Router) {
+			r.Get("/", listTriggers(backend))
+			r.Post("/", createTrigger(backend))
+			r.Route("/{triggerID}", func(r chi.Router) {
+				r.Get("/", getTrigger(backend))
+				r.Delete("/", deleteTrigger(backend))
+				r.Get("/occurrences", listTriggersOccurrences(backend))
+			})
+		})
 		r.Route("/workflows", func(r chi.Router) {
-			r.Get("/", listWorkflows(m))
-			r.Post("/", createWorkflow(m))
+			r.Get("/", listWorkflows(backend))
+			r.Post("/", createWorkflow(backend))
 			r.Route("/{workflowId}", func(r chi.Router) {
-				r.Delete("/", deleteWorkflow(m))
-				r.Get("/", readWorkflow(m))
+				r.Delete("/", deleteWorkflow(backend))
+				r.Get("/", readWorkflow(backend))
 				r.Route("/instances", func(r chi.Router) {
-					r.Post("/", runWorkflow(m))
+					r.Post("/", runWorkflow(backend))
 				})
 			})
 		})
 		r.Route("/instances", func(r chi.Router) {
-			r.Get("/", listInstances(m))
+			r.Get("/", listInstances(backend))
 			r.Route("/{instanceId}", func(r chi.Router) {
-				r.Get("/", readInstance(m))
-				r.Post("/events", postEventToWorkflowInstance(m))
-				r.Put("/abort", abortWorkflowInstance(m))
-				r.Get("/history", readInstanceHistory(m))
+				r.Get("/", readInstance(backend))
+				r.Post("/events", postEventToWorkflowInstance(backend))
+				r.Put("/abort", abortWorkflowInstance(backend))
+				r.Get("/history", readInstanceHistory(backend))
 				r.Route("/stages", func(r chi.Router) {
 					r.Route("/{number}", func(r chi.Router) {
-						r.Get("/history", readStageHistory(m))
+						r.Get("/history", readStageHistory(backend))
 					})
 				})
 			})
