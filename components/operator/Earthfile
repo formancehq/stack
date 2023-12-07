@@ -75,7 +75,7 @@ helm-update:
     RUN rm -f helm/templates/gen/*
     RUN kustomize build config/default --output helm/templates/gen
     RUN rm -f helm/templates/gen/v1_namespace*.yaml
-    RUN rm -f helm/templates/gen/components_v1_deployment_*.yaml
+    RUN rm -f helm/templates/gen/apps_v1_deployment_*.yaml
     RUN rm -f helm/templates/gen/apiextensions.k8s.io_v1_customresourcedefinition_*.components.formance.com.yaml
 
     SAVE ARTIFACT helm AS LOCAL helm
