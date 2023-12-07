@@ -28,8 +28,12 @@ build-final-spec:
     COPY openapi/package.* .
     RUN npm install
     WORKDIR /src/components
-    FOR c IN auth ledger payments webhooks search wallets orchestration
+    FOR c IN ledger payments
         COPY components/$c/openapi.yaml $c/openapi.yaml
+    END
+    WORKDIR /src/ee
+    FOR c IN auth webhooks search wallets orchestration
+        COPY ee/$c/openapi.yaml $c/openapi.yaml
     END
     WORKDIR /src/openapi
     COPY openapi/openapi-merge.json .
@@ -52,18 +56,13 @@ build-sdk:
     SAVE ARTIFACT sdks/${LANG} AS LOCAL ./sdks/${LANG}
     SAVE ARTIFACT sdks/${LANG}
 
-build-all-sdk:
-    LOCALLY
-    FOR lang IN $(ls openapi/templates)
-        BUILD +build-sdk --LANG=${lang}
-    END
-
 goreleaser:
     FROM core+builder-image
-    ARG --required component
+    ARG --required components
+    ARG --required type
     COPY . /src
     COPY (+build-sdk/go --LANG=go) /src/sdks/go
-    WORKDIR /src/components/$component
+    WORKDIR /src/$type/$components
     ARG mode=local
     LET buildArgs = --clean
     IF [ "$mode" = "local" ]
@@ -89,110 +88,104 @@ goreleaser:
 
 all-ci-goreleaser:
     LOCALLY
-    FOR component IN $(ls components)
-        BUILD --pass-args +goreleaser --component=$component --mode=ci
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+      BUILD --pass-args +goreleaser --type=ee --components=$component --mode=ci
     END
 
-build-images:
+build-all:
     LOCALLY
-    FOR component IN $(ls components)
-        BUILD --pass-args ./components/$component+build-image
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+build-image
     END
-
-deploy:
-    FROM core+base-image
-    ARG --required component
-    BUILD --pass-args ./components/$component+deploy
+    FOR component IN $(cd ./ee && ls -d */)
+      BUILD --pass-args ./ee/${component}+build-image
+    END
 
 deploy-all:
     LOCALLY
     WAIT
-        BUILD --pass-args +deploy --component=operator
+        BUILD --pass-args ./components/+deploy --components=operator
     END
-    FOR component IN $(ls components)
-        IF [ "$component" != "operator" ]
-            BUILD --pass-args +deploy --component=$component
-        END
+    FOR component IN $(cd ./components && ls -d */)
+      IF [ "$component" != "operator" ]
+        BUILD --pass-args ./components/+deploy --components=$component
+      END
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+        BUILD --pass-args ./ee/+deploy --components=$component
+    END
+
+tidy-all:
+    LOCALLY
+    WAIT
+      BUILD --pass-args ./libs/go-libs+tidy
+    END
+    #BUILD --pass-args ./tests/integration+tidy
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components+tidy --components=$component
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+      BUILD --pass-args ./ee+tidy --components=$component
+    END
+
+tests-all:
+    LOCALLY
+    WAIT
+      BUILD --pass-args +tidy-all
+    END
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+tests
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+      BUILD --pass-args ./ee/${component}+tests
     END
 
 lint-all:
     LOCALLY
-    BUILD --pass-args +tidy-all
-    FOR component IN $(ls components)
-        BUILD --pass-args ./components/${component}+lint
+    WAIT
+      BUILD --pass-args +tidy-all
+    END
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+lint
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+      BUILD --pass-args ./ee/${component}+lint
     END
 
-tidy:
-    FROM core+builder-image
-    ARG --required component
-    COPY --pass-args (./components/$component+sources/*) /src
-    ARG GOPROXY
-    WORKDIR /src/components/$component
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        go mod tidy
-    SAVE ARTIFACT go.* AS LOCAL components/$component/
-
-tidy-all:
-    LOCALLY
-    BUILD --pass-args ./libs/go-libs+tidy
-    FOR component IN $(ls components)
-        BUILD --pass-args +tidy --component=$component
-    END
-
-tests:
-    LOCALLY
-    ARG --required component
-    BUILD --pass-args ./components/${component}+tests
-
-tests-all:
-    LOCALLY
-    BUILD --pass-args +tidy-all
-    FOR component IN $(ls components)
-        BUILD --pass-args +tests --component=$component
-    END
-
-integration-tests:
+tests-integration:
     FROM core+base-image
     BUILD --pass-args ./tests/integration+tests
 
-go-dep-updates:
-    FROM core+builder-image
-    ARG --required component
-    COPY --pass-args ./components/$component+sources/* /src
-    WORKDIR /src/components/$component
-    ARG GOPROXY
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        go get -u=patch
-    SAVE ARTIFACT go.mod AS LOCAL components/$component/go.mod
-    SAVE ARTIFACT go.sum AS LOCAL components/$component/go.sum
-
-go-dep-updates-all:
-    LOCALLY
-    FOR component IN $(ls components)
-        BUILD --pass-args +go-dep-updates --component=$component
-    END
-
 pre-commit:
     LOCALLY
-    BUILD --pass-args +tidy-all
+    WAIT
+      BUILD --pass-args +tidy-all
+    END
+    BUILD --pass-args +build-final-spec
     BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
-    BUILD --pass-args +build-final-spec
-    FOR component IN $(ls components)
-        BUILD --pass-args ./components/$component+pre-commit
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD --pass-args ./components/${component}+pre-commit
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+      BUILD --pass-args ./ee/${component}+pre-commit
     END
     ARG skipIntegrationTests=0
     IF [ "$skipIntegrationTests" = "0" ]
-        BUILD --pass-args +integration-tests
+        BUILD --pass-args +tests-integration
     END
 
 pr:
     LOCALLY
+    WAIT
+      BUILD --pass-args +tidy-all
+    END
     BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
-    BUILD --pass-args +integration-tests
+    BUILD --pass-args +tests-integration
 
 INCLUDE_GO_LIBS:
     COMMAND

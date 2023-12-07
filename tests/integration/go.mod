@@ -253,15 +253,15 @@ require (
 )
 
 replace (
-	github.com/formancehq/auth => ../../components/auth
+	github.com/formancehq/auth => ../../ee/auth
 	github.com/formancehq/formance-sdk-go => ../../sdks/go
 	github.com/formancehq/ledger => ../../components/ledger
-	github.com/formancehq/orchestration => ../../components/orchestration
+	github.com/formancehq/orchestration => ../../ee/orchestration
 	github.com/formancehq/payments => ../../components/payments
-	github.com/formancehq/search => ../../components/search
+	github.com/formancehq/search => ../../ee/search
 	github.com/formancehq/stack => ../../
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
-	github.com/formancehq/wallets => ../../components/wallets
-	github.com/formancehq/webhooks => ../../components/webhooks
+	github.com/formancehq/wallets => ../../ee/wallets
+	github.com/formancehq/webhooks => ../../ee/webhooks
 	github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c
 )

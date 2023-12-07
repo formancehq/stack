@@ -1,0 +1,30 @@
+project_name: reconciliation
+includes:
+  - from_file:
+      path: ./../../.goreleaser.default.yaml
+monorepo:
+  tag_prefix: ee/reconciliation/
+  dir: ./
+
+builds:
+  - binary: reconciliation
+    id: reconciliation
+    ldflags:
+      - -X github.com/formancehq/reconciliation/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/reconciliation/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/reconciliation/cmd.Commit={{ .ShortCommit }}
+      - -extldflags "-static"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: "{{.ProjectName}}"
+    builds:
+      - reconciliation
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"

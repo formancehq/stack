@@ -1,0 +1,30 @@
+project_name: wallets
+includes:
+  - from_file:
+      path: ./../../.goreleaser.default.yaml
+monorepo:
+  tag_prefix: ee/wallets/
+  dir: ./
+
+builds:
+  - binary: wallets
+    id: wallets
+    ldflags:
+      - -X github.com/formancehq/wallets/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/wallets/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/wallets/cmd.Commit={{ .ShortCommit }}
+      - -extldflags "-static"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: "{{.ProjectName}}"
+    builds:
+      - wallets
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"

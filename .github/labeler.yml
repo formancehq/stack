@@ -1,28 +1,52 @@
 libs:
-  - libs/*
+  - changed-files:
+    - any-glob-to-any-file: "libs/*"
 openapi:
-  - openapi/*
+  - changed-files:
+    - any-glob-to-any-file: "openapi/*"
 sdks:
-  - sdks/*
+  - changed-files:
+    - any-glob-to-any-file: "sdks/*"
 github:
-  - .github/*
+  - changed-files:
+    - any-glob-to-any-file: ".github/*"
 
-# Components
-'components/auth':
-  - components/auth/*
+# Apps
 'components/fctl':
-  - components/fctl/*
+  - changed-files:
+    - any-glob-to-any-file: "components/fctl/*"
 'components/ledger':
-  - components/ledger/*
+  - changed-files:
+    - any-glob-to-any-file: "components/ledger/*"
 'components/operator':
-  - components/operator/*
-'components/orchestration':
-  - components/orchestration/*
+  - changed-files:
+    - any-glob-to-any-file: "components/operator/*"
 'components/payments':
-  - components/payments/*
-'components/search':
-  - components/search/*
-'components/wallets':
-  - components/wallets/*
-'components/webhooks':
-  - components/webhooks/*
+  - changed-files:
+    - any-glob-to-any-file: "components/payments/*"
+
+# EE
+'ee/agent':
+  - changed-files:
+    - any-glob-to-any-file: "ee/agent/*"
+'ee/auth':
+  - changed-files:
+    - any-glob-to-any-file: "ee/auth/*"
+'ee/gateway':
+  - changed-files:
+    - any-glob-to-any-file: "ee/gateway/*"
+'ee/orchestration':
+  - changed-files:
+    - any-glob-to-any-file: "ee/orchestration/*"
+'ee/search':
+  - changed-files:
+    - any-glob-to-any-file: "ee/search/*"
+'ee/stargate':
+  - changed-files:
+    - any-glob-to-any-file: "ee/stargate/*"
+'ee/wallets':
+  - changed-files:
+    - any-glob-to-any-file: "ee/wallets/*"
+'ee/webhooks':
+  - changed-files:
+    - any-glob-to-any-file: "ee/webhooks/*"

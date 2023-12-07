@@ -1,0 +1,30 @@
+project_name: gateway
+includes:
+  - from_file:
+      path: ./../../.goreleaser.default.yaml
+monorepo:
+  tag_prefix: ee/gateway/
+  dir: ./
+
+builds:
+  - binary: gateway
+    id: gateway
+    ldflags:
+      - -X github.com/formancehq/stack/components/gateway/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/stack/components/gateway/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/stack/components/gateway/cmd.Commit={{ .ShortCommit }}
+      - -extldflags "-static"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: "{{.ProjectName}}"
+    builds:
+      - gateway
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"

@@ -95,4 +95,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/search => ../search
+replace github.com/formancehq/search => ../../ee/search

@@ -3,6 +3,7 @@ VERSION --pass-args --arg-scope-and-set 0.7
 ARG core=github.com/formancehq/earthly:v0.5.2
 IMPORT $core AS core
 IMPORT ../.. AS stack
+IMPORT .. AS components
 
 FROM core+base-image
 
@@ -28,7 +29,7 @@ sources:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (stack+tidy/go.* --component=fctl) .
+    COPY --pass-args (components+tidy/go.* --components=fctl) .
     WORKDIR /src/components/fctl
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd

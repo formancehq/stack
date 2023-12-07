@@ -1,0 +1,30 @@
+project_name: webhooks
+includes:
+  - from_file:
+      path: ./../../.goreleaser.default.yaml
+monorepo:
+  tag_prefix: ee/webhooks/
+  dir: ./
+
+builds:
+  - binary: webhooks
+    id: webhooks
+    ldflags:
+      - -X github.com/formancehq/webhooks/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/webhooks/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/webhooks/cmd.Commit={{ .ShortCommit }}
+      - -extldflags "-static"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: "{{.ProjectName}}"
+    builds:
+      - webhooks
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"

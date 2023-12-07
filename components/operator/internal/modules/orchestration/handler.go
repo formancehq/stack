@@ -2,6 +2,7 @@ package orchestration
 
 import (
 	"fmt"
+
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 )

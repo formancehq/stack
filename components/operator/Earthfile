@@ -3,16 +3,16 @@ VERSION --pass-args --arg-scope-and-set 0.7
 ARG core=github.com/formancehq/earthly:v0.5.2
 IMPORT $core AS core
 IMPORT ../.. AS stack
+IMPORT .. AS components
 
 FROM core+base-image
 
 sources:
     FROM core+builder-image
     WORKDIR /src
-    COPY (stack+sources/out --LOCATION=components/search) components/search
-    #COPY (stack+sources/out --LOCATION=components/search/benthos) components/search:benthos
+    COPY (stack+sources/out --LOCATION=ee/search) ee/search
     COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
-    WORKDIR components/operator
+    WORKDIR /src/components/operator
     COPY --dir apis internal pkg .
     COPY main.go go.* .
     SAVE ARTIFACT /src
@@ -75,7 +75,7 @@ helm-update:
     RUN rm -f helm/templates/gen/*
     RUN kustomize build config/default --output helm/templates/gen
     RUN rm -f helm/templates/gen/v1_namespace*.yaml
-    RUN rm -f helm/templates/gen/apps_v1_deployment_*.yaml
+    RUN rm -f helm/templates/gen/components_v1_deployment_*.yaml
     RUN rm -f helm/templates/gen/apiextensions.k8s.io_v1_customresourcedefinition_*.components.formance.com.yaml
 
     SAVE ARTIFACT helm AS LOCAL helm
@@ -108,7 +108,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (stack+tidy/go.* --component=operator) .
+    COPY --pass-args (components+tidy/go.* --components=operator) .
     WORKDIR /src/components/operator
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT apis AS LOCAL apis
