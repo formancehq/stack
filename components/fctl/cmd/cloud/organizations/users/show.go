@@ -63,7 +63,12 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	c.store.Id = userResponse.Data.Id
 	c.store.Email = userResponse.Data.Email
-	c.store.IsAdmin = userResponse.Data.IsAdmin
+	c.store.IsAdmin = func() bool {
+		if userResponse.Data.IsAdmin == nil {
+			return false
+		}
+		return *userResponse.Data.IsAdmin
+	}()
 
 	return c, nil
 }

@@ -169,7 +169,7 @@ paths:
           description: Read a user
       summary: Read user
     put:
-      operationId: updateUser
+      operationId: updateOrganizationUser
       parameters:
       - explode: false
         in: path
@@ -189,15 +189,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: '#/components/schemas/UpdateUserAccessData'
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateUserResponse'
+        "204":
           description: Updated user
-      summary: Update user
+      summary: Update user role within an organization
   /organizations/{organizationId}/billing/portal:
     get:
       operationId: billingPortal
@@ -760,21 +756,6 @@ paths:
                 $ref: '#/components/schemas/ReadUserResponse'
           description: Read a user
       summary: Read user
-    put:
-      operationId: updateConnectedUser
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateUserResponse'
-          description: Updated user
-      summary: Update user
 components:
   schemas:
     CreatePrivateRegionRequest:
@@ -900,9 +881,6 @@ components:
       - $ref: '#/components/schemas/StackLifeCycle'
       - $ref: '#/components/schemas/Stack_allOf'
     UpdatableUserData:
-      example:
-        metadata:
-          key: metadata
       properties:
         metadata:
           additionalProperties:
@@ -913,9 +891,18 @@ components:
       allOf:
       - $ref: '#/components/schemas/UserData_allOf'
       - $ref: '#/components/schemas/UpdatableUserData'
+    UpdateUserAccessData:
+      example:
+        isAdmin: true
+      properties:
+        isAdmin:
+          description: Is the user an admin of the organization
+          type: boolean
+      type: object
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
+      - $ref: '#/components/schemas/UpdateUserAccessData'
       - $ref: '#/components/schemas/User_allOf'
     OrganizationArray:
       items:
@@ -1154,8 +1141,6 @@ components:
     UpdateUserRequest:
       $ref: '#/components/schemas/UpdatableUserData'
     UpdateUserResponse:
-      example:
-        data: null
       properties:
         data:
           $ref: '#/components/schemas/User'
@@ -1282,12 +1267,8 @@ components:
         role:
           description: User role
           type: string
-        isAdmin:
-          description: Is the user an admin of the organization
-          type: boolean
       required:
       - id
-      - isAdmin
       type: object
       example: null
     CreateStackRequest_allOf:

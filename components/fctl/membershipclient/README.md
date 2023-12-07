@@ -109,8 +109,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
-*DefaultApi* | [**UpdateConnectedUser**](docs/DefaultApi.md#updateconnecteduser) | **Put** /me | Update user
-*DefaultApi* | [**UpdateUser**](docs/DefaultApi.md#updateuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
+*DefaultApi* | [**UpdateOrganizationUser**](docs/DefaultApi.md#updateorganizationuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
 
 
 ## Documentation For Models
@@ -155,6 +154,7 @@ Class | Method | HTTP request | Description
  - [StackData](docs/StackData.md)
  - [StackLifeCycle](docs/StackLifeCycle.md)
  - [UpdatableUserData](docs/UpdatableUserData.md)
+ - [UpdateUserAccessData](docs/UpdateUserAccessData.md)
  - [UpdateUserResponse](docs/UpdateUserResponse.md)
  - [User](docs/User.md)
  - [UserAllOf](docs/UserAllOf.md)

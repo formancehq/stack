@@ -35,8 +35,7 @@ Method | HTTP request | Description
 [**ReadUser**](DefaultApi.md#ReadUser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UnlinkUserFromOrganization**](DefaultApi.md#UnlinkUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
-[**UpdateConnectedUser**](DefaultApi.md#UpdateConnectedUser) | **Put** /me | Update user
-[**UpdateUser**](DefaultApi.md#UpdateUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
+[**UpdateOrganizationUser**](DefaultApi.md#UpdateOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
 
 
 
@@ -2134,75 +2133,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## UpdateConnectedUser
+## UpdateOrganizationUser
 
-> UpdateUserResponse UpdateConnectedUser(ctx).Body(body).Execute()
+> UpdateOrganizationUser(ctx, organizationId, userId).UpdateUserAccessData(updateUserAccessData).Execute()
 
-Update user
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    body := UpdatableUserData(987) // UpdatableUserData |  (optional)
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.UpdateConnectedUser(context.Background()).Body(body).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateConnectedUser``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `UpdateConnectedUser`: UpdateUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateConnectedUser`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiUpdateConnectedUserRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **body** | **UpdatableUserData** |  | 
-
-### Return type
-
-[**UpdateUserResponse**](UpdateUserResponse.md)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## UpdateUser
-
-> UpdateUserResponse UpdateUser(ctx, organizationId, userId).Body(body).Execute()
-
-Update user
+Update user role within an organization
 
 ### Example
 
@@ -2219,17 +2154,15 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     userId := "userId_example" // string | 
-    body := UpdatableUserData(987) // UpdatableUserData |  (optional)
+    updateUserAccessData := *openapiclient.NewUpdateUserAccessData() // UpdateUserAccessData |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.UpdateUser(context.Background(), organizationId, userId).Body(body).Execute()
+    r, err := apiClient.DefaultApi.UpdateOrganizationUser(context.Background(), organizationId, userId).UpdateUserAccessData(updateUserAccessData).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateOrganizationUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `UpdateUser`: UpdateUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateUser`: %v\n", resp)
 }
 ```
 
@@ -2244,18 +2177,18 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiUpdateUserRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiUpdateOrganizationUserRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **body** | **UpdatableUserData** |  | 
+ **updateUserAccessData** | [**UpdateUserAccessData**](UpdateUserAccessData.md) |  | 
 
 ### Return type
 
-[**UpdateUserResponse**](UpdateUserResponse.md)
+ (empty response body)
 
 ### Authorization
 
@@ -2264,7 +2197,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

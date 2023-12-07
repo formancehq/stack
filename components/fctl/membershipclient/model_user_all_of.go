@@ -23,18 +23,15 @@ type UserAllOf struct {
 	Id string `json:"id"`
 	// User role
 	Role *string `json:"role,omitempty"`
-	// Is the user an admin of the organization
-	IsAdmin bool `json:"isAdmin"`
 }
 
 // NewUserAllOf instantiates a new UserAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUserAllOf(id string, isAdmin bool) *UserAllOf {
+func NewUserAllOf(id string) *UserAllOf {
 	this := UserAllOf{}
 	this.Id = id
-	this.IsAdmin = isAdmin
 	return &this
 }
 
@@ -102,30 +99,6 @@ func (o *UserAllOf) SetRole(v string) {
 	o.Role = &v
 }
 
-// GetIsAdmin returns the IsAdmin field value
-func (o *UserAllOf) GetIsAdmin() bool {
-	if o == nil {
-		var ret bool
-		return ret
-	}
-
-	return o.IsAdmin
-}
-
-// GetIsAdminOk returns a tuple with the IsAdmin field value
-// and a boolean to check if the value has been set.
-func (o *UserAllOf) GetIsAdminOk() (*bool, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.IsAdmin, true
-}
-
-// SetIsAdmin sets field value
-func (o *UserAllOf) SetIsAdmin(v bool) {
-	o.IsAdmin = v
-}
-
 func (o UserAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -140,7 +113,6 @@ func (o UserAllOf) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Role) {
 		toSerialize["role"] = o.Role
 	}
-	toSerialize["isAdmin"] = o.IsAdmin
 	return toSerialize, nil
 }
 

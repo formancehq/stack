@@ -6,15 +6,15 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Email** | **string** |  | 
 **Metadata** | Pointer to **map[string]string** |  | [optional] 
+**IsAdmin** | Pointer to **bool** | Is the user an admin of the organization | [optional] 
 **Id** | **string** | User ID | 
 **Role** | Pointer to **string** | User role | [optional] 
-**IsAdmin** | **bool** | Is the user an admin of the organization | 
 
 ## Methods
 
 ### NewUser
 
-`func NewUser(email string, id string, isAdmin bool, ) *User`
+`func NewUser(email string, id string, ) *User`
 
 NewUser instantiates a new User object
 This constructor will assign default values to properties that have it defined,
@@ -74,6 +74,31 @@ SetMetadata sets Metadata field to given value.
 
 HasMetadata returns a boolean if a field has been set.
 
+### GetIsAdmin
+
+`func (o *User) GetIsAdmin() bool`
+
+GetIsAdmin returns the IsAdmin field if non-nil, zero value otherwise.
+
+### GetIsAdminOk
+
+`func (o *User) GetIsAdminOk() (*bool, bool)`
+
+GetIsAdminOk returns a tuple with the IsAdmin field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIsAdmin
+
+`func (o *User) SetIsAdmin(v bool)`
+
+SetIsAdmin sets IsAdmin field to given value.
+
+### HasIsAdmin
+
+`func (o *User) HasIsAdmin() bool`
+
+HasIsAdmin returns a boolean if a field has been set.
+
 ### GetId
 
 `func (o *User) GetId() string`
@@ -118,26 +143,6 @@ SetRole sets Role field to given value.
 `func (o *User) HasRole() bool`
 
 HasRole returns a boolean if a field has been set.
-
-### GetIsAdmin
-
-`func (o *User) GetIsAdmin() bool`
-
-GetIsAdmin returns the IsAdmin field if non-nil, zero value otherwise.
-
-### GetIsAdminOk
-
-`func (o *User) GetIsAdminOk() (*bool, bool)`
-
-GetIsAdminOk returns a tuple with the IsAdmin field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetIsAdmin
-
-`func (o *User) SetIsAdmin(v bool)`
-
-SetIsAdmin sets IsAdmin field to given value.
-
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

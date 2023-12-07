@@ -3279,138 +3279,33 @@ func (a *DefaultApiService) UnlinkUserFromOrganizationExecute(r ApiUnlinkUserFro
 	return localVarHTTPResponse, nil
 }
 
-type ApiUpdateConnectedUserRequest struct {
-	ctx context.Context
-	ApiService *DefaultApiService
-	body *UpdatableUserData
-}
-
-func (r ApiUpdateConnectedUserRequest) Body(body UpdatableUserData) ApiUpdateConnectedUserRequest {
-	r.body = &body
-	return r
-}
-
-func (r ApiUpdateConnectedUserRequest) Execute() (*UpdateUserResponse, *http.Response, error) {
-	return r.ApiService.UpdateConnectedUserExecute(r)
-}
-
-/*
-UpdateConnectedUser Update user
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiUpdateConnectedUserRequest
-*/
-func (a *DefaultApiService) UpdateConnectedUser(ctx context.Context) ApiUpdateConnectedUserRequest {
-	return ApiUpdateConnectedUserRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return UpdateUserResponse
-func (a *DefaultApiService) UpdateConnectedUserExecute(r ApiUpdateConnectedUserRequest) (*UpdateUserResponse, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *UpdateUserResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.UpdateConnectedUser")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/me"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.body
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiUpdateUserRequest struct {
+type ApiUpdateOrganizationUserRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
 	organizationId string
 	userId string
-	body *UpdatableUserData
+	updateUserAccessData *UpdateUserAccessData
 }
 
-func (r ApiUpdateUserRequest) Body(body UpdatableUserData) ApiUpdateUserRequest {
-	r.body = &body
+func (r ApiUpdateOrganizationUserRequest) UpdateUserAccessData(updateUserAccessData UpdateUserAccessData) ApiUpdateOrganizationUserRequest {
+	r.updateUserAccessData = &updateUserAccessData
 	return r
 }
 
-func (r ApiUpdateUserRequest) Execute() (*UpdateUserResponse, *http.Response, error) {
-	return r.ApiService.UpdateUserExecute(r)
+func (r ApiUpdateOrganizationUserRequest) Execute() (*http.Response, error) {
+	return r.ApiService.UpdateOrganizationUserExecute(r)
 }
 
 /*
-UpdateUser Update user
+UpdateOrganizationUser Update user role within an organization
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param organizationId
  @param userId
- @return ApiUpdateUserRequest
+ @return ApiUpdateOrganizationUserRequest
 */
-func (a *DefaultApiService) UpdateUser(ctx context.Context, organizationId string, userId string) ApiUpdateUserRequest {
-	return ApiUpdateUserRequest{
+func (a *DefaultApiService) UpdateOrganizationUser(ctx context.Context, organizationId string, userId string) ApiUpdateOrganizationUserRequest {
+	return ApiUpdateOrganizationUserRequest{
 		ApiService: a,
 		ctx: ctx,
 		organizationId: organizationId,
@@ -3419,18 +3314,16 @@ func (a *DefaultApiService) UpdateUser(ctx context.Context, organizationId strin
 }
 
 // Execute executes the request
-//  @return UpdateUserResponse
-func (a *DefaultApiService) UpdateUserExecute(r ApiUpdateUserRequest) (*UpdateUserResponse, *http.Response, error) {
+func (a *DefaultApiService) UpdateOrganizationUserExecute(r ApiUpdateOrganizationUserRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *UpdateUserResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.UpdateUser")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.UpdateOrganizationUser")
 	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/organizations/{organizationId}/users/{userId}"
@@ -3451,7 +3344,7 @@ func (a *DefaultApiService) UpdateUserExecute(r ApiUpdateUserRequest) (*UpdateUs
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -3459,22 +3352,22 @@ func (a *DefaultApiService) UpdateUserExecute(r ApiUpdateUserRequest) (*UpdateUs
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.updateUserAccessData
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return localVarReturnValue, nil, err
+		return nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -3482,17 +3375,8 @@ func (a *DefaultApiService) UpdateUserExecute(r ApiUpdateUserRequest) (*UpdateUs
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
+		return localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
+	return localVarHTTPResponse, nil
 }

@@ -69,7 +69,12 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return User{
 			i.Id,
 			i.Email,
-			i.IsAdmin,
+			func() bool {
+				if i.IsAdmin == nil {
+					return false
+				}
+				return *i.IsAdmin
+			}(),
 		}
 	})
 
