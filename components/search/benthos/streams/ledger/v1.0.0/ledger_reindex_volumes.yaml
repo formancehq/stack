@@ -30,23 +30,25 @@ pipeline:
       - unarchive:
           format: json_array
       - bloblang: |
-          meta action = "upsert"
-          meta id = "ASSET-%s-%s-%s".format(meta("ledger"), this.account, this.asset)
           root = {
-            "data": {
-              "name": this.asset,
-              "input": this.input,
-              "output": this.output,
-              "account": this.account,
+            "id": "ASSET-%s-%s-%s".format(meta("ledger"), this.account, this.asset),
+            "action": "upsert",
+            "document": {
+              "data": {
+                "name": this.asset,
+                "input": this.input,
+                "output": this.output,
+                "account": this.account,
+                "ledger": meta("ledger")
+              },
+              "indexed": {
+                "account": this.account,
+                "name": this.asset,
+                "ledger": meta("ledger")
+              },
+              "kind": "ASSET",
               "ledger": meta("ledger")
-            },
-            "indexed": {
-              "account": this.account,
-              "name": this.asset,
-              "ledger": meta("ledger")
-            },
-            "kind": "ASSET",
-            "ledger": meta("ledger")
+            }
           }
 
 output:
