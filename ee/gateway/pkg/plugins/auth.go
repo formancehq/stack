@@ -7,16 +7,18 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp/caddyauth"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/zitadel/oidc/pkg/client"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/client"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/zap"
 )
 
@@ -32,6 +34,8 @@ type JWTAuth struct {
 
 	Issuer               string `json:"issuer,omitempty"`
 	ReadKeySetMaxRetries int    `json:"read_key_set_max_retries,omitempty"`
+	CheckScopes          bool   `json:"check_scopes,omitempty"`
+	Service              string `json:"service"`
 }
 
 func (JWTAuth) CaddyModule() caddy.ModuleInfo {
@@ -75,6 +79,19 @@ func parseAuthCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, er
 				if err != nil {
 					return nil, h.Errf("invalid read_key_set_max_retries")
 				}
+			case "check_scopes":
+				var checkScopes string
+				if !h.AllArgs(&checkScopes) {
+					return nil, h.Errf("invalid check_scopes")
+				}
+				checkScopes = strings.ToLower(checkScopes)
+				ja.CheckScopes = checkScopes == "true" || checkScopes == "1" || checkScopes == "yes"
+			case "service":
+				var service string
+				if !h.AllArgs(&service) {
+					return nil, h.Errf("invalid service")
+				}
+				ja.Service = service
 			default:
 				return nil, h.Errf("unrecognized option: %s", opt)
 			}
@@ -111,9 +128,27 @@ func (ja *JWTAuth) Authenticate(w http.ResponseWriter, r *http.Request) (caddyau
 		return caddyauth.User{}, false, fmt.Errorf("unable to create access token verifier: %w", err)
 	}
 
-	if _, err := op.VerifyAccessToken(r.Context(), token, accessTokenVerifier); err != nil {
+	claims, err := op.VerifyAccessToken[*oidc.AccessTokenClaims](r.Context(), token, accessTokenVerifier)
+	if err != nil {
 		ja.logger.Error("unable to verify access token", zap.Error(err))
 		return caddyauth.User{}, false, fmt.Errorf("unable to verify access token: %w", err)
+	}
+
+	if ja.CheckScopes {
+		scope := claims.Scopes
+
+		allowed := true
+		switch r.Method {
+		case http.MethodOptions, http.MethodGet, http.MethodHead, http.MethodTrace:
+			allowed = allowed && (collectionutils.Contains(scope, ja.Service+":read") || collectionutils.Contains(scope, ja.Service+":write"))
+		default:
+			allowed = allowed && collectionutils.Contains(scope, ja.Service+":write")
+		}
+
+		if !allowed {
+			ja.logger.Info("not enough scopes")
+			return caddyauth.User{}, false, fmt.Errorf("missing access, found scopes: '%s' need %s:read|write", strings.Join(scope, ", "), ja.Service)
+		}
 	}
 
 	return caddyauth.User{}, true, nil

@@ -135,6 +135,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		HealthPath  string
 		Methods     []string
 		RoutingPath string
+		Module      string
 	}
 
 	servicesMap := make(map[string]service, 0)
@@ -177,6 +178,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 				HealthPath:        healthPath,
 				Methods:           s.ExposeHTTP.Methods,
 				RoutingPath:       serviceRoutingPath,
+				Module:            registeredModule.Module.Name(),
 			}
 			keys = append(keys, serviceName)
 		}
@@ -198,6 +200,10 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			fallback = fmt.Sprintf("control:%d", servicesMap["control"].Port)
 		}
 	}
+	enableScopes := false
+	if context.ReconciliationConfig.Configuration.Spec.Services.Gateway.EnableScopes != nil {
+		enableScopes = *context.ReconciliationConfig.Configuration.Spec.Services.Gateway.EnableScopes
+	}
 
 	if err := caddyfileTemplate.Execute(buf, map[string]any{
 		"Region":   context.Platform.Region,
@@ -214,10 +220,11 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			}
 			return ""
 		}(),
-		"Port":        gatewayPort,
-		"Fallback":    fallback,
-		"Redirect":    redirect,
-		"EnableAudit": EnableAuditPlugin(context.ReconciliationConfig),
+		"Port":         gatewayPort,
+		"Fallback":     fallback,
+		"Redirect":     redirect,
+		"EnableAudit":  EnableAuditPlugin(context.ReconciliationConfig),
+		"EnableScopes": enableScopes,
 	}); err != nil {
 		panic(err)
 	}
@@ -238,6 +245,11 @@ const caddyfile = `(cors) {
 		issuer {{ .Issuer }}
 
 		read_key_set_max_retries 10
+
+		{{- if .EnableScopes }}
+		check_scopes yes
+		service {args[0]}
+		{{- end }}
 	}
 }
 {{- if .EnableAudit }}
@@ -308,7 +320,7 @@ const caddyfile = `(cors) {
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
 				import cors
 				{{- if not $service.Secured }}
-				import auth
+				import auth {{ $service.Module }}
 				{{- end }}
 			}
 			{{- end }}
@@ -325,7 +337,7 @@ const caddyfile = `(cors) {
 
 				import cors
 				{{- if not $service.Secured }}
-				import auth
+				import auth {{ $service.Module }}
 				{{- end }}
 			}
 		{{- end }}

@@ -3936,151 +3936,6 @@
         }
       }
     },
-    "/api/orchestration/triggers": {
-      "get": {
-        "summary": "List triggers",
-        "operationId": "listTriggers",
-        "description": "List triggers",
-        "tags": [
-          "Orchestration"
-        ],
-        "responses": {
-          "200": {
-            "description": "List of triggers",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListTriggersResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create trigger",
-        "operationId": "createTrigger",
-        "description": "Create trigger",
-        "tags": [
-          "Orchestration"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TriggerData"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Created trigger",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateTriggerResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      }
-    },
-    "/api/orchestration/triggers/{triggerID}": {
-      "parameters": [
-        {
-          "name": "triggerID",
-          "description": "The trigger id",
-          "in": "path",
-          "schema": {
-            "type": "string"
-          },
-          "required": true
-        }
-      ],
-      "get": {
-        "summary": "Read trigger",
-        "operationId": "readTrigger",
-        "description": "Read trigger",
-        "tags": [
-          "Orchestration"
-        ],
-        "responses": {
-          "200": {
-            "description": "A specific trigger",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReadTriggerResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete trigger",
-        "operationId": "deleteTrigger",
-        "description": "Read trigger",
-        "tags": [
-          "Orchestration"
-        ],
-        "responses": {
-          "204": {
-            "description": "Trigger deleted"
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      }
-    },
-    "/api/orchestration/triggers/{triggerID}/occurrences": {
-      "parameters": [
-        {
-          "name": "triggerID",
-          "description": "The trigger id",
-          "in": "path",
-          "schema": {
-            "type": "string"
-          },
-          "required": true
-        }
-      ],
-      "get": {
-        "summary": "List triggers occurrences",
-        "operationId": "listTriggersOccurrences",
-        "description": "List triggers occurrences",
-        "tags": [
-          "Orchestration"
-        ],
-        "responses": {
-          "200": {
-            "description": "List of triggers occurrences",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListTriggersOccurrencesResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      }
-    },
     "/api/orchestration/workflows": {
       "get": {
         "summary": "List registered workflows",
@@ -9022,99 +8877,6 @@
           "data"
         ]
       },
-      "TriggerData": {
-        "type": "object",
-        "required": [
-          "event",
-          "workflowID"
-        ],
-        "properties": {
-          "event": {
-            "type": "string"
-          },
-          "workflowID": {
-            "type": "string"
-          },
-          "filter": {
-            "type": "string"
-          },
-          "vars": {
-            "type": "object",
-            "additionalProperties": true
-          }
-        }
-      },
-      "Trigger": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/TriggerData"
-          },
-          {
-            "type": "object",
-            "required": [
-              "id",
-              "createdAt"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              }
-            }
-          }
-        ]
-      },
-      "TriggerOccurrence": {
-        "type": "object",
-        "required": [
-          "triggerID",
-          "workflowInstanceID",
-          "date"
-        ],
-        "properties": {
-          "date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "workflowInstanceID": {
-            "type": "string"
-          },
-          "triggerID": {
-            "type": "string"
-          }
-        }
-      },
-      "ListTriggersOccurrencesResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/TriggerOccurrence"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "data"
-        ]
-      },
-      "ListTriggersResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/Trigger"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "data"
-        ]
-      },
       "ReadWorkflowResponse": {
         "type": "object",
         "required": [
@@ -9137,17 +8899,6 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Workflow"
-          }
-        }
-      },
-      "CreateTriggerResponse": {
-        "type": "object",
-        "required": [
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Trigger"
           }
         }
       },
@@ -9733,17 +9484,6 @@
         "example": {
           "admin": "true"
         }
-      },
-      "ReadTriggerResponse": {
-        "type": "object",
-        "required": [
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Trigger"
-          }
-        }
       }
     },
     "securitySchemes": {
@@ -9817,7 +9557,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PoolBalancesResponse"
+              "$ref": "#/components/schemas/PoolBalance"
             }
           }
         }

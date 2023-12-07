@@ -4363,6 +4363,8 @@ spec:
                         type: object
                       enableAuditPlugin:
                         type: boolean
+                      enableScopes:
+                        type: boolean
                       fallback:
                         type: string
                       livenessEndpoint:

@@ -54,7 +54,7 @@ data:
         				reverse_proxy 127.0.0.1:10003
 
         				import cors
-        				import auth
+        				import auth ledger
         			}
 
         			@orchestrationmatcher {
@@ -65,7 +65,7 @@ data:
         				reverse_proxy 127.0.0.1:8080
 
         				import cors
-        				import auth
+        				import auth orchestration
         			}
 
         			@paymentsmatcher {
@@ -76,7 +76,7 @@ data:
         				reverse_proxy 127.0.0.1:10004
 
         				import cors
-        				import auth
+        				import auth payments
         			}
 
         			@searchmatcher {
@@ -87,7 +87,7 @@ data:
         				reverse_proxy 127.0.0.1:10005
 
         				import cors
-        				import auth
+        				import auth search
         			}
 
         			@search-benthosmatcher {
@@ -98,7 +98,7 @@ data:
         				reverse_proxy 127.0.0.1:4195
 
         				import cors
-        				import auth
+        				import auth search
         			}
 
         			@walletsmatcher {
@@ -109,7 +109,7 @@ data:
         				reverse_proxy 127.0.0.1:10001
 
         				import cors
-        				import auth
+        				import auth wallets
         			}
 
         			@webhooksmatcher {
@@ -120,7 +120,7 @@ data:
         				reverse_proxy 127.0.0.1:10006
 
         				import cors
-        				import auth
+        				import auth webhooks
         			}
 
         	handle /versions {

@@ -14,4 +14,7 @@ type GatewaySpec struct {
 
 	// +optional
 	LivenessEndpoint string `json:"livenessEndpoint,omitempty"`
+
+	// +optional
+	EnableScopes *bool `json:"enableScopes"`
 }

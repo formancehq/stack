@@ -79,6 +79,9 @@ var _ = Describe("Check stack deployment", func() {
 
 			// Launch test
 			Context(fmt.Sprintf("with config from dir '%s'", dirEntry.Name()), func() {
+				var (
+					additionalResourcesCreated = make([]*unstructured.Unstructured, 0)
+				)
 				BeforeEach(func() {
 					stack.Spec.Seed = configuration.Name
 					stack.Spec.Versions = versions.Name
@@ -95,6 +98,7 @@ var _ = Describe("Check stack deployment", func() {
 							object := &unstructured.Unstructured{}
 							readResourceFile(filepath.Join("testdata", dirName, "additional-resources", resource.Name()), object)
 							Expect(Create(object)).To(Succeed())
+							additionalResourcesCreated = append(additionalResourcesCreated, object)
 						}
 					}
 
@@ -110,6 +114,9 @@ var _ = Describe("Check stack deployment", func() {
 					Expect(Delete(stack)).To(Succeed())
 					Expect(Delete(configuration)).To(Succeed())
 					Expect(Delete(versions)).To(Succeed())
+					for _, resource := range additionalResourcesCreated {
+						Expect(Delete(resource)).To(Succeed())
+					}
 				})
 				It("should be ok", func() {
 					verifyResources(stack, filepath.Join(dirName, "results"))
