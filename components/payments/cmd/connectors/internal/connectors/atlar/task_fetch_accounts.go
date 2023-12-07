@@ -266,14 +266,14 @@ func ingestExternalAccountsBatch(
 				Reference:   externalAccount.ID,
 				ConnectorID: connectorID,
 			},
-			CreatedAt:    createdAt,
-			Reference:    externalAccount.ID,
-			ConnectorID:  connectorID,
-			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, "EUR"), // TODO: infer information from market information in externalAccount.identifiers
-			AccountName:  counterparty.Name,                                           // TODO: is that okay? External accounts do not have a name at Atlar.
-			Type:         models.AccountTypeExternal,
-			Metadata:     ExtractExternalAccountAndCounterpartyMetadata(externalAccount, counterparty),
-			RawData:      raw,
+			CreatedAt:   createdAt,
+			Reference:   externalAccount.ID,
+			ConnectorID: connectorID,
+			// DefaultAsset: left empty because the information is not provided by Atlar,
+			AccountName: counterparty.Name, // TODO: is that okay? External accounts do not have a name at Atlar.
+			Type:        models.AccountTypeExternal,
+			Metadata:    ExtractExternalAccountAndCounterpartyMetadata(externalAccount, counterparty),
+			RawData:     raw,
 		})
 	}
 

@@ -12,15 +12,13 @@ import (
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
 )
 
-func createExternalBankAccount(ctx task.ConnectorContext, newExternalBankAccount *models.BankAccount, config *Config) error {
-	// return connectors.ErrNotImplemented
-
+func createExternalBankAccount(ctx task.ConnectorContext, newExternalBankAccount *models.BankAccount, config Config) error {
 	err := validateExternalBankAccount(newExternalBankAccount)
 	if err != nil {
 		return err
 	}
 
-	client := createAtlarClient(config)
+	client := createAtlarClient(&config)
 	detachedCtx, _ := contextutil.Detached(ctx.Context())
 	// TODO: make sure an account with that IBAN does not already exist
 

@@ -8,7 +8,6 @@ import (
 const (
 	taskNameFetchAccounts = "fetch_accounts"
 	taskNameFetchPayments = "fetch_payments"
-	// taskNameInitiatePayment   = "initiate_payment"
 )
 
 // TaskDescriptor is the definition of a task.

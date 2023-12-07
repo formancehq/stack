@@ -59,11 +59,11 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 }
 
 func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
-	return createExternalBankAccount(ctx, bankAccount, &c.cfg)
+	return createExternalBankAccount(ctx, bankAccount, c.cfg)
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	return connectors.ErrNotImplemented
+	return initiatePayment(ctx, transfer, c.cfg)
 }
 
 var _ connectors.Connector = &Connector{}
