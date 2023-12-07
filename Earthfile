@@ -123,7 +123,7 @@ tidy-all:
     WAIT
       BUILD --pass-args ./libs/go-libs+tidy
     END
-    BUILD --pass-args ./tests/integration+tidy
+    #BUILD --pass-args ./tests/integration+tidy
     FOR component IN $(cd ./components && ls -d */)
       BUILD --pass-args ./components+tidy --components=$component
     END
