@@ -6,25 +6,6 @@ IMPORT ../.. AS stack
 
 FROM core+base-image
 
-sources:
-    FROM core+base-image
-    WORKDIR /src
-    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
-    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
-    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
-    COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
-    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
-    SAVE ARTIFACT /src
-
-tidy:
-    FROM core+builder-image
-    COPY (+sources/*) /src
-    WORKDIR /src
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        go mod tidy
-    SAVE ARTIFACT go.* AS LOCAL ./
-
 temporalite-build:
     FROM core+builder-image
     GIT CLONE --branch=v0.2.0 https://github.com/temporalio/temporalite.git /src
@@ -45,7 +26,11 @@ tests:
     FROM core+builder-image
     WORKDIR /src
     RUN apk update && apk add docker-cli-compose
-    COPY (+sources/*) /src
+    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
+    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
+    COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
+    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     COPY --pass-args (stack+build-final-spec/generate-with-version.json) /src/openapi/build/generate.json
     COPY --pass-args (stack+build-sdk/go --LANG=go) /src/sdks/go
     COPY . /src/tests/integration
