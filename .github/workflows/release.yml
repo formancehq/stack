@@ -2,7 +2,8 @@ name: Default - Release
 on:
   push:
     tags:
-      - '*/*/v*.*.*'
+      - 'components/*/v*.*.*'
+      - 'ee/*/v*.*.*'
 
 jobs:
   Extract:

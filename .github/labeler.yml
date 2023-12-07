@@ -50,3 +50,6 @@ github:
 'ee/webhooks':
   - changed-files:
     - any-glob-to-any-file: "ee/webhooks/*"
+'ee/reconciliation':
+  - changed-files:
+    - any-glob-to-any-file: "ee/reconciliation/*"
