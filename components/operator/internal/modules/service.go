@@ -326,7 +326,7 @@ type Service struct {
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
 	Liveness                Liveness
-	LivenessEndpoint        *string
+	LivenessEndpoint        string
 	AuthConfiguration       func(config ReconciliationConfig) stackv1beta3.ClientConfiguration
 	Configs                 func(resolveContext ServiceInstallConfiguration) Configs
 	Secrets                 func(resolveContext ServiceInstallConfiguration) Secrets
@@ -596,8 +596,8 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 			c.LivenessProbe = common.LegacyLiveness(r.GetUsedPort())
 		}
 
-		if r.service.LivenessEndpoint != nil {
-			c.LivenessProbe = common.LivenessEndpoint(*r.service.LivenessEndpoint)
+		if r.service.LivenessEndpoint != "" {
+			c.LivenessProbe = common.LivenessEndpoint(r.service.LivenessEndpoint)
 		}
 
 		if r.usedPort != 0 {

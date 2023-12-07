@@ -22,11 +22,11 @@ func LivenessEndpoint(str string) *corev1.Probe {
 	//str as url path
 	url, err := url.Parse(str)
 	if err != nil {
-		return nil
+		panic(err)
 	}
 	port, err := strconv.ParseInt(url.Port(), 10, 64)
 	if err != nil {
-		return nil
+		panic(err)
 	}
 
 	return liveness(

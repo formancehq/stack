@@ -13,5 +13,5 @@ type GatewaySpec struct {
 	EnableAuditPlugin *bool `json:"enableAuditPlugin,omitempty"`
 
 	// +optional
-	LivenessEndpoint *string `json:"livenessEndpoint,omitempty"`
+	LivenessEndpoint string `json:"livenessEndpoint,omitempty"`
 }
