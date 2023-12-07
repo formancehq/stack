@@ -3,7 +3,7 @@ includes:
   - from_file:
       path: ./../../.goreleaser.default.yaml
 monorepo:
-  tag_prefix: apps/payments/
+  tag_prefix: components/payments/
   dir: ./
 
 builds:
