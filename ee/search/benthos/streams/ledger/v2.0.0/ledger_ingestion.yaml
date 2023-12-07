@@ -46,7 +46,8 @@ pipeline:
                     "destination": this.transaction.postings.map_each(p -> p.destination),
                     "amount": this.transaction.postings.map_each(p -> p.apply("amount"))
                   },
-                  "kind": "TRANSACTION"
+                  "kind": "TRANSACTION",
+                  "when": this.date
                 }
               }
             }
@@ -63,7 +64,8 @@ pipeline:
                   "indexed": { 
                     "address": this.account
                   },
-                  "kind": "ACCOUNT"
+                  "kind": "ACCOUNT",
+                  "when": this.date
                 }
               }
             }
@@ -102,7 +104,8 @@ pipeline:
                   "indexed": { 
                     "address": item.key
                   },
-                  "kind": "ACCOUNT"
+                  "kind": "ACCOUNT",
+                  "when": this.date
                 }
               }).values()).values().flatten()
             )
@@ -146,7 +149,8 @@ pipeline:
                   "address": this.payload.targetId,
                   "ledger": this.payload.ledger
                 },
-                "kind": "ACCOUNT"
+                "kind": "ACCOUNT",
+                "when": this.date
               }
             }).values()
         - unarchive:

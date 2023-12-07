@@ -15,6 +15,10 @@ pipeline:
   - bloblang: |
       meta loopCount = (this.volumes_count.number() / meta("batchSize").number()).ceil()
       meta loopIndex = 0
+  - bloblang: |
+      root = if meta("loopCount") == "0" {
+        deleted() 
+      }
   - while:
       check: 'meta("loopIndex") < meta("loopCount")'
       processors:
@@ -30,23 +34,26 @@ pipeline:
       - unarchive:
           format: json_array
       - bloblang: |
-          meta action = "upsert"
-          meta id = "ASSET-%s-%s-%s".format(meta("ledger"), this.account, this.asset)
           root = {
-            "data": {
-              "name": this.asset,
-              "input": this.input,
-              "output": this.output,
-              "account": this.account,
-              "ledger": meta("ledger")
-            },
-            "indexed": {
-              "account": this.account,
-              "name": this.asset,
-              "ledger": meta("ledger")
-            },
-            "kind": "ASSET",
-            "ledger": meta("ledger")
+            "id": "ASSET-%s-%s-%s".format(meta("ledger"), this.account, this.asset),
+            "action": "upsert",
+            "document": {
+              "data": {
+                "name": this.asset,
+                "input": this.input,
+                "output": this.output,
+                "account": this.account,
+                "ledger": meta("ledger")
+              },
+              "indexed": {
+                "account": this.account,
+                "name": this.asset,
+                "ledger": meta("ledger")
+              },
+              "kind": "ASSET",
+              "ledger": meta("ledger"),
+              "when": this.date
+            }
           }
 
 output:

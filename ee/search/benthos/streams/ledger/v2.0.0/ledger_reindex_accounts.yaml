@@ -30,7 +30,8 @@ pipeline:
             "ledger": meta("ledger")
           },
           "kind": "ACCOUNT",
-          "ledger": meta("ledger")
+          "ledger": meta("ledger"),
+          "when": this.date
         },
         "id": "ACCOUNT-%s-%s".format(meta("ledger"), this.address),
         "action": "upsert"
