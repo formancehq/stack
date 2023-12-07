@@ -37,7 +37,8 @@ func NewEventSavedPool(pool *models.Pool) events.EventMessage {
 }
 
 type deletePoolMessagePayload struct {
-	ID string `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	ID        string    `json:"id"`
 }
 
 func NewEventDeletePool(id uuid.UUID) events.EventMessage {
@@ -47,7 +48,8 @@ func NewEventDeletePool(id uuid.UUID) events.EventMessage {
 		Version: events.EventVersion,
 		Type:    events.EventTypeDeletePool,
 		Payload: deletePoolMessagePayload{
-			ID: id.String(),
+			CreatedAt: time.Now().UTC(),
+			ID:        id.String(),
 		},
 	}
 }
