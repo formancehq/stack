@@ -57,6 +57,11 @@ spec:
         disableSSLMode: true
     reconciliation:
       debug: true
+      postgres:
+        credentialsFromSecret: postgres
+        host: postgres-postgresql.formance.svc.cluster.local
+        port: 5432
+        disableSSLMode: true
     payments:
       postgres:
         credentialsFromSecret: postgres
@@ -71,7 +76,6 @@ spec:
         port: 5432
         disableSSLMode: true
     search:
-
       elasticSearch:
         host: elasticsearch-master.formance.svc.cluster.local
         port: 9200

@@ -26,6 +26,8 @@ type Cron struct {
 }
 
 type DatabaseMigration struct {
+	// optional, will be the commit hash if empty in the kube object
+	Name          string
 	Shutdown      bool
 	Command       []string
 	AdditionalEnv func(config ReconciliationConfig) []EnvVar
@@ -357,7 +359,11 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 
 func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version string, migration DatabaseMigration, postgresConfig v1beta3.PostgresConfig) (bool, error) {
 	logger := log.FromContext(ctx)
-	return r.RunJob(ctx, fmt.Sprintf("%s-%s-db-migration", r.module.Name(), version),
+	name := fmt.Sprintf("%s-%s-db-migration", r.module.Name(), version)
+	if migration.Name != "" {
+		name = fmt.Sprintf("%s-%s-db-migration", r.module.Name(), migration.Name)
+	}
+	return r.RunJob(ctx, name,
 		func() error {
 			if migration.Shutdown {
 				logger.Info("Stop module reconciliation as required by upgrade", "module", r.module.Name())
