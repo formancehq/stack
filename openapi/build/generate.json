@@ -294,297 +294,6 @@
         }
       }
     },
-    "/api/auth/clients/{clientId}/scopes/{scopeId}": {
-      "put": {
-        "summary": "Add scope to client",
-        "tags": [
-          "Auth",
-          "Clients"
-        ],
-        "operationId": "addScopeToClient",
-        "parameters": [
-          {
-            "description": "Client ID",
-            "in": "path",
-            "name": "clientId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Scope ID",
-            "in": "path",
-            "name": "scopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Scope added to client"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete scope from client",
-        "tags": [
-          "Auth",
-          "Clients"
-        ],
-        "operationId": "deleteScopeFromClient",
-        "parameters": [
-          {
-            "description": "Client ID",
-            "in": "path",
-            "name": "clientId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Scope ID",
-            "in": "path",
-            "name": "scopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Scope deleted from client"
-          }
-        }
-      }
-    },
-    "/api/auth/scopes": {
-      "get": {
-        "summary": "List scopes",
-        "tags": [
-          "Auth",
-          "Scopes"
-        ],
-        "description": "List Scopes",
-        "operationId": "listScopes",
-        "responses": {
-          "200": {
-            "description": "List of scopes",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListScopesResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create scope",
-        "tags": [
-          "Auth",
-          "Scopes"
-        ],
-        "description": "Create scope",
-        "operationId": "createScope",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateScopeRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Created scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateScopeResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/auth/scopes/{scopeId}": {
-      "get": {
-        "summary": "Read scope",
-        "tags": [
-          "Auth",
-          "Scopes"
-        ],
-        "description": "Read scope",
-        "operationId": "readScope",
-        "parameters": [
-          {
-            "description": "Scope ID",
-            "in": "path",
-            "name": "scopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Retrieved scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReadScopeResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update scope",
-        "tags": [
-          "Auth",
-          "Scopes"
-        ],
-        "description": "Update scope",
-        "operationId": "updateScope",
-        "parameters": [
-          {
-            "description": "Scope ID",
-            "in": "path",
-            "name": "scopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateScopeRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Updated scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateScopeResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete scope",
-        "tags": [
-          "Auth",
-          "Scopes"
-        ],
-        "description": "Delete scope",
-        "operationId": "deleteScope",
-        "parameters": [
-          {
-            "description": "Scope ID",
-            "in": "path",
-            "name": "scopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Scope deleted"
-          }
-        }
-      }
-    },
-    "/api/auth/scopes/{scopeId}/transient/{transientScopeId}": {
-      "put": {
-        "summary": "Add a transient scope to a scope",
-        "tags": [
-          "Auth",
-          "Scopes"
-        ],
-        "description": "Add a transient scope to a scope",
-        "operationId": "addTransientScope",
-        "parameters": [
-          {
-            "description": "Scope ID",
-            "in": "path",
-            "name": "scopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Transient scope ID",
-            "in": "path",
-            "name": "transientScopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Scope added"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a transient scope from a scope",
-        "tags": [
-          "Auth",
-          "Scopes"
-        ],
-        "description": "Delete a transient scope from a scope",
-        "operationId": "deleteTransientScope",
-        "parameters": [
-          {
-            "description": "Scope ID",
-            "in": "path",
-            "name": "scopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Transient scope ID",
-            "in": "path",
-            "name": "transientScopeId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Transient scope deleted"
-          }
-        }
-      }
-    },
     "/api/auth/users": {
       "get": {
         "summary": "List users",
@@ -3936,6 +3645,151 @@
         }
       }
     },
+    "/api/orchestration/triggers": {
+      "get": {
+        "summary": "List triggers",
+        "operationId": "listTriggers",
+        "description": "List triggers",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of triggers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTriggersResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create trigger",
+        "operationId": "createTrigger",
+        "description": "Create trigger",
+        "tags": [
+          "Orchestration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created trigger",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTriggerResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orchestration/triggers/{triggerID}": {
+      "parameters": [
+        {
+          "name": "triggerID",
+          "description": "The trigger id",
+          "in": "path",
+          "schema": {
+            "type": "string"
+          },
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Read trigger",
+        "operationId": "readTrigger",
+        "description": "Read trigger",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "200": {
+            "description": "A specific trigger",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadTriggerResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete trigger",
+        "operationId": "deleteTrigger",
+        "description": "Read trigger",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "204": {
+            "description": "Trigger deleted"
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orchestration/triggers/{triggerID}/occurrences": {
+      "parameters": [
+        {
+          "name": "triggerID",
+          "description": "The trigger id",
+          "in": "path",
+          "schema": {
+            "type": "string"
+          },
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "List triggers occurrences",
+        "operationId": "listTriggersOccurrences",
+        "description": "List triggers occurrences",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of triggers occurrences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTriggersOccurrencesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
     "/api/orchestration/workflows": {
       "get": {
         "summary": "List registered workflows",
@@ -4347,6 +4201,183 @@
           }
         }
       }
+    },
+    "/api/reconciliation/_info": {
+      "get": {
+        "summary": "Get server info",
+        "operationId": "reconciliationgetServerInfo",
+        "tags": [
+          "Reconciliation"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerInfo"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/reconciliation/policies": {
+      "post": {
+        "summary": "Create a policy",
+        "tags": [
+          "Reconciliation"
+        ],
+        "operationId": "createPolicy",
+        "description": "Create a policy",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Policy"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Policy"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      },
+      "get": {
+        "summary": "List policies",
+        "operationId": "listPolicies",
+        "tags": [
+          "Reconciliation"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/reconciliationPageSize"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Policies"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/reconciliation/policies/{policyID}": {
+      "delete": {
+        "summary": "Delete a policy",
+        "operationId": "deletePolicy",
+        "tags": [
+          "Reconciliation"
+        ],
+        "description": "Delete a policy by its id.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PolicyID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a policy",
+        "tags": [
+          "Reconciliation"
+        ],
+        "operationId": "getPolicy",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PolicyID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Policy"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/reconciliation/policies/{policyID}/reconciliation": {
+      "post": {
+        "summary": "Reconcile using a policy",
+        "tags": [
+          "Reconciliation"
+        ],
+        "operationId": "reconcile",
+        "description": "Reconcile using a policy",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PolicyID"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Reconciliation"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Reconciliation"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/reconciliation/reconciliations": {
+      "get": {
+        "summary": "List reconciliations",
+        "operationId": "listReconciliations",
+        "tags": [
+          "Reconciliation"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/reconciliationPageSize"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Reconciliations"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/reconciliation/reconciliations/{reconciliationID}": {
+      "get": {
+        "summary": "Get a reconciliation",
+        "tags": [
+          "Reconciliation"
+        ],
+        "operationId": "getReconciliation",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ReconciliationID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Reconciliation"
+          },
+          "default": {
+            "$ref": "#/components/responses/reconciliationErrorResponse"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4425,6 +4456,12 @@
           },
           "metadata": {
             "$ref": "#/components/schemas/Metadata"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -4463,12 +4500,6 @@
             "properties": {
               "id": {
                 "type": "string"
-              },
-              "scopes": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               },
               "secrets": {
                 "type": "array",
@@ -8877,6 +8908,99 @@
           "data"
         ]
       },
+      "TriggerData": {
+        "type": "object",
+        "required": [
+          "event",
+          "workflowID"
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "workflowID": {
+            "type": "string"
+          },
+          "filter": {
+            "type": "string"
+          },
+          "vars": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "Trigger": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TriggerData"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "createdAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "TriggerOccurrence": {
+        "type": "object",
+        "required": [
+          "triggerID",
+          "workflowInstanceID",
+          "date"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "workflowInstanceID": {
+            "type": "string"
+          },
+          "triggerID": {
+            "type": "string"
+          }
+        }
+      },
+      "ListTriggersOccurrencesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/TriggerOccurrence"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ListTriggersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Trigger"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
       "ReadWorkflowResponse": {
         "type": "object",
         "required": [
@@ -8899,6 +9023,17 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Workflow"
+          }
+        }
+      },
+      "CreateTriggerResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trigger"
           }
         }
       },
@@ -9484,6 +9619,275 @@
         "example": {
           "admin": "true"
         }
+      },
+      "ReadTriggerResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trigger"
+          }
+        }
+      },
+      "PoliciesCursorResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "object",
+            "required": [
+              "pageSize",
+              "hasMore",
+              "data"
+            ],
+            "properties": {
+              "pageSize": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 1000,
+                "example": 15
+              },
+              "hasMore": {
+                "type": "boolean",
+                "example": false
+              },
+              "previous": {
+                "type": "string",
+                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              },
+              "next": {
+                "type": "string",
+                "example": ""
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Policy"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReconciliationsCursorResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "object",
+            "required": [
+              "pageSize",
+              "hasMore",
+              "data"
+            ],
+            "properties": {
+              "pageSize": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 1000,
+                "example": 15
+              },
+              "hasMore": {
+                "type": "boolean",
+                "example": false
+              },
+              "previous": {
+                "type": "string",
+                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              },
+              "next": {
+                "type": "string",
+                "example": ""
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Reconciliation"
+                }
+              }
+            }
+          }
+        }
+      },
+      "PolicyRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "ledgerName",
+          "ledgerQuery",
+          "paymentsPoolID"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "ledgerName": {
+            "type": "string",
+            "example": "default"
+          },
+          "ledgerQuery": {
+            "type": "string",
+            "example": "{\"$match\": {\"metadata[reconciliation]\": \"pool:main\"}}"
+          },
+          "paymentsPoolID": {
+            "type": "string",
+            "example": "XXX"
+          }
+        }
+      },
+      "PolicyResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "policy": {
+            "$ref": "#/components/schemas/Policy"
+          }
+        }
+      },
+      "ReconciliationRequest": {
+        "type": "object",
+        "required": [
+          "at"
+        ],
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "ReconciliationResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "reconciliation": {
+            "$ref": "#/components/schemas/Reconciliation"
+          }
+        }
+      },
+      "Policy": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "createdAt",
+          "ledgerName",
+          "ledgerQuery",
+          "paymentsPoolID"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "name": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-01-01T00:00:00.000Z"
+          },
+          "ledgerName": {
+            "type": "string",
+            "example": "default"
+          },
+          "ledgerQuery": {
+            "type": "string",
+            "example": "{\"$match\": {\"metadata[reconciliation]\": \"pool:main\"}}"
+          },
+          "paymentsPoolID": {
+            "type": "string",
+            "example": "XXX"
+          }
+        }
+      },
+      "Reconciliation": {
+        "type": "object",
+        "required": [
+          "id",
+          "policyID",
+          "createdAt",
+          "reconciledAt",
+          "status",
+          "paymentsBalances",
+          "ledgerBalances"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "policyID": {
+            "type": "string",
+            "example": "XXX"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-01-01T00:00:00.000Z"
+          },
+          "reconciledAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-01-01T00:00:00.000Z"
+          },
+          "status": {
+            "type": "string",
+            "example": "COMPLETED"
+          },
+          "paymentsBalances": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "bigint"
+            }
+          },
+          "ledgerBalances": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "bigint"
+            }
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "reconciliationErrorResponse": {
+        "type": "object",
+        "required": [
+          "errorCode",
+          "errorMessage"
+        ],
+        "properties": {
+          "errorCode": {
+            "type": "string",
+            "example": "VALIDATION"
+          },
+          "errorMessage": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -9557,7 +9961,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PoolBalance"
+              "$ref": "#/components/schemas/PoolBalancesResponse"
             }
           }
         }
@@ -9721,6 +10125,56 @@
             }
           }
         }
+      },
+      "Policies": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PoliciesCursorResponse"
+            }
+          }
+        }
+      },
+      "Policy": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PolicyResponse"
+            }
+          }
+        }
+      },
+      "Reconciliations": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ReconciliationsCursorResponse"
+            }
+          }
+        }
+      },
+      "Reconciliation": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ReconciliationResponse"
+            }
+          }
+        }
+      },
+      "reconciliationErrorResponse": {
+        "description": "Error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/reconciliationErrorResponse"
+            }
+          }
+        }
       }
     },
     "parameters": {
@@ -9848,6 +10302,38 @@
           "type": "string"
         },
         "required": true
+      },
+      "reconciliationPageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "The maximum number of results to return per page.\n",
+        "example": 100,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "PolicyID": {
+        "name": "policyID",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The policy ID.",
+        "example": "XXX",
+        "required": true
+      },
+      "ReconciliationID": {
+        "name": "reconciliationID",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The reconciliation ID.",
+        "example": "XXX",
+        "required": true
       }
     },
     "requestBodies": {
@@ -9937,6 +10423,26 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/TransferRequest"
+            }
+          }
+        }
+      },
+      "Policy": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PolicyRequest"
+            }
+          }
+        }
+      },
+      "Reconciliation": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ReconciliationRequest"
             }
           }
         }

@@ -85,42 +85,6 @@ func createObject(w http.ResponseWriter, r *http.Request, db *gorm.DB, v any) er
 	return err
 }
 
-func loadAssociation(w http.ResponseWriter, r *http.Request, db *gorm.DB, model any, name string, to any) error {
-	err := db.
-		WithContext(r.Context()).
-		Model(model).
-		Association(name).
-		Find(to)
-	if err != nil {
-		internalServerError(w, r, err)
-	}
-	return err
-}
-
-func appendToAssociation(w http.ResponseWriter, r *http.Request, db *gorm.DB, model any, name string, item any) error {
-	err := db.
-		WithContext(r.Context()).
-		Model(model).
-		Association(name).
-		Append(item)
-	if err != nil {
-		internalServerError(w, r, err)
-	}
-	return err
-}
-
-func removeFromAssociation(w http.ResponseWriter, r *http.Request, db *gorm.DB, model any, name string, item any) error {
-	err := db.
-		WithContext(r.Context()).
-		Model(model).
-		Association(name).
-		Delete(item)
-	if err != nil {
-		internalServerError(w, r, err)
-	}
-	return err
-}
-
 func mapList[I any, O any](items []I, fn func(I) O) []O {
 	ret := make([]O, 0)
 	for _, item := range items {

@@ -169,197 +169,6 @@ paths:
       responses:
         204:
           description: Secret deleted
-  /clients/{clientId}/scopes/{scopeId}:
-    put:
-      summary: Add scope to client
-      tags:
-        - Auth
-        - Clients
-      operationId: addScopeToClient
-      parameters:
-        - description: Client ID
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
-        - description: Scope ID
-          in: path
-          name: scopeId
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Scope added to client
-    delete:
-      summary: Delete scope from client
-      tags:
-        - Auth
-        - Clients
-      operationId: deleteScopeFromClient
-      parameters:
-        - description: Client ID
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
-        - description: Scope ID
-          in: path
-          name: scopeId
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Scope deleted from client
-  /scopes:
-    get:
-      summary: List scopes
-      tags:
-        - Auth
-        - Scopes
-      description: List Scopes
-      operationId: listScopes
-      responses:
-        200:
-          description: List of scopes
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListScopesResponse'
-    post:
-      summary: Create scope
-      tags:
-        - Auth
-        - Scopes
-      description: Create scope
-      operationId: createScope
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateScopeRequest'
-      responses:
-        201:
-          description: Created scope
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateScopeResponse'
-  /scopes/{scopeId}:
-    get:
-      summary: Read scope
-      tags:
-        - Auth
-        - Scopes
-      description: Read scope
-      operationId: readScope
-      parameters:
-        - description: Scope ID
-          in: path
-          name: scopeId
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Retrieved scope
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReadScopeResponse'
-    put:
-      summary: Update scope
-      tags:
-        - Auth
-        - Scopes
-      description: Update scope
-      operationId: updateScope
-      parameters:
-        - description: Scope ID
-          in: path
-          name: scopeId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateScopeRequest'
-      responses:
-        200:
-          description: Updated scope
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateScopeResponse'
-    delete:
-      summary: Delete scope
-      tags:
-        - Auth
-        - Scopes
-      description: Delete scope
-      operationId: deleteScope
-      parameters:
-        - description: Scope ID
-          in: path
-          name: scopeId
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: "Scope deleted"
-  /scopes/{scopeId}/transient/{transientScopeId}:
-    put:
-      summary: Add a transient scope to a scope
-      tags:
-        - Auth
-        - Scopes
-      description: Add a transient scope to a scope
-      operationId: addTransientScope
-      parameters:
-        - description: Scope ID
-          in: path
-          name: scopeId
-          required: true
-          schema:
-            type: string
-        - description: Transient scope ID
-          in: path
-          name: transientScopeId
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: "Scope added"
-    delete:
-      summary: Delete a transient scope from a scope
-      tags:
-        - Auth
-        - Scopes
-      description: Delete a transient scope from a scope
-      operationId: deleteTransientScope
-      parameters:
-        - description: Scope ID
-          in: path
-          name: scopeId
-          required: true
-          schema:
-            type: string
-        - description: Transient scope ID
-          in: path
-          name: transientScopeId
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: "Transient scope deleted"
   /users:
     get:
       summary: List users
@@ -423,6 +232,10 @@ components:
             type: string
         metadata:
           $ref: '#/components/schemas/Metadata'
+        scopes:
+          type: array
+          items:
+            type: string
       required:
         - name
     ClientSecret:
@@ -447,10 +260,6 @@ components:
           properties:
             id:
               type: string
-            scopes:
-              type: array
-              items:
-                type: string
             secrets:
               type: array
               items:

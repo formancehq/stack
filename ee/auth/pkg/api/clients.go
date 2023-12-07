@@ -17,8 +17,6 @@ func addClientRoutes(db *gorm.DB, router *mux.Router) {
 	router.Path("/clients/{clientId}").Methods(http.MethodDelete).HandlerFunc(deleteClient(db))
 	router.Path("/clients/{clientId}/secrets").Methods(http.MethodPost).HandlerFunc(createSecret(db))
 	router.Path("/clients/{clientId}/secrets/{secretId}").Methods(http.MethodDelete).HandlerFunc(deleteSecret(db))
-	router.Path("/clients/{clientId}/scopes/{scopeId}").Methods(http.MethodPut).HandlerFunc(addScopeToClient(db))
-	router.Path("/clients/{clientId}/scopes/{scopeId}").Methods(http.MethodDelete).HandlerFunc(deleteScopeOfClient(db))
 }
 
 type clientSecretView struct {
@@ -43,14 +41,8 @@ func mapBusinessClient(c auth.Client) clientView {
 			PostLogoutRedirectUris: c.PostLogoutRedirectUris,
 			Metadata:               c.Metadata,
 		},
-		ID: c.Id,
-		Scopes: func() []string {
-			ret := make([]string, 0)
-			for _, scope := range c.Scopes {
-				ret = append(ret, scope.ID)
-			}
-			return ret
-		}(),
+		ID:     c.Id,
+		Scopes: c.Scopes,
 		Secrets: mapList(c.Secrets, func(i auth.ClientSecret) clientSecretView {
 			return clientSecretView{
 				ClientSecret: i,
@@ -118,9 +110,6 @@ func readClient(db *gorm.DB) http.HandlerFunc {
 		if client == nil {
 			return
 		}
-		if err := loadAssociation(w, r, db, client, "Scopes", &client.Scopes); err != nil {
-			return
-		}
 		writeJSONObject(w, r, mapBusinessClient(*client))
 	}
 }
@@ -144,7 +133,6 @@ func listClients(db *gorm.DB) http.HandlerFunc {
 		clients := make([]auth.Client, 0)
 		if err := db.
 			WithContext(r.Context()).
-			Preload("Scopes").
 			Find(&clients).Error; err != nil {
 			internalServerError(w, r, err)
 			return
@@ -172,10 +160,6 @@ func updateClient(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		if err := loadAssociation(w, r, db, c, "Scopes", &c.Scopes); err != nil {
-			return
-		}
-
 		writeJSONObject(w, r, mapBusinessClient(*c))
 	}
 }
@@ -193,51 +177,5 @@ func createClient(db *gorm.DB) http.HandlerFunc {
 		}
 
 		writeCreatedJSONObject(w, r, mapBusinessClient(*c), c.Id)
-	}
-}
-
-func deleteScopeOfClient(db *gorm.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		client := findById[auth.Client](w, r, db, "clientId")
-		if client == nil {
-			return
-		}
-		scope := findById[auth.Scope](w, r, db, "scopeId")
-		if scope == nil {
-			return
-		}
-		if err := loadAssociation(w, r, db, client, "Scopes", &client.Scopes); err != nil {
-			return
-		}
-		if !client.HasScope(scope.ID) {
-			return
-		}
-		if err := removeFromAssociation(w, r, db, client, "Scopes", scope); err != nil {
-			return
-		}
-		w.WriteHeader(http.StatusNoContent)
-	}
-}
-
-func addScopeToClient(db *gorm.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		client := findById[auth.Client](w, r, db, "clientId")
-		if client == nil {
-			return
-		}
-		scope := findById[auth.Scope](w, r, db, "scopeId")
-		if scope == nil {
-			return
-		}
-		if err := loadAssociation(w, r, db, client, "Scopes", &client.Scopes); err != nil {
-			return
-		}
-		if client.HasScope(scope.ID) {
-			return
-		}
-		if err := appendToAssociation(w, r, db, client, "Scopes", scope); err != nil {
-			return
-		}
-		w.WriteHeader(http.StatusNoContent)
 	}
 }

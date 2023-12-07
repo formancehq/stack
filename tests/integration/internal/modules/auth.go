@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 )
 
+const AuthIssuer = "http://localhost/api/auth"
+
 var Auth = internal.NewModule("auth").
 	WithCreateDatabase().
 	WithServices(
@@ -53,10 +55,10 @@ var Auth = internal.NewModule("auth").
 					"serve",
 					"--config=" + configFile,
 					"--postgres-uri=" + test.GetDatabaseSourceName("auth"),
-					"--delegated-client-id=noop",
-					"--delegated-client-secret=noop",
-					"--delegated-issuer=https://accounts.google.com",
-					"--base-url=http://localhost/api/auth",
+					"--delegated-client-id=" + internal.OIDCServer().ClientID,
+					"--delegated-client-secret=" + internal.OIDCServer().ClientSecret,
+					"--delegated-issuer=" + internal.OIDCServer().Issuer(),
+					"--base-url=" + AuthIssuer,
 					"--listen=0.0.0.0:0",
 				}
 			}),

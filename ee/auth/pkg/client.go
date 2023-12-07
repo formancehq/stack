@@ -88,7 +88,7 @@ func (c *Client) DeleteSecret(id string) bool {
 
 func (c *Client) HasScope(id string) bool {
 	for _, clientScope := range c.Scopes {
-		if clientScope.ID == id {
+		if clientScope == id {
 			return true
 		}
 	}
@@ -98,21 +98,15 @@ func (c *Client) HasScope(id string) bool {
 type Client struct {
 	ClientOptions
 	Secrets Array[ClientSecret] `gorm:"type:text" json:"secrets"`
-	Scopes  []Scope             `gorm:"many2many:client_scopes;constraint:OnDelete:CASCADE" json:"scopes"`
 }
 
 func (c *Client) GetScopes() []string {
-	ret := make([]string, 0)
-	for _, s := range c.Scopes {
-		ret = append(ret, s.Label)
-	}
-	return ret
+	return c.Scopes
 }
 
 type StaticClient struct {
 	ClientOptions `mapstructure:",squash" yaml:",inline"`
 	Secrets       []string `json:"secrets" yaml:"secrets"`
-	Scopes        []string `json:"scopes" yaml:"scopes"`
 }
 
 func (s StaticClient) ValidateSecret(secret string) error {
@@ -137,6 +131,7 @@ type ClientOptions struct {
 	PostLogoutRedirectUris Array[string] `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris" gorm:"type:text"`
 	Metadata               Metadata      `json:"metadata" yaml:"metadata" gorm:"type:text"`
 	Trusted                bool          `json:"trusted" yaml:"trusted"`
+	Scopes                 Array[string] `gorm:"type:text" json:"scopes" yaml:"scopes"`
 }
 
 func (s *ClientOptions) IsTrusted() bool {

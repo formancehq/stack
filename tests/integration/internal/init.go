@@ -4,10 +4,12 @@ import (
 	"context"
 	formance "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/oauth2-proxy/mockoidc"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -15,14 +17,46 @@ var (
 	ctx         context.Context
 	currentEnv  *env
 	currentTest *Test
+	mockOIDC    *mockoidc.MockOIDC
 )
 
 func TestContext() context.Context {
 	return ctx
 }
 
-func Client() *formance.Formance {
-	return currentTest.sdkClient
+func Client(options ...formance.SDKOption) *formance.Formance {
+	gatewayUrl, err := url.Parse(currentTest.httpServer.URL)
+	if err != nil {
+		panic(err)
+	}
+
+	httpTransport, err := newOpenapiCheckerTransport(ctx, currentTest.httpTransport)
+	Expect(err).To(BeNil())
+
+	options = append([]formance.SDKOption{
+		formance.WithServerURL(gatewayUrl.String()),
+		formance.WithClient(
+			&http.Client{
+				Transport: httpTransport,
+			},
+		),
+	}, options...)
+
+	return formance.New(options...)
+}
+
+func GatewayURL() string {
+	return currentTest.GatewayURL()
+}
+
+func HTTPClient() *http.Client {
+	return &http.Client{
+		Transport: currentTest.httpTransport,
+	}
+}
+
+func OIDCServer() *mockoidc.MockOIDC {
+	return mockOIDC
 }
 
 var _ = BeforeSuite(func() {
@@ -32,6 +66,10 @@ var _ = BeforeSuite(func() {
 	l.Out = GinkgoWriter
 	l.Level = logrus.DebugLevel
 	ctx = logging.ContextWithLogger(ctx, logging.NewLogrus(l))
+
+	var err error
+	mockOIDC, err = mockoidc.Run()
+	Expect(err).To(BeNil())
 
 	// Some defaults
 	SetDefaultEventuallyTimeout(10 * time.Second)
