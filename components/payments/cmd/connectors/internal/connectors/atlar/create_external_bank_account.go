@@ -50,24 +50,30 @@ func createExternalBankAccount(ctx task.ConnectorContext, newExternalBankAccount
 		Context:      detachedCtx,
 		Counterparty: &createCounterpartyRequest,
 	}
-	_, err = client.Counterparties.PostV1Counterparties(&postCounterpartiesParams)
+	postCounterpartiesResponse, err := client.Counterparties.PostV1Counterparties(&postCounterpartiesParams)
 	if err != nil {
 		return err
 	}
 
-	// createExternalAccountRequest := atlar_models.CreateExternalAccountRequest{
-	// 	CounterpartyID: createCounterpartiesReponse.Payload.ID,
-	// }
-	// postExternalAccountsParams := external_accounts.PostV1ExternalAccountsParams{
-	// 	Context:         detachedCtx,
-	// 	ExternalAccount: &createExternalAccountRequest,
-	// }
+	if len(postCounterpartiesResponse.Payload.ExternalAccounts) != 1 {
+		// should never occur, but when in case it happens it's nice to have an error to search for
+		return errors.New("counterparty was not created with exactly one account")
+	}
 
-	// _, err = client.ExternalAccounts.PostV1ExternalAccounts(&postExternalAccountsParams)
-	// if err != nil {
-	// 	return err
-	// }
+	externalAccountID := postCounterpartiesResponse.Payload.ExternalAccounts[0].ID
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:              fmt.Sprintf("Fetch external account %s from atlar", externalAccountID),
+		Key:               taskNameFetchAccounts,
+		ExternalAccountID: externalAccountID,
+	})
+	if err != nil {
+		return err
+	}
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{ScheduleOption: models.OPTIONS_RUN_NOW_SYNC}); err != nil {
+		return err
+	}
 
+	// TODO: it might make sense to return the external account ID so the client can use it for initiating a payment
 	return nil
 }
 
