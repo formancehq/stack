@@ -4138,6 +4138,9 @@ spec:
                     type: object
                   nats:
                     properties:
+                      replicas:
+                        default: 3
+                        type: integer
                       url:
                         type: string
                     required:
