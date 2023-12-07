@@ -1,8 +1,8 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/auth/users"
 	"github.com/formancehq/fctl/cmd/cloud/organizations/invitations"
+	"github.com/formancehq/fctl/cmd/cloud/organizations/users"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
