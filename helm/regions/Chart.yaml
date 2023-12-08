@@ -16,7 +16,7 @@ appVersion: "latest"
 dependencies:
   - name: agent
     version: 0.3.0
-    repository: "file://../../components/agent/helm"
+    repository: "file://../../ee/agent/helm"
     condition: agent.enabled
   - name: operator
     version: 0.2.7
