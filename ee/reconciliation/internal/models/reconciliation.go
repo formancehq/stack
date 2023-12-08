@@ -20,14 +20,14 @@ func (r ReconciliationStatus) String() string {
 }
 
 type Reconciliation struct {
-	bun.BaseModel `bun:"reconciliations.reconciliation"`
+	bun.BaseModel `bun:"reconciliations.reconciliation" json:"-"`
 
-	ID               uuid.UUID `bun:",pk,nullzero"`
-	PolicyID         uuid.UUID `bun:",nullzero"`
-	CreatedAt        time.Time `bun:",nullzero"`
-	ReconciledAt     time.Time `bun:",nullzero"`
-	Status           ReconciliationStatus
-	LedgerBalances   map[string]*big.Int `bun:",jsonb"`
-	PaymentsBalances map[string]*big.Int `bun:",jsonb"`
-	Error            string
+	ID               uuid.UUID            `bun:",pk,nullzero" json:"id"`
+	PolicyID         uuid.UUID            `bun:",nullzero" json:"policyID"`
+	CreatedAt        time.Time            `bun:",nullzero" json:"createdAt"`
+	ReconciledAt     time.Time            `bun:",nullzero" json:"reconciledAt"`
+	Status           ReconciliationStatus `json:"status"`
+	LedgerBalances   map[string]*big.Int  `bun:",jsonb" json:"ledgerBalances" `
+	PaymentsBalances map[string]*big.Int  `bun:",jsonb" json:"paymentsBalances" `
+	Error            string               `json:"error"`
 }
