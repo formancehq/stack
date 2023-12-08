@@ -29,6 +29,7 @@ var (
 )
 
 const (
+	stackFlag                 = "stack"
 	stackURLFlag              = "stack-url"
 	stackClientIDFlag         = "stack-client-id"
 	stackClientSecretFlag     = "stack-client-secret"
@@ -61,6 +62,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
 	cmd.PersistentFlags().String(postgresDSNFlag, "", "Postgres address")
 	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
+	cmd.PersistentFlags().String(stackFlag, "", "Stack")
 	cmd.AddCommand(newServeCommand(), newVersionCommand(), newWorkerCommand())
 
 	publish.InitCLIFlags(cmd)
