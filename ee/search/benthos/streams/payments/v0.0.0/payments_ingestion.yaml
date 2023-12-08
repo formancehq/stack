@@ -98,6 +98,24 @@ pipeline:
                 "action": "index",
                 "id": "PAYMENT-BANK-ACCOUNT-%s".format(this.payload.id)
               }
+      - label: SAVED_POOL
+        processors:
+        - bloblang: |
+              root = {
+                "document": {
+                    "data": this.payload,
+                    "indexed": {
+                        "id": this.payload.id,
+                        "createdAt": this.payload.createdAt,
+                        "name": this.payload.name,
+                        "accountIDs": this.payload.accountIDs,
+                    },
+                    "kind": "PAYMENT_POOL",
+                    "when": this.date
+                },
+                "action": "index",
+                "id": "PAYMENT-POOL-%s".format(this.payload.id)
+              }
       - label: SAVED_TRANSFER_INITIATION
         processors:
         - bloblang: |

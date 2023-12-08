@@ -5,12 +5,13 @@ import (
 )
 
 const (
-	TopicPayments   = "payments"
-	TopicConnectors = "connectors"
+	TopicPayments = "payments"
 
 	EventVersion = "v1"
 	EventApp     = "payments"
 
+	EventTypeSavedPool                = "SAVED_POOL"
+	EventTypeDeletePool               = "DELETED_POOL"
 	EventTypeSavedPayments            = "SAVED_PAYMENT"
 	EventTypeSavedAccounts            = "SAVED_ACCOUNT"
 	EventTypeSavedBalances            = "SAVED_BALANCE"
