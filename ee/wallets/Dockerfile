@@ -2,7 +2,7 @@ FROM golang:1.20 AS builder
 ARG APP_SHA
 ARG VERSION
 WORKDIR /src
-COPY sdks/go /src/sdks/go
+COPY libs/clients/go /src/libs/clients/go
 COPY libs /src/libs
 COPY components/wallets /src/ee/wallets
 WORKDIR /src/ee/wallets

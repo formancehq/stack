@@ -1,0 +1,10 @@
+# BulkElementBulkElementAddMetadata
+
+
+## Fields
+
+| Field                                                                                                  | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `Action`                                                                                               | *string*                                                                                               | :heavy_check_mark:                                                                                     | N/A                                                                                                    |
+| `Data`                                                                                                 | [*BulkElementBulkElementAddMetadataData](../../models/shared/bulkelementbulkelementaddmetadatadata.md) | :heavy_minus_sign:                                                                                     | N/A                                                                                                    |
+| `Ik`                                                                                                   | **string*                                                                                              | :heavy_minus_sign:                                                                                     | N/A                                                                                                    |

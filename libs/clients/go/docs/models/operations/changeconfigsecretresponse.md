@@ -1,0 +1,12 @@
+# ChangeConfigSecretResponse
+
+
+## Fields
+
+| Field                                                                         | Type                                                                          | Required                                                                      | Description                                                                   |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `ConfigResponse`                                                              | [*shared.ConfigResponse](../../models/shared/configresponse.md)               | :heavy_minus_sign:                                                            | Secret successfully changed.                                                  |
+| `ContentType`                                                                 | *string*                                                                      | :heavy_check_mark:                                                            | HTTP response content type for this operation                                 |
+| `StatusCode`                                                                  | *int*                                                                         | :heavy_check_mark:                                                            | HTTP response status code for this operation                                  |
+| `RawResponse`                                                                 | [*http.Response](https://pkg.go.dev/net/http#Response)                        | :heavy_minus_sign:                                                            | Raw HTTP response; suitable for custom response parsing                       |
+| `WebhooksErrorResponse`                                                       | [*shared.WebhooksErrorResponse](../../models/shared/webhookserrorresponse.md) | :heavy_minus_sign:                                                            | Error                                                                         |

@@ -22,7 +22,6 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20221120152707-495c53812d05 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
@@ -77,4 +76,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/formance-sdk-go => ../../sdks/go
+replace github.com/formancehq/formance-sdk-go => ../../libs/clients/go

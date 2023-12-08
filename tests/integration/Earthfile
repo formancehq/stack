@@ -32,7 +32,7 @@ tests:
     COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     COPY --pass-args (stack+build-final-spec/generate-with-version.json) /src/openapi/build/generate.json
-    COPY --pass-args (stack+build-sdk/go --LANG=go) /src/sdks/go
+    COPY --pass-args (stack+build-sdk/go --LANG=go) /src/libs/clients/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
     DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo

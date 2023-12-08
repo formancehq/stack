@@ -157,4 +157,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/formance-sdk-go => ../../sdks/go
+replace github.com/formancehq/formance-sdk-go => ../../libs/clients/go

@@ -50,8 +50,8 @@ build-sdk:
     RUN apk update && apk add yq
     COPY (+speakeasy/speakeasy) /bin/speakeasy
     COPY (+build-final-spec/generate-with-version.json) final-spec.json
-    COPY --dir libs/clients/templates/go sdks/go
-    RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./src/libs/clients/go -l go
+    COPY --dir libs/clients/templates/go libs/clients/go
+    RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
     SAVE ARTIFACT sdks/go AS LOCAL ./libs/clients/go
     SAVE ARTIFACT sdks/go
 
