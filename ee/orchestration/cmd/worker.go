@@ -46,7 +46,11 @@ func workerOptions() fx.Option {
 	return fx.Options(
 		stackClientModule(),
 		temporalworker.NewWorkerModule(viper.GetString(temporalTaskQueueFlag)),
-		triggers.NewListenerModule(viper.GetString(temporalTaskQueueFlag), viper.GetStringSlice(topicsFlag)),
+		triggers.NewListenerModule(
+			viper.GetString(stackFlag),
+			viper.GetString(temporalTaskQueueFlag),
+			viper.GetStringSlice(topicsFlag),
+		),
 	)
 }
 
