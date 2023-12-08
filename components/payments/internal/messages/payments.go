@@ -20,8 +20,9 @@ type paymentMessagePayload struct {
 	Asset       models.Asset         `json:"asset"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
-	InitialAmount *big.Int `json:"initialAmount"`
-	Amount        *big.Int `json:"amount"`
+	InitialAmount *big.Int          `json:"initialAmount"`
+	Amount        *big.Int          `json:"amount"`
+	Metadata      map[string]string `json:"metadata"`
 }
 
 func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) events.EventMessage {
@@ -37,6 +38,13 @@ func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Pa
 		Amount:        payment.Amount,
 		ConnectorID:   payment.ConnectorID.String(),
 		Provider:      provider.String(),
+		Metadata: func() map[string]string {
+			ret := make(map[string]string)
+			for _, m := range payment.Metadata {
+				ret[m.Key] = m.Value
+			}
+			return ret
+		}(),
 	}
 
 	return events.EventMessage{

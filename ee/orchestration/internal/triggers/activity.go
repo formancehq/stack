@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/uptrace/bun"
 )
@@ -34,6 +35,10 @@ func (a Activities) ListTriggers(ctx context.Context, request ProcessEventReques
 				panic("unable to eval filter")
 			}
 		}
+
+		logging.FromContext(ctx).
+			WithField("trigger-id", trigger.ID).
+			Debugf("Checking expr '%s': %v", trigger.Filter, ok)
 
 		if ok {
 			ret = append(ret, trigger)
