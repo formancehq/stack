@@ -15,6 +15,10 @@ pipeline:
   - bloblang: |
       meta loopCount = (this.transactions_count.number() / meta("batchSize").number()).ceil()
       meta loopIndex = 0
+  - bloblang: |
+        root = if meta("loopCount") == "0" {
+          deleted() 
+        }
   - while:
       check: 'meta("loopIndex") < meta("loopCount")'
       processors:
@@ -35,34 +39,37 @@ pipeline:
             "metadata": this.metadata.parse_json()
           })
       - bloblang: |
-          meta action = "upsert"
-          meta id = "TRANSACTION-%s-%d".format(meta("ledger"), this.id)
           root = {
-            "data": {
-              "postings": this.postings,
-              "reference": this.reference,
-              "txid": this.id,
-              "timestamp": this.timestamp,
-              "metadata": if this.metadata { this.metadata } else {{}},
-              "ledger": meta("ledger")
-            },
-            "indexed": {
-              "reference": this.reference,
-              "txid": this.id,
-              "timestamp": this.timestamp,
-              "asset": this.postings.map_each(p -> p.asset),
-              "source": this.postings.map_each(p -> p.source),
-              "destination": this.postings.map_each(p -> p.destination),
-              "amount": this.postings.map_each(p -> if p.asset.contains("/") {
-                [
-                  p.amount,
-                  p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) # amount / pow(10, decimal part of asset)
-                ]
-              } else { [ p.amount ] }).flatten().map_each(v -> "%v".format(v)),
-              "ledger": meta("ledger")
-            },
-            "kind": "TRANSACTION",
-            "ledger": meta("ledger")
+            "id": "TRANSACTION-%s-%s".format(meta("ledger"), this.id),
+            "action": "upsert",
+            "document": {
+              "data": {
+                "postings": this.postings,
+                "reference": this.reference,
+                "txid": this.txid,
+                "timestamp": this.timestamp,
+                "metadata": if this.metadata { this.metadata } else {{}},
+                "ledger": meta("ledger")
+              },
+              "indexed": {
+                "reference": this.reference,
+                "txid": this.id,
+                "timestamp": this.timestamp,
+                "asset": this.postings.map_each(p -> p.asset),
+                "source": this.postings.map_each(p -> p.source),
+                "destination": this.postings.map_each(p -> p.destination),
+                "amount": this.postings.map_each(p -> if p.asset.contains("/") {
+                  [
+                    p.amount,
+                    p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) # amount / pow(10, decimal part of asset)
+                  ]
+                } else { [ p.amount ] }).flatten().map_each(v -> "%v".format(v)),
+                "ledger": meta("ledger")
+              },
+              "kind": "TRANSACTION",
+              "ledger": meta("ledger"),
+              "when": this.date
+            }
           }
 
 output:

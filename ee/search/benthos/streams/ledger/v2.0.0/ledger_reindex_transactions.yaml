@@ -47,7 +47,8 @@ pipeline:
               "ledger": meta("ledger")
             },
             "kind": "TRANSACTION",
-            "ledger": meta("ledger")
+            "ledger": meta("ledger"),
+            "when": this.date
           }
         }
 
