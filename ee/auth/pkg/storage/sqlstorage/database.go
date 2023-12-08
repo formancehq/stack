@@ -68,7 +68,6 @@ func MigrateTables(ctx context.Context, db *gorm.DB) error {
 		&auth.AuthRequest{},
 		&auth.RefreshToken{},
 		&auth.User{},
-		&auth.Scope{},
 	)
 }
 

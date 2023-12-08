@@ -105,7 +105,7 @@ func TestVerifyAccessToken(t *testing.T) {
 	t.Run("protected routes", func(t *testing.T) {
 		t.Parallel()
 
-		protectedRoutes := []string{"/clients", "/scopes", "/users"}
+		protectedRoutes := []string{"/clients", "/users"}
 		for _, route := range protectedRoutes {
 
 			t.Run("no token", func(t *testing.T) {

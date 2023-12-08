@@ -10,7 +10,6 @@ import (
 
 func verifyAccessToken(r *http.Request, o op.OpenIDProvider) error {
 	if !strings.HasPrefix(r.URL.String(), "/clients") &&
-		!strings.HasPrefix(r.URL.String(), "/scopes") &&
 		!strings.HasPrefix(r.URL.String(), "/users") {
 		return nil
 	}

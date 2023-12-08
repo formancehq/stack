@@ -52,7 +52,6 @@ func Module(addr, issuer string, serviceInfo api.ServiceInfo) fx.Option {
 		fx.Invoke(
 			addInfoRoute,
 			addClientRoutes,
-			addScopeRoutes,
 			addUserRoutes,
 		),
 	)

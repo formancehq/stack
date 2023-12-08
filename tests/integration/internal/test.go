@@ -3,14 +3,11 @@ package internal
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
-
-	formance "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/xo/dburl"
+	"net/http"
+	"net/http/httptest"
 )
 
 type routing struct {
@@ -24,29 +21,14 @@ type Test struct {
 	loadedModules   collectionutils.Set[string]
 	servicesToRoute map[string][]routing
 	httpServer      *httptest.Server
-	sdkClient       *formance.Formance
+	httpTransport   http.RoundTripper
 }
 
 func (test *Test) setup() error {
 	gateway := newGateway(test)
 	test.httpServer = httptest.NewServer(gateway)
-	gatewayUrl, err := url.Parse(test.httpServer.URL)
-	if err != nil {
-		panic(err)
-	}
+	test.httpTransport = httpclient.NewDebugHTTPTransport(http.DefaultTransport)
 
-	httpTransport, err := newOpenapiCheckerTransport(ctx, httpclient.NewDebugHTTPTransport(http.DefaultTransport))
-	if err != nil {
-		return err
-	}
-
-	test.sdkClient = formance.New(
-		formance.WithServerURL(gatewayUrl.String()),
-		formance.WithClient(
-			&http.Client{
-				Transport: httpTransport,
-			},
-		))
 	return nil
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"fmt"
+	"strings"
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
@@ -45,8 +46,6 @@ type Storage interface {
 	SaveUser(ctx context.Context, user auth.User) error
 
 	FindClient(ctx context.Context, id string) (*auth.Client, error)
-	FindTransientScopes(ctx context.Context, id string) ([]auth.Scope, error)
-	FindTransientScopesByLabel(ctx context.Context, label string) ([]auth.Scope, error)
 }
 
 type signingKey struct {
@@ -384,19 +383,15 @@ func (s *storageFacade) AuthorizeClientIDSecret(ctx context.Context, clientID, c
 // GetPrivateClaimsFromScopes implements the op.Storage interface
 // it will be called for the creation of a JWT access token to assert claims for custom scopes
 func (s *storageFacade) GetPrivateClaimsFromScopes(ctx context.Context, userID, clientID string, scopes []string) (claims map[string]interface{}, err error) {
-	return claims, nil
+	return map[string]interface{}{
+		"scope": strings.Join(scopes, " "),
+	}, nil
 }
 
 // ValidateJWTProfileScopes implements the op.Storage interface
 // it will be called to validate the scopes of a JWT Profile Authorization Grant request
 func (s *storageFacade) ValidateJWTProfileScopes(ctx context.Context, userID string, scopes []string) ([]string, error) {
-	allowedScopes := make([]string, 0)
-	for _, scope := range scopes {
-		if scope == oidc.ScopeOpenID || scope == oidc.ScopeEmail {
-			allowedScopes = append(allowedScopes, scope)
-		}
-	}
-	return allowedScopes, nil
+	return scopes, nil
 }
 
 // Health implements the op.Storage interface
@@ -518,40 +513,17 @@ func (s *storageFacade) ClientCredentialsTokenRequest(ctx context.Context, clien
 	}
 
 	allowedScopes := auth.Array[string]{}
-	verifiedScopes := make(map[string]any)
-	scopesToCheck := client.GetScopes()
 
 l:
 	for _, scope := range scopes {
-		for {
-			if len(scopesToCheck) == 0 {
-				break l
-			}
-			clientScope := scopesToCheck[0]
-			if len(scopesToCheck) == 1 {
-				scopesToCheck = make([]string, 0)
-			} else {
-				scopesToCheck = scopesToCheck[1:]
-			}
+		for _, clientScope := range client.GetScopes() {
 			if clientScope == scope {
-				allowedScopes = append(allowedScopes, scope)
+				allowedScopes.Append(scope)
 				continue l
 			}
-			verifiedScopes[clientScope] = struct{}{}
-
-			scopes, err := s.Storage.FindTransientScopesByLabel(ctx, clientScope)
-			if err != nil {
-				return nil, err
-			}
-
-			scopeLabels := make([]string, 0)
-			for _, scope := range scopes {
-				scopeLabels = append(scopeLabels, scope.Label)
-			}
-
-			scopesToCheck = append(scopesToCheck, scopeLabels...)
 		}
 	}
+
 	return &auth.AuthRequest{
 		ID:            uuid.NewString(),
 		CreatedAt:     time.Now(),

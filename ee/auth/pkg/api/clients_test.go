@@ -179,16 +179,13 @@ func TestListClients(t *testing.T) {
 func TestReadClient(t *testing.T) {
 	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
 
-		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
-		require.NoError(t, db.Create(scope1).Error)
-
 		opts := auth.ClientOptions{
 			Metadata: map[string]string{
 				"foo": "bar",
 			},
 		}
 		client1 := auth.NewClient(opts)
-		client1.Scopes = append(client1.Scopes, *scope1)
+		client1.Scopes = append(client1.Scopes, "XXX")
 		secret, _ := client1.GenerateNewSecret(auth.SecretCreate{
 			Name: "testing",
 		})
@@ -205,7 +202,7 @@ func TestReadClient(t *testing.T) {
 		require.Equal(t, clientView{
 			ClientOptions: opts,
 			ID:            client1.Id,
-			Scopes:        []string{scope1.ID},
+			Scopes:        []string{"XXX"},
 			Secrets: []clientSecretView{{
 				ClientSecret: secret,
 			}},
@@ -216,16 +213,13 @@ func TestReadClient(t *testing.T) {
 func TestDeleteClient(t *testing.T) {
 	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
 
-		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
-		require.NoError(t, db.Create(scope1).Error)
-
 		opts := auth.ClientOptions{
 			Metadata: map[string]string{
 				"foo": "bar",
 			},
 		}
 		client1 := auth.NewClient(opts)
-		client1.Scopes = append(client1.Scopes, *scope1)
+		client1.Scopes = append(client1.Scopes, "XXX")
 		require.NoError(t, db.Create(client1).Error)
 
 		req := httptest.NewRequest(http.MethodDelete, "/clients/"+client1.Id, nil)
@@ -277,48 +271,5 @@ func TestDeleteSecret(t *testing.T) {
 		require.Equal(t, http.StatusNoContent, res.Code)
 		require.NoError(t, db.First(client, "id = ?", client.Id).Error)
 		require.Len(t, client.Secrets, 0)
-	})
-}
-
-func TestAddScope(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
-		client := auth.NewClient(auth.ClientOptions{})
-		require.NoError(t, db.Create(client).Error)
-
-		scope := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
-		require.NoError(t, db.Create(scope).Error)
-
-		req := httptest.NewRequest(http.MethodPut, "/clients/"+client.Id+"/scopes/"+scope.ID, nil)
-		res := httptest.NewRecorder()
-
-		router.ServeHTTP(res, req)
-
-		require.Equal(t, http.StatusNoContent, res.Code)
-
-		require.NoError(t, db.Preload("Scopes").First(client).Error)
-		require.Len(t, client.Scopes, 1)
-		require.Equal(t, *scope, client.Scopes[0])
-	})
-}
-
-func TestRemoveScope(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
-
-		scope := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
-		require.NoError(t, db.Create(scope).Error)
-
-		client := auth.NewClient(auth.ClientOptions{})
-		client.Scopes = append(client.Scopes, *scope)
-		require.NoError(t, db.Create(client).Error)
-
-		req := httptest.NewRequest(http.MethodDelete, "/clients/"+client.Id+"/scopes/"+scope.ID, nil)
-		res := httptest.NewRecorder()
-
-		router.ServeHTTP(res, req)
-
-		require.Equal(t, http.StatusNoContent, res.Code)
-
-		require.NoError(t, db.Preload("Scopes").First(client).Error)
-		require.Len(t, client.Scopes, 0)
 	})
 }
