@@ -163,13 +163,13 @@ paths:
         204:
           description: Updated user
     delete:
-      summary: Unlink user from organization
-      operationId: unlinkUserFromOrganization
+      summary: delete user from organization
+      operationId: deleteUserFromOrganization
       description: |
         The owner of the organization can remove anyone while each user can leave any organization where it is not owner.
       responses:
         204:
-          description: User unlinked from organization
+          description: User deleted from organization
         403:
           description: Not allowed
         400:

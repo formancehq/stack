@@ -119,7 +119,7 @@ paths:
     delete:
       description: |
         The owner of the organization can remove anyone while each user can leave any organization where it is not owner.
-      operationId: unlinkUserFromOrganization
+      operationId: deleteUserFromOrganization
       parameters:
       - explode: false
         in: path
@@ -137,12 +137,12 @@ paths:
         style: simple
       responses:
         "204":
-          description: User unlinked from organization
+          description: User deleted from organization
         "403":
           description: Not allowed
         "400":
           description: Cannot remove the owner of the organization
-      summary: Unlink user from organization
+      summary: delete user from organization
     get:
       operationId: readUserOfOrganization
       parameters:
