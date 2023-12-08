@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"go.temporal.io/api/enums/v1"
+
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"go.temporal.io/api/serviceerror"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -59,10 +60,6 @@ func handleMessage(logger logging.Logger, temporalClient client.Client, taskQueu
 	event, err = publish.UnmarshalMessage(msg)
 	if err != nil {
 		return err
-	}
-	// todo: debug
-	if event.Type != "SAVED_PAYMENT" {
-		return nil
 	}
 
 	logger = logger.WithField("type", event.Type)
