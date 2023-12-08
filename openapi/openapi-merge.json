@@ -74,6 +74,18 @@
       "dispute": {
         "prefix": "orchestration"
       }
+    },
+    {
+      "inputFile": "./../ee/reconciliation/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/reconciliation"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "reconciliation"
+      }
     }
   ],
   "output": "./build/generate.json"
