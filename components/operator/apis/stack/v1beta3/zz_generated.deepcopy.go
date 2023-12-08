@@ -898,6 +898,7 @@ func (in *PostgresConfig) DeepCopy() *PostgresConfig {
 func (in *ReconciliationSpec) DeepCopyInto(out *ReconciliationSpec) {
 	*out = *in
 	in.CommonServiceProperties.DeepCopyInto(&out.CommonServiceProperties)
+	out.Postgres = in.Postgres
 	if in.ResourceProperties != nil {
 		in, out := &in.ResourceProperties, &out.ResourceProperties
 		*out = new(ResourceProperties)

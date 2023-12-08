@@ -4592,6 +4592,26 @@ spec:
                         type: boolean
                       disabled:
                         type: boolean
+                      postgres:
+                        properties:
+                          credentialsFromSecret:
+                            type: string
+                          debug:
+                            type: boolean
+                          disableSSLMode:
+                            type: boolean
+                          host:
+                            type: string
+                          password:
+                            type: string
+                          port:
+                            type: integer
+                          username:
+                            type: string
+                        required:
+                        - host
+                        - port
+                        type: object
                       resourceProperties:
                         properties:
                           limits:
@@ -4609,6 +4629,8 @@ spec:
                                 type: string
                             type: object
                         type: object
+                    required:
+                    - postgres
                     type: object
                   search:
                     properties:
