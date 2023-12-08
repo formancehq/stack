@@ -40,7 +40,7 @@ func getWorkflowIDFromEvent(event publish.EventMessage) *string {
 	}
 }
 
-func handleMessage(logger logging.Logger, temporalClient client.Client, taskQueue string, msg *message.Message) error {
+func handleMessage(logger logging.Logger, temporalClient client.Client, taskIDPrefix, taskQueue string, msg *message.Message) error {
 	logger = logger.WithFields(map[string]any{
 		"event-id":  msg.UUID,
 		"duplicate": "false",
@@ -68,7 +68,7 @@ func handleMessage(logger logging.Logger, temporalClient client.Client, taskQueu
 		TaskQueue: taskQueue,
 	}
 	if ik := getWorkflowIDFromEvent(*event); ik != nil {
-		options.ID = *ik
+		options.ID = taskIDPrefix + "-" + *ik
 		options.WorkflowIDReusePolicy = enums.WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE
 		options.WorkflowExecutionErrorWhenAlreadyStarted = true
 		logger = logger.WithField("ik", *ik)
@@ -95,10 +95,11 @@ func handleMessage(logger logging.Logger, temporalClient client.Client, taskQueu
 	return errors.Wrap(err, "executing workflow")
 }
 
-func registerListener(logger logging.Logger, r *message.Router, s message.Subscriber, temporalClient client.Client, taskQueue string, topics []string) {
+func registerListener(logger logging.Logger, r *message.Router, s message.Subscriber, temporalClient client.Client,
+	taskIDPrefix, taskQueue string, topics []string) {
 	for _, topic := range topics {
 		r.AddNoPublisherHandler(fmt.Sprintf("listen-%s-events", topic), topic, s, func(msg *message.Message) error {
-			if err := handleMessage(logger, temporalClient, taskQueue, msg); err != nil {
+			if err := handleMessage(logger, temporalClient, taskIDPrefix, taskQueue, msg); err != nil {
 				logging.Errorf("Error executing workflow: %s", err)
 				return err
 			}
