@@ -20,13 +20,10 @@ var _ MappedNullable = &User{}
 // User struct for User
 type User struct {
 	Email string `json:"email"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	// Is the user an admin of the organization
-	IsAdmin *bool `json:"isAdmin,omitempty"`
+	// User roles
+	Roles []string `json:"roles,omitempty"`
 	// User ID
 	Id string `json:"id"`
-	// User role
-	Role *string `json:"role,omitempty"`
 }
 
 // NewUser instantiates a new User object
@@ -72,68 +69,36 @@ func (o *User) SetEmail(v string) {
 	o.Email = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *User) GetMetadata() map[string]string {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]string
+// GetRoles returns the Roles field value if set, zero value otherwise.
+func (o *User) GetRoles() []string {
+	if o == nil || IsNil(o.Roles) {
+		var ret []string
 		return ret
 	}
-	return *o.Metadata
+	return o.Roles
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *User) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil || IsNil(o.Metadata) {
+func (o *User) GetRolesOk() ([]string, bool) {
+	if o == nil || IsNil(o.Roles) {
 		return nil, false
 	}
-	return o.Metadata, true
+	return o.Roles, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *User) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
+// HasRoles returns a boolean if a field has been set.
+func (o *User) HasRoles() bool {
+	if o != nil && !IsNil(o.Roles) {
 		return true
 	}
 
 	return false
 }
 
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *User) SetMetadata(v map[string]string) {
-	o.Metadata = &v
-}
-
-// GetIsAdmin returns the IsAdmin field value if set, zero value otherwise.
-func (o *User) GetIsAdmin() bool {
-	if o == nil || IsNil(o.IsAdmin) {
-		var ret bool
-		return ret
-	}
-	return *o.IsAdmin
-}
-
-// GetIsAdminOk returns a tuple with the IsAdmin field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *User) GetIsAdminOk() (*bool, bool) {
-	if o == nil || IsNil(o.IsAdmin) {
-		return nil, false
-	}
-	return o.IsAdmin, true
-}
-
-// HasIsAdmin returns a boolean if a field has been set.
-func (o *User) HasIsAdmin() bool {
-	if o != nil && !IsNil(o.IsAdmin) {
-		return true
-	}
-
-	return false
-}
-
-// SetIsAdmin gets a reference to the given bool and assigns it to the IsAdmin field.
-func (o *User) SetIsAdmin(v bool) {
-	o.IsAdmin = &v
+// SetRoles gets a reference to the given []string and assigns it to the Roles field.
+func (o *User) SetRoles(v []string) {
+	o.Roles = v
 }
 
 // GetId returns the Id field value
@@ -160,38 +125,6 @@ func (o *User) SetId(v string) {
 	o.Id = v
 }
 
-// GetRole returns the Role field value if set, zero value otherwise.
-func (o *User) GetRole() string {
-	if o == nil || IsNil(o.Role) {
-		var ret string
-		return ret
-	}
-	return *o.Role
-}
-
-// GetRoleOk returns a tuple with the Role field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *User) GetRoleOk() (*string, bool) {
-	if o == nil || IsNil(o.Role) {
-		return nil, false
-	}
-	return o.Role, true
-}
-
-// HasRole returns a boolean if a field has been set.
-func (o *User) HasRole() bool {
-	if o != nil && !IsNil(o.Role) {
-		return true
-	}
-
-	return false
-}
-
-// SetRole gets a reference to the given string and assigns it to the Role field.
-func (o *User) SetRole(v string) {
-	o.Role = &v
-}
-
 func (o User) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -203,16 +136,10 @@ func (o User) MarshalJSON() ([]byte, error) {
 func (o User) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["email"] = o.Email
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
-	if !IsNil(o.IsAdmin) {
-		toSerialize["isAdmin"] = o.IsAdmin
+	if !IsNil(o.Roles) {
+		toSerialize["roles"] = o.Roles
 	}
 	toSerialize["id"] = o.Id
-	if !IsNil(o.Role) {
-		toSerialize["role"] = o.Role
-	}
 	return toSerialize, nil
 }
 

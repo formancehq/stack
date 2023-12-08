@@ -103,10 +103,10 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
 *DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
 *DefaultApi* | [**ListStacks**](docs/DefaultApi.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
-*DefaultApi* | [**ListUsers**](docs/DefaultApi.md#listusers) | **Get** /organizations/{organizationId}/users | List users
+*DefaultApi* | [**ListUsersOfOrganization**](docs/DefaultApi.md#listusersoforganization) | **Get** /organizations/{organizationId}/users | List users of organization
 *DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
-*DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+*DefaultApi* | [**ReadUserOfOrganization**](docs/DefaultApi.md#readuseroforganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
 *DefaultApi* | [**UpdateOrganizationUser**](docs/DefaultApi.md#updateorganizationuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
@@ -153,11 +153,9 @@ Class | Method | HTTP request | Description
  - [StackAllOf](docs/StackAllOf.md)
  - [StackData](docs/StackData.md)
  - [StackLifeCycle](docs/StackLifeCycle.md)
- - [UpdatableUserData](docs/UpdatableUserData.md)
- - [UpdateUserAccessData](docs/UpdateUserAccessData.md)
- - [UpdateUserResponse](docs/UpdateUserResponse.md)
  - [User](docs/User.md)
  - [UserAllOf](docs/UserAllOf.md)
+ - [UserAllOf1](docs/UserAllOf1.md)
  - [UserData](docs/UserData.md)
  - [UserDataAllOf](docs/UserDataAllOf.md)
 

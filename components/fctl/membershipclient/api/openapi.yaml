@@ -98,7 +98,7 @@ paths:
       summary: Read organization
   /organizations/{organizationId}/users:
     get:
-      operationId: listUsers
+      operationId: listUsersOfOrganization
       parameters:
       - explode: false
         in: path
@@ -114,7 +114,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListUsersResponse'
           description: List of users
-      summary: List users
+      summary: List users of organization
   /organizations/{organizationId}/users/{userId}:
     delete:
       description: |
@@ -144,7 +144,7 @@ paths:
           description: Cannot remove the owner of the organization
       summary: Unlink user from organization
     get:
-      operationId: readUser
+      operationId: readUserOfOrganization
       parameters:
       - explode: false
         in: path
@@ -167,7 +167,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReadUserResponse'
           description: Read a user
-      summary: Read user
+      summary: Read user of organization
     put:
       operationId: updateOrganizationUser
       parameters:
@@ -189,8 +189,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserAccessData'
+              $ref: '#/components/schemas/UpdatableUserRole'
       responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
         "204":
           description: Updated user
       summary: Update user role within an organization
@@ -880,30 +898,30 @@ components:
       - $ref: '#/components/schemas/StackData'
       - $ref: '#/components/schemas/StackLifeCycle'
       - $ref: '#/components/schemas/Stack_allOf'
-    UpdatableUserData:
-      properties:
-        metadata:
-          additionalProperties:
-            type: string
-          type: object
-      type: object
     UserData:
       allOf:
       - $ref: '#/components/schemas/UserData_allOf'
-      - $ref: '#/components/schemas/UpdatableUserData'
-    UpdateUserAccessData:
-      example:
-        isAdmin: true
-      properties:
-        isAdmin:
-          description: Is the user an admin of the organization
-          type: boolean
-      type: object
+    UpdatableUserRole:
+      items:
+        allOf:
+        - enum:
+          - ADMIN
+          type: string
+      type: array
+    Roles:
+      description: User roles
+      items:
+        allOf:
+        - enum:
+          - ADMIN
+          - GUEST
+          type: string
+      type: array
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
-      - $ref: '#/components/schemas/UpdateUserAccessData'
       - $ref: '#/components/schemas/User_allOf'
+      - $ref: '#/components/schemas/User_allOf_1'
     OrganizationArray:
       items:
         $ref: '#/components/schemas/Organization'
@@ -1138,15 +1156,6 @@ components:
       required:
       - version
       type: object
-    UpdateUserRequest:
-      $ref: '#/components/schemas/UpdatableUserData'
-    UpdateUserResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/User'
-      required:
-      - data
-      type: object
     PrivateRegion_allOf_secret:
       properties:
         lastDigits:
@@ -1252,20 +1261,27 @@ components:
       properties:
         email:
           type: string
-        metadata:
-          additionalProperties: true
-          type: object
       required:
       - email
       type: object
       example: null
     User_allOf:
       properties:
+        roles:
+          description: User roles
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
+      type: object
+      example: null
+    User_allOf_1:
+      properties:
         id:
           description: User ID
-          type: string
-        role:
-          description: User role
           type: string
       required:
       - id

@@ -29,10 +29,10 @@ Method | HTTP request | Description
 [**ListOrganizationsExpanded**](DefaultApi.md#ListOrganizationsExpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
 [**ListRegions**](DefaultApi.md#ListRegions) | **Get** /organizations/{organizationId}/regions | List regions
 [**ListStacks**](DefaultApi.md#ListStacks) | **Get** /organizations/{organizationId}/stacks | List stacks
-[**ListUsers**](DefaultApi.md#ListUsers) | **Get** /organizations/{organizationId}/users | List users
+[**ListUsersOfOrganization**](DefaultApi.md#ListUsersOfOrganization) | **Get** /organizations/{organizationId}/users | List users of organization
 [**ReadConnectedUser**](DefaultApi.md#ReadConnectedUser) | **Get** /me | Read user
 [**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
-[**ReadUser**](DefaultApi.md#ReadUser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+[**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UnlinkUserFromOrganization**](DefaultApi.md#UnlinkUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
 [**UpdateOrganizationUser**](DefaultApi.md#UpdateOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
@@ -1725,11 +1725,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## ListUsers
+## ListUsersOfOrganization
 
-> ListUsersResponse ListUsers(ctx, organizationId).Execute()
+> ListUsersResponse ListUsersOfOrganization(ctx, organizationId).Execute()
 
-List users
+List users of organization
 
 ### Example
 
@@ -1748,13 +1748,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListUsers(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultApi.ListUsersOfOrganization(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListUsers``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListUsersOfOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListUsers`: ListUsersResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListUsers`: %v\n", resp)
+    // response from `ListUsersOfOrganization`: ListUsersResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListUsersOfOrganization`: %v\n", resp)
 }
 ```
 
@@ -1768,7 +1768,7 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiListUsersRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiListUsersOfOrganizationRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -1920,11 +1920,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## ReadUser
+## ReadUserOfOrganization
 
-> ReadUserResponse ReadUser(ctx, organizationId, userId).Execute()
+> ReadUserResponse ReadUserOfOrganization(ctx, organizationId, userId).Execute()
 
-Read user
+Read user of organization
 
 ### Example
 
@@ -1944,13 +1944,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ReadUser(context.Background(), organizationId, userId).Execute()
+    resp, r, err := apiClient.DefaultApi.ReadUserOfOrganization(context.Background(), organizationId, userId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadUserOfOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ReadUser`: ReadUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadUser`: %v\n", resp)
+    // response from `ReadUserOfOrganization`: ReadUserResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadUserOfOrganization`: %v\n", resp)
 }
 ```
 
@@ -1965,7 +1965,7 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiReadUserRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiReadUserOfOrganizationRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -2135,7 +2135,7 @@ Name | Type | Description  | Notes
 
 ## UpdateOrganizationUser
 
-> UpdateOrganizationUser(ctx, organizationId, userId).UpdateUserAccessData(updateUserAccessData).Execute()
+> UpdateOrganizationUser(ctx, organizationId, userId).RequestBody(requestBody).Execute()
 
 Update user role within an organization
 
@@ -2154,11 +2154,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     userId := "userId_example" // string | 
-    updateUserAccessData := *openapiclient.NewUpdateUserAccessData() // UpdateUserAccessData |  (optional)
+    requestBody := []string{"Property_example"} // []string |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpdateOrganizationUser(context.Background(), organizationId, userId).UpdateUserAccessData(updateUserAccessData).Execute()
+    r, err := apiClient.DefaultApi.UpdateOrganizationUser(context.Background(), organizationId, userId).RequestBody(requestBody).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateOrganizationUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -2184,7 +2184,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **updateUserAccessData** | [**UpdateUserAccessData**](UpdateUserAccessData.md) |  | 
+ **requestBody** | **[]string** |  | 
 
 ### Return type
 
@@ -2197,7 +2197,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

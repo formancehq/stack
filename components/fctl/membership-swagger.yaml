@@ -95,8 +95,8 @@ paths:
           description: Organization deleted
   /organizations/{organizationId}/users:
     get:
-      summary: List users
-      operationId: listUsers
+      summary: List users of organization
+      operationId: listUsersOfOrganization
       parameters:
       - name: organizationId
         in: path
@@ -124,8 +124,8 @@ paths:
       required: true
 
     get:
-      summary: Read user
-      operationId: readUser
+      summary: Read user of organization
+      operationId: readUserOfOrganization
       responses:
         200:
           description: Read a user
@@ -140,14 +140,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserAccessData'
+              $ref: '#/components/schemas/UpdatableUserRole'
       responses:
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         204:
           description: Updated user
-          # content:
-          #   application/json:
-          #     schema:
-          #       $ref: '#/components/schemas/UpdateUserResponse'
     delete:
       summary: Unlink user from organization
       operationId: unlinkUserFromOrganization
@@ -845,35 +859,36 @@ components:
           disabledAt:
             type: string
             format: date-time
-    UpdatableUserData:
-      type: object
-      properties:
-        metadata:
-          type: object
-          additionalProperties:
-            type: string
     UserData:
       allOf:
       - type: object
         properties:
           email:
             type: string
-          metadata:
-            type: object
-            additionalProperties: true
         required:
         - email
-      - $ref: '#/components/schemas/UpdatableUserData'
-    UpdateUserAccessData:
-      type: object
-      properties:
-        isAdmin:
-          type: boolean
-          description: Is the user an admin of the organization
+    UpdatableUserRole:
+      type: array
+      items:
+        allOf:
+        - type: string
+          enum: [ADMIN]
+    Roles:
+      type: array
+      description: User roles
+      items:
+        allOf:
+        - type: string
+          enum:
+          - ADMIN
+          - GUEST
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
-      - $ref: '#/components/schemas/UpdateUserAccessData'
+      - type: object
+        properties:
+          roles:
+            $ref: '#/components/schemas/Roles'
       - type: object
         required:
         - id
@@ -881,10 +896,7 @@ components:
           id:
             type: string
             description: User ID
-          role:
-            type: string
-            description: User role
-
+          
     OrganizationArray:
       type: array
       items:
@@ -1062,12 +1074,3 @@ components:
       properties:
         version:
           type: string
-    UpdateUserRequest:
-      $ref: '#/components/schemas/UpdatableUserData'
-    UpdateUserResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/User'
-      required:
-      - data

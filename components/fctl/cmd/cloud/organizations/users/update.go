@@ -2,9 +2,7 @@ package users
 
 import (
 	"fmt"
-	"strconv"
 
-	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -32,10 +30,10 @@ func NewUpdateController() *UpdateController {
 }
 
 func NewUpdateCommand() *cobra.Command {
-	return fctl.NewCommand("update <user-id> <is-admin>",
+	return fctl.NewCommand("update <user-id> <roles...>",
 		fctl.WithAliases("s"),
 		fctl.WithShortDescription("Update user roles by by id within an organization"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
+		fctl.WithArgs(cobra.MinimumNArgs(1)),
 		fctl.WithController[*UpdateStore](NewUpdateController()),
 	)
 }
@@ -60,23 +58,13 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	if len(args) != 2 {
-		return nil, fmt.Errorf("invalid number of arguments")
-	}
-	isAdmin, err := strconv.ParseBool(args[1])
-	if err != nil {
-		return nil, fmt.Errorf("invalid is-admin value")
-	}
+	roles := []string{}
+	roles = append(roles, args[1:]...)
 
 	response, err := apiClient.DefaultApi.UpdateOrganizationUser(
 		cmd.Context(),
 		organizationID,
-		args[0]).
-		UpdateUserAccessData(
-			membershipclient.UpdateUserAccessData{
-				IsAdmin: &isAdmin,
-			},
-		).Execute()
+		args[0]).RequestBody(roles).Execute()
 	if err != nil {
 		return nil, err
 	}
