@@ -57,5 +57,14 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return err
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE reconciliations.reconciliation RENAME COLUMN reconciled_at TO reconciled_at_ledger;
+					ALTER TABLE reconciliations.reconciliation ADD COLUMN reconciled_at_payments timestamp with time zone;
+				`)
+				return err
+			},
+		},
 	)
 }
