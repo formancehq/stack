@@ -59,11 +59,36 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 }
 
 func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
-	return createExternalBankAccount(ctx, bankAccount, c.cfg)
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:        "Create external bank account",
+		Key:         taskNameCreateExternalBankAccount,
+		BankAccount: bankAccount,
+	})
+	if err != nil {
+		return err
+	}
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{ScheduleOption: models.OPTIONS_RUN_NOW_SYNC}); err != nil {
+		return err
+	}
+
+	// TODO: it might make sense to return the external account ID so the client can use it for initiating a payment
+	return nil
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	return initiatePayment(ctx, transfer, c.cfg)
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:       "Initiate payment",
+		Key:        taskNameInitiatePayment,
+		TransferID: transfer.ID.String(),
+	})
+	if err != nil {
+		return err
+	}
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{ScheduleOption: models.OPTIONS_RUN_NOW_SYNC}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 var _ connectors.Connector = &Connector{}

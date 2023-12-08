@@ -1,26 +1,82 @@
 package atlar
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"regexp"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
+	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/counterparties"
+	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
 )
 
-func createExternalBankAccount(ctx task.ConnectorContext, newExternalBankAccount *models.BankAccount, config Config) error {
-	err := validateExternalBankAccount(newExternalBankAccount)
+func CreateExternalBankAccountTask(config Config, client *atlar_client.Rest, newExternalBankAccount *models.BankAccount) task.Task {
+	return func(
+		ctx context.Context,
+		logger logging.Logger,
+		connectorID models.ConnectorID,
+		resolver task.StateResolver,
+		scheduler task.Scheduler,
+		ingester ingestion.Ingester,
+		metricsRegistry metrics.MetricsRegistry,
+	) error {
+		err := validateExternalBankAccount(newExternalBankAccount)
+		if err != nil {
+			return err
+		}
+
+		externalAccountID, err := createExternalBankAccount(ctx, logger, config, newExternalBankAccount)
+		if err != nil {
+			return err
+		}
+		if externalAccountID == nil {
+			return errors.New("no external account id returned")
+		}
+
+		err = ingestExternalAccountFromAtlar(
+			ctx,
+			logger,
+			connectorID,
+			ingester,
+			client,
+			*externalAccountID,
+		)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+}
+
+// TODO: validation (also metadata) needs to return a 400
+func validateExternalBankAccount(newExternalBankAccount *models.BankAccount) error {
+	_, err := ExtractNamespacedMetadata(newExternalBankAccount.Metadata, "owner/name")
 	if err != nil {
-		return err
+		return fmt.Errorf("required metadata field %sowner/name is missing", atlarMetadataSpecNamespace)
+	}
+	ownerType, err := ExtractNamespacedMetadata(newExternalBankAccount.Metadata, "owner/type")
+	if err != nil {
+		return fmt.Errorf("required metadata field %sowner/type is missing", atlarMetadataSpecNamespace)
+	}
+	if *ownerType != "INDIVIDUAL" && *ownerType != "COMPANY" {
+		return fmt.Errorf("metadata field %sowner/type needs to be one of [ INDIVIDUAL COMPANY ]", atlarMetadataSpecNamespace)
 	}
 
+	return nil
+}
+
+func createExternalBankAccount(ctx context.Context, logger logging.Logger, config Config, newExternalBankAccount *models.BankAccount) (*string, error) {
 	client := createAtlarClient(&config)
-	detachedCtx, _ := contextutil.Detached(ctx.Context())
-	// TODO: make sure an account with that IBAN does not already exist
+
+	// TODO: make sure an account with that IBAN does not already exist (Atlar API v2 needed)
 
 	createCounterpartyRequest := atlar_models.CreateCounterpartyRequest{
 		Name:      ExtractNamespacedMetadataIgnoreEmpty(newExternalBankAccount.Metadata, "owner/name"),
@@ -47,65 +103,65 @@ func createExternalBankAccount(ctx task.ConnectorContext, newExternalBankAccount
 		},
 	}
 	postCounterpartiesParams := counterparties.PostV1CounterpartiesParams{
-		Context:      detachedCtx,
+		Context:      ctx,
 		Counterparty: &createCounterpartyRequest,
 	}
 	postCounterpartiesResponse, err := client.Counterparties.PostV1Counterparties(&postCounterpartiesParams)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	logger.WithContext(ctx).Debug("external bank account has been created")
 
 	if len(postCounterpartiesResponse.Payload.ExternalAccounts) != 1 {
 		// should never occur, but when in case it happens it's nice to have an error to search for
-		return errors.New("counterparty was not created with exactly one account")
+		return nil, errors.New("counterparty was not created with exactly one account")
 	}
 
 	externalAccountID := postCounterpartiesResponse.Payload.ExternalAccounts[0].ID
-	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-		Name:              fmt.Sprintf("Fetch external account %s from atlar", externalAccountID),
-		Key:               taskNameFetchAccounts,
-		ExternalAccountID: externalAccountID,
-	})
-	if err != nil {
-		return err
-	}
-	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{ScheduleOption: models.OPTIONS_RUN_NOW_SYNC}); err != nil {
-		return err
-	}
 
-	// TODO: it might make sense to return the external account ID so the client can use it for initiating a payment
-	return nil
+	return &externalAccountID, nil
 }
 
-// TODO: validation (also metadata) needs to return a 400
-func validateExternalBankAccount(newExternalBankAccount *models.BankAccount) error {
-	// if newExternalBankAccount.SwiftBicCode == "" {
-	// 	return errors.New("swiftBicCode must be provided")
-	// }
-	_, err := ExtractNamespacedMetadata(newExternalBankAccount.Metadata, "owner/name")
-	if err != nil {
-		return fmt.Errorf("required metadata field %sowner/name is missing", atlarMetadataSpecNamespace)
+func ingestExternalAccountFromAtlar(
+	ctx context.Context,
+	logger logging.Logger,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	client *atlar_client.Rest,
+	externalAccountID string,
+) error {
+	accountsBatch := ingestion.AccountBatch{}
+
+	getExternalAccountParams := external_accounts.GetV1ExternalAccountsIDParams{
+		Context: ctx,
+		ID:      externalAccountID,
 	}
-	ownerType, err := ExtractNamespacedMetadata(newExternalBankAccount.Metadata, "owner/type")
+	externalAccountResponse, err := client.ExternalAccounts.GetV1ExternalAccountsID(&getExternalAccountParams)
 	if err != nil {
-		return fmt.Errorf("required metadata field %sowner/type is missing", atlarMetadataSpecNamespace)
-	}
-	if *ownerType != "INDIVIDUAL" && *ownerType != "COMPANY" {
-		return fmt.Errorf("metadata field %sowner/type needs to be one of [ INDIVIDUAL COMPANY ]", atlarMetadataSpecNamespace)
+		return err
 	}
 
-	// hasIdentifier := false
-	// for k := range newExternalBankAccount.Metadata {
-	// 	// check whether the key has format com.atlar.spec/identifier/<market>/<type>
-	// 	_, err := metadataToIdentifierData(k, newExternalBankAccount.Metadata[k])
-	// 	if err == nil {
-	// 		hasIdentifier = true
-	// 		break
-	// 	}
-	// }
-	// if !hasIdentifier {
-	// 	return fmt.Errorf("at least one metadata field in the form of %sidentifier/<market>/<type> with a value of the identifier value is needed (e.g. %sidentifier/DE/IBAN with an IBAN as a value)", atlarMetadataSpecNamespace, atlarMetadataSpecNamespace)
-	// }
+	getCounterpartyParams := counterparties.GetV1CounterpartiesIDParams{
+		Context: ctx,
+		ID:      externalAccountResponse.Payload.CounterpartyID,
+	}
+	counterpartyResponse, err := client.Counterparties.GetV1CounterpartiesID(&getCounterpartyParams)
+	if err != nil {
+		return err
+	}
+
+	newAccount, err := ExternalAccountFromAtlarData(connectorID, externalAccountResponse.Payload, counterpartyResponse.Payload)
+	if err != nil {
+		return err
+	}
+	logger.WithContext(ctx).Info("Got external Account from Atlar", newAccount)
+
+	accountsBatch = append(accountsBatch, newAccount)
+
+	err = ingester.IngestAccounts(ctx, accountsBatch)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -158,7 +214,6 @@ func metadataToIdentifierData(key, value string) (*IdentifierData, error) {
 	}
 
 	// Extract values from the matched groups
-
 	return &IdentifierData{
 		Market: matches[1],
 		Type:   matches[2],

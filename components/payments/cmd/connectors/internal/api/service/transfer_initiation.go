@@ -30,7 +30,7 @@ type CreateTransferInitiationRequest struct {
 
 func (r *CreateTransferInitiationRequest) Validate() error {
 	if r.Reference == "" {
-		return errors.New("uniqueRequestId is required")
+		return errors.New("reference is required")
 	}
 
 	if r.Description == "" {
