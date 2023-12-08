@@ -71,7 +71,7 @@ pipeline:
                     "when": this.date
                   },
                   "action": "index",
-                  "id": "PAYMENT-BALANCE-%s-%s".format(this.payload.accountId, this.payload.asset)
+                  "id": "PAYMENT-BALANCE-%s-%s".format(this.payload.accountID, this.payload.asset)
                 }
       - label: SAVED_BANK_ACCOUNT
         processors:
