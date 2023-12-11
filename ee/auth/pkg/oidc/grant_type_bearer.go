@@ -106,6 +106,15 @@ func grantTypeBearer(issuer string, p JWTAuthorizationGrantExchanger) http.Handl
 			op.RequestError(w, r, err)
 			return
 		}
+
+		tokens, err := ParseAssertion(profileRequest.Assertion)
+		if err != nil {
+			op.RequestError(w, r, err)
+			return
+		}
+
+		tokenRequest.Scopes = tokens.Scopes
+
 		resp, err := CreateJWTTokenResponse(r.Context(), issuer, tokenRequest, p, client)
 		if err != nil {
 			op.RequestError(w, r, err)
@@ -114,6 +123,17 @@ func grantTypeBearer(issuer string, p JWTAuthorizationGrantExchanger) http.Handl
 
 		httphelper.MarshalJSON(w, resp)
 	}
+}
+
+func ParseAssertion(assertion string) (*oidc.AccessTokenClaims, error) {
+	var claims = new(oidc.AccessTokenClaims)
+
+	_, err := oidc.ParseToken(assertion, claims)
+	if err != nil {
+		return nil, err
+	}
+
+	return claims, nil
 }
 
 func CreateJWTTokenResponse(ctx context.Context, issuer string, tokenRequest *oidc.JWTTokenRequest, creator op.TokenCreator, client op.Client) (*oidc.AccessTokenResponse, error) {
