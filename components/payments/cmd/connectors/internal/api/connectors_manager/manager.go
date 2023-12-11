@@ -211,6 +211,14 @@ func (l *ConnectorsManager[ConnectorConfig]) Uninstall(ctx context.Context, conn
 		return newStorageError(err, "uninstalling connector")
 	}
 
+	if l.publisher != nil {
+		err = l.publisher.Publish(events.TopicPayments,
+			publish.NewMessage(ctx, messages.NewEventResetConnector(connectorID)))
+		if err != nil {
+			l.logger(ctx).Errorf("Publishing message: %w", err)
+		}
+	}
+
 	l.mu.Lock()
 	delete(l.connectors, connectorID.String())
 	l.mu.Unlock()
