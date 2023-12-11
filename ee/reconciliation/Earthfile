@@ -10,7 +10,7 @@ FROM core+base-image
 sources:
     WORKDIR src
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
-    COPY --pass-args (stack+build-sdk/go --LANG=go) sdks/go
+    COPY --pass-args (stack+build-sdk/go) libs/clients/go
     WORKDIR /src/ee/reconciliation
     COPY go.* .
     COPY --dir cmd internal .
