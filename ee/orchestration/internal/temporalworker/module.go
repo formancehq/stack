@@ -74,6 +74,7 @@ func NewWorkerModule(taskQueue string) fx.Option {
 					go func() {
 						err := w.Run(worker.InterruptCh())
 						if err != nil {
+							// If the worker is started/stopped fast, the Run method can return an error
 							if !willStop {
 								panic(err)
 							}

@@ -79,6 +79,15 @@
       }
     },
     {
+      "inputFile": "./../../ee/orchestration/openapi-v2.yaml",
+      "pathModification":{
+        "prepend": "/api/orchestration"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      }
+    },
+    {
       "inputFile": "./../../ee/reconciliation/openapi.yaml",
       "pathModification":{
         "prepend": "/api/reconciliation"
