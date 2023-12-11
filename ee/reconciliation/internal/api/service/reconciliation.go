@@ -3,11 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"io"
 	"math/big"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -112,66 +110,6 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 	}
 
 	return res, nil
-}
-
-func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName string, ledgerAggregatedBalanceQuery map[string]interface{}, at time.Time) (map[string]*big.Int, error) {
-	balances, err := s.client.Ledger.V2GetBalancesAggregated(
-		ctx,
-		operations.V2GetBalancesAggregatedRequest{
-			RequestBody: ledgerAggregatedBalanceQuery,
-			Ledger:      ledgerName,
-			Pit:         &at,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if balances.StatusCode != 200 {
-		return nil, errors.New("failed to get aggregated balances")
-	}
-
-	if balances.V2AggregateBalancesResponse == nil {
-		return nil, errors.New("no aggregated balance")
-	}
-
-	balanceMap := make(map[string]*big.Int)
-	for asset, balance := range balances.V2AggregateBalancesResponse.Data {
-		balanceMap[asset] = balance
-	}
-
-	return balanceMap, nil
-}
-
-func (s *Service) getPaymentPoolBalance(ctx context.Context, paymentPoolID string, at time.Time) (map[string]*big.Int, error) {
-	balances, err := s.client.Payments.GetPoolBalances(
-		ctx,
-		operations.GetPoolBalancesRequest{
-			At:     at,
-			PoolID: paymentPoolID,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if balances.StatusCode != 200 {
-		fmt.Println(err)
-		body, _ := io.ReadAll(balances.RawResponse.Body)
-		fmt.Println(string(body))
-		return nil, errors.New("failed to get pool balances")
-	}
-
-	if balances.PoolBalancesResponse == nil {
-		return nil, errors.New("no pool balance")
-	}
-
-	balanceMap := make(map[string]*big.Int)
-	for _, balance := range balances.PoolBalancesResponse.Data.Balances {
-		balanceMap[balance.GetAsset()] = balance.GetAmount()
-	}
-
-	return balanceMap, nil
 }
 
 func (s *Service) GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error) {
