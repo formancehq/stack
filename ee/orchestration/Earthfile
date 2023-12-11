@@ -74,3 +74,13 @@ lint:
 
 pre-commit:
     RUN echo "not implemented"
+
+openapi:
+  FROM node:20-alpine
+  RUN apk update && apk add yq
+  RUN npm install -g openapi-merge-cli
+  COPY --dir openapi /src/openapi
+  WORKDIR /src/openapi
+  RUN openapi-merge-cli --config ./openapi-merge.json
+  RUN yq -oy ./openapi.json > openapi.yaml
+  SAVE ARTIFACT ./openapi.yaml AS LOCAL ./openapi.yaml
