@@ -23,7 +23,6 @@ type TaskDescriptor struct {
 	TransferID  string              `json:"transferId,omitempty" yaml:"transferId" bson:"transferId"`
 }
 
-// clientID, apiKey, endpoint string, logger logging
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
 	client := createAtlarClient(&config)
 
