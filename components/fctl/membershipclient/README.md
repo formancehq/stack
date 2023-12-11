@@ -79,8 +79,6 @@ All URIs are relative to *http://localhost:8080*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**AcceptInvitation**](docs/DefaultApi.md#acceptinvitation) | **Post** /me/invitations/{invitationId}/accept | Accept invitation
-*DefaultApi* | [**BillingPortal**](docs/DefaultApi.md#billingportal) | **Get** /organizations/{organizationId}/billing/portal | Access to the billing portal
-*DefaultApi* | [**BillingSetup**](docs/DefaultApi.md#billingsetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
 *DefaultApi* | [**CreateInvitation**](docs/DefaultApi.md#createinvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
 *DefaultApi* | [**CreateOrganization**](docs/DefaultApi.md#createorganization) | **Post** /organizations | Create organization
 *DefaultApi* | [**CreatePrivateRegion**](docs/DefaultApi.md#createprivateregion) | **Post** /organizations/{organizationId}/regions | Create a private region
@@ -90,6 +88,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**DeleteOrganization**](docs/DefaultApi.md#deleteorganization) | **Delete** /organizations/{organizationId} | Delete organization
 *DefaultApi* | [**DeleteRegion**](docs/DefaultApi.md#deleteregion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
 *DefaultApi* | [**DeleteStack**](docs/DefaultApi.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+*DefaultApi* | [**DeleteUserFromOrganization**](docs/DefaultApi.md#deleteuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | delete user from organization
 *DefaultApi* | [**DisableStack**](docs/DefaultApi.md#disablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
 *DefaultApi* | [**DisableStargate**](docs/DefaultApi.md#disablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
 *DefaultApi* | [**EnableStack**](docs/DefaultApi.md#enablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/enable | Enable stack
@@ -103,14 +102,12 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
 *DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
 *DefaultApi* | [**ListStacks**](docs/DefaultApi.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
-*DefaultApi* | [**ListUsers**](docs/DefaultApi.md#listusers) | **Get** /organizations/{organizationId}/users | List users
+*DefaultApi* | [**ListUsersOfOrganization**](docs/DefaultApi.md#listusersoforganization) | **Get** /organizations/{organizationId}/users | List users of organization
 *DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
-*DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+*DefaultApi* | [**ReadUserOfOrganization**](docs/DefaultApi.md#readuseroforganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
-*DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
-*DefaultApi* | [**UpdateConnectedUser**](docs/DefaultApi.md#updateconnecteduser) | **Put** /me | Update user
-*DefaultApi* | [**UpdateUser**](docs/DefaultApi.md#updateuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
+*DefaultApi* | [**UpdateOrganizationUser**](docs/DefaultApi.md#updateorganizationuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
 
 
 ## Documentation For Models
@@ -154,10 +151,9 @@ Class | Method | HTTP request | Description
  - [StackAllOf](docs/StackAllOf.md)
  - [StackData](docs/StackData.md)
  - [StackLifeCycle](docs/StackLifeCycle.md)
- - [UpdatableUserData](docs/UpdatableUserData.md)
- - [UpdateUserResponse](docs/UpdateUserResponse.md)
  - [User](docs/User.md)
  - [UserAllOf](docs/UserAllOf.md)
+ - [UserAllOf1](docs/UserAllOf1.md)
  - [UserData](docs/UserData.md)
  - [UserDataAllOf](docs/UserDataAllOf.md)
 

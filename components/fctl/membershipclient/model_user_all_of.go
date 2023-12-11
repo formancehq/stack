@@ -19,19 +19,16 @@ var _ MappedNullable = &UserAllOf{}
 
 // UserAllOf struct for UserAllOf
 type UserAllOf struct {
-	// User ID
-	Id string `json:"id"`
-	// User role
-	Role *string `json:"role,omitempty"`
+	// User roles
+	Roles []string `json:"roles,omitempty"`
 }
 
 // NewUserAllOf instantiates a new UserAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUserAllOf(id string) *UserAllOf {
+func NewUserAllOf() *UserAllOf {
 	this := UserAllOf{}
-	this.Id = id
 	return &this
 }
 
@@ -43,60 +40,36 @@ func NewUserAllOfWithDefaults() *UserAllOf {
 	return &this
 }
 
-// GetId returns the Id field value
-func (o *UserAllOf) GetId() string {
-	if o == nil {
-		var ret string
+// GetRoles returns the Roles field value if set, zero value otherwise.
+func (o *UserAllOf) GetRoles() []string {
+	if o == nil || IsNil(o.Roles) {
+		var ret []string
 		return ret
 	}
-
-	return o.Id
+	return o.Roles
 }
 
-// GetIdOk returns a tuple with the Id field value
+// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *UserAllOf) GetIdOk() (*string, bool) {
-	if o == nil {
+func (o *UserAllOf) GetRolesOk() ([]string, bool) {
+	if o == nil || IsNil(o.Roles) {
 		return nil, false
 	}
-	return &o.Id, true
+	return o.Roles, true
 }
 
-// SetId sets field value
-func (o *UserAllOf) SetId(v string) {
-	o.Id = v
-}
-
-// GetRole returns the Role field value if set, zero value otherwise.
-func (o *UserAllOf) GetRole() string {
-	if o == nil || IsNil(o.Role) {
-		var ret string
-		return ret
-	}
-	return *o.Role
-}
-
-// GetRoleOk returns a tuple with the Role field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *UserAllOf) GetRoleOk() (*string, bool) {
-	if o == nil || IsNil(o.Role) {
-		return nil, false
-	}
-	return o.Role, true
-}
-
-// HasRole returns a boolean if a field has been set.
-func (o *UserAllOf) HasRole() bool {
-	if o != nil && !IsNil(o.Role) {
+// HasRoles returns a boolean if a field has been set.
+func (o *UserAllOf) HasRoles() bool {
+	if o != nil && !IsNil(o.Roles) {
 		return true
 	}
 
 	return false
 }
 
-// SetRole gets a reference to the given string and assigns it to the Role field.
-func (o *UserAllOf) SetRole(v string) {
-	o.Role = &v
+// SetRoles gets a reference to the given []string and assigns it to the Roles field.
+func (o *UserAllOf) SetRoles(v []string) {
+	o.Roles = v
 }
 
 func (o UserAllOf) MarshalJSON() ([]byte, error) {
@@ -109,9 +82,8 @@ func (o UserAllOf) MarshalJSON() ([]byte, error) {
 
 func (o UserAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	if !IsNil(o.Role) {
-		toSerialize["role"] = o.Role
+	if !IsNil(o.Roles) {
+		toSerialize["roles"] = o.Roles
 	}
 	return toSerialize, nil
 }

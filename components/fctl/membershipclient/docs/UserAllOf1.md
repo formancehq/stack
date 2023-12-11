@@ -1,48 +1,48 @@
-# UserData
+# UserAllOf1
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Email** | **string** |  | 
+**Id** | **string** | User ID | 
 
 ## Methods
 
-### NewUserData
+### NewUserAllOf1
 
-`func NewUserData(email string, ) *UserData`
+`func NewUserAllOf1(id string, ) *UserAllOf1`
 
-NewUserData instantiates a new UserData object
+NewUserAllOf1 instantiates a new UserAllOf1 object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewUserDataWithDefaults
+### NewUserAllOf1WithDefaults
 
-`func NewUserDataWithDefaults() *UserData`
+`func NewUserAllOf1WithDefaults() *UserAllOf1`
 
-NewUserDataWithDefaults instantiates a new UserData object
+NewUserAllOf1WithDefaults instantiates a new UserAllOf1 object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetEmail
+### GetId
 
-`func (o *UserData) GetEmail() string`
+`func (o *UserAllOf1) GetId() string`
 
-GetEmail returns the Email field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetEmailOk
+### GetIdOk
 
-`func (o *UserData) GetEmailOk() (*string, bool)`
+`func (o *UserAllOf1) GetIdOk() (*string, bool)`
 
-GetEmailOk returns a tuple with the Email field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetEmail
+### SetId
 
-`func (o *UserData) SetEmail(v string)`
+`func (o *UserAllOf1) SetId(v string)`
 
-SetEmail sets Email field to given value.
+SetId sets Id field to given value.
 
 
 

@@ -12,7 +12,8 @@ func NewCommand() *cobra.Command {
 		fctl.WithChildCommands(
 			NewListCommand(),
 			NewShowCommand(),
-			NewUnlinkCommand(),
+			NewDeleteCommand(),
+			NewUpdateCommand(),
 		),
 	)
 }

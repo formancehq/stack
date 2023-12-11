@@ -8,8 +8,9 @@ import (
 )
 
 type User struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+	ID    string   `json:"id"`
+	Email string   `json:"email"`
+	Roles []string `json:"roles"`
 }
 
 type ListStore struct {
@@ -59,7 +60,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	usersResponse, _, err := apiClient.DefaultApi.ListUsers(cmd.Context(), organizationID).Execute()
+	usersResponse, _, err := apiClient.DefaultApi.ListUsersOfOrganization(cmd.Context(), organizationID).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +69,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return User{
 			i.Id,
 			i.Email,
+			i.Roles,
 		}
 	})
 
@@ -80,10 +82,23 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return []string{
 			i.ID,
 			i.Email,
+			func() string {
+				roles := ""
+
+				for _, role := range i.Roles {
+					if role == "ADMIN" {
+						roles += pterm.LightRed(role) + " | "
+					} else {
+						roles += pterm.LightGreen(role) + " | "
+					}
+				}
+
+				return roles
+			}(),
 		}
 	})
 
-	tableData := fctl.Prepend(usersRow, []string{"ID", "Email"})
+	tableData := fctl.Prepend(usersRow, []string{"ID", "Email", "Roles"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
