@@ -4,11 +4,14 @@ import (
 	"context"
 
 	"github.com/formancehq/orchestration/internal/api"
+	v1 "github.com/formancehq/orchestration/internal/api/v1"
+	v2 "github.com/formancehq/orchestration/internal/api/v2"
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/service"
-	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
@@ -42,6 +45,8 @@ func newServeCommand() *cobra.Command {
 					}
 				}),
 				api.NewModule(),
+				v1.NewModule(),
+				v2.NewModule(),
 				fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
 					lifecycle.Append(fx.Hook{
 						OnStart: func(ctx context.Context) error {

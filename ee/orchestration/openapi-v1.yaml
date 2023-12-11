@@ -5,7 +5,7 @@ info:
   version: 0.1.0
 
 paths:
-  /v2/_info:
+  /_info:
     get:
       summary: Get server info
       operationId: getServerInfo
@@ -20,7 +20,7 @@ paths:
                 $ref: '#/components/schemas/ServerInfo'
         default:
           $ref: '#/components/responses/ErrorResponse'
-  /v2/triggers:
+  /triggers:
     get:
       summary: List triggers
       operationId: listTriggers
@@ -56,7 +56,7 @@ paths:
                 $ref: '#/components/schemas/CreateTriggerResponse'
         default:
           $ref: '#/components/responses/ErrorResponse'
-  /v2/triggers/{triggerID}:
+  /triggers/{triggerID}:
     parameters:
       - name: triggerID
         description: The trigger id
@@ -90,7 +90,7 @@ paths:
           description: Trigger deleted
         default:
           $ref: '#/components/responses/ErrorResponse'
-  /v2/triggers/{triggerID}/occurrences:
+  /triggers/{triggerID}/occurrences:
     parameters:
       - name: triggerID
         description: The trigger id
@@ -113,7 +113,7 @@ paths:
                 $ref: '#/components/schemas/ListTriggersOccurrencesResponse'
         default:
           $ref: '#/components/responses/ErrorResponse'
-  /v2/workflows:
+  /workflows:
     get:
       summary: List registered workflows
       operationId: listWorkflows
@@ -150,7 +150,7 @@ paths:
         default:
           $ref: '#/components/responses/ErrorResponse'
 
-  /v2/workflows/{flowId}:
+  /workflows/{flowId}:
     parameters:
     - in: path
       description: The flow id
@@ -186,7 +186,7 @@ paths:
         204:
           description: No content
 
-  /v2/workflows/{workflowID}/instances:
+  /workflows/{workflowID}/instances:
     parameters:
     - in: path
       description: The flow id
@@ -223,7 +223,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RunWorkflowResponse'
 
-  /v2/instances:
+  /instances:
     get:
       description: List instances of a workflow
       summary: List instances of a workflow
@@ -255,7 +255,7 @@ paths:
         default:
           $ref: '#/components/responses/ErrorResponse'
 
-  /v2/instances/{instanceID}:
+  /instances/{instanceID}:
     parameters:
     - in: path
       description: The instance id
@@ -280,7 +280,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetWorkflowInstanceResponse'
 
-  /v2/instances/{instanceID}/events:
+  /instances/{instanceID}/events:
     parameters:
     - in: path
       description: The instance id
@@ -311,7 +311,7 @@ paths:
         204:
           description: No content
 
-  /v2/instances/{instanceID}/abort:
+  /instances/{instanceID}/abort:
     parameters:
     - in: path
       description: The instance id
@@ -332,7 +332,7 @@ paths:
         204:
           description: No content
 
-  /v2/instances/{instanceID}/history:
+  /instances/{instanceID}/history:
     parameters:
     - in: path
       description: The instance id
@@ -357,7 +357,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetWorkflowInstanceHistoryResponse'
 
-  /v2/instances/{instanceID}/stages/{number}/history:
+  /instances/{instanceID}/stages/{number}/history:
     parameters:
     - in: path
       description: The instance id

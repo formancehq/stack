@@ -4938,7 +4938,7 @@
         }
       }
     },
-    "/api/orchestration/_info": {
+    "/api/orchestration/v2/_info": {
       "get": {
         "summary": "Get server info",
         "operationId": "orchestrationgetServerInfo",
@@ -4962,7 +4962,7 @@
         }
       }
     },
-    "/api/orchestration/triggers": {
+    "/api/orchestration/v2/triggers": {
       "get": {
         "summary": "List triggers",
         "operationId": "listTriggers",
@@ -5019,7 +5019,7 @@
         }
       }
     },
-    "/api/orchestration/triggers/{triggerID}": {
+    "/api/orchestration/v2/triggers/{triggerID}": {
       "parameters": [
         {
           "name": "triggerID",
@@ -5071,7 +5071,7 @@
         }
       }
     },
-    "/api/orchestration/triggers/{triggerID}/occurrences": {
+    "/api/orchestration/v2/triggers/{triggerID}/occurrences": {
       "parameters": [
         {
           "name": "triggerID",
@@ -5107,7 +5107,7 @@
         }
       }
     },
-    "/api/orchestration/workflows": {
+    "/api/orchestration/v2/workflows": {
       "get": {
         "summary": "List registered workflows",
         "operationId": "listWorkflows",
@@ -5164,7 +5164,7 @@
         }
       }
     },
-    "/api/orchestration/workflows/{flowId}": {
+    "/api/orchestration/v2/workflows/{flowId}": {
       "parameters": [
         {
           "in": "path",
@@ -5217,7 +5217,7 @@
         }
       }
     },
-    "/api/orchestration/workflows/{workflowID}/instances": {
+    "/api/orchestration/v2/workflows/{workflowID}/instances": {
       "parameters": [
         {
           "in": "path",
@@ -5274,7 +5274,7 @@
         }
       }
     },
-    "/api/orchestration/instances": {
+    "/api/orchestration/v2/instances": {
       "get": {
         "description": "List instances of a workflow",
         "summary": "List instances of a workflow",
@@ -5321,7 +5321,7 @@
         }
       }
     },
-    "/api/orchestration/instances/{instanceID}": {
+    "/api/orchestration/v2/instances/{instanceID}": {
       "parameters": [
         {
           "in": "path",
@@ -5358,7 +5358,7 @@
         }
       }
     },
-    "/api/orchestration/instances/{instanceID}/events": {
+    "/api/orchestration/v2/instances/{instanceID}/events": {
       "parameters": [
         {
           "in": "path",
@@ -5405,7 +5405,7 @@
         }
       }
     },
-    "/api/orchestration/instances/{instanceID}/abort": {
+    "/api/orchestration/v2/instances/{instanceID}/abort": {
       "parameters": [
         {
           "in": "path",
@@ -5435,7 +5435,7 @@
         }
       }
     },
-    "/api/orchestration/instances/{instanceID}/history": {
+    "/api/orchestration/v2/instances/{instanceID}/history": {
       "parameters": [
         {
           "in": "path",
@@ -5472,7 +5472,7 @@
         }
       }
     },
-    "/api/orchestration/instances/{instanceID}/stages/{number}/history": {
+    "/api/orchestration/v2/instances/{instanceID}/stages/{number}/history": {
       "parameters": [
         {
           "in": "path",

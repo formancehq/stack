@@ -7,6 +7,8 @@ import (
 	"github.com/formancehq/orchestration/internal/workflow"
 )
 
+//go:generate mockgen -source backend.go -destination backend_generated.go -package api . Backend
+
 type Backend interface {
 	CreateTrigger(context context.Context, data triggers.TriggerData) (*triggers.Trigger, error)
 	AbortRun(ctx context.Context, id string) error
@@ -27,7 +29,7 @@ type Backend interface {
 	GetTrigger(ctx context.Context, triggerID string) (*triggers.Trigger, error)
 }
 
-func newDefaultBackend(triggersManager *triggers.TriggerManager, workflowManager *workflow.WorkflowManager) Backend {
+func NewDefaultBackend(triggersManager *triggers.TriggerManager, workflowManager *workflow.WorkflowManager) Backend {
 	return struct {
 		*triggers.TriggerManager
 		*workflow.WorkflowManager
