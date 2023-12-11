@@ -6,16 +6,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"math/big"
 	"time"
 )
+
+type LogData struct {
+}
 
 type LogType string
 
 const (
-	LogTypeNewTransaction      LogType = "NEW_TRANSACTION"
-	LogTypeSetMetadata         LogType = "SET_METADATA"
-	LogTypeRevertedTransaction LogType = "REVERTED_TRANSACTION"
+	LogTypeNewTransaction LogType = "NEW_TRANSACTION"
+	LogTypeSetMetadata    LogType = "SET_METADATA"
 )
 
 func (e LogType) ToPointer() *LogType {
@@ -31,8 +32,6 @@ func (e *LogType) UnmarshalJSON(data []byte) error {
 	case "NEW_TRANSACTION":
 		fallthrough
 	case "SET_METADATA":
-		fallthrough
-	case "REVERTED_TRANSACTION":
 		*e = LogType(v)
 		return nil
 	default:
@@ -41,11 +40,11 @@ func (e *LogType) UnmarshalJSON(data []byte) error {
 }
 
 type Log struct {
-	Data map[string]interface{} `json:"data"`
-	Date time.Time              `json:"date"`
-	Hash string                 `json:"hash"`
-	ID   *big.Int               `json:"id"`
-	Type LogType                `json:"type"`
+	Data LogData   `json:"data"`
+	Date time.Time `json:"date"`
+	Hash string    `json:"hash"`
+	ID   int64     `json:"id"`
+	Type LogType   `json:"type"`
 }
 
 func (l Log) MarshalJSON() ([]byte, error) {
@@ -59,9 +58,9 @@ func (l *Log) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *Log) GetData() map[string]interface{} {
+func (o *Log) GetData() LogData {
 	if o == nil {
-		return map[string]interface{}{}
+		return LogData{}
 	}
 	return o.Data
 }
@@ -80,9 +79,9 @@ func (o *Log) GetHash() string {
 	return o.Hash
 }
 
-func (o *Log) GetID() *big.Int {
+func (o *Log) GetID() int64 {
 	if o == nil {
-		return big.NewInt(0)
+		return 0
 	}
 	return o.ID
 }

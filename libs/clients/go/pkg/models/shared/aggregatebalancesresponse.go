@@ -2,29 +2,13 @@
 
 package shared
 
-import (
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"math/big"
-)
-
 type AggregateBalancesResponse struct {
-	Data map[string]*big.Int `json:"data"`
+	Data map[string]int64 `json:"data"`
 }
 
-func (a AggregateBalancesResponse) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(a, "", false)
-}
-
-func (a *AggregateBalancesResponse) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, false); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *AggregateBalancesResponse) GetData() map[string]*big.Int {
+func (o *AggregateBalancesResponse) GetData() map[string]int64 {
 	if o == nil {
-		return map[string]*big.Int{}
+		return map[string]int64{}
 	}
 	return o.Data
 }

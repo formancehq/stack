@@ -56,6 +56,13 @@ func main() {
 * [GetVersions](docs/sdks/formance/README.md#getversions) - Show stack version information
 * [GetAPIAuthWellKnownOpenidConfiguration](docs/sdks/formance/README.md#getapiauthwellknownopenidconfiguration)
 
+### [Accounts](docs/sdks/accounts/README.md)
+
+* [AddMetadataToAccount](docs/sdks/accounts/README.md#addmetadatatoaccount) - Add metadata to an account
+* [CountAccounts](docs/sdks/accounts/README.md#countaccounts) - Count the accounts from a ledger
+* [GetAccount](docs/sdks/accounts/README.md#getaccount) - Get account by its address
+* [ListAccounts](docs/sdks/accounts/README.md#listaccounts) - List accounts from a ledger
+
 ### [Auth](docs/sdks/auth/README.md)
 
 * [CreateClient](docs/sdks/auth/README.md#createclient) - Create client
@@ -69,32 +76,44 @@ func main() {
 * [ReadUser](docs/sdks/auth/README.md#readuser) - Read user
 * [UpdateClient](docs/sdks/auth/README.md#updateclient) - Update client
 
+### [Balances](docs/sdks/balances/README.md)
+
+* [GetBalances](docs/sdks/balances/README.md#getbalances) - Get the balances from a ledger's account
+* [GetBalancesAggregated](docs/sdks/balances/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
+
 ### [Ledger](docs/sdks/ledger/README.md)
 
-* [CreateLedger](docs/sdks/ledger/README.md#createledger) - Create a ledger
-* [GetLedger](docs/sdks/ledger/README.md#getledger) - Get a ledger
-* [ListLedgers](docs/sdks/ledger/README.md#listledgers) - List ledgers
+* [GetLedgerInfo](docs/sdks/ledger/README.md#getledgerinfo) - Get information about a ledger
+* [V2AddMetadataOnTransaction](docs/sdks/ledger/README.md#v2addmetadataontransaction) - Set the metadata of a transaction by its ID
+* [V2AddMetadataToAccount](docs/sdks/ledger/README.md#v2addmetadatatoaccount) - Add metadata to an account
+* [V2CountAccounts](docs/sdks/ledger/README.md#v2countaccounts) - Count the accounts from a ledger
+* [V2CountTransactions](docs/sdks/ledger/README.md#v2counttransactions) - Count the transactions from a ledger
+* [V2CreateBulk](docs/sdks/ledger/README.md#v2createbulk) - Bulk request
+* [V2CreateLedger](docs/sdks/ledger/README.md#v2createledger) - Create a ledger
+* [V2CreateTransaction](docs/sdks/ledger/README.md#v2createtransaction) - Create a new transaction to a ledger
+* [V2DeleteAccountMetadata](docs/sdks/ledger/README.md#v2deleteaccountmetadata) - Delete metadata by key
+* [V2DeleteTransactionMetadata](docs/sdks/ledger/README.md#v2deletetransactionmetadata) - Delete metadata by key
+* [V2GetAccount](docs/sdks/ledger/README.md#v2getaccount) - Get account by its address
+* [V2GetBalancesAggregated](docs/sdks/ledger/README.md#v2getbalancesaggregated) - Get the aggregated balances from selected accounts
+* [V2GetInfo](docs/sdks/ledger/README.md#v2getinfo) - Show server information
+* [V2GetLedger](docs/sdks/ledger/README.md#v2getledger) - Get a ledger
+* [V2GetLedgerInfo](docs/sdks/ledger/README.md#v2getledgerinfo) - Get information about a ledger
+* [V2GetTransaction](docs/sdks/ledger/README.md#v2gettransaction) - Get transaction from a ledger by its ID
+* [V2ListAccounts](docs/sdks/ledger/README.md#v2listaccounts) - List accounts from a ledger
+* [V2ListLedgers](docs/sdks/ledger/README.md#v2listledgers) - List ledgers
+* [V2ListLogs](docs/sdks/ledger/README.md#v2listlogs) - List the logs from a ledger
+* [V2ListTransactions](docs/sdks/ledger/README.md#v2listtransactions) - List transactions from a ledger
+* [V2ReadStats](docs/sdks/ledger/README.md#v2readstats) - Get statistics from a ledger
+* [V2RevertTransaction](docs/sdks/ledger/README.md#v2reverttransaction) - Revert a ledger transaction by its ID
 
-### [Ledger.V2](docs/sdks/ledgerv2/README.md)
+### [Logs](docs/sdks/logs/README.md)
 
-* [AddMetadataOnTransaction](docs/sdks/ledgerv2/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
-* [AddMetadataToAccount](docs/sdks/ledgerv2/README.md#addmetadatatoaccount) - Add metadata to an account
-* [CountAccounts](docs/sdks/ledgerv2/README.md#countaccounts) - Count the accounts from a ledger
-* [CountTransactions](docs/sdks/ledgerv2/README.md#counttransactions) - Count the transactions from a ledger
-* [CreateBulk](docs/sdks/ledgerv2/README.md#createbulk) - Bulk request
-* [CreateTransaction](docs/sdks/ledgerv2/README.md#createtransaction) - Create a new transaction to a ledger
-* [DeleteAccountMetadata](docs/sdks/ledgerv2/README.md#deleteaccountmetadata) - Delete metadata by key
-* [DeleteTransactionMetadata](docs/sdks/ledgerv2/README.md#deletetransactionmetadata) - Delete metadata by key
-* [GetAccount](docs/sdks/ledgerv2/README.md#getaccount) - Get account by its address
-* [GetBalancesAggregated](docs/sdks/ledgerv2/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
-* [GetInfo](docs/sdks/ledgerv2/README.md#getinfo) - Show server information
-* [GetLedgerInfo](docs/sdks/ledgerv2/README.md#getledgerinfo) - Get information about a ledger
-* [GetTransaction](docs/sdks/ledgerv2/README.md#gettransaction) - Get transaction from a ledger by its ID
-* [ListAccounts](docs/sdks/ledgerv2/README.md#listaccounts) - List accounts from a ledger
-* [ListLogs](docs/sdks/ledgerv2/README.md#listlogs) - List the logs from a ledger
-* [ListTransactions](docs/sdks/ledgerv2/README.md#listtransactions) - List transactions from a ledger
-* [ReadStats](docs/sdks/ledgerv2/README.md#readstats) - Get statistics from a ledger
-* [RevertTransaction](docs/sdks/ledgerv2/README.md#reverttransaction) - Revert a ledger transaction by its ID
+* [ListLogs](docs/sdks/logs/README.md#listlogs) - List the logs from a ledger
+
+### [Mapping](docs/sdks/mapping/README.md)
+
+* [GetMapping](docs/sdks/mapping/README.md#getmapping) - Get the mapping of a ledger
+* [UpdateMapping](docs/sdks/mapping/README.md#updatemapping) - Update the mapping of a ledger
 
 ### [Orchestration](docs/sdks/orchestration/README.md)
 
@@ -115,6 +134,23 @@ func main() {
 * [ReadTrigger](docs/sdks/orchestration/README.md#readtrigger) - Read trigger
 * [RunWorkflow](docs/sdks/orchestration/README.md#runworkflow) - Run workflow
 * [SendEvent](docs/sdks/orchestration/README.md#sendevent) - Send an event to a running workflow
+* [V2CancelEvent](docs/sdks/orchestration/README.md#v2cancelevent) - Cancel a running workflow
+* [V2CreateTrigger](docs/sdks/orchestration/README.md#v2createtrigger) - Create trigger
+* [V2CreateWorkflow](docs/sdks/orchestration/README.md#v2createworkflow) - Create workflow
+* [V2DeleteTrigger](docs/sdks/orchestration/README.md#v2deletetrigger) - Delete trigger
+* [V2DeleteWorkflow](docs/sdks/orchestration/README.md#v2deleteworkflow) - Delete a flow by id
+* [V2GetInstance](docs/sdks/orchestration/README.md#v2getinstance) - Get a workflow instance by id
+* [V2GetInstanceHistory](docs/sdks/orchestration/README.md#v2getinstancehistory) - Get a workflow instance history by id
+* [V2GetInstanceStageHistory](docs/sdks/orchestration/README.md#v2getinstancestagehistory) - Get a workflow instance stage history
+* [V2GetServerInfo](docs/sdks/orchestration/README.md#v2getserverinfo) - Get server info
+* [V2GetWorkflow](docs/sdks/orchestration/README.md#v2getworkflow) - Get a flow by id
+* [V2ListInstances](docs/sdks/orchestration/README.md#v2listinstances) - List instances of a workflow
+* [V2ListTriggers](docs/sdks/orchestration/README.md#v2listtriggers) - List triggers
+* [V2ListTriggersOccurrences](docs/sdks/orchestration/README.md#v2listtriggersoccurrences) - List triggers occurrences
+* [V2ListWorkflows](docs/sdks/orchestration/README.md#v2listworkflows) - List registered workflows
+* [V2ReadTrigger](docs/sdks/orchestration/README.md#v2readtrigger) - Read trigger
+* [V2RunWorkflow](docs/sdks/orchestration/README.md#v2runworkflow) - Run workflow
+* [V2SendEvent](docs/sdks/orchestration/README.md#v2sendevent) - Send an event to a running workflow
 
 ### [Payments](docs/sdks/payments/README.md)
 
@@ -168,10 +204,32 @@ func main() {
 * [Reconcile](docs/sdks/reconciliation/README.md#reconcile) - Reconcile using a policy
 * [ReconciliationgetServerInfo](docs/sdks/reconciliation/README.md#reconciliationgetserverinfo) - Get server info
 
+### [Script](docs/sdks/script/README.md)
+
+* [~~RunScript~~](docs/sdks/script/README.md#runscript) - Execute a Numscript :warning: **Deprecated**
+
 ### [Search](docs/sdks/search/README.md)
 
 * [Search](docs/sdks/search/README.md#search) - Search
 * [SearchgetServerInfo](docs/sdks/search/README.md#searchgetserverinfo) - Get server info
+
+### [Server](docs/sdks/server/README.md)
+
+* [GetInfo](docs/sdks/server/README.md#getinfo) - Show server information
+
+### [Stats](docs/sdks/stats/README.md)
+
+* [ReadStats](docs/sdks/stats/README.md#readstats) - Get statistics from a ledger
+
+### [Transactions](docs/sdks/transactions/README.md)
+
+* [CreateTransactions](docs/sdks/transactions/README.md#createtransactions) - Create a new batch of transactions to a ledger
+* [AddMetadataOnTransaction](docs/sdks/transactions/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
+* [CountTransactions](docs/sdks/transactions/README.md#counttransactions) - Count the transactions from a ledger
+* [CreateTransaction](docs/sdks/transactions/README.md#createtransaction) - Create a new transaction to a ledger
+* [GetTransaction](docs/sdks/transactions/README.md#gettransaction) - Get transaction from a ledger by its ID
+* [ListTransactions](docs/sdks/transactions/README.md#listtransactions) - List transactions from a ledger
+* [RevertTransaction](docs/sdks/transactions/README.md#reverttransaction) - Revert a ledger transaction by its ID
 
 ### [Wallets](docs/sdks/wallets/README.md)
 

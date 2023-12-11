@@ -16,7 +16,7 @@ func printCommonInformation(
 	out io.Writer,
 	txID *big.Int,
 	reference string,
-	postings []shared.Posting,
+	postings []shared.V2Posting,
 	timestamp time.Time,
 ) error {
 	fctl.Section.WithWriter(out).Println("Information")
@@ -53,7 +53,7 @@ func printCommonInformation(
 	return nil
 }
 
-func PrintExpandedTransaction(out io.Writer, transaction shared.ExpandedTransaction) error {
+func PrintExpandedTransaction(out io.Writer, transaction shared.V2ExpandedTransaction) error {
 
 	if err := printCommonInformation(
 		out,
@@ -101,7 +101,7 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.ExpandedTransact
 	return nil
 }
 
-func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
+func PrintTransaction(out io.Writer, transaction shared.V2Transaction) error {
 
 	reference := ""
 	if transaction.Reference != nil {

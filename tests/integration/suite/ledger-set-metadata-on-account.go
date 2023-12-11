@@ -18,7 +18,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -36,9 +36,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
-			response, err := Client().Ledger.V2.AddMetadataToAccount(
+			response, err := Client().Ledger.V2AddMetadataToAccount(
 				TestContext(),
-				operations.AddMetadataToAccountRequest{
+				operations.V2AddMetadataToAccountRequest{
 					RequestBody: metadata,
 					Address:     "foo",
 					Ledger:      "default",
@@ -51,9 +51,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.V2.GetAccount(
+			response, err := Client().Ledger.V2GetAccount(
 				TestContext(),
-				operations.GetAccountRequest{
+				operations.V2GetAccountRequest{
 					Address: "foo",
 					Ledger:  "default",
 				},
@@ -61,7 +61,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			Expect(response.AccountResponse.Data).Should(Equal(shared.Account{
+			Expect(response.V2AccountResponse.Data).Should(Equal(shared.V2Account{
 				Address:  "foo",
 				Metadata: metadata,
 			}))

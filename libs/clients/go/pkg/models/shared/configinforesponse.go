@@ -3,20 +3,12 @@
 package shared
 
 type ConfigInfoResponse struct {
-	Server  string `json:"server"`
-	Version string `json:"version"`
+	Data ConfigInfo `json:"data"`
 }
 
-func (o *ConfigInfoResponse) GetServer() string {
+func (o *ConfigInfoResponse) GetData() ConfigInfo {
 	if o == nil {
-		return ""
+		return ConfigInfo{}
 	}
-	return o.Server
-}
-
-func (o *ConfigInfoResponse) GetVersion() string {
-	if o == nil {
-		return ""
-	}
-	return o.Version
+	return o.Data
 }

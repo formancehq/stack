@@ -17,11 +17,11 @@ type RevertTransactionRequest struct {
 	ID     *big.Int `json:"txId"`
 }
 
-func (a Activities) RevertTransaction(ctx context.Context, request RevertTransactionRequest) (*shared.Transaction, error) {
-	response, err := a.client.Ledger.V2.
-		RevertTransaction(
+func (a Activities) RevertTransaction(ctx context.Context, request RevertTransactionRequest) (*shared.V2Transaction, error) {
+	response, err := a.client.Ledger.
+		V2RevertTransaction(
 			ctx,
-			operations.RevertTransactionRequest{
+			operations.V2RevertTransactionRequest{
 				Ledger: request.Ledger,
 				ID:     request.ID,
 			},
@@ -32,13 +32,13 @@ func (a Activities) RevertTransaction(ctx context.Context, request RevertTransac
 
 	switch response.StatusCode {
 	case http.StatusCreated:
-		return &response.RevertTransactionResponse.Data, nil
+		return &response.V2RevertTransactionResponse.Data, nil
 	default:
-		if response.ErrorResponse != nil {
+		if response.V2ErrorResponse != nil {
 			return nil, temporal.NewApplicationError(
-				response.ErrorResponse.ErrorMessage,
-				string(response.ErrorResponse.ErrorCode),
-				response.ErrorResponse.Details)
+				response.V2ErrorResponse.ErrorMessage,
+				string(response.V2ErrorResponse.ErrorCode),
+				response.V2ErrorResponse.Details)
 		}
 
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)

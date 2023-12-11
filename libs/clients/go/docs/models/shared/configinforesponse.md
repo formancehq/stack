@@ -3,7 +3,6 @@
 
 ## Fields
 
-| Field              | Type               | Required           | Description        |
-| ------------------ | ------------------ | ------------------ | ------------------ |
-| `Server`           | *string*           | :heavy_check_mark: | N/A                |
-| `Version`          | *string*           | :heavy_check_mark: | N/A                |
+| Field                                           | Type                                            | Required                                        | Description                                     |
+| ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| `Data`                                          | [ConfigInfo](../../models/shared/configinfo.md) | :heavy_check_mark:                              | N/A                                             |

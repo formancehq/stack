@@ -12,18 +12,18 @@ import (
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 	var (
-		workflow shared.Workflow
-		list     []shared.Workflow
+		workflow shared.V2Workflow
+		list     []shared.V2Workflow
 	)
 	When("first listing workflows", func() {
 		BeforeEach(func() {
-			response, err := Client().Orchestration.ListWorkflows(
+			response, err := Client().Orchestration.V2ListWorkflows(
 				TestContext(),
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			list = response.ListWorkflowsResponse.Data
+			list = response.V2ListWorkflowsResponse.Cursor.Data
 		})
 		It("should respond with an empty list", func() {
 			Expect(list).To(BeEmpty())
@@ -31,9 +31,9 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 	})
 	When("populating 1 workflow", func() {
 		BeforeEach(func() {
-			response, err := Client().Orchestration.CreateWorkflow(
+			response, err := Client().Orchestration.V2CreateWorkflow(
 				TestContext(),
-				&shared.CreateWorkflowRequest{
+				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
 					Stages: []map[string]interface{}{
 						{
@@ -63,20 +63,19 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(201))
 
-			workflow = response.CreateWorkflowResponse.Data
+			workflow = response.V2CreateWorkflowResponse.Data
 		})
 		It("should be ok", func() {
 			Expect(workflow.ID).NotTo(BeEmpty())
 		})
 		JustBeforeEach(func() {
-
-			response, err := Client().Orchestration.ListWorkflows(
+			response, err := Client().Orchestration.V2ListWorkflows(
 				TestContext(),
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			list = response.ListWorkflowsResponse.Data
+			list = response.V2ListWorkflowsResponse.Cursor.Data
 		})
 		It("should respond with a list of 1 elements", func() {
 			Expect(list).ToNot(BeEmpty())
@@ -84,9 +83,9 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 		})
 		When("Deleting a workflow", func() {
 			JustBeforeEach(func() {
-				response, err := Client().Orchestration.DeleteWorkflow(
+				response, err := Client().Orchestration.V2DeleteWorkflow(
 					TestContext(),
-					operations.DeleteWorkflowRequest{
+					operations.V2DeleteWorkflowRequest{
 						FlowID: workflow.ID,
 					},
 				)
@@ -95,13 +94,13 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 
 			})
 			JustBeforeEach(func() {
-				response, err := Client().Orchestration.ListWorkflows(
+				response, err := Client().Orchestration.V2ListWorkflows(
 					TestContext(),
 				)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				list = response.ListWorkflowsResponse.Data
+				list = response.V2ListWorkflowsResponse.Cursor.Data
 
 			})
 			It("should have a list of 0 element", func() {

@@ -3,16 +3,16 @@
 package shared
 
 type TransactionsCursorResponseCursor struct {
-	Data     []ExpandedTransaction `json:"data"`
-	HasMore  bool                  `json:"hasMore"`
-	Next     *string               `json:"next,omitempty"`
-	PageSize int64                 `json:"pageSize"`
-	Previous *string               `json:"previous,omitempty"`
+	Data     []Transaction `json:"data"`
+	HasMore  bool          `json:"hasMore"`
+	Next     *string       `json:"next,omitempty"`
+	PageSize int64         `json:"pageSize"`
+	Previous *string       `json:"previous,omitempty"`
 }
 
-func (o *TransactionsCursorResponseCursor) GetData() []ExpandedTransaction {
+func (o *TransactionsCursorResponseCursor) GetData() []Transaction {
 	if o == nil {
-		return []ExpandedTransaction{}
+		return []Transaction{}
 	}
 	return o.Data
 }

@@ -3,12 +3,12 @@
 package shared
 
 type AccountResponse struct {
-	Data Account `json:"data"`
+	Data AccountWithVolumesAndBalances `json:"data"`
 }
 
-func (o *AccountResponse) GetData() Account {
+func (o *AccountResponse) GetData() AccountWithVolumesAndBalances {
 	if o == nil {
-		return Account{}
+		return AccountWithVolumesAndBalances{}
 	}
 	return o.Data
 }

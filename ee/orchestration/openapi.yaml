@@ -595,6 +595,7 @@ components:
         - triggerID
         - workflowInstanceID
         - date
+        - event
       properties:
         date:
           type: string
@@ -603,6 +604,9 @@ components:
           type: string
         triggerID:
           type: string
+        event:
+          type: object
+          additionalProperties: true
     ListTriggersOccurrencesResponse:
       type: object
       properties:

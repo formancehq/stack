@@ -12,12 +12,12 @@ import (
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 	When("creating a new workflow", func() {
 		var (
-			createWorkflowResponse *shared.CreateWorkflowResponse
+			createWorkflowResponse *shared.V2CreateWorkflowResponse
 		)
 		BeforeEach(func() {
-			response, err := Client().Orchestration.CreateWorkflow(
+			response, err := Client().Orchestration.V2CreateWorkflow(
 				TestContext(),
-				&shared.CreateWorkflowRequest{
+				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
 					Stages: []map[string]interface{}{
 						{
@@ -46,7 +46,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(201))
 
-			createWorkflowResponse = response.CreateWorkflowResponse
+			createWorkflowResponse = response.V2CreateWorkflowResponse
 		})
 		It("should be ok", func() {
 			Expect(createWorkflowResponse.Data.ID).NotTo(BeEmpty())

@@ -7,9 +7,12 @@ import (
 	"time"
 )
 
+type PostTransactionScriptVars struct {
+}
+
 type PostTransactionScript struct {
-	Plain string                 `json:"plain"`
-	Vars  map[string]interface{} `json:"vars,omitempty"`
+	Plain string                     `json:"plain"`
+	Vars  *PostTransactionScriptVars `json:"vars,omitempty"`
 }
 
 func (o *PostTransactionScript) GetPlain() string {
@@ -19,7 +22,7 @@ func (o *PostTransactionScript) GetPlain() string {
 	return o.Plain
 }
 
-func (o *PostTransactionScript) GetVars() map[string]interface{} {
+func (o *PostTransactionScript) GetVars() *PostTransactionScriptVars {
 	if o == nil {
 		return nil
 	}
@@ -27,7 +30,7 @@ func (o *PostTransactionScript) GetVars() map[string]interface{} {
 }
 
 type PostTransaction struct {
-	Metadata  map[string]string      `json:"metadata"`
+	Metadata  map[string]interface{} `json:"metadata,omitempty"`
 	Postings  []Posting              `json:"postings,omitempty"`
 	Reference *string                `json:"reference,omitempty"`
 	Script    *PostTransactionScript `json:"script,omitempty"`
@@ -45,9 +48,9 @@ func (p *PostTransaction) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *PostTransaction) GetMetadata() map[string]string {
+func (o *PostTransaction) GetMetadata() map[string]interface{} {
 	if o == nil {
-		return map[string]string{}
+		return nil
 	}
 	return o.Metadata
 }

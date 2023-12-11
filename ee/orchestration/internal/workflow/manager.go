@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 	"go.temporal.io/api/enums/v1"
@@ -119,15 +122,13 @@ func (m *WorkflowManager) Wait(ctx context.Context, instanceID string) error {
 	return nil
 }
 
-func (m *WorkflowManager) ListWorkflows(ctx context.Context) ([]Workflow, error) {
+func (m *WorkflowManager) ListWorkflows(ctx context.Context, query bunpaginate.OffsetPaginatedQuery[any]) (*api.Cursor[Workflow], error) {
 	workflows := make([]Workflow, 0)
-	if err := m.db.NewSelect().
+	sb := m.db.NewSelect().
 		Model(&workflows).
-		Where("deleted_at IS NULL").
-		Scan(ctx); err != nil {
-		return nil, err
-	}
-	return workflows, nil
+		Where("deleted_at IS NULL")
+
+	return bunpaginate.UsingOffset[any, Workflow](ctx, sb, query)
 }
 
 func (m *WorkflowManager) ReadWorkflow(ctx context.Context, id string) (Workflow, error) {
@@ -172,23 +173,20 @@ func (m *WorkflowManager) AbortRun(ctx context.Context, instanceID string) error
 	return m.temporalClient.CancelWorkflow(ctx, instanceID, "")
 }
 
-func (m *WorkflowManager) ListInstances(ctx context.Context, workflowID string, running bool) ([]Instance, error) {
+func (m *WorkflowManager) ListInstances(ctx context.Context, pagination ListInstancesQuery) (*api.Cursor[Instance], error) {
 	instances := make([]Instance, 0)
-	query := m.db.NewSelect().Model(&instances)
+	query := m.db.NewSelect().Model(&instances).
+		Join("JOIN workflows ON workflows.id = u.workflow_id").
+		Where("workflows.deleted_at IS NULL")
 
-	query.Join("JOIN workflows ON workflows.id = u.workflow_id").Where("workflows.deleted_at IS NULL")
-
-	if workflowID != "" {
-		query = query.Where("workflows.id = ?", workflowID)
+	if pagination.Options.WorkflowID != "" {
+		query = query.Where("workflows.id = ?", pagination.Options.WorkflowID)
 	}
-	if running {
+	if pagination.Options.Running {
 		query = query.Where("u.terminated = false")
 	}
 
-	if err := query.Scan(ctx); err != nil {
-		return nil, errors.Wrap(err, "retrieving workflow")
-	}
-	return instances, nil
+	return bunpaginate.UsingOffset[ListInstancesOptions, Instance](ctx, query, bunpaginate.OffsetPaginatedQuery[ListInstancesOptions](pagination))
 }
 
 type StageHistory struct {
@@ -369,3 +367,10 @@ func NewManager(db *bun.DB, temporalClient client.Client, taskQueue string) *Wor
 		taskQueue:      taskQueue,
 	}
 }
+
+type ListInstancesOptions struct {
+	WorkflowID string
+	Running    bool
+}
+
+type ListInstancesQuery bunpaginate.OffsetPaginatedQuery[ListInstancesOptions]

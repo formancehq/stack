@@ -3,9 +3,9 @@
 package shared
 
 type ErrorResponse struct {
-	Details      *string    `json:"details,omitempty"`
-	ErrorCode    ErrorsEnum `json:"errorCode"`
-	ErrorMessage string     `json:"errorMessage"`
+	Details      *string     `json:"details,omitempty"`
+	ErrorCode    *ErrorsEnum `json:"errorCode,omitempty"`
+	ErrorMessage *string     `json:"errorMessage,omitempty"`
 }
 
 func (o *ErrorResponse) GetDetails() *string {
@@ -15,16 +15,16 @@ func (o *ErrorResponse) GetDetails() *string {
 	return o.Details
 }
 
-func (o *ErrorResponse) GetErrorCode() ErrorsEnum {
+func (o *ErrorResponse) GetErrorCode() *ErrorsEnum {
 	if o == nil {
-		return ErrorsEnum("")
+		return nil
 	}
 	return o.ErrorCode
 }
 
-func (o *ErrorResponse) GetErrorMessage() string {
+func (o *ErrorResponse) GetErrorMessage() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.ErrorMessage
 }

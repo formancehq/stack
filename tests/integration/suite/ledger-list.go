@@ -15,7 +15,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When(fmt.Sprintf("creating %d ledger", count), func() {
 		BeforeEach(func() {
 			for i := 0; i < count; i++ {
-				createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+				createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 					Ledger: fmt.Sprintf("ledger%d", i),
 				})
 				Expect(err).To(BeNil())
@@ -23,10 +23,10 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}
 		})
 		It("should be listable on api", func() {
-			response, err := Client().Ledger.ListLedgers(TestContext(), operations.ListLedgersRequest{})
+			response, err := Client().Ledger.V2ListLedgers(TestContext(), operations.V2ListLedgersRequest{})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusOK))
-			Expect(response.LedgerListResponse.Cursor.Data).To(HaveLen(count))
+			Expect(response.V2LedgerListResponse.Cursor.Data).To(HaveLen(count))
 		})
 	})
 })

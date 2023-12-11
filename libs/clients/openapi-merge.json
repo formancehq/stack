@@ -16,9 +16,12 @@
       "inputFile": "./../../components/ledger/openapi.yaml",
       "pathModification":{
         "prepend": "/api/ledger"
-      },
-      "dispute": {
-        "prefix": "ledger"
+      }
+    },
+    {
+      "inputFile": "./../../components/ledger/openapi-v2.yaml",
+      "pathModification":{
+        "prepend": "/api/ledger"
       }
     },
     {
@@ -73,6 +76,15 @@
       },
       "dispute": {
         "prefix": "orchestration"
+      }
+    },
+    {
+      "inputFile": "./../../ee/orchestration/openapi-v2.yaml",
+      "pathModification":{
+        "prepend": "/api/orchestration"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
       }
     },
     {

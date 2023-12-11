@@ -12,7 +12,7 @@ import (
 )
 
 type ListStore struct {
-	Ledgers []shared.Ledger `json:"ledgers"`
+	Ledgers []shared.V2Ledger `json:"ledgers"`
 }
 type ListController struct {
 	store *ListStore
@@ -22,7 +22,7 @@ var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
 func NewDefaultListStore() *ListStore {
 	return &ListStore{
-		Ledgers: []shared.Ledger{},
+		Ledgers: []shared.V2Ledger{},
 	}
 }
 
@@ -67,26 +67,26 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := ledgerClient.Ledger.ListLedgers(cmd.Context(), operations.ListLedgersRequest{})
+	response, err := ledgerClient.Ledger.V2ListLedgers(cmd.Context(), operations.V2ListLedgersRequest{})
 	if err != nil {
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Ledgers = response.LedgerListResponse.Cursor.Data
+	c.store.Ledgers = response.V2LedgerListResponse.Cursor.Data
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.Ledgers, func(ledger shared.Ledger) []string {
+	tableData := fctl.Map(c.store.Ledgers, func(ledger shared.V2Ledger) []string {
 		return []string{
 			ledger.Name,
 		}

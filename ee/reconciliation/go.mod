@@ -20,6 +20,7 @@ require (
 	github.com/uptrace/bun/extra/bundebug v1.1.16
 	github.com/uptrace/bun/extra/bunotel v1.1.16
 	go.uber.org/fx v1.20.1
+	golang.org/x/mod v0.12.0
 	golang.org/x/oauth2 v0.12.0
 	golang.org/x/sync v0.3.0
 )

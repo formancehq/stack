@@ -8,9 +8,10 @@ import (
 )
 
 type TriggerOccurrence struct {
-	Date               time.Time `json:"date"`
-	TriggerID          string    `json:"triggerID"`
-	WorkflowInstanceID string    `json:"workflowInstanceID"`
+	Date               time.Time              `json:"date"`
+	Event              map[string]interface{} `json:"event"`
+	TriggerID          string                 `json:"triggerID"`
+	WorkflowInstanceID string                 `json:"workflowInstanceID"`
 }
 
 func (t TriggerOccurrence) MarshalJSON() ([]byte, error) {
@@ -29,6 +30,13 @@ func (o *TriggerOccurrence) GetDate() time.Time {
 		return time.Time{}
 	}
 	return o.Date
+}
+
+func (o *TriggerOccurrence) GetEvent() map[string]interface{} {
+	if o == nil {
+		return map[string]interface{}{}
+	}
+	return o.Event
 }
 
 func (o *TriggerOccurrence) GetTriggerID() string {

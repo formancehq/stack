@@ -7,16 +7,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"math/big"
 	"net/http"
-	"time"
 )
 
 type GetTransactionRequest struct {
-	Expand *string `queryParam:"style=form,explode=true,name=expand"`
-	// Transaction ID.
-	ID *big.Int `pathParam:"style=simple,explode=false,name=id"`
 	// Name of the ledger.
-	Ledger string     `pathParam:"style=simple,explode=false,name=ledger"`
-	Pit    *time.Time `queryParam:"style=form,explode=true,name=pit"`
+	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Transaction ID.
+	Txid *big.Int `pathParam:"style=simple,explode=false,name=txid"`
 }
 
 func (g GetTransactionRequest) MarshalJSON() ([]byte, error) {
@@ -30,20 +27,6 @@ func (g *GetTransactionRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *GetTransactionRequest) GetExpand() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Expand
-}
-
-func (o *GetTransactionRequest) GetID() *big.Int {
-	if o == nil {
-		return big.NewInt(0)
-	}
-	return o.ID
-}
-
 func (o *GetTransactionRequest) GetLedger() string {
 	if o == nil {
 		return ""
@@ -51,11 +34,11 @@ func (o *GetTransactionRequest) GetLedger() string {
 	return o.Ledger
 }
 
-func (o *GetTransactionRequest) GetPit() *time.Time {
+func (o *GetTransactionRequest) GetTxid() *big.Int {
 	if o == nil {
-		return nil
+		return big.NewInt(0)
 	}
-	return o.Pit
+	return o.Txid
 }
 
 type GetTransactionResponse struct {
@@ -63,12 +46,12 @@ type GetTransactionResponse struct {
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
-	// OK
-	GetTransactionResponse *shared.GetTransactionResponse
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// OK
+	TransactionResponse *shared.TransactionResponse
 }
 
 func (o *GetTransactionResponse) GetContentType() string {
@@ -85,13 +68,6 @@ func (o *GetTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
 	return o.ErrorResponse
 }
 
-func (o *GetTransactionResponse) GetGetTransactionResponse() *shared.GetTransactionResponse {
-	if o == nil {
-		return nil
-	}
-	return o.GetTransactionResponse
-}
-
 func (o *GetTransactionResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
@@ -104,4 +80,11 @@ func (o *GetTransactionResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
+}
+
+func (o *GetTransactionResponse) GetTransactionResponse() *shared.TransactionResponse {
+	if o == nil {
+		return nil
+	}
+	return o.TransactionResponse
 }

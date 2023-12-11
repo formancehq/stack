@@ -20,8 +20,8 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			ledger1 = uuid.NewString()
-			response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
-				CreateLedgerRequest: &shared.CreateLedgerRequest{
+			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+				V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 					Bucket: pointer.For("bucket0"),
 				},
 				Ledger: ledger1,
@@ -32,12 +32,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		Then("Creating a tx on this ledger", func() {
 			BeforeEach(func() {
 				// Create a transaction
-				response, err := Client().Ledger.V2.CreateTransaction(
+				response, err := Client().Ledger.V2CreateTransaction(
 					TestContext(),
-					operations.CreateTransactionRequest{
-						PostTransaction: shared.PostTransaction{
+					operations.V2CreateTransactionRequest{
+						V2PostTransaction: shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{
+							Postings: []shared.V2Posting{
 								{
 									Amount:      big.NewInt(100),
 									Asset:       "USD",
@@ -58,8 +58,8 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				)
 				BeforeEach(func() {
 					ledger2 = uuid.NewString()
-					response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
-						CreateLedgerRequest: &shared.CreateLedgerRequest{
+					response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+						V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 							Bucket: pointer.For("bucket0"),
 						},
 						Ledger: ledger2,
@@ -70,12 +70,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Then("Creating another tx on this new ledger", func() {
 					BeforeEach(func() {
 						// Create a transaction
-						response, err := Client().Ledger.V2.CreateTransaction(
+						response, err := Client().Ledger.V2CreateTransaction(
 							TestContext(),
-							operations.CreateTransactionRequest{
-								PostTransaction: shared.PostTransaction{
+							operations.V2CreateTransactionRequest{
+								V2PostTransaction: shared.V2PostTransaction{
 									Metadata: map[string]string{},
-									Postings: []shared.Posting{
+									Postings: []shared.V2Posting{
 										{
 											Amount:      big.NewInt(100),
 											Asset:       "USD",
@@ -91,19 +91,19 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Expect(response.StatusCode).To(Equal(200))
 					})
 					It("should have one tx on both ledger", func() {
-						response, err := Client().Ledger.V2.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+						response, err := Client().Ledger.V2ListTransactions(TestContext(), operations.V2ListTransactionsRequest{
 							Ledger: ledger1,
 						})
 						Expect(err).ToNot(HaveOccurred())
 						Expect(response.StatusCode).To(Equal(200))
-						Expect(response.TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
+						Expect(response.V2TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
 
-						response, err = Client().Ledger.V2.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+						response, err = Client().Ledger.V2ListTransactions(TestContext(), operations.V2ListTransactionsRequest{
 							Ledger: ledger2,
 						})
 						Expect(err).ToNot(HaveOccurred())
 						Expect(response.StatusCode).To(Equal(200))
-						Expect(response.TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
+						Expect(response.V2TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
 					})
 				})
 			})

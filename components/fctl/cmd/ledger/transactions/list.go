@@ -13,7 +13,7 @@ import (
 )
 
 type ListStore struct {
-	Transaction shared.TransactionsCursorResponseCursor `json:"transactionCursor"`
+	Transaction shared.V2TransactionsCursorResponseCursor `json:"transactionCursor"`
 }
 type ListController struct {
 	store           *ListStore
@@ -136,9 +136,9 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.V2.ListTransactions(
+	response, err := ledgerClient.Ledger.V2ListTransactions(
 		cmd.Context(),
-		operations.ListTransactionsRequest{
+		operations.V2ListTransactionsRequest{
 			RequestBody: map[string]interface{}{
 				"$and": options,
 			},
@@ -150,15 +150,15 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Transaction = response.TransactionsCursorResponse.Cursor
+	c.store.Transaction = response.V2TransactionsCursorResponse.Cursor
 
 	return c, nil
 }
@@ -169,7 +169,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	tableData := fctl.Map(c.store.Transaction.Data, func(tx shared.ExpandedTransaction) []string {
+	tableData := fctl.Map(c.store.Transaction.Data, func(tx shared.V2ExpandedTransaction) []string {
 		return []string{
 			fmt.Sprintf("%d", tx.ID),
 			func() string {

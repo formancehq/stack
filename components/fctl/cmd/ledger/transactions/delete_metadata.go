@@ -74,7 +74,7 @@ func (c *DeleteMetadataController) Run(cmd *cobra.Command, args []string) (fctl.
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, err := ledgerClient.Ledger.V2.DeleteTransactionMetadata(cmd.Context(), operations.DeleteTransactionMetadataRequest{
+	response, err := ledgerClient.Ledger.V2DeleteTransactionMetadata(cmd.Context(), operations.V2DeleteTransactionMetadataRequest{
 		ID:     transactionID,
 		Key:    args[1],
 		Ledger: fctl.GetString(cmd, internal.LedgerFlag),

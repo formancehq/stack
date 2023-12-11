@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"math/big"
 	"testing"
 
@@ -301,17 +300,9 @@ func TestGetPoolBalance(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			expectedResponse := &GetPoolBalanceResponse{
-				Balances: []*Balance{
-					{
-						Asset:  "EUR/2",
-						Amount: big.NewInt(200),
-					},
-					{
-						Asset:  "USD/2",
-						Amount: big.NewInt(300),
-					},
-				},
+			expectedResponseMap := map[string]*big.Int{
+				"EUR/2": big.NewInt(200),
+				"USD/2": big.NewInt(300),
 			}
 
 			balances, err := service.GetPoolBalance(context.Background(), tc.poolID, tc.atTime)
@@ -319,8 +310,13 @@ func TestGetPoolBalance(t *testing.T) {
 				require.True(t, errors.Is(err, tc.expectedError))
 			} else {
 				require.NoError(t, err)
-				fmt.Println(balances)
-				require.Equal(t, expectedResponse, balances)
+
+				require.Equal(t, 2, len(balances.Balances))
+				for _, balance := range balances.Balances {
+					expectedAmount, ok := expectedResponseMap[balance.Asset]
+					require.True(t, ok)
+					require.Equal(t, expectedAmount, balance.Amount)
+				}
 			}
 		})
 	}
