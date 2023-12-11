@@ -79,8 +79,6 @@ All URIs are relative to *http://localhost:8080*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**AcceptInvitation**](docs/DefaultApi.md#acceptinvitation) | **Post** /me/invitations/{invitationId}/accept | Accept invitation
-*DefaultApi* | [**BillingPortal**](docs/DefaultApi.md#billingportal) | **Get** /organizations/{organizationId}/billing/portal | Access to the billing portal
-*DefaultApi* | [**BillingSetup**](docs/DefaultApi.md#billingsetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
 *DefaultApi* | [**CreateInvitation**](docs/DefaultApi.md#createinvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
 *DefaultApi* | [**CreateOrganization**](docs/DefaultApi.md#createorganization) | **Post** /organizations | Create organization
 *DefaultApi* | [**CreatePrivateRegion**](docs/DefaultApi.md#createprivateregion) | **Post** /organizations/{organizationId}/regions | Create a private region

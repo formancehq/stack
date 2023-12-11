@@ -91,6 +91,18 @@ paths:
           type: string
         required: true
       responses:
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         204:
           description: Organization deleted
   /organizations/{organizationId}/users:
@@ -104,6 +116,12 @@ paths:
           type: string
         required: true
       responses:
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         200:
           description: List of users
           content:
@@ -127,6 +145,18 @@ paths:
       summary: Read user of organization
       operationId: readUserOfOrganization
       responses:
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         200:
           description: Read a user
           content:
@@ -148,13 +178,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        404:
-          description: Error
+        403:
+          description: Not Authorized
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        403:
+        404:
           description: Error
           content:
             application/json:
@@ -170,44 +200,18 @@ paths:
       responses:
         204:
           description: User deleted from organization
-        403:
-          description: Not allowed
         400:
-          description: Cannot remove the owner of the organization
-  /organizations/{organizationId}/billing/portal:
-    get:
-      summary: Access to the billing portal
-      operationId: billingPortal
-      parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      responses:
-        200:
-          description: Access to the billing portal
+          description: Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingPortalResponse'
-  /organizations/{organizationId}/billing/setup:
-    get:
-      summary: Create a billing setup
-      operationId: billingSetup
-      parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      responses:
-        200:
-          description: Create a billing setup
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingSetupResponse'
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/stacks:
     get:
       summary: List stacks
@@ -265,6 +269,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/stacks/{stackId}:
     get:
       summary: Find stack
@@ -289,6 +299,12 @@ paths:
                 $ref: '#/components/schemas/ReadStackResponse'
         404:
           description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
           content:
             application/json:
               schema:
@@ -318,6 +334,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         404:
           description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
           content:
             application/json:
               schema:
@@ -352,6 +374,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/stacks/{stackId}/enable:
     put:
       summary: Enable stack
@@ -378,6 +406,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         404:
           description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
           content:
             application/json:
               schema:
@@ -416,6 +450,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
     parameters:
     - name: organizationId
@@ -440,6 +480,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/stacks/{stackId}/stargate/disable:
     parameters:
     - name: organizationId
@@ -460,6 +506,12 @@ paths:
           description: OK
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
           content:
             application/json:
               schema:
@@ -501,6 +553,24 @@ paths:
       responses:
         204:
           description: Invitation accepted
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /me/invitations/{invitationId}/reject:
     post:
       summary: Decline invitation
@@ -514,6 +584,24 @@ paths:
       responses:
         204:
           description: Invitation declined
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/invitations:
     get:
       summary: List invitations of the organization
@@ -537,6 +625,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListInvitationsResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create invitation
       operationId: createInvitation
@@ -558,6 +658,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateInvitationResponse'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/invitations/{invitationId}:
     delete:
       summary: Delete invitation
@@ -576,7 +682,24 @@ paths:
       responses:
         204:
           description: Invitation deleted
-
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/regions:
     parameters:
     - name: organizationId
@@ -595,6 +718,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListRegionsResponse'
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create a private region
       operationId: createPrivateRegion
@@ -604,6 +739,24 @@ paths:
             schema:
               $ref: '#/components/schemas/CreatePrivateRegionRequest'
       responses:
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         200:
           description: Created region
           content:
@@ -626,6 +779,18 @@ paths:
       summary: Get region
       operationId: getRegion
       responses:
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         200:
           description: Get a specific region
           content:
@@ -638,6 +803,24 @@ paths:
       responses:
         204:
           description: Delete a specific region
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /me:
     get:
       summary: Read user
