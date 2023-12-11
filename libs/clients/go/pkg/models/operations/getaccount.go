@@ -4,9 +4,7 @@ package operations
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
-	"time"
 )
 
 type GetAccountRequest struct {
@@ -15,22 +13,9 @@ type GetAccountRequest struct {
 	// ^\w+(:\w+)*$
 	// ```
 	//
-	Address string  `pathParam:"style=simple,explode=false,name=address"`
-	Expand  *string `queryParam:"style=form,explode=true,name=expand"`
+	Address string `pathParam:"style=simple,explode=false,name=address"`
 	// Name of the ledger.
-	Ledger string     `pathParam:"style=simple,explode=false,name=ledger"`
-	Pit    *time.Time `queryParam:"style=form,explode=true,name=pit"`
-}
-
-func (g GetAccountRequest) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(g, "", false)
-}
-
-func (g *GetAccountRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, false); err != nil {
-		return err
-	}
-	return nil
+	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
 func (o *GetAccountRequest) GetAddress() string {
@@ -40,25 +25,11 @@ func (o *GetAccountRequest) GetAddress() string {
 	return o.Address
 }
 
-func (o *GetAccountRequest) GetExpand() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Expand
-}
-
 func (o *GetAccountRequest) GetLedger() string {
 	if o == nil {
 		return ""
 	}
 	return o.Ledger
-}
-
-func (o *GetAccountRequest) GetPit() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.Pit
 }
 
 type GetAccountResponse struct {

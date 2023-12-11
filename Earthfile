@@ -29,11 +29,11 @@ build-final-spec:
     RUN npm install
     WORKDIR /src/components
     FOR c IN ledger payments
-        COPY components/$c/openapi.yaml $c/openapi.yaml
+        COPY components/$c/openapi*.yaml $c/
     END
     WORKDIR /src/ee
     FOR c IN auth webhooks search wallets orchestration reconciliation
-        COPY ee/$c/openapi.yaml $c/openapi.yaml
+        COPY ee/$c/openapi*.yaml $c/
     END
     WORKDIR /src/libs/clients
     COPY libs/clients/openapi-merge.json .

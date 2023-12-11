@@ -16,7 +16,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -109,7 +109,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 						Input: shared.WorkflowInstanceHistoryStageInput{
 							CreateTransaction: &shared.ActivityCreateTransaction{
 								Ledger: ptr("default"),
-								Data: &shared.PostTransaction{
+								Data: &shared.OrchestrationPostTransaction{
 									Postings: []shared.Posting{{
 										Amount:      big.NewInt(100),
 										Asset:       "EUR/2",

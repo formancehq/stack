@@ -2,11 +2,13 @@
 
 package shared
 
+type AccountMetadata struct {
+}
+
 type Account struct {
-	Address          string            `json:"address"`
-	EffectiveVolumes map[string]Volume `json:"effectiveVolumes,omitempty"`
-	Metadata         map[string]string `json:"metadata"`
-	Volumes          map[string]Volume `json:"volumes,omitempty"`
+	Address  string           `json:"address"`
+	Metadata *AccountMetadata `json:"metadata,omitempty"`
+	Type     *string          `json:"type,omitempty"`
 }
 
 func (o *Account) GetAddress() string {
@@ -16,23 +18,16 @@ func (o *Account) GetAddress() string {
 	return o.Address
 }
 
-func (o *Account) GetEffectiveVolumes() map[string]Volume {
+func (o *Account) GetMetadata() *AccountMetadata {
 	if o == nil {
 		return nil
-	}
-	return o.EffectiveVolumes
-}
-
-func (o *Account) GetMetadata() map[string]string {
-	if o == nil {
-		return map[string]string{}
 	}
 	return o.Metadata
 }
 
-func (o *Account) GetVolumes() map[string]Volume {
+func (o *Account) GetType() *string {
 	if o == nil {
 		return nil
 	}
-	return o.Volumes
+	return o.Type
 }

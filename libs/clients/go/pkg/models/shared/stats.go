@@ -2,25 +2,9 @@
 
 package shared
 
-import (
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"math/big"
-)
-
 type Stats struct {
-	Accounts     int64    `json:"accounts"`
-	Transactions *big.Int `json:"transactions"`
-}
-
-func (s Stats) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *Stats) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, false); err != nil {
-		return err
-	}
-	return nil
+	Accounts     int64 `json:"accounts"`
+	Transactions int64 `json:"transactions"`
 }
 
 func (o *Stats) GetAccounts() int64 {
@@ -30,9 +14,9 @@ func (o *Stats) GetAccounts() int64 {
 	return o.Accounts
 }
 
-func (o *Stats) GetTransactions() *big.Int {
+func (o *Stats) GetTransactions() int64 {
 	if o == nil {
-		return big.NewInt(0)
+		return 0
 	}
 	return o.Transactions
 }

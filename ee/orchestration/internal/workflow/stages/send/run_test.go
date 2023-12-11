@@ -139,8 +139,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
@@ -151,8 +151,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 			{
@@ -160,8 +160,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
@@ -173,8 +173,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 			{
@@ -257,8 +257,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
@@ -269,8 +269,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 			{
@@ -278,8 +278,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
@@ -291,8 +291,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 			{
@@ -300,8 +300,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "foo",
@@ -313,8 +313,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 		},
@@ -357,8 +357,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
@@ -376,8 +376,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
@@ -389,8 +389,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 			{
@@ -398,8 +398,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "foo",
@@ -411,8 +411,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 		},
@@ -439,8 +439,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "bar",
@@ -450,8 +450,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 		},
@@ -478,8 +478,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
@@ -491,8 +491,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 			{
@@ -500,8 +500,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "account2",
@@ -513,8 +513,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 		},
@@ -605,8 +605,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
@@ -618,8 +618,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 			{
@@ -674,8 +674,8 @@ var (
 					Ledger: "default",
 					ID:     "foo",
 				}},
-				Returns: []any{&shared.AccountResponse{
-					Data: shared.Account{
+				Returns: []any{&shared.V2AccountResponse{
+					Data: shared.V2Account{
 						Address: "foo",
 						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",
@@ -701,8 +701,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
@@ -712,8 +712,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 		},
@@ -828,8 +828,8 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: shared.PostTransaction{
-							Postings: []shared.Posting{{
+						Data: shared.V2PostTransaction{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "account",
@@ -841,8 +841,8 @@ var (
 						},
 					},
 				},
-				Returns: []any{&shared.CreateTransactionResponse{
-					Data: shared.Transaction{},
+				Returns: []any{&shared.V2CreateTransactionResponse{
+					Data: shared.V2Transaction{},
 				}, nil},
 			},
 		},

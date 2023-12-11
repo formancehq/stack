@@ -13,7 +13,7 @@ import (
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("creating a bulk on a ledger", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
 			})
 			Expect(err).To(BeNil())
@@ -22,18 +22,18 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		It("Should be ok", func() {})
 		Then("trying to create another ledger with the same name", func() {
 			var (
-				response *operations.CreateLedgerResponse
+				response *operations.V2CreateLedgerResponse
 			)
 			BeforeEach(func() {
 				var err error
-				response, err = Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+				response, err = Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 					Ledger: "default",
 				})
 				Expect(err).To(BeNil())
 			})
 			It("should fail", func() {
 				Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-				Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumValidation))
+				Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumValidation))
 			})
 		})
 	})

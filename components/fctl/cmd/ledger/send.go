@@ -12,7 +12,7 @@ import (
 )
 
 type SendStore struct {
-	Transaction *shared.Transaction `json:"transaction"`
+	Transaction *shared.V2Transaction `json:"transaction"`
 }
 type SendController struct {
 	store         *SendStore
@@ -102,10 +102,10 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	reference := fctl.GetString(cmd, c.referenceFlag)
 
-	response, err := ledgerClient.Ledger.V2.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
-		PostTransaction: shared.PostTransaction{
+	response, err := ledgerClient.Ledger.V2CreateTransaction(cmd.Context(), operations.V2CreateTransactionRequest{
+		V2PostTransaction: shared.V2PostTransaction{
 			Metadata: metadata,
-			Postings: []shared.Posting{
+			Postings: []shared.V2Posting{
 				{
 					Amount:      amount,
 					Asset:       asset,
@@ -121,15 +121,15 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code %d when creating transaction", response.StatusCode)
 	}
 
-	c.store.Transaction = &response.CreateTransactionResponse.Data
+	c.store.Transaction = &response.V2CreateTransactionResponse.Data
 	return c, nil
 }
 

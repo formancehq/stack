@@ -4,61 +4,23 @@ package operations
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"math/big"
 	"net/http"
 )
 
 type AddMetadataOnTransactionRequest struct {
-	// Use an idempotency key
-	IdempotencyKey *string `header:"style=simple,explode=false,name=Idempotency-Key"`
 	// metadata
-	RequestBody map[string]string `request:"mediaType=application/json"`
-	// Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
-	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
-	// Transaction ID.
-	ID *big.Int `pathParam:"style=simple,explode=false,name=id"`
+	RequestBody map[string]interface{} `request:"mediaType=application/json"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Transaction ID.
+	Txid int64 `pathParam:"style=simple,explode=false,name=txid"`
 }
 
-func (a AddMetadataOnTransactionRequest) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(a, "", false)
-}
-
-func (a *AddMetadataOnTransactionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, false); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *AddMetadataOnTransactionRequest) GetIdempotencyKey() *string {
-	if o == nil {
-		return nil
-	}
-	return o.IdempotencyKey
-}
-
-func (o *AddMetadataOnTransactionRequest) GetRequestBody() map[string]string {
+func (o *AddMetadataOnTransactionRequest) GetRequestBody() map[string]interface{} {
 	if o == nil {
 		return nil
 	}
 	return o.RequestBody
-}
-
-func (o *AddMetadataOnTransactionRequest) GetDryRun() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.DryRun
-}
-
-func (o *AddMetadataOnTransactionRequest) GetID() *big.Int {
-	if o == nil {
-		return big.NewInt(0)
-	}
-	return o.ID
 }
 
 func (o *AddMetadataOnTransactionRequest) GetLedger() string {
@@ -66,6 +28,13 @@ func (o *AddMetadataOnTransactionRequest) GetLedger() string {
 		return ""
 	}
 	return o.Ledger
+}
+
+func (o *AddMetadataOnTransactionRequest) GetTxid() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Txid
 }
 
 type AddMetadataOnTransactionResponse struct {

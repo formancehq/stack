@@ -9,12 +9,13 @@ import (
 )
 
 type Transaction struct {
-	ID        *big.Int          `json:"id"`
-	Metadata  map[string]string `json:"metadata"`
-	Postings  []Posting         `json:"postings"`
-	Reference *string           `json:"reference,omitempty"`
-	Reverted  bool              `json:"reverted"`
-	Timestamp time.Time         `json:"timestamp"`
+	Metadata          map[string]interface{}       `json:"metadata,omitempty"`
+	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes,omitempty"`
+	Postings          []Posting                    `json:"postings"`
+	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
+	Reference         *string                      `json:"reference,omitempty"`
+	Timestamp         time.Time                    `json:"timestamp"`
+	Txid              *big.Int                     `json:"txid"`
 }
 
 func (t Transaction) MarshalJSON() ([]byte, error) {
@@ -28,18 +29,18 @@ func (t *Transaction) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *Transaction) GetID() *big.Int {
+func (o *Transaction) GetMetadata() map[string]interface{} {
 	if o == nil {
-		return big.NewInt(0)
-	}
-	return o.ID
-}
-
-func (o *Transaction) GetMetadata() map[string]string {
-	if o == nil {
-		return map[string]string{}
+		return nil
 	}
 	return o.Metadata
+}
+
+func (o *Transaction) GetPostCommitVolumes() map[string]map[string]Volume {
+	if o == nil {
+		return nil
+	}
+	return o.PostCommitVolumes
 }
 
 func (o *Transaction) GetPostings() []Posting {
@@ -49,6 +50,13 @@ func (o *Transaction) GetPostings() []Posting {
 	return o.Postings
 }
 
+func (o *Transaction) GetPreCommitVolumes() map[string]map[string]Volume {
+	if o == nil {
+		return nil
+	}
+	return o.PreCommitVolumes
+}
+
 func (o *Transaction) GetReference() *string {
 	if o == nil {
 		return nil
@@ -56,16 +64,16 @@ func (o *Transaction) GetReference() *string {
 	return o.Reference
 }
 
-func (o *Transaction) GetReverted() bool {
-	if o == nil {
-		return false
-	}
-	return o.Reverted
-}
-
 func (o *Transaction) GetTimestamp() time.Time {
 	if o == nil {
 		return time.Time{}
 	}
 	return o.Timestamp
+}
+
+func (o *Transaction) GetTxid() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Txid
 }

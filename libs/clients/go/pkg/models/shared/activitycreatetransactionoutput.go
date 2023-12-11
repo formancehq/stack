@@ -3,12 +3,12 @@
 package shared
 
 type ActivityCreateTransactionOutput struct {
-	Data Transaction `json:"data"`
+	Data OrchestrationTransaction `json:"data"`
 }
 
-func (o *ActivityCreateTransactionOutput) GetData() Transaction {
+func (o *ActivityCreateTransactionOutput) GetData() OrchestrationTransaction {
 	if o == nil {
-		return Transaction{}
+		return OrchestrationTransaction{}
 	}
 	return o.Data
 }

@@ -10,12 +10,12 @@ import (
 )
 
 type RevertTransactionRequest struct {
-	// Force revert
-	Force *bool `queryParam:"style=form,explode=true,name=force"`
-	// Transaction ID.
-	ID *big.Int `pathParam:"style=simple,explode=false,name=id"`
+	// Allow to disable balances checks
+	DisableChecks *bool `queryParam:"style=form,explode=true,name=disableChecks"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Transaction ID.
+	Txid *big.Int `pathParam:"style=simple,explode=false,name=txid"`
 }
 
 func (r RevertTransactionRequest) MarshalJSON() ([]byte, error) {
@@ -29,18 +29,11 @@ func (r *RevertTransactionRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *RevertTransactionRequest) GetForce() *bool {
+func (o *RevertTransactionRequest) GetDisableChecks() *bool {
 	if o == nil {
 		return nil
 	}
-	return o.Force
-}
-
-func (o *RevertTransactionRequest) GetID() *big.Int {
-	if o == nil {
-		return big.NewInt(0)
-	}
-	return o.ID
+	return o.DisableChecks
 }
 
 func (o *RevertTransactionRequest) GetLedger() string {
@@ -50,17 +43,24 @@ func (o *RevertTransactionRequest) GetLedger() string {
 	return o.Ledger
 }
 
+func (o *RevertTransactionRequest) GetTxid() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Txid
+}
+
 type RevertTransactionResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
-	// OK
-	RevertTransactionResponse *shared.RevertTransactionResponse
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// OK
+	TransactionResponse *shared.TransactionResponse
 }
 
 func (o *RevertTransactionResponse) GetContentType() string {
@@ -77,13 +77,6 @@ func (o *RevertTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
 	return o.ErrorResponse
 }
 
-func (o *RevertTransactionResponse) GetRevertTransactionResponse() *shared.RevertTransactionResponse {
-	if o == nil {
-		return nil
-	}
-	return o.RevertTransactionResponse
-}
-
 func (o *RevertTransactionResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
@@ -96,4 +89,11 @@ func (o *RevertTransactionResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
+}
+
+func (o *RevertTransactionResponse) GetTransactionResponse() *shared.TransactionResponse {
+	if o == nil {
+		return nil
+	}
+	return o.TransactionResponse
 }

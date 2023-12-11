@@ -4,34 +4,27 @@ package operations
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
-	"time"
 )
 
+// CountAccountsMetadata - Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
+type CountAccountsMetadata struct {
+}
+
 type CountAccountsRequest struct {
-	RequestBody map[string]interface{} `request:"mediaType=application/json"`
+	// Filter accounts by address pattern (regular expression placed between ^ and $).
+	Address *string `queryParam:"style=form,explode=true,name=address"`
 	// Name of the ledger.
-	Ledger string     `pathParam:"style=simple,explode=false,name=ledger"`
-	Pit    *time.Time `queryParam:"style=form,explode=true,name=pit"`
+	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
+	Metadata *CountAccountsMetadata `queryParam:"style=deepObject,explode=true,name=metadata"`
 }
 
-func (c CountAccountsRequest) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(c, "", false)
-}
-
-func (c *CountAccountsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, false); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *CountAccountsRequest) GetRequestBody() map[string]interface{} {
+func (o *CountAccountsRequest) GetAddress() *string {
 	if o == nil {
 		return nil
 	}
-	return o.RequestBody
+	return o.Address
 }
 
 func (o *CountAccountsRequest) GetLedger() string {
@@ -41,11 +34,11 @@ func (o *CountAccountsRequest) GetLedger() string {
 	return o.Ledger
 }
 
-func (o *CountAccountsRequest) GetPit() *time.Time {
+func (o *CountAccountsRequest) GetMetadata() *CountAccountsMetadata {
 	if o == nil {
 		return nil
 	}
-	return o.Pit
+	return o.Metadata
 }
 
 type CountAccountsResponse struct {
