@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	taskNameMain = "main"
+	taskNameMain          = "main"
+	taskNameFetchAccounts = "fetch-accounts"
 )
 
 type TaskDescriptor struct {
@@ -34,12 +35,12 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		}
 	}
 
-	_ = adyenClient
-
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		switch taskDescriptor.Key {
 		case taskNameMain:
 			return taskMain()
+		case taskNameFetchAccounts:
+			return taskFetchAccounts(logger, adyenClient)
 		}
 
 		// This should never happen.
