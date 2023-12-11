@@ -41,8 +41,6 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			return err
 		}
 
-		// client := createAtlarClient(&config)
-
 		currency, precision, err := currency.GetCurrencyAndPrecisionFromAsset(supportedCurrenciesWithDecimal, transfer.Asset)
 		if err != nil {
 			return err
@@ -87,7 +85,6 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			return err
 		}
 
-		// return connectors.ErrNotImplemented
 		return nil
 	}
 }

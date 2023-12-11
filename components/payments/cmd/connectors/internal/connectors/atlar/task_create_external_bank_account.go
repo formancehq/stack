@@ -76,7 +76,8 @@ func validateExternalBankAccount(newExternalBankAccount *models.BankAccount) err
 func createExternalBankAccount(ctx context.Context, logger logging.Logger, config Config, newExternalBankAccount *models.BankAccount) (*string, error) {
 	client := createAtlarClient(&config)
 
-	// TODO: make sure an account with that IBAN does not already exist (Atlar API v2 needed)
+	// TODO: make sure an account with that IBAN does not already exist (Atlar API v2 needed, v1 lacks the filters)
+	// alternatively we could query the local DB
 
 	createCounterpartyRequest := atlar_models.CreateCounterpartyRequest{
 		Name:      ExtractNamespacedMetadataIgnoreEmpty(newExternalBankAccount.Metadata, "owner/name"),
@@ -205,8 +206,6 @@ type IdentifierData struct {
 var identifierMetadataRegex = regexp.MustCompile(`^com\.atlar\.spec/identifier/([^/]+)/([^/]+)$`)
 
 func metadataToIdentifierData(key, value string) (*IdentifierData, error) {
-	// Define a regular expression for matching the format
-
 	// Find matches in the input string
 	matches := identifierMetadataRegex.FindStringSubmatch(key)
 	if matches == nil {
