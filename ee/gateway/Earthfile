@@ -46,7 +46,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --components=gateway) .
+    COPY --pass-args +tidy/go.* .
     WORKDIR /src/ee/gateway
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT internal AS LOCAL internal
@@ -60,7 +60,14 @@ tests:
     DO --pass-args core+GO_TESTS
 
 pre-commit:
-    RUN echo "not implemented"
+    BUILD --pass-args +tidy
+    BUILD --pass-args +lint
 
 openapi:
     RUN echo "not implemented"
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/ee/gateway
+    DO --pass-args stack+GO_TIDY

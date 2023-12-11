@@ -29,10 +29,11 @@ func TestWalletsGet(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
+
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  account,
-					Metadata: w.LedgerMetadata(),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 				},
 				Balances: balances,
 			}, nil

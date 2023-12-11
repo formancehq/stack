@@ -16,9 +16,9 @@ type DebitHold struct {
 	Description string            `json:"description"`
 }
 
-func (h DebitHold) LedgerMetadata(chart *Chart) metadata.Metadata {
+func (h DebitHold) LedgerMetadata(chart *Chart) map[string]string {
 
-	ret := metadata.Metadata{
+	return metadata.Metadata{
 		MetadataKeyWalletSpecType: HoldWallet,
 		MetadataKeyHoldWalletID:   h.WalletID,
 		MetadataKeyHoldID:         h.ID,
@@ -37,11 +37,7 @@ func (h DebitHold) LedgerMetadata(chart *Chart) metadata.Metadata {
 			"identifier": h.Destination.Identifier,
 			"balance":    h.Destination.Balance,
 		}),
-	}
-
-	ret = ret.Merge(EncodeCustomMetadata(h.Metadata))
-
-	return ret
+	}.Merge(EncodeCustomMetadata(h.Metadata))
 }
 
 func NewDebitHold(walletID string, destination Subject, asset, description string, md metadata.Metadata) DebitHold {
@@ -55,13 +51,20 @@ func NewDebitHold(walletID string, destination Subject, asset, description strin
 	}
 }
 
-func DebitHoldFromLedgerAccount(account Account) DebitHold {
-	subject := metadata.UnmarshalValue[Subject](account.GetMetadata()[MetadataKeyHoldSubject])
+func DebitHoldFromLedgerAccount(account interface {
+	MetadataOwner
+	GetAddress() string
+}) DebitHold {
+	destination := metadata.UnmarshalValue[metadata.Metadata](account.GetMetadata()[MetadataKeyHoldSubject])
 
 	hold := DebitHold{}
 	hold.ID = account.GetMetadata()[MetadataKeyHoldID]
 	hold.WalletID = account.GetMetadata()[MetadataKeyHoldWalletID]
-	hold.Destination = subject
+	hold.Destination = Subject{
+		Type:       destination["type"],
+		Identifier: destination["identifier"],
+		Balance:    destination["balance"],
+	}
 	hold.Asset = account.GetMetadata()[MetadataKeyHoldAsset]
 	hold.Description = account.GetMetadata()[MetadataKeyWalletHoldDescription]
 	hold.Metadata = ExtractCustomMetadata(account)
@@ -79,9 +82,14 @@ func (h ExpandedDebitHold) IsClosed() bool {
 	return h.Remaining.Uint64() == 0
 }
 
-func ExpandedDebitHoldFromLedgerAccount(account AccountWithVolumesAndBalances) ExpandedDebitHold {
+func ExpandedDebitHoldFromLedgerAccount(account interface {
+	MetadataOwner
+	GetAddress() string
+	GetVolumes() map[string]map[string]*big.Int
+	GetBalances() map[string]*big.Int
+}) ExpandedDebitHold {
 	hold := ExpandedDebitHold{
-		DebitHold: DebitHoldFromLedgerAccount(account.Account),
+		DebitHold: DebitHoldFromLedgerAccount(account),
 	}
 	hold.OriginalAmount = account.GetVolumes()[hold.Asset]["input"]
 	hold.Remaining = account.GetBalances()[hold.Asset]

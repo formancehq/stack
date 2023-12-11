@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
@@ -67,7 +68,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"foo": "bar",
 			}
 
-			response, err := Client().Ledger.V2AddMetadataOnTransaction(
+			_, err := Client().Ledger.V2AddMetadataOnTransaction(
 				TestContext(),
 				operations.V2AddMetadataOnTransactionRequest{
 					RequestBody: metadata,
@@ -75,8 +76,8 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					ID:          big.NewInt(666),
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(404))
+			Expect(err).To(HaveOccurred())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumNotFound))
 		})
 		Then("adding a metadata", func() {
 			metadata := map[string]string{

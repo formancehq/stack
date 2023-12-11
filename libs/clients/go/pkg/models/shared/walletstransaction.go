@@ -8,7 +8,7 @@ import (
 )
 
 type WalletsTransaction struct {
-	ID     *int64  `json:"id,omitempty"`
+	ID     int64   `json:"id"`
 	Ledger *string `json:"ledger,omitempty"`
 	// Metadata associated with the wallet.
 	Metadata          map[string]string                   `json:"metadata"`
@@ -30,9 +30,9 @@ func (w *WalletsTransaction) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *WalletsTransaction) GetID() *int64 {
+func (o *WalletsTransaction) GetID() int64 {
 	if o == nil {
-		return nil
+		return 0
 	}
 	return o.ID
 }

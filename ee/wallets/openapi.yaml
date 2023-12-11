@@ -705,7 +705,7 @@ components:
       required:
       - postings
       - timestamp
-      - ix
+      - id
       - metadata
     Cursor:
       type: object

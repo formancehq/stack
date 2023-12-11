@@ -81,7 +81,7 @@ func (w WithBalances) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (w Wallet) LedgerMetadata() metadata.Metadata {
+func (w Wallet) LedgerMetadata() map[string]string {
 	return metadata.Metadata{
 		MetadataKeyWalletSpecType: PrimaryWallet,
 		MetadataKeyWalletName:     w.Name,
@@ -105,7 +105,9 @@ func NewWallet(name, ledger string, m metadata.Metadata) Wallet {
 	}
 }
 
-func FromAccount(ledger string, account Account) Wallet {
+func FromAccount(ledger string, account interface {
+	MetadataOwner
+}) Wallet {
 	createdAt, err := time.Parse(time.RFC3339Nano, GetMetadata(account, MetadataKeyCreatedAt))
 	if err != nil {
 		panic(err)
@@ -120,9 +122,12 @@ func FromAccount(ledger string, account Account) Wallet {
 	}
 }
 
-func WithBalancesFromAccount(ledger string, account AccountWithVolumesAndBalances) WithBalances {
+func WithBalancesFromAccount(ledger string, account interface {
+	MetadataOwner
+	GetBalances() map[string]*big.Int
+}) WithBalances {
 	return WithBalances{
-		Wallet:   FromAccount(ledger, account.Account),
+		Wallet:   FromAccount(ledger, account),
 		Balances: account.GetBalances(),
 	}
 }

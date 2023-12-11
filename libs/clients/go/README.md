@@ -269,6 +269,45 @@ func main() {
 # Error Handling
 
 Handling errors in your SDK should largely match your expectations.  All operations return a response object or an error, they will never return both.  When specified by the OpenAPI spec document, the SDK will return the appropriate subclass.
+
+
+## Example
+
+```go
+package main
+
+import (
+	"context"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"math/big"
+)
+
+func main() {
+	s := formancesdkgo.New()
+
+	ctx := context.Background()
+	res, err := s.Ledger.V2AddMetadataOnTransaction(ctx, operations.V2AddMetadataOnTransactionRequest{
+		RequestBody: map[string]string{
+			"admin": "true",
+		},
+		DryRun: formancesdkgo.Bool(true),
+		ID:     big.NewInt(1234),
+		Ledger: "ledger001",
+	})
+	if err != nil {
+
+		var e *V2ErrorResponse
+		if errors.As(err, &e) {
+			// handle error
+			log.Fatal(e.Error())
+		}
+
+	}
+}
+
+```
 <!-- End Error Handling -->
 
 <!-- Start Server Selection -->

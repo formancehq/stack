@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
+
+func metadataWithExpectingTypesAfterUnmarshalling(m map[string]string) map[string]string {
+	data, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(data, &m)
+	if err != nil {
+		panic(err)
+	}
+	return m
+}
 
 func TestGetBalance(t *testing.T) {
 	t.Parallel()
@@ -33,7 +46,7 @@ func TestGetBalance(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  account,
-					Metadata: balance.LedgerMetadata(walletID),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(balance.LedgerMetadata(walletID)),
 				},
 				Balances: assets,
 			}, nil

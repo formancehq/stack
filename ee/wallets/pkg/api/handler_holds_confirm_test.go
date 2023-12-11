@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -33,14 +35,14 @@ func TestHoldsConfirm(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: balances,
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.EqualValues(t, wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*shared.Transaction, error) {
+			compareJSON(t, wallet.PostTransaction{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -48,11 +50,12 @@ func TestHoldsConfirm(t *testing.T) {
 							"amount": uint64(100),
 							"asset":  "USD",
 						},
+						"dest": "bank",
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, postTransaction)
-			return &wallet.CreateTransactionResponse{}, nil
+			return &shared.Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -80,7 +83,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -92,9 +95,9 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.EqualValues(t, wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*shared.Transaction, error) {
+			compareJSON(t, wallet.PostTransaction{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -102,11 +105,12 @@ func TestHoldsPartialConfirm(t *testing.T) {
 							"amount": uint64(50),
 							"asset":  "USD",
 						},
+						"dest": "bank",
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, postTransaction)
-			return &wallet.CreateTransactionResponse{}, nil
+			return &shared.Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -134,7 +138,7 @@ func TestHoldsConfirmWithTooHighAmount(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -172,7 +176,7 @@ func TestHoldsConfirmWithClosedHold(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(0),
@@ -214,7 +218,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -226,9 +230,9 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.EqualValues(t, wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*shared.Transaction, error) {
+			compareJSON(t, wallet.PostTransaction{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(true, "USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -236,11 +240,13 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 							"amount": uint64(50),
 							"asset":  "USD",
 						},
+						"dest":             "bank",
+						"void_destination": testEnv.Chart().GetMainBalanceAccount(hold.WalletID),
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, script)
-			return &wallet.CreateTransactionResponse{}, nil
+			return &shared.Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

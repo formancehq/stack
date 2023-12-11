@@ -2,7 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	. "github.com/onsi/ginkgo/v2"
@@ -21,20 +21,14 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		It("Should be ok", func() {})
 		Then("trying to create another ledger with the same name", func() {
-			var (
-				response *operations.V2CreateLedgerResponse
-			)
 			BeforeEach(func() {
-				var err error
-				response, err = Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+				_, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 					Ledger: "default",
 				})
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(BeNil())
+				Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumValidation))
 			})
-			It("should fail", func() {
-				Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-				Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumValidation))
-			})
+			It("should fail", func() {})
 		})
 	})
 })

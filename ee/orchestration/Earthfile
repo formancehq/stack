@@ -64,7 +64,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --components=orchestration) .
+    COPY --pass-args +tidy/go.* .
     WORKDIR /src/ee/orchestration
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
@@ -73,14 +73,21 @@ lint:
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
-    RUN echo "not implemented"
+    BUILD --pass-args +tidy
+    BUILD --pass-args +lint
 
 openapi:
-  FROM node:20-alpine
-  RUN apk update && apk add yq
-  RUN npm install -g openapi-merge-cli
-  COPY --dir openapi /src/openapi
-  WORKDIR /src/openapi
-  RUN openapi-merge-cli --config ./openapi-merge.json
-  RUN yq -oy ./openapi.json > openapi.yaml
-  SAVE ARTIFACT ./openapi.yaml AS LOCAL ./openapi.yaml
+    FROM node:20-alpine
+    RUN apk update && apk add yq
+    RUN npm install -g openapi-merge-cli
+    WORKDIR /src/ee/orchestration
+    COPY --dir openapi openapi
+    RUN openapi-merge-cli --config ./openapi/openapi-merge.json
+    RUN yq -oy ./openapi.json > openapi.yaml
+    SAVE ARTIFACT ./openapi.yaml AS LOCAL ./openapi.yaml
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/ee/orchestration
+    DO --pass-args stack+GO_TIDY

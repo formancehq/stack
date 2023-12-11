@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -31,7 +33,7 @@ func TestHoldsVoid(t *testing.T) {
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				},
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
@@ -43,17 +45,18 @@ func TestHoldsVoid(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
-			require.Equal(t, wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*shared.Transaction, error) {
+			compareJSON(t, wallet.PostTransaction{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildCancelHoldScript("USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
+						"dest": testEnv.Chart().GetMainBalanceAccount(hold.WalletID),
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, script)
-			return &wallet.CreateTransactionResponse{}, nil
+			return &shared.Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

@@ -2,6 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
@@ -103,16 +104,14 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 	Context("trying to deactivate an unknown ID", func() {
 		It("should fail", func() {
-			response, err := Client().Webhooks.DeactivateConfig(
+			_, err := Client().Webhooks.DeactivateConfig(
 				TestContext(),
 				operations.DeactivateConfigRequest{
 					ID: "unknown",
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(404))
-			Expect(response.ConfigResponse).To(BeNil())
-			Expect(response.WebhooksErrorResponse).ToNot(BeNil())
+			Expect(err).To(HaveOccurred())
+			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumNotFound))
 		})
 	})
 })

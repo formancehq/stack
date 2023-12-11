@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
@@ -36,17 +38,17 @@ func TestHoldsList(t *testing.T) {
 				wallet.MetadataKeyWalletSpecType: wallet.HoldWallet,
 			}, query.Metadata)
 
-			hasMore := false
 			accounts := make([]wallet.Account, 0)
 			for _, hold := range holds[:pageSize] {
 				accounts = append(accounts, wallet.Account{
 					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				})
 			}
+
 			return &wallet.AccountsCursorResponseCursor{
 				PageSize: 5,
-				HasMore:  hasMore,
+				HasMore:  false,
 				Data:     accounts,
 			}, nil
 		}),
@@ -92,14 +94,15 @@ func TestHoldsListWithPagination(t *testing.T) {
 				for _, hold := range holds[page*pageSize : (page+1)*pageSize] {
 					accounts = append(accounts, wallet.Account{
 						Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-						Metadata: hold.LedgerMetadata(testEnv.Chart()),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 					})
 				}
+
 				return &wallet.AccountsCursorResponseCursor{
 					PageSize: pageSize,
 					HasMore:  hasMore,
-					Previous: previous,
-					Next:     next,
+					Previous: pointer.For(previous),
+					Next:     pointer.For(next),
 					Data:     accounts,
 				}, nil
 			}
@@ -111,19 +114,19 @@ func TestHoldsListWithPagination(t *testing.T) {
 				wallet.MetadataKeyHoldWalletID:   walletID,
 			}, query.Metadata)
 
-			hasMore := true
 			next := "1"
 			accounts := make([]wallet.Account, 0)
 			for _, hold := range holds[:pageSize] {
 				accounts = append(accounts, wallet.Account{
 					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-					Metadata: hold.LedgerMetadata(testEnv.Chart()),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
 				})
 			}
+
 			return &wallet.AccountsCursorResponseCursor{
 				PageSize: pageSize,
-				HasMore:  hasMore,
-				Next:     next,
+				HasMore:  true,
+				Next:     pointer.For(next),
 				Data:     accounts,
 			}, nil
 		}),

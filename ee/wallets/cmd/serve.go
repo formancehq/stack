@@ -41,7 +41,7 @@ func newServeCommand() *cobra.Command {
 						viper.GetString(stackURLFlag), viper.GetBool(service.DebugFlag))
 				}),
 				wallet.Module(
-					viper.GetString(stackURLFlag)+"/api/ledger",
+					viper.GetString(stackURLFlag),
 					viper.GetString(ledgerNameFlag),
 					viper.GetString(accountPrefixFlag),
 				),

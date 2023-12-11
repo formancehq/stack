@@ -34,24 +34,25 @@ func TestWalletsPatch(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
+
 			return &wallet.AccountWithVolumesAndBalances{
 				Account: wallet.Account{
 					Address:  account,
-					Metadata: w.LedgerMetadata(),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 				},
 			}, nil
 		}),
-		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md metadata.Metadata) error {
+		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md map[string]string) error {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
-			require.EqualValues(t, metadata.Metadata{
+			compareJSON(t, metadata.Metadata{
 				wallet.MetadataKeyWalletID:       w.ID,
 				wallet.MetadataKeyWalletName:     w.Name,
 				wallet.MetadataKeyWalletSpecType: wallet.PrimaryWallet,
 				wallet.MetadataKeyBalanceName:    wallet.MainBalance,
 				wallet.MetadataKeyWalletBalance:  wallet.TrueValue,
 				wallet.MetadataKeyCreatedAt:      w.CreatedAt.UTC().Format(time.RFC3339Nano),
-			}.Merge(wallet.EncodeCustomMetadata(metadata.Metadata{
+			}.Merge(wallet.EncodeCustomMetadata(map[string]string{
 				"role": "admin",
 				"foo":  "baz",
 			})), md)

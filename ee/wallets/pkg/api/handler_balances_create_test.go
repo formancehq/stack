@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -73,10 +72,10 @@ func TestBalancesCreate(t *testing.T) {
 			var (
 				targetedLedger  string
 				targetedAccount string
-				appliedMetadata metadata.Metadata
+				appliedMetadata map[string]string
 			)
 			testEnv := newTestEnv(
-				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
+				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, metadata map[string]string) error {
 					targetedLedger = ledger
 					targetedAccount = account
 					appliedMetadata = metadata

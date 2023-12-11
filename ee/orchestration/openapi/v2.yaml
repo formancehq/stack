@@ -88,6 +88,10 @@ paths:
       responses:
         204:
           description: Trigger deleted
+
+        "404":
+          $ref: '#/components/responses/V2ErrorResponse'
+
         default:
           $ref: '#/components/responses/V2ErrorResponse'
   /v2/triggers/{triggerID}/occurrences:
@@ -183,6 +187,13 @@ paths:
       responses:
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+
+        "404":
+          $ref: '#/components/responses/V2ErrorResponse'
+
+        "400":
+          $ref: '#/components/responses/V2ErrorResponse'
+
         204:
           description: No content
 

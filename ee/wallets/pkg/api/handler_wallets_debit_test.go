@@ -16,6 +16,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func compareJSON(t *testing.T, expected, actual any) {
+	data, err := json.Marshal(expected)
+	require.NoError(t, err)
+
+	expectedAsMap := make(map[string]any)
+	require.NoError(t, json.Unmarshal(data, &expectedAsMap))
+
+	data, err = json.Marshal(actual)
+	require.NoError(t, err)
+
+	actualAsMap := make(map[string]any)
+	require.NoError(t, json.Unmarshal(data, &actualAsMap))
+
+	require.Equal(t, expectedAsMap, actualAsMap)
+}
+
 type testCase struct {
 	name                    string
 	request                 wallet.DebitRequest
@@ -26,18 +42,18 @@ type testCase struct {
 }
 
 type apiErrorMock struct {
-	ErrorCode    shared.V2ErrorsEnum `json:"errorCode,omitempty"`
-	ErrorMessage string              `json:"errorMessage,omitempty"`
-	Details      *string             `json:"details,omitempty"`
+	ErrorCode    shared.ErrorsEnum `json:"errorCode,omitempty"`
+	ErrorMessage string            `json:"errorMessage,omitempty"`
+	Details      *string           `json:"details,omitempty"`
 }
 
 func (a *apiErrorMock) Model() any {
 	if a == nil {
 		return nil
 	}
-	return shared.V2ErrorResponse{
-		ErrorCode:    a.ErrorCode,
-		ErrorMessage: a.ErrorMessage,
+	return shared.ErrorResponse{
+		ErrorCode:    &a.ErrorCode,
+		ErrorMessage: &a.ErrorMessage,
 		Details:      a.Details,
 	}
 }
@@ -61,7 +77,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": wallet.DefaultDebitDest.Identifier,
@@ -71,7 +87,7 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}
 		},
 	},
@@ -83,7 +99,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": "account1",
@@ -93,7 +109,7 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}
 		},
 	},
@@ -105,7 +121,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetMainBalanceAccount("wallet1"),
@@ -115,7 +131,7 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}
 		},
 	},
@@ -125,7 +141,7 @@ var walletDebitTestCases = []testCase{
 			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
 		postTransactionError: &apiErrorMock{
-			ErrorCode: shared.V2ErrorsEnumInsufficientFund,
+			ErrorCode: shared.ErrorsEnumInsufficientFund,
 		},
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  string(shared.ErrorsEnumInsufficientFund),
@@ -142,7 +158,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetHoldAccount(h.ID),
@@ -152,9 +168,9 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(metadata.Metadata{
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(metadata.Metadata{
 					"foo": "bar",
-				}),
+				})),
 			}
 		},
 		expectedStatusCode: http.StatusCreated,
@@ -167,7 +183,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 					Vars: map[string]interface{}{
 						"destination": "world",
@@ -177,7 +193,7 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}
 		},
 	},
@@ -189,7 +205,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(
 						testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
 						testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
@@ -204,7 +220,7 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}
 		},
 	},
@@ -216,7 +232,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 					Vars: map[string]interface{}{
 						"destination": "world",
@@ -226,7 +242,7 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}
 		},
 		expectedStatusCode: http.StatusBadRequest,
@@ -240,7 +256,7 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
-				Script: &wallet.PostTransactionScript{
+				Script: &shared.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetBalanceAccount("wallet1", "secondary"),
@@ -250,7 +266,7 @@ var walletDebitTestCases = []testCase{
 						},
 					},
 				},
-				Metadata: wallet.TransactionMetadata(nil),
+				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}
 		},
 	},
@@ -271,10 +287,10 @@ func TestWalletsDebit(t *testing.T) {
 				testEnv             *testEnv
 				postTransaction     wallet.PostTransaction
 				holdAccount         string
-				holdAccountMetadata metadata.Metadata
+				holdAccountMetadata map[string]string
 			)
 			testEnv = newTestEnv(
-				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, m metadata.Metadata) error {
+				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, m map[string]string) error {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					holdAccount = account
 					holdAccountMetadata = m
@@ -283,45 +299,46 @@ func TestWalletsDebit(t *testing.T) {
 				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					require.Equal(t, query.Metadata, wallet.BalancesMetadataFilter(walletID))
+
 					return &wallet.AccountsCursorResponseCursor{
 						Data: []wallet.Account{
 							{
 								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
-								Metadata: wallet.Balance{
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
 									Name:     "coupon2",
 									Priority: 10,
-								}.LedgerMetadata(walletID),
+								}.LedgerMetadata(walletID)),
 							},
 							{
 								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
-								Metadata: wallet.Balance{
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
 									Name:      "coupon1",
 									ExpiresAt: ptr(time.Now().Add(5 * time.Second)),
-								}.LedgerMetadata(walletID),
+								}.LedgerMetadata(walletID)),
 							},
 							{
 								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon3"),
-								Metadata: wallet.Balance{
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
 									Name:      "coupon3",
 									ExpiresAt: ptr(time.Now().Add(-time.Minute)),
-								}.LedgerMetadata(walletID),
+								}.LedgerMetadata(walletID)),
 							},
 							{
 								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
-								Metadata: wallet.Balance{
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
 									Name: "coupon4",
-								}.LedgerMetadata(walletID),
+								}.LedgerMetadata(walletID)),
 							},
 							{
 								Address: testEnv.Chart().GetBalanceAccount(walletID, "main"),
-								Metadata: wallet.Balance{
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
 									Name: "main",
-								}.LedgerMetadata(walletID),
+								}.LedgerMetadata(walletID)),
 							},
 						},
 					}, nil
 				}),
-				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*shared.Transaction, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
 					if testCase.postTransactionError != nil {
@@ -352,7 +369,7 @@ func TestWalletsDebit(t *testing.T) {
 
 			if testCase.expectedPostTransaction != nil {
 				expectedPostTransaction := testCase.expectedPostTransaction(testEnv, walletID, hold)
-				require.Equal(t, expectedPostTransaction, postTransaction)
+				compareJSON(t, expectedPostTransaction, postTransaction)
 			}
 
 			if testCase.request.Pending {

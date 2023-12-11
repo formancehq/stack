@@ -1,6 +1,6 @@
 vars {
   account $hold
-  account $dest = meta($hold, "void_destination")
+  account $dest
 }
 
 send [{{ .Asset }} *] (

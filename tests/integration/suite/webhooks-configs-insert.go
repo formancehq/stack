@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"net/http"
 	"time"
@@ -42,14 +43,11 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			Endpoint:   "https://example.com",
 			EventTypes: []string{},
 		}
-		response, err := Client().Webhooks.InsertConfig(
+		_, err := Client().Webhooks.InsertConfig(
 			TestContext(),
 			cfg,
 		)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-		Expect(response.ConfigResponse).To(BeNil())
-		Expect(response.WebhooksErrorResponse).NotTo(BeNil())
+		Expect(err).To(HaveOccurred())
 	})
 
 	It("inserting an invalid config without endpoint", func() {
@@ -59,14 +57,12 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		response, err := Client().Webhooks.InsertConfig(
+		_, err := Client().Webhooks.InsertConfig(
 			TestContext(),
 			cfg,
 		)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-		Expect(response.ConfigResponse).To(BeNil())
-		Expect(response.WebhooksErrorResponse).NotTo(BeNil())
+		Expect(err).To(HaveOccurred())
+		Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumValidation))
 	})
 
 	It("inserting an invalid config with invalid secret", func() {
@@ -78,13 +74,10 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		response, err := Client().Webhooks.InsertConfig(
+		_, err := Client().Webhooks.InsertConfig(
 			TestContext(),
 			cfg,
 		)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-		Expect(response.ConfigResponse).To(BeNil())
-		Expect(response.WebhooksErrorResponse).NotTo(BeNil())
+		Expect(err).To(HaveOccurred())
 	})
 })

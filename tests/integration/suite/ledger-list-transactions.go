@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
@@ -18,17 +19,14 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("trying to list transactions of a non existent ledger", func() {
-		var response *operations.V2ListTransactionsResponse
 		BeforeEach(func() {
-			var err error
-			response, err = Client().Ledger.V2ListTransactions(TestContext(), operations.V2ListTransactionsRequest{
+			_, err := Client().Ledger.V2ListTransactions(TestContext(), operations.V2ListTransactionsRequest{
 				Ledger: "default",
 			})
-			Expect(err).To(BeNil())
-
+			Expect(err).NotTo(BeNil())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumNotFound))
 		})
 		It("Should fail with a 404", func() {
-			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
 		})
 	})
 })
@@ -214,10 +212,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		Then("listing transactions using invalid filter", func() {
 			var (
 				err error
-				rsp *operations.V2ListTransactionsResponse
 			)
 			BeforeEach(func() {
-				rsp, err = Client().Ledger.V2ListTransactions(
+				_, err = Client().Ledger.V2ListTransactions(
 					TestContext(),
 					operations.V2ListTransactionsRequest{
 						RequestBody: map[string]interface{}{
@@ -229,11 +226,10 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						PageSize: ptr(pageSize),
 					},
 				)
-				Expect(err).ToNot(HaveOccurred())
+				Expect(err).To(HaveOccurred())
 			})
-			It("Should fail with "+string(shared.ErrorsEnumValidation)+" error code", func() {
-				Expect(rsp.StatusCode).To(Equal(http.StatusBadRequest))
-				Expect(rsp.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumValidation))
+			It("Should fail with "+string(sdkerrors.V2ErrorsEnumValidation)+" error code", func() {
+				Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumValidation))
 			})
 		})
 	})
@@ -991,8 +987,8 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					ID:     big.NewInt(666),
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(404))
+			Expect(err).To(HaveOccurred())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumNotFound))
 		})
 	})
 

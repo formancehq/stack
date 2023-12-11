@@ -8,6 +8,7 @@ features:
     constsAndDefaults: 0.1.1
     core: 2.94.0
     deprecations: 2.81.1
+    errors: 2.81.7
     getRequestBodies: 2.81.1
     globalServerURLs: 2.82.0
     unions: 2.84.1

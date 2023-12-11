@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"net/http"
 
@@ -63,29 +64,27 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		})
 
 		AfterEach(func() {
-			response, err := Client().Webhooks.DeleteConfig(
+			_, err := Client().Webhooks.DeleteConfig(
 				TestContext(),
 				operations.DeleteConfigRequest{
 					ID: insertResp.Data.ID,
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
-			Expect(response.WebhooksErrorResponse).ToNot(BeNil())
+			Expect(err).To(HaveOccurred())
+			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumNotFound))
 		})
 	})
 
 	Context("trying to delete an unknown ID", func() {
 		It("should fail", func() {
-			response, err := Client().Webhooks.DeleteConfig(
+			_, err := Client().Webhooks.DeleteConfig(
 				TestContext(),
 				operations.DeleteConfigRequest{
 					ID: "unknown",
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
-			Expect(response.WebhooksErrorResponse).ToNot(BeNil())
+			Expect(err).To(HaveOccurred())
+			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumNotFound))
 		})
 	})
 })

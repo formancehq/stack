@@ -2,11 +2,10 @@ package activities
 
 import (
 	"context"
-	"fmt"
 	"math/big"
-	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
@@ -27,22 +26,15 @@ func (a Activities) RevertTransaction(ctx context.Context, request RevertTransac
 			},
 		)
 	if err != nil {
-		return nil, err
-	}
-
-	switch response.StatusCode {
-	case http.StatusCreated:
-		return &response.V2RevertTransactionResponse.Data, nil
-	default:
-		if response.V2ErrorResponse != nil {
-			return nil, temporal.NewApplicationError(
-				response.V2ErrorResponse.ErrorMessage,
-				string(response.V2ErrorResponse.ErrorCode),
-				response.V2ErrorResponse.Details)
+		switch err := err.(type) {
+		case *sdkerrors.V2ErrorResponse:
+			return nil, temporal.NewApplicationError(err.ErrorMessage, string(err.ErrorCode), err.Details)
+		default:
+			return nil, err
 		}
-
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
+
+	return &response.V2RevertTransactionResponse.Data, nil
 }
 
 var RevertTransactionActivity = Activities{}.RevertTransaction

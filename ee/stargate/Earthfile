@@ -64,7 +64,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --components=stargate) .
+    COPY --pass-args +tidy/go.* .
     WORKDIR /src/ee/stargate
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
@@ -72,7 +72,14 @@ lint:
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
-    RUN echo "not implemented"
+    BUILD --pass-args +tidy
+    BUILD --pass-args +lint
 
 openapi:
     RUN echo "not implemented"
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/ee/stargate
+    DO --pass-args stack+GO_TIDY

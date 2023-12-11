@@ -23,25 +23,28 @@ build-final-spec:
     FROM core+base-image
     RUN apk update && apk add yarn nodejs npm jq
     WORKDIR /src/libs/clients
-    RUN mkdir build
-    COPY libs/clients/base.yaml .
     COPY libs/clients/package.* .
     RUN npm install
     WORKDIR /src/components
-    FOR c IN ledger payments
-        COPY components/$c/openapi*.yaml $c/
+    FOR c IN payments ledger
+        COPY (./components/$c+openapi/openapi.yaml) /src/components/$c/
     END
     WORKDIR /src/ee
-    FOR c IN auth webhooks search wallets orchestration reconciliation
-        COPY ee/$c/openapi*.yaml $c/
+    FOR c IN auth webhooks search wallets reconciliation orchestration
+        COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
     END
+
     WORKDIR /src/libs/clients
+    COPY libs/clients/base.yaml .
+    COPY libs/clients/openapi-overlay.json .
     COPY libs/clients/openapi-merge.json .
+    RUN mkdir ./build
     RUN npm run build
     LET VERSION=$(date +%Y%m%d)
     RUN jq '.info.version = "v1.0.${VERSION}"' build/generate.json > build/generate-with-version.json
-    SAVE ARTIFACT build/generate-with-version.json
-    SAVE ARTIFACT build/generate-with-version.json AS LOCAL libs/clients/build/generate.json
+    RUN jq -s '.[0] * .[1]' build/generate-with-version.json openapi-overlay.json > build/final.json
+
+    SAVE ARTIFACT build/final.json AS LOCAL libs/clients/build/generate.json
 
 build-sdk:
     BUILD --pass-args +build-final-spec # Force output of the final spec
@@ -49,7 +52,7 @@ build-sdk:
     WORKDIR /src
     RUN apk update && apk add yq
     COPY (+speakeasy/speakeasy) /bin/speakeasy
-    COPY (+build-final-spec/generate-with-version.json) final-spec.json
+    COPY (+build-final-spec/final.json) final-spec.json
     COPY --dir libs/clients/go ./sdks/go
     RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
     RUN rm -rf ./libs/clients/go
@@ -57,21 +60,22 @@ build-sdk:
     SAVE ARTIFACT sdks/go
 
 openapi:
-    LOCALLY
+    FROM core+base-image
+    COPY . /src
+    WORKDIR /src
     FOR component IN $(cd ./components && ls -d */)
-      BUILD ./components/$component+openapi
+        COPY (./components/$component+openapi/src/components/$component) /src/components/$component
     END
     FOR component IN $(cd ./ee && ls -d */)
-      BUILD ./ee/$component+openapi
+        COPY (./ee/$component+openapi/src/ee/$component) /src/ee/$component
     END
+    RUN toto
+    SAVE ARTIFACT /src
 
 goreleaser:
     FROM core+builder-image
     ARG --required components
     ARG --required type
-    WAIT
-      BUILD +openapi
-    END
     COPY . /src
     COPY (+build-sdk/go --LANG=go) /src/libs/clients/go
     WORKDIR /src/$type/$components
@@ -101,19 +105,19 @@ goreleaser:
 all-ci-goreleaser:
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
-      BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
+        BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
     END
     FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args +goreleaser --type=ee --components=$component --mode=ci
+        BUILD --pass-args +goreleaser --type=ee --components=$component --mode=ci
     END
 
 build-all:
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
-      BUILD --pass-args ./components/${component}+build-image
+        BUILD --pass-args ./components/${component}+build-image
     END
     FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args ./ee/${component}+build-image
+        BUILD --pass-args ./ee/${component}+build-image
     END
 
 deploy-all:
@@ -122,32 +126,16 @@ deploy-all:
         BUILD --pass-args ./components/+deploy --components=operator
     END
     FOR component IN $(cd ./components && ls -d */)
-      IF [ "$component" != "operator" ]
-        BUILD --pass-args ./components/+deploy --components=$component
-      END
+        IF [ "$component" != "operator" ]
+            BUILD --pass-args ./components/+deploy --components=$component
+        END
     END
     FOR component IN $(cd ./ee && ls -d */)
         BUILD --pass-args ./ee/+deploy --components=$component
     END
 
-tidy-all:
-    LOCALLY
-    WAIT
-      BUILD --pass-args ./libs/go-libs+tidy
-    END
-    #BUILD --pass-args ./tests/integration+tidy
-    FOR component IN $(cd ./components && ls -d */)
-      BUILD --pass-args ./components+tidy --components=$component
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args ./ee+tidy --components=$component
-    END
-
 tests-all:
     LOCALLY
-    WAIT
-      BUILD --pass-args +tidy-all
-    END
     FOR component IN $(cd ./components && ls -d */)
       BUILD --pass-args ./components/${component}+tests
     END
@@ -155,48 +143,22 @@ tests-all:
       BUILD --pass-args ./ee/${component}+tests
     END
 
-lint-all:
-    LOCALLY
-    WAIT
-      BUILD --pass-args +tidy-all
-    END
-    FOR component IN $(cd ./components && ls -d */)
-      BUILD --pass-args ./components/${component}+lint
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args ./ee/${component}+lint
-    END
-
 tests-integration:
     FROM core+base-image
     BUILD --pass-args ./tests/integration+tests
 
-pre-commit:
+pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
-    WAIT
-      BUILD --pass-args +tidy-all
-      BUILD +openapi
-    END
     BUILD --pass-args +build-final-spec
-    BUILD --pass-args +lint-all
-    BUILD --pass-args +tests-all
     FOR component IN $(cd ./components && ls -d */)
-      BUILD --pass-args ./components/${component}+pre-commit
+        BUILD --pass-args ./components/${component}+pre-commit
     END
     FOR component IN $(cd ./ee && ls -d */)
       BUILD --pass-args ./ee/${component}+pre-commit
     END
-    ARG skipIntegrationTests=0
-    IF [ "$skipIntegrationTests" = "0" ]
-        BUILD --pass-args +tests-integration
-    END
 
 pr:
     LOCALLY
-    WAIT
-      BUILD --pass-args +tidy-all
-    END
-    BUILD --pass-args +lint-all
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration
 
@@ -213,3 +175,11 @@ GO_LINT:
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
         --mount=type=cache,id=golangci,target=/root/.cache/golangci-lint \
         golangci-lint run --fix ./...
+
+GO_TIDY:
+    COMMAND
+    ARG GOPROXY
+    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
+        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+        go mod tidy
+    SAVE ARTIFACT go.* AS LOCAL .
