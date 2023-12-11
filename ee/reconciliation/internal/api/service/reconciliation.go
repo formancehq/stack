@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"io"
 	"math/big"
 	"time"
 
@@ -30,7 +31,7 @@ func (r *ReconciliationRequest) Validate() error {
 	}
 
 	if r.ReconciledAtPayments.IsZero() {
-		return errors.New("missing ReconciledAtPayments")
+		return errors.New("missing reconciledAtPayments")
 	}
 
 	if r.ReconciledAtPayments.After(time.Now()) {
@@ -155,6 +156,9 @@ func (s *Service) getPaymentPoolBalance(ctx context.Context, paymentPoolID strin
 	}
 
 	if balances.StatusCode != 200 {
+		fmt.Println(err)
+		body, _ := io.ReadAll(balances.RawResponse.Body)
+		fmt.Println(string(body))
 		return nil, errors.New("failed to get pool balances")
 	}
 
