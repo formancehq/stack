@@ -4,15 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
-	api2 "github.com/formancehq/orchestration/internal/api"
+	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/api"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
 
-func readStageHistory(backend api2.Backend) http.HandlerFunc {
+func readStageHistory(backend api.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		stageNumberAsString := chi.URLParam(r, "number")
 		stage, err := strconv.ParseInt(stageNumberAsString, 10, 64)
@@ -24,13 +24,13 @@ func readStageHistory(backend api2.Backend) http.HandlerFunc {
 		if err != nil {
 			switch {
 			case errors.Is(err, workflow.ErrInstanceNotFound):
-				api.NotFound(w)
+				sharedapi.NotFound(w)
 			default:
-				api.InternalServerError(w, r, err)
+				sharedapi.InternalServerError(w, r, err)
 			}
 			return
 		}
 
-		api.Ok(w, workflows)
+		sharedapi.Ok(w, workflows)
 	}
 }

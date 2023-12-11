@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
@@ -40,9 +42,9 @@ func TestListInstances(t *testing.T) {
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
 		// Retrieve only running instances
-		instances := make([]workflow.Instance, 0)
-		apitesting.ReadResponse(t, rec, &instances)
-		require.Len(t, instances, 10)
+		instances := sharedapi.Cursor[workflow.Instance]{}
+		apitesting.ReadCursor(t, rec, &instances)
+		require.Len(t, instances.Data, 10)
 
 		req = httptest.NewRequest(http.MethodGet, "/instances?running=true", nil)
 		rec = httptest.NewRecorder()
@@ -50,8 +52,8 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-		apitesting.ReadResponse(t, rec, &instances)
-		require.Len(t, instances, 6)
+		apitesting.ReadCursor(t, rec, &instances)
+		require.Len(t, instances.Data, 6)
 
 		// Delete the workflow
 		req = httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/workflows/%s/", w.ID), nil)
@@ -68,9 +70,9 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-		instances = make([]workflow.Instance, 0)
-		apitesting.ReadResponse(t, rec, &instances)
-		require.Len(t, instances, 0)
+		instances = sharedapi.Cursor[workflow.Instance]{}
+		apitesting.ReadCursor(t, rec, &instances)
+		require.Len(t, instances.Data, 0)
 
 		// Try to retrieve instances for the deleted workflow
 		req = httptest.NewRequest(http.MethodGet, "/instances?workflowID="+w.ID, nil)
@@ -79,8 +81,8 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-		instances = make([]workflow.Instance, 0)
-		apitesting.ReadResponse(t, rec, &instances)
-		require.Len(t, instances, 0)
+		instances = sharedapi.Cursor[workflow.Instance]{}
+		apitesting.ReadCursor(t, rec, &instances)
+		require.Len(t, instances.Data, 0)
 	})
 }

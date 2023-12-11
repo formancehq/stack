@@ -24,12 +24,12 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 	})
 	When("creating a new workflow which will fail with insufficient fund error", func() {
 		var (
-			createWorkflowResponse *shared.CreateWorkflowResponse
+			createWorkflowResponse *shared.V2CreateWorkflowResponse
 		)
 		BeforeEach(func() {
-			response, err := Client().Orchestration.CreateWorkflow(
+			response, err := Client().Orchestration.V2CreateWorkflow(
 				TestContext(),
-				&shared.CreateWorkflowRequest{
+				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
 					Stages: []map[string]interface{}{
 						{
@@ -58,14 +58,14 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(201))
 
-			createWorkflowResponse = response.CreateWorkflowResponse
+			createWorkflowResponse = response.V2CreateWorkflowResponse
 		})
 		Then("executing it", func() {
-			var runWorkflowResponse *shared.RunWorkflowResponse
+			var runWorkflowResponse *shared.V2RunWorkflowResponse
 			BeforeEach(func() {
-				response, err := Client().Orchestration.RunWorkflow(
+				response, err := Client().Orchestration.V2RunWorkflow(
 					TestContext(),
-					operations.RunWorkflowRequest{
+					operations.V2RunWorkflowRequest{
 						RequestBody: map[string]string{},
 						WorkflowID:  createWorkflowResponse.Data.ID,
 					},
@@ -73,17 +73,16 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(201))
 
-				runWorkflowResponse = response.RunWorkflowResponse
+				runWorkflowResponse = response.V2RunWorkflowResponse
 			})
 			Then("waiting for first stage retried at least once", func() {
-				var getWorkflowInstanceHistoryStageResponse *shared.GetWorkflowInstanceHistoryStageResponse
+				var getWorkflowInstanceHistoryStageResponse *shared.V2GetWorkflowInstanceHistoryStageResponse
 				BeforeEach(func() {
 					Eventually(func(g Gomega) int64 {
 
-						//TODO: error EOF response
-						response, err := Client().Orchestration.GetInstanceStageHistory(
+						response, err := Client().Orchestration.V2GetInstanceStageHistory(
 							TestContext(),
-							operations.GetInstanceStageHistoryRequest{
+							operations.V2GetInstanceStageHistoryRequest{
 								InstanceID: runWorkflowResponse.Data.ID,
 								Number:     0,
 							},
@@ -95,7 +94,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 							return 0
 						}
 
-						getWorkflowInstanceHistoryStageResponse = response.GetWorkflowInstanceHistoryStageResponse
+						getWorkflowInstanceHistoryStageResponse = response.V2GetWorkflowInstanceHistoryStageResponse
 						g.Expect(getWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))
 						return getWorkflowInstanceHistoryStageResponse.Data[0].Attempt
 					}).Should(BeNumerically(">", 2))
@@ -104,13 +103,13 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt).NotTo(BeZero())
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution).NotTo(BeNil())
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Attempt).To(BeNumerically(">", 2))
-					Expect(getWorkflowInstanceHistoryStageResponse.Data[0]).To(Equal(shared.WorkflowInstanceHistoryStage{
+					Expect(getWorkflowInstanceHistoryStageResponse.Data[0]).To(Equal(shared.V2WorkflowInstanceHistoryStage{
 						Name: "CreateTransaction",
-						Input: shared.WorkflowInstanceHistoryStageInput{
-							CreateTransaction: &shared.ActivityCreateTransaction{
+						Input: shared.V2WorkflowInstanceHistoryStageInput{
+							CreateTransaction: &shared.V2ActivityCreateTransaction{
 								Ledger: ptr("default"),
-								Data: &shared.OrchestrationPostTransaction{
-									Postings: []shared.Posting{{
+								Data: &shared.V2PostTransaction{
+									Postings: []shared.V2Posting{{
 										Amount:      big.NewInt(100),
 										Asset:       "EUR/2",
 										Destination: "bank",

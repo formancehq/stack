@@ -14,6 +14,8 @@ import (
 
 	triggers "github.com/formancehq/orchestration/internal/triggers"
 	workflow "github.com/formancehq/orchestration/internal/workflow"
+	api "github.com/formancehq/stack/libs/go-libs/api"
+	bunpaginate "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -143,63 +145,63 @@ func (mr *MockBackendMockRecorder) GetTrigger(ctx, triggerID any) *gomock.Call {
 }
 
 // ListInstances mocks base method.
-func (m *MockBackend) ListInstances(ctx context.Context, workflowID string, deleted bool) ([]workflow.Instance, error) {
+func (m *MockBackend) ListInstances(ctx context.Context, pagination workflow.ListInstancesQuery) (*api.Cursor[workflow.Instance], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListInstances", ctx, workflowID, deleted)
-	ret0, _ := ret[0].([]workflow.Instance)
+	ret := m.ctrl.Call(m, "ListInstances", ctx, pagination)
+	ret0, _ := ret[0].(*api.Cursor[workflow.Instance])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListInstances indicates an expected call of ListInstances.
-func (mr *MockBackendMockRecorder) ListInstances(ctx, workflowID, deleted any) *gomock.Call {
+func (mr *MockBackendMockRecorder) ListInstances(ctx, pagination any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInstances", reflect.TypeOf((*MockBackend)(nil).ListInstances), ctx, workflowID, deleted)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInstances", reflect.TypeOf((*MockBackend)(nil).ListInstances), ctx, pagination)
 }
 
 // ListTriggers mocks base method.
-func (m *MockBackend) ListTriggers(ctx context.Context) ([]triggers.Trigger, error) {
+func (m *MockBackend) ListTriggers(ctx context.Context, query triggers.ListTriggersQuery) (*api.Cursor[triggers.Trigger], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTriggers", ctx)
-	ret0, _ := ret[0].([]triggers.Trigger)
+	ret := m.ctrl.Call(m, "ListTriggers", ctx, query)
+	ret0, _ := ret[0].(*api.Cursor[triggers.Trigger])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListTriggers indicates an expected call of ListTriggers.
-func (mr *MockBackendMockRecorder) ListTriggers(ctx any) *gomock.Call {
+func (mr *MockBackendMockRecorder) ListTriggers(ctx, query any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTriggers", reflect.TypeOf((*MockBackend)(nil).ListTriggers), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTriggers", reflect.TypeOf((*MockBackend)(nil).ListTriggers), ctx, query)
 }
 
 // ListTriggersOccurrences mocks base method.
-func (m *MockBackend) ListTriggersOccurrences(ctx context.Context, triggerID string) ([]triggers.Occurrence, error) {
+func (m *MockBackend) ListTriggersOccurrences(ctx context.Context, query triggers.ListTriggersOccurrencesQuery) (*api.Cursor[triggers.Occurrence], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTriggersOccurrences", ctx, triggerID)
-	ret0, _ := ret[0].([]triggers.Occurrence)
+	ret := m.ctrl.Call(m, "ListTriggersOccurrences", ctx, query)
+	ret0, _ := ret[0].(*api.Cursor[triggers.Occurrence])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListTriggersOccurrences indicates an expected call of ListTriggersOccurrences.
-func (mr *MockBackendMockRecorder) ListTriggersOccurrences(ctx, triggerID any) *gomock.Call {
+func (mr *MockBackendMockRecorder) ListTriggersOccurrences(ctx, query any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTriggersOccurrences", reflect.TypeOf((*MockBackend)(nil).ListTriggersOccurrences), ctx, triggerID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTriggersOccurrences", reflect.TypeOf((*MockBackend)(nil).ListTriggersOccurrences), ctx, query)
 }
 
 // ListWorkflows mocks base method.
-func (m *MockBackend) ListWorkflows(ctx context.Context) ([]workflow.Workflow, error) {
+func (m *MockBackend) ListWorkflows(ctx context.Context, query bunpaginate.OffsetPaginatedQuery[any]) (*api.Cursor[workflow.Workflow], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListWorkflows", ctx)
-	ret0, _ := ret[0].([]workflow.Workflow)
+	ret := m.ctrl.Call(m, "ListWorkflows", ctx, query)
+	ret0, _ := ret[0].(*api.Cursor[workflow.Workflow])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListWorkflows indicates an expected call of ListWorkflows.
-func (mr *MockBackendMockRecorder) ListWorkflows(ctx any) *gomock.Call {
+func (mr *MockBackendMockRecorder) ListWorkflows(ctx, query any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListWorkflows", reflect.TypeOf((*MockBackend)(nil).ListWorkflows), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListWorkflows", reflect.TypeOf((*MockBackend)(nil).ListWorkflows), ctx, query)
 }
 
 // PostEvent mocks base method.

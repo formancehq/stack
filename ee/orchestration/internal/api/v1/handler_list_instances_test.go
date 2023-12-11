@@ -39,11 +39,11 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
-		// Retrieve only running instances
 		instances := make([]workflow.Instance, 0)
 		apitesting.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 10)
 
+		// Retrieve only running instances
 		req = httptest.NewRequest(http.MethodGet, "/instances?running=true", nil)
 		rec = httptest.NewRecorder()
 

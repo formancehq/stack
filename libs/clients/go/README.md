@@ -134,6 +134,23 @@ func main() {
 * [ReadTrigger](docs/sdks/orchestration/README.md#readtrigger) - Read trigger
 * [RunWorkflow](docs/sdks/orchestration/README.md#runworkflow) - Run workflow
 * [SendEvent](docs/sdks/orchestration/README.md#sendevent) - Send an event to a running workflow
+* [V2CancelEvent](docs/sdks/orchestration/README.md#v2cancelevent) - Cancel a running workflow
+* [V2CreateTrigger](docs/sdks/orchestration/README.md#v2createtrigger) - Create trigger
+* [V2CreateWorkflow](docs/sdks/orchestration/README.md#v2createworkflow) - Create workflow
+* [V2DeleteTrigger](docs/sdks/orchestration/README.md#v2deletetrigger) - Delete trigger
+* [V2DeleteWorkflow](docs/sdks/orchestration/README.md#v2deleteworkflow) - Delete a flow by id
+* [V2GetInstance](docs/sdks/orchestration/README.md#v2getinstance) - Get a workflow instance by id
+* [V2GetInstanceHistory](docs/sdks/orchestration/README.md#v2getinstancehistory) - Get a workflow instance history by id
+* [V2GetInstanceStageHistory](docs/sdks/orchestration/README.md#v2getinstancestagehistory) - Get a workflow instance stage history
+* [V2GetServerInfo](docs/sdks/orchestration/README.md#v2getserverinfo) - Get server info
+* [V2GetWorkflow](docs/sdks/orchestration/README.md#v2getworkflow) - Get a flow by id
+* [V2ListInstances](docs/sdks/orchestration/README.md#v2listinstances) - List instances of a workflow
+* [V2ListTriggers](docs/sdks/orchestration/README.md#v2listtriggers) - List triggers
+* [V2ListTriggersOccurrences](docs/sdks/orchestration/README.md#v2listtriggersoccurrences) - List triggers occurrences
+* [V2ListWorkflows](docs/sdks/orchestration/README.md#v2listworkflows) - List registered workflows
+* [V2ReadTrigger](docs/sdks/orchestration/README.md#v2readtrigger) - Read trigger
+* [V2RunWorkflow](docs/sdks/orchestration/README.md#v2runworkflow) - Run workflow
+* [V2SendEvent](docs/sdks/orchestration/README.md#v2sendevent) - Send an event to a running workflow
 
 ### [Payments](docs/sdks/payments/README.md)
 

@@ -26,12 +26,12 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 	})
 	When("creating a new workflow", func() {
 		var (
-			createWorkflowResponse *shared.CreateWorkflowResponse
+			createWorkflowResponse *shared.V2CreateWorkflowResponse
 		)
 		BeforeEach(func() {
-			response, err := Client().Orchestration.CreateWorkflow(
+			response, err := Client().Orchestration.V2CreateWorkflow(
 				TestContext(),
-				&shared.CreateWorkflowRequest{
+				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
 					Stages: []map[string]interface{}{
 						{
@@ -60,17 +60,17 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(201))
 
-			createWorkflowResponse = response.CreateWorkflowResponse
+			createWorkflowResponse = response.V2CreateWorkflowResponse
 		})
 		It("should be ok", func() {
 			Expect(createWorkflowResponse.Data.ID).NotTo(BeEmpty())
 		})
 		Then("executing it", func() {
-			var runWorkflowResponse *shared.RunWorkflowResponse
+			var runWorkflowResponse *shared.V2RunWorkflowResponse
 			BeforeEach(func() {
-				response, err := Client().Orchestration.RunWorkflow(
+				response, err := Client().Orchestration.V2RunWorkflow(
 					TestContext(),
-					operations.RunWorkflowRequest{
+					operations.V2RunWorkflowRequest{
 						RequestBody: map[string]string{},
 						WorkflowID:  createWorkflowResponse.Data.ID,
 					},
@@ -78,27 +78,27 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(201))
 
-				runWorkflowResponse = response.RunWorkflowResponse
+				runWorkflowResponse = response.V2RunWorkflowResponse
 			})
 			It("should be ok", func() {
 				Expect(runWorkflowResponse.Data.ID).NotTo(BeEmpty())
 			})
 			Then("waiting for termination", func() {
-				var instanceResponse *shared.GetWorkflowInstanceResponse
+				var instanceResponse *shared.V2GetWorkflowInstanceResponse
 				BeforeEach(func() {
 					Eventually(func() bool {
-						response, err := Client().Orchestration.GetInstance(
+						response, err := Client().Orchestration.V2GetInstance(
 							TestContext(),
-							operations.GetInstanceRequest{
+							operations.V2GetInstanceRequest{
 								InstanceID: runWorkflowResponse.Data.ID,
 							},
 						)
 						Expect(err).ToNot(HaveOccurred())
 						Expect(response.StatusCode).To(Equal(200))
 
-						instanceResponse = response.GetWorkflowInstanceResponse
+						instanceResponse = response.V2GetWorkflowInstanceResponse
 
-						return response.GetWorkflowInstanceResponse.Data.Terminated
+						return response.V2GetWorkflowInstanceResponse.Data.Terminated
 					}).Should(BeTrue())
 				})
 				It("should be terminated successfully", func() {
@@ -183,11 +183,11 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							}))
 					})
 					Then("reading first stage history", func() {
-						var getWorkflowInstanceHistoryStageResponse *shared.GetWorkflowInstanceHistoryStageResponse
+						var getWorkflowInstanceHistoryStageResponse *shared.V2GetWorkflowInstanceHistoryStageResponse
 						BeforeEach(func() {
-							response, err := Client().Orchestration.GetInstanceStageHistory(
+							response, err := Client().Orchestration.V2GetInstanceStageHistory(
 								TestContext(),
-								operations.GetInstanceStageHistoryRequest{
+								operations.V2GetInstanceStageHistoryRequest{
 									InstanceID: runWorkflowResponse.Data.ID,
 									Number:     0,
 								},
@@ -195,21 +195,21 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							Expect(err).ToNot(HaveOccurred())
 							Expect(response.StatusCode).To(Equal(200))
 
-							getWorkflowInstanceHistoryStageResponse = response.GetWorkflowInstanceHistoryStageResponse
+							getWorkflowInstanceHistoryStageResponse = response.V2GetWorkflowInstanceHistoryStageResponse
 						})
 						It("should be properly terminated", func() {
 							Expect(getWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Error).To(BeNil())
-							postings := []shared.Posting{{
+							postings := []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "EUR/2",
 								Destination: "bank",
 								Source:      "world",
 							}}
-							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Input).To(Equal(shared.WorkflowInstanceHistoryStageInput{
-								CreateTransaction: &shared.ActivityCreateTransaction{
+							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Input).To(Equal(shared.V2WorkflowInstanceHistoryStageInput{
+								CreateTransaction: &shared.V2ActivityCreateTransaction{
 									Ledger: ptr("default"),
-									Data: &shared.OrchestrationPostTransaction{
+									Data: &shared.V2PostTransaction{
 										Postings: postings,
 										Metadata: metadata.Metadata{},
 									},
@@ -224,9 +224,9 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp).
 								NotTo(BeZero())
 							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp = time.Time{}
-							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.WorkflowInstanceHistoryStageOutput{
-								CreateTransaction: &shared.ActivityCreateTransactionOutput{
-									Data: shared.OrchestrationTransaction{
+							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.V2WorkflowInstanceHistoryStageOutput{
+								CreateTransaction: &shared.V2ActivityCreateTransactionOutput{
+									Data: shared.V2Transaction{
 										ID:       big.NewInt(0),
 										Postings: postings,
 										Metadata: map[string]string{},

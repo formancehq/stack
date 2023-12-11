@@ -3,18 +3,26 @@ package v1
 import (
 	"net/http"
 
-	api2 "github.com/formancehq/orchestration/internal/api"
+	"github.com/formancehq/orchestration/internal/workflow"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
+	api "github.com/formancehq/orchestration/internal/api"
+
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 )
 
-func listInstances(backend api2.Backend) http.HandlerFunc {
+func listInstances(backend api.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		runs, err := backend.ListInstances(r.Context(), r.URL.Query().Get("workflowID"), r.URL.Query().Get("running") == "true")
+
+		runs, err := backend.ListInstances(r.Context(), workflow.ListInstancesQuery{
+			Options: workflow.ListInstancesOptions{
+				WorkflowID: r.URL.Query().Get("workflowID"),
+				Running:    sharedapi.QueryParamBool(r, "running"),
+			},
+		})
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			sharedapi.InternalServerError(w, r, err)
 			return
 		}
-		api.Ok(w, runs)
+		sharedapi.Ok(w, runs.Data)
 	}
 }

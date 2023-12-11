@@ -3,6 +3,8 @@ package v1
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	api2 "github.com/formancehq/orchestration/internal/api"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -10,12 +12,13 @@ import (
 
 func listWorkflows(backend api2.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		workflows, err := backend.ListWorkflows(r.Context())
+
+		workflows, err := backend.ListWorkflows(r.Context(), bunpaginate.OffsetPaginatedQuery[any]{})
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
 		}
 
-		api.Ok(w, workflows)
+		api.Ok(w, workflows.Data)
 	}
 }

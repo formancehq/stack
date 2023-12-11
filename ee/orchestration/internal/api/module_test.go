@@ -5,6 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+
 	"github.com/formancehq/orchestration/internal/api"
 	v1 "github.com/formancehq/orchestration/internal/api/v1"
 	v2 "github.com/formancehq/orchestration/internal/api/v2"
@@ -36,9 +38,9 @@ func TestModule(t *testing.T) {
 	app.RequireStart()
 
 	backend.EXPECT().
-		ListWorkflows(gomock.Any()).
+		ListWorkflows(gomock.Any(), gomock.Any()).
 		AnyTimes().
-		Return([]workflow.Workflow{}, nil)
+		Return(&sharedapi.Cursor[workflow.Workflow]{}, nil)
 
 	req := httptest.NewRequest(http.MethodGet, "/workflows", nil)
 	rsp := httptest.NewRecorder()

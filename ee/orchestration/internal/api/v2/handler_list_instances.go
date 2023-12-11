@@ -3,18 +3,40 @@ package v2
 import (
 	"net/http"
 
-	api2 "github.com/formancehq/orchestration/internal/api"
+	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
+	api "github.com/formancehq/orchestration/internal/api"
+
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 )
 
-func listInstances(backend api2.Backend) http.HandlerFunc {
+func listInstances(backend api.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		runs, err := backend.ListInstances(r.Context(), r.URL.Query().Get("workflowID"), r.URL.Query().Get("running") == "true")
+
+		q, err := bunpaginate.Extract[workflow.ListInstancesQuery](r, func() (*workflow.ListInstancesQuery, error) {
+			pageSize, err := bunpaginate.GetPageSize(r)
+			if err != nil {
+				return nil, err
+			}
+			return &workflow.ListInstancesQuery{
+				PageSize: pageSize,
+				Options: workflow.ListInstancesOptions{
+					WorkflowID: r.URL.Query().Get("workflowID"),
+					Running:    sharedapi.QueryParamBool(r, "running"),
+				},
+			}, nil
+		})
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			sharedapi.BadRequest(w, "VALIDATION", err)
 			return
 		}
-		api.Ok(w, runs)
+
+		runs, err := backend.ListInstances(r.Context(), *q)
+		if err != nil {
+			sharedapi.InternalServerError(w, r, err)
+			return
+		}
+		sharedapi.RenderCursor(w, *runs)
 	}
 }
