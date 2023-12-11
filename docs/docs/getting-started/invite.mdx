@@ -15,6 +15,21 @@ The simplest way to allow users to interact with your Formance stack is to invit
 fctl cloud organizations invitations send foo@example.com
 ```
 
+# Once invited: manage permissions
+
+Once a user has been invited, they will receive an email with a link to accept the invitation.
+
+It's up to you to decide what permissions you want to give to your users. You can do this by assigning them roles.
+
+By default, users are assigned the `GUEST` role, which allows them to read informations from regions and stacks.
+
+You can update roles with the following command:
+```
+fctl cloud organizations users update <userId> ADMIN 
+```
+
+
+
 ## From the dashboard
 
 You can also invite users to your organization using the organization management feature in the [console](https://console.formance.cloud).
