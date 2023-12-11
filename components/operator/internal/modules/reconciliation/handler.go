@@ -24,7 +24,6 @@ func (o module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
 			DatabaseMigration: &modules.DatabaseMigration{
-				Name:     "v0.0.0",
 				Shutdown: false,
 				Command:  []string{"migrate", "up"},
 				AdditionalEnv: func(config modules.ReconciliationConfig) []modules.EnvVar {

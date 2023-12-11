@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"io"
 	"math/big"
 	"time"
 
@@ -16,16 +17,25 @@ import (
 )
 
 type ReconciliationRequest struct {
-	At time.Time `json:"at"`
+	ReconciledAtLedger   time.Time `json:"reconciledAtLedger"`
+	ReconciledAtPayments time.Time `json:"reconciledAtPayment"`
 }
 
 func (r *ReconciliationRequest) Validate() error {
-	if r.At.IsZero() {
-		return errors.New("missing at")
+	if r.ReconciledAtLedger.IsZero() {
+		return errors.New("missing reconciledAtLedger")
 	}
 
-	if r.At.After(time.Now()) {
-		return errors.New("at must be in the past")
+	if r.ReconciledAtLedger.After(time.Now()) {
+		return errors.New("reconciledAtLedger must be in the past")
+	}
+
+	if r.ReconciledAtPayments.IsZero() {
+		return errors.New("missing reconciledAtPayments")
+	}
+
+	if r.ReconciledAtPayments.After(time.Now()) {
+		return errors.New("ReconciledAtPayments must be in the past")
 	}
 
 	return nil
@@ -46,14 +56,14 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 	var paymentBalance map[string]*big.Int
 	eg.Go(func() error {
 		var err error
-		paymentBalance, err = s.getPaymentPoolBalance(ctxGroup, policy.PaymentsPoolID.String(), req.At)
+		paymentBalance, err = s.getPaymentPoolBalance(ctxGroup, policy.PaymentsPoolID.String(), req.ReconciledAtPayments)
 		return err
 	})
 
 	var ledgerBalance map[string]*big.Int
 	eg.Go(func() error {
 		var err error
-		ledgerBalance, err = s.getAccountsAggregatedBalance(ctxGroup, policy.LedgerName, policy.LedgerQuery, req.At)
+		ledgerBalance, err = s.getAccountsAggregatedBalance(ctxGroup, policy.LedgerName, policy.LedgerQuery, req.ReconciledAtLedger)
 		return err
 	})
 
@@ -62,13 +72,14 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 	}
 
 	res := &models.Reconciliation{
-		ID:               uuid.New(),
-		PolicyID:         policy.ID,
-		CreatedAt:        time.Now().UTC(),
-		ReconciledAt:     req.At,
-		Status:           models.ReconciliationOK,
-		PaymentsBalances: paymentBalance,
-		LedgerBalances:   ledgerBalance,
+		ID:                   uuid.New(),
+		PolicyID:             policy.ID,
+		CreatedAt:            time.Now().UTC(),
+		ReconciledAtLedger:   req.ReconciledAtLedger,
+		ReconciledAtPayments: req.ReconciledAtPayments,
+		Status:               models.ReconciliationOK,
+		PaymentsBalances:     paymentBalance,
+		LedgerBalances:       ledgerBalance,
 	}
 
 	var reconciliationError bool
@@ -145,6 +156,9 @@ func (s *Service) getPaymentPoolBalance(ctx context.Context, paymentPoolID strin
 	}
 
 	if balances.StatusCode != 200 {
+		fmt.Println(err)
+		body, _ := io.ReadAll(balances.RawResponse.Body)
+		fmt.Println(string(body))
 		return nil, errors.New("failed to get pool balances")
 	}
 

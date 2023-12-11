@@ -33,3 +33,4 @@ worktrees
 # Ignore SDKS
 sdks
 .DS_Store
+openapi/node_modules

@@ -9,14 +9,15 @@ import (
 )
 
 type Reconciliation struct {
-	CreatedAt        time.Time           `json:"createdAt"`
-	Error            *string             `json:"error,omitempty"`
-	ID               string              `json:"id"`
-	LedgerBalances   map[string]*big.Int `json:"ledgerBalances"`
-	PaymentsBalances map[string]*big.Int `json:"paymentsBalances"`
-	PolicyID         string              `json:"policyID"`
-	ReconciledAt     time.Time           `json:"reconciledAt"`
-	Status           string              `json:"status"`
+	CreatedAt            time.Time           `json:"createdAt"`
+	Error                *string             `json:"error,omitempty"`
+	ID                   string              `json:"id"`
+	LedgerBalances       map[string]*big.Int `json:"ledgerBalances"`
+	PaymentsBalances     map[string]*big.Int `json:"paymentsBalances"`
+	PolicyID             string              `json:"policyID"`
+	ReconciledAtLedger   time.Time           `json:"reconciledAtLedger"`
+	ReconciledAtPayments time.Time           `json:"reconciledAtPayments"`
+	Status               string              `json:"status"`
 }
 
 func (r Reconciliation) MarshalJSON() ([]byte, error) {
@@ -72,11 +73,18 @@ func (o *Reconciliation) GetPolicyID() string {
 	return o.PolicyID
 }
 
-func (o *Reconciliation) GetReconciledAt() time.Time {
+func (o *Reconciliation) GetReconciledAtLedger() time.Time {
 	if o == nil {
 		return time.Time{}
 	}
-	return o.ReconciledAt
+	return o.ReconciledAtLedger
+}
+
+func (o *Reconciliation) GetReconciledAtPayments() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.ReconciledAtPayments
 }
 
 func (o *Reconciliation) GetStatus() string {

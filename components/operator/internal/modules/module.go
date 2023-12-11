@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"sort"
 
-	"golang.org/x/mod/semver"
-	appsv1 "k8s.io/api/apps/v1"
-
-	"github.com/pkg/errors"
-
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
+	"golang.org/x/mod/semver"
+	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -27,7 +25,6 @@ type Cron struct {
 
 type DatabaseMigration struct {
 	// optional, will be the commit hash if empty in the kube object
-	Name          string
 	Shutdown      bool
 	Command       []string
 	AdditionalEnv func(config ReconciliationConfig) []EnvVar
@@ -359,10 +356,13 @@ func (r *moduleReconciler) runPreUpgradeMigration(ctx context.Context, module Mo
 
 func (r *moduleReconciler) runDatabaseMigration(ctx context.Context, version string, migration DatabaseMigration, postgresConfig v1beta3.PostgresConfig) (bool, error) {
 	logger := log.FromContext(ctx)
-	name := fmt.Sprintf("%s-%s-db-migration", r.module.Name(), version)
-	if migration.Name != "" {
-		name = fmt.Sprintf("%s-%s-db-migration", r.module.Name(), migration.Name)
+	if !semver.IsValid(version) {
+		// Commit hash
+		if len(version) > 7 {
+			version = version[:7]
+		}
 	}
+	name := fmt.Sprintf("%s-%s-db-migration", r.module.Name(), version)
 	return r.RunJob(ctx, name,
 		func() error {
 			if migration.Shutdown {
