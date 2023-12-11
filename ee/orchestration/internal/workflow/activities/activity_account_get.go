@@ -17,10 +17,10 @@ type GetAccountRequest struct {
 	ID     string `json:"id"`
 }
 
-func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (*shared.AccountResponse, error) {
-	response, err := a.client.Ledger.V2.GetAccount(
+func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (*shared.V2AccountResponse, error) {
+	response, err := a.client.Ledger.V2GetAccount(
 		ctx,
-		operations.GetAccountRequest{
+		operations.V2GetAccountRequest{
 			Address: request.ID,
 			Ledger:  request.Ledger,
 		},
@@ -31,15 +31,15 @@ func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (
 
 	switch response.StatusCode {
 	case http.StatusOK:
-		return response.AccountResponse, nil
+		return response.V2AccountResponse, nil
 	case http.StatusNotFound:
 		return nil, errors.New("wallet not found")
 	default:
-		if response.ErrorResponse != nil {
+		if response.V2ErrorResponse != nil {
 			return nil, temporal.NewApplicationError(
-				response.ErrorResponse.ErrorMessage,
-				string(response.ErrorResponse.ErrorCode),
-				response.ErrorResponse.Details)
+				response.V2ErrorResponse.ErrorMessage,
+				string(response.V2ErrorResponse.ErrorCode),
+				response.V2ErrorResponse.Details)
 		}
 
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
@@ -48,8 +48,8 @@ func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (
 
 var GetAccountActivity = Activities{}.GetAccount
 
-func GetAccount(ctx workflow.Context, ledger, id string) (*shared.Account, error) {
-	ret := &shared.AccountResponse{}
+func GetAccount(ctx workflow.Context, ledger, id string) (*shared.V2Account, error) {
+	ret := &shared.V2AccountResponse{}
 	if err := executeActivity(ctx, GetAccountActivity, ret, GetAccountRequest{
 		Ledger: ledger,
 		ID:     id,

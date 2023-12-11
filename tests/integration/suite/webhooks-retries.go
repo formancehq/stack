@@ -23,7 +23,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -58,12 +58,12 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusOK))
 
-			createTransactionResponse, err := Client().Ledger.V2.CreateTransaction(
+			createTransactionResponse, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",

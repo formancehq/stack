@@ -18,7 +18,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -120,19 +120,19 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 
 				Expect(*getInstanceResponse.GetWorkflowInstanceResponse.Data.Error).To(BeEmpty())
 
-				listTransactionsResponse, err := Client().Ledger.V2.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+				listTransactionsResponse, err := Client().Ledger.V2ListTransactions(TestContext(), operations.V2ListTransactionsRequest{
 					Ledger: "default",
 				})
 				Expect(err).To(BeNil())
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings).To(HaveLen(1))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Source).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings).To(HaveLen(1))
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Source).
 					To(Equal("world"))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Destination).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Destination).
 					To(Equal(strings.Replace(payment["id"].(string), "-", "_", -1)))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Asset).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Asset).
 					To(Equal("USD/2"))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Amount).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Amount).
 					To(Equal(big.NewInt(100)))
 			})
 		})

@@ -68,17 +68,21 @@ func NewWorkerModule(taskQueue string) fx.Option {
 			}, fx.ParamTags(``, `group:"workflows"`, `group:"activities"`)),
 		),
 		fx.Invoke(func(lc fx.Lifecycle, w worker.Worker) {
+			willStop := false
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					go func() {
 						err := w.Run(worker.InterruptCh())
 						if err != nil {
-							panic(err)
+							if !willStop {
+								panic(err)
+							}
 						}
 					}()
 					return nil
 				},
 				OnStop: func(ctx context.Context) error {
+					willStop = true
 					w.Stop()
 					return nil
 				},

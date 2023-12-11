@@ -19,7 +19,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -30,19 +30,19 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			msgs                      chan *nats.Msg
 			cancelSubscription        func()
 			timestamp                 = time.Now().Round(time.Second).UTC()
-			createTransactionResponse *shared.CreateTransactionResponse
+			createTransactionResponse *shared.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Ledger.V2.CreateTransaction(
+			response, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -58,7 +58,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			createTransactionResponse = response.CreateTransactionResponse
+			createTransactionResponse = response.V2CreateTransactionResponse
 
 			// Wait for created transaction event to drain events
 			WaitOnChanWithTimeout(msgs, 5*time.Second)
@@ -68,12 +68,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("transferring funds from destination to another account", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2.CreateTransaction(
+				response, err := Client().Ledger.V2CreateTransaction(
 					TestContext(),
-					operations.CreateTransactionRequest{
-						PostTransaction: shared.PostTransaction{
+					operations.V2CreateTransactionRequest{
+						V2PostTransaction: shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{
+							Postings: []shared.V2Posting{
 								{
 									Amount:      big.NewInt(100),
 									Asset:       "USD",
@@ -93,12 +93,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				var (
 					force    bool
 					err      error
-					response *operations.RevertTransactionResponse
+					response *operations.V2RevertTransactionResponse
 				)
 				revertTx := func() {
-					response, err = Client().Ledger.V2.RevertTransaction(
+					response, err = Client().Ledger.V2RevertTransaction(
 						TestContext(),
-						operations.RevertTransactionRequest{
+						operations.V2RevertTransactionRequest{
 							Force:  pointer.For(force),
 							ID:     big.NewInt(0),
 							Ledger: "default",
@@ -109,7 +109,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				It("Should fail", func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(response.StatusCode).To(Equal(400))
-					Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumInsufficientFund))
+					Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumInsufficientFund))
 				})
 				Context("With forcing", func() {
 					BeforeEach(func() {
@@ -124,9 +124,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("reverting it", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2.RevertTransaction(
+				response, err := Client().Ledger.V2RevertTransaction(
 					TestContext(),
-					operations.RevertTransactionRequest{
+					operations.V2RevertTransactionRequest{
 						Ledger: "default",
 						ID:     createTransactionResponse.Data.ID,
 					},
@@ -140,9 +140,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeRevertedTransaction)).Should(Succeed())
 			})
 			It("should revert the original transaction", func() {
-				response, err := Client().Ledger.V2.GetTransaction(
+				response, err := Client().Ledger.V2GetTransaction(
 					TestContext(),
-					operations.GetTransactionRequest{
+					operations.V2GetTransactionRequest{
 						Ledger: "default",
 						ID:     createTransactionResponse.Data.ID,
 					},
@@ -150,20 +150,20 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				Expect(response.GetTransactionResponse.Data.Reverted).To(BeTrue())
+				Expect(response.V2GetTransactionResponse.Data.Reverted).To(BeTrue())
 			})
 			Then("trying to revert again", func() {
 				It("should be rejected", func() {
-					response, err := Client().Ledger.V2.RevertTransaction(
+					response, err := Client().Ledger.V2RevertTransaction(
 						TestContext(),
-						operations.RevertTransactionRequest{
+						operations.V2RevertTransactionRequest{
 							Ledger: "default",
 							ID:     createTransactionResponse.Data.ID,
 						},
 					)
 					Expect(err).To(BeNil())
 					Expect(response.StatusCode).To(Equal(400))
-					Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumAlreadyRevert))
+					Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumAlreadyRevert))
 				})
 			})
 		})

@@ -2,45 +2,29 @@
 
 package shared
 
-import (
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
-	"math/big"
-)
-
 type Volume struct {
-	Balance *big.Int `json:"balance,omitempty"`
-	Input   *big.Int `json:"input"`
-	Output  *big.Int `json:"output"`
+	Balance *int64 `json:"balance,omitempty"`
+	Input   int64  `json:"input"`
+	Output  int64  `json:"output"`
 }
 
-func (v Volume) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(v, "", false)
-}
-
-func (v *Volume) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, false); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *Volume) GetBalance() *big.Int {
+func (o *Volume) GetBalance() *int64 {
 	if o == nil {
 		return nil
 	}
 	return o.Balance
 }
 
-func (o *Volume) GetInput() *big.Int {
+func (o *Volume) GetInput() int64 {
 	if o == nil {
-		return big.NewInt(0)
+		return 0
 	}
 	return o.Input
 }
 
-func (o *Volume) GetOutput() *big.Int {
+func (o *Volume) GetOutput() int64 {
 	if o == nil {
-		return big.NewInt(0)
+		return 0
 	}
 	return o.Output
 }

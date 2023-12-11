@@ -18,7 +18,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -115,7 +115,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 				//Then("checking ledger account balance", func() {
 				//	var balancesCursorResponse *shared.BalancesCursorResponse
 				//	BeforeEach(func() {
-				//		reponse, err := Client().Ledger.V2.GetBalances(
+				//		reponse, err := Client().Ledger.V2GetBalances(
 				//			TestContext(),
 				//			operations.GetBalancesRequest{
 				//				Address: ptr("bank"),
@@ -209,7 +209,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Input).To(Equal(shared.WorkflowInstanceHistoryStageInput{
 								CreateTransaction: &shared.ActivityCreateTransaction{
 									Ledger: ptr("default"),
-									Data: &shared.PostTransaction{
+									Data: &shared.OrchestrationPostTransaction{
 										Postings: postings,
 										Metadata: metadata.Metadata{},
 									},
@@ -226,7 +226,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp = time.Time{}
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.ActivityCreateTransactionOutput{
-									Data: shared.Transaction{
+									Data: shared.OrchestrationTransaction{
 										ID:       big.NewInt(0),
 										Postings: postings,
 										Metadata: map[string]string{},

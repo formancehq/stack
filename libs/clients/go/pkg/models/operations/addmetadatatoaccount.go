@@ -8,32 +8,21 @@ import (
 )
 
 type AddMetadataToAccountRequest struct {
-	// Use an idempotency key
-	IdempotencyKey *string `header:"style=simple,explode=false,name=Idempotency-Key"`
 	// metadata
-	RequestBody map[string]string `request:"mediaType=application/json"`
+	RequestBody map[string]interface{} `request:"mediaType=application/json"`
 	// Exact address of the account. It must match the following regular expressions pattern:
 	// ```
 	// ^\w+(:\w+)*$
 	// ```
 	//
 	Address string `pathParam:"style=simple,explode=false,name=address"`
-	// Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
-	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
-func (o *AddMetadataToAccountRequest) GetIdempotencyKey() *string {
+func (o *AddMetadataToAccountRequest) GetRequestBody() map[string]interface{} {
 	if o == nil {
 		return nil
-	}
-	return o.IdempotencyKey
-}
-
-func (o *AddMetadataToAccountRequest) GetRequestBody() map[string]string {
-	if o == nil {
-		return map[string]string{}
 	}
 	return o.RequestBody
 }
@@ -43,13 +32,6 @@ func (o *AddMetadataToAccountRequest) GetAddress() string {
 		return ""
 	}
 	return o.Address
-}
-
-func (o *AddMetadataToAccountRequest) GetDryRun() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.DryRun
 }
 
 func (o *AddMetadataToAccountRequest) GetLedger() string {

@@ -17,7 +17,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -36,12 +36,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}
 		)
 		BeforeEach(func() {
-			response, err := Client().Ledger.V2.CreateTransaction(
+			response, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -57,12 +57,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			response, err = Client().Ledger.V2.CreateTransaction(
+			response, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: m1,
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(200),
 								Asset:       "USD",
@@ -78,9 +78,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			addMetadataResponse, err := Client().Ledger.V2.AddMetadataToAccount(
+			addMetadataResponse, err := Client().Ledger.V2AddMetadataToAccount(
 				TestContext(),
-				operations.AddMetadataToAccountRequest{
+				operations.V2AddMetadataToAccountRequest{
 					RequestBody: m2,
 					Address:     "foo:baz",
 					Ledger:      "default",
@@ -90,22 +90,22 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(addMetadataResponse.StatusCode).To(Equal(204))
 		})
 		It("should be listed on api with ListLogs", func() {
-			response, err := Client().Ledger.V2.ListLogs(
+			response, err := Client().Ledger.V2ListLogs(
 				TestContext(),
-				operations.ListLogsRequest{
+				operations.V2ListLogsRequest{
 					Ledger: "default",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			logsCursorResponse := response.LogsCursorResponse
+			logsCursorResponse := response.V2LogsCursorResponse
 			Expect(logsCursorResponse.Cursor.Data).To(HaveLen(3))
 
 			// Cannot check the date and the hash since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(big.NewInt(2)))
-			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.LogTypeSetMetadata))
+			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.V2LogTypeSetMetadata))
 			Expect(logsCursorResponse.Cursor.Data[0].Data).To(Equal(map[string]any{
 				"targetType": "ACCOUNT",
 				"metadata": map[string]any{
@@ -115,7 +115,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}))
 
 			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(big.NewInt((1))))
-			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.LogTypeNewTransaction))
+			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.V2LogTypeNewTransaction))
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[1].Data["accountMetadata"]).To(Equal(map[string]any{}))
@@ -135,7 +135,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}))
 
 			Expect(logsCursorResponse.Cursor.Data[2].ID).To(Equal(big.NewInt((0))))
-			Expect(logsCursorResponse.Cursor.Data[2].Type).To(Equal(shared.LogTypeNewTransaction))
+			Expect(logsCursorResponse.Cursor.Data[2].Type).To(Equal(shared.V2LogTypeNewTransaction))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
 			transaction = logsCursorResponse.Cursor.Data[2].Data["transaction"].(map[string]any)
@@ -154,12 +154,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 
 	type expectedLog struct {
 		id       *big.Int
-		typ      shared.LogType
+		typ      shared.V2LogType
 		postings []any
 	}
 
 	var (
-		compareLogs = func(log shared.Log, expected expectedLog) {
+		compareLogs = func(log shared.V2Log, expected expectedLog) {
 			Expect(log.ID).To(Equal(expected.id))
 			Expect(log.Type).To(Equal(expected.typ))
 			Expect(log.Data["accountMetadata"]).To(Equal(map[string]any{}))
@@ -182,12 +182,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			for i := int64(0); i < accountCounts; i++ {
 				now := time.Now().Round(time.Millisecond).UTC()
 
-				response, err := Client().Ledger.V2.CreateTransaction(
+				response, err := Client().Ledger.V2CreateTransaction(
 					TestContext(),
-					operations.CreateTransactionRequest{
-						PostTransaction: shared.PostTransaction{
+					operations.V2CreateTransactionRequest{
+						V2PostTransaction: shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{
+							Postings: []shared.V2Posting{
 								{
 									Amount:      big.NewInt(100),
 									Asset:       "USD",
@@ -205,7 +205,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 
 				expectedLogs = append(expectedLogs, expectedLog{
 					id:  big.NewInt(i),
-					typ: shared.LogTypeNewTransaction,
+					typ: shared.V2LogTypeNewTransaction,
 					postings: []any{
 						map[string]any{
 							"amount":      float64(100),
@@ -226,12 +226,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then(fmt.Sprintf("listing accounts using page size of %d", pageSize), func() {
 			var (
-				rsp *shared.LogsCursorResponse
+				rsp *shared.V2LogsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2.ListLogs(
+				response, err := Client().Ledger.V2ListLogs(
 					TestContext(),
-					operations.ListLogsRequest{
+					operations.V2ListLogsRequest{
 						Ledger:   "default",
 						PageSize: ptr(pageSize),
 					},
@@ -239,7 +239,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				rsp = response.LogsCursorResponse
+				rsp = response.V2LogsCursorResponse
 				Expect(rsp.Cursor.HasMore).To(BeTrue())
 				Expect(rsp.Cursor.Previous).To(BeNil())
 				Expect(rsp.Cursor.Next).NotTo(BeNil())
@@ -253,9 +253,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.V2.ListLogs(
+					response, err := Client().Ledger.V2ListLogs(
 						TestContext(),
-						operations.ListLogsRequest{
+						operations.V2ListLogsRequest{
 							Cursor: rsp.Cursor.Next,
 							Ledger: "default",
 						},
@@ -263,7 +263,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(response.StatusCode).To(Equal(200))
 
-					rsp = response.LogsCursorResponse
+					rsp = response.V2LogsCursorResponse
 				})
 				It("should return next page", func() {
 					Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
@@ -275,9 +275,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.V2.ListLogs(
+						response, err := Client().Ledger.V2ListLogs(
 							TestContext(),
-							operations.ListLogsRequest{
+							operations.V2ListLogsRequest{
 								Cursor: rsp.Cursor.Previous,
 								Ledger: "default",
 							},
@@ -285,7 +285,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Expect(err).ToNot(HaveOccurred())
 						Expect(response.StatusCode).To(Equal(200))
 
-						rsp = response.LogsCursorResponse
+						rsp = response.V2LogsCursorResponse
 					})
 					It("should return first page", func() {
 						Expect(rsp.Cursor.PageSize).To(Equal(pageSize))

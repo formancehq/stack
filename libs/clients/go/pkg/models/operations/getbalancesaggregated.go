@@ -4,34 +4,21 @@ package operations
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
-	"time"
 )
 
 type GetBalancesAggregatedRequest struct {
-	RequestBody map[string]interface{} `request:"mediaType=application/json"`
+	// Filter balances involving given account, either as source or destination.
+	Address *string `queryParam:"style=form,explode=true,name=address"`
 	// Name of the ledger.
-	Ledger string     `pathParam:"style=simple,explode=false,name=ledger"`
-	Pit    *time.Time `queryParam:"style=form,explode=true,name=pit"`
+	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
-func (g GetBalancesAggregatedRequest) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(g, "", false)
-}
-
-func (g *GetBalancesAggregatedRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, false); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *GetBalancesAggregatedRequest) GetRequestBody() map[string]interface{} {
+func (o *GetBalancesAggregatedRequest) GetAddress() *string {
 	if o == nil {
 		return nil
 	}
-	return o.RequestBody
+	return o.Address
 }
 
 func (o *GetBalancesAggregatedRequest) GetLedger() string {
@@ -39,13 +26,6 @@ func (o *GetBalancesAggregatedRequest) GetLedger() string {
 		return ""
 	}
 	return o.Ledger
-}
-
-func (o *GetBalancesAggregatedRequest) GetPit() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.Pit
 }
 
 type GetBalancesAggregatedResponse struct {

@@ -14,12 +14,9 @@ const (
 	ErrorsEnumInsufficientFund  ErrorsEnum = "INSUFFICIENT_FUND"
 	ErrorsEnumValidation        ErrorsEnum = "VALIDATION"
 	ErrorsEnumConflict          ErrorsEnum = "CONFLICT"
+	ErrorsEnumNoScript          ErrorsEnum = "NO_SCRIPT"
 	ErrorsEnumCompilationFailed ErrorsEnum = "COMPILATION_FAILED"
 	ErrorsEnumMetadataOverride  ErrorsEnum = "METADATA_OVERRIDE"
-	ErrorsEnumNotFound          ErrorsEnum = "NOT_FOUND"
-	ErrorsEnumRevertOccurring   ErrorsEnum = "REVERT_OCCURRING"
-	ErrorsEnumAlreadyRevert     ErrorsEnum = "ALREADY_REVERT"
-	ErrorsEnumNoPostings        ErrorsEnum = "NO_POSTINGS"
 )
 
 func (e ErrorsEnum) ToPointer() *ErrorsEnum {
@@ -40,17 +37,11 @@ func (e *ErrorsEnum) UnmarshalJSON(data []byte) error {
 		fallthrough
 	case "CONFLICT":
 		fallthrough
+	case "NO_SCRIPT":
+		fallthrough
 	case "COMPILATION_FAILED":
 		fallthrough
 	case "METADATA_OVERRIDE":
-		fallthrough
-	case "NOT_FOUND":
-		fallthrough
-	case "REVERT_OCCURRING":
-		fallthrough
-	case "ALREADY_REVERT":
-		fallthrough
-	case "NO_POSTINGS":
 		*e = ErrorsEnum(v)
 		return nil
 	default:

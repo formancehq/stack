@@ -115,9 +115,9 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 }
 
 func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName string, ledgerAggregatedBalanceQuery map[string]interface{}, at time.Time) (map[string]*big.Int, error) {
-	balances, err := s.client.Ledger.V2.GetBalancesAggregated(
+	balances, err := s.client.Ledger.V2GetBalancesAggregated(
 		ctx,
-		operations.GetBalancesAggregatedRequest{
+		operations.V2GetBalancesAggregatedRequest{
 			RequestBody: ledgerAggregatedBalanceQuery,
 			Ledger:      ledgerName,
 			Pit:         &at,
@@ -131,12 +131,12 @@ func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName s
 		return nil, errors.New("failed to get aggregated balances")
 	}
 
-	if balances.AggregateBalancesResponse == nil {
+	if balances.V2AggregateBalancesResponse == nil {
 		return nil, errors.New("no aggregated balance")
 	}
 
 	balanceMap := make(map[string]*big.Int)
-	for asset, balance := range balances.AggregateBalancesResponse.Data {
+	for asset, balance := range balances.V2AggregateBalancesResponse.Data {
 		balanceMap[asset] = balance
 	}
 

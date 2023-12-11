@@ -117,7 +117,7 @@ func extractOpenAPIErrorMessage(err error) error {
 	return err
 }
 
-func unwrapOpenAPIError(err error) *shared.ErrorResponse {
+func unwrapOpenAPIError(err error) *shared.V2ErrorResponse {
 	openapiError := &membershipclient.GenericOpenAPIError{}
 	if errors.As(err, &openapiError) {
 		body := openapiError.Body()
@@ -131,8 +131,8 @@ func unwrapOpenAPIError(err error) *shared.ErrorResponse {
 		}
 
 		if errResponse.ErrorCode != "" {
-			errorCode := shared.ErrorsEnum(errResponse.ErrorCode)
-			return &shared.ErrorResponse{
+			errorCode := shared.V2ErrorsEnum(errResponse.ErrorCode)
+			return &shared.V2ErrorResponse{
 				ErrorCode:    errorCode,
 				ErrorMessage: errResponse.ErrorMessage,
 				Details:      &errResponse.Details,

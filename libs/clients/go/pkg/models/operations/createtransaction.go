@@ -8,24 +8,15 @@ import (
 )
 
 type CreateTransactionRequest struct {
-	// Use an idempotency key
-	IdempotencyKey *string `header:"style=simple,explode=false,name=Idempotency-Key"`
 	// The request body must contain at least one of the following objects:
 	//   - `postings`: suitable for simple transactions
 	//   - `script`: enabling more complex transactions with Numscript
 	//
 	PostTransaction shared.PostTransaction `request:"mediaType=application/json"`
-	// Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
-	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
-}
-
-func (o *CreateTransactionRequest) GetIdempotencyKey() *string {
-	if o == nil {
-		return nil
-	}
-	return o.IdempotencyKey
+	// Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+	Preview *bool `queryParam:"style=form,explode=true,name=preview"`
 }
 
 func (o *CreateTransactionRequest) GetPostTransaction() shared.PostTransaction {
@@ -35,13 +26,6 @@ func (o *CreateTransactionRequest) GetPostTransaction() shared.PostTransaction {
 	return o.PostTransaction
 }
 
-func (o *CreateTransactionRequest) GetDryRun() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.DryRun
-}
-
 func (o *CreateTransactionRequest) GetLedger() string {
 	if o == nil {
 		return ""
@@ -49,17 +33,24 @@ func (o *CreateTransactionRequest) GetLedger() string {
 	return o.Ledger
 }
 
+func (o *CreateTransactionRequest) GetPreview() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Preview
+}
+
 type CreateTransactionResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// OK
-	CreateTransactionResponse *shared.CreateTransactionResponse
 	// Error
 	ErrorResponse *shared.ErrorResponse
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// OK
+	TransactionsResponse *shared.TransactionsResponse
 }
 
 func (o *CreateTransactionResponse) GetContentType() string {
@@ -67,13 +58,6 @@ func (o *CreateTransactionResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *CreateTransactionResponse) GetCreateTransactionResponse() *shared.CreateTransactionResponse {
-	if o == nil {
-		return nil
-	}
-	return o.CreateTransactionResponse
 }
 
 func (o *CreateTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
@@ -95,4 +79,11 @@ func (o *CreateTransactionResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
+}
+
+func (o *CreateTransactionResponse) GetTransactionsResponse() *shared.TransactionsResponse {
+	if o == nil {
+		return nil
+	}
+	return o.TransactionsResponse
 }

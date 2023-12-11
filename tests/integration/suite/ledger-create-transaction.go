@@ -20,7 +20,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -31,7 +31,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			msgs               chan *nats.Msg
 			cancelSubscription func()
 			timestamp          = time.Now().Round(time.Second).UTC()
-			rsp                *shared.CreateTransactionResponse
+			rsp                *shared.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
 
@@ -39,12 +39,12 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Ledger.V2.CreateTransaction(
+			response, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -61,15 +61,15 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			rsp = response.CreateTransactionResponse
+			rsp = response.V2CreateTransactionResponse
 		})
 		AfterEach(func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.V2.GetTransaction(
+			response, err := Client().Ledger.V2GetTransaction(
 				TestContext(),
-				operations.GetTransactionRequest{
+				operations.V2GetTransactionRequest{
 					Ledger: "default",
 					ID:     rsp.Data.ID,
 					Expand: pointer.For("volumes"),
@@ -78,14 +78,14 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			transactionResponse := response.GetTransactionResponse
-			Expect(transactionResponse.Data).To(Equal(shared.ExpandedTransaction{
+			transactionResponse := response.V2GetTransactionResponse
+			Expect(transactionResponse.Data).To(Equal(shared.V2ExpandedTransaction{
 				Timestamp: rsp.Data.Timestamp,
 				Postings:  rsp.Data.Postings,
 				Reference: rsp.Data.Reference,
 				Metadata:  rsp.Data.Metadata,
 				ID:        rsp.Data.ID,
-				PreCommitVolumes: map[string]map[string]shared.Volume{
+				PreCommitVolumes: map[string]map[string]shared.V2Volume{
 					"world": {
 						"USD": {
 							Input:   big.NewInt(0),
@@ -101,7 +101,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 						},
 					},
 				},
-				PostCommitVolumes: map[string]map[string]shared.Volume{
+				PostCommitVolumes: map[string]map[string]shared.V2Volume{
 					"world": {
 						"USD": {
 							Input:   big.NewInt(0),
@@ -119,9 +119,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			}))
 
-			accResponse, err := Client().Ledger.V2.GetAccount(
+			accResponse, err := Client().Ledger.V2GetAccount(
 				TestContext(),
-				operations.GetAccountRequest{
+				operations.V2GetAccountRequest{
 					Address: "alice",
 					Ledger:  "default",
 					Expand:  pointer.For("volumes"),
@@ -130,11 +130,11 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(accResponse.StatusCode).To(Equal(200))
 
-			accountResponse := accResponse.AccountResponse
-			Expect(accountResponse.Data).Should(Equal(shared.Account{
+			accountResponse := accResponse.V2AccountResponse
+			Expect(accountResponse.Data).Should(Equal(shared.V2Account{
 				Address:  "alice",
 				Metadata: metadata.Metadata{},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input:   big.NewInt(100),
 						Output:  big.NewInt(0),
@@ -145,17 +145,17 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		Then("trying to commit a new transaction with the same reference", func() {
 			var (
-				response *operations.CreateTransactionResponse
+				response *operations.V2CreateTransactionResponse
 				err      error
 			)
 			BeforeEach(func() {
 				// Create a transaction
-				response, err = Client().Ledger.V2.CreateTransaction(
+				response, err = Client().Ledger.V2CreateTransaction(
 					TestContext(),
-					operations.CreateTransactionRequest{
-						PostTransaction: shared.PostTransaction{
+					operations.V2CreateTransactionRequest{
+						V2PostTransaction: shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{
+							Postings: []shared.V2Posting{
 								{
 									Amount:      big.NewInt(100),
 									Asset:       "USD",
@@ -171,9 +171,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				)
 				Expect(err).ToNot(HaveOccurred())
 			})
-			It("Should fail with "+string(shared.ErrorsEnumConflict)+" error code", func() {
+			It("Should fail with "+string(shared.V2ErrorsEnumConflict)+" error code", func() {
 				Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-				Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumConflict))
+				Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumConflict))
 			})
 		})
 		It("should trigger a new event", func() {
@@ -261,12 +261,12 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
-			response, err := Client().Ledger.V2.CreateTransaction(
+			response, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -280,10 +280,10 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(400))
-			Expect(response.CreateTransactionResponse).To(BeNil())
+			Expect(response.V2CreateTransactionResponse).To(BeNil())
 
-			Expect(response.ErrorResponse).Should(Equal(&shared.ErrorResponse{
-				ErrorCode:    shared.ErrorsEnumInsufficientFund,
+			Expect(response.V2ErrorResponse).Should(Equal(&shared.V2ErrorResponse{
+				ErrorCode:    shared.V2ErrorsEnumInsufficientFund,
 				ErrorMessage: "running numscript: script execution failed: no more fund to withdraw",
 			}))
 		})
@@ -292,16 +292,16 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	When("creating a transaction on a ledger with an idempotency key", func() {
 		var (
 			err      error
-			response *operations.CreateTransactionResponse
+			response *operations.V2CreateTransactionResponse
 		)
 		createTransaction := func() {
-			response, err = Client().Ledger.V2.CreateTransaction(
+			response, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
+				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
-					PostTransaction: shared.PostTransaction{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -317,13 +317,13 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		BeforeEach(createTransaction)
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(response.CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+			Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
 		})
 		Then("replaying with the same IK", func() {
 			BeforeEach(createTransaction)
 			It("should respond with the same tx id", func() {
 				Expect(err).To(Succeed())
-				Expect(response.CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+				Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
 			})
 		})
 	})
@@ -331,16 +331,16 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	When("creating a transaction on a ledger with a negative amount in the script", func() {
 		var (
 			err      error
-			response *operations.CreateTransactionResponse
+			response *operations.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2.CreateTransaction(
+			response, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
+				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
-					PostTransaction: shared.PostTransaction{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Script: &shared.PostTransactionScript{
+						Script: &shared.V2PostTransactionScript{
 							Plain: `send [COIN -100] (
 								source = @world
 								destination = @bob
@@ -352,27 +352,27 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.ErrorsEnumCompilationFailed)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).To(Succeed())
 			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.ErrorResponse).NotTo(BeNil())
-			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumCompilationFailed))
-			Expect(response.ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjE1XHJcbiAgXHUwMDFiWzM0bXxcdTAwMWJbMG1cclxuXHUwMDFiWzMxbTEgfCBcdTAwMWJbMG1cdTAwMWJbOTBtc2VuZCBbQ09JTiAtMTAwXHUwMDFiWzBtXVx1MDAxYls5MG0gKFxyXG5cdTAwMWJbMG0gIFx1MDAxYlszNG18XHUwMDFiWzBtICAgICAgICAgICAgICAgIFx1MDAxYlszMW1eXHUwMDFiWzBtIG5vIHZpYWJsZSBhbHRlcm5hdGl2ZSBhdCBpbnB1dCAnW0NPSU4tMTAwXSdcclxuIn0=")))
+			Expect(response.V2ErrorResponse).NotTo(BeNil())
+			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
+			Expect(response.V2ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjE1XHJcbiAgXHUwMDFiWzM0bXxcdTAwMWJbMG1cclxuXHUwMDFiWzMxbTEgfCBcdTAwMWJbMG1cdTAwMWJbOTBtc2VuZCBbQ09JTiAtMTAwXHUwMDFiWzBtXVx1MDAxYls5MG0gKFxyXG5cdTAwMWJbMG0gIFx1MDAxYlszNG18XHUwMDFiWzBtICAgICAgICAgICAgICAgIFx1MDAxYlszMW1eXHUwMDFiWzBtIG5vIHZpYWJsZSBhbHRlcm5hdGl2ZSBhdCBpbnB1dCAnW0NPSU4tMTAwXSdcclxuIn0=")))
 		})
 	})
 	When("creating a transaction on a ledger with a negative amount in the script", func() {
 		var (
 			err      error
-			response *operations.CreateTransactionResponse
+			response *operations.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2.CreateTransaction(
+			response, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
+				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
-					PostTransaction: shared.PostTransaction{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Script: &shared.PostTransactionScript{
+						Script: &shared.V2PostTransactionScript{
 							Plain: `vars {
 								monetary $amount
 							}
@@ -389,27 +389,27 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.ErrorsEnumCompilationFailed)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).To(Succeed())
 			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.ErrorResponse).NotTo(BeNil())
-			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumCompilationFailed))
-			Expect(response.ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
+			Expect(response.V2ErrorResponse).NotTo(BeNil())
+			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
+			Expect(response.V2ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
 		})
 	})
 	When("creating a transaction on a ledger with error on script", func() {
 		var (
 			err      error
-			response *operations.CreateTransactionResponse
+			response *operations.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2.CreateTransaction(
+			response, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
+				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
-					PostTransaction: shared.PostTransaction{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Script: &shared.PostTransactionScript{
+						Script: &shared.V2PostTransactionScript{
 							Plain: `XXX`,
 							Vars:  map[string]interface{}{},
 						},
@@ -418,27 +418,27 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.ErrorsEnumCompilationFailed)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).To(Succeed())
 			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.ErrorResponse).NotTo(BeNil())
-			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumCompilationFailed))
-			Expect(response.ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjBcclxuICBcdTAwMWJbMzRtfFx1MDAxYlswbVxyXG5cdTAwMWJbMzFtMSB8IFx1MDAxYlswbVx1MDAxYls5MG1cdTAwMWJbMG1YWFhcdTAwMWJbOTBtXHJcblx1MDAxYlswbSAgXHUwMDFiWzM0bXxcdTAwMWJbMG0gXHUwMDFiWzMxbV5eXHUwMDFiWzBtIG1pc21hdGNoZWQgaW5wdXQgJ1hYWCcgZXhwZWN0aW5nIHtORVdMSU5FLCAndmFycycsICdzZXRfdHhfbWV0YScsICdzZXRfYWNjb3VudF9tZXRhJywgJ3ByaW50JywgJ2ZhaWwnLCAnc2VuZCcsICdzYXZlJ31cclxuIn0=")))
+			Expect(response.V2ErrorResponse).NotTo(BeNil())
+			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
+			Expect(response.V2ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjBcclxuICBcdTAwMWJbMzRtfFx1MDAxYlswbVxyXG5cdTAwMWJbMzFtMSB8IFx1MDAxYlswbVx1MDAxYls5MG1cdTAwMWJbMG1YWFhcdTAwMWJbOTBtXHJcblx1MDAxYlswbSAgXHUwMDFiWzM0bXxcdTAwMWJbMG0gXHUwMDFiWzMxbV5eXHUwMDFiWzBtIG1pc21hdGNoZWQgaW5wdXQgJ1hYWCcgZXhwZWN0aW5nIHtORVdMSU5FLCAndmFycycsICdzZXRfdHhfbWV0YScsICdzZXRfYWNjb3VudF9tZXRhJywgJ3ByaW50JywgJ2ZhaWwnLCAnc2VuZCcsICdzYXZlJ31cclxuIn0=")))
 		})
 	})
 	When("creating a transaction with no postings", func() {
 		var (
 			err      error
-			response *operations.CreateTransactionResponse
+			response *operations.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2.CreateTransaction(
+			response, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
+				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
-					PostTransaction: shared.PostTransaction{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Script: &shared.PostTransactionScript{
+						Script: &shared.V2PostTransactionScript{
 							Plain: `vars {
 								monetary $amount
 							}
@@ -453,28 +453,28 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.ErrorsEnumNoPostings)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumNoPostings)+" code", func() {
 			Expect(err).To(Succeed())
 			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.ErrorResponse).NotTo(BeNil())
-			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumNoPostings))
+			Expect(response.V2ErrorResponse).NotTo(BeNil())
+			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumNoPostings))
 		})
 	})
 	When("creating a transaction with metadata override", func() {
 		var (
 			err      error
-			response *operations.CreateTransactionResponse
+			response *operations.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2.CreateTransaction(
+			response, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
+				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
-					PostTransaction: shared.PostTransaction{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{
 							"foo": "baz",
 						},
-						Script: &shared.PostTransactionScript{
+						Script: &shared.V2PostTransactionScript{
 							Plain: `send [COIN 100] (
 								source = @world
 								destination = @bob
@@ -487,11 +487,11 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.ErrorsEnumMetadataOverride)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumMetadataOverride)+" code", func() {
 			Expect(err).To(Succeed())
 			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.ErrorResponse).NotTo(BeNil())
-			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumMetadataOverride))
+			Expect(response.V2ErrorResponse).NotTo(BeNil())
+			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumMetadataOverride))
 		})
 	})
 })

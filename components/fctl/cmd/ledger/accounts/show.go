@@ -12,7 +12,7 @@ import (
 )
 
 type ShowStore struct {
-	Account *shared.Account `json:"account"`
+	Account *shared.V2Account `json:"account"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -66,7 +66,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.V2.GetAccount(cmd.Context(), operations.GetAccountRequest{
+	response, err := ledgerClient.Ledger.V2GetAccount(cmd.Context(), operations.V2GetAccountRequest{
 		Address: args[0],
 		Ledger:  ledger,
 	})
@@ -74,15 +74,15 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Account = &response.AccountResponse.Data
+	c.store.Account = &response.V2AccountResponse.Data
 
 	return c, nil
 }
