@@ -34,7 +34,7 @@ func isVersionSupported(
 }
 
 func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName string, ledgerAggregatedBalanceQuery map[string]interface{}, at time.Time) (map[string]*big.Int, error) {
-	infoResponse, err := s.client.Ledger.V2.GetInfo(ctx)
+	infoResponse, err := s.client.Ledger.V2GetInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName s
 		return nil, errors.New("failed to get ledger info")
 	}
 
-	if !isVersionSupported(infoResponse.ConfigInfoResponse, "v2.0.0-beta.1") {
+	if !isVersionSupported(infoResponse.V2ConfigInfoResponse, "v2.0.0-beta.1") {
 		return nil, errors.New("ledger version not supported")
 	}
 
