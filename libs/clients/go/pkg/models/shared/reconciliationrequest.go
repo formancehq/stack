@@ -8,7 +8,8 @@ import (
 )
 
 type ReconciliationRequest struct {
-	At time.Time `json:"at"`
+	ReconciledAtLedger  time.Time `json:"reconciledAtLedger"`
+	ReconciledAtPayment time.Time `json:"reconciledAtPayment"`
 }
 
 func (r ReconciliationRequest) MarshalJSON() ([]byte, error) {
@@ -22,9 +23,16 @@ func (r *ReconciliationRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *ReconciliationRequest) GetAt() time.Time {
+func (o *ReconciliationRequest) GetReconciledAtLedger() time.Time {
 	if o == nil {
 		return time.Time{}
 	}
-	return o.At
+	return o.ReconciledAtLedger
+}
+
+func (o *ReconciliationRequest) GetReconciledAtPayment() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.ReconciledAtPayment
 }
