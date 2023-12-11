@@ -1,0 +1,95 @@
+VERSION --arg-scope-and-set --pass-args 0.7
+
+ARG core=github.com/formancehq/earthly:v0.5.2
+IMPORT $core AS core
+IMPORT ./../ AS stack
+
+sources:
+  FROM core+base-image
+  WORKDIR /src
+  COPY *.json .
+  COPY *.js .
+  COPY templates templates
+  COPY versions versions
+  SAVE ARTIFACT /src
+
+install:
+  FROM node:20-alpine
+  WORKDIR /src
+  COPY (+sources/src) /src
+  RUN npm install
+  SAVE ARTIFACT /src
+
+build:
+  FROM node:20-alpine
+  ARG --required version
+  ENV version_short=$(echo ${version} | sed 's![^.]*$!!' | sed '$ s/.$//')
+  WORKDIR /src
+  COPY (+install/src) /src
+  RUN --secret GITHUB_TOKEN node main.js create $version
+  RUN --secret GITHUB_TOKEN node main.js generate $version
+  RUN --secret GITHUB_TOKEN node main.js operator $version_short
+  BUILD +sdk-generate-all --version=${version_short}
+  SAVE ARTIFACT /src/versions AS LOCAL ./versions
+  SAVE ARTIFACT /src/build AS LOCAL ./build
+  SAVE ARTIFACT /src
+
+sdk-generate:
+  ARG --required version
+  ARG LANG=go
+  FROM node:20-alpine
+  RUN apk update && apk add yq git
+  WORKDIR /src
+  COPY (stack+speakeasy/speakeasy) /bin/speakeasy
+  COPY (+install/src) /src
+  RUN git clone https://github.com/formancehq/formance-sdk-${LANG}.git ./sdks/${LANG}
+  RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows/speakeasy_sdk_publish.yml
+  COPY --dir templates/sdk/${LANG}/* ./sdks/${LANG}/
+  RUN --no-cache \
+      --secret SPEAKEASY_API_KEY \
+      speakeasy generate sdk -s ./versions/${version}/openapi.json -o ./sdks/${LANG} -l ${LANG}
+  SAVE ARTIFACT /src/sdks/${LANG} AS LOCAL ./sdks/generate/${LANG}
+
+sdk-publish:
+  ARG --required version
+  ARG LANG=go
+  FROM node:20-alpine
+  RUN apk update && apk add yq git
+  WORKDIR /src
+  COPY (+install/src) /src
+  LET version_full=$(yq .version ./versions/${version}/main.yaml)
+  COPY --dir ./sdks/generate/${LANG} ./sdks/${LANG}
+  WORKDIR /src/sdks/${LANG}
+  RUN git config --global user.email "support@formance.com"
+  RUN git config --global user.name "NumaryBot"
+  RUN git checkout -b release/${version_full}
+  RUN git add .
+  RUN git commit -m "release(sdk): ${version_full}"
+  RUN git remote remove origin
+  RUN --secret GITHUB_TOKEN git remote add origin https://${GITHUB_TOKEN}@github.com/formancehq/formance-sdk-${LANG}.git
+  RUN --secret GITHUB_TOKEN git push origin release/${version_full}
+  SAVE ARTIFACT /src/sdks/${LANG} AS LOCAL ./sdks/publish/${LANG}
+
+sdk-generate-all:
+  ARG --required version
+  LOCALLY
+  FOR lang IN $(ls templates/sdk)
+      BUILD --pass-args +sdk-generate --LANG=${lang}
+  END
+
+sdk-publish-all:
+  ARG --required version
+  LOCALLY
+  BUILD --pass-args +sdk-generate-all
+  FOR lang IN $(ls templates/sdk)
+      BUILD --pass-args +sdk-publish --LANG=${lang}
+  END
+
+release:
+  ARG --required version
+  LOCALLY
+  ENV version_short=$(echo ${version} | sed 's![^.]*$!!' | sed '$ s/.$//')
+  RUN cp ./versions/${version_short}/operator.yaml ./../helm/regions/templates/versions/${version_short}.yaml
+  RUN cp ./versions/${version_short}/operator.yaml ./../docs/openapi/${version_short}.yaml
+  BUILD +sdk-publish-all --version=${version_short}
+
