@@ -41,6 +41,18 @@ func TestCreateBankAccounts(t *testing.T) {
 			},
 		},
 		{
+			name: "nominal with metadata",
+			req: &CreateBankAccountRequest{
+				AccountNumber: "0112345678",
+				IBAN:          "FR7630006000011234567890189",
+				SwiftBicCode:  "HBUKGB4B",
+				Country:       "FR",
+				ConnectorID:   connectorDummyPay.ID.String(),
+				Name:          "test_nominal_metadata",
+				Metadata:      map[string]string{"test": "metadata"},
+			},
+		},
+		{
 			name: "invalid connector id",
 			req: &CreateBankAccountRequest{
 				AccountNumber: "0112345678",

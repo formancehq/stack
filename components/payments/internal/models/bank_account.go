@@ -20,6 +20,7 @@ type BankAccount struct {
 	IBAN          string `bun:"decrypted_iban,scanonly"`
 	SwiftBicCode  string `bun:"decrypted_swift_bic_code,scanonly"`
 	Country       string `bun:"country"`
+	Metadata      map[string]string
 
 	AccountID *AccountID
 }

@@ -15,11 +15,11 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/accounts"
-	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
+	"github.com/get-momo/atlar-v1-go-client/client/counterparties"
+	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -46,15 +46,15 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		}()
 
 		// Pagination works by cursor token.
-		params := accounts.GetV1AccountsParams{
+		accountsParams := accounts.GetV1AccountsParams{
 			Context: ctx,
 			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
 			limit := int64(config.PageSize)
-			params.Token = &token
-			params.Limit = &limit
-			pagedAccounts, err := client.Accounts.GetV1Accounts(&params)
+			accountsParams.Token = &token
+			accountsParams.Limit = &limit
+			pagedAccounts, err := client.Accounts.GetV1Accounts(&accountsParams)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
@@ -63,6 +63,32 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 			token = pagedAccounts.Payload.NextToken
 
 			if err := ingestAccountsBatch(ctx, connectorID, ingester, metricsRegistry, pagedAccounts); err != nil {
+				return err
+			}
+
+			if token == "" {
+				break
+			}
+		}
+
+		// Pagination works by cursor token.
+		externalAccountsParams := external_accounts.GetV1ExternalAccountsParams{
+			Context: ctx,
+			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
+		}
+		for token := ""; ; {
+			limit := int64(config.PageSize)
+			accountsParams.Token = &token
+			accountsParams.Limit = &limit
+			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&externalAccountsParams)
+			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
+				return err
+			}
+
+			token = pagedExternalAccounts.Payload.NextToken
+
+			if err := ingestExternalAccountsBatch(ctx, connectorID, ingester, metricsRegistry, pagedExternalAccounts, client); err != nil {
 				return err
 			}
 
@@ -108,7 +134,7 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		openingDate, err := ParseAtlarTimestamp(account.Created)
+		createdAt, err := ParseAtlarTimestamp(account.Created)
 		if err != nil {
 			return fmt.Errorf("failed to parse opening date: %w", err)
 		}
@@ -118,7 +144,7 @@ func ingestAccountsBatch(
 				Reference:   *account.ID,
 				ConnectorID: connectorID,
 			},
-			CreatedAt:    openingDate,
+			CreatedAt:    createdAt,
 			Reference:    *account.ID,
 			ConnectorID:  connectorID,
 			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
@@ -174,25 +200,40 @@ func ingestAccountsBatch(
 	return nil
 }
 
-func ExtractAccountMetadata(account *atlar_models.Account) metadata.Metadata {
-	result := metadata.Metadata{}
-	result = result.Merge(ComputeAccountMetadataBool("fictive", account.Fictive))
-	result = result.Merge(ComputeAccountMetadata("bank/id", account.Bank.ID))
-	result = result.Merge(ComputeAccountMetadata("bank/name", account.Bank.Name))
-	result = result.Merge(ComputeAccountMetadata("bank/bic", account.Bank.Bic))
-	result = result.Merge(IdentifiersToMetadata(account.Identifiers))
-	result = result.Merge(ComputeAccountMetadata("alias", account.Alias))
-	result = result.Merge(ComputeAccountMetadata("owner/name", account.Owner.Name))
-	return result
-}
+func ingestExternalAccountsBatch(
+	ctx context.Context,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	metricsRegistry metrics.MetricsRegistry,
+	pagedExternalAccounts *external_accounts.GetV1ExternalAccountsOK,
+	client *atlar_client.Rest,
+) error {
+	accountsBatch := ingestion.AccountBatch{}
 
-func IdentifiersToMetadata(identifiers []*atlar_models.AccountIdentifier) metadata.Metadata {
-	result := metadata.Metadata{}
-	for _, i := range identifiers {
-		result = result.Merge(ComputeAccountMetadata(
-			fmt.Sprintf("identifier/%s", *i.Type),
-			*i.Number,
-		))
+	for _, externalAccount := range pagedExternalAccounts.Payload.Items {
+		counterpartyParams := counterparties.GetV1CounterpartiesIDParams{
+			Context: ctx,
+			ID:      externalAccount.CounterpartyID,
+		}
+		counterparty_response, err := client.Counterparties.GetV1CounterpartiesID(&counterpartyParams)
+		if err != nil {
+			return err
+		}
+		counterparty := counterparty_response.Payload
+
+		newAccount, err := ExternalAccountFromAtlarData(connectorID, externalAccount, counterparty)
+		if err != nil {
+			return err
+		}
+
+		accountsBatch = append(accountsBatch, newAccount)
 	}
-	return result
+
+	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
+		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
+		return err
+	}
+	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs)
+
+	return nil
 }

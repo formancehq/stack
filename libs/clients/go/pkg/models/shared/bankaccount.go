@@ -8,14 +8,15 @@ import (
 )
 
 type BankAccount struct {
-	AccountNumber *string   `json:"accountNumber,omitempty"`
-	ConnectorID   string    `json:"connectorID"`
-	Country       string    `json:"country"`
-	CreatedAt     time.Time `json:"createdAt"`
-	Iban          *string   `json:"iban,omitempty"`
-	ID            string    `json:"id"`
-	Provider      *string   `json:"provider,omitempty"`
-	SwiftBicCode  *string   `json:"swiftBicCode,omitempty"`
+	AccountNumber *string           `json:"accountNumber,omitempty"`
+	ConnectorID   string            `json:"connectorID"`
+	Country       string            `json:"country"`
+	CreatedAt     time.Time         `json:"createdAt"`
+	Iban          *string           `json:"iban,omitempty"`
+	ID            string            `json:"id"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
+	Provider      *string           `json:"provider,omitempty"`
+	SwiftBicCode  *string           `json:"swiftBicCode,omitempty"`
 }
 
 func (b BankAccount) MarshalJSON() ([]byte, error) {
@@ -69,6 +70,13 @@ func (o *BankAccount) GetID() string {
 		return ""
 	}
 	return o.ID
+}
+
+func (o *BankAccount) GetMetadata() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
 }
 
 func (o *BankAccount) GetProvider() *string {

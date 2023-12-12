@@ -2,10 +2,12 @@ package atlar
 
 import (
 	"context"
+	"errors"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
 )
@@ -59,11 +61,55 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 }
 
 func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
-	return connectors.ErrNotImplemented
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:        "Create external bank account",
+		Key:         taskNameCreateExternalBankAccount,
+		BankAccount: bankAccount,
+	})
+	if err != nil {
+		return err
+	}
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{ScheduleOption: models.OPTIONS_RUN_NOW_SYNC}); err != nil {
+		return err
+	}
+
+	// TODO: it might make sense to return the external account ID so the client can use it for initiating a payment
+	return nil
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	return connectors.ErrNotImplemented
+	err := ValidateTransferInitiation(transfer)
+	if err != nil {
+		return err
+	}
+
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, _ := contextutil.Detached(ctx.Context())
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:       "Initiate payment",
+		Key:        taskNameInitiatePayment,
+		TransferID: transfer.ID.String(),
+	})
+	if err != nil {
+		return err
+	}
+
+	scheduleOption := models.OPTIONS_RUN_NOW_SYNC
+	scheduledAt := transfer.ScheduledAt
+	if !scheduledAt.IsZero() {
+		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
+	}
+
+	if err := ctx.Scheduler().Schedule(detachedCtx, descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: scheduleOption,
+		ScheduleAt:     scheduledAt,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
 }
 
 var _ connectors.Connector = &Connector{}

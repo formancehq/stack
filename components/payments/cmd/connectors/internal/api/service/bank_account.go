@@ -11,12 +11,13 @@ import (
 )
 
 type CreateBankAccountRequest struct {
-	AccountNumber string `json:"accountNumber"`
-	IBAN          string `json:"iban"`
-	SwiftBicCode  string `json:"swiftBicCode"`
-	Country       string `json:"country"`
-	ConnectorID   string `json:"connectorID"`
-	Name          string `json:"name"`
+	AccountNumber string            `json:"accountNumber"`
+	IBAN          string            `json:"iban"`
+	SwiftBicCode  string            `json:"swiftBicCode"`
+	Country       string            `json:"country"`
+	ConnectorID   string            `json:"connectorID"`
+	Name          string            `json:"name"`
+	Metadata      map[string]string `json:"metadata"`
 }
 
 func (c *CreateBankAccountRequest) Validate() error {
@@ -65,6 +66,7 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 		Country:       req.Country,
 		ConnectorID:   connectorID,
 		Name:          req.Name,
+		Metadata:      req.Metadata,
 	}
 	err = s.store.CreateBankAccount(ctx, bankAccount)
 	if err != nil {
