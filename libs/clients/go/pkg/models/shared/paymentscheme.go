@@ -10,6 +10,8 @@ import (
 type PaymentScheme string
 
 const (
+	PaymentSchemeUnknown    PaymentScheme = "unknown"
+	PaymentSchemeOther      PaymentScheme = "other"
 	PaymentSchemeVisa       PaymentScheme = "visa"
 	PaymentSchemeMastercard PaymentScheme = "mastercard"
 	PaymentSchemeAmex       PaymentScheme = "amex"
@@ -17,17 +19,21 @@ const (
 	PaymentSchemeDiscover   PaymentScheme = "discover"
 	PaymentSchemeJcb        PaymentScheme = "jcb"
 	PaymentSchemeUnionpay   PaymentScheme = "unionpay"
+	PaymentSchemeAlipay     PaymentScheme = "alipay"
+	PaymentSchemeCup        PaymentScheme = "cup"
 	PaymentSchemeSepaDebit  PaymentScheme = "sepa debit"
 	PaymentSchemeSepaCredit PaymentScheme = "sepa credit"
 	PaymentSchemeSepa       PaymentScheme = "sepa"
 	PaymentSchemeApplePay   PaymentScheme = "apple pay"
 	PaymentSchemeGooglePay  PaymentScheme = "google pay"
+	PaymentSchemeDoku       PaymentScheme = "doku"
+	PaymentSchemeDragonpay  PaymentScheme = "dragonpay"
+	PaymentSchemeMaestro    PaymentScheme = "maestro"
+	PaymentSchemeMolpay     PaymentScheme = "molpay"
 	PaymentSchemeA2a        PaymentScheme = "a2a"
 	PaymentSchemeAchDebit   PaymentScheme = "ach debit"
 	PaymentSchemeAch        PaymentScheme = "ach"
 	PaymentSchemeRtp        PaymentScheme = "rtp"
-	PaymentSchemeUnknown    PaymentScheme = "unknown"
-	PaymentSchemeOther      PaymentScheme = "other"
 )
 
 func (e PaymentScheme) ToPointer() *PaymentScheme {
@@ -40,6 +46,10 @@ func (e *PaymentScheme) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch v {
+	case "unknown":
+		fallthrough
+	case "other":
+		fallthrough
 	case "visa":
 		fallthrough
 	case "mastercard":
@@ -54,6 +64,10 @@ func (e *PaymentScheme) UnmarshalJSON(data []byte) error {
 		fallthrough
 	case "unionpay":
 		fallthrough
+	case "alipay":
+		fallthrough
+	case "cup":
+		fallthrough
 	case "sepa debit":
 		fallthrough
 	case "sepa credit":
@@ -64,6 +78,14 @@ func (e *PaymentScheme) UnmarshalJSON(data []byte) error {
 		fallthrough
 	case "google pay":
 		fallthrough
+	case "doku":
+		fallthrough
+	case "dragonpay":
+		fallthrough
+	case "maestro":
+		fallthrough
+	case "molpay":
+		fallthrough
 	case "a2a":
 		fallthrough
 	case "ach debit":
@@ -71,10 +93,6 @@ func (e *PaymentScheme) UnmarshalJSON(data []byte) error {
 	case "ach":
 		fallthrough
 	case "rtp":
-		fallthrough
-	case "unknown":
-		fallthrough
-	case "other":
 		*e = PaymentScheme(v)
 		return nil
 	default:

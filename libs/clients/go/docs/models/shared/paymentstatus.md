@@ -3,11 +3,12 @@
 
 ## Values
 
-| Name                      | Value                     |
-| ------------------------- | ------------------------- |
-| `PaymentStatusPending`    | PENDING                   |
-| `PaymentStatusActive`     | ACTIVE                    |
-| `PaymentStatusTerminated` | TERMINATED                |
-| `PaymentStatusFailed`     | FAILED                    |
-| `PaymentStatusSucceeded`  | SUCCEEDED                 |
-| `PaymentStatusCancelled`  | CANCELLED                 |
+| Name                     | Value                    |
+| ------------------------ | ------------------------ |
+| `PaymentStatusPending`   | PENDING                  |
+| `PaymentStatusSucceeded` | SUCCEEDED                |
+| `PaymentStatusCancelled` | CANCELLED                |
+| `PaymentStatusFailed`    | FAILED                   |
+| `PaymentStatusExpired`   | EXPIRED                  |
+| `PaymentStatusRefunded`  | REFUNDED                 |
+| `PaymentStatusOther`     | OTHER                    |

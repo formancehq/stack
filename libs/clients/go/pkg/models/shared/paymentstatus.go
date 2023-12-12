@@ -10,12 +10,13 @@ import (
 type PaymentStatus string
 
 const (
-	PaymentStatusPending    PaymentStatus = "PENDING"
-	PaymentStatusActive     PaymentStatus = "ACTIVE"
-	PaymentStatusTerminated PaymentStatus = "TERMINATED"
-	PaymentStatusFailed     PaymentStatus = "FAILED"
-	PaymentStatusSucceeded  PaymentStatus = "SUCCEEDED"
-	PaymentStatusCancelled  PaymentStatus = "CANCELLED"
+	PaymentStatusPending   PaymentStatus = "PENDING"
+	PaymentStatusSucceeded PaymentStatus = "SUCCEEDED"
+	PaymentStatusCancelled PaymentStatus = "CANCELLED"
+	PaymentStatusFailed    PaymentStatus = "FAILED"
+	PaymentStatusExpired   PaymentStatus = "EXPIRED"
+	PaymentStatusRefunded  PaymentStatus = "REFUNDED"
+	PaymentStatusOther     PaymentStatus = "OTHER"
 )
 
 func (e PaymentStatus) ToPointer() *PaymentStatus {
@@ -30,15 +31,17 @@ func (e *PaymentStatus) UnmarshalJSON(data []byte) error {
 	switch v {
 	case "PENDING":
 		fallthrough
-	case "ACTIVE":
-		fallthrough
-	case "TERMINATED":
-		fallthrough
-	case "FAILED":
-		fallthrough
 	case "SUCCEEDED":
 		fallthrough
 	case "CANCELLED":
+		fallthrough
+	case "FAILED":
+		fallthrough
+	case "EXPIRED":
+		fallthrough
+	case "REFUNDED":
+		fallthrough
+	case "OTHER":
 		*e = PaymentStatus(v)
 		return nil
 	default:

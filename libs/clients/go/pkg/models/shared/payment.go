@@ -13,6 +13,7 @@ type PaymentRaw struct {
 
 type Payment struct {
 	Adjustments          []PaymentAdjustment `json:"adjustments"`
+	Amount               *big.Int            `json:"amount"`
 	Asset                string              `json:"asset"`
 	ConnectorID          string              `json:"connectorID"`
 	CreatedAt            time.Time           `json:"createdAt"`
@@ -45,6 +46,13 @@ func (o *Payment) GetAdjustments() []PaymentAdjustment {
 		return []PaymentAdjustment{}
 	}
 	return o.Adjustments
+}
+
+func (o *Payment) GetAmount() *big.Int {
+	if o == nil {
+		return big.NewInt(0)
+	}
+	return o.Amount
 }
 
 func (o *Payment) GetAsset() string {
