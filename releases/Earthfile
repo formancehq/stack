@@ -45,8 +45,7 @@ sdk-generate:
   RUN git clone https://github.com/formancehq/formance-sdk-${LANG}.git ./sdks/${LANG}
   RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows/speakeasy_sdk_publish.yml
   COPY --dir templates/sdk/${LANG}/* ./sdks/${LANG}/
-  RUN --no-cache \
-      --secret SPEAKEASY_API_KEY \
+  RUN --secret SPEAKEASY_API_KEY \
       speakeasy generate sdk -s ./versions/${version}/openapi.json -o ./sdks/${LANG} -l ${LANG}
   SAVE ARTIFACT /src/sdks/${LANG} AS LOCAL ./sdks/generate/${LANG}
 
