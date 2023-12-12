@@ -81,7 +81,8 @@ func (o module) Versions() map[string]modules.Version {
 					{
 						Port: 8080,
 						AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
-							return stackv1beta3.NewClientConfiguration()
+							return stackv1beta3.NewClientConfiguration().WithAdditionalScopes(modules.ModulesToScopes(o.DependsOn()...)...)
+
 						},
 						ExposeHTTP:              modules.DefaultExposeHTTP,
 						HasVersionEndpoint:      true,
