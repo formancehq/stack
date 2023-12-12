@@ -2,10 +2,12 @@ package atlar
 
 import (
 	"context"
+	"errors"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
 )
@@ -76,6 +78,14 @@ func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAcc
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
+	err := ValidateTransferInitiation(transfer)
+	if err != nil {
+		return err
+	}
+
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, _ := contextutil.Detached(ctx.Context())
 	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name:       "Initiate payment",
 		Key:        taskNameInitiatePayment,
@@ -84,7 +94,18 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	if err != nil {
 		return err
 	}
-	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{ScheduleOption: models.OPTIONS_RUN_NOW_SYNC}); err != nil {
+
+	scheduleOption := models.OPTIONS_RUN_NOW_SYNC
+	scheduledAt := transfer.ScheduledAt
+	if !scheduledAt.IsZero() {
+		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
+	}
+
+	if err := ctx.Scheduler().Schedule(detachedCtx, descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: scheduleOption,
+		ScheduleAt:     scheduledAt,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 		return err
 	}
 

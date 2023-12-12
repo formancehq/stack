@@ -3,7 +3,9 @@ package atlar
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math/big"
+	"regexp"
 	"strings"
 	"time"
 
@@ -18,6 +20,12 @@ import (
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/credit_transfers"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
+)
+
+var (
+	initiatePayoutAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_payout"))...)
 )
 
 func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID string) task.Task {
@@ -31,21 +39,55 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
+		logger.Info("initiate payment for transfer-initiation %s", transferID)
+
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
 			return err
 		}
 
-		err = validateTransferInitiation(transfer)
+		attrs := metric.WithAttributes(connectorAttrs...)
+		var paymentID *models.PaymentID
+		defer func() {
+			if err != nil {
+				ctx, cancel := contextutil.Detached(ctx)
+				defer cancel()
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
+					logger.Error("failed to update transfer initiation status: %v", err)
+				}
+			}
+		}()
+
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", transfer.Attempts, time.Now())
 		if err != nil {
 			return err
+		}
+
+		attrs = initiatePayoutAttrs
+
+		logger.Info("initiate payment between", transfer.SourceAccountID, " and %s", transfer.DestinationAccountID)
+
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
+		}()
+
+		if transfer.SourceAccount != nil {
+			if transfer.SourceAccount.Type == models.AccountTypeExternal {
+				err = errors.New("payin not implemented: source account must be an internal account")
+				return err
+			}
 		}
 
 		currency, precision, err := currency.GetCurrencyAndPrecisionFromAsset(supportedCurrenciesWithDecimal, transfer.Asset)
 		if err != nil {
 			return err
 		}
+
+		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
 
 		paymentSchemeType := "SCT" // SEPA Credit Transfer
 		remittanceInformationType := "UNSTRUCTURED"
@@ -67,7 +109,7 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			DestinationExternalAccountID: &transfer.DestinationAccount.Reference,
 			Amount:                       &amount,
 			Date:                         &dateString,
-			ExternalID:                   transfer.ID.Reference,
+			ExternalID:                   serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.Attempts),
 			PaymentSchemeType:            &paymentSchemeType,
 			RemittanceInformation: &atlar_models.RemittanceInformation{
 				Type:  &remittanceInformationType,
@@ -75,38 +117,32 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			},
 		}
 
-		logger.Debug(createPaymentRequest, "createPaymentRequest")
-
 		postCreditTransfersParams := credit_transfers.PostV1CreditTransfersParams{
 			Context:        ctx,
 			CreditTransfer: &createPaymentRequest,
 		}
 		postCreditTransferResponse, err := client.CreditTransfers.PostV1CreditTransfers(&postCreditTransfersParams)
-		if err != nil {
-			ctx, cancel := contextutil.Detached(ctx)
-			defer cancel()
-			if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, nil, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
-				logger.Error("failed to update transfer initiation status: %v", err)
-			}
-			return err
-		}
 
-		paymentID := &models.PaymentID{
+		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
+
+		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
 				Reference: postCreditTransferResponse.Payload.ID,
-				Type:      models.PaymentTypeTransfer,
+				Type:      models.PaymentTypePayOut,
 			},
 			ConnectorID: connectorID,
 		}
-		if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, err.Error(), transfer.Attempts, time.Now()); err != nil {
-			logger.Error("failed to update transfer initiation status: %v", err)
+
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+		if err != nil {
+			return err
 		}
 
 		return nil
 	}
 }
 
-func validateTransferInitiation(transfer *models.TransferInitiation) error {
+func ValidateTransferInitiation(transfer *models.TransferInitiation) error {
 	if transfer == nil {
 		return errors.New("transfer cannot be nil")
 	}
@@ -159,4 +195,29 @@ func getTransfer(
 	}
 
 	return transfer, nil
+}
+
+func serializeAtlarPaymentExternalID(ID string, attempts int) string {
+	return fmt.Sprintf("%s_%d", ID, attempts)
+}
+
+var deserializeAtlarPaymentExternalIDRegex = regexp.MustCompile(`^([^\_]+)_([0-9]+)$`)
+
+func deserializeAtlarPaymentExternalID(serialized string) (string, int, error) {
+	var attempts int
+
+	// Find matches in the input string
+	matches := deserializeAtlarPaymentExternalIDRegex.FindStringSubmatch(serialized)
+	if matches == nil || len(matches) != 3 {
+		return "", 0, errors.New("cannot deserialize malformed externalID")
+	}
+
+	parsed, err := fmt.Sscanf(matches[2], "%d", &attempts)
+	if err != nil {
+		return "", 0, errors.New("cannot deserialize malformed externalID")
+	}
+	if parsed != 1 {
+		return "", 0, errors.New("cannot deserialize malformed externalID")
+	}
+	return matches[1], attempts, nil
 }
