@@ -81,6 +81,10 @@ func (b *BuiltConnector) CreateExternalBankAccount(ctx task.ConnectorContext, ac
 	return nil
 }
 
+func (b *BuiltConnector) HandleWebhook(ctx task.ConnectorContext, webhook *models.Webhook) error {
+	return nil
+}
+
 func (b *BuiltConnector) Name() string {
 	return b.name
 }

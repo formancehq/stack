@@ -15,4 +15,5 @@ type Store interface {
 	Uninstall(ctx context.Context, connectorID models.ConnectorID) error
 	UpdateConfig(ctx context.Context, connectorID models.ConnectorID, config json.RawMessage) error
 	GetConnector(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error)
+	CreateWebhook(ctx context.Context, webhook *models.Webhook) error
 }

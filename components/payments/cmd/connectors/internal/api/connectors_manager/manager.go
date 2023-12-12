@@ -390,6 +390,29 @@ func (l *ConnectorsManager[ConnectorConfig]) CreateExternalBankAccount(ctx conte
 	return nil
 }
 
+func (l *ConnectorsManager[ConnectorConfig]) HandleWebhook(ctx context.Context, webhook *models.Webhook) error {
+	connectorManager, err := l.getManager(webhook.ConnectorID)
+	if err != nil {
+		return ErrConnectorNotFound
+	}
+
+	if err := l.store.CreateWebhook(ctx, webhook); err != nil {
+		return newStorageError(err, "creating webhook")
+	}
+
+	err = connectorManager.connector.HandleWebhook(task.NewConnectorContext(ctx, connectorManager.scheduler), webhook)
+	if err != nil {
+		switch {
+		case errors.Is(err, connectors.ErrNotImplemented):
+			return errors.Wrap(ErrValidation, "webhook handling not implemented for this connector")
+		default:
+			return fmt.Errorf("handling webhook: %w", err)
+		}
+	}
+
+	return nil
+}
+
 func (l *ConnectorsManager[ConnectorConfig]) validateAssets(
 	ctx context.Context,
 	connectorManager *ConnectorManager,

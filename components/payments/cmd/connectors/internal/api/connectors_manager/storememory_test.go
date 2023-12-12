@@ -123,6 +123,10 @@ func (i *InMemoryConnectorStore) ReadConfig(ctx context.Context, connectorID mod
 	return nil
 }
 
+func (i *InMemoryConnectorStore) CreateWebhook(ctx context.Context, webhook *models.Webhook) error {
+	return nil
+}
+
 var _ Store = &InMemoryConnectorStore{}
 
 func NewInMemoryStore() *InMemoryConnectorStore {

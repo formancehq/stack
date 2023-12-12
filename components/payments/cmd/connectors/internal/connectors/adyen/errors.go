@@ -14,4 +14,7 @@ var (
 
 	// ErrMissingName is returned when the name is missing.
 	ErrMissingName = errors.New("missing name from config")
+
+	// ErrMissingHMACKey is returned when the hmacKey is missing.
+	ErrMissingHMACKey = errors.New("missing hmacKey from config")
 )

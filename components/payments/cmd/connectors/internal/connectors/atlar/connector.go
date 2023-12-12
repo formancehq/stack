@@ -35,7 +35,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 	}
 
 	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_INDEFINITELY,
+		ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
 		Duration:       c.cfg.PollingPeriod.Duration,
 		// No need to restart this task, since the connector is not existing or
 		// was uninstalled previously, the task does not exists in the database
@@ -110,6 +110,10 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	}
 
 	return nil
+}
+
+func (c *Connector) HandleWebhook(ctx task.ConnectorContext, webhook *models.Webhook) error {
+	return connectors.ErrNotImplemented
 }
 
 var _ connectors.Connector = &Connector{}

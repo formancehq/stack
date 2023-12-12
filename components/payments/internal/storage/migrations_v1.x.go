@@ -127,6 +127,37 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE payments.payment ADD COLUMN IF NOT EXISTS initial_amount numeric NOT NULL DEFAULT 0;
+					UPDATE payments.payment SET initial_amount = amount;
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'EXPIRED';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'REFUNDED';
+
+					CREATE TABLE IF NOT EXISTS connectors.webhook (
+						id uuid NOT NULL,
+						connector_id CHARACTER VARYING NOT NULL,
+						request_body bytea NOT NULL,
+						CONSTRAINT webhook_pk PRIMARY KEY (id)
+					);
+
+					ALTER TABLE connectors.webhook DROP CONSTRAINT IF EXISTS webhook_connector_id;
+					ALTER TABLE connectors.webhook ADD CONSTRAINT webhook_connector_id
+					FOREIGN KEY (connector_id)
+					REFERENCES connectors.connector (id)
+					ON DELETE CASCADE
+					NOT DEFERRABLE
+					INITIALLY IMMEDIATE
+					;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 

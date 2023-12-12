@@ -20,8 +20,9 @@ import (
 )
 
 type connectorHandler struct {
-	Handler  http.Handler
-	Provider models.ConnectorProvider
+	Handler        http.Handler
+	WebhookHandler http.Handler
+	Provider       models.ConnectorProvider
 
 	// TODO(polo): refactor to remove this ugly hack to access the connector manager
 	initiatePayment           service.PaymentHandler
@@ -72,6 +73,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 		) connectorHandler {
 			return connectorHandler{
 				Handler:                   connectorRouter(loader.Name(), b),
+				WebhookHandler:            webhookConnectorRouter(loader.Name(), b),
 				Provider:                  loader.Name(),
 				initiatePayment:           cm.InitiatePayment,
 				createExternalBankAccount: cm.CreateExternalBankAccount,

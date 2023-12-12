@@ -441,7 +441,7 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				}
 			}
 		}()
-	case models.OPTIONS_RUN_INDEFINITELY:
+	case models.OPTIONS_RUN_PERIODICALLY:
 		go func() {
 			defer func() {
 				defer span.End()

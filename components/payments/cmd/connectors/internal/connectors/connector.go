@@ -19,6 +19,8 @@ type Connector interface {
 	InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
 	// CreateExternalBankAccount is used to create a bank account on the connector side.
 	CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error
+	// HandleWebhook is used to handle a webhook from the connector.
+	HandleWebhook(ctx task.ConnectorContext, webhook *models.Webhook) error
 	// GetSupportedCurrenciesAndDecimals returns a map of supported currencies and their decimals.
 	SupportedCurrenciesAndDecimals() map[string]int
 }

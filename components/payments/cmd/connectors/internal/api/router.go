@@ -63,6 +63,12 @@ func httpRouter(
 
 		connectorGroup.PathPrefix("/" + h.Provider.StringLower()).Handler(
 			http.StripPrefix("/connectors", h.Handler))
+
+		connectorGroup.PathPrefix("/webhooks/" + h.Provider.String()).Handler(
+			http.StripPrefix("/connectors", h.WebhookHandler))
+
+		connectorGroup.PathPrefix("/webhooks/" + h.Provider.StringLower()).Handler(
+			http.StripPrefix("/connectors", h.WebhookHandler))
 	}
 
 	return rootMux
@@ -91,7 +97,23 @@ func connectorRouter[Config models.ConnectorConfigObject](
 	return r
 }
 
+func webhookConnectorRouter[Config models.ConnectorConfigObject](
+	provider models.ConnectorProvider,
+	b backend.ManagerBackend[Config],
+) *mux.Router {
+	r := mux.NewRouter()
+
+	addWebhookRoute(r, provider, "/{connectorID}", http.MethodPost, webhooks(b, V1))
+
+	return r
+}
+
 func addRoute(r *mux.Router, provider models.ConnectorProvider, path, method string, handler http.Handler) {
 	r.Path("/" + provider.String() + path).Methods(method).Handler(handler)
 	r.Path("/" + provider.StringLower() + path).Methods(method).Handler(handler)
+}
+
+func addWebhookRoute(r *mux.Router, provider models.ConnectorProvider, path, method string, handler http.Handler) {
+	r.Path("/webhooks/" + provider.String() + path).Methods(method).Handler(handler)
+	r.Path("/webhooks/" + provider.StringLower() + path).Methods(method).Handler(handler)
 }

@@ -29,4 +29,6 @@ type Reader interface {
 	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
+	GetWebhook(ctx context.Context, id uuid.UUID) (*models.Webhook, error)
+	GetPayment(ctx context.Context, id string) (*models.Payment, error)
 }
