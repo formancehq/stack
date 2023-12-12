@@ -55,11 +55,11 @@ data:
         				import cors
         				import auth payments
         			}
-        			@matcher {
+        			@poolsmatcher {
         				path /api/payments/pools*
         				method POST GET DELETE
         			}
-        			handle @matcher {
+        			handle @poolsmatcher {
         				uri strip_prefix /api/payments
         				reverse_proxy 127.0.0.1:10002
         				import cors
@@ -114,6 +114,15 @@ data:
         				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
+        			}
+        			@paymentWebhooksmatcher {
+        				path /api/payments/connectors/webhooks*
+        				method POST
+        			}
+        			handle @paymentWebhooksmatcher {
+        				uri strip_prefix /api/payments
+        				reverse_proxy 127.0.0.1:10003
+        				import cors
         			}
         			@configsmatcher {
         				path /api/payments/configs*

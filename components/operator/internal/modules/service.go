@@ -302,6 +302,7 @@ type Path struct {
 	Path    string
 	Methods []string
 	Name    string
+	Secured bool
 }
 
 var DefaultExposeHTTP = &ExposeHTTP{}

@@ -334,6 +334,7 @@ func paymentsServicesSplitted(
 				{
 					Path:    "/pools",
 					Methods: []string{"POST", "GET", "DELETE"},
+					Name:    "pools",
 				},
 				{
 					Path:    "/accounts",
@@ -375,6 +376,12 @@ func paymentsServicesSplitted(
 				{
 					Path: "/connectors",
 					Name: "connectors",
+				},
+				{
+					Path:    "/connectors/webhooks",
+					Methods: []string{"POST"},
+					Name:    "paymentWebhooks",
+					Secured: true,
 				},
 				{
 					Path: "/configs",
