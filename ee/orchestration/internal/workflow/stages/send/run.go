@@ -2,12 +2,12 @@ package send
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
@@ -19,15 +19,15 @@ const (
 	moveFromLedgerMetadata = "orchestration/move-from-ledger"
 )
 
-func extractFormanceAccountID(metadataKey string, metadata map[string]string) (string, error) {
+func extractFormanceAccountID[V any](metadataKey string, metadata map[string]V) (string, error) {
 	formanceAccountID, ok := metadata[metadataKey]
 	if !ok {
 		return "", fmt.Errorf("expected '%s' metadata containing formance account ID", metadataKey)
 	}
-	if formanceAccountID == "" {
+	if reflect.ValueOf(formanceAccountID).IsZero() {
 		return "", errors.New("formance account ID empty")
 	}
-	return formanceAccountID, nil
+	return fmt.Sprint(formanceAccountID), nil
 }
 
 func justError[T any](v T, err error) error {
@@ -92,14 +92,14 @@ func savePayment(ctx workflow.Context, paymentID string) (*shared.Payment, error
 		return nil, errors.Wrapf(err, "retrieving payment: %s", paymentID)
 	}
 	reference := paymentAccountName(paymentID)
-	_, err = activities.CreateTransaction(internal.InfiniteRetryContext(ctx), internalLedger, shared.V2PostTransaction{
-		Postings: []shared.V2Posting{{
+	_, err = activities.CreateTransaction(internal.InfiniteRetryContext(ctx), internalLedger, shared.PostTransaction{
+		Postings: []shared.Posting{{
 			Amount:      payment.InitialAmount,
 			Asset:       payment.Asset,
 			Destination: paymentAccountName(paymentID),
 			Source:      "world",
 		}},
-		Metadata:  metadata.Metadata{},
+		Metadata:  map[string]interface{}{},
 		Reference: &reference,
 	})
 	if err != nil {
@@ -162,7 +162,7 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]string{
 			moveToLedgerMetadata: walletDestination.Ledger,
 		},
 	})); err != nil {
@@ -172,7 +172,7 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destination.ID, &shared.CreditWalletRequest{
 		Amount:  *amount,
 		Balance: &destination.Balance,
-		Metadata: metadata.Metadata{
+		Metadata: map[string]string{
 			moveFromLedgerMetadata: walletSource.Ledger,
 		},
 	})
@@ -235,21 +235,21 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]string{
 			moveToLedgerMetadata: destination.Ledger,
 		},
 	})); err != nil {
 		return err
 	}
 
-	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, shared.V2PostTransaction{
-		Postings: []shared.V2Posting{{
+	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, shared.PostTransaction{
+		Postings: []shared.Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveFromLedgerMetadata: wallet.Ledger,
 		},
 	}))
@@ -276,14 +276,14 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 		})
 	}
 
-	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.V2PostTransaction{
-		Postings: []shared.V2Posting{{
+	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.PostTransaction{
+		Postings: []shared.Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveToLedgerMetadata: wallet.Ledger,
 		},
 	})); err != nil {
@@ -299,7 +299,7 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 			},
 		}},
 		Balance: &destination.Balance,
-		Metadata: metadata.Metadata{
+		Metadata: map[string]string{
 			moveFromLedgerMetadata: source.Ledger,
 		},
 	})
@@ -310,37 +310,37 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 		return errors.New("amount must be specified")
 	}
 	if source.Ledger == destination.Ledger {
-		return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, shared.V2PostTransaction{
-			Postings: []shared.V2Posting{{
+		return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, shared.PostTransaction{
+			Postings: []shared.Posting{{
 				Amount:      amount.Amount,
 				Asset:       amount.Asset,
 				Destination: destination.ID,
 				Source:      source.ID,
 			}},
-			Metadata: metadata.Metadata{},
+			Metadata: map[string]interface{}{},
 		}))
 	}
-	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.V2PostTransaction{
-		Postings: []shared.V2Posting{{
+	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.PostTransaction{
+		Postings: []shared.Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveToLedgerMetadata: destination.Ledger,
 		},
 	})); err != nil {
 		return err
 	}
-	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, shared.V2PostTransaction{
-		Postings: []shared.V2Posting{{
+	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, shared.PostTransaction{
+		Postings: []shared.Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: metadata.Metadata{
+		Metadata: map[string]any{
 			moveFromLedgerMetadata: source.Ledger,
 		},
 	}))
@@ -371,13 +371,13 @@ func runAccountToPayment(ctx workflow.Context, connectorID *string, source *Ledg
 	}); err != nil {
 		return err
 	}
-	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.V2PostTransaction{
-		Postings: []shared.V2Posting{{
+	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.PostTransaction{
+		Postings: []shared.Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: metadata.Metadata{},
+		Metadata: map[string]any{},
 	}))
 }

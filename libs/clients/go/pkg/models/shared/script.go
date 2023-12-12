@@ -2,15 +2,12 @@
 
 package shared
 
-type ScriptVars struct {
-}
-
 type Script struct {
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Plain    string                 `json:"plain"`
 	// Reference to attach to the generated transaction
-	Reference *string     `json:"reference,omitempty"`
-	Vars      *ScriptVars `json:"vars,omitempty"`
+	Reference *string                `json:"reference,omitempty"`
+	Vars      map[string]interface{} `json:"vars,omitempty"`
 }
 
 func (o *Script) GetMetadata() map[string]interface{} {
@@ -34,7 +31,7 @@ func (o *Script) GetReference() *string {
 	return o.Reference
 }
 
-func (o *Script) GetVars() *ScriptVars {
+func (o *Script) GetVars() map[string]interface{} {
 	if o == nil {
 		return nil
 	}

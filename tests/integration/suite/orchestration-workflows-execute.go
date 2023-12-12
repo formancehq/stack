@@ -221,16 +221,16 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt).NotTo(BeZero())
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Attempt).To(Equal(int64(1)))
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution).To(BeNil())
-							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp).
+							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].Timestamp).
 								NotTo(BeZero())
-							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp = time.Time{}
+							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].Timestamp = time.Time{}
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.V2WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.V2ActivityCreateTransactionOutput{
-									Data: shared.V2Transaction{
-										ID:       big.NewInt(0),
+									Data: []shared.OrchestrationV2Transaction{{
+										Txid:     big.NewInt(0),
 										Postings: postings,
 										Metadata: map[string]string{},
-									},
+									}},
 								},
 							}))
 						})

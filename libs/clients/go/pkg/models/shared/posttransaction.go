@@ -7,12 +7,9 @@ import (
 	"time"
 )
 
-type PostTransactionScriptVars struct {
-}
-
 type PostTransactionScript struct {
-	Plain string                     `json:"plain"`
-	Vars  *PostTransactionScriptVars `json:"vars,omitempty"`
+	Plain string                 `json:"plain"`
+	Vars  map[string]interface{} `json:"vars,omitempty"`
 }
 
 func (o *PostTransactionScript) GetPlain() string {
@@ -22,7 +19,7 @@ func (o *PostTransactionScript) GetPlain() string {
 	return o.Plain
 }
 
-func (o *PostTransactionScript) GetVars() *PostTransactionScriptVars {
+func (o *PostTransactionScript) GetVars() map[string]interface{} {
 	if o == nil {
 		return nil
 	}

@@ -281,24 +281,22 @@ import (
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"log"
-	"math/big"
 )
 
 func main() {
 	s := formancesdkgo.New()
 
 	ctx := context.Background()
-	res, err := s.Ledger.V2AddMetadataOnTransaction(ctx, operations.V2AddMetadataOnTransactionRequest{
-		RequestBody: map[string]string{
-			"admin": "true",
+	res, err := s.Accounts.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
+		RequestBody: map[string]interface{}{
+			"key": "string",
 		},
-		DryRun: formancesdkgo.Bool(true),
-		ID:     big.NewInt(1234),
-		Ledger: "ledger001",
+		Address: "users:001",
+		Ledger:  "ledger001",
 	})
 	if err != nil {
 
-		var e *V2ErrorResponse
+		var e *ErrorResponse
 		if errors.As(err, &e) {
 			// handle error
 			log.Fatal(e.Error())
