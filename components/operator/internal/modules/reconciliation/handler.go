@@ -45,7 +45,7 @@ func (o module) Versions() map[string]modules.Version {
 					{
 						InjectPostgresVariables: true,
 						AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
-							return stackv1beta3.NewClientConfiguration(modules.ModulesToScopes(o.DependsOn()...)...)
+							return stackv1beta3.NewClientConfiguration().WithAdditionalScopes(modules.ModulesToScopes(Module.DependsOn()...)...)
 						},
 						HasVersionEndpoint: true,
 						ListenEnvVar:       "LISTEN",

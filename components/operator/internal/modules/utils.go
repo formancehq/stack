@@ -49,9 +49,7 @@ func GetResourcesWithDefault(
 }
 
 func ModulesToScopes(modules ...Module) []string {
-	str := []string{
-		"openid",
-	}
+	str := []string{}
 	for _, module := range modules {
 		str = append(str, fmt.Sprintf("%s:%s", module.Name(), "read"))
 		str = append(str, fmt.Sprintf("%s:%s", module.Name(), "write"))

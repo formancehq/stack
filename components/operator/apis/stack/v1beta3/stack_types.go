@@ -60,6 +60,9 @@ type ClientConfiguration struct {
 	Scopes []string `json:"scopes,omitempty"`
 }
 
+func (cfg ClientConfiguration) CompareEqual(other ClientConfiguration) bool {
+	return reflect.DeepEqual(cfg, other)
+}
 func (cfg ClientConfiguration) WithAdditionalScopes(scopes ...string) ClientConfiguration {
 	cfg.Scopes = append(cfg.Scopes, scopes...)
 	return cfg
@@ -75,9 +78,9 @@ func (cfg ClientConfiguration) WithPostLogoutRedirectUris(redirectUris ...string
 	return cfg
 }
 
-func NewClientConfiguration(scopes ...string) ClientConfiguration {
+func NewClientConfiguration() ClientConfiguration {
 	return ClientConfiguration{
-		Scopes: scopes, // Required scope
+		Scopes: []string{"openid"}, // Required scope
 	}
 }
 
@@ -222,13 +225,24 @@ func (in *Stack) GetOrCreateClient(name string, configuration ClientConfiguratio
 	if in.Status.StaticAuthClients == nil {
 		in.Status.StaticAuthClients = map[string]StaticClient{}
 	}
+
 	if _, ok := in.Status.StaticAuthClients[name]; !ok {
 		in.Status.StaticAuthClients[name] = StaticClient{
 			ID:                  name,
 			Secrets:             []string{ClientSecretGenerator()},
 			ClientConfiguration: configuration,
 		}
+		return in.Status.StaticAuthClients[name]
 	}
+
+	if !configuration.CompareEqual(in.Status.StaticAuthClients[name].ClientConfiguration) {
+		in.Status.StaticAuthClients[name] = StaticClient{
+			ID:                  name,
+			Secrets:             []string{ClientSecretGenerator()},
+			ClientConfiguration: configuration,
+		}
+	}
+
 	return in.Status.StaticAuthClients[name]
 }
 

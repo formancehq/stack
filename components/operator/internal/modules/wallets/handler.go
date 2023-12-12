@@ -138,7 +138,7 @@ func service(ctx modules.ReconciliationConfig) modules.Services {
 		ListenEnvVar:       "LISTEN",
 		Annotations:        ctx.Configuration.Spec.Services.Wallets.Annotations.Service,
 		AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
-			return stackv1beta3.NewClientConfiguration(modules.ModulesToScopes(Module.DependsOn()...)...)
+			return stackv1beta3.NewClientConfiguration().WithAdditionalScopes(modules.ModulesToScopes(Module.DependsOn()...)...)
 		},
 		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 			return modules.Container{
