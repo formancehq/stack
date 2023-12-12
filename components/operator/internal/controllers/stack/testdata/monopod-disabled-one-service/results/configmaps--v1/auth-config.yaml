@@ -9,7 +9,6 @@ data:
               PostLogoutRedirectUris:
                 - http://example.net/auth/destroy
               scopes:
-                - openid
                 - profile
                 - email
                 - offline
@@ -22,6 +21,8 @@ data:
               PostLogoutRedirectUris: []
               scopes:
                 - openid
+                - ledger:read
+                - ledger:write
               id: wallets
               secrets:
                 - mocked-secret
