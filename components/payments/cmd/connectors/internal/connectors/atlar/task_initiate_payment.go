@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/credit_transfers"
@@ -80,9 +81,25 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			Context:        ctx,
 			CreditTransfer: &createPaymentRequest,
 		}
-		_, err = client.CreditTransfers.PostV1CreditTransfers(&postCreditTransfersParams)
+		postCreditTransferResponse, err := client.CreditTransfers.PostV1CreditTransfers(&postCreditTransfersParams)
 		if err != nil {
+			ctx, cancel := contextutil.Detached(ctx)
+			defer cancel()
+			if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, nil, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
+				logger.Error("failed to update transfer initiation status: %v", err)
+			}
 			return err
+		}
+
+		paymentID := &models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: postCreditTransferResponse.Payload.ID,
+				Type:      models.PaymentTypeTransfer,
+			},
+			ConnectorID: connectorID,
+		}
+		if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, err.Error(), transfer.Attempts, time.Now()); err != nil {
+			logger.Error("failed to update transfer initiation status: %v", err)
 		}
 
 		return nil
