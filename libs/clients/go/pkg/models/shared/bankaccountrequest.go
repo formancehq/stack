@@ -3,12 +3,13 @@
 package shared
 
 type BankAccountRequest struct {
-	AccountNumber *string `json:"accountNumber,omitempty"`
-	ConnectorID   string  `json:"connectorID"`
-	Country       string  `json:"country"`
-	Iban          *string `json:"iban,omitempty"`
-	Name          string  `json:"name"`
-	SwiftBicCode  *string `json:"swiftBicCode,omitempty"`
+	AccountNumber *string           `json:"accountNumber,omitempty"`
+	ConnectorID   string            `json:"connectorID"`
+	Country       string            `json:"country"`
+	Iban          *string           `json:"iban,omitempty"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
+	Name          string            `json:"name"`
+	SwiftBicCode  *string           `json:"swiftBicCode,omitempty"`
 }
 
 func (o *BankAccountRequest) GetAccountNumber() *string {
@@ -37,6 +38,13 @@ func (o *BankAccountRequest) GetIban() *string {
 		return nil
 	}
 	return o.Iban
+}
+
+func (o *BankAccountRequest) GetMetadata() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
 }
 
 func (o *BankAccountRequest) GetName() string {
