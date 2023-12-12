@@ -67,7 +67,8 @@ pipeline:
                         "id": "ACCOUNT-%s-%s".format(this.payload.ledger, p.source),
                         "document": {
                             "data": {
-                                "address": p.source
+                                "address": p.source,
+                                "metadata": {}
                             },
                             "indexed": {
                                 "address": p.source
@@ -79,7 +80,8 @@ pipeline:
                         "id": "ACCOUNT-%s-%s".format(this.payload.ledger, p.destination),
                         "document": {
                             "data": {
-                                "address": p.destination
+                                "address": p.destination,
+                                "metadata": {}
                             },
                             "indexed": {
                                 "address": p.destination
@@ -108,20 +110,21 @@ pipeline:
         processors:
         - bloblang: |
             root = this.payload.metadata.map_each(item -> {
-              "script": "ctx._source.data.metadata[\"" + item.key + "\"]=\"" + item.value + "\"",
+              "script": "if (ctx._source.data.metadata == null) { ctx._source.data.metadata = ['" + item.key + "': '" + item.value + "'] }  ctx._source.data.metadata['" + item.key + "']='" + item.value + "'",
               "action": "update",
               "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),
               "upsert": {
                 "data": { 
-                  "address": this,
+                  "address": this.payload.targetId,
                   "metadata": { item.key: item.value },
                   "ledger": this.payload.ledger
                 },
                 "indexed": { 
-                  "address": this,
+                  "address": this.payload.targetId,
                   "ledger": this.payload.ledger
                 },
-                "kind": "ACCOUNT"
+                "kind": "ACCOUNT",
+                "when": this.date
               }
             }).values()
         - unarchive:
