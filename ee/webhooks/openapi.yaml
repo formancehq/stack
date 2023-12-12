@@ -70,6 +70,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
 
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
         default:
           description: Error
           content:
@@ -95,6 +102,20 @@ paths:
       responses:
         "200":
           description: Config successfully deleted.
+
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        "404":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
         default:
           description: Error
@@ -125,6 +146,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AttemptResponse'
+
+        "404":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
         default:
           description: Error
@@ -186,6 +221,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
 
+        "404":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
         default:
           description: Error
           content:
@@ -224,6 +266,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
+
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
         default:
           description: Error

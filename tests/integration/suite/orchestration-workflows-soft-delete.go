@@ -2,6 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
@@ -68,36 +69,26 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 
 	When("deleting a non-uuid workflow", func() {
 		It("should return 400 with unknown", func() {
-			response, err := Client().Orchestration.V2DeleteWorkflow(
+			_, err := Client().Orchestration.V2DeleteWorkflow(
 				TestContext(),
 				operations.V2DeleteWorkflowRequest{
 					FlowID: "unknown",
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(400))
-		})
-		It("should return 400, with empty spaces'      '", func() {
-			response, err := Client().Orchestration.V2DeleteWorkflow(
-				TestContext(),
-				operations.V2DeleteWorkflowRequest{
-					FlowID: "      ",
-				},
-			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(400))
+			Expect(err).To(HaveOccurred())
+			Expect(err.(*sdkerrors.V2Error).ErrorCode).To(Equal(sdkerrors.V2ErrorErrorCodeValidation))
 		})
 	})
 	When("deleting a non-existing workflow", func() {
 		It("should return 404", func() {
-			response, err := Client().Orchestration.V2DeleteWorkflow(
+			_, err := Client().Orchestration.V2DeleteWorkflow(
 				TestContext(),
 				operations.V2DeleteWorkflowRequest{
 					FlowID: uuid.New(),
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(404))
+			Expect(err).To(HaveOccurred())
+			Expect(err.(*sdkerrors.V2Error).ErrorCode).To(Equal(sdkerrors.V2ErrorErrorCodeNotFound))
 		})
 	})
 })

@@ -108,7 +108,7 @@ deploy:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (components+tidy/go.* --components=operator) .
+    COPY --pass-args +tidy/go.* .
     WORKDIR /src/components/operator
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT apis AS LOCAL apis
@@ -142,9 +142,18 @@ tests:
     END
 
 pre-commit:
+    BUILD --pass-args +tidy
+    BUILD --pass-args +lint
     BUILD --pass-args +generate
     BUILD --pass-args +manifests
     BUILD --pass-args +helm-update
 
+
 openapi:
     RUN echo "not implemented"
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/components/operator
+    DO --pass-args stack+GO_TIDY

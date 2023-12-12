@@ -31,8 +31,8 @@ type mapper[SRC any, DST any] func(src SRC) DST
 
 func newListResponse[SRC any, DST any](cursor interface {
 	GetData() []SRC
-	GetNext() string
-	GetPrevious() string
+	GetNext() *string
+	GetPrevious() *string
 	GetHasMore() bool
 }, mapper mapper[SRC, DST],
 ) *ListResponse[DST] {
@@ -41,10 +41,20 @@ func newListResponse[SRC any, DST any](cursor interface {
 		ret = append(ret, mapper(item))
 	}
 
+	next := ""
+	if n := cursor.GetNext(); n != nil {
+		next = *n
+	}
+
+	previous := ""
+	if n := cursor.GetPrevious(); n != nil {
+		previous = *n
+	}
+
 	return &ListResponse[DST]{
 		Data:     ret,
-		Next:     cursor.GetNext(),
-		Previous: cursor.GetPrevious(),
+		Next:     next,
+		Previous: previous,
 		HasMore:  cursor.GetHasMore(),
 	}
 }
@@ -136,7 +146,7 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	}
 
 	postTransaction := PostTransaction{
-		Script: &PostTransactionScript{
+		Script: &shared.PostTransactionScript{
 			Plain: BuildDebitWalletScript(sources...),
 			Vars: map[string]interface{}{
 				"destination": dest.getAccount(m.chart),
@@ -172,7 +182,7 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		return ErrHoldNotFound
 	}
 
-	hold := ExpandedDebitHoldFromLedgerAccount(*account)
+	hold := ExpandedDebitHoldFromLedgerAccount(account)
 	if hold.Remaining.Uint64() == 0 {
 		return ErrClosedHold
 	}
@@ -182,16 +192,22 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		return err
 	}
 
+	vars := map[string]interface{}{
+		"hold": m.chart.GetHoldAccount(debit.HoldID),
+		"amount": map[string]any{
+			"amount": amount,
+			"asset":  hold.Asset,
+		},
+		"dest": hold.Destination.getAccount(m.chart),
+	}
+	if debit.Final {
+		vars["void_destination"] = m.chart.GetMainBalanceAccount(hold.WalletID)
+	}
+
 	postTransaction := PostTransaction{
-		Script: &PostTransactionScript{
+		Script: &shared.PostTransactionScript{
 			Plain: BuildConfirmHoldScript(debit.Final, hold.Asset),
-			Vars: map[string]interface{}{
-				"hold": m.chart.GetHoldAccount(debit.HoldID),
-				"amount": map[string]any{
-					"amount": amount,
-					"asset":  hold.Asset,
-				},
-			},
+			Vars:  vars,
 		},
 		Metadata: TransactionMetadata(metadata.Metadata{}),
 	}
@@ -209,16 +225,17 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 		return errors.Wrap(err, "getting account")
 	}
 
-	hold := ExpandedDebitHoldFromLedgerAccount(*account)
+	hold := ExpandedDebitHoldFromLedgerAccount(account)
 	if hold.IsClosed() {
 		return ErrClosedHold
 	}
 
 	postTransaction := PostTransaction{
-		Script: &PostTransactionScript{
+		Script: &shared.PostTransactionScript{
 			Plain: BuildCancelHoldScript(hold.Asset),
 			Vars: map[string]interface{}{
 				"hold": m.chart.GetHoldAccount(void.HoldID),
+				"dest": m.chart.GetMainBalanceAccount(hold.WalletID),
 			},
 		},
 		Metadata: TransactionMetadata(metadata.Metadata{}),
@@ -243,7 +260,7 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 	}
 
 	postTransaction := PostTransaction{
-		Script: &PostTransactionScript{
+		Script: &shared.PostTransactionScript{
 			Plain: BuildCreditWalletScript(credit.Sources.ResolveAccounts(m.chart)...),
 			Vars: map[string]interface{}{
 				"destination": credit.destinationAccount(m.chart),
@@ -271,10 +288,10 @@ func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTra
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
 		apiErr, ok := err.(GenericOpenAPIError)
 		if ok {
-			respErr, ok := apiErr.Model().(shared.V2ErrorResponse)
+			respErr, ok := apiErr.Model().(shared.ErrorResponse)
 			if ok {
-				switch respErr.ErrorCode {
-				case shared.V2ErrorsEnumInsufficientFund:
+				switch *respErr.ErrorCode {
+				case shared.ErrorsEnumInsufficientFund:
 					return ErrInsufficientFundError
 				}
 			}
@@ -303,7 +320,10 @@ func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets])
 			}
 			return metadata
 		},
-	}, func(account Account) Wallet {
+	}, func(account interface {
+		MetadataOwner
+		GetAddress() string
+	}) Wallet {
 		return FromAccount(m.ledgerName, account)
 	})
 }
@@ -345,7 +365,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 
 func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTransactions]) (*ListResponse[Transaction], error) {
 	var (
-		response *TransactionsCursorResponseCursor
+		response *shared.TransactionsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -368,10 +388,10 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 		return nil, errors.Wrap(err, "listing transactions")
 	}
 
-	return newListResponse[ExpandedTransaction, Transaction](response, func(tx ExpandedTransaction) Transaction {
+	return newListResponse[shared.Transaction, Transaction](response, func(tx shared.Transaction) Transaction {
 		return Transaction{
-			ExpandedTransaction: tx,
-			Ledger:              m.ledgerName,
+			Transaction: tx,
+			Ledger:      m.ledgerName,
 		}
 	}), nil
 }
@@ -405,10 +425,10 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 	newCustomMetadata = newCustomMetadata.Merge(ExtractCustomMetadata(account))
 	newCustomMetadata = newCustomMetadata.Merge(data.Metadata)
 
-	meta := account.GetMetadata()
+	meta := metadata.Metadata(account.GetMetadata())
 	meta = meta.Merge(EncodeCustomMetadata(newCustomMetadata))
 
-	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), metadata.Metadata(meta)); err != nil {
+	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), meta); err != nil {
 		return errors.Wrap(err, "adding metadata to account")
 	}
 
@@ -429,7 +449,7 @@ func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, erro
 		return nil, ErrWalletNotFound
 	}
 
-	return Ptr(WithBalancesFromAccount(m.ledgerName, *account)), nil
+	return Ptr(WithBalancesFromAccount(m.ledgerName, account)), nil
 }
 
 type Summary struct {
@@ -443,13 +463,16 @@ type Summary struct {
 func (m *Manager) GetWalletSummary(ctx context.Context, id string) (*Summary, error) {
 	balances, err := fetchAndMapAllAccounts(ctx, m, metadata.Metadata{
 		MetadataKeyWalletID: id,
-	}, func(src Account) ExpandedBalance {
+	}, func(src interface {
+		MetadataOwner
+		GetAddress() string
+	}) ExpandedBalance {
 		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
 		if err != nil {
 			// TODO: refine error handling
 			panic(errors.Wrap(err, "getting account"))
 		}
-		return ExpandedBalanceFromAccount(*account)
+		return ExpandedBalanceFromAccount(account)
 	})
 	if err != nil {
 		return nil, err
@@ -491,14 +514,17 @@ func (m *Manager) GetWalletSummary(ctx context.Context, id string) (*Summary, er
 
 	holds, err := fetchAndMapAllAccounts(ctx, m, metadata.Metadata{
 		MetadataKeyHoldWalletID: id,
-	}, func(src Account) ExpandedDebitHold {
+	}, func(src interface {
+		MetadataOwner
+		GetAddress() string
+	}) ExpandedDebitHold {
 		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
 		if err != nil {
 			// TODO: refine error handling
 			panic(errors.Wrap(err, "getting account"))
 		}
 
-		return ExpandedDebitHoldFromLedgerAccount(*account)
+		return ExpandedDebitHoldFromLedgerAccount(account)
 	})
 	if err != nil {
 		return nil, err
@@ -520,7 +546,7 @@ func (m *Manager) GetHold(ctx context.Context, id string) (*ExpandedDebitHold, e
 		return nil, err
 	}
 
-	return Ptr(ExpandedDebitHoldFromLedgerAccount(*account)), nil
+	return Ptr(ExpandedDebitHoldFromLedgerAccount(account)), nil
 }
 
 func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Balance, error) {
@@ -531,7 +557,8 @@ func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Bala
 	if err != nil {
 		return nil, err
 	}
-	if ret.Metadata != nil && ret.Metadata[MetadataKeyWalletBalance] == TrueValue {
+	if ret.Metadata != nil &&
+		ret.Metadata[MetadataKeyWalletBalance] == TrueValue {
 		return nil, ErrBalanceAlreadyExists
 	}
 
@@ -554,11 +581,12 @@ func (m *Manager) GetBalance(ctx context.Context, walletID string, balanceName s
 	if err != nil {
 		return nil, err
 	}
+
 	if account.Metadata[MetadataKeyWalletBalance] != TrueValue {
 		return nil, ErrBalanceNotExists
 	}
 
-	return Ptr(ExpandedBalanceFromAccount(*account)), nil
+	return Ptr(ExpandedBalanceFromAccount(account)), nil
 }
 
 type mapAccountListQuery struct {
@@ -566,18 +594,21 @@ type mapAccountListQuery struct {
 	Metadata func() metadata.Metadata
 }
 
-func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[Account, TO]) (*ListResponse[TO], error) {
+func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[interface {
+	MetadataOwner
+	GetAddress() string
+}, TO]) (*ListResponse[TO], error) {
 	var (
-		response *AccountsCursorResponseCursor
-		err      error
+		cursor *AccountsCursorResponseCursor
+		err    error
 	)
 	if query.PaginationToken == "" {
-		response, err = r.client.ListAccounts(ctx, r.ledgerName, ListAccountsQuery{
+		cursor, err = r.client.ListAccounts(ctx, r.ledgerName, ListAccountsQuery{
 			Limit:    query.Limit,
 			Metadata: query.Metadata(),
 		})
 	} else {
-		response, err = r.client.ListAccounts(ctx, r.ledgerName, ListAccountsQuery{
+		cursor, err = r.client.ListAccounts(ctx, r.ledgerName, ListAccountsQuery{
 			Cursor: query.PaginationToken,
 		})
 	}
@@ -585,14 +616,17 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 		return nil, err
 	}
 
-	return newListResponse[Account, TO](response, func(item Account) TO {
-		return mapper(item)
+	return newListResponse[Account, TO](cursor, func(item Account) TO {
+		return mapper(&item)
 	}), nil
 }
 
 const maxPageSize = 100
 
-func fetchAndMapAllAccounts[TO any](ctx context.Context, r *Manager, md metadata.Metadata, mapper mapper[Account, TO]) ([]TO, error) {
+func fetchAndMapAllAccounts[TO any](ctx context.Context, r *Manager, md metadata.Metadata, mapper mapper[interface {
+	MetadataOwner
+	GetAddress() string
+}, TO]) ([]TO, error) {
 	ret := make([]TO, 0)
 	query := mapAccountListQuery{
 		Metadata: func() metadata.Metadata {

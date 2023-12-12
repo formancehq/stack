@@ -4,23 +4,6 @@ ARG core=github.com/formancehq/earthly:v0.5.2
 IMPORT $core AS core
 IMPORT .. AS stack
 
-tidy-all:
-    LOCALLY
-    FOR components IN $(ls -d */)
-      BUILD --pass-args +tidy --components=$components
-    END
-
-tidy:
-    FROM core+builder-image
-    ARG --required components
-    COPY --pass-args (./$components+sources/*) /src
-    ARG GOPROXY
-    WORKDIR /src/ee/$components
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        go mod tidy
-    SAVE ARTIFACT go.* AS LOCAL ./$components/
-
 deploy:
     FROM core+base-image
     ARG --required components

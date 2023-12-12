@@ -3,6 +3,8 @@ package wallet
 import (
 	"net/http"
 
+	sdk "github.com/formancehq/formance-sdk-go"
+
 	"go.uber.org/fx"
 )
 
@@ -10,7 +12,11 @@ func Module(ledgerURL string, ledgerName, chartPrefix string) fx.Option {
 	return fx.Module(
 		"wallet",
 		fx.Provide(fx.Annotate(func(httpClient *http.Client) *DefaultLedger {
-			return NewDefaultLedger(httpClient, ledgerURL)
+			sdk := sdk.New(
+				sdk.WithClient(httpClient),
+				sdk.WithServerURL(ledgerURL),
+			)
+			return NewDefaultLedger(sdk)
 		}, fx.As(new(Ledger)))),
 		fx.Provide(func() *Chart {
 			return NewChart(chartPrefix)

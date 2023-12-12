@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
@@ -36,7 +38,9 @@ func TestBalancesList(t *testing.T) {
 				}
 
 				if page >= numberOfPages-1 {
-					return &wallet.AccountsCursorResponseCursor{}, nil
+					return &wallet.AccountsCursorResponseCursor{
+						Data: make([]wallet.Account, 0),
+					}, nil
 				}
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
@@ -45,15 +49,15 @@ func TestBalancesList(t *testing.T) {
 				for _, balance := range balances[page*pageSize : (page+1)*pageSize] {
 					accounts = append(accounts, wallet.Account{
 						Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
-						Metadata: balance.LedgerMetadata(walletID),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(balance.LedgerMetadata(walletID)),
 					})
 				}
 				return &wallet.AccountsCursorResponseCursor{
+					Data:     accounts,
 					PageSize: pageSize,
 					HasMore:  hasMore,
-					Previous: previous,
-					Next:     next,
-					Data:     accounts,
+					Previous: pointer.For(previous),
+					Next:     pointer.For(next),
 				}, nil
 			}
 
@@ -64,19 +68,17 @@ func TestBalancesList(t *testing.T) {
 				wallet.MetadataKeyWalletID:      walletID,
 			}, query.Metadata)
 
-			hasMore := true
-			next := "1"
 			accounts := make([]wallet.Account, 0)
 			for _, balance := range balances[:pageSize] {
 				accounts = append(accounts, wallet.Account{
 					Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
-					Metadata: balance.LedgerMetadata(walletID),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(balance.LedgerMetadata(walletID)),
 				})
 			}
 			return &wallet.AccountsCursorResponseCursor{
 				PageSize: pageSize,
-				HasMore:  hasMore,
-				Next:     next,
+				HasMore:  true,
+				Next:     pointer.For("1"),
 				Data:     accounts,
 			}, nil
 		}),

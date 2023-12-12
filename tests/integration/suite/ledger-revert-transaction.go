@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/nats-io/nats.go"
@@ -107,9 +108,8 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				}
 				JustBeforeEach(revertTx)
 				It("Should fail", func() {
-					Expect(err).ToNot(HaveOccurred())
-					Expect(response.StatusCode).To(Equal(400))
-					Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumInsufficientFund))
+					Expect(err).To(HaveOccurred())
+					Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumInsufficientFund))
 				})
 				Context("With forcing", func() {
 					BeforeEach(func() {
@@ -154,16 +154,15 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("trying to revert again", func() {
 				It("should be rejected", func() {
-					response, err := Client().Ledger.V2RevertTransaction(
+					_, err := Client().Ledger.V2RevertTransaction(
 						TestContext(),
 						operations.V2RevertTransactionRequest{
 							Ledger: "default",
 							ID:     createTransactionResponse.Data.ID,
 						},
 					)
-					Expect(err).To(BeNil())
-					Expect(response.StatusCode).To(Equal(400))
-					Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumAlreadyRevert))
+					Expect(err).NotTo(BeNil())
+					Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumAlreadyRevert))
 				})
 			})
 		})

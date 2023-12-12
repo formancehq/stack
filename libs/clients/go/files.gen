@@ -510,6 +510,11 @@ pkg/models/shared/attemptresponse.go
 pkg/models/shared/attempt.go
 pkg/models/shared/getversionsresponse.go
 pkg/models/shared/version.go
+pkg/models/sdkerrors/v2errorresponse.go
+pkg/models/sdkerrors/v2errorsenum.go
+pkg/models/sdkerrors/v2error.go
+pkg/models/sdkerrors/webhookserrorresponse.go
+pkg/models/sdkerrors/webhookserrorsenum.go
 USAGE.md
 docs/models/operations/addmetadatatoaccountrequest.md
 docs/models/operations/addmetadatatoaccountresponse.md
@@ -1220,6 +1225,12 @@ docs/models/shared/attemptresponse.md
 docs/models/shared/attempt.md
 docs/models/shared/getversionsresponse.md
 docs/models/shared/version.md
+docs/models/errors/v2errorresponse.md
+docs/models/errors/v2errorsenum.md
+docs/models/errors/v2errorerrorcode.md
+docs/models/errors/v2error.md
+docs/models/errors/webhookserrorresponse.md
+docs/models/errors/webhookserrorsenum.md
 docs/sdks/formance/README.md
 docs/sdks/accounts/README.md
 docs/sdks/auth/README.md

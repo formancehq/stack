@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -42,8 +41,8 @@ type Balance struct {
 	Priority  int        `json:"priority"`
 }
 
-func (b Balance) LedgerMetadata(walletID string) metadata.Metadata {
-	m := metadata.Metadata{
+func (b Balance) LedgerMetadata(walletID string) map[string]string {
+	m := map[string]string{
 		MetadataKeyWalletID:         walletID,
 		MetadataKeyWalletBalance:    TrueValue,
 		MetadataKeyBalanceName:      b.Name,
@@ -91,7 +90,10 @@ func (b Balances) Swap(i, j int) {
 	b[i], b[j] = b[j], b[i]
 }
 
-func BalanceFromAccount(account Account) Balance {
+func BalanceFromAccount(account interface {
+	MetadataOwner
+	GetAddress() string
+}) Balance {
 	expiresAtRaw := GetMetadata(account, MetadataKeyBalanceExpiresAt)
 	var expiresAt *time.Time
 	if expiresAtRaw != "" {
@@ -101,12 +103,10 @@ func BalanceFromAccount(account Account) Balance {
 		}
 		expiresAt = &parsedExpiresAt
 	}
+	var priority int64
 	priorityRaw := GetMetadata(account, MetadataKeyBalancePriority)
-	var (
-		priority int64
-		err      error
-	)
 	if priorityRaw != "" {
+		var err error
 		priority, err = strconv.ParseInt(priorityRaw, 10, 64)
 		if err != nil {
 			panic(err)
@@ -124,9 +124,13 @@ type ExpandedBalance struct {
 	Assets map[string]*big.Int `json:"assets"`
 }
 
-func ExpandedBalanceFromAccount(account AccountWithVolumesAndBalances) ExpandedBalance {
+func ExpandedBalanceFromAccount(account interface {
+	MetadataOwner
+	GetAddress() string
+	GetBalances() map[string]*big.Int
+}) ExpandedBalance {
 	return ExpandedBalance{
-		Balance: BalanceFromAccount(account.Account),
+		Balance: BalanceFromAccount(account),
 		Assets:  account.GetBalances(),
 	}
 }

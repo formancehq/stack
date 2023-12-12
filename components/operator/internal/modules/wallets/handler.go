@@ -111,6 +111,36 @@ func (w module) Versions() map[string]modules.Version {
 				return true, nil
 			},
 		},
+		"v0.5.0": {
+			Services: service,
+			PostUpgrade: func(ctx context.Context, upgrader modules.JobRunner, config modules.MigrationConfig) (bool, error) {
+
+				_, ok := config.ReconciliationConfig.Stack.Status.Ports["ledger"]
+				if !ok {
+					return false, errors.New("not ready, missing ledger port")
+				}
+				_, ok = config.ReconciliationConfig.Stack.Status.Ports["ledger"]["ledger"]
+				if !ok {
+					return false, errors.New("not ready, missing ledger port")
+				}
+
+				accounts, err := api.FetchAllPaginated[account](ctx, http.DefaultClient, ledgerUrl(config.ReconciliationConfig)+"/accounts", url.Values{})
+				if err != nil {
+					return false, errors.Wrap(err, "fetching accounts")
+				}
+
+				for _, account := range accounts {
+					walletCustomMetadata, ok := account.Metadata["wallets/custom_data"]
+					if ok && walletCustomMetadata != "" {
+						if err := updateAccountMetadataForLedgerV2(ctx, config.ReconciliationConfig, account); err != nil {
+							return false, errors.Wrapf(err, "updating account metadata of account: %s", account.Address)
+						}
+					}
+				}
+
+				return true, nil
+			},
+		},
 	}
 }
 

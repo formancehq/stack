@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"math/big"
 	"net/http"
@@ -56,6 +57,8 @@ type V2DeleteTransactionMetadataResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// Error
+	V2ErrorResponse *shared.V2ErrorResponse
 }
 
 func (o *V2DeleteTransactionMetadataResponse) GetContentType() string {
@@ -77,4 +80,11 @@ func (o *V2DeleteTransactionMetadataResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
+}
+
+func (o *V2DeleteTransactionMetadataResponse) GetV2ErrorResponse() *shared.V2ErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.V2ErrorResponse
 }

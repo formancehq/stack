@@ -1,16 +1,17 @@
 package wallet
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+	"math/big"
 	"time"
 
+	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 )
 
 type ListAccountsQuery struct {
@@ -28,297 +29,217 @@ type ListTransactionsQuery struct {
 	Account     string
 }
 
-type TransactionsCursorResponseCursor struct {
-	PageSize int64                 `json:"pageSize"`
-	HasMore  bool                  `json:"hasMore"`
-	Previous string                `json:"previous,omitempty"`
-	Next     string                `json:"next,omitempty"`
-	Data     []ExpandedTransaction `json:"data"`
-}
-
-func (c TransactionsCursorResponseCursor) GetData() []ExpandedTransaction {
-	return c.Data
-}
-func (c TransactionsCursorResponseCursor) GetNext() string {
-	return c.Next
-}
-func (c TransactionsCursorResponseCursor) GetPrevious() string {
-	return c.Previous
-}
-func (c TransactionsCursorResponseCursor) GetHasMore() bool {
-	return c.HasMore
-}
-
-type TransactionsCursorResponse struct {
-	Cursor TransactionsCursorResponseCursor `json:"cursor"`
-}
-
-type CreateTransactionResponse struct {
-	Data Transaction `json:"data"`
-}
-
-type PostTransactionScript struct {
-	Plain string         `json:"plain"`
-	Vars  map[string]any `json:"vars,omitempty"`
-}
-
 type PostTransaction struct {
-	Timestamp *time.Time             `json:"timestamp,omitempty"`
-	Postings  []Posting              `json:"postings,omitempty"`
-	Script    *PostTransactionScript `json:"script,omitempty"`
-	Reference *string                `json:"reference,omitempty"`
-	Metadata  map[string]string      `json:"metadata"`
+	Metadata  map[string]string             `json:"metadata,omitempty"`
+	Postings  []shared.Posting              `json:"postings,omitempty"`
+	Reference *string                       `json:"reference,omitempty"`
+	Script    *shared.PostTransactionScript `json:"script,omitempty"`
+	Timestamp *time.Time                    `json:"timestamp,omitempty"`
+}
+
+type Account struct {
+	Address  string            `json:"address"`
+	Metadata map[string]string `json:"metadata,omitempty"`
+	Type     *string           `json:"type,omitempty"`
+}
+
+func (a Account) GetMetadata() map[string]string {
+	return a.Metadata
+}
+
+func (a Account) GetAddress() string {
+	return a.Address
+}
+
+type AccountWithVolumesAndBalances struct {
+	Account
+	Balances map[string]*big.Int            `json:"balances,omitempty"`
+	Volumes  map[string]map[string]*big.Int `json:"volumes,omitempty"`
+}
+
+func (a AccountWithVolumesAndBalances) GetBalances() map[string]*big.Int {
+	return a.Balances
+}
+
+func (a AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]*big.Int {
+	return a.Volumes
 }
 
 type AccountsCursorResponseCursor struct {
-	PageSize int64     `json:"pageSize"`
-	HasMore  bool      `json:"hasMore"`
-	Previous string    `json:"previous,omitempty"`
-	Next     string    `json:"next,omitempty"`
 	Data     []Account `json:"data"`
+	HasMore  bool      `json:"hasMore"`
+	Next     *string   `json:"next,omitempty"`
+	PageSize int64     `json:"pageSize"`
+	Previous *string   `json:"previous,omitempty"`
+}
+
+func (c AccountsCursorResponseCursor) GetNext() *string {
+	return c.Next
+}
+
+func (c AccountsCursorResponseCursor) GetPrevious() *string {
+	return c.Previous
 }
 
 func (c AccountsCursorResponseCursor) GetData() []Account {
 	return c.Data
 }
 
-func (c AccountsCursorResponseCursor) GetNext() string {
-	return c.Next
-}
-
-func (c AccountsCursorResponseCursor) GetPrevious() string {
-	return c.Previous
-}
-
 func (c AccountsCursorResponseCursor) GetHasMore() bool {
 	return c.HasMore
 }
 
-type AccountsCursorResponse struct {
-	Cursor AccountsCursorResponseCursor `json:"cursor"`
-}
-
 type Ledger interface {
-	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error
+	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]string) error
 	GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error)
 	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error)
-	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*TransactionsCursorResponseCursor, error)
-	CreateTransaction(ctx context.Context, ledger string, postTransaction PostTransaction) (*CreateTransactionResponse, error)
+	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*shared.TransactionsCursorResponseCursor, error)
+	CreateTransaction(ctx context.Context, ledger string, postTransaction PostTransaction) (*shared.Transaction, error)
 }
 
 type DefaultLedger struct {
-	client  *http.Client
-	baseUrl string
+	client *sdk.Formance
 }
 
-func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*TransactionsCursorResponseCursor, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s/transactions", d.baseUrl, ledger), nil)
-	if err != nil {
-		panic(err)
+func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*shared.TransactionsCursorResponseCursor, error) {
+	req := operations.ListTransactionsRequest{
+		Ledger: ledger,
 	}
-	req = req.WithContext(ctx)
-	urlValues := req.URL.Query()
-
 	if query.Cursor == "" {
-		urlValues.Set("pageSize", fmt.Sprint(query.Limit))
-		urlValues.Set("destination", query.Destination)
-		urlValues.Set("account", query.Account)
-		urlValues.Set("source", query.Source)
+		req.PageSize = pointer.For(int64(query.Limit))
+		req.Destination = pointer.For(query.Destination)
+		req.Source = pointer.For(query.Source)
+		req.Account = pointer.For(query.Account)
+		req.Metadata = make(map[string]any)
+
 		for key, value := range query.Metadata {
-			urlValues.Set(fmt.Sprintf("metadata[%s]", key), value)
+			req.Metadata[fmt.Sprintf("metadata[%s]", key)] = value
 		}
 	} else {
-		urlValues.Set("cursor", query.Cursor)
+		req.Cursor = pointer.For(query.Cursor)
 	}
-	req.URL.RawQuery = urlValues.Encode()
+
+	rsp, err := d.client.Transactions.ListTransactions(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	httpResponse, err := d.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer httpResponse.Body.Close()
-
-	if httpResponse.StatusCode != http.StatusOK {
-		errorResponse := &shared.V2ErrorResponse{}
-		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
-			panic(err)
-		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
-	}
-
-	ret := &TransactionsCursorResponse{}
-	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
-		return nil, err
-	}
-
-	return &ret.Cursor, nil
+	return &rsp.TransactionsCursorResponse.Cursor, nil
 }
 
-func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction PostTransaction) (*CreateTransactionResponse, error) {
-
-	data, err := json.Marshal(transaction)
-	if err != nil {
-		panic(err)
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction PostTransaction) (*shared.Transaction, error) {
+	txMetadata := make(map[string]any, 0)
+	for k, v := range transaction.Metadata {
+		txMetadata[k] = v
 	}
-
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/%s/transactions", d.baseUrl, ledger), bytes.NewBuffer(data))
-	if err != nil {
-		panic(err)
-	}
-	req = req.WithContext(ctx)
-
-	httpResponse, err := d.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer httpResponse.Body.Close()
-
-	if httpResponse.StatusCode != http.StatusOK && httpResponse.StatusCode != http.StatusCreated {
-		errorResponse := &shared.V2ErrorResponse{}
-		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
-			panic(err)
-		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
-	}
-
-	// TODO(gfyrag): Remove when ledger v2 will be released
-	type v1Response struct {
-		Data []Transaction `json:"data"`
-	}
-
-	data, err = io.ReadAll(httpResponse.Body)
+	ret, err := d.client.Transactions.CreateTransaction(ctx, operations.CreateTransactionRequest{
+		PostTransaction: shared.PostTransaction{
+			Metadata:  txMetadata,
+			Postings:  transaction.Postings,
+			Reference: transaction.Reference,
+			Script:    transaction.Script,
+			Timestamp: transaction.Timestamp,
+		},
+		Ledger: ledger,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	v1 := &v1Response{}
-	if err := json.Unmarshal(data, v1); err != nil {
-		v2 := &CreateTransactionResponse{}
-		if err := json.Unmarshal(data, v2); err != nil {
-			return nil, err
-		}
-		return v2, nil
-	}
-
-	return &CreateTransactionResponse{
-		Data: v1.Data[0],
-	}, nil
+	return &ret.TransactionsResponse.Data[0], nil
 }
 
-func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
+func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]string) error {
 
-	data, err := json.Marshal(metadata)
-	if err != nil {
-		panic(err)
+	m := make(map[string]any)
+	for k, v := range metadata {
+		m[k] = v
 	}
 
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/%s/accounts/%s/metadata", d.baseUrl, ledger, account), bytes.NewBuffer(data))
-	if err != nil {
-		panic(err)
-	}
-	req = req.WithContext(ctx)
-
-	httpResponse, err := d.client.Do(req)
+	_, err := d.client.Accounts.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
+		RequestBody: m,
+		Address:     account,
+		Ledger:      ledger,
+	})
 	if err != nil {
 		return err
 	}
-	defer httpResponse.Body.Close()
-
-	if httpResponse.StatusCode != http.StatusOK && httpResponse.StatusCode != http.StatusNoContent {
-		errorResponse := &shared.V2ErrorResponse{}
-		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
-			panic(err)
-		}
-		return fmt.Errorf("%s", errorResponse.ErrorMessage)
-	}
-
-	return err
+	return nil
 }
 
 func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s/accounts/%s", d.baseUrl, ledger, account), nil)
-	if err != nil {
-		panic(err)
-	}
-	req = req.WithContext(ctx)
-
-	httpResponse, err := d.client.Do(req)
+	ret, err := d.client.Accounts.GetAccount(ctx, operations.GetAccountRequest{
+		Address: account,
+		Ledger:  ledger,
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer httpResponse.Body.Close()
 
-	if httpResponse.StatusCode != http.StatusOK {
-		errorResponse := &shared.V2ErrorResponse{}
-		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
-			panic(err)
-		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
-	}
-
-	type accountResponse struct {
-		Data AccountWithVolumesAndBalances `json:"data"`
-	}
-
-	ret := &accountResponse{}
-	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
-		return nil, err
-	}
-
-	return &ret.Data, nil
+	return &AccountWithVolumesAndBalances{
+		Account: Account{
+			Address:  ret.AccountResponse.Data.Address,
+			Metadata: convertAccountMetadata(ret.AccountResponse.Data.Metadata),
+			Type:     ret.AccountResponse.Data.Type,
+		},
+		Balances: ret.AccountResponse.Data.Balances,
+		Volumes:  ret.AccountResponse.Data.Volumes,
+	}, nil
 }
 
 func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s/accounts", d.baseUrl, ledger), nil)
-	if err != nil {
-		panic(err)
+	req := operations.ListAccountsRequest{
+		Ledger: ledger,
 	}
-	req = req.WithContext(ctx)
-	urlValues := req.URL.Query()
-
 	if query.Cursor == "" {
-		urlValues.Set("pageSize", fmt.Sprint(query.Limit))
+		req.PageSize = pointer.For(int64(query.Limit))
+		req.Metadata = make(map[string]any)
 		for key, value := range query.Metadata {
-			urlValues.Set(fmt.Sprintf("metadata[%s]", key), value)
+			req.Metadata[key] = value
 		}
 	} else {
-		urlValues.Set("cursor", query.Cursor)
+		req.Cursor = pointer.For(query.Cursor)
 	}
-	req.URL.RawQuery = urlValues.Encode()
+
+	ret, err := d.client.Accounts.ListAccounts(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	httpResponse, err := d.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer httpResponse.Body.Close()
-
-	if httpResponse.StatusCode != http.StatusOK {
-		errorResponse := &shared.V2ErrorResponse{}
-		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
-			panic(err)
-		}
-		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
-	}
-
-	ret := &AccountsCursorResponse{}
-	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
-		return nil, err
-	}
-
-	return &ret.Cursor, nil
+	return &AccountsCursorResponseCursor{
+		Data: collectionutils.Map(ret.AccountsCursorResponse.Cursor.Data, func(from shared.Account) Account {
+			return Account{
+				Address:  from.Address,
+				Metadata: convertAccountMetadata(from.Metadata),
+				Type:     from.Type,
+			}
+		}),
+		HasMore:  ret.AccountsCursorResponse.Cursor.HasMore,
+		Next:     ret.AccountsCursorResponse.Cursor.Next,
+		PageSize: ret.AccountsCursorResponse.Cursor.PageSize,
+		Previous: ret.AccountsCursorResponse.Cursor.Previous,
+	}, nil
 }
 
 var _ Ledger = &DefaultLedger{}
 
-func NewDefaultLedger(client *http.Client, baseURL string) *DefaultLedger {
+func NewDefaultLedger(client *sdk.Formance) *DefaultLedger {
 	return &DefaultLedger{
-		client:  client,
-		baseUrl: baseURL,
+		client: client,
 	}
+}
+
+func convertAccountMetadata(m map[string]any) map[string]string {
+	ret := make(map[string]string)
+	for k, v := range m {
+		switch v := v.(type) {
+		case string:
+			ret[k] = v
+		case map[string]any:
+			ret[k] = metadata.MarshalValue(v)
+		default:
+			ret[k] = fmt.Sprint(v)
+		}
+	}
+	return ret
 }

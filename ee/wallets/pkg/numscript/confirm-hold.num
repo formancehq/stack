@@ -1,8 +1,8 @@
 vars {
   account $hold
-  account $dest = meta($hold, "destination")
+  account $dest
   {{- if .Final }}
-  account $void_destination = meta($hold, "void_destination")
+  account $void_destination
   {{- end }}
   monetary $amount
 }

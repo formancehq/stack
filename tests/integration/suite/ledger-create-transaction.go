@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
@@ -145,12 +146,11 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		Then("trying to commit a new transaction with the same reference", func() {
 			var (
-				response *operations.V2CreateTransactionResponse
-				err      error
+				err error
 			)
 			BeforeEach(func() {
 				// Create a transaction
-				response, err = Client().Ledger.V2CreateTransaction(
+				_, err = Client().Ledger.V2CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
 						V2PostTransaction: shared.V2PostTransaction{
@@ -169,12 +169,10 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 						Ledger: "default",
 					},
 				)
-				Expect(err).ToNot(HaveOccurred())
+				Expect(err).To(HaveOccurred())
+				Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumConflict))
 			})
-			It("Should fail with "+string(shared.V2ErrorsEnumConflict)+" error code", func() {
-				Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-				Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumConflict))
-			})
+			It("Should fail with "+string(sdkerrors.V2ErrorsEnumConflict)+" error code", func() {})
 		})
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
@@ -261,7 +259,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
-			response, err := Client().Ledger.V2CreateTransaction(
+			_, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -278,12 +276,10 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 					Ledger: "default",
 				},
 			)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(400))
-			Expect(response.V2CreateTransactionResponse).To(BeNil())
+			Expect(err).To(HaveOccurred())
 
-			Expect(response.V2ErrorResponse).Should(Equal(&shared.V2ErrorResponse{
-				ErrorCode:    shared.V2ErrorsEnumInsufficientFund,
+			Expect(err).Should(Equal(&sdkerrors.V2ErrorResponse{
+				ErrorCode:    sdkerrors.V2ErrorsEnumInsufficientFund,
 				ErrorMessage: "running numscript: script execution failed: no more fund to withdraw",
 			}))
 		})
@@ -330,11 +326,10 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	// TODO(gfyrag): test negative amount with a variable
 	When("creating a transaction on a ledger with a negative amount in the script", func() {
 		var (
-			err      error
-			response *operations.V2CreateTransactionResponse
+			err error
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -352,21 +347,18 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
-			Expect(err).To(Succeed())
-			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.V2ErrorResponse).NotTo(BeNil())
-			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
-			Expect(response.V2ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjE1XHJcbiAgXHUwMDFiWzM0bXxcdTAwMWJbMG1cclxuXHUwMDFiWzMxbTEgfCBcdTAwMWJbMG1cdTAwMWJbOTBtc2VuZCBbQ09JTiAtMTAwXHUwMDFiWzBtXVx1MDAxYls5MG0gKFxyXG5cdTAwMWJbMG0gIFx1MDAxYlszNG18XHUwMDFiWzBtICAgICAgICAgICAgICAgIFx1MDAxYlszMW1eXHUwMDFiWzBtIG5vIHZpYWJsZSBhbHRlcm5hdGl2ZSBhdCBpbnB1dCAnW0NPSU4tMTAwXSdcclxuIn0=")))
+		It("should fail with "+string(sdkerrors.V2ErrorsEnumCompilationFailed)+" code", func() {
+			Expect(err).NotTo(Succeed())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumCompilationFailed))
+			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjE1XHJcbiAgXHUwMDFiWzM0bXxcdTAwMWJbMG1cclxuXHUwMDFiWzMxbTEgfCBcdTAwMWJbMG1cdTAwMWJbOTBtc2VuZCBbQ09JTiAtMTAwXHUwMDFiWzBtXVx1MDAxYls5MG0gKFxyXG5cdTAwMWJbMG0gIFx1MDAxYlszNG18XHUwMDFiWzBtICAgICAgICAgICAgICAgIFx1MDAxYlszMW1eXHUwMDFiWzBtIG5vIHZpYWJsZSBhbHRlcm5hdGl2ZSBhdCBpbnB1dCAnW0NPSU4tMTAwXSdcclxuIn0=")))
 		})
 	})
 	When("creating a transaction on a ledger with a negative amount in the script", func() {
 		var (
-			err      error
-			response *operations.V2CreateTransactionResponse
+			err error
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -389,21 +381,18 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
-			Expect(err).To(Succeed())
-			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.V2ErrorResponse).NotTo(BeNil())
-			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
-			Expect(response.V2ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
+		It("should fail with "+string(sdkerrors.V2ErrorsEnumCompilationFailed)+" code", func() {
+			Expect(err).NotTo(Succeed())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumCompilationFailed))
+			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
 		})
 	})
 	When("creating a transaction on a ledger with error on script", func() {
 		var (
-			err      error
-			response *operations.V2CreateTransactionResponse
+			err error
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -418,21 +407,18 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
-			Expect(err).To(Succeed())
-			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.V2ErrorResponse).NotTo(BeNil())
-			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
-			Expect(response.V2ErrorResponse.Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjBcclxuICBcdTAwMWJbMzRtfFx1MDAxYlswbVxyXG5cdTAwMWJbMzFtMSB8IFx1MDAxYlswbVx1MDAxYls5MG1cdTAwMWJbMG1YWFhcdTAwMWJbOTBtXHJcblx1MDAxYlswbSAgXHUwMDFiWzM0bXxcdTAwMWJbMG0gXHUwMDFiWzMxbV5eXHUwMDFiWzBtIG1pc21hdGNoZWQgaW5wdXQgJ1hYWCcgZXhwZWN0aW5nIHtORVdMSU5FLCAndmFycycsICdzZXRfdHhfbWV0YScsICdzZXRfYWNjb3VudF9tZXRhJywgJ3ByaW50JywgJ2ZhaWwnLCAnc2VuZCcsICdzYXZlJ31cclxuIn0=")))
+		It("should fail with "+string(sdkerrors.V2ErrorsEnumCompilationFailed)+" code", func() {
+			Expect(err).NotTo(Succeed())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumCompilationFailed))
+			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjBcclxuICBcdTAwMWJbMzRtfFx1MDAxYlswbVxyXG5cdTAwMWJbMzFtMSB8IFx1MDAxYlswbVx1MDAxYls5MG1cdTAwMWJbMG1YWFhcdTAwMWJbOTBtXHJcblx1MDAxYlswbSAgXHUwMDFiWzM0bXxcdTAwMWJbMG0gXHUwMDFiWzMxbV5eXHUwMDFiWzBtIG1pc21hdGNoZWQgaW5wdXQgJ1hYWCcgZXhwZWN0aW5nIHtORVdMSU5FLCAndmFycycsICdzZXRfdHhfbWV0YScsICdzZXRfYWNjb3VudF9tZXRhJywgJ3ByaW50JywgJ2ZhaWwnLCAnc2VuZCcsICdzYXZlJ31cclxuIn0=")))
 		})
 	})
 	When("creating a transaction with no postings", func() {
 		var (
-			err      error
-			response *operations.V2CreateTransactionResponse
+			err error
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -453,20 +439,17 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.V2ErrorsEnumNoPostings)+" code", func() {
-			Expect(err).To(Succeed())
-			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.V2ErrorResponse).NotTo(BeNil())
-			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumNoPostings))
+		It("should fail with "+string(sdkerrors.V2ErrorsEnumNoPostings)+" code", func() {
+			Expect(err).NotTo(Succeed())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumNoPostings))
 		})
 	})
 	When("creating a transaction with metadata override", func() {
 		var (
-			err      error
-			response *operations.V2CreateTransactionResponse
+			err error
 		)
 		BeforeEach(func() {
-			response, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -487,11 +470,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(shared.V2ErrorsEnumMetadataOverride)+" code", func() {
-			Expect(err).To(Succeed())
-			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.V2ErrorResponse).NotTo(BeNil())
-			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumMetadataOverride))
+		It("should fail with "+string(sdkerrors.V2ErrorsEnumMetadataOverride)+" code", func() {
+			Expect(err).NotTo(Succeed())
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumMetadataOverride))
 		})
 	})
 })

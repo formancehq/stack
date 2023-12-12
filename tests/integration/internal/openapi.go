@@ -74,7 +74,7 @@ var _ http.RoundTripper = &openapiCheckerRoundTripper{}
 func newOpenapiCheckerTransport(ctx context.Context, rt http.RoundTripper) (*openapiCheckerRoundTripper, error) {
 	openapiRawSpec, err := os.ReadFile(filepath.Join("..", "..", "..", "libs", "clients", "build", "generate.json"))
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "loading spec file")
 	}
 
 	loader := &openapi3.Loader{
@@ -83,7 +83,7 @@ func newOpenapiCheckerTransport(ctx context.Context, rt http.RoundTripper) (*ope
 	}
 	doc, err := loader.LoadFromData(openapiRawSpec)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "parsing spec")
 	}
 
 	// Override default servers
@@ -92,15 +92,20 @@ func newOpenapiCheckerTransport(ctx context.Context, rt http.RoundTripper) (*ope
 	}}
 	doc.Security = openapi3.SecurityRequirements{}
 	doc.Components.SecuritySchemes = openapi3.SecuritySchemes{}
+	for path := range doc.Paths {
+		if path == "x-speakeasy-errors" {
+			delete(doc.Paths, path)
+		}
+	}
 
 	err = doc.Validate(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "validating spec")
 	}
 
 	router, err := gorillamux.NewRouter(doc)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "building router")
 	}
 
 	return &openapiCheckerRoundTripper{

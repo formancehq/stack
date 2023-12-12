@@ -109,7 +109,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		Context("bringing our own invalid secret", func() {
 			invalidSecret := "invalid"
 			It("should return a bad request error", func() {
-				response, err := Client().Webhooks.ChangeConfigSecret(
+				_, err := Client().Webhooks.ChangeConfigSecret(
 					TestContext(),
 					operations.ChangeConfigSecretRequest{
 						ConfigChangeSecret: &shared.ConfigChangeSecret{
@@ -118,10 +118,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 						ID: insertResp.Data.ID,
 					},
 				)
-				Expect(err).ToNot(HaveOccurred())
-				Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-				Expect(response.ConfigResponse).To(BeNil())
-				Expect(response.WebhooksErrorResponse).ToNot(BeNil())
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})

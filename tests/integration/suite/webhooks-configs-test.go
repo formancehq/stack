@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"io"
 	"net/http"
@@ -143,16 +144,14 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("testing an unknown ID", func() {
 			It("should fail", func() {
-				response, err := Client().Webhooks.TestConfig(
+				_, err := Client().Webhooks.TestConfig(
 					TestContext(),
 					operations.TestConfigRequest{
 						ID: "unknown",
 					},
 				)
-				Expect(err).ToNot(HaveOccurred())
-				Expect(response.StatusCode).To(Equal(http.StatusNotFound))
-				Expect(response.AttemptResponse).To(BeNil())
-				Expect(response.WebhooksErrorResponse).ToNot(BeNil())
+				Expect(err).To(HaveOccurred())
+				Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumNotFound))
 			})
 		})
 	})

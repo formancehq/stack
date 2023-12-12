@@ -12,8 +12,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  Dirty:
+    runs-on: "formance-runner"
+    steps:
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+      - name: Setup Env
+        uses: ./.github/actions/env
+      - run: >
+          earthly 
+          --allow-privileged
+          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY 
+          --secret GITHUB_TOKEN=$GITHUB_TOKEN 
+          ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
+          +pre-commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          since_last_remote_commit: true
+      - name: Run step if test file(s) change
+        if: steps.changed-files.outputs.all_changed_files == 'true'
+        run: |
+          echo "One or more test file(s) has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.all_changed_files }}"
+          exit 1
+
   Main:
     runs-on: "formance-runner"
+    needs:
+      - Dirty
     steps:
       - uses: 'actions/checkout@v4'
         with:
@@ -58,6 +90,7 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'build-images') || github.ref == 'refs/heads/main'
     needs:
       - Extract
+      - Dirty
     strategy:
       matrix:
         components: ${{ fromJson(needs.Extract.outputs.components) }}

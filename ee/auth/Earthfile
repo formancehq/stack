@@ -43,7 +43,7 @@ tests:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (ee+tidy/go.* --components=auth) .
+    COPY --pass-args +tidy/go.* .
     WORKDIR /src/ee/auth
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
@@ -60,7 +60,15 @@ deploy:
     RUN kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${tag}\"}}" --type=merge
 
 pre-commit:
-    RUN echo "not implemented"
+    BUILD --pass-args +tidy
+    BUILD --pass-args +lint
 
 openapi:
-    RUN echo "not implemented"
+    COPY ./openapi.yaml .
+    SAVE ARTIFACT ./openapi.yaml
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/ee/auth
+    DO --pass-args stack+GO_TIDY
