@@ -25,6 +25,7 @@ func stackClientModule() fx.Option {
 				ClientID:     viper.GetString(stackClientIDFlag),
 				ClientSecret: viper.GetString(stackClientSecretFlag),
 				TokenURL:     fmt.Sprintf("%s/api/auth/oauth/token", viper.GetString(stackURLFlag)),
+				Scopes:       []string{"openid", "ledger:read", "ledger:write", "wallets:read", "wallets:write", "payments:read", "payments:write"},
 			}
 			underlyingHTTPClient := &http.Client{
 				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),
