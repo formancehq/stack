@@ -75,9 +75,9 @@ func (cfg ClientConfiguration) WithPostLogoutRedirectUris(redirectUris ...string
 	return cfg
 }
 
-func NewClientConfiguration() ClientConfiguration {
+func NewClientConfiguration(scopes ...string) ClientConfiguration {
 	return ClientConfiguration{
-		Scopes: []string{"openid"}, // Required scope
+		Scopes: scopes, // Required scope
 	}
 }
 

@@ -72,6 +72,7 @@ func GetAuthenticatedClient(ctx context.Context, clientID, clientSecret, stackUR
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		TokenURL:     stackURL + "/api/auth/oauth/token",
+		Scopes:       []string{"openid ledger:read ledger:write"},
 	}
 	underlyingHTTPClient := &http.Client{
 		Transport: otlp.NewRoundTripper(http.DefaultTransport, debug),
