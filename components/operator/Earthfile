@@ -145,3 +145,6 @@ pre-commit:
     BUILD --pass-args +generate
     BUILD --pass-args +manifests
     BUILD --pass-args +helm-update
+
+openapi:
+    RUN echo "not implemented"

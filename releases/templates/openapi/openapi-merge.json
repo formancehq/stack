@@ -1,0 +1,92 @@
+{
+  "inputs": [
+    {
+      "inputFile": "./base.yaml"
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/auth/AUTH_VERSION/ee/auth/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/auth"
+      },
+      "dispute": {
+        "prefix": "auth"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/components/ledger/LEDGER_VERSION/components/ledger/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/ledger"
+      },
+      "dispute": {
+        "prefix": "ledger"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/components/payments/PAYMENTS_VERSION/components/payments/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/payments"
+      },
+      "dispute": {
+        "prefix": "payments"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/search/SEARCH_VERSION/ee/search/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/search"
+      },
+      "dispute": {
+        "prefix": "search"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/webhooks/WEBHOOKS_VERSION/ee/webhooks/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/webhooks"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "webhooks"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/wallets/WALLETS_VERSION/ee/wallets/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/wallets"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "wallets"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/orchestration/ORCHESTRATION_VERSION/ee/orchestration/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/orchestration"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "orchestration"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/reconciliation/RECONCILIATION_VERSION/ee/reconciliation/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/reconciliation"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "reconciliation"
+      }
+    }
+  ],
+  "output": "OUTPUT_FILE"
+}

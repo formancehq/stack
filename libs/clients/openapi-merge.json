@@ -19,12 +19,6 @@
       }
     },
     {
-      "inputFile": "./../../components/ledger/openapi-v2.yaml",
-      "pathModification":{
-        "prepend": "/api/ledger"
-      }
-    },
-    {
       "inputFile": "./../../components/payments/openapi.yaml",
       "pathModification":{
         "prepend": "/api/payments"
@@ -76,15 +70,6 @@
       },
       "dispute": {
         "prefix": "orchestration"
-      }
-    },
-    {
-      "inputFile": "./../../ee/orchestration/openapi-v2.yaml",
-      "pathModification":{
-        "prepend": "/api/orchestration"
-      },
-      "operationSelection": {
-        "excludeTags": ["Health"]
       }
     },
     {

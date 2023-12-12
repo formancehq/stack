@@ -62,3 +62,6 @@ lint:
 
 pre-commit:
     RUN echo "not implemented"
+
+openapi:
+    RUN echo "not implemented"

@@ -56,10 +56,22 @@ build-sdk:
     SAVE ARTIFACT sdks/go AS LOCAL ./libs/clients/go
     SAVE ARTIFACT sdks/go
 
+openapi:
+    LOCALLY
+    FOR component IN $(cd ./components && ls -d */)
+      BUILD ./components/$component+openapi
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+      BUILD ./ee/$component+openapi
+    END
+
 goreleaser:
     FROM core+builder-image
     ARG --required components
     ARG --required type
+    WAIT
+      BUILD +openapi
+    END
     COPY . /src
     COPY (+build-sdk/go --LANG=go) /src/libs/clients/go
     WORKDIR /src/$type/$components
@@ -163,6 +175,7 @@ pre-commit:
     LOCALLY
     WAIT
       BUILD --pass-args +tidy-all
+      BUILD +openapi
     END
     BUILD --pass-args +build-final-spec
     BUILD --pass-args +lint-all
