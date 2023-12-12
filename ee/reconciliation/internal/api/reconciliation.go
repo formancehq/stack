@@ -17,14 +17,15 @@ import (
 )
 
 type reconciliationResponse struct {
-	ID               string              `json:"id"`
-	PolicyID         string              `json:"policyID"`
-	CreatedAt        time.Time           `json:"createdAt"`
-	ReconciledAt     time.Time           `json:"reconciledAt"`
-	Status           string              `json:"status"`
-	PaymentsBalances map[string]*big.Int `json:"paymentsBalances"`
-	LedgerBalances   map[string]*big.Int `json:"ledgerBalances"`
-	Error            string              `json:"error"`
+	ID                   string              `json:"id"`
+	PolicyID             string              `json:"policyID"`
+	CreatedAt            time.Time           `json:"createdAt"`
+	ReconciledAtLedger   time.Time           `json:"reconciledAtLedger"`
+	ReconciledAtPayments time.Time           `json:"reconciledAtPayments"`
+	Status               string              `json:"status"`
+	PaymentsBalances     map[string]*big.Int `json:"paymentsBalances"`
+	LedgerBalances       map[string]*big.Int `json:"ledgerBalances"`
+	Error                string              `json:"error"`
 }
 
 func reconciliationHandler(b backend.Backend) http.HandlerFunc {
@@ -54,14 +55,15 @@ func reconciliationHandler(b backend.Backend) http.HandlerFunc {
 		}
 
 		data := &reconciliationResponse{
-			ID:               res.ID.String(),
-			PolicyID:         policyID,
-			CreatedAt:        res.CreatedAt,
-			ReconciledAt:     res.ReconciledAt,
-			Status:           res.Status.String(),
-			PaymentsBalances: res.PaymentsBalances,
-			LedgerBalances:   res.LedgerBalances,
-			Error:            res.Error,
+			ID:                   res.ID.String(),
+			PolicyID:             policyID,
+			CreatedAt:            res.CreatedAt,
+			ReconciledAtLedger:   res.ReconciledAtLedger,
+			ReconciledAtPayments: res.ReconciledAtPayments,
+			Status:               res.Status.String(),
+			PaymentsBalances:     res.PaymentsBalances,
+			LedgerBalances:       res.LedgerBalances,
+			Error:                res.Error,
 		}
 
 		api.Ok(w, data)
@@ -79,14 +81,15 @@ func getReconciliationHandler(b backend.Backend) http.HandlerFunc {
 		}
 
 		data := &reconciliationResponse{
-			ID:               res.ID.String(),
-			PolicyID:         res.PolicyID.String(),
-			CreatedAt:        res.CreatedAt,
-			ReconciledAt:     res.ReconciledAt,
-			Status:           res.Status.String(),
-			PaymentsBalances: res.PaymentsBalances,
-			LedgerBalances:   res.LedgerBalances,
-			Error:            res.Error,
+			ID:                   res.ID.String(),
+			PolicyID:             res.PolicyID.String(),
+			CreatedAt:            res.CreatedAt,
+			ReconciledAtLedger:   res.ReconciledAtLedger,
+			ReconciledAtPayments: res.ReconciledAtPayments,
+			Status:               res.Status.String(),
+			PaymentsBalances:     res.PaymentsBalances,
+			LedgerBalances:       res.LedgerBalances,
+			Error:                res.Error,
 		}
 
 		api.Ok(w, data)

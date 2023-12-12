@@ -15,7 +15,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -24,16 +24,16 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("creating a transaction on a ledger", func() {
 		var (
 			timestamp = time.Now().Round(time.Second).UTC()
-			rsp       *shared.CreateTransactionResponse
+			rsp       *shared.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
 			// Create a transaction
-			response, err := Client().Ledger.V2.CreateTransaction(
+			response, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -49,12 +49,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			rsp = response.CreateTransactionResponse
+			rsp = response.V2CreateTransactionResponse
 
 			// Check existence on api
-			getResponse, err := Client().Ledger.V2.GetTransaction(
+			getResponse, err := Client().Ledger.V2GetTransaction(
 				TestContext(),
-				operations.GetTransactionRequest{
+				operations.V2GetTransactionRequest{
 					Ledger: "default",
 					ID:     rsp.Data.ID,
 				},
@@ -67,9 +67,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"foo": "bar",
 			}
 
-			response, err := Client().Ledger.V2.AddMetadataOnTransaction(
+			response, err := Client().Ledger.V2AddMetadataOnTransaction(
 				TestContext(),
-				operations.AddMetadataOnTransactionRequest{
+				operations.V2AddMetadataOnTransactionRequest{
 					RequestBody: metadata,
 					Ledger:      "default",
 					ID:          big.NewInt(666),
@@ -83,9 +83,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"foo": "bar",
 			}
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2.AddMetadataOnTransaction(
+				response, err := Client().Ledger.V2AddMetadataOnTransaction(
 					TestContext(),
-					operations.AddMetadataOnTransactionRequest{
+					operations.V2AddMetadataOnTransactionRequest{
 						RequestBody: metadata,
 						Ledger:      "default",
 						ID:          rsp.Data.ID,
@@ -96,9 +96,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			It("should be available on api", func() {
 				// Check existence on api
-				response, err := Client().Ledger.V2.GetTransaction(
+				response, err := Client().Ledger.V2GetTransaction(
 					TestContext(),
-					operations.GetTransactionRequest{
+					operations.V2GetTransactionRequest{
 						Ledger: "default",
 						ID:     rsp.Data.ID,
 					},
@@ -106,7 +106,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				Expect(response.GetTransactionResponse.Data.Metadata).Should(Equal(metadata))
+				Expect(response.V2GetTransactionResponse.Data.Metadata).Should(Equal(metadata))
 			})
 		})
 	})

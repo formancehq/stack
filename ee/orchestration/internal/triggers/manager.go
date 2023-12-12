@@ -5,6 +5,9 @@ import (
 	"database/sql"
 	"time"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -16,17 +19,13 @@ type TriggerManager struct {
 	db *bun.DB
 }
 
-func (m *TriggerManager) ListTriggers(ctx context.Context) ([]Trigger, error) {
+func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQuery) (*sharedapi.Cursor[Trigger], error) {
 	ret := make([]Trigger, 0)
-	err := m.db.NewSelect().
+	q := m.db.NewSelect().
 		Model(&ret).
-		Where("deleted_at is null").
-		Scan(ctx)
-	if err != nil {
-		return nil, err
-	}
+		Where("deleted_at is null")
 
-	return ret, nil
+	return bunpaginate.UsingOffset[any, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[any](query))
 }
 
 func (m *TriggerManager) GetTrigger(ctx context.Context, triggerID string) (*Trigger, error) {
@@ -95,17 +94,16 @@ func (m *TriggerManager) CreateTrigger(ctx context.Context, data TriggerData) (*
 	return trigger, nil
 }
 
-func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, triggerID string) ([]Occurrence, error) {
+func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, query ListTriggersOccurrencesQuery) (*sharedapi.Cursor[Occurrence], error) {
 	ret := make([]Occurrence, 0)
-	err := m.db.NewSelect().
-		Model(&ret).
-		Where("trigger_id = ?", triggerID).
-		Scan(ctx)
-	if err != nil {
-		return nil, err
+	q := m.db.NewSelect().
+		Model(&ret)
+
+	if query.Options.TriggerID != "" {
+		q = q.Where("trigger_id = ?", query.Options.TriggerID)
 	}
 
-	return ret, nil
+	return bunpaginate.UsingOffset[ListTriggersOccurrencesOptions, Occurrence](ctx, q, bunpaginate.OffsetPaginatedQuery[ListTriggersOccurrencesOptions](query))
 }
 
 func NewManager(db *bun.DB) *TriggerManager {
@@ -113,3 +111,11 @@ func NewManager(db *bun.DB) *TriggerManager {
 		db: db,
 	}
 }
+
+type ListTriggersQuery bunpaginate.OffsetPaginatedQuery[any]
+
+type ListTriggersOccurrencesOptions struct {
+	TriggerID string
+}
+
+type ListTriggersOccurrencesQuery bunpaginate.OffsetPaginatedQuery[ListTriggersOccurrencesOptions]

@@ -18,7 +18,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -76,9 +76,9 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			Expect(createTriggerResponse.StatusCode).To(Equal(201))
 			Expect(createTriggerResponse.CreateTriggerResponse.Data.ID).NotTo(BeEmpty())
 
-			listTriggersResponse, err := Client().Orchestration.ListTriggers(TestContext())
+			listTriggersResponse, err := Client().Orchestration.V2ListTriggers(TestContext())
 			Expect(err).To(BeNil())
-			Expect(listTriggersResponse.ListTriggersResponse.Data).Should(HaveLen(1))
+			Expect(listTriggersResponse.V2ListTriggersResponse.Cursor.Data).Should(HaveLen(1))
 		})
 		Then("publishing a new payments in the event bus", func() {
 			var payment map[string]any
@@ -97,56 +97,56 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			})
 			It("Should trigger the workflow", func() {
 				var (
-					listTriggersOccurrencesResponse *operations.ListTriggersOccurrencesResponse
+					listTriggersOccurrencesResponse *operations.V2ListTriggersOccurrencesResponse
 					err                             error
 				)
-				Eventually(func(g Gomega) []shared.TriggerOccurrence {
-					listTriggersOccurrencesResponse, err = Client().Orchestration.ListTriggersOccurrences(TestContext(), operations.ListTriggersOccurrencesRequest{
+				Eventually(func(g Gomega) []shared.V2TriggerOccurrence {
+					listTriggersOccurrencesResponse, err = Client().Orchestration.V2ListTriggersOccurrences(TestContext(), operations.V2ListTriggersOccurrencesRequest{
 						TriggerID: createTriggerResponse.CreateTriggerResponse.Data.ID,
 					})
 					g.Expect(err).To(BeNil())
-					return listTriggersOccurrencesResponse.ListTriggersOccurrencesResponse.Data
+					return listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data
 				}).ShouldNot(BeEmpty())
 
-				var getInstanceResponse *operations.GetInstanceResponse
+				var getInstanceResponse *operations.V2GetInstanceResponse
 				Eventually(func() bool {
-					getInstanceResponse, err = Client().Orchestration.GetInstance(TestContext(), operations.GetInstanceRequest{
-						InstanceID: listTriggersOccurrencesResponse.ListTriggersOccurrencesResponse.Data[0].WorkflowInstanceID,
+					getInstanceResponse, err = Client().Orchestration.V2GetInstance(TestContext(), operations.V2GetInstanceRequest{
+						InstanceID: listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data[0].WorkflowInstanceID,
 					})
 					Expect(err).To(BeNil())
 
-					return getInstanceResponse.GetWorkflowInstanceResponse.Data.Terminated
+					return getInstanceResponse.V2GetWorkflowInstanceResponse.Data.Terminated
 				}).Should(BeTrue())
 
-				Expect(*getInstanceResponse.GetWorkflowInstanceResponse.Data.Error).To(BeEmpty())
+				Expect(*getInstanceResponse.V2GetWorkflowInstanceResponse.Data.Error).To(BeEmpty())
 
-				listTransactionsResponse, err := Client().Ledger.V2.ListTransactions(TestContext(), operations.ListTransactionsRequest{
+				listTransactionsResponse, err := Client().Ledger.V2ListTransactions(TestContext(), operations.V2ListTransactionsRequest{
 					Ledger: "default",
 				})
 				Expect(err).To(BeNil())
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings).To(HaveLen(1))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Source).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data).To(HaveLen(1))
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings).To(HaveLen(1))
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Source).
 					To(Equal("world"))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Destination).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Destination).
 					To(Equal(strings.Replace(payment["id"].(string), "-", "_", -1)))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Asset).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Asset).
 					To(Equal("USD/2"))
-				Expect(listTransactionsResponse.TransactionsCursorResponse.Cursor.Data[0].Postings[0].Amount).
+				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Amount).
 					To(Equal(big.NewInt(100)))
 			})
 		})
 		Then("deleting the trigger", func() {
 			BeforeEach(func() {
-				_, err := Client().Orchestration.DeleteTrigger(TestContext(), operations.DeleteTriggerRequest{
+				_, err := Client().Orchestration.V2DeleteTrigger(TestContext(), operations.V2DeleteTriggerRequest{
 					TriggerID: createTriggerResponse.CreateTriggerResponse.Data.ID,
 				})
 				Expect(err).To(BeNil())
 			})
 			It("should not appear on list", func() {
-				listTriggersResponse, err := Client().Orchestration.ListTriggers(TestContext())
+				listTriggersResponse, err := Client().Orchestration.V2ListTriggers(TestContext())
 				Expect(err).To(BeNil())
-				Expect(listTriggersResponse.ListTriggersResponse.Data).Should(HaveLen(0))
+				Expect(listTriggersResponse.V2ListTriggersResponse.Cursor.Data).Should(HaveLen(0))
 			})
 		})
 	})

@@ -79,8 +79,8 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	response, err := ledgerClient.Ledger.CreateLedger(cmd.Context(), operations.CreateLedgerRequest{
-		CreateLedgerRequest: &shared.CreateLedgerRequest{
+	response, err := ledgerClient.Ledger.V2CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
+		V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 			Bucket: pointer.For(fctl.GetString(cmd, bucketNameFlag)),
 		},
 		Ledger: args[0],
@@ -89,8 +89,8 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

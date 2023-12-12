@@ -78,18 +78,18 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, err
 	}
 
-	request := operations.AddMetadataToAccountRequest{
+	request := operations.V2AddMetadataToAccountRequest{
 		Ledger:      fctl.GetString(cmd, internal.LedgerFlag),
 		Address:     address,
 		RequestBody: metadata,
 	}
-	response, err := ledgerClient.Ledger.V2.AddMetadataToAccount(cmd.Context(), request)
+	response, err := ledgerClient.Ledger.V2AddMetadataToAccount(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	if response.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {

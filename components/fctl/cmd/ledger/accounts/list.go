@@ -12,7 +12,7 @@ import (
 )
 
 type ListStore struct {
-	Accounts []shared.Account `json:"accounts"`
+	Accounts []shared.V2Account `json:"accounts"`
 }
 type ListController struct {
 	store        *ListStore
@@ -83,33 +83,33 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		})
 	}
 
-	request := operations.ListAccountsRequest{
+	request := operations.V2ListAccountsRequest{
 		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
 		RequestBody: map[string]interface{}{
 			"$and": body,
 		},
 	}
-	rsp, err := ledgerClient.Ledger.V2.ListAccounts(cmd.Context(), request)
+	rsp, err := ledgerClient.Ledger.V2ListAccounts(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
 
-	if rsp.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", rsp.ErrorResponse.ErrorCode, rsp.ErrorResponse.ErrorMessage)
+	if rsp.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", rsp.V2ErrorResponse.ErrorCode, rsp.V2ErrorResponse.ErrorMessage)
 	}
 
 	if rsp.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", rsp.StatusCode)
 	}
 
-	c.store.Accounts = rsp.AccountsCursorResponse.Cursor.Data
+	c.store.Accounts = rsp.V2AccountsCursorResponse.Cursor.Data
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 
-	tableData := fctl.Map(c.store.Accounts, func(account shared.Account) []string {
+	tableData := fctl.Map(c.store.Accounts, func(account shared.V2Account) []string {
 		return []string{
 			account.Address,
 			fctl.MetadataAsShortString(account.Metadata),

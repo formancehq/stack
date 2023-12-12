@@ -25,7 +25,7 @@ require (
 	go.temporal.io/sdk v1.21.1
 	go.temporal.io/sdk/contrib/opentelemetry v0.2.0
 	go.uber.org/fx v1.19.1
-	golang.org/x/mod v0.10.0
+	go.uber.org/mock v0.3.0
 	golang.org/x/oauth2 v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -141,6 +141,7 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
+	golang.org/x/mod v0.11.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
@@ -157,4 +158,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/formance-sdk-go => ../../sdks/go
+replace github.com/formancehq/formance-sdk-go => ../../libs/clients/go

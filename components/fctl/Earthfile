@@ -18,7 +18,7 @@ tests:
 
 sources:
     WORKDIR src
-    COPY --pass-args (stack+build-sdk/go --LANG=go) sdks/go
+    COPY --pass-args (stack+build-sdk/go) libs/clients/go
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     WORKDIR /src/components/fctl
     COPY go.* .

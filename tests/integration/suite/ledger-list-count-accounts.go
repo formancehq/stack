@@ -19,7 +19,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -40,9 +40,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
-			response, err := Client().Ledger.V2.AddMetadataToAccount(
+			response, err := Client().Ledger.V2AddMetadataToAccount(
 				TestContext(),
-				operations.AddMetadataToAccountRequest{
+				operations.V2AddMetadataToAccountRequest{
 					RequestBody: metadata1,
 					Address:     "foo:foo",
 					Ledger:      "default",
@@ -51,9 +51,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			response, err = Client().Ledger.V2.AddMetadataToAccount(
+			response, err = Client().Ledger.V2AddMetadataToAccount(
 				TestContext(),
-				operations.AddMetadataToAccountRequest{
+				operations.V2AddMetadataToAccountRequest{
 					RequestBody: metadata2,
 					Address:     "foo:bar",
 					Ledger:      "default",
@@ -62,12 +62,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(204))
 
-			createTransactionResponse, err := Client().Ledger.V2.CreateTransaction(
+			createTransactionResponse, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
-				operations.CreateTransactionRequest{
-					PostTransaction: shared.PostTransaction{
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
 						Metadata: map[string]string{},
-						Postings: []shared.Posting{
+						Postings: []shared.V2Posting{
 							{
 								Amount:      bigInt,
 								Asset:       "USD",
@@ -83,10 +83,10 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(createTransactionResponse.StatusCode).To(Equal(200))
 		})
-		It("should return a "+string(shared.ErrorsEnumValidation)+" on invalid filter", func() {
-			response, err := Client().Ledger.V2.ListAccounts(
+		It("should return a "+string(shared.V2ErrorsEnumValidation)+" on invalid filter", func() {
+			response, err := Client().Ledger.V2ListAccounts(
 				TestContext(),
-				operations.ListAccountsRequest{
+				operations.V2ListAccountsRequest{
 					Ledger: "default",
 					RequestBody: map[string]interface{}{
 						"$match": map[string]any{
@@ -97,12 +97,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusBadRequest))
-			Expect(response.ErrorResponse.ErrorCode).To(Equal(shared.ErrorsEnumValidation))
+			Expect(response.V2ErrorResponse.ErrorCode).To(Equal(shared.V2ErrorsEnumValidation))
 		})
 		It("should be countable on api", func() {
-			response, err := Client().Ledger.V2.CountAccounts(
+			response, err := Client().Ledger.V2CountAccounts(
 				TestContext(),
-				operations.CountAccountsRequest{
+				operations.V2CountAccountsRequest{
 					Ledger: "default",
 				},
 			)
@@ -112,9 +112,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 		})
 		It("should be listed on api", func() {
-			response, err := Client().Ledger.V2.ListAccounts(
+			response, err := Client().Ledger.V2ListAccounts(
 				TestContext(),
-				operations.ListAccountsRequest{
+				operations.V2ListAccountsRequest{
 					Ledger: "default",
 					Expand: pointer.For("volumes"),
 				},
@@ -122,16 +122,16 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			accountsCursorResponse := response.AccountsCursorResponse
+			accountsCursorResponse := response.V2AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(3))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.V2Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.V2Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input:   bigInt,
 						Output:  big.NewInt(0),
@@ -139,10 +139,10 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					},
 				},
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(shared.V2Account{
 				Address:  "world",
 				Metadata: metadata.Metadata{},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Output:  bigInt,
 						Input:   big.NewInt(0),
@@ -152,9 +152,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}))
 		})
 		It("should be listed on api using address filters", func() {
-			response, err := Client().Ledger.V2.ListAccounts(
+			response, err := Client().Ledger.V2ListAccounts(
 				TestContext(),
-				operations.ListAccountsRequest{
+				operations.V2ListAccountsRequest{
 					Ledger: "default",
 					RequestBody: map[string]interface{}{
 						"$match": map[string]any{
@@ -166,20 +166,20 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			accountsCursorResponse := response.AccountsCursorResponse
+			accountsCursorResponse := response.V2AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.V2Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.V2Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
 
-			response, err = Client().Ledger.V2.ListAccounts(
+			response, err = Client().Ledger.V2ListAccounts(
 				TestContext(),
-				operations.ListAccountsRequest{
+				operations.V2ListAccountsRequest{
 					Ledger: "default",
 					RequestBody: map[string]interface{}{
 						"$match": map[string]any{
@@ -191,17 +191,17 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			accountsCursorResponse = response.AccountsCursorResponse
+			accountsCursorResponse = response.V2AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.V2Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
 		})
 		It("should be listed on api using metadata filters", func() {
-			response, err := Client().Ledger.V2.ListAccounts(
+			response, err := Client().Ledger.V2ListAccounts(
 				TestContext(),
-				operations.ListAccountsRequest{
+				operations.V2ListAccountsRequest{
 					Ledger: "default",
 					RequestBody: map[string]interface{}{
 						"$match": map[string]any{
@@ -213,9 +213,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			accountsCursorResponse := response.AccountsCursorResponse
+			accountsCursorResponse := response.V2AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.V2Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
@@ -224,9 +224,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 
 	When("counting and listing accounts empty", func() {
 		It("should be countable on api even if empty", func() {
-			response, err := Client().Ledger.V2.CountAccounts(
+			response, err := Client().Ledger.V2CountAccounts(
 				TestContext(),
-				operations.CountAccountsRequest{
+				operations.V2CountAccountsRequest{
 					Ledger: "default",
 				},
 			)
@@ -237,16 +237,16 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api even if empty", func() {
-			response, err := Client().Ledger.V2.ListAccounts(
+			response, err := Client().Ledger.V2ListAccounts(
 				TestContext(),
-				operations.ListAccountsRequest{
+				operations.V2ListAccountsRequest{
 					Ledger: "default",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			Expect(response.AccountsCursorResponse.Cursor.Data).To(HaveLen(0))
+			Expect(response.V2AccountsCursorResponse.Cursor.Data).To(HaveLen(0))
 		})
 	})
 
@@ -256,7 +256,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	)
 	When("creating accounts", func() {
 		var (
-			accounts []shared.Account
+			accounts []shared.V2Account
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(accountCounts); i++ {
@@ -264,9 +264,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					"id": fmt.Sprintf("%d", i),
 				}
 
-				response, err := Client().Ledger.V2.AddMetadataToAccount(
+				response, err := Client().Ledger.V2AddMetadataToAccount(
 					TestContext(),
-					operations.AddMetadataToAccountRequest{
+					operations.V2AddMetadataToAccountRequest{
 						RequestBody: m,
 						Address:     fmt.Sprintf("foo:%d", i),
 						Ledger:      "default",
@@ -275,7 +275,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(204))
 
-				accounts = append(accounts, shared.Account{
+				accounts = append(accounts, shared.V2Account{
 					Address:  fmt.Sprintf("foo:%d", i),
 					Metadata: m,
 				})
@@ -290,12 +290,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then(fmt.Sprintf("listing accounts using page size of %d", pageSize), func() {
 			var (
-				rsp *shared.AccountsCursorResponse
+				rsp *shared.V2AccountsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2.ListAccounts(
+				response, err := Client().Ledger.V2ListAccounts(
 					TestContext(),
-					operations.ListAccountsRequest{
+					operations.V2ListAccountsRequest{
 						Ledger:   "default",
 						PageSize: ptr(pageSize),
 					},
@@ -303,7 +303,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
-				rsp = response.AccountsCursorResponse
+				rsp = response.V2AccountsCursorResponse
 				Expect(rsp.Cursor.HasMore).To(BeTrue())
 				Expect(rsp.Cursor.Previous).To(BeNil())
 				Expect(rsp.Cursor.Next).NotTo(BeNil())
@@ -314,9 +314,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.V2.ListAccounts(
+					response, err := Client().Ledger.V2ListAccounts(
 						TestContext(),
-						operations.ListAccountsRequest{
+						operations.V2ListAccountsRequest{
 							Cursor: rsp.Cursor.Next,
 							Ledger: "default",
 						},
@@ -324,7 +324,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(response.StatusCode).To(Equal(200))
 
-					rsp = response.AccountsCursorResponse
+					rsp = response.V2AccountsCursorResponse
 				})
 				It("should return next page", func() {
 					Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
@@ -333,9 +333,9 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.V2.ListAccounts(
+						response, err := Client().Ledger.V2ListAccounts(
 							TestContext(),
-							operations.ListAccountsRequest{
+							operations.V2ListAccountsRequest{
 								Ledger: "default",
 								Cursor: rsp.Cursor.Previous,
 							},
@@ -343,7 +343,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Expect(err).ToNot(HaveOccurred())
 						Expect(response.StatusCode).To(Equal(200))
 
-						rsp = response.AccountsCursorResponse
+						rsp = response.V2AccountsCursorResponse
 					})
 					It("should return first page", func() {
 						Expect(rsp.Cursor.PageSize).To(Equal(pageSize))

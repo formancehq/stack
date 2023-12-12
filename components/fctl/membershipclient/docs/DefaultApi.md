@@ -5,8 +5,6 @@ All URIs are relative to *http://localhost:8080*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**AcceptInvitation**](DefaultApi.md#AcceptInvitation) | **Post** /me/invitations/{invitationId}/accept | Accept invitation
-[**BillingPortal**](DefaultApi.md#BillingPortal) | **Get** /organizations/{organizationId}/billing/portal | Access to the billing portal
-[**BillingSetup**](DefaultApi.md#BillingSetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
 [**CreateInvitation**](DefaultApi.md#CreateInvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
 [**CreateOrganization**](DefaultApi.md#CreateOrganization) | **Post** /organizations | Create organization
 [**CreatePrivateRegion**](DefaultApi.md#CreatePrivateRegion) | **Post** /organizations/{organizationId}/regions | Create a private region
@@ -16,6 +14,7 @@ Method | HTTP request | Description
 [**DeleteOrganization**](DefaultApi.md#DeleteOrganization) | **Delete** /organizations/{organizationId} | Delete organization
 [**DeleteRegion**](DefaultApi.md#DeleteRegion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
 [**DeleteStack**](DefaultApi.md#DeleteStack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+[**DeleteUserFromOrganization**](DefaultApi.md#DeleteUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | delete user from organization
 [**DisableStack**](DefaultApi.md#DisableStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
 [**DisableStargate**](DefaultApi.md#DisableStargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
 [**EnableStack**](DefaultApi.md#EnableStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/enable | Enable stack
@@ -29,14 +28,12 @@ Method | HTTP request | Description
 [**ListOrganizationsExpanded**](DefaultApi.md#ListOrganizationsExpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
 [**ListRegions**](DefaultApi.md#ListRegions) | **Get** /organizations/{organizationId}/regions | List regions
 [**ListStacks**](DefaultApi.md#ListStacks) | **Get** /organizations/{organizationId}/stacks | List stacks
-[**ListUsers**](DefaultApi.md#ListUsers) | **Get** /organizations/{organizationId}/users | List users
+[**ListUsersOfOrganization**](DefaultApi.md#ListUsersOfOrganization) | **Get** /organizations/{organizationId}/users | List users of organization
 [**ReadConnectedUser**](DefaultApi.md#ReadConnectedUser) | **Get** /me | Read user
 [**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
-[**ReadUser**](DefaultApi.md#ReadUser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+[**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
-[**UnlinkUserFromOrganization**](DefaultApi.md#UnlinkUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
-[**UpdateConnectedUser**](DefaultApi.md#UpdateConnectedUser) | **Put** /me | Update user
-[**UpdateUser**](DefaultApi.md#UpdateUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
+[**UpdateOrganizationUser**](DefaultApi.md#UpdateOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
 
 
 
@@ -91,142 +88,6 @@ Name | Type | Description  | Notes
 ### Return type
 
  (empty response body)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## BillingPortal
-
-> BillingPortalResponse BillingPortal(ctx, organizationId).Execute()
-
-Access to the billing portal
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    organizationId := "organizationId_example" // string | 
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.BillingPortal(context.Background(), organizationId).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.BillingPortal``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `BillingPortal`: BillingPortalResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.BillingPortal`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiBillingPortalRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-### Return type
-
-[**BillingPortalResponse**](BillingPortalResponse.md)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## BillingSetup
-
-> BillingSetupResponse BillingSetup(ctx, organizationId).Execute()
-
-Create a billing setup
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    organizationId := "organizationId_example" // string | 
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.BillingSetup(context.Background(), organizationId).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.BillingSetup``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `BillingSetup`: BillingSetupResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.BillingSetup`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiBillingSetupRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-### Return type
-
-[**BillingSetupResponse**](BillingSetupResponse.md)
 
 ### Authorization
 
@@ -575,7 +436,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -644,7 +505,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -710,7 +571,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -779,7 +640,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -830,6 +691,77 @@ Name | Type | Description  | Notes
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeleteStackRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## DeleteUserFromOrganization
+
+> DeleteUserFromOrganization(ctx, organizationId, userId).Execute()
+
+delete user from organization
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    userId := "userId_example" // string | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    r, err := apiClient.DefaultApi.DeleteUserFromOrganization(context.Background(), organizationId, userId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteUserFromOrganization``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**userId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteUserFromOrganizationRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -1726,11 +1658,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## ListUsers
+## ListUsersOfOrganization
 
-> ListUsersResponse ListUsers(ctx, organizationId).Execute()
+> ListUsersResponse ListUsersOfOrganization(ctx, organizationId).Execute()
 
-List users
+List users of organization
 
 ### Example
 
@@ -1749,13 +1681,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListUsers(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultApi.ListUsersOfOrganization(context.Background(), organizationId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListUsers``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListUsersOfOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListUsers`: ListUsersResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListUsers`: %v\n", resp)
+    // response from `ListUsersOfOrganization`: ListUsersResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListUsersOfOrganization`: %v\n", resp)
 }
 ```
 
@@ -1769,7 +1701,7 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiListUsersRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiListUsersOfOrganizationRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -1921,11 +1853,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## ReadUser
+## ReadUserOfOrganization
 
-> ReadUserResponse ReadUser(ctx, organizationId, userId).Execute()
+> ReadUserResponse ReadUserOfOrganization(ctx, organizationId, userId).Execute()
 
-Read user
+Read user of organization
 
 ### Example
 
@@ -1945,13 +1877,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ReadUser(context.Background(), organizationId, userId).Execute()
+    resp, r, err := apiClient.DefaultApi.ReadUserOfOrganization(context.Background(), organizationId, userId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadUserOfOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ReadUser`: ReadUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadUser`: %v\n", resp)
+    // response from `ReadUserOfOrganization`: ReadUserResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadUserOfOrganization`: %v\n", resp)
 }
 ```
 
@@ -1966,7 +1898,7 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiReadUserRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiReadUserOfOrganizationRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -2063,13 +1995,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## UnlinkUserFromOrganization
+## UpdateOrganizationUser
 
-> UnlinkUserFromOrganization(ctx, organizationId, userId).Execute()
+> UpdateOrganizationUser(ctx, organizationId, userId).RequestBody(requestBody).Execute()
 
-Unlink user from organization
-
-
+Update user role within an organization
 
 ### Example
 
@@ -2086,12 +2016,13 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     userId := "userId_example" // string | 
+    requestBody := []string{"Property_example"} // []string |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UnlinkUserFromOrganization(context.Background(), organizationId, userId).Execute()
+    r, err := apiClient.DefaultApi.UpdateOrganizationUser(context.Background(), organizationId, userId).RequestBody(requestBody).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UnlinkUserFromOrganization``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateOrganizationUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -2108,154 +2039,18 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiUnlinkUserFromOrganizationRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiUpdateOrganizationUserRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
+ **requestBody** | **[]string** |  | 
 
 ### Return type
 
  (empty response body)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## UpdateConnectedUser
-
-> UpdateUserResponse UpdateConnectedUser(ctx).Body(body).Execute()
-
-Update user
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    body := UpdatableUserData(987) // UpdatableUserData |  (optional)
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.UpdateConnectedUser(context.Background()).Body(body).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateConnectedUser``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `UpdateConnectedUser`: UpdateUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateConnectedUser`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiUpdateConnectedUserRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **body** | **UpdatableUserData** |  | 
-
-### Return type
-
-[**UpdateUserResponse**](UpdateUserResponse.md)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## UpdateUser
-
-> UpdateUserResponse UpdateUser(ctx, organizationId, userId).Body(body).Execute()
-
-Update user
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    organizationId := "organizationId_example" // string | 
-    userId := "userId_example" // string | 
-    body := UpdatableUserData(987) // UpdatableUserData |  (optional)
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.UpdateUser(context.Background(), organizationId, userId).Body(body).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateUser``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `UpdateUser`: UpdateUserResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateUser`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  | 
-**userId** | **string** |  | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiUpdateUserRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
- **body** | **UpdatableUserData** |  | 
-
-### Return type
-
-[**UpdateUserResponse**](UpdateUserResponse.md)
 
 ### Authorization
 

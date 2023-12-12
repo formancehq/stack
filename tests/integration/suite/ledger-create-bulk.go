@@ -15,7 +15,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+		response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -26,12 +26,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			now = time.Now().Round(time.Microsecond).UTC()
 		)
 		BeforeEach(func() {
-			_, err := Client().Ledger.V2.CreateBulk(TestContext(), operations.CreateBulkRequest{
-				RequestBody: []shared.BulkElement{
-					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
-						Data: &shared.PostTransaction{
+			_, err := Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
+				RequestBody: []shared.V2BulkElement{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD/2",
 								Destination: "bank",
@@ -40,25 +40,25 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 							Timestamp: &now,
 						},
 					}),
-					shared.CreateBulkElementAddMetadata(shared.BulkElementBulkElementAddMetadata{
-						Data: &shared.BulkElementBulkElementAddMetadataData{
+					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementV2BulkElementAddMetadata{
+						Data: &shared.V2BulkElementV2BulkElementAddMetadataData{
 							Metadata: metadata.Metadata{
 								"foo":  "bar",
 								"role": "admin",
 							},
-							TargetID:   shared.CreateTargetIDBigint(big.NewInt(0)),
-							TargetType: shared.TargetTypeTransaction,
+							TargetID:   shared.CreateV2TargetIDBigint(big.NewInt(0)),
+							TargetType: shared.V2TargetTypeTransaction,
 						},
 					}),
-					shared.CreateBulkElementDeleteMetadata(shared.BulkElementBulkElementDeleteMetadata{
-						Data: &shared.BulkElementBulkElementDeleteMetadataData{
+					shared.CreateV2BulkElementDeleteMetadata(shared.V2BulkElementV2BulkElementDeleteMetadata{
+						Data: &shared.V2BulkElementV2BulkElementDeleteMetadataData{
 							Key:        "foo",
-							TargetID:   shared.CreateTargetIDBigint(big.NewInt(0)),
-							TargetType: shared.TargetTypeTransaction,
+							TargetID:   shared.CreateV2TargetIDBigint(big.NewInt(0)),
+							TargetType: shared.V2TargetTypeTransaction,
 						},
 					}),
-					shared.CreateBulkElementRevertTransaction(shared.BulkElementBulkElementRevertTransaction{
-						Data: &shared.BulkElementBulkElementRevertTransactionData{
+					shared.CreateV2BulkElementRevertTransaction(shared.V2BulkElementV2BulkElementRevertTransaction{
+						Data: &shared.V2BulkElementV2BulkElementRevertTransactionData{
 							ID: big.NewInt(0),
 						},
 					}),
@@ -68,17 +68,17 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).To(Succeed())
 		})
 		It("should be ok", func() {
-			tx, err := Client().Ledger.V2.GetTransaction(TestContext(), operations.GetTransactionRequest{
+			tx, err := Client().Ledger.V2GetTransaction(TestContext(), operations.V2GetTransactionRequest{
 				ID:     big.NewInt(0),
 				Ledger: "default",
 			})
 			Expect(err).To(Succeed())
-			Expect(tx.GetTransactionResponse.Data).To(Equal(shared.ExpandedTransaction{
+			Expect(tx.V2GetTransactionResponse.Data).To(Equal(shared.V2ExpandedTransaction{
 				ID: big.NewInt(0),
 				Metadata: metadata.Metadata{
 					"role": "admin",
 				},
-				Postings: []shared.Posting{{
+				Postings: []shared.V2Posting{{
 					Amount:      big.NewInt(100),
 					Asset:       "USD/2",
 					Destination: "bank",
@@ -93,15 +93,15 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		var (
 			now          = time.Now().Round(time.Microsecond).UTC()
 			err          error
-			bulkResponse *operations.CreateBulkResponse
+			bulkResponse *operations.V2CreateBulkResponse
 		)
 		BeforeEach(func() {
-			bulkResponse, err = Client().Ledger.V2.CreateBulk(TestContext(), operations.CreateBulkRequest{
-				RequestBody: []shared.BulkElement{
-					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
-						Data: &shared.PostTransaction{
+			bulkResponse, err = Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
+				RequestBody: []shared.V2BulkElement{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD/2",
 								Destination: "bank",
@@ -110,10 +110,10 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 							Timestamp: &now,
 						},
 					}),
-					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
-						Data: &shared.PostTransaction{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(200), // Insufficient fund
 								Asset:       "USD/2",
 								Destination: "user",
@@ -128,8 +128,8 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).To(Succeed())
 		})
 		It("should respond with an error", func() {
-			Expect(bulkResponse.BulkResponse.Data[1].Type).To(Equal(shared.BulkElementResultType("ERROR")))
-			Expect(bulkResponse.BulkResponse.Data[1].BulkElementResultBulkElementResultError.ErrorCode).To(Equal("INSUFFICIENT_FUND"))
+			Expect(bulkResponse.V2BulkResponse.Data[1].Type).To(Equal(shared.V2BulkElementResultType("ERROR")))
+			Expect(bulkResponse.V2BulkResponse.Data[1].V2BulkElementResultV2BulkElementResultError.ErrorCode).To(Equal("INSUFFICIENT_FUND"))
 		})
 	})
 })

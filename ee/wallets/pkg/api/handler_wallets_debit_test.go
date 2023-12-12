@@ -26,16 +26,16 @@ type testCase struct {
 }
 
 type apiErrorMock struct {
-	ErrorCode    shared.ErrorsEnum `json:"errorCode,omitempty"`
-	ErrorMessage string            `json:"errorMessage,omitempty"`
-	Details      *string           `json:"details,omitempty"`
+	ErrorCode    shared.V2ErrorsEnum `json:"errorCode,omitempty"`
+	ErrorMessage string              `json:"errorMessage,omitempty"`
+	Details      *string             `json:"details,omitempty"`
 }
 
 func (a *apiErrorMock) Model() any {
 	if a == nil {
 		return nil
 	}
-	return shared.ErrorResponse{
+	return shared.V2ErrorResponse{
 		ErrorCode:    a.ErrorCode,
 		ErrorMessage: a.ErrorMessage,
 		Details:      a.Details,
@@ -125,7 +125,7 @@ var walletDebitTestCases = []testCase{
 			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
 		postTransactionError: &apiErrorMock{
-			ErrorCode: shared.ErrorsEnumInsufficientFund,
+			ErrorCode: shared.V2ErrorsEnumInsufficientFund,
 		},
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  string(shared.ErrorsEnumInsufficientFund),

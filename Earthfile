@@ -22,26 +22,26 @@ speakeasy:
 build-final-spec:
     FROM core+base-image
     RUN apk update && apk add yarn nodejs npm jq
-    WORKDIR /src/openapi
+    WORKDIR /src/libs/clients
     RUN mkdir build
-    COPY openapi/base.yaml .
-    COPY openapi/package.* .
+    COPY libs/clients/base.yaml .
+    COPY libs/clients/package.* .
     RUN npm install
     WORKDIR /src/components
     FOR c IN ledger payments
-        COPY components/$c/openapi.yaml $c/openapi.yaml
+        COPY components/$c/openapi*.yaml $c/
     END
     WORKDIR /src/ee
     FOR c IN auth webhooks search wallets orchestration reconciliation
-        COPY ee/$c/openapi.yaml $c/openapi.yaml
+        COPY ee/$c/openapi*.yaml $c/
     END
-    WORKDIR /src/openapi
-    COPY openapi/openapi-merge.json .
+    WORKDIR /src/libs/clients
+    COPY libs/clients/openapi-merge.json .
     RUN npm run build
     LET VERSION=$(date +%Y%m%d)
     RUN jq '.info.version = "v1.0.${VERSION}"' build/generate.json > build/generate-with-version.json
     SAVE ARTIFACT build/generate-with-version.json
-    SAVE ARTIFACT build/generate-with-version.json AS LOCAL openapi/build/generate.json
+    SAVE ARTIFACT build/generate-with-version.json AS LOCAL libs/clients/build/generate.json
 
 build-sdk:
     BUILD --pass-args +build-final-spec # Force output of the final spec
@@ -50,18 +50,18 @@ build-sdk:
     RUN apk update && apk add yq
     COPY (+speakeasy/speakeasy) /bin/speakeasy
     COPY (+build-final-spec/generate-with-version.json) final-spec.json
-    ARG LANG=go
-    COPY --dir openapi/templates/${LANG} sdks/${LANG}
-    RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/${LANG} -l ${LANG}
-    SAVE ARTIFACT sdks/${LANG} AS LOCAL ./sdks/${LANG}
-    SAVE ARTIFACT sdks/${LANG}
+    COPY --dir libs/clients/go ./sdks/go
+    RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
+    RUN rm -rf ./libs/clients/go
+    SAVE ARTIFACT sdks/go AS LOCAL ./libs/clients/go
+    SAVE ARTIFACT sdks/go
 
 goreleaser:
     FROM core+builder-image
     ARG --required components
     ARG --required type
     COPY . /src
-    COPY (+build-sdk/go --LANG=go) /src/sdks/go
+    COPY (+build-sdk/go --LANG=go) /src/libs/clients/go
     WORKDIR /src/$type/$components
     ARG mode=local
     LET buildArgs = --clean

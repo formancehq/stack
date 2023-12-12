@@ -3,6 +3,11 @@ package suite
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
@@ -11,10 +16,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"golang.org/x/oauth2"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
 )
 
 type claims struct {
@@ -38,7 +39,7 @@ func forgeSecurityToken(scopes ...string) string {
 }
 
 func exchangeSecurityToken(securityToken string, scopes ...string) *oauth2.Token {
-	scopes = append(scopes, "openid", "email")
+	scopes = append(scopes, "email")
 	form := url.Values{
 		"grant_type": []string{"urn:ietf:params:oauth:grant-type:jwt-bearer"},
 		"assertion":  []string{securityToken},
@@ -65,22 +66,23 @@ var _ = WithModules([]*Module{modules.Auth}, func() {
 		securityToken string
 	)
 	BeforeEach(func() {
-		securityToken = forgeSecurityToken("scope1")
+		securityToken = forgeSecurityToken("openid scope1")
 	})
 	When("exchanging security token against an access token", func() {
 		var (
 			token *oauth2.Token
 		)
 		BeforeEach(func() {
-			token = exchangeSecurityToken(securityToken, "scope1")
+			token = exchangeSecurityToken(securityToken, "other_scope1 other_scope2")
 		})
-		It("should be ok", func() {
+		It("should be ok, even if wrong scope are asked", func() {
 			accessTokenClaims := &oidc.AccessTokenClaims{}
 			_, err := oidc.ParseToken(token.AccessToken, accessTokenClaims)
 			Expect(err).To(Succeed())
 
 			Expect(accessTokenClaims.Scopes).To(HaveLen(2))
 			Expect(collectionutils.Contains(accessTokenClaims.Scopes, "scope1")).To(BeTrue())
+			Expect(collectionutils.Contains(accessTokenClaims.Scopes, "openid")).To(BeTrue())
 		})
 	})
 })

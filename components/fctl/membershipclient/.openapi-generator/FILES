@@ -45,10 +45,9 @@ docs/Stack.md
 docs/StackAllOf.md
 docs/StackData.md
 docs/StackLifeCycle.md
-docs/UpdatableUserData.md
-docs/UpdateUserResponse.md
 docs/User.md
 docs/UserAllOf.md
+docs/UserAllOf1.md
 docs/UserData.md
 docs/UserDataAllOf.md
 git_push.sh
@@ -93,10 +92,9 @@ model_stack.go
 model_stack_all_of.go
 model_stack_data.go
 model_stack_life_cycle.go
-model_updatable_user_data.go
-model_update_user_response.go
 model_user.go
 model_user_all_of.go
+model_user_all_of_1.go
 model_user_data.go
 model_user_data_all_of.go
 response.go

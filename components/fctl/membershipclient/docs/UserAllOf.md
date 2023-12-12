@@ -4,14 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | User ID | 
-**Role** | Pointer to **string** | User role | [optional] 
+**Roles** | Pointer to **[]string** | User roles | [optional] 
 
 ## Methods
 
 ### NewUserAllOf
 
-`func NewUserAllOf(id string, ) *UserAllOf`
+`func NewUserAllOf() *UserAllOf`
 
 NewUserAllOf instantiates a new UserAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -26,50 +25,30 @@ NewUserAllOfWithDefaults instantiates a new UserAllOf object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetId
+### GetRoles
 
-`func (o *UserAllOf) GetId() string`
+`func (o *UserAllOf) GetRoles() []string`
 
-GetId returns the Id field if non-nil, zero value otherwise.
+GetRoles returns the Roles field if non-nil, zero value otherwise.
 
-### GetIdOk
+### GetRolesOk
 
-`func (o *UserAllOf) GetIdOk() (*string, bool)`
+`func (o *UserAllOf) GetRolesOk() (*[]string, bool)`
 
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+GetRolesOk returns a tuple with the Roles field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetId
+### SetRoles
 
-`func (o *UserAllOf) SetId(v string)`
+`func (o *UserAllOf) SetRoles(v []string)`
 
-SetId sets Id field to given value.
+SetRoles sets Roles field to given value.
 
+### HasRoles
 
-### GetRole
+`func (o *UserAllOf) HasRoles() bool`
 
-`func (o *UserAllOf) GetRole() string`
-
-GetRole returns the Role field if non-nil, zero value otherwise.
-
-### GetRoleOk
-
-`func (o *UserAllOf) GetRoleOk() (*string, bool)`
-
-GetRoleOk returns a tuple with the Role field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetRole
-
-`func (o *UserAllOf) SetRole(v string)`
-
-SetRole sets Role field to given value.
-
-### HasRole
-
-`func (o *UserAllOf) HasRole() bool`
-
-HasRole returns a boolean if a field has been set.
+HasRoles returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

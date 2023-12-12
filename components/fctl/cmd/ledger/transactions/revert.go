@@ -11,7 +11,7 @@ import (
 )
 
 type RevertStore struct {
-	Transaction *shared.Transaction `json:"transaction"`
+	Transaction *shared.V2Transaction `json:"transaction"`
 }
 type RevertController struct {
 	store *RevertStore
@@ -74,21 +74,21 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	request := operations.RevertTransactionRequest{
+	request := operations.V2RevertTransactionRequest{
 		Ledger: ledger,
 		ID:     txId,
 	}
 
-	response, err := ledgerClient.Ledger.V2.RevertTransaction(cmd.Context(), request)
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+	response, err := ledgerClient.Ledger.V2RevertTransaction(cmd.Context(), request)
+	if response.V2ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Transaction = &response.RevertTransactionResponse.Data
+	c.store.Transaction = &response.V2RevertTransactionResponse.Data
 
 	return c, nil
 }

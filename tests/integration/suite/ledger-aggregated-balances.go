@@ -14,18 +14,18 @@ import (
 var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 	When("creating two transactions on a ledger with custom metadata", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.CreateLedger(TestContext(), operations.CreateLedgerRequest{
+			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
 			})
 			Expect(err).To(BeNil())
 			Expect(response.StatusCode).To(Equal(http.StatusNoContent))
 
-			_, err = Client().Ledger.V2.CreateBulk(TestContext(), operations.CreateBulkRequest{
-				RequestBody: []shared.BulkElement{
-					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
-						Data: &shared.PostTransaction{
+			_, err = Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
+				RequestBody: []shared.V2BulkElement{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD/2",
 								Destination: "bank1",
@@ -33,10 +33,10 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 							}},
 						},
 					}),
-					shared.CreateBulkElementCreateTransaction(shared.BulkElementBulkElementCreateTransaction{
-						Data: &shared.PostTransaction{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
-							Postings: []shared.Posting{{
+							Postings: []shared.V2Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD/2",
 								Destination: "bank2",
@@ -44,22 +44,22 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 							}},
 						},
 					}),
-					shared.CreateBulkElementAddMetadata(shared.BulkElementBulkElementAddMetadata{
-						Data: &shared.BulkElementBulkElementAddMetadataData{
+					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementV2BulkElementAddMetadata{
+						Data: &shared.V2BulkElementV2BulkElementAddMetadataData{
 							Metadata: map[string]string{
 								"category": "premium",
 							},
-							TargetID:   shared.CreateTargetIDStr("bank2"),
-							TargetType: shared.TargetTypeAccount,
+							TargetID:   shared.CreateV2TargetIDStr("bank2"),
+							TargetType: shared.V2TargetTypeAccount,
 						},
 					}),
-					shared.CreateBulkElementAddMetadata(shared.BulkElementBulkElementAddMetadata{
-						Data: &shared.BulkElementBulkElementAddMetadataData{
+					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementV2BulkElementAddMetadata{
+						Data: &shared.V2BulkElementV2BulkElementAddMetadataData{
 							Metadata: map[string]string{
 								"category": "premium",
 							},
-							TargetID:   shared.CreateTargetIDStr("bank1"),
-							TargetType: shared.TargetTypeAccount,
+							TargetID:   shared.CreateV2TargetIDStr("bank1"),
+							TargetType: shared.V2TargetTypeAccount,
 						},
 					}),
 				},
@@ -68,9 +68,9 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			Expect(err).To(Succeed())
 		})
 		It("should be ok when aggregating using the metadata", func() {
-			response, err := Client().Ledger.V2.GetBalancesAggregated(
+			response, err := Client().Ledger.V2GetBalancesAggregated(
 				TestContext(),
-				operations.GetBalancesAggregatedRequest{
+				operations.V2GetBalancesAggregatedRequest{
 					RequestBody: map[string]any{
 						"$match": map[string]any{
 							"metadata[category]": "premium",
@@ -82,8 +82,8 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			Expect(response.AggregateBalancesResponse.Data).To(HaveLen(1))
-			Expect(response.AggregateBalancesResponse.Data["USD/2"]).To(Equal(big.NewInt(200)))
+			Expect(response.V2AggregateBalancesResponse.Data).To(HaveLen(1))
+			Expect(response.V2AggregateBalancesResponse.Data["USD/2"]).To(Equal(big.NewInt(200)))
 		})
 	})
 })
