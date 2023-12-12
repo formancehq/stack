@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"sync"
 	"time"
@@ -147,7 +148,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 				}
 				wr := entry.(waitingResponse)
 
-				s.metricsRegistry.GRPCLatencies().Record(ctx, time.Since(wr.sendAt).Milliseconds())
+				s.metricsRegistry.GRPCLatencies().Record(ctx, time.Since(wr.sendAt).Milliseconds(), metric.WithAttributes([]attribute.KeyValue{
+					attribute.String("name", fmt.Sprintf("%s.%s", organizationID, stackID)),
+				}...))
 
 				data, err := proto.Marshal(in)
 				if err != nil {
