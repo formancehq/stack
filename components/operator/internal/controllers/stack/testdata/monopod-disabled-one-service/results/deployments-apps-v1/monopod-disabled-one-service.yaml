@@ -45,7 +45,7 @@ spec:
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
                     - name: LISTEN
-                      value: :10002
+                      value: :10004
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -91,7 +91,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10002
+                        port: 10004
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -99,7 +99,7 @@ spec:
                     timeoutSeconds: 30
                   name: auth
                   ports:
-                    - containerPort: 10002
+                    - containerPort: 10004
                       name: http
                       protocol: TCP
                   resources:
@@ -245,7 +245,7 @@ spec:
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
                     - name: LISTEN
-                      value: :10003
+                      value: :10002
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -290,7 +290,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_health
-                        port: 10003
+                        port: 10002
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -298,7 +298,7 @@ spec:
                     timeoutSeconds: 30
                   name: payments-api
                   ports:
-                    - containerPort: 10003
+                    - containerPort: 10002
                       name: http
                       protocol: TCP
                   resources:
@@ -326,7 +326,7 @@ spec:
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
                     - name: LISTEN
-                      value: :10004
+                      value: :10003
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -371,7 +371,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_health
-                        port: 10004
+                        port: 10003
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -379,7 +379,7 @@ spec:
                     timeoutSeconds: 30
                   name: payments-connectors
                   ports:
-                    - containerPort: 10004
+                    - containerPort: 10003
                       name: http
                       protocol: TCP
                   resources:

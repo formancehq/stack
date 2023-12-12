@@ -1,6 +1,8 @@
 package modules
 
 import (
+	"fmt"
+
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -44,4 +46,13 @@ func GetResourcesWithDefault(
 	}
 
 	return resources
+}
+
+func ModulesToScopes(modules ...Module) []string {
+	str := []string{}
+	for _, module := range modules {
+		str = append(str, fmt.Sprintf("%s:%s", module.Name(), "read"))
+		str = append(str, fmt.Sprintf("%s:%s", module.Name(), "write"))
+	}
+	return str
 }

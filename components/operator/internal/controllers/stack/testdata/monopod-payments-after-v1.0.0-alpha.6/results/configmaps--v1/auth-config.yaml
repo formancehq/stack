@@ -22,6 +22,12 @@ data:
               PostLogoutRedirectUris: []
               scopes:
                 - openid
+                - ledger:read
+                - ledger:write
+                - wallets:read
+                - wallets:write
+                - payments:read
+                - payments:write
               id: orchestration
               secrets:
                 - mocked-secret
@@ -31,6 +37,8 @@ data:
               PostLogoutRedirectUris: []
               scopes:
                 - openid
+                - ledger:read
+                - ledger:write
               id: wallets
               secrets:
                 - mocked-secret

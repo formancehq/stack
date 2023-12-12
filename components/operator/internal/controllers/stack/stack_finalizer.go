@@ -38,7 +38,6 @@ const stacksIndex = "stacks"
 var ErrNotFullyDisabled = errors.New("not fully disabled")
 var ErrFinalizerNotRemoved = errors.New("finalizer not removed")
 var ErrFinalizerNotAdded = errors.New("finalizer not added")
-var ErrCast = errors.New("cannot cast interface to string")
 var natsClientId = "membership"
 
 func NewStackFinalizer(

@@ -41,7 +41,7 @@ data:
         			}
         			handle @authmatcher {
         				uri strip_prefix /api/auth
-        				reverse_proxy 127.0.0.1:10002
+        				reverse_proxy 127.0.0.1:10004
 
         				import cors
         			}
@@ -51,7 +51,7 @@ data:
         			}
         			handle @paymentsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10002
         				import cors
         				import auth payments
         			}
@@ -61,7 +61,7 @@ data:
         			}
         			handle @matcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10002
         				import cors
         				import auth payments
         			}
@@ -71,7 +71,7 @@ data:
         			}
         			handle @accountsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10002
         				import cors
         				import auth payments
         			}
@@ -81,7 +81,7 @@ data:
         			}
         			handle @bank-accounts-readmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10002
         				import cors
         				import auth payments
         			}
@@ -91,7 +91,7 @@ data:
         			}
         			handle @transfer-initiations-readmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10002
         				import cors
         				import auth payments
         			}
@@ -101,7 +101,7 @@ data:
         			}
         			handle @payments-apimatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10002
 
         				import cors
         				import auth payments
@@ -111,7 +111,7 @@ data:
         			}
         			handle @connectorsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -120,7 +120,7 @@ data:
         			}
         			handle @configsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -130,7 +130,7 @@ data:
         			}
         			handle @transfer-initiations-writematcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -140,7 +140,7 @@ data:
         			}
         			handle @bank-accounts-writematcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -150,7 +150,7 @@ data:
         			}
         			handle @payments-connectorsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
 
         				import cors
         				import auth payments
@@ -205,9 +205,9 @@ data:
         			region "us-west-1"
         			env "staging"
         			endpoints {
-        				auth http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
-        				payments-api http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
-        				payments-connectors http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
+        				auth http://127.0.0.1:10004/_info http://127.0.0.1:10004/_healthcheck
+        				payments-api http://127.0.0.1:10002/_info http://127.0.0.1:10002/_health
+        				payments-connectors http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
         				search http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
         				wallets http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
         				webhooks http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck

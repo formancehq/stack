@@ -11,12 +11,20 @@ import (
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	"github.com/formancehq/operator/internal/modules/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
 
 type module struct{}
+
+// DependsOn implements modules.DependsOnAwareModule.
+func (*module) DependsOn() []modules.Module {
+	return []modules.Module{
+		ledger.Module,
+	}
+}
 
 func (w module) Name() string {
 	return "wallets"
@@ -147,6 +155,7 @@ func (w module) Versions() map[string]modules.Version {
 var Module = &module{}
 
 var _ modules.Module = Module
+var _ modules.DependsOnAwareModule = Module
 
 func init() {
 	modules.Register(Module)
@@ -159,7 +168,7 @@ func service(ctx modules.ReconciliationConfig) modules.Services {
 		ListenEnvVar:       "LISTEN",
 		Annotations:        ctx.Configuration.Spec.Services.Wallets.Annotations.Service,
 		AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
-			return stackv1beta3.NewClientConfiguration()
+			return stackv1beta3.NewClientConfiguration().WithAdditionalScopes(modules.ModulesToScopes(Module.DependsOn()...)...)
 		},
 		Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 			return modules.Container{

@@ -5,9 +5,21 @@ import (
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	"github.com/formancehq/operator/internal/modules/ledger"
+	"github.com/formancehq/operator/internal/modules/payments"
+	"github.com/formancehq/operator/internal/modules/wallets"
 )
 
 type module struct{}
+
+// DependsOn implements modules.DependsOnAwareModule.
+func (*module) DependsOn() []modules.Module {
+	return []modules.Module{
+		ledger.Module,
+		wallets.Module,
+		payments.Module,
+	}
+}
 
 func (o module) Name() string {
 	return "orchestration"
@@ -25,7 +37,9 @@ func (o module) Versions() map[string]modules.Version {
 					{
 						Port: 8080,
 						AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
-							return stackv1beta3.NewClientConfiguration()
+							return stackv1beta3.
+								NewClientConfiguration().
+								WithAdditionalScopes(modules.ModulesToScopes(o.DependsOn()...)...)
 						},
 						ExposeHTTP:              modules.DefaultExposeHTTP,
 						HasVersionEndpoint:      true,
@@ -67,7 +81,8 @@ func (o module) Versions() map[string]modules.Version {
 					{
 						Port: 8080,
 						AuthConfiguration: func(config modules.ReconciliationConfig) stackv1beta3.ClientConfiguration {
-							return stackv1beta3.NewClientConfiguration()
+							return stackv1beta3.NewClientConfiguration().WithAdditionalScopes(modules.ModulesToScopes(o.DependsOn()...)...)
+
 						},
 						ExposeHTTP:              modules.DefaultExposeHTTP,
 						HasVersionEndpoint:      true,
@@ -116,6 +131,7 @@ var Module = &module{}
 
 var _ modules.Module = Module
 var _ modules.PostgresAwareModule = Module
+var _ modules.DependsOnAwareModule = Module
 
 func init() {
 	modules.Register(Module)

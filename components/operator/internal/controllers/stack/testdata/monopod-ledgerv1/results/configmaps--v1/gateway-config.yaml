@@ -41,7 +41,7 @@ data:
         			}
         			handle @authmatcher {
         				uri strip_prefix /api/auth
-        				reverse_proxy 127.0.0.1:10002
+        				reverse_proxy 127.0.0.1:10005
 
         				import cors
         			}
@@ -51,7 +51,7 @@ data:
         			}
         			handle @ledgermatcher {
         				uri strip_prefix /api/ledger
-        				reverse_proxy 127.0.0.1:10003
+        				reverse_proxy 127.0.0.1:10001
 
         				import cors
         				import auth ledger
@@ -73,7 +73,7 @@ data:
         			}
         			handle @paymentsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -83,7 +83,7 @@ data:
         			}
         			handle @matcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -93,7 +93,7 @@ data:
         			}
         			handle @accountsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -103,7 +103,7 @@ data:
         			}
         			handle @bank-accounts-readmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -113,7 +113,7 @@ data:
         			}
         			handle @transfer-initiations-readmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
         				import cors
         				import auth payments
         			}
@@ -123,7 +123,7 @@ data:
         			}
         			handle @payments-apimatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10004
+        				reverse_proxy 127.0.0.1:10003
 
         				import cors
         				import auth payments
@@ -133,7 +133,7 @@ data:
         			}
         			handle @connectorsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth payments
         			}
@@ -142,7 +142,7 @@ data:
         			}
         			handle @configsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth payments
         			}
@@ -152,7 +152,7 @@ data:
         			}
         			handle @transfer-initiations-writematcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth payments
         			}
@@ -162,7 +162,7 @@ data:
         			}
         			handle @bank-accounts-writematcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
         				import cors
         				import auth payments
         			}
@@ -172,7 +172,7 @@ data:
         			}
         			handle @payments-connectorsmatcher {
         				uri strip_prefix /api/payments
-        				reverse_proxy 127.0.0.1:10005
+        				reverse_proxy 127.0.0.1:10004
 
         				import cors
         				import auth payments
@@ -205,7 +205,7 @@ data:
         			}
         			handle @walletsmatcher {
         				uri strip_prefix /api/wallets
-        				reverse_proxy 127.0.0.1:10001
+        				reverse_proxy 127.0.0.1:10002
 
         				import cors
         				import auth wallets
@@ -227,13 +227,13 @@ data:
         			region "us-west-1"
         			env "staging"
         			endpoints {
-        				auth http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
-        				ledger http://127.0.0.1:10003/_info http://127.0.0.1:10003/_healthcheck
+        				auth http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
+        				ledger http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
         				orchestration http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
-        				payments-api http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
-        				payments-connectors http://127.0.0.1:10005/_info http://127.0.0.1:10005/_health
+        				payments-api http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
+        				payments-connectors http://127.0.0.1:10004/_info http://127.0.0.1:10004/_health
         				search http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
-        				wallets http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
+        				wallets http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
         				webhooks http://127.0.0.1:10007/_info http://127.0.0.1:10007/_healthcheck
         			}
         		}

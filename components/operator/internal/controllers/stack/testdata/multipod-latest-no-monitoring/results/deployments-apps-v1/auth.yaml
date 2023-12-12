@@ -23,7 +23,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: 7dwr9TSCRLxhAFSJuusb42WLDizNvny_FgLhRkc6ysw=
+                stack.formance.cloud/volumes-hash: oQpoLrzV7V5HyafDUh_DPOoleiB93uWbpo-iGuO9NSw=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: auth
