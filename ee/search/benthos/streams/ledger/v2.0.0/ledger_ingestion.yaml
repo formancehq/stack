@@ -136,7 +136,7 @@ pipeline:
         processors:
         - bloblang: |
             root = this.payload.metadata.map_each(item -> {
-              "script": "ctx._source.data.metadata[\"" + item.key + "\"]=\"" + item.value + "\"",
+              "script": "if (ctx._source.data.metadata == null) { ctx._source.data.metadata = ['" + item.key + "': '" + item.value + "'] }  ctx._source.data.metadata['" + item.key + "']='" + item.value + "'",
               "action": "update",
               "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),
               "upsert": {

@@ -2,6 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/stack/tests/integration/internal/modules"
+	"math/big"
 	"net/http"
 	"reflect"
 	"time"
@@ -23,6 +24,97 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		Expect(err).To(BeNil())
 		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
+	When("creating a new transaction", func() {
+		BeforeEach(func() {
+			// Create a transaction
+			response, err := Client().Ledger.V2CreateTransaction(
+				TestContext(),
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.V2Posting{
+							{
+								Amount:      big.NewInt(100),
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "alice",
+							},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			Eventually(func() bool {
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("ACCOUNT"),
+						Terms:  []string{"address=alice"},
+					},
+				)
+				if err != nil {
+					return false
+				}
+				if response.StatusCode != 200 {
+					return false
+				}
+				if len(response.Response.Cursor.Data) != 1 {
+					return false
+				}
+				return reflect.DeepEqual(response.Response.Cursor.Data[0], map[string]any{
+					"ledger":   "default",
+					"address":  "alice",
+					"metadata": map[string]any{},
+				})
+			}).Should(BeTrue())
+		})
+		Then("setting a metadata on the destination account", func() {
+			BeforeEach(func() {
+				response, err := Client().Ledger.V2AddMetadataToAccount(
+					TestContext(),
+					operations.V2AddMetadataToAccountRequest{
+						RequestBody: map[string]string{
+							"foo": "bar",
+						},
+						Address: "alice",
+						Ledger:  "default",
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(204))
+			})
+			It("should be ok", func() {
+				Eventually(func() bool {
+					response, err := Client().Search.Search(
+						TestContext(),
+						shared.Query{
+							Target: ptr("ACCOUNT"),
+							Terms:  []string{"address=alice"},
+						},
+					)
+					if err != nil {
+						return false
+					}
+					if response.StatusCode != 200 {
+						return false
+					}
+					if len(response.Response.Cursor.Data) != 1 {
+						return false
+					}
+					return reflect.DeepEqual(response.Response.Cursor.Data[0], map[string]any{
+						"ledger": "default",
+						"metadata": map[string]any{
+							"foo": "bar",
+						},
+						"address": "alice",
+					})
+				}).Should(BeTrue())
+			})
+		})
 	})
 	When("setting metadata on a unknown account", func() {
 		var (
