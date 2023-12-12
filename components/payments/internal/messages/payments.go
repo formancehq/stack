@@ -31,11 +31,11 @@ func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Pa
 		Reference:     payment.Reference,
 		Type:          payment.Type,
 		Status:        payment.Status,
-		InitialAmount: payment.Amount,
+		InitialAmount: payment.InitialAmount,
+		Amount:        payment.Amount,
 		Scheme:        payment.Scheme,
 		Asset:         payment.Asset,
 		CreatedAt:     payment.CreatedAt,
-		Amount:        payment.Amount,
 		ConnectorID:   payment.ConnectorID.String(),
 		Provider:      provider.String(),
 		Metadata: func() map[string]string {
