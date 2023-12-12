@@ -66,7 +66,7 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			DestinationExternalAccountID: &transfer.DestinationAccount.Reference,
 			Amount:                       &amount,
 			Date:                         &dateString,
-			ExternalID:                   transfer.ID.Reference, // TODO: don't know if that's correct
+			ExternalID:                   transfer.ID.Reference,
 			PaymentSchemeType:            &paymentSchemeType,
 			RemittanceInformation: &atlar_models.RemittanceInformation{
 				Type:  &remittanceInformationType,
