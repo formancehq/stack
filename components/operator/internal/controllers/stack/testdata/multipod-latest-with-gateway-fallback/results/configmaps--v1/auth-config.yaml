@@ -6,7 +6,14 @@ data:
               description: null
               redirectUris: []
               PostLogoutRedirectUris: []
-              scopes: []
+              scopes:
+                - openid
+                - ledger:read
+                - ledger:write
+                - wallets:read
+                - wallets:write
+                - payments:read
+                - payments:write
               id: orchestration
               secrets:
                 - mocked-secret

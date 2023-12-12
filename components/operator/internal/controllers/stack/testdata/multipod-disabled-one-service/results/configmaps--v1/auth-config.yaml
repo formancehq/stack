@@ -9,6 +9,7 @@ data:
               PostLogoutRedirectUris:
                 - http://example.net/auth/destroy
               scopes:
+                - openid
                 - profile
                 - email
                 - offline
