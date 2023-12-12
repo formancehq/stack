@@ -297,7 +297,7 @@ pkg/models/shared/orchestrationpaymentmetadata.go
 pkg/models/shared/paymentadjustment.go
 pkg/models/shared/activitygetaccountoutput.go
 pkg/models/shared/orchestrationaccount.go
-pkg/models/shared/orchestrationvolume.go
+pkg/models/shared/volume.go
 pkg/models/shared/activitydebitwalletoutput.go
 pkg/models/shared/hold.go
 pkg/models/shared/subject.go
@@ -355,7 +355,6 @@ pkg/models/shared/v2stagewaitevent.go
 pkg/models/shared/v2getworkflowinstancehistorystageresponse.go
 pkg/models/shared/v2workflowinstancehistorystage.go
 pkg/models/shared/v2workflowinstancehistorystageoutput.go
-pkg/models/shared/v2activityreverttransactionoutput.go
 pkg/models/shared/v2activitygetwalletoutput.go
 pkg/models/shared/v2walletwithbalances.go
 pkg/models/shared/v2assetholder.go
@@ -372,10 +371,10 @@ pkg/models/shared/v2subject.go
 pkg/models/shared/v2ledgeraccountsubject.go
 pkg/models/shared/v2walletsubject.go
 pkg/models/shared/v2activitycreatetransactionoutput.go
+pkg/models/shared/orchestrationv2transaction.go
 pkg/models/shared/v2workflowinstancehistorystageinput.go
 pkg/models/shared/v2activityvoidhold.go
 pkg/models/shared/v2activitystripetransfer.go
-pkg/models/shared/v2activityreverttransaction.go
 pkg/models/shared/v2activitygetwallet.go
 pkg/models/shared/v2activitygetpayment.go
 pkg/models/shared/v2activitygetaccount.go
@@ -462,7 +461,6 @@ pkg/models/shared/reconciliationscursorresponse.go
 pkg/models/shared/reconciliationrequest.go
 pkg/models/shared/scriptresponse.go
 pkg/models/shared/transaction.go
-pkg/models/shared/volume.go
 pkg/models/shared/script.go
 pkg/models/shared/response.go
 pkg/models/shared/query.go
@@ -510,6 +508,8 @@ pkg/models/shared/attemptresponse.go
 pkg/models/shared/attempt.go
 pkg/models/shared/getversionsresponse.go
 pkg/models/shared/version.go
+pkg/models/sdkerrors/errorresponse.go
+pkg/models/sdkerrors/errorsenum.go
 pkg/models/sdkerrors/v2errorresponse.go
 pkg/models/sdkerrors/v2errorsenum.go
 pkg/models/sdkerrors/v2error.go
@@ -524,7 +524,6 @@ docs/models/operations/countaccountsresponse.md
 docs/models/operations/getaccountrequest.md
 docs/models/operations/getaccountresponse.md
 docs/models/operations/listaccountsbalanceoperator.md
-docs/models/operations/listaccountsmetadata.md
 docs/models/operations/listaccountsrequest.md
 docs/models/operations/listaccountsresponse.md
 docs/models/operations/createclientresponse.md
@@ -757,7 +756,6 @@ docs/models/operations/createtransactionrequest.md
 docs/models/operations/createtransactionresponse.md
 docs/models/operations/gettransactionrequest.md
 docs/models/operations/gettransactionresponse.md
-docs/models/operations/listtransactionsmetadata.md
 docs/models/operations/listtransactionsrequest.md
 docs/models/operations/listtransactionsresponse.md
 docs/models/operations/reverttransactionrequest.md
@@ -811,11 +809,9 @@ docs/models/operations/getapiauthwellknownopenidconfigurationresponse.md
 docs/models/shared/errorresponse.md
 docs/models/shared/errorsenum.md
 docs/models/shared/accountresponse.md
-docs/models/shared/accountwithvolumesandbalancesmetadata.md
 docs/models/shared/accountwithvolumesandbalances.md
 docs/models/shared/accountscursorresponsecursor.md
 docs/models/shared/accountscursorresponse.md
-docs/models/shared/accountmetadata.md
 docs/models/shared/account.md
 docs/models/shared/createclientresponse.md
 docs/models/shared/client.md
@@ -949,7 +945,7 @@ docs/models/shared/paymentadjustmentraw.md
 docs/models/shared/paymentadjustment.md
 docs/models/shared/activitygetaccountoutput.md
 docs/models/shared/orchestrationaccount.md
-docs/models/shared/orchestrationvolume.md
+docs/models/shared/volume.md
 docs/models/shared/activitydebitwalletoutput.md
 docs/models/shared/hold.md
 docs/models/shared/subject.md
@@ -1010,7 +1006,6 @@ docs/models/shared/v2stagewaitevent.md
 docs/models/shared/v2getworkflowinstancehistorystageresponse.md
 docs/models/shared/v2workflowinstancehistorystage.md
 docs/models/shared/v2workflowinstancehistorystageoutput.md
-docs/models/shared/v2activityreverttransactionoutput.md
 docs/models/shared/v2activitygetwalletoutput.md
 docs/models/shared/v2walletwithbalancesbalances.md
 docs/models/shared/v2walletwithbalances.md
@@ -1032,11 +1027,11 @@ docs/models/shared/v2subject.md
 docs/models/shared/v2ledgeraccountsubject.md
 docs/models/shared/v2walletsubject.md
 docs/models/shared/v2activitycreatetransactionoutput.md
+docs/models/shared/orchestrationv2transaction.md
 docs/models/shared/v2workflowinstancehistorystageinput.md
 docs/models/shared/v2activityvoidhold.md
 docs/models/shared/v2activitystripetransfermetadata.md
 docs/models/shared/v2activitystripetransfer.md
-docs/models/shared/v2activityreverttransaction.md
 docs/models/shared/v2activitygetwallet.md
 docs/models/shared/v2activitygetpayment.md
 docs/models/shared/v2activitygetaccount.md
@@ -1164,8 +1159,6 @@ docs/models/shared/reconciliationscursorresponse.md
 docs/models/shared/reconciliationrequest.md
 docs/models/shared/scriptresponse.md
 docs/models/shared/transaction.md
-docs/models/shared/volume.md
-docs/models/shared/scriptvars.md
 docs/models/shared/script.md
 docs/models/shared/responsecursortotal.md
 docs/models/shared/responsecursor.md
@@ -1181,7 +1174,6 @@ docs/models/shared/stats.md
 docs/models/shared/transactionsresponse.md
 docs/models/shared/transactions.md
 docs/models/shared/transactiondata.md
-docs/models/shared/posttransactionscriptvars.md
 docs/models/shared/posttransactionscript.md
 docs/models/shared/posttransaction.md
 docs/models/shared/transactionresponse.md
@@ -1225,6 +1217,8 @@ docs/models/shared/attemptresponse.md
 docs/models/shared/attempt.md
 docs/models/shared/getversionsresponse.md
 docs/models/shared/version.md
+docs/models/errors/errorresponse.md
+docs/models/errors/errorsenum.md
 docs/models/errors/v2errorresponse.md
 docs/models/errors/v2errorsenum.md
 docs/models/errors/v2errorerrorcode.md

@@ -3,12 +3,12 @@
 package shared
 
 type V2ActivityCreateTransactionOutput struct {
-	Data V2Transaction `json:"data"`
+	Data []OrchestrationV2Transaction `json:"data"`
 }
 
-func (o *V2ActivityCreateTransactionOutput) GetData() V2Transaction {
+func (o *V2ActivityCreateTransactionOutput) GetData() []OrchestrationV2Transaction {
 	if o == nil {
-		return V2Transaction{}
+		return []OrchestrationV2Transaction{}
 	}
 	return o.Data
 }

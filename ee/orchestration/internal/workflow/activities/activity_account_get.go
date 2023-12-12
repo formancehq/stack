@@ -15,30 +15,30 @@ type GetAccountRequest struct {
 	ID     string `json:"id"`
 }
 
-func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (*shared.V2AccountResponse, error) {
-	response, err := a.client.Ledger.V2GetAccount(
+func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (*shared.AccountResponse, error) {
+	response, err := a.client.Accounts.GetAccount(
 		ctx,
-		operations.V2GetAccountRequest{
+		operations.GetAccountRequest{
 			Address: request.ID,
 			Ledger:  request.Ledger,
 		},
 	)
 	if err != nil {
 		switch err := err.(type) {
-		case *sdkerrors.V2ErrorResponse:
-			return nil, temporal.NewApplicationError(err.ErrorMessage, string(err.ErrorCode), err.Details)
+		case *sdkerrors.ErrorResponse:
+			return nil, temporal.NewApplicationError(*err.ErrorMessage, string(*err.ErrorCode), err.Details)
 		default:
 			return nil, err
 		}
 	}
 
-	return response.V2AccountResponse, nil
+	return response.AccountResponse, nil
 }
 
 var GetAccountActivity = Activities{}.GetAccount
 
-func GetAccount(ctx workflow.Context, ledger, id string) (*shared.V2Account, error) {
-	ret := &shared.V2AccountResponse{}
+func GetAccount(ctx workflow.Context, ledger, id string) (*shared.AccountWithVolumesAndBalances, error) {
+	ret := &shared.AccountResponse{}
 	if err := executeActivity(ctx, GetAccountActivity, ret, GetAccountRequest{
 		Ledger: ledger,
 		ID:     id,

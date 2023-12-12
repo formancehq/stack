@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/stretchr/testify/mock"
 	"go.temporal.io/sdk/temporal"
@@ -139,20 +138,20 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
 							Reference: pointer.For(paymentAccountName("payment1")),
-							Metadata:  metadata.Metadata{},
+							Metadata:  map[string]interface{}{},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -160,21 +159,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -209,7 +208,7 @@ var (
 								Type: shared.SubjectTypeAccount,
 							}},
 							Balance: pointer.For("main"),
-							Metadata: metadata.Metadata{
+							Metadata: map[string]string{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
@@ -257,20 +256,20 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
 							Reference: pointer.For(paymentAccountName("payment1")),
-							Metadata:  metadata.Metadata{},
+							Metadata:  map[string]any{},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -278,21 +277,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -300,21 +299,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -357,15 +356,15 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: paymentAccountName("payment1"),
 								Source:      "world",
 							}},
 							Reference: pointer.For(paymentAccountName("payment1")),
-							Metadata:  metadata.Metadata{},
+							Metadata:  map[string]any{},
 						},
 					},
 				},
@@ -376,21 +375,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "default",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -398,21 +397,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -439,19 +438,19 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "bar",
 								Source:      "foo",
 							}},
-							Metadata: metadata.Metadata{},
+							Metadata: map[string]any{},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -478,21 +477,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -500,21 +499,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "account2",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -605,21 +604,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 			{
@@ -640,7 +639,7 @@ var (
 								Type: shared.SubjectTypeAccount,
 							}},
 							Balance: pointer.For("main"),
-							Metadata: metadata.Metadata{
+							Metadata: map[string]string{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -674,10 +673,10 @@ var (
 					Ledger: "default",
 					ID:     "foo",
 				}},
-				Returns: []any{&shared.V2AccountResponse{
-					Data: shared.V2Account{
+				Returns: []any{&shared.AccountResponse{
+					Data: shared.AccountWithVolumesAndBalances{
 						Address: "foo",
-						Metadata: metadata.Metadata{
+						Metadata: map[string]any{
 							"stripeConnectID": "abcd",
 						},
 					},
@@ -701,19 +700,19 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "foo",
 							}},
-							Metadata: metadata.Metadata{},
+							Metadata: map[string]any{},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -743,7 +742,7 @@ var (
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
 						ID: "foo",
-						Metadata: metadata.Metadata{
+						Metadata: map[string]string{
 							"stripeConnectID": "abcd",
 						},
 						Ledger: "default",
@@ -815,7 +814,7 @@ var (
 								Amount: big.NewInt(100),
 							},
 							Balances: []string{"main"},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]string{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
@@ -828,21 +827,21 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: shared.V2PostTransaction{
-							Postings: []shared.V2Posting{{
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "account",
 								Source:      "world",
 							}},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]any{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
 					},
 				},
-				Returns: []any{&shared.V2CreateTransactionResponse{
-					Data: shared.V2Transaction{},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
 				}, nil},
 			},
 		},
@@ -962,7 +961,7 @@ var (
 								Asset:  "USD",
 								Amount: big.NewInt(100),
 							},
-							Metadata: metadata.Metadata{
+							Metadata: map[string]string{
 								moveToLedgerMetadata: "ledger2",
 							},
 							Balances: []string{"main"},
@@ -982,7 +981,7 @@ var (
 								Amount: big.NewInt(100),
 							},
 							Balance: pointer.For("main"),
-							Metadata: metadata.Metadata{
+							Metadata: map[string]string{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -1017,7 +1016,7 @@ var (
 				}},
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
-						Metadata: metadata.Metadata{
+						Metadata: map[string]string{
 							"stripeConnectID": "abcd",
 						},
 					},

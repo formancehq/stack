@@ -137,10 +137,10 @@ deploy-all:
 tests-all:
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
-      BUILD --pass-args ./components/${component}+tests
+        BUILD --pass-args ./components/${component}+tests
     END
     FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args ./ee/${component}+tests
+        BUILD --pass-args ./ee/${component}+tests
     END
 
 tests-integration:
@@ -154,7 +154,7 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
         BUILD --pass-args ./components/${component}+pre-commit
     END
     FOR component IN $(cd ./ee && ls -d */)
-      BUILD --pass-args ./ee/${component}+pre-commit
+        BUILD --pass-args ./ee/${component}+pre-commit
     END
 
 pr:

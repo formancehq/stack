@@ -1194,16 +1194,6 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/PostTransaction'
-    ActivityRevertTransaction:
-      type: object
-      required:
-        - id
-        - ledger
-      properties:
-        ledger:
-          type: string
-        id:
-          type: string
     ActivityGetPayment:
       type: object
       required:
@@ -1369,18 +1359,11 @@ components:
           type: integer
           format: bigint
           minimum: 0
-        reverted:
-          type: boolean
       required:
         - postings
         - timestamp
         - id
         - metadata
-        - reverted
-    ActivityRevertTransactionOutput:
-      $ref: '#/components/schemas/RevertTransactionResponse'
-    RevertTransactionResponse:
-      $ref: '#/components/schemas/CreateTransactionResponse'
     ActivityGetPaymentOutput:
       $ref: '#/components/schemas/PaymentResponse'
     PaymentResponse:
@@ -1612,8 +1595,6 @@ components:
           $ref: '#/components/schemas/ActivityGetAccount'
         CreateTransaction:
           $ref: '#/components/schemas/ActivityCreateTransaction'
-        RevertTransaction:
-          $ref: '#/components/schemas/ActivityRevertTransaction'
         StripeTransfer:
           $ref: '#/components/schemas/ActivityStripeTransfer'
         GetPayment:
@@ -1635,8 +1616,6 @@ components:
           $ref: '#/components/schemas/ActivityGetAccountOutput'
         CreateTransaction:
           $ref: '#/components/schemas/ActivityCreateTransactionOutput'
-        RevertTransaction:
-          $ref: '#/components/schemas/ActivityRevertTransactionOutput'
         GetPayment:
           $ref: '#/components/schemas/ActivityGetPaymentOutput'
         DebitWallet:
@@ -2485,14 +2464,11 @@ components:
           type: integer
           format: bigint
           minimum: 0
-        reverted:
-          type: boolean
       required:
         - postings
         - timestamp
         - id
         - metadata
-        - reverted
     V2ActivityRevertTransactionOutput:
       $ref: '#/components/schemas/V2RevertTransactionResponse'
     V2RevertTransactionResponse:
@@ -2728,8 +2704,6 @@ components:
           $ref: '#/components/schemas/V2ActivityGetAccount'
         CreateTransaction:
           $ref: '#/components/schemas/V2ActivityCreateTransaction'
-        RevertTransaction:
-          $ref: '#/components/schemas/V2ActivityRevertTransaction'
         StripeTransfer:
           $ref: '#/components/schemas/V2ActivityStripeTransfer'
         GetPayment:
@@ -2751,8 +2725,6 @@ components:
           $ref: '#/components/schemas/V2ActivityGetAccountOutput'
         CreateTransaction:
           $ref: '#/components/schemas/V2ActivityCreateTransactionOutput'
-        RevertTransaction:
-          $ref: '#/components/schemas/V2ActivityRevertTransactionOutput'
         GetPayment:
           $ref: '#/components/schemas/V2ActivityGetPaymentOutput'
         DebitWallet:

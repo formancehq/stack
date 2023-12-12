@@ -924,16 +924,6 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/V2PostTransaction'
-    V2ActivityRevertTransaction:
-      type: object
-      required:
-      - id
-      - ledger
-      properties:
-        ledger:
-          type: string
-        id:
-          type: string
     V2ActivityGetPayment:
       type: object
       required:
@@ -1081,7 +1071,9 @@ components:
     V2CreateTransactionResponse:
       properties:
         data:
-          $ref: '#/components/schemas/V2Transaction'
+          type: array
+          items:
+            $ref: '#/components/schemas/V2Transaction'
       type: object
       required:
         - data
@@ -1101,24 +1093,15 @@ components:
           example: ref:001
         metadata:
           $ref: '#/components/schemas/V2Metadata'
-        id:
+        txid:
           type: integer
           format: bigint
           minimum: 0
-        reverted:
-          type: boolean
       required:
         - postings
         - timestamp
-        - id
+        - txid
         - metadata
-        - reverted
-
-    V2ActivityRevertTransactionOutput:
-      $ref: '#/components/schemas/V2RevertTransactionResponse'
-
-    V2RevertTransactionResponse:
-      $ref: '#/components/schemas/V2CreateTransactionResponse'
 
     V2ActivityGetPaymentOutput:
       $ref: '#/components/schemas/V2PaymentResponse'
@@ -1364,8 +1347,6 @@ components:
           $ref: '#/components/schemas/V2ActivityGetAccount'
         CreateTransaction:
           $ref: '#/components/schemas/V2ActivityCreateTransaction'
-        RevertTransaction:
-          $ref: '#/components/schemas/V2ActivityRevertTransaction'
         StripeTransfer:
           $ref: '#/components/schemas/V2ActivityStripeTransfer'
         GetPayment:
@@ -1387,8 +1368,6 @@ components:
           $ref: '#/components/schemas/V2ActivityGetAccountOutput'
         CreateTransaction:
           $ref: '#/components/schemas/V2ActivityCreateTransactionOutput'
-        RevertTransaction:
-          $ref: '#/components/schemas/V2ActivityRevertTransactionOutput'
         GetPayment:
           $ref: '#/components/schemas/V2ActivityGetPaymentOutput'
         DebitWallet:

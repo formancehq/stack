@@ -3,10 +3,10 @@
 package shared
 
 type OrchestrationAccount struct {
-	Address          string                         `json:"address"`
-	EffectiveVolumes map[string]OrchestrationVolume `json:"effectiveVolumes,omitempty"`
-	Metadata         map[string]string              `json:"metadata"`
-	Volumes          map[string]OrchestrationVolume `json:"volumes,omitempty"`
+	Address          string            `json:"address"`
+	EffectiveVolumes map[string]Volume `json:"effectiveVolumes,omitempty"`
+	Metadata         map[string]string `json:"metadata"`
+	Volumes          map[string]Volume `json:"volumes,omitempty"`
 }
 
 func (o *OrchestrationAccount) GetAddress() string {
@@ -16,7 +16,7 @@ func (o *OrchestrationAccount) GetAddress() string {
 	return o.Address
 }
 
-func (o *OrchestrationAccount) GetEffectiveVolumes() map[string]OrchestrationVolume {
+func (o *OrchestrationAccount) GetEffectiveVolumes() map[string]Volume {
 	if o == nil {
 		return nil
 	}
@@ -30,7 +30,7 @@ func (o *OrchestrationAccount) GetMetadata() map[string]string {
 	return o.Metadata
 }
 
-func (o *OrchestrationAccount) GetVolumes() map[string]OrchestrationVolume {
+func (o *OrchestrationAccount) GetVolumes() map[string]Volume {
 	if o == nil {
 		return nil
 	}

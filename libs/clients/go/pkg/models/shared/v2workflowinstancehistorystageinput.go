@@ -10,7 +10,6 @@ type V2WorkflowInstanceHistoryStageInput struct {
 	GetAccount        *V2ActivityGetAccount        `json:"GetAccount,omitempty"`
 	GetPayment        *V2ActivityGetPayment        `json:"GetPayment,omitempty"`
 	GetWallet         *V2ActivityGetWallet         `json:"GetWallet,omitempty"`
-	RevertTransaction *V2ActivityRevertTransaction `json:"RevertTransaction,omitempty"`
 	StripeTransfer    *V2ActivityStripeTransfer    `json:"StripeTransfer,omitempty"`
 	VoidHold          *V2ActivityVoidHold          `json:"VoidHold,omitempty"`
 }
@@ -62,13 +61,6 @@ func (o *V2WorkflowInstanceHistoryStageInput) GetGetWallet() *V2ActivityGetWalle
 		return nil
 	}
 	return o.GetWallet
-}
-
-func (o *V2WorkflowInstanceHistoryStageInput) GetRevertTransaction() *V2ActivityRevertTransaction {
-	if o == nil {
-		return nil
-	}
-	return o.RevertTransaction
 }
 
 func (o *V2WorkflowInstanceHistoryStageInput) GetStripeTransfer() *V2ActivityStripeTransfer {
