@@ -19,6 +19,7 @@ const (
 	ConnectorConfigTypeMangoPayConfig      ConnectorConfigType = "MangoPayConfig"
 	ConnectorConfigTypeMoneycorpConfig     ConnectorConfigType = "MoneycorpConfig"
 	ConnectorConfigTypeAtlarConfig         ConnectorConfigType = "AtlarConfig"
+	ConnectorConfigTypeAdyenConfig         ConnectorConfigType = "AdyenConfig"
 )
 
 type ConnectorConfig struct {
@@ -31,6 +32,7 @@ type ConnectorConfig struct {
 	MangoPayConfig      *MangoPayConfig
 	MoneycorpConfig     *MoneycorpConfig
 	AtlarConfig         *AtlarConfig
+	AdyenConfig         *AdyenConfig
 
 	Type ConnectorConfigType
 }
@@ -116,6 +118,15 @@ func CreateConnectorConfigAtlarConfig(atlarConfig AtlarConfig) ConnectorConfig {
 	}
 }
 
+func CreateConnectorConfigAdyenConfig(adyenConfig AdyenConfig) ConnectorConfig {
+	typ := ConnectorConfigTypeAdyenConfig
+
+	return ConnectorConfig{
+		AdyenConfig: &adyenConfig,
+		Type:        typ,
+	}
+}
+
 func (u *ConnectorConfig) UnmarshalJSON(data []byte) error {
 
 	wiseConfig := WiseConfig{}
@@ -164,6 +175,13 @@ func (u *ConnectorConfig) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &moneycorpConfig, "", true, true); err == nil {
 		u.MoneycorpConfig = &moneycorpConfig
 		u.Type = ConnectorConfigTypeMoneycorpConfig
+		return nil
+	}
+
+	adyenConfig := AdyenConfig{}
+	if err := utils.UnmarshalJSON(data, &adyenConfig, "", true, true); err == nil {
+		u.AdyenConfig = &adyenConfig
+		u.Type = ConnectorConfigTypeAdyenConfig
 		return nil
 	}
 
@@ -219,6 +237,10 @@ func (u ConnectorConfig) MarshalJSON() ([]byte, error) {
 
 	if u.AtlarConfig != nil {
 		return utils.MarshalJSON(u.AtlarConfig, "", true)
+	}
+
+	if u.AdyenConfig != nil {
+		return utils.MarshalJSON(u.AdyenConfig, "", true)
 	}
 
 	return nil, errors.New("could not marshal union type: all fields are null")

@@ -14,3 +14,4 @@
 | `ConnectorMangopay`      | MANGOPAY                 |
 | `ConnectorMoneycorp`     | MONEYCORP                |
 | `ConnectorAtlar`         | ATLAR                    |
+| `ConnectorAdyen`         | ADYEN                    |
