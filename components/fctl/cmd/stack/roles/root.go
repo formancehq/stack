@@ -1,4 +1,4 @@
-package stacks
+package roles
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
@@ -6,12 +6,13 @@ import (
 )
 
 func NewCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("stacks",
+	return fctl.NewMembershipCommand("roles",
 		fctl.WithAliases("s"),
 		fctl.WithShortDescription("Stack users management within an organization"),
 		fctl.WithChildCommands(
-			NewUpsertStackAccessRolesCommand(),
-			NewListStackAccessRolesCommand(),
+			NewUpsertCommand(),
+			NewListCommand(),
+			NewDeleteCommand(),
 		),
 	)
 }

@@ -1,4 +1,4 @@
-package stacks
+package roles
 
 import (
 	"strings"
@@ -9,41 +9,41 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ListStackAccessRolesStore struct {
+type ListStore struct {
 	list []membershipclient.StackUserAccess
 }
-type ListStackAccessRolesController struct {
-	store *ListStackAccessRolesStore
+type ListController struct {
+	store *ListStore
 }
 
-var _ fctl.Controller[*ListStackAccessRolesStore] = (*ListStackAccessRolesController)(nil)
+var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
-func NewDefaultListStackAccessRolesStore() *ListStackAccessRolesStore {
-	return &ListStackAccessRolesStore{
+func NewDefaultListStore() *ListStore {
+	return &ListStore{
 		list: []membershipclient.StackUserAccess{},
 	}
 }
 
-func NewListStackAccessRolesController() *ListStackAccessRolesController {
-	return &ListStackAccessRolesController{
-		store: NewDefaultListStackAccessRolesStore(),
+func NewListController() *ListController {
+	return &ListController{
+		store: NewDefaultListStore(),
 	}
 }
 
-func NewListStackAccessRolesCommand() *cobra.Command {
-	return fctl.NewCommand("list-access-roles <stack-id>",
+func NewListCommand() *cobra.Command {
+	return fctl.NewCommand("list <stack-id>",
 		fctl.WithAliases("usar"),
 		fctl.WithShortDescription("List Stack Access Roles within an organization by stacks"),
 		fctl.WithArgs(cobra.MinimumNArgs(1)),
-		fctl.WithController[*ListStackAccessRolesStore](NewListStackAccessRolesController()),
+		fctl.WithController[*ListStore](NewListController()),
 	)
 }
 
-func (c *ListStackAccessRolesController) GetStore() *ListStackAccessRolesStore {
+func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *ListStackAccessRolesController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -69,21 +69,33 @@ func (c *ListStackAccessRolesController) Run(cmd *cobra.Command, args []string) 
 		return nil, err
 	}
 
-	c.store.list = append(c.store.list, ListStackUsersAccesses...)
+	c.store.list = append(c.store.list, ListStackUsersAccesses.Data...)
 
 	return c, nil
 }
 
-func (c *ListStackAccessRolesController) Render(cmd *cobra.Command, args []string) error {
+func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	stackUserAccessMap := fctl.Map(c.store.list, func(o membershipclient.StackUserAccess) []string {
 		return []string{
 			o.StackId,
 			o.UserId,
-			strings.Join(o.Roles, "|"),
+			func() string {
+				roles := []string{}
+
+				for _, role := range o.Roles {
+					if role == "ADMIN" {
+						roles = append(roles, pterm.LightRed(role))
+					} else {
+						roles = append(roles, pterm.LightGreen(role))
+					}
+				}
+
+				return strings.Join(roles, " | ")
+			}(),
 		}
 	})
 
-	tableData := fctl.Prepend(stackUserAccessMap, []string{"StackId", "UserId", "Roles"})
+	tableData := fctl.Prepend(stackUserAccessMap, []string{"Stack Id", "User Id", "Roles"})
 
 	return pterm.DefaultTable.WithHasHeader().WithWriter(cmd.OutOrStdout()).WithData(tableData).Render()
 

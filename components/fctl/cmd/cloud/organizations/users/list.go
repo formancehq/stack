@@ -1,6 +1,8 @@
 package users
 
 import (
+	"strings"
+
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -83,17 +85,17 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			i.ID,
 			i.Email,
 			func() string {
-				roles := ""
+				roles := []string{}
 
 				for _, role := range i.Roles {
 					if role == "ADMIN" {
-						roles += pterm.LightRed(role) + " | "
+						roles = append(roles, pterm.LightRed(role))
 					} else {
-						roles += pterm.LightGreen(role) + " | "
+						roles = append(roles, pterm.LightGreen(role))
 					}
 				}
 
-				return roles
+				return strings.Join(roles, " | ")
 			}(),
 		}
 	})
