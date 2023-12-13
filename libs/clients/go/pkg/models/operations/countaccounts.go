@@ -7,17 +7,13 @@ import (
 	"net/http"
 )
 
-// CountAccountsMetadata - Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
-type CountAccountsMetadata struct {
-}
-
 type CountAccountsRequest struct {
 	// Filter accounts by address pattern (regular expression placed between ^ and $).
 	Address *string `queryParam:"style=form,explode=true,name=address"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
-	Metadata *CountAccountsMetadata `queryParam:"style=deepObject,explode=true,name=metadata"`
+	Metadata map[string]interface{} `queryParam:"style=deepObject,explode=true,name=metadata"`
 }
 
 func (o *CountAccountsRequest) GetAddress() *string {
@@ -34,7 +30,7 @@ func (o *CountAccountsRequest) GetLedger() string {
 	return o.Ledger
 }
 
-func (o *CountAccountsRequest) GetMetadata() *CountAccountsMetadata {
+func (o *CountAccountsRequest) GetMetadata() map[string]interface{} {
 	if o == nil {
 		return nil
 	}
