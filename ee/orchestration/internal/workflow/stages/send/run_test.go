@@ -60,6 +60,51 @@ func TestSendSchemaValidation(t *testing.T) {
 			ExpectedValidationError: true,
 		},
 		{
+			Name: "valid case with variables",
+			Data: map[string]any{
+				"source": map[string]any{
+					"payment": map[string]any{
+						"id":  "${paymentID}",
+						"psp": "test",
+					},
+				},
+				"destination": map[string]any{
+					"account": map[string]any{
+						"id":     "test:${var1}:test:${var2}:test:${var3}:test",
+						"ledger": "default",
+					},
+				},
+				"amount": map[string]any{
+					"amount": "${amount}",
+					"asset":  "EUR/2",
+				},
+			},
+			Variables: map[string]string{
+				"paymentID": "test",
+				"var1":      "001",
+				"var2":      "003",
+				"var3":      "f5649",
+				"amount":    "2819",
+			},
+			ExpectedResolved: Send{
+				Source: Source{
+					Payment: &PaymentSource{
+						ID: "test",
+					},
+				},
+				Destination: Destination{
+					Account: &LedgerAccountDestination{
+						ID:     "test:001:test:003:test:f5649:test",
+						Ledger: "default",
+					},
+				},
+				Amount: &shared.Monetary{
+					Amount: big.NewInt(2819),
+					Asset:  "EUR/2",
+				},
+			},
+		},
+		{
 			Name: "valid case",
 			Data: map[string]any{
 				"source": map[string]any{

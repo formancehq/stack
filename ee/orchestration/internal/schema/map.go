@@ -27,7 +27,7 @@ func (err *fieldResolveError) Error() string {
 }
 
 func interpolate(ctx Context, v string) string {
-	r := regexp.MustCompile(`\$\{.+}`)
+	r := regexp.MustCompile(`\$\{[^\}]+\}`)
 	return r.ReplaceAllStringFunc(v, func(key string) string {
 		key = strings.TrimPrefix(key, "${")
 		key = strings.TrimSuffix(key, "}")
