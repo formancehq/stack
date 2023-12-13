@@ -8,6 +8,7 @@ pipeline:
   - switch_event_type:
       events:
       - label: SAVED_PAYMENT
+        version: v1
         processors:
         - bloblang: |
               root = {
@@ -33,6 +34,7 @@ pipeline:
                   "id": "PAYMENT-%s".format(this.payload.id)
               }
       - label: SAVED_ACCOUNT
+        version: v1
         processors:
         - bloblang: |
               root = {
@@ -55,6 +57,7 @@ pipeline:
                 "id": "PAYMENT-ACCOUNT-%s".format(this.payload.id)
               }
       - label: SAVED_BALANCE
+        version: v1
         processors:
         - bloblang: |
               root = {
@@ -75,6 +78,7 @@ pipeline:
                   "id": "PAYMENT-BALANCE-%s-%s".format(this.payload.accountID, this.payload.asset)
                 }
       - label: SAVED_BANK_ACCOUNT
+        version: v1
         processors:
         - bloblang: |
               root = {
@@ -100,6 +104,7 @@ pipeline:
                 "id": "PAYMENT-BANK-ACCOUNT-%s".format(this.payload.id)
               }
       - label: SAVED_POOL
+        version: v1
         processors:
         - bloblang: |
               root = {
@@ -118,6 +123,7 @@ pipeline:
                 "id": "PAYMENT-POOL-%s".format(this.payload.id)
               }
       - label: SAVED_TRANSFER_INITIATION
+        version: v1
         processors:
         - bloblang: |
               root = {

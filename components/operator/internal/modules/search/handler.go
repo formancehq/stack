@@ -336,24 +336,15 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 					panic(err)
 				}
 
-				var mostRecent string
 				for _, version := range versions {
-					if ctx.Versions.IsLower(serviceDir.Name(), version.Name()) {
-						continue
+					streamsDir := filepath.Join("streams", serviceDir.Name(), version.Name())
+
+					streams := make(map[string]string)
+					copyDir(benthos.Streams, streamsDir, streamsDir, &streams)
+
+					for name, stream := range streams {
+						data[name] = stream
 					}
-
-					if mostRecent == "" || semver.Compare(version.Name(), mostRecent) > 0 {
-						mostRecent = version.Name()
-					}
-				}
-
-				streamsDir := filepath.Join("streams", serviceDir.Name(), mostRecent)
-
-				streams := make(map[string]string)
-				copyDir(benthos.Streams, streamsDir, streamsDir, &streams)
-
-				for name, stream := range streams {
-					data[name] = stream
 				}
 			}
 			ret["streams"] = modules.Config{

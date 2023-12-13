@@ -9,7 +9,7 @@ fields:
 mapping: |
   root = {
     "switch": this.events.map_each(eventDefinition -> {
-      "check": "this.type == \"%s\"".format(eventDefinition.label),
+      "check": "this.type == \"%s\" && this.version == \"%s\"".format(eventDefinition.label, eventDefinition.version),
       "processors": eventDefinition.processors
     }).append({
       "processors": [

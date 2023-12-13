@@ -1,7 +1,7 @@
 input:
   event_bus:
     topic: ledger
-    consumer_group: search
+    consumer_group: search-ledgerv2
 
 pipeline:
   processors:
@@ -10,9 +10,9 @@ pipeline:
   - switch_event_type:
       events:
       - label: COMMITTED_TRANSACTIONS
+        version: v2
         processors:
         - bloblang: |
-            
             map amount {
               root = [this.amount]
               let hasDecimals = this.asset.split("/").length() > 1
@@ -133,6 +133,7 @@ pipeline:
         - unarchive:
             format: json_array
       - label: SAVED_METADATA
+        version: v2
         processors:
         - bloblang: |
             root = this.payload.metadata.map_each(item -> {
@@ -156,6 +157,7 @@ pipeline:
         - unarchive:
             format: json_array
       - label: DELETED_METADATA
+        version: v2
         processors:
         - bloblang: |
             root = {
