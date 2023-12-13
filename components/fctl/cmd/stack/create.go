@@ -149,8 +149,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		}
 	}
 
-	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Your dashboard will be reachable on: %s",
-		profile.ServicesBaseUrl(stackResponse.Data).String())
+	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Println("Your dashboard will be reachable on: https://console.formance.cloud")
 
 	stackClient, err := fctl.NewStackClient(cmd, cfg, stackResponse.Data)
 	if err != nil {
