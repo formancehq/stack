@@ -22,7 +22,7 @@ var _ fctl.Controller[*UiStruct] = (*UiController)(nil)
 
 func NewDefaultUiStore() *UiStruct {
 	return &UiStruct{
-		UIUrl:        "",
+		UIUrl:        "https://console.formance.cloud",
 		FoundBrowser: false,
 	}
 }
@@ -56,27 +56,6 @@ func (c *UiController) GetStore() *UiStruct {
 }
 
 func (c *UiController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organization)
-	if err != nil {
-		return nil, err
-	}
-
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	stackUrl := profile.ServicesBaseUrl(stack)
-
-	c.store.UIUrl = stackUrl.String()
-
 	if err := openUrl(c.store.UIUrl); err != nil {
 		c.store.FoundBrowser = true
 	}

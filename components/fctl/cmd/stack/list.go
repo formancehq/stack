@@ -99,7 +99,7 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return Stack{
 			Id:        stack.Id,
 			Name:      stack.Name,
-			Dashboard: c.profile.ServicesBaseUrl(&stack).String(),
+			Dashboard: "https://console.formance.cloud",
 			RegionID:  stack.RegionID,
 			Status:    stack.State,
 			DisabledAt: func() *string {
