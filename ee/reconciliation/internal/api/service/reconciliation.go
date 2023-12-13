@@ -16,7 +16,7 @@ import (
 
 type ReconciliationRequest struct {
 	ReconciledAtLedger   time.Time `json:"reconciledAtLedger"`
-	ReconciledAtPayments time.Time `json:"reconciledAtPayment"`
+	ReconciledAtPayments time.Time `json:"reconciledAtPayments"`
 }
 
 func (r *ReconciliationRequest) Validate() error {
@@ -78,6 +78,7 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 		Status:               models.ReconciliationOK,
 		PaymentsBalances:     paymentBalance,
 		LedgerBalances:       ledgerBalance,
+		DriftBalances:        make(map[string]*big.Int),
 	}
 
 	var reconciliationError bool
@@ -89,18 +90,28 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 	}
 
 	if !reconciliationError {
-		for paymentAsset, paymentBalance := range paymentBalance {
-			ledgerBalance, ok := ledgerBalance[paymentAsset]
-			if !ok {
+		for asset, ledgerBalance := range ledgerBalance {
+			err := s.computeDrift(res, asset, ledgerBalance, paymentBalance[asset])
+			if err != nil {
 				res.Status = models.ReconciliationNotOK
-				res.Error = fmt.Sprintf("missing asset %s in ledger", paymentAsset)
-				break
+				if res.Error == "" {
+					res.Error = err.Error()
+				} else {
+					res.Error = res.Error + "; " + err.Error()
+				}
+			}
+		}
+
+		for asset, paymentBalance := range paymentBalance {
+			if _, ok := res.DriftBalances[asset]; ok {
+				// Already computed
+				continue
 			}
 
-			if paymentBalance.Cmp(ledgerBalance) != 0 {
+			err := s.computeDrift(res, asset, ledgerBalance[asset], paymentBalance)
+			if err != nil {
 				res.Status = models.ReconciliationNotOK
-				res.Error = fmt.Sprintf("different balance for asset %s", paymentAsset)
-				break
+				res.Error = res.Error + "; " + err.Error()
 			}
 		}
 	}
@@ -110,6 +121,45 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 	}
 
 	return res, nil
+}
+
+func (s *Service) computeDrift(
+	res *models.Reconciliation,
+	asset string,
+	ledgerBalance *big.Int,
+	paymentBalance *big.Int,
+) error {
+	switch {
+	case ledgerBalance == nil && paymentBalance == nil:
+		// Not possible
+		return nil
+	case ledgerBalance == nil && paymentBalance != nil:
+		var balance big.Int
+		balance.Set(paymentBalance).Abs(&balance)
+		res.DriftBalances[asset] = &balance
+		return fmt.Errorf("missing asset %s in ledgerBalances", asset)
+	case ledgerBalance != nil && paymentBalance == nil:
+		var balance big.Int
+		balance.Set(ledgerBalance).Abs(&balance)
+		res.DriftBalances[asset] = &balance
+		res.DriftBalances[asset] = ledgerBalance
+		return fmt.Errorf("missing asset %s in paymentBalances", asset)
+	case ledgerBalance != nil && paymentBalance != nil:
+		var drift big.Int
+		drift.Set(paymentBalance).Add(&drift, ledgerBalance)
+
+		var err error
+		switch drift.Cmp(big.NewInt(0)) {
+		case 0, 1:
+		default:
+			err = fmt.Errorf("balance drift for asset %s", asset)
+		}
+
+		res.DriftBalances[asset] = drift.Abs(&drift)
+		return err
+	}
+
+	return nil
 }
 
 func (s *Service) GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error) {

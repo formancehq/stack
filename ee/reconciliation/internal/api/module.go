@@ -42,6 +42,7 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 			return store
 		}),
 		fx.Supply(serviceInfo),
+		fx.Provide(fx.Annotate(service.NewSDKFormance, fx.As(new(service.SDKFormance)))),
 		fx.Provide(fx.Annotate(service.NewService, fx.As(new(backend.Service)))),
 		fx.Provide(backend.NewDefaultBackend),
 		fx.Provide(newRouter),

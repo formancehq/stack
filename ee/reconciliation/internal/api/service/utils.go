@@ -34,7 +34,7 @@ func isVersionSupported(
 }
 
 func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName string, ledgerAggregatedBalanceQuery map[string]interface{}, at time.Time) (map[string]*big.Int, error) {
-	infoResponse, err := s.client.Ledger.V2GetInfo(ctx)
+	infoResponse, err := s.client.V2GetInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName s
 		return nil, errors.New("ledger version not supported")
 	}
 
-	balances, err := s.client.Ledger.V2GetBalancesAggregated(
+	balances, err := s.client.V2GetBalancesAggregated(
 		ctx,
 		operations.V2GetBalancesAggregatedRequest{
 			RequestBody: ledgerAggregatedBalanceQuery,
@@ -76,7 +76,7 @@ func (s *Service) getAccountsAggregatedBalance(ctx context.Context, ledgerName s
 }
 
 func (s *Service) getPaymentPoolBalance(ctx context.Context, paymentPoolID string, at time.Time) (map[string]*big.Int, error) {
-	response, err := s.client.Payments.PaymentsgetServerInfo(ctx)
+	response, err := s.client.PaymentsgetServerInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (s *Service) getPaymentPoolBalance(ctx context.Context, paymentPoolID strin
 		return nil, errors.New("payments version not supported")
 	}
 
-	balances, err := s.client.Payments.GetPoolBalances(
+	balances, err := s.client.GetPoolBalances(
 		ctx,
 		operations.GetPoolBalancesRequest{
 			At:     at,

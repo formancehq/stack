@@ -320,13 +320,13 @@ components:
       type: object
       required:
         - reconciledAtLedger
-        - reconciledAtPayment
+        - reconciledAtPayments
       properties:
         reconciledAtLedger:
           type: string
           format: date-time
           example: "2021-01-01T00:00:00.000Z"
-        reconciledAtPayment:
+        reconciledAtPayments:
           type: string
           format: date-time
           example: "2021-01-01T00:00:00.000Z"
@@ -377,6 +377,7 @@ components:
         - status
         - paymentsBalances
         - ledgerBalances
+        - driftBalances
       properties:
         id:
           type: string
@@ -405,6 +406,11 @@ components:
             type: integer
             format: bigint
         ledgerBalances:
+          type: object
+          additionalProperties:
+            type: integer
+            format: bigint
+        driftBalances:
           type: object
           additionalProperties:
             type: integer

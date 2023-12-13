@@ -25,6 +25,7 @@ type reconciliationResponse struct {
 	Status               string              `json:"status"`
 	PaymentsBalances     map[string]*big.Int `json:"paymentsBalances"`
 	LedgerBalances       map[string]*big.Int `json:"ledgerBalances"`
+	DriftBalances        map[string]*big.Int `json:"driftBalances"`
 	Error                string              `json:"error"`
 }
 
@@ -63,6 +64,7 @@ func reconciliationHandler(b backend.Backend) http.HandlerFunc {
 			Status:               res.Status.String(),
 			PaymentsBalances:     res.PaymentsBalances,
 			LedgerBalances:       res.LedgerBalances,
+			DriftBalances:        res.DriftBalances,
 			Error:                res.Error,
 		}
 
@@ -89,6 +91,7 @@ func getReconciliationHandler(b backend.Backend) http.HandlerFunc {
 			Status:               res.Status.String(),
 			PaymentsBalances:     res.PaymentsBalances,
 			LedgerBalances:       res.LedgerBalances,
+			DriftBalances:        res.DriftBalances,
 			Error:                res.Error,
 		}
 
