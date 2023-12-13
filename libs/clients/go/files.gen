@@ -447,6 +447,7 @@ pkg/models/shared/bankingcircleconfig.go
 pkg/models/shared/mangopayconfig.go
 pkg/models/shared/moneycorpconfig.go
 pkg/models/shared/atlarconfig.go
+pkg/models/shared/adyenconfig.go
 pkg/models/shared/connectorsresponse.go
 pkg/models/shared/bankaccountscursor.go
 pkg/models/shared/connectorsconfigsresponse.go
@@ -1132,6 +1133,7 @@ docs/models/shared/bankingcircleconfig.md
 docs/models/shared/mangopayconfig.md
 docs/models/shared/moneycorpconfig.md
 docs/models/shared/atlarconfig.md
+docs/models/shared/adyenconfig.md
 docs/models/shared/connectorsresponsedata.md
 docs/models/shared/connectorsresponse.md
 docs/models/shared/bankaccountscursorcursor.md

@@ -57,3 +57,9 @@ connectorConfig := shared.CreateConnectorConfigMoneycorpConfig(shared.MoneycorpC
 connectorConfig := shared.CreateConnectorConfigAtlarConfig(shared.AtlarConfig{/* values here */})
 ```
 
+### AdyenConfig
+
+```go
+connectorConfig := shared.CreateConnectorConfigAdyenConfig(shared.AdyenConfig{/* values here */})
+```
+

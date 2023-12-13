@@ -1155,6 +1155,7 @@ components:
         - MANGOPAY
         - MONEYCORP
         - ATLAR
+        - ADYEN
     TransferInitiationStatus:
       type: string
       enum:
@@ -1175,6 +1176,7 @@ components:
         - $ref: '#/components/schemas/MangoPayConfig'
         - $ref: '#/components/schemas/MoneycorpConfig'
         - $ref: '#/components/schemas/AtlarConfig'
+        - $ref: '#/components/schemas/AdyenConfig'
     StripeConfig:
       type: object
       required:
@@ -1382,6 +1384,31 @@ components:
           type: string
           example: 'XXX'
           description: 'The endpoint to use for the API. Defaults to https://devapi.currencycloud.com'
+    AdyenConfig:
+      type: object
+      required:
+        - name
+        - apiKey
+        - hmacKey
+      properties:
+        name:
+          type: string
+          example: 'My Adyen Account'
+        apiKey:
+          type: string
+          example: 'XXX'
+        hmacKey:
+          type: string
+          example: 'XXX'
+        liveEndpointPrefix:
+          type: string
+          example: 'XXX'
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Adyen API.
+          default: '120s'
     AtlarConfig:
       type: object
       required:
