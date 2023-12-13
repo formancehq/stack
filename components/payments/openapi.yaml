@@ -1540,6 +1540,7 @@ components:
         - type
         - status
         - initialAmount
+        - amount
         - scheme
         - asset
         - createdAt
@@ -1565,6 +1566,11 @@ components:
         status:
           $ref: '#/components/schemas/PaymentStatus'
         initialAmount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        amount:
           type: integer
           format: bigint
           minimum: 0
@@ -2041,6 +2047,8 @@ components:
     PaymentScheme:
       type: string
       enum:
+        - unknown
+        - other
         - visa
         - mastercard
         - amex
@@ -2048,26 +2056,31 @@ components:
         - discover
         - jcb
         - unionpay
+        - alipay
+        - cup
         - sepa debit
         - sepa credit
         - sepa
         - apple pay
         - google pay
+        - doku
+        - dragonpay
+        - maestro
+        - molpay
         - a2a
         - ach debit
         - ach
         - rtp
-        - unknown
-        - other
     PaymentStatus:
       type: string
       enum:
         - PENDING
-        - ACTIVE
-        - TERMINATED
-        - FAILED
         - SUCCEEDED
         - CANCELLED
+        - FAILED
+        - EXPIRED
+        - REFUNDED
+        - OTHER
     ServerInfo:
       type: object
       required:

@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -121,6 +122,42 @@ func listTasks[Config models.ConnectorConfigObject](
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func webhooks[Config models.ConnectorConfigObject](
+	b backend.ManagerBackend[Config],
+	apiVersion APIVersion,
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		connectorID, err := getConnectorID(b, r, apiVersion)
+		if err != nil {
+			api.BadRequest(w, ErrInvalidID, err)
+			return
+		}
+
+		if connectorNotInstalled(b, connectorID, w, r) {
+			return
+		}
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			api.BadRequest(w, ErrMissingOrInvalidBody, err)
+		}
+		defer r.Body.Close()
+
+		err = b.GetManager().HandleWebhook(r.Context(), &models.Webhook{
+			ID:          uuid.New(),
+			ConnectorID: connectorID,
+			RequestBody: body,
+		})
+		if err != nil {
+			handleConnectorsManagerErrors(w, r, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("[accepted]"))
 	}
 }
 

@@ -9,10 +9,12 @@ import (
 type Client struct {
 	client *adyen.APIClient
 
+	HMACKey string
+
 	logger logging.Logger
 }
 
-func NewClient(apiKey, liveEndpointPrefix string, logger logging.Logger) (*Client, error) {
+func NewClient(apiKey, hmacKey, liveEndpointPrefix string, logger logging.Logger) (*Client, error) {
 	adyenConfig := &common.Config{
 		ApiKey:      apiKey,
 		Environment: common.TestEnv,
@@ -28,7 +30,8 @@ func NewClient(apiKey, liveEndpointPrefix string, logger logging.Logger) (*Clien
 	client := adyen.NewClient(adyenConfig)
 
 	return &Client{
-		client: client,
-		logger: logger,
+		client:  client,
+		HMACKey: hmacKey,
+		logger:  logger,
 	}, nil
 }

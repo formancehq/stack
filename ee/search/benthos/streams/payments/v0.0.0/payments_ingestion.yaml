@@ -23,7 +23,8 @@ pipeline:
                         "status": this.payload.status,
                         "scheme": this.payload.scheme,
                         "asset": this.payload.asset,
-                        "initialAmount": this.payload.initialAmount
+                        "initialAmount": this.payload.initialAmount,
+                        "amount": this.payload.amount
                     },
                     "kind": "PAYMENT",
                     "when": this.date

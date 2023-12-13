@@ -22,6 +22,7 @@ type paymentResponse struct {
 	Provider             models.ConnectorProvider `json:"provider"`
 	ConnectorID          string                   `json:"connectorID"`
 	Status               models.PaymentStatus     `json:"status"`
+	Amount               *big.Int                 `json:"amount"`
 	InitialAmount        *big.Int                 `json:"initialAmount"`
 	Scheme               models.PaymentScheme     `json:"scheme"`
 	Asset                string                   `json:"asset"`
@@ -68,7 +69,8 @@ func createPaymentHandler(b backend.Backend) http.HandlerFunc {
 			ConnectorID:   payment.ConnectorID.String(),
 			Provider:      payment.ConnectorID.Provider,
 			Status:        payment.Status,
-			InitialAmount: payment.Amount,
+			Amount:        payment.Amount,
+			InitialAmount: payment.InitialAmount,
 			Scheme:        payment.Scheme,
 			Asset:         payment.Asset.String(),
 			CreatedAt:     payment.CreatedAt,
@@ -120,7 +122,8 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 				ConnectorID:   ret[i].ConnectorID.String(),
 				Provider:      ret[i].Connector.Provider,
 				Status:        ret[i].Status,
-				InitialAmount: ret[i].Amount,
+				Amount:        ret[i].Amount,
+				InitialAmount: ret[i].InitialAmount,
 				Scheme:        ret[i].Scheme,
 				Asset:         ret[i].Asset.String(),
 				CreatedAt:     ret[i].CreatedAt,
@@ -193,7 +196,8 @@ func readPaymentHandler(b backend.Backend) http.HandlerFunc {
 			Type:          payment.Type.String(),
 			ConnectorID:   payment.ConnectorID.String(),
 			Status:        payment.Status,
-			InitialAmount: payment.Amount,
+			Amount:        payment.Amount,
+			InitialAmount: payment.InitialAmount,
 			Scheme:        payment.Scheme,
 			Asset:         payment.Asset.String(),
 			CreatedAt:     payment.CreatedAt,

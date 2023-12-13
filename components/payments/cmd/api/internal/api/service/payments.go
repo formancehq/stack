@@ -128,6 +128,7 @@ func (s *Service) CreatePayment(ctx context.Context, req *CreatePaymentRequest) 
 		CreatedAt:            req.CreatedAt,
 		Reference:            req.Reference,
 		Amount:               req.Amount,
+		InitialAmount:        req.Amount,
 		Type:                 models.PaymentType(req.Type),
 		Status:               models.PaymentStatus(req.Status),
 		Scheme:               models.PaymentScheme(req.Scheme),

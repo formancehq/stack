@@ -122,21 +122,21 @@ func (e *OrchestrationPaymentType) UnmarshalJSON(data []byte) error {
 }
 
 type OrchestrationPayment struct {
-	Adjustments          []PaymentAdjustment           `json:"adjustments"`
-	Asset                string                        `json:"asset"`
-	ConnectorID          string                        `json:"connectorID"`
-	CreatedAt            time.Time                     `json:"createdAt"`
-	DestinationAccountID string                        `json:"destinationAccountID"`
-	ID                   string                        `json:"id"`
-	InitialAmount        *big.Int                      `json:"initialAmount"`
-	Metadata             *OrchestrationPaymentMetadata `json:"metadata"`
-	Provider             *OrchestrationConnector       `json:"provider,omitempty"`
-	Raw                  *OrchestrationPaymentRaw      `json:"raw"`
-	Reference            string                        `json:"reference"`
-	Scheme               OrchestrationPaymentScheme    `json:"scheme"`
-	SourceAccountID      string                        `json:"sourceAccountID"`
-	Status               PaymentStatus                 `json:"status"`
-	Type                 OrchestrationPaymentType      `json:"type"`
+	Adjustments          []OrchestrationPaymentAdjustment `json:"adjustments"`
+	Asset                string                           `json:"asset"`
+	ConnectorID          string                           `json:"connectorID"`
+	CreatedAt            time.Time                        `json:"createdAt"`
+	DestinationAccountID string                           `json:"destinationAccountID"`
+	ID                   string                           `json:"id"`
+	InitialAmount        *big.Int                         `json:"initialAmount"`
+	Metadata             *OrchestrationPaymentMetadata    `json:"metadata"`
+	Provider             *OrchestrationConnector          `json:"provider,omitempty"`
+	Raw                  *OrchestrationPaymentRaw         `json:"raw"`
+	Reference            string                           `json:"reference"`
+	Scheme               OrchestrationPaymentScheme       `json:"scheme"`
+	SourceAccountID      string                           `json:"sourceAccountID"`
+	Status               OrchestrationPaymentStatus       `json:"status"`
+	Type                 OrchestrationPaymentType         `json:"type"`
 }
 
 func (o OrchestrationPayment) MarshalJSON() ([]byte, error) {
@@ -150,9 +150,9 @@ func (o *OrchestrationPayment) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *OrchestrationPayment) GetAdjustments() []PaymentAdjustment {
+func (o *OrchestrationPayment) GetAdjustments() []OrchestrationPaymentAdjustment {
 	if o == nil {
-		return []PaymentAdjustment{}
+		return []OrchestrationPaymentAdjustment{}
 	}
 	return o.Adjustments
 }
@@ -241,9 +241,9 @@ func (o *OrchestrationPayment) GetSourceAccountID() string {
 	return o.SourceAccountID
 }
 
-func (o *OrchestrationPayment) GetStatus() PaymentStatus {
+func (o *OrchestrationPayment) GetStatus() OrchestrationPaymentStatus {
 	if o == nil {
-		return PaymentStatus("")
+		return OrchestrationPaymentStatus("")
 	}
 	return o.Status
 }

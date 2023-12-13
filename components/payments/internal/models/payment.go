@@ -91,15 +91,16 @@ func (pid *PaymentID) Scan(value interface{}) error {
 type Payment struct {
 	bun.BaseModel `bun:"payments.payment"`
 
-	ID          PaymentID   `bun:",pk,type:character varying,nullzero"`
-	ConnectorID ConnectorID `bun:",nullzero"`
-	CreatedAt   time.Time   `bun:",nullzero"`
-	Reference   string
-	Amount      *big.Int      `bun:"type:numeric"`
-	Type        PaymentType   `bun:",type:payment_type"`
-	Status      PaymentStatus `bun:",type:payment_status"`
-	Scheme      PaymentScheme
-	Asset       Asset
+	ID            PaymentID   `bun:",pk,type:character varying,nullzero"`
+	ConnectorID   ConnectorID `bun:",nullzero"`
+	CreatedAt     time.Time   `bun:",nullzero"`
+	Reference     string
+	Amount        *big.Int      `bun:"type:numeric"`
+	InitialAmount *big.Int      `bun:"type:numeric"`
+	Type          PaymentType   `bun:",type:payment_type"`
+	Status        PaymentStatus `bun:",type:payment_status"`
+	Scheme        PaymentScheme
+	Asset         Asset
 
 	RawData json.RawMessage
 
@@ -130,6 +131,8 @@ const (
 	PaymentStatusSucceeded PaymentStatus = "SUCCEEDED"
 	PaymentStatusCancelled PaymentStatus = "CANCELLED"
 	PaymentStatusFailed    PaymentStatus = "FAILED"
+	PaymentStatusExpired   PaymentStatus = "EXPIRED"
+	PaymentStatusRefunded  PaymentStatus = "REFUNDED"
 	PaymentStatusOther     PaymentStatus = "OTHER"
 )
 
@@ -144,6 +147,8 @@ const (
 	PaymentSchemeCardDiscover   PaymentScheme = "discover"
 	PaymentSchemeCardJCB        PaymentScheme = "jcb"
 	PaymentSchemeCardUnionPay   PaymentScheme = "unionpay"
+	PaymentSchemeCardAlipay     PaymentScheme = "alipay"
+	PaymentSchemeCardCUP        PaymentScheme = "cup"
 
 	PaymentSchemeSepaDebit  PaymentScheme = "sepa debit"
 	PaymentSchemeSepaCredit PaymentScheme = "sepa credit"
@@ -151,6 +156,11 @@ const (
 
 	PaymentSchemeApplePay  PaymentScheme = "apple pay"
 	PaymentSchemeGooglePay PaymentScheme = "google pay"
+
+	PaymentSchemeDOKU      PaymentScheme = "doku"
+	PaymentSchemeDragonPay PaymentScheme = "dragonpay"
+	PaymentSchemeMaestro   PaymentScheme = "maestro"
+	PaymentSchemeMolPay    PaymentScheme = "molpay"
 
 	PaymentSchemeA2A      PaymentScheme = "a2a"
 	PaymentSchemeACHDebit PaymentScheme = "ach debit"

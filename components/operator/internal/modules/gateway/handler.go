@@ -319,7 +319,7 @@ const caddyfile = `(cors) {
 				uri strip_prefix /api/{{ $service.RoutingPath }}
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
 				import cors
-				{{- if not $service.Secured }}
+				{{- if and (not $service.Secured) (not $path.Secured) }}
 				import auth {{ $service.Module }}
 				{{- end }}
 			}

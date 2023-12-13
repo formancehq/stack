@@ -24,9 +24,10 @@ var (
 	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
-func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
+func taskFetchAccounts(client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
+		logger logging.Logger,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,

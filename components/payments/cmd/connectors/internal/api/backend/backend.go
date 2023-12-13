@@ -27,6 +27,7 @@ type Manager[ConnectorConfig models.ConnectorConfigObject] interface {
 	Connectors() map[string]*manager.ConnectorManager
 	ReadConfig(ctx context.Context, connectorID models.ConnectorID) (ConnectorConfig, error)
 	ListTasksStates(ctx context.Context, connectorID models.ConnectorID, pagination storage.PaginatorQuery) ([]*models.Task, storage.PaginationDetails, error)
+	HandleWebhook(ctx context.Context, webhook *models.Webhook) error
 	ReadTaskState(ctx context.Context, connectorID models.ConnectorID, taskID uuid.UUID) (*models.Task, error)
 	Install(ctx context.Context, name string, config ConnectorConfig) (models.ConnectorID, error)
 	Reset(ctx context.Context, connectorID models.ConnectorID) error
