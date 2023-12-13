@@ -56,13 +56,6 @@ func main() {
 * [GetVersions](docs/sdks/formance/README.md#getversions) - Show stack version information
 * [GetAPIAuthWellKnownOpenidConfiguration](docs/sdks/formance/README.md#getapiauthwellknownopenidconfiguration)
 
-### [Accounts](docs/sdks/accounts/README.md)
-
-* [AddMetadataToAccount](docs/sdks/accounts/README.md#addmetadatatoaccount) - Add metadata to an account
-* [CountAccounts](docs/sdks/accounts/README.md#countaccounts) - Count the accounts from a ledger
-* [GetAccount](docs/sdks/accounts/README.md#getaccount) - Get account by its address
-* [ListAccounts](docs/sdks/accounts/README.md#listaccounts) - List accounts from a ledger
-
 ### [Auth](docs/sdks/auth/README.md)
 
 * [CreateClient](docs/sdks/auth/README.md#createclient) - Create client
@@ -76,14 +69,28 @@ func main() {
 * [ReadUser](docs/sdks/auth/README.md#readuser) - Read user
 * [UpdateClient](docs/sdks/auth/README.md#updateclient) - Update client
 
-### [Balances](docs/sdks/balances/README.md)
-
-* [GetBalances](docs/sdks/balances/README.md#getbalances) - Get the balances from a ledger's account
-* [GetBalancesAggregated](docs/sdks/balances/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
-
 ### [Ledger](docs/sdks/ledger/README.md)
 
+* [CreateTransactions](docs/sdks/ledger/README.md#createtransactions) - Create a new batch of transactions to a ledger
+* [AddMetadataOnTransaction](docs/sdks/ledger/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
+* [AddMetadataToAccount](docs/sdks/ledger/README.md#addmetadatatoaccount) - Add metadata to an account
+* [CountAccounts](docs/sdks/ledger/README.md#countaccounts) - Count the accounts from a ledger
+* [CountTransactions](docs/sdks/ledger/README.md#counttransactions) - Count the transactions from a ledger
+* [CreateTransaction](docs/sdks/ledger/README.md#createtransaction) - Create a new transaction to a ledger
+* [GetAccount](docs/sdks/ledger/README.md#getaccount) - Get account by its address
+* [GetBalances](docs/sdks/ledger/README.md#getbalances) - Get the balances from a ledger's account
+* [GetBalancesAggregated](docs/sdks/ledger/README.md#getbalancesaggregated) - Get the aggregated balances from selected accounts
+* [GetInfo](docs/sdks/ledger/README.md#getinfo) - Show server information
 * [GetLedgerInfo](docs/sdks/ledger/README.md#getledgerinfo) - Get information about a ledger
+* [GetMapping](docs/sdks/ledger/README.md#getmapping) - Get the mapping of a ledger
+* [GetTransaction](docs/sdks/ledger/README.md#gettransaction) - Get transaction from a ledger by its ID
+* [ListAccounts](docs/sdks/ledger/README.md#listaccounts) - List accounts from a ledger
+* [ListLogs](docs/sdks/ledger/README.md#listlogs) - List the logs from a ledger
+* [ListTransactions](docs/sdks/ledger/README.md#listtransactions) - List transactions from a ledger
+* [ReadStats](docs/sdks/ledger/README.md#readstats) - Get statistics from a ledger
+* [RevertTransaction](docs/sdks/ledger/README.md#reverttransaction) - Revert a ledger transaction by its ID
+* [~~RunScript~~](docs/sdks/ledger/README.md#runscript) - Execute a Numscript :warning: **Deprecated**
+* [UpdateMapping](docs/sdks/ledger/README.md#updatemapping) - Update the mapping of a ledger
 * [V2AddMetadataOnTransaction](docs/sdks/ledger/README.md#v2addmetadataontransaction) - Set the metadata of a transaction by its ID
 * [V2AddMetadataToAccount](docs/sdks/ledger/README.md#v2addmetadatatoaccount) - Add metadata to an account
 * [V2CountAccounts](docs/sdks/ledger/README.md#v2countaccounts) - Count the accounts from a ledger
@@ -105,15 +112,6 @@ func main() {
 * [V2ListTransactions](docs/sdks/ledger/README.md#v2listtransactions) - List transactions from a ledger
 * [V2ReadStats](docs/sdks/ledger/README.md#v2readstats) - Get statistics from a ledger
 * [V2RevertTransaction](docs/sdks/ledger/README.md#v2reverttransaction) - Revert a ledger transaction by its ID
-
-### [Logs](docs/sdks/logs/README.md)
-
-* [ListLogs](docs/sdks/logs/README.md#listlogs) - List the logs from a ledger
-
-### [Mapping](docs/sdks/mapping/README.md)
-
-* [GetMapping](docs/sdks/mapping/README.md#getmapping) - Get the mapping of a ledger
-* [UpdateMapping](docs/sdks/mapping/README.md#updatemapping) - Update the mapping of a ledger
 
 ### [Orchestration](docs/sdks/orchestration/README.md)
 
@@ -204,32 +202,10 @@ func main() {
 * [Reconcile](docs/sdks/reconciliation/README.md#reconcile) - Reconcile using a policy
 * [ReconciliationgetServerInfo](docs/sdks/reconciliation/README.md#reconciliationgetserverinfo) - Get server info
 
-### [Script](docs/sdks/script/README.md)
-
-* [~~RunScript~~](docs/sdks/script/README.md#runscript) - Execute a Numscript :warning: **Deprecated**
-
 ### [Search](docs/sdks/search/README.md)
 
 * [Search](docs/sdks/search/README.md#search) - Search
 * [SearchgetServerInfo](docs/sdks/search/README.md#searchgetserverinfo) - Get server info
-
-### [Server](docs/sdks/server/README.md)
-
-* [GetInfo](docs/sdks/server/README.md#getinfo) - Show server information
-
-### [Stats](docs/sdks/stats/README.md)
-
-* [ReadStats](docs/sdks/stats/README.md#readstats) - Get statistics from a ledger
-
-### [Transactions](docs/sdks/transactions/README.md)
-
-* [CreateTransactions](docs/sdks/transactions/README.md#createtransactions) - Create a new batch of transactions to a ledger
-* [AddMetadataOnTransaction](docs/sdks/transactions/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
-* [CountTransactions](docs/sdks/transactions/README.md#counttransactions) - Count the transactions from a ledger
-* [CreateTransaction](docs/sdks/transactions/README.md#createtransaction) - Create a new transaction to a ledger
-* [GetTransaction](docs/sdks/transactions/README.md#gettransaction) - Get transaction from a ledger by its ID
-* [ListTransactions](docs/sdks/transactions/README.md#listtransactions) - List transactions from a ledger
-* [RevertTransaction](docs/sdks/transactions/README.md#reverttransaction) - Revert a ledger transaction by its ID
 
 ### [Wallets](docs/sdks/wallets/README.md)
 
@@ -287,7 +263,7 @@ func main() {
 	s := formancesdkgo.New()
 
 	ctx := context.Background()
-	res, err := s.Accounts.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
+	res, err := s.Ledger.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
 		RequestBody: map[string]interface{}{
 			"key": "string",
 		},

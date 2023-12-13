@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-type LogData struct {
-}
-
 type LogType string
 
 const (
@@ -40,11 +37,11 @@ func (e *LogType) UnmarshalJSON(data []byte) error {
 }
 
 type Log struct {
-	Data LogData   `json:"data"`
-	Date time.Time `json:"date"`
-	Hash string    `json:"hash"`
-	ID   int64     `json:"id"`
-	Type LogType   `json:"type"`
+	Data map[string]interface{} `json:"data"`
+	Date time.Time              `json:"date"`
+	Hash string                 `json:"hash"`
+	ID   int64                  `json:"id"`
+	Type LogType                `json:"type"`
 }
 
 func (l Log) MarshalJSON() ([]byte, error) {
@@ -58,9 +55,9 @@ func (l *Log) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *Log) GetData() LogData {
+func (o *Log) GetData() map[string]interface{} {
 	if o == nil {
-		return LogData{}
+		return map[string]interface{}{}
 	}
 	return o.Data
 }

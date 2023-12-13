@@ -11,6 +11,7 @@ features:
     errors: 2.81.7
     getRequestBodies: 2.81.1
     globalServerURLs: 2.82.0
+    ignores: 2.81.1
     unions: 2.84.1
 go:
   version: v0.1.0

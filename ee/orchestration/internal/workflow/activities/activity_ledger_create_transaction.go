@@ -34,7 +34,7 @@ type CreateTransactionRequest struct {
 
 func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.TransactionsResponse, error) {
 
-	response, err := a.client.Transactions.CreateTransaction(
+	response, err := a.client.Ledger.CreateTransaction(
 		ctx,
 		operations.CreateTransactionRequest{
 			PostTransaction: request.Data,

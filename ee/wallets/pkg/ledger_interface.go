@@ -119,7 +119,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, quer
 		req.Cursor = pointer.For(query.Cursor)
 	}
 
-	rsp, err := d.client.Transactions.ListTransactions(ctx, req)
+	rsp, err := d.client.Ledger.ListTransactions(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 	for k, v := range transaction.Metadata {
 		txMetadata[k] = v
 	}
-	ret, err := d.client.Transactions.CreateTransaction(ctx, operations.CreateTransactionRequest{
+	ret, err := d.client.Ledger.CreateTransaction(ctx, operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata:  txMetadata,
 			Postings:  transaction.Postings,
@@ -156,7 +156,7 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 		m[k] = v
 	}
 
-	_, err := d.client.Accounts.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
+	_, err := d.client.Ledger.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
 		RequestBody: m,
 		Address:     account,
 		Ledger:      ledger,
@@ -168,7 +168,7 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 }
 
 func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error) {
-	ret, err := d.client.Accounts.GetAccount(ctx, operations.GetAccountRequest{
+	ret, err := d.client.Ledger.GetAccount(ctx, operations.GetAccountRequest{
 		Address: account,
 		Ledger:  ledger,
 	})
@@ -201,7 +201,7 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query Li
 		req.Cursor = pointer.For(query.Cursor)
 	}
 
-	ret, err := d.client.Accounts.ListAccounts(ctx, req)
+	ret, err := d.client.Ledger.ListAccounts(ctx, req)
 	if err != nil {
 		return nil, err
 	}

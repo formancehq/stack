@@ -80,20 +80,12 @@ func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
 // and standard method from web, mobile and desktop applications.
 // <SecurityDefinitions />
 type Formance struct {
-	Accounts       *accounts
 	Auth           *auth
-	Balances       *balances
 	Ledger         *ledger
-	Logs           *logs
-	Mapping        *mapping
 	Orchestration  *orchestration
 	Payments       *payments
 	Reconciliation *reconciliation
-	Script         *script
 	Search         *search
-	Server         *server
-	Stats          *stats
-	Transactions   *transactions
 	Wallets        *wallets
 	Webhooks       *webhooks
 
@@ -167,17 +159,9 @@ func New(opts ...SDKOption) *Formance {
 		sdk.sdkConfiguration.SecurityClient = sdk.sdkConfiguration.DefaultClient
 	}
 
-	sdk.Accounts = newAccounts(sdk.sdkConfiguration)
-
 	sdk.Auth = newAuth(sdk.sdkConfiguration)
 
-	sdk.Balances = newBalances(sdk.sdkConfiguration)
-
 	sdk.Ledger = newLedger(sdk.sdkConfiguration)
-
-	sdk.Logs = newLogs(sdk.sdkConfiguration)
-
-	sdk.Mapping = newMapping(sdk.sdkConfiguration)
 
 	sdk.Orchestration = newOrchestration(sdk.sdkConfiguration)
 
@@ -185,15 +169,7 @@ func New(opts ...SDKOption) *Formance {
 
 	sdk.Reconciliation = newReconciliation(sdk.sdkConfiguration)
 
-	sdk.Script = newScript(sdk.sdkConfiguration)
-
 	sdk.Search = newSearch(sdk.sdkConfiguration)
-
-	sdk.Server = newServer(sdk.sdkConfiguration)
-
-	sdk.Stats = newStats(sdk.sdkConfiguration)
-
-	sdk.Transactions = newTransactions(sdk.sdkConfiguration)
 
 	sdk.Wallets = newWallets(sdk.sdkConfiguration)
 
