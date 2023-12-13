@@ -290,7 +290,7 @@ func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTra
 		if ok {
 			respErr, ok := apiErr.Model().(shared.ErrorResponse)
 			if ok {
-				switch *respErr.ErrorCode {
+				switch respErr.ErrorCode {
 				case shared.ErrorsEnumInsufficientFund:
 					return ErrInsufficientFundError
 				}

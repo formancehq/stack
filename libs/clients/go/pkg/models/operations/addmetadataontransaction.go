@@ -4,6 +4,8 @@ package operations
 
 import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/pkg/utils"
+	"math/big"
 	"net/http"
 )
 
@@ -13,7 +15,18 @@ type AddMetadataOnTransactionRequest struct {
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Transaction ID.
-	Txid int64 `pathParam:"style=simple,explode=false,name=txid"`
+	Txid *big.Int `pathParam:"style=simple,explode=false,name=txid"`
+}
+
+func (a AddMetadataOnTransactionRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(a, "", false)
+}
+
+func (a *AddMetadataOnTransactionRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &a, "", false, false); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *AddMetadataOnTransactionRequest) GetRequestBody() map[string]interface{} {
@@ -30,9 +43,9 @@ func (o *AddMetadataOnTransactionRequest) GetLedger() string {
 	return o.Ledger
 }
 
-func (o *AddMetadataOnTransactionRequest) GetTxid() int64 {
+func (o *AddMetadataOnTransactionRequest) GetTxid() *big.Int {
 	if o == nil {
-		return 0
+		return big.NewInt(0)
 	}
 	return o.Txid
 }

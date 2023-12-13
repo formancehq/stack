@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -14,7 +16,7 @@ import (
 )
 
 type NumStore struct {
-	Transaction *shared.V2Transaction `json:"transaction"`
+	Transaction *shared.Transaction `json:"transaction"`
 }
 type NumController struct {
 	store          *NumStore
@@ -154,11 +156,11 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
 
-	response, err := client.Ledger.V2CreateTransaction(cmd.Context(), operations.V2CreateTransactionRequest{
-		V2PostTransaction: shared.V2PostTransaction{
-			Metadata:  metadata,
+	response, err := client.Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
+		PostTransaction: shared.PostTransaction{
+			Metadata:  collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 			Reference: &reference,
-			Script: &shared.V2PostTransactionScript{
+			Script: &shared.PostTransactionScript{
 				Plain: script,
 				Vars:  vars,
 			},
@@ -175,20 +177,19 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 		return nil, err
 	}
 
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code %d when creating transaction", response.StatusCode)
 	}
 
-	c.store.Transaction = &response.V2CreateTransactionResponse.Data
+	c.store.Transaction = &response.TransactionsResponse.Data[0]
 
 	return c, nil
 }
 
 func (c *NumController) Render(cmd *cobra.Command, args []string) error {
-
 	return internal.PrintTransaction(cmd.OutOrStdout(), *c.store.Transaction)
 }

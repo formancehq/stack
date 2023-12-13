@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/pkg/errors"
+
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -13,7 +17,7 @@ import (
 )
 
 type ListStore struct {
-	Transaction shared.V2TransactionsCursorResponseCursor `json:"transactionCursor"`
+	Transaction shared.TransactionsCursorResponseCursor `json:"transactionCursor"`
 }
 type ListController struct {
 	store           *ListStore
@@ -96,69 +100,54 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	options := make([]map[string]map[string]any, 0)
-	if account := fctl.GetString(cmd, c.accountFlag); account != "" {
-		options = append(options, map[string]map[string]any{
-			"$match": {"account": account},
-		})
-	}
-	if source := fctl.GetString(cmd, c.sourceFlag); source != "" {
-		options = append(options, map[string]map[string]any{
-			"$match": {"source": source},
-		})
-	}
-	if destination := fctl.GetString(cmd, c.destinationFlag); destination != "" {
-		options = append(options, map[string]map[string]any{
-			"$match": {"destination": destination},
-		})
-	}
-	if reference := fctl.GetString(cmd, c.referenceFlag); reference != "" {
-		options = append(options, map[string]map[string]any{
-			"$match": {"reference": reference},
-		})
-	}
-	if startTime := fctl.GetString(cmd, c.startTimeFlag); startTime != "" {
-		options = append(options, map[string]map[string]any{
-			"$gte": {"date": startTime},
-		})
-	}
-	if endTime := fctl.GetString(cmd, c.endTimeFlag); endTime != "" {
-		options = append(options, map[string]map[string]any{
-			"$lt": {"date": endTime},
-		})
-	}
-	for key, value := range metadata {
-		options = append(options, map[string]map[string]any{
-			"$match": {
-				"metadata[" + key + "]": value,
-			},
-		})
+	ledger := fctl.GetString(cmd, internal.LedgerFlag)
+	req := operations.ListTransactionsRequest{
+		Ledger:   ledger,
+		PageSize: fctl.Ptr(int64(fctl.GetInt(cmd, c.pageSizeFlag))),
 	}
 
-	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.V2ListTransactions(
-		cmd.Context(),
-		operations.V2ListTransactionsRequest{
-			RequestBody: map[string]interface{}{
-				"$and": options,
-			},
-			Ledger:   ledger,
-			PageSize: fctl.Ptr(int64(fctl.GetInt(cmd, c.pageSizeFlag))),
-		},
-	)
+	if account := fctl.GetString(cmd, c.accountFlag); account != "" {
+		req.Account = pointer.For(account)
+	}
+	if source := fctl.GetString(cmd, c.sourceFlag); source != "" {
+		req.Source = pointer.For(source)
+	}
+	if destination := fctl.GetString(cmd, c.destinationFlag); destination != "" {
+		req.Destination = pointer.For(destination)
+	}
+	if reference := fctl.GetString(cmd, c.referenceFlag); reference != "" {
+		req.Reference = pointer.For(reference)
+	}
+	if startTime := fctl.GetString(cmd, c.startTimeFlag); startTime != "" {
+		t, err := time.Parse(time.RFC3339Nano, startTime)
+		if err != nil {
+			return nil, errors.Wrap(err, "parsing start time")
+		}
+		req.StartTime = pointer.For(t)
+	}
+	if endTime := fctl.GetString(cmd, c.endTimeFlag); endTime != "" {
+		t, err := time.Parse(time.RFC3339Nano, endTime)
+		if err != nil {
+			return nil, errors.Wrap(err, "parsing end time")
+		}
+		req.EndTime = pointer.For(t)
+	}
+	req.Metadata = collectionutils.ConvertMap(metadata, collectionutils.ToAny[string])
+
+	response, err := ledgerClient.Ledger.ListTransactions(cmd.Context(), req)
 	if err != nil {
 		return nil, err
 	}
 
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Transaction = response.V2TransactionsCursorResponse.Cursor
+	c.store.Transaction = response.TransactionsCursorResponse.Cursor
 
 	return c, nil
 }
@@ -169,9 +158,9 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	tableData := fctl.Map(c.store.Transaction.Data, func(tx shared.V2ExpandedTransaction) []string {
+	tableData := fctl.Map(c.store.Transaction.Data, func(tx shared.Transaction) []string {
 		return []string{
-			fmt.Sprintf("%d", tx.ID),
+			fmt.Sprintf("%d", tx.Txid),
 			func() string {
 				if tx.Reference == nil {
 					return ""

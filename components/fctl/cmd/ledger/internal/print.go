@@ -7,6 +7,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
@@ -16,7 +18,7 @@ func printCommonInformation(
 	out io.Writer,
 	txID *big.Int,
 	reference string,
-	postings []shared.V2Posting,
+	postings []shared.Posting,
 	timestamp time.Time,
 ) error {
 	fctl.Section.WithWriter(out).Println("Information")
@@ -53,11 +55,11 @@ func printCommonInformation(
 	return nil
 }
 
-func PrintExpandedTransaction(out io.Writer, transaction shared.V2ExpandedTransaction) error {
+func PrintExpandedTransaction(out io.Writer, transaction shared.Transaction) error {
 
 	if err := printCommonInformation(
 		out,
-		transaction.ID,
+		transaction.Txid,
 		func() string {
 			if transaction.Reference == nil {
 				return ""
@@ -95,13 +97,13 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.V2ExpandedTransa
 	}
 
 	fmt.Fprintln(out, "")
-	if err := PrintMetadata(out, transaction.Metadata); err != nil {
+	if err := PrintMetadata(out, collectionutils.ConvertMap(transaction.Metadata, collectionutils.ToFmtString[any])); err != nil {
 		return err
 	}
 	return nil
 }
 
-func PrintTransaction(out io.Writer, transaction shared.V2Transaction) error {
+func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
 
 	reference := ""
 	if transaction.Reference != nil {
@@ -109,7 +111,7 @@ func PrintTransaction(out io.Writer, transaction shared.V2Transaction) error {
 	}
 	if err := printCommonInformation(
 		out,
-		transaction.ID,
+		transaction.Txid,
 		reference,
 		transaction.Postings,
 		transaction.Timestamp,
@@ -117,7 +119,7 @@ func PrintTransaction(out io.Writer, transaction shared.V2Transaction) error {
 		return err
 	}
 
-	if err := PrintMetadata(out, transaction.Metadata); err != nil {
+	if err := PrintMetadata(out, collectionutils.ConvertMap(transaction.Metadata, collectionutils.ToFmtString[string])); err != nil {
 		return err
 	}
 	return nil

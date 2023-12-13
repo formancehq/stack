@@ -3,6 +3,8 @@ package transactions
 import (
 	"fmt"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -81,18 +83,18 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fctl.ErrMissingApproval
 	}
 
-	request := operations.V2AddMetadataOnTransactionRequest{
+	request := operations.AddMetadataOnTransactionRequest{
 		Ledger:      fctl.GetString(cmd, internal.LedgerFlag),
-		ID:          transactionID,
-		RequestBody: metadata,
+		Txid:        transactionID,
+		RequestBody: collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 	}
-	response, err := ledgerClient.Ledger.V2AddMetadataOnTransaction(cmd.Context(), request)
+	response, err := ledgerClient.Ledger.AddMetadataOnTransaction(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
 
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
