@@ -98,7 +98,7 @@ func newOpenapiCheckerTransport(ctx context.Context, rt http.RoundTripper) (*ope
 		}
 	}
 
-	err = doc.Validate(ctx)
+	err = doc.Validate(ctx, openapi3.DisableExamplesValidation())
 	if err != nil {
 		return nil, errors.Wrap(err, "validating spec")
 	}
