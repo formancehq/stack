@@ -10,6 +10,7 @@ import (
 
 type Reconciliation struct {
 	CreatedAt            time.Time           `json:"createdAt"`
+	DriftBalances        map[string]*big.Int `json:"driftBalances"`
 	Error                *string             `json:"error,omitempty"`
 	ID                   string              `json:"id"`
 	LedgerBalances       map[string]*big.Int `json:"ledgerBalances"`
@@ -36,6 +37,13 @@ func (o *Reconciliation) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return o.CreatedAt
+}
+
+func (o *Reconciliation) GetDriftBalances() map[string]*big.Int {
+	if o == nil {
+		return map[string]*big.Int{}
+	}
+	return o.DriftBalances
 }
 
 func (o *Reconciliation) GetError() *string {

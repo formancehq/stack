@@ -66,5 +66,13 @@ func registerMigrations(migrator *migrations.Migrator) {
 				return err
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TABLE reconciliations.reconciliation ADD COLUMN drift_balances jsonb;
+				`)
+				return err
+			},
+		},
 	)
 }

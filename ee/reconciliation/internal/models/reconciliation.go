@@ -30,5 +30,6 @@ type Reconciliation struct {
 	Status               ReconciliationStatus `json:"status"`
 	LedgerBalances       map[string]*big.Int  `bun:",jsonb" json:"ledgerBalances"`
 	PaymentsBalances     map[string]*big.Int  `bun:",jsonb" json:"paymentsBalances"`
+	DriftBalances        map[string]*big.Int  `bun:",jsonb" json:"driftBalances"`
 	Error                string               `json:"error"`
 }
