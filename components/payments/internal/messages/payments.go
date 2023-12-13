@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"encoding/json"
 	"math/big"
 	"time"
 
@@ -18,6 +19,7 @@ type paymentMessagePayload struct {
 	Status      models.PaymentStatus `json:"status"`
 	Scheme      models.PaymentScheme `json:"scheme"`
 	Asset       models.Asset         `json:"asset"`
+	RawData     json.RawMessage      `json:"rawData"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
 	InitialAmount *big.Int          `json:"initialAmount"`
@@ -38,6 +40,7 @@ func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Pa
 		CreatedAt:     payment.CreatedAt,
 		ConnectorID:   payment.ConnectorID.String(),
 		Provider:      provider.String(),
+		RawData:       payment.RawData,
 		Metadata: func() map[string]string {
 			ret := make(map[string]string)
 			for _, m := range payment.Metadata {
