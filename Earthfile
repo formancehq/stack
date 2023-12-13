@@ -41,7 +41,7 @@ build-final-spec:
     RUN mkdir ./build
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/final.json
-
+    RUN sed -i 's/SDK_VERSION/INTERNAL/g' build/final.json
     SAVE ARTIFACT build/final.json AS LOCAL libs/clients/build/generate.json
 
 build-sdk:
@@ -147,7 +147,7 @@ tests-integration:
 
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
-    BUILD --pass-args +build-final-spec
+    BUILD --pass-args +build-sdk
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+pre-commit
     END
