@@ -13,7 +13,7 @@ pipeline:
         - bloblang: |
               root = {
                   "document": {
-                    "data": this.payload,
+                    "data": this.payload.without("rawData"),
                     "indexed": {
                         "id": this.payload.id,
                         "reference": this.payload.reference,
