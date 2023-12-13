@@ -30,7 +30,10 @@ archives:
     format: tar.gz
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
-#after:
-#  hooks:
-#  - cmd: make helm-update
-#    dir: ./
+
+release:
+  prerelease: auto
+  footer: |
+    ## What to do next?
+    - Read the [documentation](https://docs.formance.com/)
+    - Join our [Slack server](https://formance.com/slack)

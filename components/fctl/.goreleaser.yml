@@ -58,3 +58,11 @@ brews:
       bash_completion.install "completions/fctl.bash" => "fctl"
       zsh_completion.install "completions/fctl.zsh" => "_fctl"
       fish_completion.install "completions/fctl.fish"
+
+
+release:
+  prerelease: auto
+  footer: |
+    ## What to do next?
+    - Read the [documentation](https://docs.formance.com/)
+    - Join our [Slack server](https://formance.com/slack)

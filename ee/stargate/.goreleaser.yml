@@ -28,3 +28,10 @@ archives:
       - stargate
     format: tar.gz
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
+
+release:
+  prerelease: auto
+  footer: |
+    ## What to do next?
+    - Read the [documentation](https://docs.formance.com/)
+    - Join our [Slack server](https://formance.com/slack)
