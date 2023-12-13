@@ -10,6 +10,7 @@ pipeline:
   - switch_event_type:
       events:
       - label: COMMITTED_TRANSACTIONS
+        version: v2
         processors:
         - bloblang: |
             
@@ -133,6 +134,7 @@ pipeline:
         - unarchive:
             format: json_array
       - label: SAVED_METADATA
+        version: v2
         processors:
         - bloblang: |
             root = this.payload.metadata.map_each(item -> {
@@ -156,6 +158,7 @@ pipeline:
         - unarchive:
             format: json_array
       - label: DELETED_METADATA
+        version: v2
         processors:
         - bloblang: |
             root = {

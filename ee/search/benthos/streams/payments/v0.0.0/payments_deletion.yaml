@@ -8,6 +8,7 @@ pipeline:
   - switch_event_type:
       events:
       - label: CONNECTOR_RESET
+        version: v1
         processors:
         - bloblang: |
             root = {
@@ -66,6 +67,7 @@ pipeline:
             }
 
       - label: DELETED_POOL
+        version: v1
         processors:
         - bloblang: |
             root = {
@@ -93,6 +95,7 @@ pipeline:
             }
 
       - label: DELETED_TRANSFER_INITIATION
+        version: v1
         processors:
         - bloblang: |
             root = {
