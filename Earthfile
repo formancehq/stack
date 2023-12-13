@@ -40,9 +40,7 @@ build-final-spec:
     COPY libs/clients/openapi-merge.json .
     RUN mkdir ./build
     RUN npm run build
-    LET VERSION=$(date +%Y%m%d)
-    RUN jq '.info.version = "v1.0.${VERSION}"' build/generate.json > build/generate-with-version.json
-    RUN jq -s '.[0] * .[1]' build/generate-with-version.json openapi-overlay.json > build/final.json
+    RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/final.json
 
     SAVE ARTIFACT build/final.json AS LOCAL libs/clients/build/generate.json
 

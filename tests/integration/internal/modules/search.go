@@ -30,7 +30,9 @@ var Search = internal.NewModule("search").
 				"-c", "/config/config.yml",
 				"-t", "/config/templates/*.yaml",
 				"-r", "/config/resources/*.yaml",
-				"streams", "/config/streams/ledger/v2.0.0/*.yaml", "/config/streams/payments/v0.0.0/*.yaml",
+				"streams",
+				"/config/streams/ledger/*/*.yaml",
+				"/config/streams/payments/*/*.yaml",
 			}).
 			WithEnv(func(test *internal.Test) []string {
 				return []string{

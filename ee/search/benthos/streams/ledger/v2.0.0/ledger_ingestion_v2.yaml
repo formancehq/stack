@@ -1,7 +1,7 @@
 input:
   event_bus:
     topic: ledger
-    consumer_group: search
+    consumer_group: search-ledgerv2
 
 pipeline:
   processors:
@@ -13,7 +13,6 @@ pipeline:
         version: v2
         processors:
         - bloblang: |
-            
             map amount {
               root = [this.amount]
               let hasDecimals = this.asset.split("/").length() > 1

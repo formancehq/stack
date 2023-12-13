@@ -17,4 +17,4 @@ output:
     outputs:
     - http_client:
         verb: POST
-        url: http://localhost:4195/ledger_reindex
+        url: http://localhost:4195/ledger_reindex_v2

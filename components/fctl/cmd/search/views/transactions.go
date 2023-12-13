@@ -11,10 +11,15 @@ import (
 func DisplayTransactions(out io.Writer, txs []map[string]interface{}) error {
 	tableData := make([][]string, 0)
 	for _, tx := range txs {
+		referenceValue := tx["reference"]
+		reference := ""
+		if referenceValue != nil {
+			reference = referenceValue.(string)
+		}
 		tableData = append(tableData, []string{
 			tx["ledger"].(string),
 			fmt.Sprint(tx["txid"].(float64)),
-			tx["reference"].(string),
+			reference,
 			tx["timestamp"].(string),
 		})
 	}
