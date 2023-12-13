@@ -38,9 +38,9 @@ func TestHoldsVoid(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]map[string]*big.Int{
+				Volumes: map[string]shared.Volume{
 					"USD": {
-						"input": big.NewInt(100),
+						Input: big.NewInt(100),
 					},
 				},
 			}, nil

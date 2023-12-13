@@ -65,21 +65,21 @@ func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, err
 	}
 
-	response, err := ledgerClient.Ledger.V2GetInfo(cmd.Context())
+	response, err := ledgerClient.Ledger.GetInfo(cmd.Context())
 	if err != nil {
 		return nil, err
 	}
 
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Server = response.V2ConfigInfoResponse.Server
-	c.store.Version = response.V2ConfigInfoResponse.Version
+	c.store.Server = response.ConfigInfoResponse.Data.Server
+	c.store.Version = response.ConfigInfoResponse.Data.Version
 
 	return c, nil
 }

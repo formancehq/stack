@@ -7,9 +7,9 @@ import (
 )
 
 type ErrorResponse struct {
-	Details      *string     `json:"details,omitempty"`
-	ErrorCode    *ErrorsEnum `json:"errorCode,omitempty"`
-	ErrorMessage *string     `json:"errorMessage,omitempty"`
+	Details      *string    `json:"details,omitempty"`
+	ErrorCode    ErrorsEnum `json:"errorCode"`
+	ErrorMessage string     `json:"errorMessage"`
 }
 
 var _ error = &ErrorResponse{}

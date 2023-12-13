@@ -3,6 +3,8 @@ package accounts
 import (
 	"fmt"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -12,7 +14,7 @@ import (
 )
 
 type ShowStore struct {
-	Account *shared.V2Account `json:"account"`
+	Account *shared.AccountWithVolumesAndBalances `json:"account"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -66,7 +68,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.V2GetAccount(cmd.Context(), operations.V2GetAccountRequest{
+	response, err := ledgerClient.Ledger.GetAccount(cmd.Context(), operations.GetAccountRequest{
 		Address: args[0],
 		Ledger:  ledger,
 	})
@@ -74,15 +76,15 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Account = &response.V2AccountResponse.Data
+	c.store.Account = &response.AccountResponse.Data
 
 	return c, nil
 }
@@ -110,5 +112,6 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 
 	fmt.Fprintln(cmd.OutOrStdout())
 
-	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.Account.Metadata)
+	return fctl.PrintMetadata(cmd.OutOrStdout(),
+		collectionutils.ConvertMap(c.store.Account.Metadata, collectionutils.ToFmtString[string]))
 }

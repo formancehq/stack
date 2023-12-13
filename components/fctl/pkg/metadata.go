@@ -39,7 +39,7 @@ func PrintMetadata(out io.Writer, metadata metadata.Metadata) error {
 		Render()
 }
 
-func MetadataAsShortString(metadata metadata.Metadata) string {
+func MetadataAsShortString[V any](metadata map[string]V) string {
 	metadataAsString := ""
 	for k, v := range metadata {
 		asJson, err := json.Marshal(v)

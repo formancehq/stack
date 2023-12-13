@@ -88,9 +88,9 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]map[string]*big.Int{
+				Volumes: map[string]shared.Volume{
 					"USD": {
-						"input": big.NewInt(100),
+						Input: big.NewInt(100),
 					},
 				},
 			}, nil
@@ -143,9 +143,9 @@ func TestHoldsConfirmWithTooHighAmount(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]map[string]*big.Int{
+				Volumes: map[string]shared.Volume{
 					"USD": {
-						"input": big.NewInt(100),
+						Input: big.NewInt(100),
 					},
 				},
 			}, nil
@@ -181,9 +181,9 @@ func TestHoldsConfirmWithClosedHold(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(0),
 				},
-				Volumes: map[string]map[string]*big.Int{
+				Volumes: map[string]shared.Volume{
 					"USD": {
-						"input": big.NewInt(100),
+						Input: big.NewInt(100),
 					},
 				},
 			}, nil
@@ -223,9 +223,9 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]map[string]*big.Int{
+				Volumes: map[string]shared.Volume{
 					"USD": {
-						"input": big.NewInt(100),
+						Input: big.NewInt(100),
 					},
 				},
 			}, nil

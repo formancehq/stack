@@ -52,8 +52,8 @@ func (a *apiErrorMock) Model() any {
 		return nil
 	}
 	return shared.ErrorResponse{
-		ErrorCode:    &a.ErrorCode,
-		ErrorMessage: &a.ErrorMessage,
+		ErrorCode:    a.ErrorCode,
+		ErrorMessage: a.ErrorMessage,
 		Details:      a.Details,
 	}
 }

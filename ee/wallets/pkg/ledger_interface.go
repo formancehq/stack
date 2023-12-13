@@ -53,15 +53,15 @@ func (a Account) GetAddress() string {
 
 type AccountWithVolumesAndBalances struct {
 	Account
-	Balances map[string]*big.Int            `json:"balances,omitempty"`
-	Volumes  map[string]map[string]*big.Int `json:"volumes,omitempty"`
+	Balances map[string]*big.Int      `json:"balances,omitempty"`
+	Volumes  map[string]shared.Volume `json:"volumes,omitempty"`
 }
 
 func (a AccountWithVolumesAndBalances) GetBalances() map[string]*big.Int {
 	return a.Balances
 }
 
-func (a AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]*big.Int {
+func (a AccountWithVolumesAndBalances) GetVolumes() map[string]shared.Volume {
 	return a.Volumes
 }
 

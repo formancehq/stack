@@ -12,7 +12,7 @@ import (
 )
 
 type StatsStore struct {
-	Stats shared.V2Stats `json:"stats"`
+	Stats shared.Stats `json:"stats"`
 }
 type StatsController struct {
 	store *StatsStore
@@ -64,23 +64,23 @@ func (c *StatsController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 		return nil, err
 	}
 
-	request := operations.V2ReadStatsRequest{
+	request := operations.ReadStatsRequest{
 		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
 	}
-	response, err := ledgerClient.Ledger.V2ReadStats(cmd.Context(), request)
+	response, err := ledgerClient.Ledger.ReadStats(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
 
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
+	if response.ErrorResponse != nil {
+		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}
 
 	if response.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Stats = response.V2StatsResponse.Data
+	c.store.Stats = response.StatsResponse.Data
 
 	return c, nil
 }

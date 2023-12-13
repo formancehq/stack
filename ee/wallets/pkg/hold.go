@@ -3,6 +3,8 @@ package wallet
 import (
 	"math/big"
 
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/google/uuid"
 )
@@ -85,13 +87,13 @@ func (h ExpandedDebitHold) IsClosed() bool {
 func ExpandedDebitHoldFromLedgerAccount(account interface {
 	MetadataOwner
 	GetAddress() string
-	GetVolumes() map[string]map[string]*big.Int
+	GetVolumes() map[string]shared.Volume
 	GetBalances() map[string]*big.Int
 }) ExpandedDebitHold {
 	hold := ExpandedDebitHold{
 		DebitHold: DebitHoldFromLedgerAccount(account),
 	}
-	hold.OriginalAmount = account.GetVolumes()[hold.Asset]["input"]
+	hold.OriginalAmount = account.GetVolumes()[hold.Asset].Input
 	hold.Remaining = account.GetBalances()[hold.Asset]
 	return hold
 }

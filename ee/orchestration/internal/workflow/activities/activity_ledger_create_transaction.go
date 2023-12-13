@@ -44,7 +44,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 	if err != nil {
 		switch err := err.(type) {
 		case *sdkerrors.ErrorResponse:
-			return nil, temporal.NewApplicationError(*err.ErrorMessage, string(*err.ErrorCode), err.Details)
+			return nil, temporal.NewApplicationError(err.ErrorMessage, string(err.ErrorCode), err.Details)
 		default:
 			return nil, err
 		}
