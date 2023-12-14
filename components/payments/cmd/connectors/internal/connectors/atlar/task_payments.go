@@ -239,11 +239,9 @@ func UpdatePaymentStatusTask(
 				return err
 			}
 
-			scheduleDuration := 2 * time.Minute
-			// ctx, _ = contextutil.Detached(ctx)
 			err = scheduler.Schedule(ctx, taskDescriptor, models.TaskSchedulerOptions{
 				ScheduleOption: models.OPTIONS_RUN_IN_DURATION,
-				Duration:       scheduleDuration,
+				Duration:       2 * time.Minute,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
