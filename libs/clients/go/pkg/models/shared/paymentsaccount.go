@@ -19,6 +19,7 @@ type PaymentsAccount struct {
 	DefaultCurrency string              `json:"defaultCurrency"`
 	ID              string              `json:"id"`
 	Metadata        map[string]string   `json:"metadata"`
+	Pools           []string            `json:"pools,omitempty"`
 	Raw             *PaymentsAccountRaw `json:"raw"`
 	Reference       string              `json:"reference"`
 	Type            string              `json:"type"`
@@ -82,6 +83,13 @@ func (o *PaymentsAccount) GetMetadata() map[string]string {
 		return nil
 	}
 	return o.Metadata
+}
+
+func (o *PaymentsAccount) GetPools() []string {
+	if o == nil {
+		return nil
+	}
+	return o.Pools
 }
 
 func (o *PaymentsAccount) GetRaw() *PaymentsAccountRaw {

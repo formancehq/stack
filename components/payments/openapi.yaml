@@ -1722,6 +1722,10 @@ components:
           type: string
         type:
           type: string
+        pools:
+          type: array
+          items:
+            type: string
         metadata:
           $ref: '#/components/schemas/AccountMetadata'
         raw:

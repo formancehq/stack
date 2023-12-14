@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -22,6 +23,7 @@ type accountResponse struct {
 	AccountName     string            `json:"accountName"`
 	Type            string            `json:"type"`
 	Metadata        map[string]string `json:"metadata"`
+	Pools           []uuid.UUID       `json:"pools"`
 	Raw             interface{}       `json:"raw"`
 }
 
@@ -71,6 +73,11 @@ func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 					metadata[k] = v
 				}
 				data[i].Metadata = metadata
+			}
+
+			data[i].Pools = make([]uuid.UUID, len(ret[i].PoolAccounts))
+			for j := range ret[i].PoolAccounts {
+				data[i].Pools[j] = ret[i].PoolAccounts[j].PoolID
 			}
 		}
 
@@ -129,6 +136,11 @@ func readAccountHandler(b backend.Backend) http.HandlerFunc {
 				metadata[k] = v
 			}
 			data.Metadata = metadata
+		}
+
+		data.Pools = make([]uuid.UUID, len(account.PoolAccounts))
+		for j := range account.PoolAccounts {
+			data.Pools[j] = account.PoolAccounts[j].PoolID
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[accountResponse]{
