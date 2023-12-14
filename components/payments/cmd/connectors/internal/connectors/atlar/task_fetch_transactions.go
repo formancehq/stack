@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
@@ -43,12 +44,14 @@ func FetchTransactionsTask(config Config, client *atlar_client.Rest) task.Task {
 
 		// Pagination works by cursor token.
 		params := transactions.GetV1TransactionsParams{
-			Context: ctx,
-			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
+			Limit: pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
-			limit := int64(config.PageSize)
+			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+			defer cancel()
+			params.Context = requestCtx
 			params.Token = &token
+			limit := int64(config.PageSize)
 			params.Limit = &limit
 			pagedTransactions, err := client.Transactions.GetV1Transactions(&params)
 			if err != nil {
@@ -92,14 +95,10 @@ func ingestPaymentsBatch(
 		itemAmount := item.Amount
 		precision := supportedCurrenciesWithDecimal[*itemAmount.Currency]
 
-		var amount big.Float
-		_, ok := amount.SetString(*itemAmount.StringValue)
-		if !ok {
-			return fmt.Errorf("failed to parse amount %s", *itemAmount.StringValue)
+		amount, err := atlarTransactionAmountToPaymentAbsoluteAmount(*itemAmount.StringValue, precision)
+		if err != nil {
+			return err
 		}
-
-		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 		createdAt, err := ParseAtlarTimestamp(item.Created)
 		if err != nil {
@@ -123,8 +122,8 @@ func ingestPaymentsBatch(
 				CreatedAt:     createdAt,
 				Status:        determinePaymentStatus(item),
 				Scheme:        determinePaymentScheme(item),
-				Amount:        &amountInt,
-				InitialAmount: &amountInt,
+				Amount:        amount,
+				InitialAmount: amount,
 				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *item.Amount.Currency),
 				Metadata:      ExtractPaymentMetadata(paymentId, item),
 				RawData:       raw,
@@ -132,7 +131,7 @@ func ingestPaymentsBatch(
 			Update: true,
 		}
 
-		if amountInt.Cmp(big.NewInt(0)) >= 0 {
+		if *itemAmount.Value >= 0 {
 			// DEBIT
 			batchElement.Payment.DestinationAccountID = &models.AccountID{
 				Reference:   *item.Account.ID,
@@ -241,4 +240,18 @@ func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_model
 	}
 
 	return result
+}
+
+func atlarTransactionAmountToPaymentAbsoluteAmount(atlarAmount string, precision int) (*big.Int, error) {
+	var amount big.Float
+	_, ok := amount.SetString(atlarAmount)
+	amount.Abs(&amount)
+	if !ok {
+		return nil, fmt.Errorf("failed to parse amount %s", atlarAmount)
+	}
+
+	var amountInt big.Int
+	amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
+
+	return &amountInt, nil
 }
