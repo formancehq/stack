@@ -86,9 +86,6 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			return err
 		}
 
-		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-
 		paymentSchemeType := "SCT" // SEPA Credit Transfer
 		remittanceInformationType := "UNSTRUCTURED"
 		remittanceInformationValue := transfer.Description
@@ -117,8 +114,10 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			},
 		}
 
+		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+		defer cancel()
 		postCreditTransfersParams := credit_transfers.PostV1CreditTransfersParams{
-			Context:        ctx,
+			Context:        requestCtx,
 			CreditTransfer: &createPaymentRequest,
 		}
 		postCreditTransferResponse, err := client.CreditTransfers.PostV1CreditTransfers(&postCreditTransfersParams)
@@ -148,7 +147,6 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			return err
 		}
 
-		ctx, _ = contextutil.DetachedWithTimeout(ctx, 10*time.Second)
 		err = scheduler.Schedule(ctx, taskDescriptor, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
@@ -215,7 +213,10 @@ func UpdatePaymentStatusTask(
 			}
 		}()
 
+		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+		defer cancel()
 		getCreditTransferParams := credit_transfers.GetV1CreditTransfersGetByExternalIDExternalIDParams{
+			Context:    requestCtx,
 			ExternalID: serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.Attempts),
 		}
 		getCreditTransferResponse, err := client.CreditTransfers.GetV1CreditTransfersGetByExternalIDExternalID(&getCreditTransferParams)
@@ -238,9 +239,11 @@ func UpdatePaymentStatusTask(
 				return err
 			}
 
+			scheduleDuration := 2 * time.Minute
+			// ctx, _ = contextutil.Detached(ctx)
 			err = scheduler.Schedule(ctx, taskDescriptor, models.TaskSchedulerOptions{
 				ScheduleOption: models.OPTIONS_RUN_IN_DURATION,
-				Duration:       2 * time.Minute,
+				Duration:       scheduleDuration,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
