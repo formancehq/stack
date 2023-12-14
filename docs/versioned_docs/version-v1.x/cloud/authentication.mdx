@@ -1,0 +1,71 @@
+---
+title: Authentication
+description: How to configure Formance Platform Authentication
+---
+import CloudToken from '@site/docs/partials/_cloud_token.mdx';
+
+Formance Cloud exposes the same authentication types as Open Source Formance Platform. You can use the same authentication types in your Formance Cloud application as you would in a self-hosted Formance Platform, as described in the [Formance Platform Authentication](/stack/authentication) documentation.
+
+:::info
+In addition to the standard described in the main documentation, this section describes how to create OAuth2 clients and secrets, and how to provision OAuth2 clients and JWT tokens in the context of Formance Cloud.
+:::
+
+## Creating clients
+
+The following command creates a new OAuth2 client with the name `my-backend`:
+
+```shell
+fctl auth clients create my-backend
+```
+
+Now, we can use the returned client ID to create a secret for the client:
+
+```shell
+# Replace <your-client-id> with the client ID returned by the previous command
+fctl auth clients secrets create <your-client-id> default-secret
+```
+
+You should get an output like this:
+
+```
+ID    | <your-secret-id>
+Name  | default-secret
+Clear | 1234567-xxx-yyy-zzz-12341234
+```
+
+Take note of the secret ID and the clear text secret. It will only be shown once and you will not be able to retrieve it later. This is the secret that you'll be able to use in your application to get a JWT token with the `client_credentials` OAuth2 grant type.
+
+:::info
+It is recommended to create as many secrets as you have separate applications that need to access Formance Cloud. This way, you can revoke a secret without affecting other applications.
+:::
+
+## Machine-to-machine Authentication
+
+Formance Cloud exposes the `/api/auth/oauth/token` token generation endpoint that you can use to generate a JWT token with the `client_credentials` OAuth2 grant type.
+
+```shell
+http \
+post 'https://<your-sandbox-id>.sandbox.formance.cloud/api/auth/oauth/token' \
+grant_type=='client_credentials' \
+client_secret=='18bc5303-62ca-4ad9-a822-a1f883abbd19' \
+client_id=='38072a09-7c00-447e-8ecc-839ba0949ce8'
+```
+
+
+## Personal authentication
+
+Personal tokens provide an easy way to authenticate yourself against the Formance Cloud Platform, without having to go through the OAuth2 flow. This method is recommended as a quick way to issue API calls from the command line. Generated tokens are valid for 5 minutes.
+
+<CloudToken />
+
+This saves the personal token into an environment variable called `FORMANCE_TOKEN` that we can use in further command lines. We can check the contents of the envronment variable to be sure that we have a valid token like this:
+
+```shell
+echo $FORMANCE_TOKEN
+```
+
+You should see a very long string of random characters that looks like this:
+```
+YiLCJhdWQiOlsiZmN0bCJdLCJqdGkiOiIn0.CRr7dc7omdlnbR1EhVmiaV0Aw84brAhZtMIp9e3gNil0KakkSNkYqJZsJ7KGmFKPVgjEx0QDsP5LtgRLvBa8SzikjXhjdJlfJ1neoviJiifWB8xs72OSe4pvaBWOmAhAk2BECe4NEERz4sksGca7KxQFXwfCJe8NTBZZiqnDh2fj1e6Az3nJUbiwp01DOzpyMufOQaEkHS4GCUfz5f7eI62Imo2f3v9XyuM95QGYE2rozGRDnGYIvbJDCfM2MpAwcMo5ef9PsJtOpdiCTwMeydJ4ow31visNnmg4BBPiaB.tiGRqtw2Qkb7ck4zXPiwZ4P5UcHcnwuHQnhDEOP9Ua5KI3G8p2JsKXLefeAIWJWZ9oNAgejP1LABNQ8zms3Ui7ZYNBNaxk432koCKOslRDXrxOFZRh60oFsjaPBS5xg02gbBnPjap9pb90P1YiN7agciJYEm5NOKlfmZpyI7srsB4LgDxo5o8d4Sk9r3qDzZIUqT2DvD9WWqxaSHeo1ez26Othbx5y3iKk3bLQmwy7PWzmGFMds9TZ4mpx5l15qRWJdZp7JyuOAfcGc9V2w74PudDdazzXwGebTjZGdSlW7HQMxwUR0otWtfO7N7XQypeya6pB9Wm1inaiE7KsGdhw
+```
+If you see something else, such as an error message, make sure you have a sandbox environment set up first.

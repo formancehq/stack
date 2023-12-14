@@ -1,0 +1,20 @@
+---
+title: Telemetry
+description: Understanding and managing telemetry
+---
+
+By default, The Formance Platform enables the usage of telemetry to collect anonymous usage data. The usage collection system is also designed to be as unobtrusive as possible, along with the ability to always opt-out of telemetry entirely.
+
+## What data is collected?
+
+No personal, sensitive or any piece of information that would allow us to identify you or your company is collected.
+
+## How to disable telemetry
+
+If you want to disable telemetry entirely, you can do so by setting the environment variable `USAGE_TELEMETRY` to `false`.
+
+We also try to enforce your choice as much as possible, by persisting this setting in underlying storage layers. The goal is to make sure that even if you forget to set the environment variable, the telemetry will remain disabled if you have already disabled it once and don't enable it explicitly again. We respect your decision and privacy and will never ask you to change your mind.
+
+## Acknowledgements
+
+We would like to thank all the users keeping the telemetry enabled. Lovely is too small a word to express our gratitude for your support as your data helps us to continuously improve the project.

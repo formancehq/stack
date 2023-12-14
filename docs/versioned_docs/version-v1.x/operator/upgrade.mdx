@@ -1,0 +1,19 @@
+---
+title: Upgrading the operator
+---
+
+It is good practice to keep the operator up to date with the latest [releases](https://github.com/formancehq/stack/releases) to anticipate for any future component upgrades. As there is no immediate impact on the deployed stacks when upgrading the operator, it is advised to simply ensure the operator is running the latest version most of the time.
+
+The operator can be upgraded by running the following command:
+
+```bash
+helm upgrade regions oci://ghcr.io/formancehq/helm/regions \
+--version 0.3.1 \
+--namespace formance-system \
+```
+
+Once the upgrade is complete, you can verify the operator is running the latest version with the usual `kubectl` commands:
+
+```bash
+kubectl -n formance-system describe deployments operator
+```

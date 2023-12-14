@@ -1,0 +1,47 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Binaries for fctl are available for Linux, macOS, and Windows. You can download the latest release from the GitHub [releases page](https://github.com/formancehq/stack/releases).
+
+<Tabs>
+
+<TabItem value="linux" label="Linux">
+
+```shell
+# You can use either amd64 for x86_64 or arm64 for ARM
+ARCH="amd64"; curl -L -o fctl.tar.gz "https://github.com/formancehq/stack/releases/download/components%2Ffctl%2Fv0.11.6/fctl_linux-$ARCH.tar.gz" \
+&& tar -xvf fctl.tar.gz \
+&& sudo mv fctl /usr/local/bin \
+&& chmod +x /usr/local/bin/fctl \
+&& rm fctl.tar.gz
+```
+
+</TabItem>
+
+<TabItem value="macos" label="macOS">
+
+```shell
+# You can use either amd64 for x86_64 or arm64 for ARM
+ARCH="amd64"; curl -L -o fctl.tar.gz "https://github.com/formancehq/stack/releases/download/components%2Ffctl%2Fv0.11.6/fctl_darwin-$ARCH.tar.gz" \
+&& tar -xvf fctl.tar.gz \
+&& sudo mv fctl /usr/local/bin \
+&& chmod +x /usr/local/bin/fctl \
+&& rm fctl.tar.gz
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+```shell
+# You can download and unzip the latest fctl release from the GitHub releases page
+# available at https://github.com/formancehq/stack/releases
+#
+# Place the binary somewhere convenient and in your PATH, such as C:\Program Files\fctl
+# and make sure to drop the .exe for easier usage afterwards
+
+```
+
+</TabItem>
+
+</Tabs>

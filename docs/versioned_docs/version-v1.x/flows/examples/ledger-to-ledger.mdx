@@ -1,0 +1,65 @@
+---
+title: Ledger to Ledger
+---
+
+In the Formance Ledger world, ledgers are logically separated from one another.
+
+There are occurences where you want to transfer value from one ledger to another.
+
+Fortunately for us, Flows provide a way to do this that takes care of the underlying details for us.
+
+## Workflow definition
+
+```yaml
+---
+stages:
+# let's first provision a user account on our first ledger
+- send:
+    source:
+      account:
+        id: "world"
+        ledger: "flows-demo-001"
+    destination:
+      account:
+        id: "users:42"
+        ledger: "flows-demo-001"
+    amount:
+      asset: "USD/2"
+      amount: 100
+# now let's transfer that value to our second ledger
+- send:
+    source:
+      account:
+        id: "users:42"
+        ledger: "flows-demo-001"
+    destination:
+      account:
+        id: "users:42"
+        # note that we're sending to a different ledger
+        ledger: "flows-demo-002"
+    amount:
+      asset: "USD/2"
+      amount: 100
+```
+
+## Running the workflow
+
+Let's save the above workflow to a file called `ledger-to-ledger.yaml` and run it:
+
+```shell
+fctl orchestration workflows create ledger-to-ledger.yaml
+```
+
+Let's check the status of the workflow:
+
+```shell
+fctl orchestration workflows run <workflow-id>
+```
+
+We can now check the status of the workflow instance:
+
+```
+fctl orchestration workflows instances show <workflow-instance-id>
+```
+
+## Notes

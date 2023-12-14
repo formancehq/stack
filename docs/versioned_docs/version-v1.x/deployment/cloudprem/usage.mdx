@@ -1,0 +1,40 @@
+---
+title: Stack creation
+---
+
+We are now reaching the final steps of this setup guide. We will now verify our setup by creating a stack in our Formance Cloud private region.
+
+:::info
+The Formance Platform seggregates resources first by region, then by stack. A stack is a deployment of the Formance Platform, isolated from other stacks. This allows you to have multiple deployments of the Formance Platform, for example for different customers or different environments.
+:::
+
+## Creating a stack
+
+```bash
+fctl stack create foo
+```
+
+You will be prompted for the region in which you want to create the stack: you can select the private region we created earlier. As you confirm the command, this sequence of actions will be executed:
+
+* The stack will be registered in the Formance Cloud control plane inventory
+* The operator deployed in your cluster will receive the stack creation event
+* The operator will create the stack namespace in your cluster
+* The operator will deploy the stack in your cluster and all its components
+
+After a few seconds or minutes, fctl will finally return and acknowledge the stack creation and availability.
+
+## Checking our deployment
+
+We should now see some resources in our cluster when filtering by namespace:
+
+```
+kubectl get all -n "<YOUR-FORMANCE-CLOUD-ORG-ID>-<YOUR-STACK-ID>"
+```
+
+## Using our stack
+
+It is now time to finally use our stack. We will issue a simple command to query the ledger server infos in order to verify that our stack is working properly:
+
+```bash
+fctl ledger server-infos --stack="<YOUR-STACK-ID>"
+```

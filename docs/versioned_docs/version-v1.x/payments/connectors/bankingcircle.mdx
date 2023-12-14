@@ -1,0 +1,70 @@
+---
+title: BankingCircle Connector
+description: Learn how to use the BankingCircle Connector to connect your Formance Platform with your BankingCircle account.
+---
+import {StackCmd} from '@site/src/components/StackCmd';
+import ApiWarning from '@site/docs/payments/partials/_api_key.mdx';
+
+## Prerequisites
+
+Before you begin, you need to have a BankingCircle account. If you don't have one, you can [sign up for a BankingCircle account](https://www.bankingcircle.com/contact-us) here. Make sure you have prepared your BankingCircle API credentials, with the least amount of permissions required to access the functionality of the BankingCircle Connector you plan to use. You can find more information about how to create an API key [here](https://docs.bankingcircleconnect.com/).
+
+### Client Certificate
+
+You will also need a client certificate, along with the unecrypted key that you can extract from the pfx file you have assigned to your BankingCircle account. You can use the following commands to extract the certificate and the key from the pfx file:
+
+```shell
+openssl pkcs12 -in <filename.pfx> -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > client.cer
+openssl pkcs12 -in <filename.pfx> -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > client.key
+```
+
+### IP Whitelisting
+
+In addition to the steps above, you will alsoneed to whitelist the IP addresses of the Formance Platform in your BankingCircle account. The IP address you will need to whitelist is relative to the region your Formance Platform is hosted. The IP addresses of a Formance Cloud deployment are:
+
+| Region     | IP Address     |
+|------------|----------------|
+| sandbox    | 18.202.172.221 |
+| eu-west-1  | 52.49.33.19    |
+| us-west-2  | 54.70.241.235  |
+| af-south-1 | 13.244.136.76  |
+| sa-east-1  | 54.232.156.67  |
+
+<ApiWarning/>
+
+## Setup
+
+<StackCmd>
+
+```shell
+read "BC_USERNAME"
+read "BC_PASSWORD"
+read "BC_ENDPOINT"
+read "BC_AUTH_ENDPOINT"
+read "BC_USER_CERTIFICATE"
+read "BC_USER_CERTIFICATE_KEY"
+fctl payments connectors install bankingcircle $BC_USERNAME $BC_PASSWORD $BC_ENDPOINT $BC_AUTH_ENDPOINT $BC_USER_CERTIFICATE $BC_USER_CERTIFICATE_KEY
+```
+
+```shell
+STACK="stack_123" \
+read "BC_USERNAME" && \
+read "BC_PASSWORD" && \
+read "BC_ENDPOINT" && \
+read "BC_AUTH_ENDPOINT" && \
+read "BC_USER_CERTIFICATE" && \
+read "BC_USER_CERTIFICATE_KEY"
+echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/bankingcircle" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $TOKEN" \
+-d "{ \
+  \"username\": \"$BC_USERNAME\", \
+  \"password\": \"$BC_PASSWORD\", \
+  \"endpoint\": \"$BC_ENDPOINT\", \
+  \"authEndpoint\": \"$BC_AUTH_ENDPOINT\" \
+  \"userCertificate\": \"$BC_USER_CERTIFICATE\" \
+  \"userCertificateKey\": \"$BC_USER_CERTIFICATE_KEY\" \
+}"
+```
+
+</StackCmd>

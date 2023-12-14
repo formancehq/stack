@@ -1,0 +1,60 @@
+---
+title: Payment to Wallet
+---
+
+## Prerequisites
+
+Prior to creating and executing this workflow, you'll need to have the following:
+
+* A payments connector set up and configured
+* At least one payment object synced from the connector and created in the payments service
+* A previously created wallet
+
+## Workflow definition
+
+```yaml
+---
+name: "payment-to-wallet-demo"
+stages:
+  - send:
+      source:
+        payment:
+          id: "${paymentID}"
+      destination:
+        account:
+          id: "deposits:${depositID}:pending"
+          ledger: "flows-demo-001"
+      amount:
+        amount: 100
+        asset: "USD/2"
+  - wait_event:
+      event: "deposit.confirmed"
+  - send:
+      source:
+        account:
+          id: "deposits:${depositID}:pending"
+          ledger: "flows-demo-001"
+      destination:
+        wallet:
+          id: "${walletID}"
+      amount:
+        amount: 100
+        asset: "USD/2"
+```
+
+Let's save this file as `payment_to_wallet.yaml`. We can now create this workflow with the following command:
+
+```shell
+fctl orchestration workflows create payment_to_wallet.yaml
+```
+
+Now that we have a workflow, we can run a workflow instance with the following command:
+
+```shell
+fctl orchestration workflows run <workflow_id> \
+--variable paymentID=ch_1G4Z4p2eZvKYlo2C4q0Z0Z0Z \
+--variable walletID=wallet_1G4Z4p2eZvKYlo2C4q0Z0Z0Z \
+--variable depositID=deposit_1G4Z4p2eZvKYlo2C4q0Z0Z0Z
+```
+
+Note that we're passing in the payment ID, wallet ID, and deposit ID as variables. These variables are used in the workflow definition to reference the payment, wallet, and deposit objects. You'll need to replace these values with the IDs of the payment, wallet you prepared in the prerequisites.

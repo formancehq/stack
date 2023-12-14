@@ -127,10 +127,10 @@ export default async function createConfig() {
             srcDark: 'img/logo-dark.svg'
           },
           items: [
-            // {
-            //   type: 'docsVersionDropdown',
-            //   position: 'left',
-            // },
+            {
+              type: 'docsVersionDropdown',
+              position: 'left',
+            },
             {
               label: 'Use-cases Library',
               position: 'right',

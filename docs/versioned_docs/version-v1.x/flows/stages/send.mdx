@@ -1,0 +1,150 @@
+---
+title: Send Statement
+---
+
+The `send` statement is the main and most powerful stage of the Workflow definition. It allows you to natively send money from a payment to a ledger account, from a ledger account to a wallet and from a wallet to a payment initiation, handling the implementation of the actual underlying semantics.
+
+It can be added to a Workflow definition by creating a new stage with the `send` type:
+
+```yaml
+---
+stages:
+- send:
+    source:
+      # ...
+    destination:
+      # ...
+    amount:
+      amount: 100
+      asset: "EUR/2"
+```
+
+The `send` statement is composed of three main attributes:
+
+- `source`: the source of the funds to be sent
+- `destination`: the destination of the funds to be sent
+- `amount`: the amount of funds to be sent
+
+The `source` and `destination` parts can reference either a ledger account, a wallet or a payment.
+
+## Compatibility matrix
+
+| | ↘️ Ledger account | ↘️ Wallet | ↘️ Payment |
+| --- | --- | --- | --- |
+| ↗️ **Ledger account** | :white_check_mark: | :white_check_mark: | Partial support **[1]** |
+| ↗️ **Wallet** | :white_check_mark: | :white_check_mark: | Partial support **[1]** |
+| ↗️ **Payment** | :white_check_mark: | :white_check_mark: | :x: |
+
+**[1]** The `send` statement can be used with a payment block as the destination, which will initiate a payment to the PSP defined in the `psp` attribute. This is currently supported only for the `stripe` connector, though support for other connectors will be added in the future.
+
+## Source types
+
+### Ledger account
+
+A ledger account can be referenced by providing the `account` attribute, which is composed of the `id` and `ledger` attributes, referencing the account address and the ledger name respectively:
+
+```yaml
+---
+stages:
+- send:
+    source:
+      account:
+        id: "users:42"
+        ledger: "flows-demo-001"
+    destination:
+      # ...
+    amount:
+      # ...
+```
+
+### Wallet
+
+A wallet can be referenced by providing the `wallet` attribute:
+
+```yaml
+---
+stages:
+- send:
+    source:
+      wallet:
+        id: "22d5de50-b5ef-407d-9a03-9e4fc36356f8"
+    destination:
+      # ...
+    amount:
+      # ...
+```
+
+### Payment
+
+A payment can be referenced by providing the `payment` attribute:
+
+```yaml
+---
+stages:
+- send:
+    source:
+      payment:
+        id: "22d5de50-b5ef-407d-9a03-9e4fc36356f8"
+    destination:
+      # ...
+    amount:
+      # ...
+```
+
+## Destination types
+
+### Ledger account
+
+A ledger account can be referenced by providing the `account` and `ledger` attributes:
+
+```yaml
+---
+stages:
+- send:
+    source:
+      # ...
+    destination:
+      account:
+        id: "users:42"
+        ledger: "flows-demo-001"
+    amount:
+      # ...
+```
+
+### Wallet
+
+A wallet can be referenced by providing the `wallet` attribute:
+
+```yaml
+---
+stages:
+- send:
+    source:
+      # ...
+    destination:
+      wallet:
+        id: "22d5de50-b5ef-407d-9a03-9e4fc36356f8"
+    amount:
+      # ...
+```
+
+### Payment
+
+Beyond the syntax, it's important to understand the effective behaviour of defining a payment block as the destination of a `send` statement.
+
+Here, we won't reference a payment by its identifier (as it doesn't exist yet), but rather the connector we want to use to initiate a payment. This is done by providing the `psp` attribute:
+
+```yaml
+---
+stages:
+- send:
+    source:
+      # ...
+    destination:
+      payment:
+        psp: "stripe"
+    amount:
+      # ...
+```
+
+The `send` statement will create a payment initiation request to the PSP defined in the `psp` attribute. The payment initiation request will be sent to the PSP with the amount and asset defined in the `amount` attribute.

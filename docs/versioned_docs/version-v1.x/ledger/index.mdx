@@ -1,0 +1,45 @@
+---
+title: Introduction to Formance Ledger
+pagination_next: null
+pagination_prev: null
+# hide_table_of_contents: true
+# the above sets the doc column width to 100% when set to true,
+# landing a less-than-ideal look
+toc_min_heading_level: 3
+---
+
+import {DocCardGrid,DocCard} from '@site/src/components/DocCard';
+
+# Formance Ledger
+
+Formance Ledger is a real-time money tracking microservice that lets you model and record complex financial transactions. It offers atomic, multi-posting transactions and is programmable using Numscript, a dedicated DSL (Domain Specific Language) to model and templatize such transactions.
+
+:::info
+We assume here that the ledger service is running as part of the Formance Platform. If you are running it standalone from [source](https://github.com/formancehq/ledger), you will need to adapt the instructions accordingly.
+:::
+
+## Getting started
+
+<DocCardGrid>
+
+<DocCard headline="Hello, world" cta="Get Started" link="/ledger/get-started/" highlight="true">
+    Get your feet wet and an understanding of how Formance Ledger works, by creating your first accounts and transactions to track money movements.
+</DocCard>
+
+<DocCard headline="Complex transactions" cta="Learn about Numscript" link="/ledger/numscript/">
+    Understand how to use Numscript to track complex money movements, reconcile accounts, and more in this series of focused tutorials.
+</DocCard>
+
+</DocCardGrid>
+
+import GettingHelp from '@site/docs/partials/_getting_help.mdx';
+
+<GettingHelp />
+
+## I found a bug!
+
+Did you find a bug in Formance Ledger? Well, thanks! We need your help to make it better. You can [file a bug report](https://github.com/formancehq/ledger/issues/new?assignees=&labels=bug&template=bug_report.md&title=) and tell us all about it.
+
+## Formance Ledger is Open Source
+
+Formance Ledger is [Open Source](https://github.com/formancehq/ledger/blob/main/LICENSE), and we welcome your contributions, whether it's code or working on these very documents. We maintain a welcoming and inclusive community: [Join us on GitHub](https://github.com/formancehq/ledger) and learn how to get involved.

@@ -1,0 +1,47 @@
+---
+title: Welcome to The Formance Platform
+---
+
+import {DocCardGrid,DocCard} from '@site/src/components/DocCard';
+
+Formance Platform is a cloud native payments operations platform. It enables payments engineers to build and operate complex flow of funds, weaving together multiple payment rails with internal ledger accounts.
+
+## What's a flow of funds?
+
+A flow of funds is a sequence of financial transactions that move money from one place to another. Some transactions will interact with external payment rails, like credit cards or bank transfers. Others will be internal to your organization, like moving money between accounts in your ledger.
+
+The purpose of the Formance Platform is to equip you as an engineer with a foundation to build and operate these flows of funds in a reliable, scalable, and secure way.
+
+## Components
+
+<DocCardGrid>
+
+<DocCard headline="Ledger" icon="/img/ledger.svg" cta="Learn More" link="/ledger/" highlight="true">
+  Programmable accounting database for financial transactions. Accurately track money movements and account balances across your entire operation.
+</DocCard>
+
+<DocCard headline="Numscript" icon="/img/numscript.svg" cta="Learn More" link="/ledger/reference/numscript/machine/" highlight="true">
+  Model complex financial transactions with a simple, powerful, and extensible DSL built for money movements.
+</DocCard>
+
+<DocCard headline="Payments" icon="/img/payments.svg" cta="Learn More" link="/payments/" highlight="true">
+  Unified data layer and API for payment processing services like Stripe and Wise, with upcoming support for payment initiation.
+</DocCard>
+
+<DocCard headline="Wallets (beta)" icon="/img/wallets.svg" cta="Learn More" link="/wallets/" highlight="true" tag="beta">
+  Fully managed white-label wallet service to hold user funds, with built-in support for complex flows like hold and capture.
+</DocCard>
+
+<DocCard headline="Flows (beta)" icon="/img/flows.svg" cta="Learn More" link="/flows/" highlight="true" tag="beta">
+  End-to-end financial workflows orchestration service.
+</DocCard>
+
+</DocCardGrid>
+
+## Intended Audience
+
+The documentation pages here are intended for software engineers who are building and operating payments infrastructure. We assume that you have a basic understanding of payments concepts, though we'll do our best to explain them as we go.
+
+import GettingHelp from './partials/_getting_help.mdx';
+
+<GettingHelp />

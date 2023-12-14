@@ -1,0 +1,38 @@
+---
+title: Ledgers
+---
+# Ledgers
+
+Formance Ledger is a _multi-ledger_ ledger. Behind the fanciness of that statement, lies the simple meaning that you can operate multiple individual _ledgers_ in a single instance of the Formance Ledger service. Each ledger is completely independent of the others, and can be used for different purposes.
+
+:::info
+Ledgers are identified by their alphanumeric name, and providing a name is a required parameter for all ledger operations.
+:::
+
+## Ledger data model
+
+A ledger exposes and contains the following resources:
+
+| Accounts                                                       | Transactions                                                        |
+|----------------------------------------------------------------|----------------------------------------------------------------------|
+| Containers for assets, see [Accounts](#accounts)               | Movement of assets between accounts, see [Transactions](#transactions) |
+
+Beneath these resources lie the immutable log of all operations performed on the ledger. This log is the primary source of truth for the ledger, and is used to construct the state of accounts and transactions. It contains entries of the following types:
+
+* `NEW_TRANSACTION`
+* `SET_METADATA`
+
+Ont thing to keep in mind is that all the resources listed above are fully logically separated by ledger. This means that you can have e.g. two ledgers with the same account name, and they will not interfere with each other.
+
+## Naming your ledger
+
+The name of your ledger is an alphanumeric string. It is used to identify your ledger in all operations, and is also used by the storage layer to create seggregated locations for your ledger data. Good names are short, descriptive, and unique and depend on both your application and your single vs multi-ledger strategy. A good generic name for a single ledger strategy is `main`.
+
+## Single ledger vs multi-ledger
+
+At some point, you will want to decide between a single ledger and a multi-ledger strategy. This decision is based on the opportunity for trade-offs your application has. The main benefit of a multi-ledger strategy is the leverage you get from it in term of horizontal scaling, as the locking on write is scoped by ledger. Good candidates for a multi-ledger strategy include:
+
+* Applications with multi-tenancy and no data sharing between tenants (e.g. you are a PSP and want to isolate merchants from each other)
+* Applications with a high write volume and where data seggregation is possible
+
+The main benefit of a single ledger strategy is the simplicity of it. You don't have to worry about wether an account exists in a ledger or not, and you don't have to resort to distributed transactions to ensure data consistency if you want at some point to perform cross-ledger transactions.

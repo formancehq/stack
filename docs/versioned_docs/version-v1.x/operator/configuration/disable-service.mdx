@@ -1,0 +1,54 @@
+---
+title: Disabling a component
+---
+import GettingHelp from '@site/docs/partials/_getting_help.mdx';
+import WIP from '@site/docs/partials/_wip.mdx';
+
+In the Stack object of your Kubernetes cluster, you can disable services you don't want to deploy.
+The following services can be disabled:
+
+- Ledger
+- Payments
+- Wallets
+- Orchestration
+- Webhooks
+
+## How do I disable a service?
+
+In order to disable a service, you need to edit the `stack.yml` file of your Kubernetes cluster.
+By example, if you want to disable a Ledger service, you need to add the following lines in the `stack.yml` file:
+
+```yaml
+services:
+  ledger:
+    disabled: true
+```
+
+## Example
+
+Let's first edit the stack object of your Kubernetes cluster
+
+```bash
+kubectl edit stack stack1
+```
+
+And edit the `stack.yml` file of your Kubernetes cluster:
+
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Stack
+metadata:
+  name: stack1
+spec:
+  debug: false
+  dev: false
+  scheme: http
+  host: example.net
+  seed: stacks
+  versions: default
+  services:
+    orchestration:
+      disabled: true
+
+```
+<GettingHelp />

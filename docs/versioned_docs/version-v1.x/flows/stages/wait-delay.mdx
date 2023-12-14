@@ -1,0 +1,20 @@
+---
+title: Waiting for a delay
+---
+
+The `delay` stage is used to wait for a specific duration or until a specific date:
+
+```yaml
+---
+stages:
+- delay:
+    duration: 60s
+```
+
+```yaml
+---
+stages:
+- delay:
+    # <date as rfc3339>
+    until: 2023-06-01T00:00:00Z
+```

@@ -1,0 +1,37 @@
+---
+title: CurrencyCloud Connector
+description: Learn how to use the CurrencyCloud Connector to connect your Formance Platform with your CurrencyCloud account.
+---
+import {StackCmd} from '@site/src/components/StackCmd';
+import ApiWarning from '@site/docs/payments/partials/_api_key.mdx';
+
+## Prerequisites
+
+Before you begin, make sure you have a CurrencyCloud account. If you don't have one, you can [sign up for a CurrencyCloud account](https://www.currencycloud.com/get-started/) here. Make sure you have a CurrencyCloud API key, with the least amount of permissions required to access the functionality of the CurrencyCloud Connector you plan to use. You can find more information about how to create an API key [here](https://developer.currencycloud.com).
+
+<ApiWarning/>
+
+## Setup
+
+<StackCmd>
+
+```shell
+read "CC_LOGIN_ID"
+read "CC_API_KEY"
+fctl payments connectors install currencycloud $CC_API_KEY $CC_API_KEY
+```
+
+```shell
+STACK="stack_123" \
+read CC_LOGIN_ID && \
+read CC_API_KEY && \
+echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/currencycloud" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $TOKEN" \
+-d "{ \
+  \"apiKey\": "$CC_API_KEY", \
+  \"loginID\": "$CC_LOGIN_ID", \
+}"
+```
+
+</StackCmd>

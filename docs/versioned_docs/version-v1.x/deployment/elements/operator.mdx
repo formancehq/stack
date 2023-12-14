@@ -1,0 +1,231 @@
+---
+title: Operator deployment
+---
+import Warning from '../../stack/partials/installation/_complexity_warning.mdx';
+
+In order to streamline feature-complete deployments of Formance Elements, we recommend to use our official Formance Kubernetes operator. The operator source code is available on [Github](https://github.com/formancehq/stack/tree/main/components/operator).
+
+<Warning/>
+
+## Dependencies
+Before creating our region and deploying the Formance Operator, let's make sure that our cluster is ready to host our operator and have the required following items below in place.
+
+## Ingress controller
+
+The Formance Operator requires an ingress controller to be present on the cluster. The recommended ingress controller is [Traefik](https://doc.traefik.io/traefik/), which is also the one used by Formance Cloud. SSL will need to be enabled, either on the ingress controller itself or on a load balancer in front of it.
+
+:::info
+As the Formance Operator will create standard `Ingress` objects to be picked up, alternative ingress controllers can work just as great but might require additional configuration not covered in this setup guide.
+:::
+
+## Certificates management
+
+The operator requires [Cert-Manager](https://cert-manager.io/docs/installation/helm/) to run, and to be available on the cluster prior to installing the operator. Make sure to install it now if it's not already set up on your cluster.
+
+:::tip
+Default installations of cert-manager should have resources being shown when listed with
+`kubectl get all -n cert-manager`
+:::
+
+## Stateful dependencies
+
+In order to function properly, stacks deployed within your private region will need the following stateful dependencies.
+
+<!-- * A PostgreSQL instance
+* An Elasticsearch or OpenSearch instance
+* A Temporal deployment (optional)
+
+The recommended way to spin up these dependencies is to use your cloud provider's managed services. -->
+
+### NATS
+
+<!-- :::info
+::: -->
+
+_Version 2.6 or higher with Jetstream is required._
+
+The recommended way to spin up a NATS deployment is through the official NATS helm [chart](https://artifacthub.io/packages/helm/nats/nats).
+
+:::info
+Depending on your setup, you may need to activate Jetsream mode on your NATS deployment manually. Jetstream is required for the resources deployed by the Formance Operator to function properly.
+:::
+
+### PostgreSQL
+
+_Version 14 or higher is required._
+
+<!-- :::info
+::: -->
+
+The recommended way to spin up a PostgreSQL deployment is to use your cloud provider's managed services. It is recommended to start with a small instance and scale up as needed, starting with for example a `db.m4.large` sizing on AWS.
+
+### Elasticsearch
+
+_Version 7.10 or higher is required._
+
+<!-- :::info
+::: -->
+
+The recommended way to spin up an Elasticsearch / OpenSearch deployment is to use your cloud provider's managed service, or Elastic Cloud itself.
+
+:::info
+If using Elastic Cloud, make sure to use a deployment in a network with low latency to your cluster.
+:::
+
+### Temporal (optional)
+
+:::info
+Using Temporal is only required for stacks using the flows service. It can be ommitted now if you don't plan on using it yet, and added at a later time.
+:::
+
+The recommended way to spin up a Temporal deployment is through Temporal Cloud, or by using the official Temporal helm [chart](https://github.com/temporalio/helm-charts).
+
+## Summary
+
+Before moving on to the next step, make sure that you have:
+
+- Set up an ingress controller, with SSL enabled
+- Installed cert-manager (or had it already installed)
+- Deployed the required stateful dependencies
+
+With these steps completed, we can now move on to creating our very own Formance Cloud private region and deploying the Formance Operator.
+
+
+## Operator deployment
+
+To deploy the Formance operator in your k8s cluster, the first step is to install it. The recommended way of installing the operator is to use Kustomize. However, you can also find a preview Helm template in the repository.
+
+Run the following command to apply the Kubernetes manifest that includes the operator:
+
+```shell
+helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
+--version 0.3.1 \
+--namespace formance-system \
+--create-namespace \
+--set agent.enabled=false
+```
+
+This will deploy the operator in your cluster, and allow you to start using it with the CRDs mentioned below.
+
+### Configuration
+
+The Formance operator is a tool that automates the management of specific resources within a Kubernetes cluster. To operate, the operator uses custom resource definitions (CRDs) that define resources specific to our application.
+
+Using these CRDs, the operator can automate many common tasks such as application updates, version management, configuration management and application scaling. This allows developers to let the operator handle the application management tasks in Kubernetes.
+
+In our case, we use three different types of CRDs:
+
+#### Version
+
+The "Version" CRD defines the version of our application that we wish to deploy. This allows the operator to manage different deployments based on their version.
+
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Versions
+metadata:
+  name: default
+spec:
+  auth: v0.4.3
+  control: v1.7.0
+  ledger: v1.10.4
+  payments: v0.9.4
+  search: v0.7.0
+  wallets: v0.4.3
+  stargate: v0.1.8
+  webhooks: v0.6.6
+  gateway: v0.1.7
+```
+#### Configuration
+
+The "Configuration" CRD defines the configuration of our application. This includes configuration settings such as listening ports, environment variables, and secrets.
+
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Configuration
+metadata:
+  name: stacks
+spec:
+  broker:
+    nats:
+      url: NATS_URL
+  ingress:
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+  light: true
+  services:
+    auth:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    control: {}
+    ledger:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    orchestration:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    payments:
+      encryptionKey: DEFAULT_ENCRYPTION_KEY
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    search:
+      batching:
+        count: 50
+        period: 1s
+      elasticSearch:
+        host: ELASTICSEARCH_URL
+        pathPrefix: ''
+        port: 443
+        scheme: https
+        tls: {}
+    wallets:
+      debug: false
+      dev: false
+    webhooks:
+      debug: false
+      dev: false
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+  temporal:
+    address: TEMPORAL_ADDRESSE
+    namespace: TEMPORAL_NAMESPACE
+    tls:
+      crt: TEMPORAL_TLS_CERT
+      key: TEMPORAL_TLS_KEY
+```
+
+#### Stack
+
+The "Stack" CRD defines the set of resources that make up our application. This includes deployments, services, volumes, and other Kubernetes resources required to run our application.
+
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Stack
+metadata:
+  name: stack
+spec:
+  debug: true
+  dev: true
+  scheme: http
+  host: HOST
+  seed: stacks
+```

@@ -1,0 +1,44 @@
+---
+title: Disabling a stack
+pagination_next: null
+pagination_prev: null
+# hide_table_of_contents: true
+# the above sets the doc column width to 100% when set to true,
+# landing a less-than-ideal look
+toc_min_heading_level: 3
+---
+import GettingHelp from '@site/docs/partials/_getting_help.mdx';
+import WIP from '@site/docs/partials/_wip.mdx';
+
+In the Stack object of your Kubernetes cluster, you can easily disable stack you don't want or need to deploy anymore.
+
+## Configuration
+
+In order to disable a stack, you need to edit the `stack.yml` file of your Kubernetes cluster and add the following parameter:
+```yaml
+disabled: true
+```
+
+## Example
+
+Let's first open the stack configuration file:
+```bash
+kubectl edit stack stack1
+```
+
+And add to the `stack.yml` file the following parameter:
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Stack
+metadata:
+  name: stack1
+spec:
+  debug: true
+  dev: true
+  scheme: http
+  host: example.net
+  seed: stacks
+  versions: default
+  disabled: true
+```
+<GettingHelp />

@@ -1,0 +1,42 @@
+---
+title: Adding funds to wallets
+description: Learn how to increase a wallet balance by crediting it
+---
+
+Now that we've seen how to create a wallet, let's see how to fund them and spend funds from them.
+
+:::info
+Note that all the amounts used here are denominated in UMN, which is an safe monetary notation that specifies the asset and the scale of the amount and is used throughout the whole Formance Platform. For more information about UMN, please refer to the [UMN specification](/stack/unambiguous-monetary-notation)
+:::
+
+## Funding wallets
+
+To add funds to a wallet, you simply need to issue a credit against the wallet through the `POST /wallets/{walletId}/credit` endpoint. The credit will be issued against the wallet's balance, which will immediately be increased by the amount of the credit.
+
+```json
+{
+  "amount": {
+    "amount": 100,
+    "asset": "USD/2"
+  },
+}
+```
+
+### Setting the funding source
+
+When issuing a credit, you can specify the funding source of the credit by setting the `source` property of the credit. The funding source needs to be a reference to a specific ledger account. If not specified, the default `world` account will be used.
+
+```json
+{
+  "amount": {
+    "amount": 100,
+    "asset": "USD/2"
+  },
+  "sources": [
+    {
+      "type": "ACCOUNT",
+      "identifier": "orders:1234"
+    }
+  ]
+}
+```

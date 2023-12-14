@@ -1,0 +1,22 @@
+---
+title: SDKs
+---
+
+:::caution
+This page is on its way to be deprecated, as the SDKs listed below are only compatible with the ledger API and not the entirety of The Formance Platform. Please refer to the [SDKs](/stack/sdk) page for the latest information.
+:::
+
+Beyond the [HTTP API](/api), you can use one of these libraries to communicate with a Formance instance:
+
+## Officialy supported
+
+| Language        | Package name      | Registry  | Source code                                 |
+|-----------------|-------------------|-----------|---------------------------------------------|
+| Typescript / JS | numary            | NPM       | https://github.com/formancehq/numary-js         |
+| PHP             | numary-sdk-php    | Packagist | https://github.com/formancehq/numary-sdk-php    |
+| Python          | numary-sdk-python |           | https://github.com/formancehq/numary-sdk-python |
+| Go              | numary-sdk-go     |           | https://github.com/formancehq/numary-sdk-go     |
+
+If you're interested in creating an SDK, the latest OpenAPI spec can be found [here](https://raw.githubusercontent.com/formancehq/ledger/release/v1.10/pkg/api/controllers/swagger.yaml) to generate types and requests.
+
+We can offer sponsorship to community-owned SDKs, and are interested in both SDKs targeting specific languages and SDKs targeting application frameworks; feel free to ping @Team on the community Slack anytime to discuss that topic.

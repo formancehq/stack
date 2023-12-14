@@ -1,0 +1,34 @@
+---
+title: Wise Connector
+description: Learn how to use the Wise Connector to connect your Formance Platform with your Wise account.
+---
+import {StackCmd} from '@site/src/components/StackCmd';
+import ApiWarning from '@site/docs/payments/partials/_api_key.mdx';
+
+## Prerequisites
+
+Before you begin, you need to have a Wise account. If you don't have one, you can [sign up for a Wise account](https://wise.com/register/#/email) here. Make sure you have a Wise API key and secret, with the least amount of permissions required to access the functionality of the Wise Connector you plan to use. You can find more information about how to create an API key [here](https://api-docs.wise.com).
+
+<ApiWarning/>
+
+## Setup
+
+<StackCmd>
+
+```shell
+read "WISE_API_KEY"
+fctl payments connectors install wise $WISE_API_KEY
+```
+
+```shell
+STACK="stack_123" \
+read WISE_API_KEY && \
+echo -X POST "https://$STACK.formance.cloud/api/payments/connectors/wise" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $TOKEN" \
+-d "{ \
+  \"apiKey\": "$MODULR_API_KEY" \
+}"
+```
+
+</StackCmd>

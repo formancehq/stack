@@ -1,0 +1,107 @@
+---
+title: Formance Platform Helm Charts
+description: How to install Formance Platform on K8S with Helm
+---
+import Warning from '../partials/installation/_complexity_warning.mdx';
+
+:::caution
+This deployment method is being deprecated in favor of the [operator-based](/deployment/cloudprem/intro) deployment. The charts below will continue to be available for the time being, but will not be updated with new features.
+:::
+
+To make it easier to deploy Formance Platform components, we provide official Helm charts. To use them, install the Formance repository:
+
+    helm repo add formance https://helm.formance.com
+    helm repo update
+
+You can find all the charts in the GitHub repository [formancehq/helm](https://github.com/formancehq/helm).
+
+<Warning/>
+
+## Dependencies
+
+Deploying the Formance Helm charts requires some downstream dependencies. Our recommendations for specifics of these below.
+
+| Technology | Recommended Implementation | Used by |
+|------------|---------------------------|---------|
+| PostgreSQL | [AWS Aurora](https://aws.amazon.com/rds/aurora/) | Ledger |
+| MongoDB | [MongoDB Atlas](https://www.mongodb.com/atlas) | Payments |
+| Kafka | [RedPanda](https://redpanda.com/), [AWS Managed Kafka](https://aws.amazon.com/msk/) | Ledger, Payments, Search |
+| OpenSearch | [OpenSearch](https://opensearch.org/), [AWS Hosted OpenSearch](https://aws.amazon.com/opensearch/) | Control Dashboard |
+| Traefik | [Traefik](https://traefik.io/) | Main Ingress Proxy |
+| Redis | [AWS Elasticache](https://aws.amazon.com/elasticache/) | Ledger (optional) |
+
+## Kubernetes requirements
+
+| Requirement | Version |
+|-------------|---------|
+| Kubernetes | >= 1.22 |
+| Helm | 3 |
+
+## Formance Platform components
+
+### Ledger
+
+Requirements:
+- PostgreSQL
+- Redis
+- RedPanda or Kafka
+
+Values : [Ledger README.md](https://github.com/numary/helm/blob/main/charts/ledger/README.md)
+
+```shell
+helm install ledger formance/ledger
+```
+
+### Control
+
+Requirements:
+- All Formance components
+
+Values : [Control README.md](https://github.com/numary/helm/blob/main/charts/control/README.md)
+
+```shell
+helm install control formance/control
+```
+
+### Payments
+
+Requirements:
+- MongoDB
+- Kafka
+
+Values: [Payments README.md](https://github.com/numary/helm/blob/main/charts/payments/README.md)
+
+    helm install payments formance/payments
+
+### Search
+
+Requirements:
+- OpenSearch
+- Kafka
+
+Values: [Search README.md](https://github.com/numary/helm/blob/main/charts/search/README.md)
+
+
+```shell
+helm install search formance/search
+```
+
+### Gateway
+
+Values: [Gateway README.md](https://github.com/numary/helm/blob/main/charts/gateway/README.md)
+
+```shell
+helm install gateway formance/gateway
+```
+
+## Formance Platform chart
+
+For development purposes and to help you deploy the entire Formance Platform as a whole, we provide a Helm Chart that bundles all the components together.
+
+We however *do not* provide the databases and stateful dependencies in this chart, so you have to provision them as a separate step and properly update the values to point to the correct endpoints.
+
+Values: [Stack README.md](https://github.com/numary/helm/blob/main/charts/stack/README.md)
+
+```shell
+helm install stack formance/stack
+```

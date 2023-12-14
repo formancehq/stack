@@ -1,0 +1,85 @@
+---
+title: Cluster preparation
+---
+
+Before creating our region and deploying the Formance Operator, let's make sure that our cluster is ready to host our operator and have the required following items below in place.
+
+## Ingress controller
+
+The Formance Operator requires an ingress controller to be present on the cluster. The recommended ingress controller is [Traefik](https://doc.traefik.io/traefik/), which is also the one used by Formance Cloud. SSL will need to be enabled, either on the ingress controller itself or on a load balancer in front of it.
+
+:::info
+As the Formance Operator will create standard `Ingress` objects to be picked up, alternative ingress controllers can work just as great but might require additional configuration not covered in this setup guide.
+:::
+
+## Certificates management
+
+The operator requires [Cert-Manager](https://cert-manager.io/docs/installation/helm/) to run, and to be available on the cluster prior to installing the operator. Make sure to install it now if it's not already set up on your cluster.
+
+:::tip
+Default installations of cert-manager should have resources being shown when listed with
+`kubectl get all -n cert-manager`
+:::
+
+## Stateful dependencies
+
+In order to function properly, stacks deployed within your private region will need the following stateful dependencies.
+
+<!-- * A PostgreSQL instance
+* An Elasticsearch or OpenSearch instance
+* A Temporal deployment (optional)
+
+The recommended way to spin up these dependencies is to use your cloud provider's managed services. -->
+
+### NATS
+
+<!-- :::info
+::: -->
+
+_Version 2.6 or higher with Jetstream is required._
+
+The recommended way to spin up a NATS deployment is through the official NATS helm [chart](https://artifacthub.io/packages/helm/nats/nats).
+
+:::info
+Depending on your setup, you may need to activate Jetsream mode on your NATS deployment manually. Jetstream is required for the resources deployed by the Formance Operator to function properly.
+:::
+
+### PostgreSQL
+
+_Version 14 or higher is required._
+
+<!-- :::info
+::: -->
+
+The recommended way to spin up a PostgreSQL deployment is to use your cloud provider's managed services. It is recommended to start with a small instance and scale up as needed, starting with for example a `db.m4.large` sizing on AWS.
+
+### Elasticsearch
+
+_Version 7.10 or higher is required._
+
+<!-- :::info
+::: -->
+
+The recommended way to spin up an Elasticsearch / OpenSearch deployment is to use your cloud provider's managed service, or Elastic Cloud itself.
+
+:::info
+If using Elastic Cloud, make sure to use a deployment in a network with low latency to your cluster.
+:::
+
+### Temporal (optional)
+
+:::info
+Using Temporal is only required for stacks using the flows service. It can be ommitted now if you don't plan on using it yet, and added at a later time.
+:::
+
+The recommended way to spin up a Temporal deployment is through Temporal Cloud, or by using the official Temporal helm [chart](https://github.com/temporalio/helm-charts).
+
+## Summary
+
+Before moving on to the next step, make sure that you have:
+
+- Set up an ingress controller, with SSL enabled
+- Installed cert-manager (or had it already installed)
+- Deployed the required stateful dependencies
+
+With these steps completed, we can now move on to creating our very own Formance Cloud private region and deploying the Formance Operator.

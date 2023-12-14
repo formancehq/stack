@@ -1,0 +1,18 @@
+---
+title: Waiting for events
+---
+
+Using the `wait_event` stage, you can wait for an event to be submitted to a running workflow instance before continuing. This is useful for workflows that require user input, such as a manual approval of a transaction.
+
+```yaml
+---
+stages:
+- wait_event:
+    event: "payout.confirmed"
+```
+
+Events can be then submitted to running workflow instances using the `POST /instances/{id}/events` endpoint, or manually using fctl:
+
+```bash
+fctl orchestration instances send-event 1234-5678-9012-3456 "payout.confirmed"
+```

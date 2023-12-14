@@ -1,0 +1,22 @@
+---
+title: Inviting your team
+description: Allowing users to access your stack
+---
+
+# Inviting users
+
+The simplest way to allow users to interact with your Formance stack is to invite them to your organization using fctl:
+
+```shell
+# if you have multiple organizations,
+# you must specify which one you're using with the --organization flag
+# e.g. --organization [OrganizationID]
+#
+fctl cloud organizations invitations send foo@example.com
+```
+
+## From the dashboard
+
+You can also invite users to your organization using the organization management feature in the [console](https://console.formance.cloud).
+
+This can be achieved by clicking your username in the top right corner, then clicking on "Organizations", and "Manage Environments".

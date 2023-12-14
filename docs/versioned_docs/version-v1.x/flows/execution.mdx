@@ -1,0 +1,76 @@
+---
+title: Managing Workflow Instances
+---
+## Creating a Workflow
+
+Before initiating an workflow, we need to establish a definition file. Let's begin by creating a simple one with the provided YAML
+
+```yaml
+---
+name: "my-workflow"
+stages:
+  - send:
+      source:
+        account:
+          id: "world"
+          ledger: "flows-demo-001"
+      destination:
+        account:
+          id: "deposits:${depositID}"
+          ledger: "flows-demo-001"
+      amount:
+        amount: 100
+        asset: "JPY"
+```
+
+Let's save this file as `my-workflow.yaml`. We can now create the workflow using the following command:
+
+```shell
+fctl orchestration workflows create my-workflow.yaml
+```
+
+Executing the above command will save this workflow, and return an ID that can be used to execute it as a workflow instance. The output of the above command should look like this:
+
+```
+[SUCCESS] Workflow created with ID: e6415ff5-1d83-4853-998a-cac09ae1513c
+```
+
+For the sake of learning the available commands, let's verify that the workflow was successfully saved by listing all our created workflows:
+
+```shell
+fctl orchestration workflows list
+```
+
+## Executing a Workflow
+
+Alright; we have now created our first workflow, but nothing has happened yet within the ledger `flows-demo-001` that we used in the workflow definition. Let's jump straight to the fun part and execute our workflow as a workflow instance. We can do so using the following command:
+
+```shell
+fctl orchestration workflows run <workflow_id> --variable depositID=1234
+```
+
+## Checking a Workflow instance status
+
+Workflow instances are living entities. Their current state of execution and termination can be checked using the following command:
+
+```shell
+fctl orchestration instances show dff3791d-b82c-4ed5-bf35-e954872cd2af
+```
+
+## Debugging a Workflow instance
+
+If you're having trouble understanding what a workflow instance is currently doing, you can use the following command to get a detailed view of its current internal state:
+
+```shell
+fctl orchestration instances describe dff3791d-b82c-4ed5-bf35-e954872cd2af
+```
+
+## Terminating a Workflow instance
+
+There are cases where you might want to terminate a workflow instance, e.g. when you want to recreate it after making changes to definition or restart it after a failure with different variables.
+
+If you want to do so, you can simply use the following command:
+
+```shell
+fctl orchestration instances stop dff3791d-b82c-4ed5-bf35-e954872cd2af
+```
