@@ -13,7 +13,8 @@ func (s *Storage) ListAccounts(ctx context.Context, pagination PaginatorQuery) (
 
 	query := s.db.NewSelect().
 		Model(&accounts).
-		Relation("Connector")
+		Relation("Connector").
+		Relation("PoolAccounts")
 
 	query = pagination.apply(query, "account.created_at")
 
@@ -66,6 +67,7 @@ func (s *Storage) GetAccount(ctx context.Context, id string) (*models.Account, e
 	err := s.db.NewSelect().
 		Model(&account).
 		Relation("Connector").
+		Relation("PoolAccounts").
 		Where("account.id = ?", id).
 		Scan(ctx)
 	if err != nil {
