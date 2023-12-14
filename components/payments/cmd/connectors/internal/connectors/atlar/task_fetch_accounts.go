@@ -100,7 +100,7 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		// Fetch payments after inserting all accounts in order to link them correctly
 		taskPayments, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name: "Fetch payments from Atlar",
-			Key:  taskNameFetchPayments,
+			Key:  taskNameFetchTransactions,
 		})
 		if err != nil {
 			return err
