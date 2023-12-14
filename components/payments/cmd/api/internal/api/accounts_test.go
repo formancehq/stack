@@ -187,6 +187,7 @@ func TestListAccounts(t *testing.T) {
 					DefaultAsset:    listAccountsResponse[0].DefaultAsset.String(),
 					AccountName:     listAccountsResponse[0].AccountName,
 					Type:            listAccountsResponse[0].Type.String(),
+					Pools:           []uuid.UUID{},
 					Metadata:        listAccountsResponse[0].Metadata,
 				},
 				{
@@ -198,6 +199,7 @@ func TestListAccounts(t *testing.T) {
 					DefaultCurrency: listAccountsResponse[1].DefaultAsset.String(),
 					DefaultAsset:    listAccountsResponse[1].DefaultAsset.String(),
 					AccountName:     listAccountsResponse[1].AccountName,
+					Pools:           []uuid.UUID{},
 					// Type is converted to external when it is external formance
 					Type: string(models.AccountTypeExternal),
 				},
@@ -358,6 +360,7 @@ func TestGetAccount(t *testing.T) {
 					DefaultAsset:    getAccountResponse.DefaultAsset.String(),
 					AccountName:     getAccountResponse.AccountName,
 					Metadata:        getAccountResponse.Metadata,
+					Pools:           []uuid.UUID{},
 					Type:            getAccountResponse.Type.String(),
 				}
 			} else {
@@ -383,6 +386,7 @@ func TestGetAccount(t *testing.T) {
 					DefaultCurrency: getAccountResponse.DefaultAsset.String(),
 					DefaultAsset:    getAccountResponse.DefaultAsset.String(),
 					AccountName:     getAccountResponse.AccountName,
+					Pools:           []uuid.UUID{},
 					// Type is converted to external when it is external formance
 					Type: models.AccountTypeExternal.String(),
 				}
