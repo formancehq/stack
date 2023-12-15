@@ -33,7 +33,7 @@ func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferI
 	var transferInitiation models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
+		Column("id", "connector_id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
 		Model(&transferInitiation).
 		Where("id = ?", id)
 
@@ -71,7 +71,7 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 	var tfs []*models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
+		Column("id", "connector_id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
 		Model(&tfs)
 
 	if pagination.queryBuilder != nil {
@@ -113,7 +113,7 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 		lastReference = tfs[len(tfs)-1].CreatedAt.Format(time.RFC3339Nano)
 
 		query = s.db.NewSelect().
-			Column("id", "created_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
+			Column("id", "connector_id", "created_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
 			Model(&tfs)
 
 		hasPrevious, err = pagination.hasPrevious(ctx, query, "transfer_initiation.created_at", firstReference)
