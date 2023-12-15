@@ -81,10 +81,10 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		for token := ""; ; {
 			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 			defer cancel()
-			accountsParams.Context = requestCtx
-			accountsParams.Token = &token
+			externalAccountsParams.Context = requestCtx
+			externalAccountsParams.Token = &token
 			limit := int64(config.PageSize)
-			accountsParams.Limit = &limit
+			externalAccountsParams.Limit = &limit
 			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&externalAccountsParams)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
