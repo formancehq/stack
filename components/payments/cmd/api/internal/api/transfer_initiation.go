@@ -20,6 +20,7 @@ type transferInitiationResponse struct {
 	Description          string    `json:"description"`
 	SourceAccountID      string    `json:"sourceAccountID"`
 	DestinationAccountID string    `json:"destinationAccountID"`
+	ConnectorID          string    `json:"connectorID"`
 	Provider             string    `json:"provider"`
 	Type                 string    `json:"type"`
 	Amount               *big.Int  `json:"amount"`
@@ -65,6 +66,7 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 				Description:          ret.Description,
 				SourceAccountID:      ret.SourceAccountID.String(),
 				DestinationAccountID: ret.DestinationAccountID.String(),
+				ConnectorID:          ret.ConnectorID.String(),
 				Provider:             ret.Provider.String(),
 				Type:                 ret.Type.String(),
 				Amount:               ret.Amount,
@@ -120,6 +122,7 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 				SourceAccountID:      ret[i].SourceAccountID.String(),
 				DestinationAccountID: ret[i].DestinationAccountID.String(),
 				Provider:             ret[i].Provider.String(),
+				ConnectorID:          ret[i].ConnectorID.String(),
 				Type:                 ret[i].Type.String(),
 				Amount:               ret[i].Amount,
 				Asset:                ret[i].Asset.String(),
