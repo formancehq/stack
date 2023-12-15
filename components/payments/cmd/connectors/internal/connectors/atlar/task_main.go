@@ -26,7 +26,7 @@ func MainTask(logger logging.Logger) task.Task {
 
 		err = scheduler.Schedule(ctx, taskAccounts, models.TaskSchedulerOptions{
 			ScheduleOption: models.OPTIONS_RUN_NOW,
-			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+			RestartOption:  models.OPTIONS_RESTART_ALWAYS,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			return err

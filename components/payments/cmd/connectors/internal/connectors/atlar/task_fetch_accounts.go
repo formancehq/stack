@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
@@ -47,12 +48,14 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 
 		// Pagination works by cursor token.
 		accountsParams := accounts.GetV1AccountsParams{
-			Context: ctx,
-			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
+			Limit: pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
-			limit := int64(config.PageSize)
+			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+			defer cancel()
+			accountsParams.Context = requestCtx
 			accountsParams.Token = &token
+			limit := int64(config.PageSize)
 			accountsParams.Limit = &limit
 			pagedAccounts, err := client.Accounts.GetV1Accounts(&accountsParams)
 			if err != nil {
@@ -73,13 +76,15 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 
 		// Pagination works by cursor token.
 		externalAccountsParams := external_accounts.GetV1ExternalAccountsParams{
-			Context: ctx,
-			Limit:   pointer.For(int64(config.ApiConfig.PageSize)),
+			Limit: pointer.For(int64(config.ApiConfig.PageSize)),
 		}
 		for token := ""; ; {
+			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+			defer cancel()
+			externalAccountsParams.Context = requestCtx
+			externalAccountsParams.Token = &token
 			limit := int64(config.PageSize)
-			accountsParams.Token = &token
-			accountsParams.Limit = &limit
+			externalAccountsParams.Limit = &limit
 			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&externalAccountsParams)
 			if err != nil {
 				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
@@ -210,11 +215,12 @@ func ingestExternalAccountsBatch(
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
 
+	var counterpartyParams counterparties.GetV1CounterpartiesIDParams
 	for _, externalAccount := range pagedExternalAccounts.Payload.Items {
-		counterpartyParams := counterparties.GetV1CounterpartiesIDParams{
-			Context: ctx,
-			ID:      externalAccount.CounterpartyID,
-		}
+		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		counterpartyParams.Context = requestCtx
+		counterpartyParams.ID = externalAccount.CounterpartyID
 		counterparty_response, err := client.Counterparties.GetV1CounterpartiesID(&counterpartyParams)
 		if err != nil {
 			return err
