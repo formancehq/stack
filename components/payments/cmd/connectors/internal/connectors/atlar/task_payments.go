@@ -86,9 +86,6 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			return err
 		}
 
-		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-
 		paymentSchemeType := "SCT" // SEPA Credit Transfer
 		remittanceInformationType := "UNSTRUCTURED"
 		remittanceInformationValue := transfer.Description
@@ -117,8 +114,10 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			},
 		}
 
+		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+		defer cancel()
 		postCreditTransfersParams := credit_transfers.PostV1CreditTransfersParams{
-			Context:        ctx,
+			Context:        requestCtx,
 			CreditTransfer: &createPaymentRequest,
 		}
 		postCreditTransferResponse, err := client.CreditTransfers.PostV1CreditTransfers(&postCreditTransfersParams)
@@ -132,9 +131,27 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			},
 			ConnectorID: connectorID,
 		}
-
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+		err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
 		if err != nil {
+			return err
+		}
+
+		taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name:       fmt.Sprintf("Update transfer initiation status of transfer %s", transfer.ID.String()),
+			Key:        taskNameUpdatePaymentStatus,
+			TransferID: transfer.ID.String(),
+			PaymentID:  paymentID.String(),
+			Attempt:    1,
+		})
+		if err != nil {
+			return err
+		}
+
+		err = scheduler.Schedule(ctx, taskDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+		})
+		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			return err
 		}
 
@@ -149,10 +166,117 @@ func ValidateTransferInitiation(transfer *models.TransferInitiation) error {
 	if transfer.Description == "" {
 		return errors.New("description of transfer initiation can not be empty")
 	}
-	if transfer.Type.String() != "TRANSFER" {
-		return errors.New("this connector only supports type TRANSFER")
+	if transfer.Type.String() != "PAYOUT" {
+		return errors.New("this connector only supports type PAYOUT")
 	}
 	return nil
+}
+
+var (
+	updatePayoutAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_payout"))...)
+)
+
+func UpdatePaymentStatusTask(
+	config Config,
+	client *atlar_client.Rest,
+	transferID string,
+	stringPaymentID string,
+	attempt int,
+) task.Task {
+	return func(
+		ctx context.Context,
+		logger logging.Logger,
+		connectorID models.ConnectorID,
+		resolver task.StateResolver,
+		scheduler task.Scheduler,
+		storageReader storage.Reader,
+		ingester ingestion.Ingester,
+		metricsRegistry metrics.MetricsRegistry,
+	) error {
+		paymentID := models.MustPaymentIDFromString(stringPaymentID)
+		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
+		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
+		if err != nil {
+			return err
+		}
+		logger.Info("attempt: ", attempt, " fetching status of ", paymentID)
+
+		attrs := updatePayoutAttrs
+		now := time.Now()
+		defer func() {
+			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
+		}()
+
+		defer func() {
+			if err != nil {
+				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
+			}
+		}()
+
+		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		getCreditTransferParams := credit_transfers.GetV1CreditTransfersGetByExternalIDExternalIDParams{
+			Context:    requestCtx,
+			ExternalID: serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.Attempts),
+		}
+		getCreditTransferResponse, err := client.CreditTransfers.GetV1CreditTransfersGetByExternalIDExternalID(&getCreditTransferParams)
+		if err != nil {
+			return err
+		}
+
+		status := getCreditTransferResponse.Payload.Status
+		// Status docs: https://docs.atlar.com/docs/payment-details#payment-states--events
+		switch status {
+		case "CREATED", "APPROVED", "PENDING_SUBMISSION", "SENT", "PENDING_AT_BANK", "ACCEPTED", "EXECUTED":
+			taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+				Name:       fmt.Sprintf("Update transfer initiation status of transfer %s", transfer.ID.String()),
+				Key:        taskNameUpdatePaymentStatus,
+				TransferID: transfer.ID.String(),
+				PaymentID:  paymentID.String(),
+				Attempt:    attempt + 1,
+			})
+			if err != nil {
+				return err
+			}
+
+			err = scheduler.Schedule(ctx, taskDescriptor, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_IN_DURATION,
+				Duration:       2 * time.Minute,
+				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+			})
+			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				return err
+			}
+			return nil
+
+		case "RECONCILED":
+			// this is done
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+			if err != nil {
+				return err
+			}
+
+			return nil
+
+		case "REJECTED", "FAILED", "RETURNED":
+			// this has failed
+			err = ingester.UpdateTransferInitiationPaymentsStatus(
+				ctx, transfer, paymentID, models.TransferInitiationStatusFailed,
+				fmt.Sprintf("paymant initiation status is \"%s\"", status), transfer.Attempts, time.Now(),
+			)
+			if err != nil {
+				return err
+			}
+
+			return nil
+
+		default:
+			return fmt.Errorf(
+				"unknown status \"%s\" encountered while fetching payment initiation status of payment \"%s\"",
+				status, getCreditTransferResponse.Payload.ID,
+			)
+		}
+	}
 }
 
 func amountToString(amount big.Int, precision int) string {

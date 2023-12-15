@@ -26,7 +26,7 @@ var (
 	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
-func FetchPaymentsTask(config Config, client *atlar_client.Rest, account string) task.Task {
+func FetchTransactionsTask(config Config, client *atlar_client.Rest) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
