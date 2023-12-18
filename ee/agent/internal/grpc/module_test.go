@@ -77,8 +77,51 @@ func (k *stacksClient) Delete(ctx context.Context, name string) error {
 	return nil
 }
 
+type versionsClient struct {
+	versions map[string]*v1beta3.Versions
+}
+
+func (k *versionsClient) List(ctx context.Context, opts metav1.ListOptions) (*v1beta3.VersionsList, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (k *versionsClient) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+	return watch.NewFake(), nil
+}
+
+func (k *versionsClient) Get(ctx context.Context, name string, options metav1.GetOptions) (*v1beta3.Versions, error) {
+	versions, ok := k.versions[name]
+	if !ok {
+		return nil, &apierrors.StatusError{
+			ErrStatus: metav1.Status{
+				Reason: metav1.StatusReasonNotFound,
+			},
+		}
+	}
+	return versions, nil
+}
+
+func (k *versionsClient) Update(ctx context.Context, versions *v1beta3.Versions) (*v1beta3.Versions, error) {
+	k.versions[versions.Name] = versions
+	return versions, nil
+}
+
+func (k *versionsClient) Create(ctx context.Context, versions *v1beta3.Versions) (*v1beta3.Versions, error) {
+	if k.versions == nil {
+		k.versions = make(map[string]*v1beta3.Versions)
+	}
+	k.versions[versions.Name] = versions
+	return nil, nil
+}
+
+func (k *versionsClient) Delete(ctx context.Context, name string) error {
+	delete(k.versions, name)
+	return nil
+}
+
 type k8sClient struct {
-	stacksClient *stacksClient
+	stacksClient   *stacksClient
+	versionsClient *versionsClient
 }
 
 func (k k8sClient) Stacks() clientv1beta3.StackInterface {
@@ -86,8 +129,7 @@ func (k k8sClient) Stacks() clientv1beta3.StackInterface {
 }
 
 func (k k8sClient) Versions() clientv1beta3.VersionsInterface {
-	//TODO implement me
-	panic("implement me")
+	return k.versionsClient
 }
 
 var _ K8SClient = &k8sClient{}
@@ -96,6 +138,9 @@ func newK8SClient() *k8sClient {
 	return &k8sClient{
 		stacksClient: &stacksClient{
 			stacks: map[string]*v1beta3.Stack{},
+		},
+		versionsClient: &versionsClient{
+			versions: map[string]*v1beta3.Versions{},
 		},
 	}
 }
