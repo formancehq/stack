@@ -87,7 +87,10 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 		}
 
 		stripeClient := client.Client(stripeClient)
-		if transfer.SourceAccount != nil {
+		// If source account is nil, or equal to root (which is a special
+		// account we create for stripe for the balance platform), we don't need
+		// to set the stripe account.
+		if transfer.SourceAccount != nil && transfer.SourceAccount.Reference != rootAccountReference {
 			stripeClient = stripeClient.ForAccount(transfer.SourceAccountID.Reference)
 		}
 
