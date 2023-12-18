@@ -1,4 +1,4 @@
-package users
+package roles
 
 import (
 	"strings"
@@ -9,14 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type User struct {
-	ID    string   `json:"id"`
-	Email string   `json:"email"`
-	Roles []string `json:"roles"`
-}
-
 type ListStore struct {
-	Users []User `json:"users"`
+	list []membershipclient.StackUserAccess
 }
 type ListController struct {
 	store *ListStore
@@ -25,7 +19,9 @@ type ListController struct {
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
 func NewDefaultListStore() *ListStore {
-	return &ListStore{}
+	return &ListStore{
+		list: []membershipclient.StackUserAccess{},
+	}
 }
 
 func NewListController() *ListController {
@@ -35,9 +31,10 @@ func NewListController() *ListController {
 }
 
 func NewListCommand() *cobra.Command {
-	return fctl.NewCommand("list",
-		fctl.WithAliases("ls", "l"),
-		fctl.WithShortDescription("List users"),
+	return fctl.NewCommand("list <stack-id>",
+		fctl.WithAliases("usar"),
+		fctl.WithShortDescription("List Stack Access Roles within an organization by stacks"),
+		fctl.WithArgs(cobra.MinimumNArgs(1)),
 		fctl.WithController[*ListStore](NewListController()),
 	)
 }
@@ -47,6 +44,7 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -62,32 +60,29 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	usersResponse, _, err := apiClient.DefaultApi.ListUsersOfOrganization(cmd.Context(), organizationID).Execute()
+	ListStackUsersAccesses, response, err := apiClient.DefaultApi.ListStackUsersAccesses(cmd.Context(), organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}
 
-	c.store.Users = fctl.Map(usersResponse.Data, func(i membershipclient.User) User {
-		return User{
-			i.Id,
-			i.Email,
-			i.Roles,
-		}
-	})
+	if response.StatusCode > 300 {
+		return nil, err
+	}
+
+	c.store.list = append(c.store.list, ListStackUsersAccesses.Data...)
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-
-	usersRow := fctl.Map(c.store.Users, func(i User) []string {
+	stackUserAccessMap := fctl.Map(c.store.list, func(o membershipclient.StackUserAccess) []string {
 		return []string{
-			i.ID,
-			i.Email,
+			o.StackId,
+			o.UserId,
 			func() string {
 				roles := []string{}
 
-				for _, role := range i.Roles {
+				for _, role := range o.Roles {
 					if role == "ADMIN" {
 						roles = append(roles, pterm.LightRed(role))
 					} else {
@@ -100,11 +95,8 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		}
 	})
 
-	tableData := fctl.Prepend(usersRow, []string{"ID", "Email", "Roles"})
-	return pterm.DefaultTable.
-		WithHasHeader().
-		WithWriter(cmd.OutOrStdout()).
-		WithData(tableData).
-		Render()
+	tableData := fctl.Prepend(stackUserAccessMap, []string{"Stack Id", "User Id", "Roles"})
+
+	return pterm.DefaultTable.WithHasHeader().WithWriter(cmd.OutOrStdout()).WithData(tableData).Render()
 
 }
