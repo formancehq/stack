@@ -61,7 +61,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	roles := []string{}
 	roles = append(roles, args[1:]...)
 
-	response, err := apiClient.DefaultApi.UpdateOrganizationUser(
+	response, err := apiClient.DefaultApi.UpsertOrganizationUser(
 		cmd.Context(),
 		organizationID,
 		args[0]).RequestBody(roles).Execute()
