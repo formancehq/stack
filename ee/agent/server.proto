@@ -18,12 +18,12 @@ message ConnectRequest {
 }
 
 message Order {
+  reserved 5;
   oneof message {
     Connected connected = 1;
     Stack existingStack = 2;
     DeletedStack deletedStack = 3;
     Ping ping = 4;
-    UpdateUsageReport updateUsageReport = 5;
     DisabledStack disabledStack = 6;
     EnabledStack enabledStack = 7;
   }
@@ -82,12 +82,6 @@ message DisabledStack {
 
 message EnabledStack {
   string clusterName = 1;
-}
-
-message UpdateUsageReport {
-  string clusterName = 1;
-  string stripeKey = 2;
-  string stripeSubscriptionId = 3;
 }
 
 message AuthConfig {
