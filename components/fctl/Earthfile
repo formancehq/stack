@@ -48,3 +48,19 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/fctl
     DO --pass-args stack+GO_TIDY
+
+generate-membership-client:
+    FROM openapitools/openapi-generator-cli:v6.6.0
+    WORKDIR /src
+    COPY membership-swagger.yaml .
+    RUN docker-entrypoint.sh generate \
+        -i ./membership-swagger.yaml \
+        -g go \
+        -o ./membershipclient \
+        --git-user-id=formancehq \
+        --git-repo-id=fctl \
+        -p packageVersion=latest \
+        -p isGoSubmodule=true \
+        -p packageName=membershipclient
+    RUN rm -rf ./membershipclient/test
+    SAVE ARTIFACT ./membershipclient AS LOCAL membershipclient

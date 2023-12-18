@@ -88,12 +88,14 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**DeleteOrganization**](docs/DefaultApi.md#deleteorganization) | **Delete** /organizations/{organizationId} | Delete organization
 *DefaultApi* | [**DeleteRegion**](docs/DefaultApi.md#deleteregion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
 *DefaultApi* | [**DeleteStack**](docs/DefaultApi.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+*DefaultApi* | [**DeleteStackUserAccess**](docs/DefaultApi.md#deletestackuseraccess) | **Delete** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Delete stack user access role within an organization
 *DefaultApi* | [**DeleteUserFromOrganization**](docs/DefaultApi.md#deleteuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | delete user from organization
 *DefaultApi* | [**DisableStack**](docs/DefaultApi.md#disablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
 *DefaultApi* | [**DisableStargate**](docs/DefaultApi.md#disablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
 *DefaultApi* | [**EnableStack**](docs/DefaultApi.md#enablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/enable | Enable stack
 *DefaultApi* | [**EnableStargate**](docs/DefaultApi.md#enablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
 *DefaultApi* | [**GetRegion**](docs/DefaultApi.md#getregion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
+*DefaultApi* | [**GetRegionVersions**](docs/DefaultApi.md#getregionversions) | **Get** /organizations/{organizationId}/regions/{regionId}/versions | Get region versions
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
 *DefaultApi* | [**GetStack**](docs/DefaultApi.md#getstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
 *DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
@@ -101,23 +103,21 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ListOrganizations**](docs/DefaultApi.md#listorganizations) | **Get** /organizations | List organizations of the connected user
 *DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
 *DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
+*DefaultApi* | [**ListStackUsersAccesses**](docs/DefaultApi.md#liststackusersaccesses) | **Get** /organizations/{organizationId}/stacks/{stackId}/users | List stack users accesses within an organization
 *DefaultApi* | [**ListStacks**](docs/DefaultApi.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
 *DefaultApi* | [**ListUsersOfOrganization**](docs/DefaultApi.md#listusersoforganization) | **Get** /organizations/{organizationId}/users | List users of organization
 *DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
 *DefaultApi* | [**ReadUserOfOrganization**](docs/DefaultApi.md#readuseroforganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
-*DefaultApi* | [**UpdateOrganizationUser**](docs/DefaultApi.md#updateorganizationuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
+*DefaultApi* | [**UpsertOrganizationUser**](docs/DefaultApi.md#upsertorganizationuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
+*DefaultApi* | [**UpsertStackUserAccess**](docs/DefaultApi.md#upsertstackuseraccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
 
 ## Documentation For Models
 
  - [AnyRegion](docs/AnyRegion.md)
  - [AnyRegionAllOf](docs/AnyRegionAllOf.md)
- - [BillingPortal](docs/BillingPortal.md)
- - [BillingPortalResponse](docs/BillingPortalResponse.md)
- - [BillingSetup](docs/BillingSetup.md)
- - [BillingSetupResponse](docs/BillingSetupResponse.md)
  - [CreateInvitationResponse](docs/CreateInvitationResponse.md)
  - [CreateOrganizationResponse](docs/CreateOrganizationResponse.md)
  - [CreatePrivateRegionRequest](docs/CreatePrivateRegionRequest.md)
@@ -127,6 +127,7 @@ Class | Method | HTTP request | Description
  - [CreatedPrivateRegionResponse](docs/CreatedPrivateRegionResponse.md)
  - [Error](docs/Error.md)
  - [GetRegionResponse](docs/GetRegionResponse.md)
+ - [GetRegionVersionsResponse](docs/GetRegionVersionsResponse.md)
  - [Invitation](docs/Invitation.md)
  - [ListInvitationsResponse](docs/ListInvitationsResponse.md)
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
@@ -151,11 +152,16 @@ Class | Method | HTTP request | Description
  - [StackAllOf](docs/StackAllOf.md)
  - [StackData](docs/StackData.md)
  - [StackLifeCycle](docs/StackLifeCycle.md)
+ - [StackUserAccess](docs/StackUserAccess.md)
+ - [StackUserAccessAllOf](docs/StackUserAccessAllOf.md)
+ - [StackUserAccessAllOf1](docs/StackUserAccessAllOf1.md)
+ - [StackUserAccessResponse](docs/StackUserAccessResponse.md)
  - [User](docs/User.md)
  - [UserAllOf](docs/UserAllOf.md)
  - [UserAllOf1](docs/UserAllOf1.md)
  - [UserData](docs/UserData.md)
  - [UserDataAllOf](docs/UserDataAllOf.md)
+ - [Version](docs/Version.md)
 
 
 ## Documentation For Authorization

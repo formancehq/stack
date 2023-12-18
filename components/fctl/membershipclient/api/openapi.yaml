@@ -207,7 +207,7 @@ paths:
           description: Read a user
       summary: Read user of organization
     put:
-      operationId: updateOrganizationUser
+      operationId: upsertOrganizationUser
       parameters:
       - explode: false
         in: path
@@ -398,6 +398,136 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not Authorized
       summary: Find stack
+  /organizations/{organizationId}/stacks/{stackId}/users:
+    get:
+      operationId: listStackUsersAccesses
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StackUserAccessResponse'
+          description: Stack users access roles array
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+      summary: List stack users accesses within an organization
+  /organizations/{organizationId}/stacks/{stackId}/users/{userId}:
+    delete:
+      operationId: deleteStackUserAccess
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "204":
+          description: Updated user
+      summary: Delete stack user access role within an organization
+    put:
+      operationId: upsertStackUserAccess
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatableStackUserRole'
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "204":
+          description: Updated user
+      summary: Update stack user access role within an organization
   /organizations/{organizationId}/stacks/{stackId}/disable:
     put:
       operationId: disableStack
@@ -943,6 +1073,44 @@ paths:
                 $ref: '#/components/schemas/GetRegionResponse'
           description: Get a specific region
       summary: Get region
+  /organizations/{organizationId}/regions/{regionId}/versions:
+    get:
+      operationId: getRegionVersions
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRegionVersionsResponse'
+          description: Get a specific region
+      summary: Get region versions
   /me:
     get:
       operationId: readConnectedUser
@@ -1053,22 +1221,6 @@ components:
       - state
       - status
       type: object
-    BillingPortal:
-      properties:
-        url:
-          description: Billing portal URL
-          type: string
-      required:
-      - url
-      type: object
-    BillingSetup:
-      properties:
-        url:
-          description: Billing portal URL
-          type: string
-      required:
-      - url
-      type: object
     Stack:
       allOf:
       - $ref: '#/components/schemas/StackData'
@@ -1082,6 +1234,15 @@ components:
         allOf:
         - enum:
           - ADMIN
+          - GUEST
+          type: string
+      type: array
+    UpdatableStackUserRole:
+      items:
+        allOf:
+        - enum:
+          - ADMIN
+          - GUEST
           type: string
       type: array
     Roles:
@@ -1109,6 +1270,25 @@ components:
     UserArray:
       items:
         $ref: '#/components/schemas/User'
+      type: array
+    StackUserAccess:
+      allOf:
+      - $ref: '#/components/schemas/StackUserAccess_allOf'
+      - $ref: '#/components/schemas/StackUserAccess_allOf_1'
+    StackUserAccessResponse:
+      example:
+        data:
+        - null
+        - null
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/StackUserAccess'
+          type: array
+      type: object
+    StackUserAccessArray:
+      items:
+        $ref: '#/components/schemas/StackUserAccess'
       type: array
     ListOrganizationResponse:
       example:
@@ -1142,16 +1322,6 @@ components:
           items:
             $ref: '#/components/schemas/Stack'
           type: array
-      type: object
-    BillingPortalResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/BillingPortal'
-      type: object
-    BillingSetupResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/BillingSetup'
       type: object
     ListUsersResponse:
       example:
@@ -1326,6 +1496,39 @@ components:
       required:
       - version
       type: object
+    Version:
+      example:
+        versions:
+          key: versions
+        name: name
+      properties:
+        name:
+          type: string
+        versions:
+          additionalProperties:
+            type: string
+          type: object
+      required:
+      - name
+      - versions
+      type: object
+    GetRegionVersionsResponse:
+      example:
+        data:
+        - versions:
+            key: versions
+          name: name
+        - versions:
+            key: versions
+          name: name
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Version'
+          type: array
+      required:
+      - data
+      type: object
     PrivateRegion_allOf_secret:
       properties:
         lastDigits:
@@ -1455,6 +1658,31 @@ components:
           type: string
       required:
       - id
+      type: object
+      example: null
+    StackUserAccess_allOf:
+      properties:
+        roles:
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
+      type: object
+      example: null
+    StackUserAccess_allOf_1:
+      properties:
+        stackId:
+          description: Stack ID
+          type: string
+        userId:
+          description: User ID
+          type: string
+      required:
+      - stackId
+      - userId
       type: object
       example: null
     CreateStackRequest_allOf:
