@@ -226,6 +226,7 @@ func TestListTransferInitiations(t *testing.T) {
 			expectedTFsResponse := []*transferInitiationResponse{
 				{
 					ID:                   listTFsResponse[0].ID.String(),
+					Reference:            listTFsResponse[0].ID.Reference,
 					CreatedAt:            listTFsResponse[0].CreatedAt,
 					UpdatedAt:            listTFsResponse[0].UpdatedAt,
 					ScheduledAt:          listTFsResponse[0].ScheduledAt,
@@ -242,6 +243,7 @@ func TestListTransferInitiations(t *testing.T) {
 				},
 				{
 					ID:                   listTFsResponse[1].ID.String(),
+					Reference:            listTFsResponse[1].ID.Reference,
 					CreatedAt:            listTFsResponse[1].CreatedAt,
 					UpdatedAt:            listTFsResponse[1].UpdatedAt,
 					ScheduledAt:          listTFsResponse[1].ScheduledAt,
@@ -438,6 +440,7 @@ func TestGetTransferInitiation(t *testing.T) {
 				expectedTransferInitiationResponse = &readTransferInitiationResponse{
 					transferInitiationResponse: transferInitiationResponse{
 						ID:                   getTransferInitiationResponse.ID.String(),
+						Reference:            getTransferInitiationResponse.ID.Reference,
 						CreatedAt:            getTransferInitiationResponse.CreatedAt,
 						UpdatedAt:            getTransferInitiationResponse.UpdatedAt,
 						ScheduledAt:          getTransferInitiationResponse.ScheduledAt,
@@ -491,6 +494,7 @@ func TestGetTransferInitiation(t *testing.T) {
 				expectedTransferInitiationResponse = &readTransferInitiationResponse{
 					transferInitiationResponse: transferInitiationResponse{
 						ID:                   getTransferInitiationResponse.ID.String(),
+						Reference:            getTransferInitiationResponse.ID.Reference,
 						CreatedAt:            getTransferInitiationResponse.CreatedAt,
 						UpdatedAt:            getTransferInitiationResponse.UpdatedAt,
 						ScheduledAt:          getTransferInitiationResponse.ScheduledAt,

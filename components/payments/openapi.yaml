@@ -1455,6 +1455,7 @@ components:
       type: object
       required:
         - id
+        - reference
         - createdAt
         - updatedAt
         - scheduledAt
@@ -1471,6 +1472,8 @@ components:
         id:
           type: string
           example: XXX
+        reference:
+          type: string
         createdAt:
           type: string
           format: date-time

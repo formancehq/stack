@@ -14,6 +14,7 @@ import (
 
 type transferInitiationResponse struct {
 	ID                   string    `json:"id"`
+	Reference            string    `json:"reference"`
 	CreatedAt            time.Time `json:"createdAt"`
 	UpdatedAt            time.Time `json:"updatedAt"`
 	ScheduledAt          time.Time `json:"scheduledAt"`
@@ -60,6 +61,7 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 		data := &readTransferInitiationResponse{
 			transferInitiationResponse: transferInitiationResponse{
 				ID:                   ret.ID.String(),
+				Reference:            ret.ID.Reference,
 				CreatedAt:            ret.CreatedAt,
 				UpdatedAt:            ret.UpdatedAt,
 				ScheduledAt:          ret.ScheduledAt,
@@ -115,6 +117,7 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 		for i := range ret {
 			data[i] = &transferInitiationResponse{
 				ID:                   ret[i].ID.String(),
+				Reference:            ret[i].ID.Reference,
 				CreatedAt:            ret[i].CreatedAt,
 				UpdatedAt:            ret[i].UpdatedAt,
 				ScheduledAt:          ret[i].ScheduledAt,

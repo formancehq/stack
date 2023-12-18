@@ -18,6 +18,10 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
+const (
+	rootAccountReference = "root"
+)
+
 var (
 	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
@@ -139,12 +143,12 @@ func registerRootAccount(
 	if err := ingester.IngestAccounts(ctx, ingestion.AccountBatch{
 		{
 			ID: models.AccountID{
-				Reference:   "root",
+				Reference:   rootAccountReference,
 				ConnectorID: connectorID,
 			},
 			ConnectorID: connectorID,
 			CreatedAt:   time.Now().UTC(),
-			Reference:   "root",
+			Reference:   rootAccountReference,
 			Type:        models.AccountTypeInternal,
 		},
 	}); err != nil {
@@ -153,7 +157,7 @@ func registerRootAccount(
 	balanceTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name:    "Fetch balance for the root account",
 		Key:     taskNameFetchBalances,
-		Account: "root",
+		Account: rootAccountReference,
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to transform task descriptor")

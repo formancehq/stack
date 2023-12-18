@@ -33,7 +33,7 @@ func balanceTask(account string, client *client.DefaultClient) func(ctx context.
 		}()
 
 		stripeAccount := account
-		if account == "root" {
+		if account == rootAccountReference {
 			// special case for root account
 			stripeAccount = ""
 		}
