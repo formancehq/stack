@@ -118,7 +118,7 @@ pipeline:
               "upsert": {
                 "data": {
                   "address": this.payload.targetId,
-                  "metadata": { item.key: "\"" + item.value.string() + "\"" },
+                  "metadata": { item.key: item.value.string() },
                   "ledger": this.payload.ledger
                 },
                 "indexed": { 
