@@ -22,10 +22,14 @@ func init() {
 	httpcaddyfile.RegisterHandlerDirective("versions", parseCaddyfile)
 }
 
-type Endpoint struct {
-	Name            string `json:"name,omitempty"`
+type Service struct {
 	VersionEndpoint string `json:"endpoint,omitempty"`
 	HealthEndpoint  string `json:"health,omitempty"`
+}
+
+type Endpoint struct {
+	Name     string    `json:"name,omitempty"`
+	Services []Service `json:"services,omitempty"`
 }
 
 // Versions is a module that serves a /versions endpoint. This endpoint will
@@ -85,16 +89,22 @@ func (m *Versions) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				for d.Next() {
 					for d.NextBlock(0) {
 						name := d.Val()
-						var versionEndpoint string
-						var healthEndpoint string
-						fmt.Println("remaining args for endpoints", d.CountRemainingArgs())
-						if !d.AllArgs(&versionEndpoint, &healthEndpoint) {
-							return d.Errf("invalid number of endpoints' arguments: want <name> <version_endpoint> <health_endpoint>")
+						services := make([]Service, 0)
+						for d.NextBlock(1) {
+							versionEndpoint := d.Val()
+							if !d.NextArg() {
+								return d.Errf("invalid number of endpoints' arguments: want <version_endpoint> <health_endpoint>")
+							}
+							healthEndpoint := d.Val()
+							services = append(services, Service{
+								VersionEndpoint: versionEndpoint,
+								HealthEndpoint:  healthEndpoint,
+							})
 						}
+
 						m.Endpoints = append(m.Endpoints, Endpoint{
-							Name:            name,
-							VersionEndpoint: versionEndpoint,
-							HealthEndpoint:  healthEndpoint,
+							Name:     name,
+							Services: services,
 						})
 					}
 				}
@@ -119,12 +129,14 @@ func (m *Versions) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 // the module is provisioned.
 func (v *Versions) Validate() error {
 	for _, endpoint := range v.Endpoints {
-		if _, err := url.ParseRequestURI(endpoint.VersionEndpoint); err != nil {
-			return fmt.Errorf("invalid version endpoint %s: %w", endpoint.Name, err)
-		}
+		for _, service := range endpoint.Services {
+			if _, err := url.ParseRequestURI(service.VersionEndpoint); err != nil {
+				return fmt.Errorf("invalid version endpoint %s: %w", endpoint.Name, err)
+			}
 
-		if _, err := url.ParseRequestURI(endpoint.HealthEndpoint); err != nil {
-			return fmt.Errorf("invalid health endpoint %s: %w", endpoint.Name, err)
+			if _, err := url.ParseRequestURI(service.HealthEndpoint); err != nil {
+				return fmt.Errorf("invalid health endpoint %s: %w", endpoint.Name, err)
+			}
 		}
 	}
 
@@ -206,24 +218,32 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				Name: edpt.Name,
 			}
 
-			version, err := serviceVersion(ctxGroup, v.httpClient, edpt.VersionEndpoint)
-			if err != nil {
-				// Log and Discard the error if there is any, and provide an
-				// "unknown" version.
-				v.logger.Error("failed to query version", zap.Error(err))
-				res.Version = "unknown"
-			} else {
-				res.Version = version
-			}
+			for _, service := range edpt.Services {
+				if res.Version == "" {
+					version, err := serviceVersion(ctxGroup, v.httpClient, service.VersionEndpoint)
+					if err != nil {
+						// Log and Discard the error if there is any, and provide an
+						// "unknown" version.
+						v.logger.Error("failed to query version", zap.Error(err))
+						res.Version = "unknown"
+					} else {
+						res.Version = version
+					}
+				}
 
-			health, err := serviceHealth(ctxGroup, v.httpClient, edpt.HealthEndpoint)
-			if err != nil {
-				// Log and Discard the error if there is any, and provide a
-				// "false" health.
-				v.logger.Error("failed to query health", zap.Error(err))
-				res.Health = false
-			} else {
-				res.Health = health
+				health, err := serviceHealth(ctxGroup, v.httpClient, service.HealthEndpoint)
+				if err != nil {
+					// Log and Discard the error if there is any, and provide a
+					// "false" health.
+					v.logger.Error("failed to query health", zap.Error(err))
+					res.Health = false
+					break
+				} else {
+					res.Health = health
+					if !health {
+						break
+					}
+				}
 			}
 
 			versions <- res

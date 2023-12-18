@@ -214,12 +214,22 @@ data:
         			region "us-west-1"
         			env "staging"
         			endpoints {
-        				auth http://127.0.0.1:10004/_info http://127.0.0.1:10004/_healthcheck
-        				payments-api http://127.0.0.1:10002/_info http://127.0.0.1:10002/_health
-        				payments-connectors http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
-        				search http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
-        				wallets http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
-        				webhooks http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
+        					auth {
+        						http://127.0.0.1:10004/_info http://127.0.0.1:10004/_healthcheck
+        					}
+        					payments {
+        						http://127.0.0.1:10002/_info http://127.0.0.1:10002/_health
+        						http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
+        					}
+        					search {
+        						http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
+        					}
+        					wallets {
+        						http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
+        					}
+        					webhooks {
+        						http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck
+        					}
         			}
         		}
         	}

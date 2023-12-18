@@ -98,12 +98,30 @@ var Module = &module{}
 var _ modules.Module = Module
 var _ modules.DependsOnAwareModule = Module
 
-var caddyfileTemplate = template.Must(template.New("caddyfile").Funcs(map[string]any{
-	"join": strings.Join,
-}).Parse(caddyfile))
-
 func init() {
 	modules.Register(Module)
+}
+
+func caddyFileTemplate(context modules.ServiceInstallConfiguration) *template.Template {
+	gatewayVersion := context.Versions.Spec.Gateway
+	if !semver.IsValid(gatewayVersion) {
+		return template.Must(template.New("caddyfile").Funcs(map[string]any{
+			"join": strings.Join,
+		}).Parse(caddyfile))
+	}
+
+	switch semver.Compare("v0.1.8", gatewayVersion) {
+	case -1, 0:
+		// gatewayVersion >= v0.1.8
+		return template.Must(template.New("caddyfile").Funcs(map[string]any{
+			"join": strings.Join,
+		}).Parse(caddyfile))
+	default:
+		// gatewayVersion < v0.1.8
+		return template.Must(template.New("caddyfile").Funcs(map[string]any{
+			"join": strings.Join,
+		}).Parse(deprecatedCaddyfile))
+	}
 }
 
 // When enabled, the audit plugin will be enabled for the gateway.
@@ -125,6 +143,7 @@ func EnableAuditPlugin(ctx modules.ReconciliationConfig) bool {
 }
 
 func createCaddyfile(context modules.ServiceInstallConfiguration) string {
+	fmt.Println("TOTOTOTOTO", context.Versions.Spec.Gateway)
 	buf := bytes.NewBufferString("")
 
 	type service struct {
@@ -136,6 +155,16 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		Methods     []string
 		RoutingPath string
 		Module      string
+	}
+
+	type versionEndpoint struct {
+		VersionEndpoint string
+		HealthEndpoint  string
+	}
+
+	type versions struct {
+		ModuleName string
+		Endpoints  []versionEndpoint
 	}
 
 	servicesMap := make(map[string]service, 0)
@@ -205,7 +234,36 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		enableScopes = *context.ReconciliationConfig.Configuration.Spec.Services.Gateway.EnableScopes
 	}
 
-	if err := caddyfileTemplate.Execute(buf, map[string]any{
+	versionsMap := make(map[string]*versions, 0)
+	for _, service := range services {
+		if !service.HasVersionEndpoint {
+			continue
+		}
+
+		_, ok := versionsMap[service.Module]
+		if !ok {
+			versionsMap[service.Module] = &versions{
+				ModuleName: service.Module,
+				Endpoints:  make([]versionEndpoint, 0),
+			}
+		}
+
+		versionsMap[service.Module].Endpoints = append(versionsMap[service.Module].Endpoints, versionEndpoint{
+			VersionEndpoint: fmt.Sprintf("http://%s:%d/_info", service.Hostname, service.Port),
+			HealthEndpoint:  fmt.Sprintf("http://%s:%d/%s", service.Hostname, service.Port, service.HealthPath),
+		})
+	}
+
+	vs := make([]*versions, 0)
+	for _, v := range versionsMap {
+		vs = append(vs, v)
+	}
+
+	sort.Slice(vs, func(i, j int) bool {
+		return vs[i].ModuleName < vs[j].ModuleName
+	})
+
+	if err := caddyFileTemplate(context).Execute(buf, map[string]any{
 		"Region":   context.Platform.Region,
 		"Env":      context.Platform.Environment,
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
@@ -225,6 +283,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		"Redirect":     redirect,
 		"EnableAudit":  EnableAuditPlugin(context.ReconciliationConfig),
 		"EnableScopes": enableScopes,
+		"Versions":     vs,
 	}); err != nil {
 		panic(err)
 	}
@@ -232,6 +291,152 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 }
 
 const caddyfile = `(cors) {
+	header {
+		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
+		Access-Control-Allow-Headers content-type
+		Access-Control-Max-Age 100
+		Access-Control-Allow-Origin *
+	}
+}
+
+(auth) {
+	auth {
+		issuer {{ .Issuer }}
+
+		read_key_set_max_retries 10
+
+		{{- if .EnableScopes }}
+		check_scopes yes
+		service {args[0]}
+		{{- end }}
+	}
+}
+{{- if .EnableAudit }}
+(audit) {
+	audit {
+		# Kafka publisher
+		{{- if (eq .Broker "kafka") }}
+		publisher_kafka_broker {$PUBLISHER_KAFKA_BROKER:redpanda:29092}
+		publisher_kafka_enabled {$PUBLISHER_KAFKA_ENABLED:false}
+		publisher_kafka_tls_enabled {$PUBLISHER_KAFKA_TLS_ENABLED:false}
+		publisher_kafka_sasl_enabled {$PUBLISHER_KAFKA_SASL_ENABLED:false}
+		publisher_kafka_sasl_username {$PUBLISHER_KAFKA_SASL_USERNAME}
+		publisher_kafka_sasl_password {$PUBLISHER_KAFKA_SASL_PASSWORD}
+		publisher_kafka_sasl_mechanism {$PUBLISHER_KAFKA_SASL_MECHANISM}
+		publisher_kafka_sasl_scram_sha_size {$PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE}
+		{{- end }}
+		{{- if (eq .Broker "nats") }}
+		# Nats publisher
+		publisher_nats_enabled {$PUBLISHER_NATS_ENABLED:true}
+		publisher_nats_url {$PUBLISHER_NATS_URL:nats://nats:4222}
+		publisher_nats_client_id {$PUBLISHER_NATS_CLIENT_ID:gateway}
+		publisher_nats_max_reconnects {$PUBLISHER_NATS_MAX_RECONNECTS:30}
+		publisher_nats_max_reconnects_wait {$PUBLISHER_NATS_MAX_RECONNECT_WAIT:2s}
+		{{- end }}
+	}
+}
+{{- end }}
+
+{
+	{{ if .Debug }}debug{{ end }}
+	# Many directives manipulate the HTTP handler chain and the order in which
+	# those directives are evaluated matters. So the jwtauth directive must be
+	# ordered.
+	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
+	order auth before basicauth
+	order versions after metrics
+	{{- if .EnableAudit }}
+	order audit after encode
+	{{- end }}
+}
+
+:{{ .Port }} {
+	tracing {
+		span gateway
+	}
+	log {
+		output stdout
+		{{- if .Debug }}
+		level  DEBUG
+		{{- end }}
+	}
+
+	{{- if .EnableAudit }}
+	import audit
+	{{- end }}
+
+	{{- range $i, $service := .Services }}
+		{{- if not (eq $service.Name "control") }}
+			{{- range $i, $path := $service.Paths }}
+			@{{ $path.Name }}matcher {
+				path /api/{{ $service.RoutingPath }}{{ $path.Path }}*
+				{{- if gt ($path.Methods | len) 0 }}
+				method {{ join $path.Methods " " }}
+				{{- end }}
+			}
+			handle @{{ $path.Name }}matcher {
+				uri strip_prefix /api/{{ $service.RoutingPath }}
+				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
+				import cors
+				{{- if and (not $service.Secured) (not $path.Secured) }}
+				import auth {{ $service.Module }}
+				{{- end }}
+			}
+			{{- end }}
+
+			@{{ $service.Name }}matcher {
+				path /api/{{ $service.RoutingPath }}*
+				{{- if gt ($service.Methods | len) 0 }}
+				method {{ join $service.Methods " " }}
+				{{- end }}
+			}
+			handle @{{ $service.Name }}matcher {
+				uri strip_prefix /api/{{ $service.RoutingPath }}
+				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
+
+				import cors
+				{{- if not $service.Secured }}
+				import auth {{ $service.Module }}
+				{{- end }}
+			}
+		{{- end }}
+	{{- end }}
+
+	handle /versions {
+		versions {
+			region "{{ .Region }}"
+			env "{{ .Env }}"
+			endpoints {
+				{{- range $i, $version := .Versions }}
+					{{ $version.ModuleName }} {
+						{{- range $i, $endpoint := $version.Endpoints }}
+						{{ $endpoint.VersionEndpoint }} {{ $endpoint.HealthEndpoint }}
+						{{- end }}
+					}
+				{{- end }}
+			}
+		}
+	}
+
+	# Respond 502 if service does not exists
+	handle /api/* {
+		respond "Bad Gateway" 502
+	}
+
+	# handle all other requests
+	{{- if not (eq .Fallback "") }}
+	handle {
+		{{- if .Redirect }}
+		redir {{ .Fallback }}
+		{{- else }}
+		reverse_proxy {{ .Fallback }}
+		{{- end }}
+		import cors
+	}
+	{{ end }}
+}`
+
+const deprecatedCaddyfile = `(cors) {
 	header {
 		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
 		Access-Control-Allow-Headers content-type
