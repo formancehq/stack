@@ -8,6 +8,9 @@ import (
 	"testing"
 	"time"
 
+	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
+	"github.com/pkg/errors"
+
 	"google.golang.org/grpc/metadata"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
@@ -33,15 +36,19 @@ func (m *mockServer) Join(server generated.Server_JoinServer) error {
 	return nil
 }
 
-type k8sClient struct {
+type stacksClient struct {
 	stacks map[string]*v1beta3.Stack
 }
 
-func (k *k8sClient) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+func (k *stacksClient) List(ctx context.Context, opts metav1.ListOptions) (*v1beta3.StackList, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (k *stacksClient) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
 	return watch.NewFake(), nil
 }
 
-func (k *k8sClient) Get(ctx context.Context, name string, options metav1.GetOptions) (*v1beta3.Stack, error) {
+func (k *stacksClient) Get(ctx context.Context, name string, options metav1.GetOptions) (*v1beta3.Stack, error) {
 	stack, ok := k.stacks[name]
 	if !ok {
 		return nil, &apierrors.StatusError{
@@ -53,12 +60,12 @@ func (k *k8sClient) Get(ctx context.Context, name string, options metav1.GetOpti
 	return stack, nil
 }
 
-func (k *k8sClient) Update(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error) {
+func (k *stacksClient) Update(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error) {
 	k.stacks[stack.Name] = stack
 	return stack, nil
 }
 
-func (k *k8sClient) Create(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error) {
+func (k *stacksClient) Create(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error) {
 	if k.stacks == nil {
 		k.stacks = make(map[string]*v1beta3.Stack)
 	}
@@ -66,16 +73,82 @@ func (k *k8sClient) Create(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.
 	return nil, nil
 }
 
-func (k *k8sClient) Delete(ctx context.Context, name string) error {
+func (k *stacksClient) Delete(ctx context.Context, name string) error {
 	delete(k.stacks, name)
 	return nil
 }
 
+type versionsClient struct {
+	versions map[string]*v1beta3.Versions
+}
+
+func (k *versionsClient) List(ctx context.Context, opts metav1.ListOptions) (*v1beta3.VersionsList, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (k *versionsClient) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+	return watch.NewFake(), nil
+}
+
+func (k *versionsClient) Get(ctx context.Context, name string, options metav1.GetOptions) (*v1beta3.Versions, error) {
+	versions, ok := k.versions[name]
+	if !ok {
+		return nil, &apierrors.StatusError{
+			ErrStatus: metav1.Status{
+				Reason: metav1.StatusReasonNotFound,
+			},
+		}
+	}
+	return versions, nil
+}
+
+func (k *versionsClient) Update(ctx context.Context, versions *v1beta3.Versions) (*v1beta3.Versions, error) {
+	k.versions[versions.Name] = versions
+	return versions, nil
+}
+
+func (k *versionsClient) Create(ctx context.Context, versions *v1beta3.Versions) (*v1beta3.Versions, error) {
+	if k.versions == nil {
+		k.versions = make(map[string]*v1beta3.Versions)
+	}
+	k.versions[versions.Name] = versions
+	return nil, nil
+}
+
+func (k *versionsClient) Delete(ctx context.Context, name string) error {
+	delete(k.versions, name)
+	return nil
+}
+
+type k8sClient struct {
+	stacksClient   *stacksClient
+	versionsClient *versionsClient
+}
+
+func (k k8sClient) Stacks() clientv1beta3.StackInterface {
+	return k.stacksClient
+}
+
+func (k k8sClient) Versions() clientv1beta3.VersionsInterface {
+	return k.versionsClient
+}
+
 var _ K8SClient = &k8sClient{}
+
+func newK8SClient() *k8sClient {
+	return &k8sClient{
+		stacksClient: &stacksClient{
+			stacks: map[string]*v1beta3.Stack{},
+		},
+		versionsClient: &versionsClient{
+			versions: map[string]*v1beta3.Versions{},
+		},
+	}
+}
 
 func TestModule(t *testing.T) {
 	mockServer := &mockServer{}
-	k8sClient := &k8sClient{}
+	k8sClient := newK8SClient()
 
 	grpcServer := grpc.NewServer()
 	generated.RegisterServerServer(grpcServer, mockServer)
@@ -134,10 +207,10 @@ func TestModule(t *testing.T) {
 		},
 	}))
 	require.Eventually(t, func() bool {
-		return len(k8sClient.stacks) == 1
+		return len(k8sClient.stacksClient.stacks) == 1
 	}, time.Second, 100*time.Millisecond)
-	require.NotEmpty(t, k8sClient.stacks[createdStack.ClusterName])
-	require.Equal(t, createdStack.ClusterName, k8sClient.stacks[createdStack.ClusterName].Name)
+	require.NotEmpty(t, k8sClient.stacksClient.stacks[createdStack.ClusterName])
+	require.Equal(t, createdStack.ClusterName, k8sClient.stacksClient.stacks[createdStack.ClusterName].Name)
 
 	md, ok := metadata.FromIncomingContext(mockServer.connectServer.Context())
 	require.True(t, ok)

@@ -7,6 +7,11 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
+	"strings"
+
+	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
@@ -21,11 +26,8 @@ import (
 )
 
 type K8SClient interface {
-	Get(ctx context.Context, name string, options metav1.GetOptions) (*v1beta3.Stack, error)
-	Create(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error)
-	Update(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error)
-	Delete(ctx context.Context, name string) error
-	Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error)
+	Stacks() clientv1beta3.StackInterface
+	Versions() clientv1beta3.VersionsInterface
 }
 
 type Authenticator interface {
@@ -179,13 +181,21 @@ func (client *client) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	w, err := client.k8sClient.Watch(ctx, metav1.ListOptions{
+	stacksWatcher, err := client.k8sClient.Stacks().Watch(ctx, metav1.ListOptions{
 		Watch: true,
 	})
 	if err != nil {
-		return err
+		return errors.Wrap(err, "trying to watch stacks")
 	}
-	defer w.Stop()
+	defer stacksWatcher.Stop()
+
+	versionsWatcher, err := client.k8sClient.Versions().Watch(ctx, metav1.ListOptions{
+		Watch: true,
+	})
+	if err != nil {
+		return errors.Wrap(err, "trying to watch versions")
+	}
+	defer versionsWatcher.Stop()
 
 	var (
 		closed = false
@@ -237,7 +247,7 @@ func (client *client) Start(ctx context.Context) error {
 		case err := <-errCh:
 			sharedlogging.FromContext(ctx).Errorf("Stream closed with error: %s", err)
 			return err
-		case k8sUpdate := <-w.ResultChan():
+		case k8sUpdate := <-stacksWatcher.ResultChan():
 			stack := k8sUpdate.Object.(*v1beta3.Stack)
 			var status generated.StackStatus
 			switch k8sUpdate.Type {
@@ -266,16 +276,73 @@ func (client *client) Start(ctx context.Context) error {
 			}); err != nil {
 				sharedlogging.FromContext(ctx).Errorf("Unable to send stack status to server: %s", err)
 			}
+		case k8sUpdate := <-versionsWatcher.ResultChan():
+			version := k8sUpdate.Object.(*v1beta3.Versions)
+
+			var msg *generated.Message
+			switch k8sUpdate.Type {
+			default:
+				sharedlogging.FromContext(ctx).Error("Watch type '%s' not handled for versions", k8sUpdate.Type)
+			case watch.Deleted:
+				sharedlogging.FromContext(ctx).Infof("Detect versions '%s' as deleted", version.Name)
+				msg = &generated.Message{
+					Message: &generated.Message_DeletedVersion{
+						DeletedVersion: &generated.DeletedVersion{
+							Name: version.Name,
+						},
+					},
+				}
+			case watch.Added, watch.Modified:
+				vOfVersion := reflect.ValueOf(version.Spec)
+				tOfVersion := reflect.TypeOf(version.Spec)
+				versionsMap := make(map[string]string)
+				for i := 0; i < tOfVersion.NumField(); i++ {
+					jsonTag := tOfVersion.Field(i).Tag.Get("json")
+					name := strings.Split(jsonTag, ",")[0]
+					versionsMap[name] = vOfVersion.Field(i).String()
+				}
+
+				switch k8sUpdate.Type {
+				case watch.Added:
+					sharedlogging.FromContext(ctx).
+						WithFields(collectionutils.ConvertMap(versionsMap, collectionutils.ToAny[string])).
+						Infof("Detect versions '%s' added", version.Name)
+					msg = &generated.Message{
+						Message: &generated.Message_AddedVersion{
+							AddedVersion: &generated.AddedVersion{
+								Name:     version.Name,
+								Versions: versionsMap,
+							},
+						},
+					}
+				case watch.Modified:
+					sharedlogging.FromContext(ctx).
+						WithFields(collectionutils.ConvertMap(versionsMap, collectionutils.ToAny[string])).
+						Infof("Detect versions '%s' modified", version.Name)
+					msg = &generated.Message{
+						Message: &generated.Message_UpdatedVersion{
+							UpdatedVersion: &generated.UpdatedVersion{
+								Name:     version.Name,
+								Versions: versionsMap,
+							},
+						},
+					}
+				}
+			}
+
+			if err := client.connectClient.SendMsg(msg); err != nil {
+				sharedlogging.FromContext(ctx).Errorf("Unable to send version update: %s", err)
+			}
 
 		case msg := <-msgs:
 			switch msg := msg.Message.(type) {
 			// TODO: Implement UpdateOrCreate
 			case *generated.Order_ExistingStack:
 				createStack := client.createStack(msg.ExistingStack)
-				existingStack, err := client.k8sClient.Get(ctx, createStack.Name, metav1.GetOptions{})
+				existingStack, err := client.k8sClient.Stacks().Get(ctx, createStack.Name, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
-						if _, err := client.k8sClient.Create(ctx, createStack); err != nil {
+						if _, err := client.k8sClient.Stacks().Create(ctx, createStack); err != nil {
 							sharedlogging.FromContext(ctx).Errorf("Creating stack cluster side: %s", err)
 							continue
 						}
@@ -287,7 +354,7 @@ func (client *client) Start(ctx context.Context) error {
 				}
 
 				newStack := client.mergeStack(existingStack, createStack)
-				if _, err := client.k8sClient.Update(ctx, newStack); err != nil {
+				if _, err := client.k8sClient.Stacks().Update(ctx, newStack); err != nil {
 					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}
@@ -295,7 +362,7 @@ func (client *client) Start(ctx context.Context) error {
 				sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", newStack.Name)
 
 			case *generated.Order_DeletedStack:
-				if err := client.k8sClient.Delete(ctx, msg.DeletedStack.ClusterName); err != nil {
+				if err := client.k8sClient.Stacks().Delete(ctx, msg.DeletedStack.ClusterName); err != nil {
 					if controllererrors.IsNotFound(err) {
 						sharedlogging.FromContext(ctx).Infof("Cannot delete not existing stack: %s", msg.DeletedStack.ClusterName)
 
@@ -308,7 +375,7 @@ func (client *client) Start(ctx context.Context) error {
 			case *generated.Order_DisabledStack:
 				sharedlogging.FromContext(ctx).Infof("Incomming DISABLING: %s", msg.DisabledStack.ClusterName)
 
-				existingStack, err := client.k8sClient.Get(ctx, msg.DisabledStack.ClusterName, metav1.GetOptions{})
+				existingStack, err := client.k8sClient.Stacks().Get(ctx, msg.DisabledStack.ClusterName, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
 						sharedlogging.FromContext(ctx).Infof("Cannot disable not existing stack: %s", msg.DisabledStack.ClusterName)
@@ -318,14 +385,14 @@ func (client *client) Start(ctx context.Context) error {
 					continue
 				}
 				existingStack.Spec.Disabled = true
-				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
+				if _, err := client.k8sClient.Stacks().Update(ctx, existingStack); err != nil {
 					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}
 				sharedlogging.FromContext(ctx).Infof("Stack %s disabled", msg.DisabledStack.ClusterName)
 			case *generated.Order_EnabledStack:
 				sharedlogging.FromContext(ctx).Infof("Incomming ENABLING: %s", msg.EnabledStack.ClusterName)
-				existingStack, err := client.k8sClient.Get(ctx, msg.EnabledStack.ClusterName, metav1.GetOptions{})
+				existingStack, err := client.k8sClient.Stacks().Get(ctx, msg.EnabledStack.ClusterName, metav1.GetOptions{})
 				if err != nil {
 					if controllererrors.IsNotFound(err) {
 						sharedlogging.FromContext(ctx).Infof("Cannot enable not existing stack: %s", msg.EnabledStack.ClusterName)
@@ -335,7 +402,7 @@ func (client *client) Start(ctx context.Context) error {
 					continue
 				}
 				existingStack.Spec.Disabled = false
-				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
+				if _, err := client.k8sClient.Stacks().Update(ctx, existingStack); err != nil {
 					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
 				}

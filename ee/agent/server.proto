@@ -18,12 +18,12 @@ message ConnectRequest {
 }
 
 message Order {
+  reserved 5;
   oneof message {
     Connected connected = 1;
     Stack existingStack = 2;
     DeletedStack deletedStack = 3;
     Ping ping = 4;
-    UpdateUsageReport updateUsageReport = 5;
     DisabledStack disabledStack = 6;
     EnabledStack enabledStack = 7;
   }
@@ -33,6 +33,9 @@ message Message {
   oneof message {
     StatusChanged statusChanged = 1;
     Pong pong = 2;
+    AddedVersion addedVersion = 3;
+    DeletedVersion deletedVersion = 4;
+    UpdatedVersion updatedVersion = 5;
   }
 }
 
@@ -81,12 +84,6 @@ message EnabledStack {
   string clusterName = 1;
 }
 
-message UpdateUsageReport {
-  string clusterName = 1;
-  string stripeKey = 2;
-  string stripeSubscriptionId = 3;
-}
-
 message AuthConfig {
   string clientId = 1;
   string clientSecret = 2;
@@ -96,4 +93,18 @@ message AuthConfig {
 message AuthClient {
   bool public = 1;
   string id = 2;
+}
+
+message AddedVersion {
+  string name = 1;
+  map<string, string> versions = 2;
+}
+
+message UpdatedVersion {
+  string name = 1;
+  map<string, string> versions = 2;
+}
+
+message DeletedVersion {
+  string name = 1;
 }
