@@ -138,6 +138,16 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		Module      string
 	}
 
+	type versionEndpoint struct {
+		VersionEndpoint string
+		HealthEndpoint  string
+	}
+
+	type versions struct {
+		ModuleName string
+		Endpoints  []versionEndpoint
+	}
+
 	servicesMap := make(map[string]service, 0)
 	keys := make([]string, 0)
 	for _, registeredModule := range context.RegisteredModules {
@@ -205,6 +215,35 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		enableScopes = *context.ReconciliationConfig.Configuration.Spec.Services.Gateway.EnableScopes
 	}
 
+	versionsMap := make(map[string]*versions, 0)
+	for _, service := range services {
+		if !service.HasVersionEndpoint {
+			continue
+		}
+
+		_, ok := versionsMap[service.Module]
+		if !ok {
+			versionsMap[service.Module] = &versions{
+				ModuleName: service.Module,
+				Endpoints:  make([]versionEndpoint, 0),
+			}
+		}
+
+		versionsMap[service.Module].Endpoints = append(versionsMap[service.Module].Endpoints, versionEndpoint{
+			VersionEndpoint: fmt.Sprintf("http://%s:%d/_info", service.Hostname, service.Port),
+			HealthEndpoint:  fmt.Sprintf("http://%s:%d/%s", service.Hostname, service.Port, service.HealthPath),
+		})
+	}
+
+	vs := make([]*versions, 0)
+	for _, v := range versionsMap {
+		vs = append(vs, v)
+	}
+
+	sort.Slice(vs, func(i, j int) bool {
+		return vs[i].ModuleName < vs[j].ModuleName
+	})
+
 	if err := caddyfileTemplate.Execute(buf, map[string]any{
 		"Region":   context.Platform.Region,
 		"Env":      context.Platform.Environment,
@@ -225,6 +264,7 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 		"Redirect":     redirect,
 		"EnableAudit":  EnableAuditPlugin(context.ReconciliationConfig),
 		"EnableScopes": enableScopes,
+		"Versions":     vs,
 	}); err != nil {
 		panic(err)
 	}
@@ -348,10 +388,12 @@ const caddyfile = `(cors) {
 			region "{{ .Region }}"
 			env "{{ .Env }}"
 			endpoints {
-				{{- range $i, $service := .Services }}
-					{{- if $service.HasVersionEndpoint }}
-				{{ $service.Name }} http://{{ $service.Hostname }}:{{ $service.Port }}/_info http://{{ $service.Hostname }}:{{ $service.Port }}/{{ $service.HealthPath }}
-					{{- end }}
+				{{- range $i, $version := .Versions }}
+					{{ $version.ModuleName }} {
+						{{- range $i, $endpoint := $version.Endpoints }}
+						{{ $endpoint.VersionEndpoint }} {{ $endpoint.HealthEndpoint }}
+						{{- end }}
+					}
 				{{- end }}
 			}
 		}
