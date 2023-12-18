@@ -81,7 +81,7 @@ tidy:
     WORKDIR /src/ee/agent
     DO --pass-args stack+GO_TIDY
 
-generate:
+grpc-generate:
     FROM core+builder-image
     RUN apk add --no-cache protobuf git protobuf-dev && \
         go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 && \
