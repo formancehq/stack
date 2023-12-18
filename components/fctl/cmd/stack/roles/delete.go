@@ -31,9 +31,6 @@ func NewStackDeleteController() *StackDeleteController {
 }
 
 func NewDeleteCommand() *cobra.Command {
-	const (
-		stackNameFlag = "name"
-	)
 	return fctl.NewMembershipCommand("delete <stack-id> <user-id>",
 		fctl.WithConfirmFlag(),
 		fctl.WithShortDescription("Delete user access from a stack within an organization"),
