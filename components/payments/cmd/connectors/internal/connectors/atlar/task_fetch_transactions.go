@@ -226,6 +226,17 @@ func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_model
 		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/btc/subfamily", transaction.Characteristics.ReturnReason.OriginalBankTransactionCode.Subfamily))
 		result = append(result, ComputePaymentMetadata(paymentId, "returnReason/btc/description", transaction.Characteristics.ReturnReason.OriginalBankTransactionCode.Description))
 	}
+	if transaction.Characteristics.VirtualAccount != nil {
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/market", transaction.Characteristics.VirtualAccount.Market))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/rawIdentifier", transaction.Characteristics.VirtualAccount.RawIdentifier))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/bank/id", transaction.Characteristics.VirtualAccount.Bank.ID))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/bank/name", transaction.Characteristics.VirtualAccount.Bank.Name))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/bank/bic", transaction.Characteristics.VirtualAccount.Bank.Bic))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/identifier/holderName", *transaction.Characteristics.VirtualAccount.Identifier.HolderName))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/identifier/market", transaction.Characteristics.VirtualAccount.Identifier.Market))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/identifier/type", transaction.Characteristics.VirtualAccount.Identifier.Type))
+		result = append(result, ComputePaymentMetadata(paymentId, "virtualAccount/identifier/number", transaction.Characteristics.VirtualAccount.Identifier.Number))
+	}
 	result = append(result, ComputePaymentMetadata(paymentId, "reconciliation/status", transaction.Reconciliation.Status))
 	result = append(result, ComputePaymentMetadata(paymentId, "reconciliation/transactableId", transaction.Reconciliation.TransactableID))
 	result = append(result, ComputePaymentMetadata(paymentId, "reconciliation/transactableType", transaction.Reconciliation.TransactableType))

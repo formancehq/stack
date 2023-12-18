@@ -728,8 +728,8 @@ github.com/frankban/quicktest v1.11.3/go.mod h1:wRf/ReqHper53s+kmmSZizM8NamnL3IM
 github.com/frankban/quicktest v1.14.3 h1:FJKSZTDHjyhriyC81FLQ0LY93eSai0ZyR/ZIkd3ZUKE=
 github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
-github.com/get-momo/atlar-v1-go-client v1.1.0 h1:Rd44OM7+O5cIMZfwz6j4tgLxjLJmQ1X0REzO6HRssLs=
-github.com/get-momo/atlar-v1-go-client v1.1.0/go.mod h1:qcLoXEhjTCOeBqAzG2tucpvxGJS2LYNwaU7WnJYnO64=
+github.com/get-momo/atlar-v1-go-client v1.2.0 h1:M/q8+eg5ntslmde4gzky7S7txkhnPXERuWQerMd81FA=
+github.com/get-momo/atlar-v1-go-client v1.2.0/go.mod h1:qcLoXEhjTCOeBqAzG2tucpvxGJS2LYNwaU7WnJYnO64=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/gibson042/canonicaljson-go v1.0.3 h1:EAyF8L74AWabkyUmrvEFHEt/AGFQeD6RfwbAuf0j1bI=
 github.com/gibson042/canonicaljson-go v1.0.3/go.mod h1:DsLpJTThXyGNO+KZlI85C1/KDcImpP67k/RKVjcaEqo=
