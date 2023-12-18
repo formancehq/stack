@@ -7,4 +7,5 @@ rules:
   - stack.formance.com
   resources:
   - stacks
+  - versions
   verbs: ["get", "watch", "list", "delete", "update", "create"]

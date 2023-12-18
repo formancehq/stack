@@ -33,6 +33,9 @@ message Message {
   oneof message {
     StatusChanged statusChanged = 1;
     Pong pong = 2;
+    AddedVersion addedVersion = 3;
+    DeletedVersion deletedVersion = 4;
+    UpdatedVersion updatedVersion = 5;
   }
 }
 
@@ -96,4 +99,18 @@ message AuthConfig {
 message AuthClient {
   bool public = 1;
   string id = 2;
+}
+
+message AddedVersion {
+  string name = 1;
+  map<string, string> versions = 2;
+}
+
+message UpdatedVersion {
+  string name = 1;
+  map<string, string> versions = 2;
+}
+
+message DeletedVersion {
+  string name = 1;
 }
