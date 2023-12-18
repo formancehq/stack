@@ -3,12 +3,13 @@ package grpc
 
 import (
 	"context"
-	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
-	"github.com/pkg/errors"
 	"net"
 	"net/url"
 	"testing"
 	"time"
+
+	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
+	"github.com/pkg/errors"
 
 	"google.golang.org/grpc/metadata"
 

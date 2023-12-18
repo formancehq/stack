@@ -759,8 +759,8 @@ github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
 github.com/gabriel-vasile/mimetype v1.4.2 h1:w5qFW6JKBz9Y393Y4q372O9A7cUSequkh1Q7OhCmWKU=
 github.com/gabriel-vasile/mimetype v1.4.2/go.mod h1:zApsH/mKG4w07erKIaJPFiX0Tsq9BFQgN3qGY5GnNgA=
-github.com/get-momo/atlar-v1-go-client v1.1.0 h1:Rd44OM7+O5cIMZfwz6j4tgLxjLJmQ1X0REzO6HRssLs=
-github.com/get-momo/atlar-v1-go-client v1.1.0/go.mod h1:qcLoXEhjTCOeBqAzG2tucpvxGJS2LYNwaU7WnJYnO64=
+github.com/get-momo/atlar-v1-go-client v1.2.0 h1:M/q8+eg5ntslmde4gzky7S7txkhnPXERuWQerMd81FA=
+github.com/get-momo/atlar-v1-go-client v1.2.0/go.mod h1:qcLoXEhjTCOeBqAzG2tucpvxGJS2LYNwaU7WnJYnO64=
 github.com/getkin/kin-openapi v0.114.0 h1:ar7QiJpDdlR+zSyPjrLf8mNnpoFP/lI90XcywMCFNe8=
 github.com/getkin/kin-openapi v0.114.0/go.mod h1:l5e9PaFUo9fyLJCPGQeXI2ML8c3P8BHOEV2VaAVf/pc=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
