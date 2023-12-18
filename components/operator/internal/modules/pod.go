@@ -149,6 +149,7 @@ func (d *monoPodDeployer) deploy(ctx context.Context, pod pod) error {
 		}
 		d.initContainers = append(d.initContainers, container)
 	}
+	d.annotations = pod.annotations
 
 	return nil
 }

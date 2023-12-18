@@ -22,6 +22,8 @@ spec:
         type: RollingUpdate
     template:
         metadata:
+            annotations:
+                stack.formance.cloud/volumes-hash: 47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: monopod-payments-after-v1-0-0-alpha-6
