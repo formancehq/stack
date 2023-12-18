@@ -167,14 +167,16 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 	}
 }
 
-func (client *client) mergeStack(currentStack *v1beta3.Stack, createStack *v1beta3.Stack) *v1beta3.Stack {
-	createStack.SetResourceVersion(currentStack.GetResourceVersion())
-	createStack.Spec.Services = currentStack.Spec.Services
-	createStack.Spec.Seed = currentStack.Spec.Seed
-	createStack.Spec.Versions = currentStack.Spec.Versions
-	createStack.Spec.DevProperties.Debug = currentStack.Spec.DevProperties.Debug
-	createStack.Spec.DevProperties.Dev = currentStack.Spec.DevProperties.Dev
-	return createStack
+func (client *client) mergeStack(currentStack *v1beta3.Stack, into *v1beta3.Stack) *v1beta3.Stack {
+	into.SetResourceVersion(currentStack.GetResourceVersion())
+	into.Spec.Services = currentStack.Spec.Services
+	into.Spec.Seed = currentStack.Spec.Seed
+	into.Spec.DevProperties.Debug = currentStack.Spec.DevProperties.Debug
+	into.Spec.DevProperties.Dev = currentStack.Spec.DevProperties.Dev
+	if into.Spec.Versions == "" {
+		into.Spec.Versions = currentStack.Spec.Versions
+	}
+	return into
 }
 
 func (client *client) Start(ctx context.Context) error {

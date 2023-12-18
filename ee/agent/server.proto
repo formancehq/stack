@@ -53,6 +53,7 @@ message Stack {
   StargateConfig stargateConfig = 5;
   bool disabled = 6;
   google.protobuf.Timestamp deletedAt = 7;
+  string versions = 8;
 }
 
 enum StackStatus {
