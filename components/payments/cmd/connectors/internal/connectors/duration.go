@@ -10,6 +10,10 @@ type Duration struct {
 	time.Duration `json:"duration"`
 }
 
+func (d *Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.Duration.String())
+}
+
 func (d *Duration) UnmarshalJSON(b []byte) error {
 	var rawValue any
 
