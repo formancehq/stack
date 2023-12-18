@@ -14,12 +14,14 @@ Method | HTTP request | Description
 [**DeleteOrganization**](DefaultApi.md#DeleteOrganization) | **Delete** /organizations/{organizationId} | Delete organization
 [**DeleteRegion**](DefaultApi.md#DeleteRegion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
 [**DeleteStack**](DefaultApi.md#DeleteStack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+[**DeleteStackUserAccess**](DefaultApi.md#DeleteStackUserAccess) | **Delete** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Delete stack user access role within an organization
 [**DeleteUserFromOrganization**](DefaultApi.md#DeleteUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | delete user from organization
 [**DisableStack**](DefaultApi.md#DisableStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
 [**DisableStargate**](DefaultApi.md#DisableStargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
 [**EnableStack**](DefaultApi.md#EnableStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/enable | Enable stack
 [**EnableStargate**](DefaultApi.md#EnableStargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
 [**GetRegion**](DefaultApi.md#GetRegion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
+[**GetRegionVersions**](DefaultApi.md#GetRegionVersions) | **Get** /organizations/{organizationId}/regions/{regionId}/versions | Get region versions
 [**GetServerInfo**](DefaultApi.md#GetServerInfo) | **Get** /_info | Get server info
 [**GetStack**](DefaultApi.md#GetStack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
 [**ListInvitations**](DefaultApi.md#ListInvitations) | **Get** /me/invitations | List invitations of the user
@@ -27,13 +29,15 @@ Method | HTTP request | Description
 [**ListOrganizations**](DefaultApi.md#ListOrganizations) | **Get** /organizations | List organizations of the connected user
 [**ListOrganizationsExpanded**](DefaultApi.md#ListOrganizationsExpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
 [**ListRegions**](DefaultApi.md#ListRegions) | **Get** /organizations/{organizationId}/regions | List regions
+[**ListStackUsersAccesses**](DefaultApi.md#ListStackUsersAccesses) | **Get** /organizations/{organizationId}/stacks/{stackId}/users | List stack users accesses within an organization
 [**ListStacks**](DefaultApi.md#ListStacks) | **Get** /organizations/{organizationId}/stacks | List stacks
 [**ListUsersOfOrganization**](DefaultApi.md#ListUsersOfOrganization) | **Get** /organizations/{organizationId}/users | List users of organization
 [**ReadConnectedUser**](DefaultApi.md#ReadConnectedUser) | **Get** /me | Read user
 [**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
 [**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
-[**UpdateOrganizationUser**](DefaultApi.md#UpdateOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
+[**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
+[**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
 
 
@@ -716,6 +720,78 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
+## DeleteStackUserAccess
+
+> DeleteStackUserAccess(ctx, organizationId, stackId, userId).Execute()
+
+Delete stack user access role within an organization
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
+    userId := "userId_example" // string | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    r, err := apiClient.DefaultApi.DeleteStackUserAccess(context.Background(), organizationId, stackId, userId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteStackUserAccess``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
+**userId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteStackUserAccessRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## DeleteUserFromOrganization
 
 > DeleteUserFromOrganization(ctx, organizationId, userId).Execute()
@@ -1119,6 +1195,77 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**GetRegionResponse**](GetRegionResponse.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetRegionVersions
+
+> GetRegionVersionsResponse GetRegionVersions(ctx, organizationId, regionId).Execute()
+
+Get region versions
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    regionId := "regionId_example" // string | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.GetRegionVersions(context.Background(), organizationId, regionId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.GetRegionVersions``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `GetRegionVersions`: GetRegionVersionsResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.GetRegionVersions`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**regionId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetRegionVersionsRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+[**GetRegionVersionsResponse**](GetRegionVersionsResponse.md)
 
 ### Authorization
 
@@ -1586,6 +1733,77 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
+## ListStackUsersAccesses
+
+> StackUserAccessResponse ListStackUsersAccesses(ctx, organizationId, stackId).Execute()
+
+List stack users accesses within an organization
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.ListStackUsersAccesses(context.Background(), organizationId, stackId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListStackUsersAccesses``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ListStackUsersAccesses`: StackUserAccessResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListStackUsersAccesses`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListStackUsersAccessesRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+[**StackUserAccessResponse**](StackUserAccessResponse.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## ListStacks
 
 > ListStacksResponse ListStacks(ctx, organizationId).All(all).Deleted(deleted).Execute()
@@ -1995,9 +2213,9 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## UpdateOrganizationUser
+## UpsertOrganizationUser
 
-> UpdateOrganizationUser(ctx, organizationId, userId).RequestBody(requestBody).Execute()
+> UpsertOrganizationUser(ctx, organizationId, userId).RequestBody(requestBody).Execute()
 
 Update user role within an organization
 
@@ -2020,9 +2238,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpdateOrganizationUser(context.Background(), organizationId, userId).RequestBody(requestBody).Execute()
+    r, err := apiClient.DefaultApi.UpsertOrganizationUser(context.Background(), organizationId, userId).RequestBody(requestBody).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateOrganizationUser``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertOrganizationUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -2039,11 +2257,85 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiUpdateOrganizationUserRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiUpsertOrganizationUserRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+
+
+ **requestBody** | **[]string** |  | 
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpsertStackUserAccess
+
+> UpsertStackUserAccess(ctx, organizationId, stackId, userId).RequestBody(requestBody).Execute()
+
+Update stack user access role within an organization
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
+    userId := "userId_example" // string | 
+    requestBody := []string{"Property_example"} // []string |  (optional)
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    r, err := apiClient.DefaultApi.UpsertStackUserAccess(context.Background(), organizationId, stackId, userId).RequestBody(requestBody).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertStackUserAccess``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
+**userId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpsertStackUserAccessRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
 
 
  **requestBody** | **[]string** |  | 

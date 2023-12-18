@@ -1,52 +1,52 @@
-# BillingPortalResponse
+# StackUserAccessResponse
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**BillingPortal**](BillingPortal.md) |  | [optional] 
+**Data** | Pointer to [**[]StackUserAccess**](StackUserAccess.md) |  | [optional] 
 
 ## Methods
 
-### NewBillingPortalResponse
+### NewStackUserAccessResponse
 
-`func NewBillingPortalResponse() *BillingPortalResponse`
+`func NewStackUserAccessResponse() *StackUserAccessResponse`
 
-NewBillingPortalResponse instantiates a new BillingPortalResponse object
+NewStackUserAccessResponse instantiates a new StackUserAccessResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewBillingPortalResponseWithDefaults
+### NewStackUserAccessResponseWithDefaults
 
-`func NewBillingPortalResponseWithDefaults() *BillingPortalResponse`
+`func NewStackUserAccessResponseWithDefaults() *StackUserAccessResponse`
 
-NewBillingPortalResponseWithDefaults instantiates a new BillingPortalResponse object
+NewStackUserAccessResponseWithDefaults instantiates a new StackUserAccessResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *BillingPortalResponse) GetData() BillingPortal`
+`func (o *StackUserAccessResponse) GetData() []StackUserAccess`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *BillingPortalResponse) GetDataOk() (*BillingPortal, bool)`
+`func (o *StackUserAccessResponse) GetDataOk() (*[]StackUserAccess, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *BillingPortalResponse) SetData(v BillingPortal)`
+`func (o *StackUserAccessResponse) SetData(v []StackUserAccess)`
 
 SetData sets Data field to given value.
 
 ### HasData
 
-`func (o *BillingPortalResponse) HasData() bool`
+`func (o *StackUserAccessResponse) HasData() bool`
 
 HasData returns a boolean if a field has been set.
 

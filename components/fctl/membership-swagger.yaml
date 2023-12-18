@@ -5,8 +5,8 @@ info:
   version: "0.1.0"
 
 servers:
-- url: http://localhost:8080
-  description: Local server
+  - url: http://localhost:8080
+    description: Local server
 
 paths:
   /_info:
@@ -52,7 +52,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-            
+
   /organizations/expanded:
     get:
       summary: List organizations of the connected user with expanded data
@@ -69,11 +69,11 @@ paths:
       summary: Read organization
       operationId: readOrganization
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         200:
           description: OK
@@ -85,11 +85,11 @@ paths:
       summary: Delete organization
       operationId: deleteOrganization
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         400:
           description: Error
@@ -110,11 +110,11 @@ paths:
       summary: List users of organization
       operationId: listUsersOfOrganization
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         403:
           description: Not Authorized
@@ -130,16 +130,16 @@ paths:
                 $ref: '#/components/schemas/ListUsersResponse'
   /organizations/{organizationId}/users/{userId}:
     parameters:
-    - name: organizationId
-      in: path
-      schema:
-        type: string
-      required: true
-    - name: userId
-      in: path
-      schema:
-        type: string
-      required: true
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: userId
+        in: path
+        schema:
+          type: string
+        required: true
 
     get:
       summary: Read user of organization
@@ -165,7 +165,7 @@ paths:
                 $ref: '#/components/schemas/ReadUserResponse'
     put:
       summary: Update user role within an organization
-      operationId: updateOrganizationUser
+      operationId: upsertOrganizationUser
       requestBody:
         content:
           application/json:
@@ -217,24 +217,24 @@ paths:
       summary: List stacks
       operationId: listStacks
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: all
-        in: query
-        description: Include deleted and disabled stacks
-        schema:
-          type: boolean
-        required: false
-      - name: deleted
-        in: query
-        description: Include deleted stacks
-        deprecated: true
-        schema:
-          type: boolean
-        required: false
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: all
+          in: query
+          description: Include deleted and disabled stacks
+          schema:
+            type: boolean
+          required: false
+        - name: deleted
+          in: query
+          description: Include deleted stacks
+          deprecated: true
+          schema:
+            type: boolean
+          required: false
       responses:
         200:
           description: List of stacks
@@ -246,11 +246,11 @@ paths:
       summary: Create stack
       operationId: createStack
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
       requestBody:
         content:
           application/json:
@@ -280,16 +280,16 @@ paths:
       summary: Find stack
       operationId: getStack
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: stackId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         200:
           description: OK
@@ -313,16 +313,16 @@ paths:
       summary: Delete stack
       operationId: deleteStack
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: stackId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         204:
           description: Stack deleted
@@ -344,21 +344,135 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /organizations/{organizationId}/stacks/{stackId}/users:
+    get:
+      summary: List stack users accesses within an organization
+      operationId: listStackUsersAccesses
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Stack users access roles array
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StackUserAccessResponse'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /organizations/{organizationId}/stacks/{stackId}/users/{userId}:
+    delete:
+      summary: Delete stack user access role within an organization
+      operationId: deleteStackUserAccess
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: userId
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        204:
+          description: Updated user
+    put:
+      summary: Update stack user access role within an organization
+      operationId: upsertStackUserAccess
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: userId
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatableStackUserRole'
+      responses:
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        204:
+          description: Updated user
   /organizations/{organizationId}/stacks/{stackId}/disable:
     put:
       summary: Disable stack
       operationId: disableStack
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: stackId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         204:
           description: Stack disabled
@@ -385,16 +499,16 @@ paths:
       summary: Enable stack
       operationId: enableStack
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: stackId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         204:
           description: Stack enabled
@@ -421,16 +535,16 @@ paths:
       summary: Restore stack
       operationId: restoreStack
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: stackId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         200:
           description: OK
@@ -458,16 +572,16 @@ paths:
                 $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
     parameters:
-    - name: organizationId
-      in: path
-      schema:
-        type: string
-      required: true
-    - name: stackId
-      in: path
-      schema:
-        type: string
-      required: true
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: stackId
+        in: path
+        schema:
+          type: string
+        required: true
     put:
       summary: Enable stargate on a stack
       operationId: enableStargate
@@ -488,16 +602,16 @@ paths:
                 $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/stacks/{stackId}/stargate/disable:
     parameters:
-    - name: organizationId
-      in: path
-      schema:
-        type: string
-      required: true
-    - name: stackId
-      in: path
-      schema:
-        type: string
-      required: true
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: stackId
+        in: path
+        schema:
+          type: string
+        required: true
     put:
       summary: Disable stargate on a stack
       operationId: disableStargate
@@ -521,18 +635,18 @@ paths:
       summary: List invitations of the user
       operationId: listInvitations
       parameters:
-      - in: query
-        name: status
-        required: false
-        description: Status of organizations
-        schema:
-          type: string
-      - in: query
-        name: organization
-        required: false
-        description: Status of organizations
-        schema:
-          type: string
+        - in: query
+          name: status
+          required: false
+          description: Status of organizations
+          schema:
+            type: string
+        - in: query
+          name: organization
+          required: false
+          description: Status of organizations
+          schema:
+            type: string
       responses:
         200:
           description: List of the invitations for the connected user
@@ -545,11 +659,11 @@ paths:
       summary: Accept invitation
       operationId: acceptInvitation
       parameters:
-      - name: invitationId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: invitationId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         204:
           description: Invitation accepted
@@ -576,11 +690,11 @@ paths:
       summary: Decline invitation
       operationId: declineInvitation
       parameters:
-      - name: invitationId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: invitationId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         204:
           description: Invitation declined
@@ -607,17 +721,17 @@ paths:
       summary: List invitations of the organization
       operationId: listOrganizationInvitations
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - in: query
-        name: status
-        required: false
-        description: Status of organizations
-        schema:
-          type: string
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: status
+          required: false
+          description: Status of organizations
+          schema:
+            type: string
       responses:
         200:
           description: List of the invitations for the organization
@@ -641,16 +755,16 @@ paths:
       summary: Create invitation
       operationId: createInvitation
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: email
-        in: query
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: email
+          in: query
+          schema:
+            type: string
+          required: true
       responses:
         201:
           description: Invitation created
@@ -669,16 +783,16 @@ paths:
       summary: Delete invitation
       operationId: deleteInvitation
       parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: invitationId
-        in: path
-        schema:
-          type: string
-        required: true
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: invitationId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         204:
           description: Invitation deleted
@@ -702,11 +816,11 @@ paths:
                 $ref: '#/components/schemas/Error'
   /organizations/{organizationId}/regions:
     parameters:
-    - name: organizationId
-      in: path
-      schema:
-        type: string
-      required: true
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
 
     get:
       summary: List regions
@@ -765,16 +879,16 @@ paths:
                 $ref: '#/components/schemas/CreatedPrivateRegionResponse'
   /organizations/{organizationId}/regions/{regionId}:
     parameters:
-    - name: organizationId
-      in: path
-      schema:
-        type: string
-      required: true
-    - name: regionId
-      in: path
-      schema:
-        type: string
-      required: true
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: regionId
+        in: path
+        schema:
+          type: string
+        required: true
     get:
       summary: Get region
       operationId: getRegion
@@ -821,6 +935,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /organizations/{organizationId}/regions/{regionId}/versions:
+    parameters:
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: regionId
+        in: path
+        schema:
+          type: string
+        required: true
+    get:
+      summary: Get region versions
+      operationId: getRegionVersions
+      responses:
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        200:
+          description: Get a specific region
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRegionVersionsResponse'
+
   /me:
     get:
       summary: Read user
@@ -833,7 +983,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReadUserResponse'
 security:
-- oauth2: []
+  - oauth2: []
 
 components:
   securitySchemes:
@@ -853,95 +1003,95 @@ components:
         name:
           type: string
       required:
-      - name
+        - name
     CreatedPrivateRegionResponse:
       properties:
         data:
           $ref: '#/components/schemas/PrivateRegion'
       required:
-      - data
+        - data
     PrivateRegion:
       allOf:
-      - $ref: '#/components/schemas/Region'
-      - type: object
-        properties:
-          organizationID:
-            type: string
-          creatorID:
-            type: string
-          secret:
-            type: object
-            properties:
-              lastDigits:
-                type: string
-              clear:
-                type: string
-            required:
-            - lastDigits
-        required:
-        - organizationID
-        - creatorID
+        - $ref: '#/components/schemas/Region'
+        - type: object
+          properties:
+            organizationID:
+              type: string
+            creatorID:
+              type: string
+            secret:
+              type: object
+              properties:
+                lastDigits:
+                  type: string
+                clear:
+                  type: string
+              required:
+                - lastDigits
+          required:
+            - organizationID
+            - creatorID
     PublicRegion:
       allOf:
-      - $ref: '#/components/schemas/Region'
-      - type: object
-        properties:
-          production:
-            type: boolean
-        required:
-        - production
+        - $ref: '#/components/schemas/Region'
+        - type: object
+          properties:
+            production:
+              type: boolean
+          required:
+            - production
     AnyRegion:
       allOf:
-      - $ref: '#/components/schemas/Region'
-      - type: object
-        properties:
-          clientID:
-            type: string
-          organizationID:
-            type: string
-          creator:
-            $ref: '#/components/schemas/User'
-          production:
-            type: boolean
-          public:
-            type: boolean
-          version:
-            type: string
-        required:
-        - public
+        - $ref: '#/components/schemas/Region'
+        - type: object
+          properties:
+            clientID:
+              type: string
+            organizationID:
+              type: string
+            creator:
+              $ref: '#/components/schemas/User'
+            production:
+              type: boolean
+            public:
+              type: boolean
+            version:
+              type: string
+          required:
+            - public
     OrganizationData:
       type: object
       required:
-      - name
+        - name
       properties:
         name:
           type: string
           description: Organization name
     Organization:
       allOf:
-      - $ref: '#/components/schemas/OrganizationData'
-      - type: object
-        required:
-        - id
-        - ownerId
-        properties:
-          id:
-            type: string
-            description: Organization ID
-          ownerId:
-            type: string
-            description: Owner ID
-          availableStacks:
-            type: integer
-            description: Number of available stacks
-          availableSandboxes:
-            type: integer
-            description: Number of available sandboxes
+        - $ref: '#/components/schemas/OrganizationData'
+        - type: object
+          required:
+            - id
+            - ownerId
+          properties:
+            id:
+              type: string
+              description: Organization ID
+            ownerId:
+              type: string
+              description: Owner ID
+            availableStacks:
+              type: integer
+              description: Number of available stacks
+            availableSandboxes:
+              type: integer
+              description: Number of available sandboxes
     StackData:
       type: object
       required:
-      - name
-      - metadata
+        - name
+        - metadata
       properties:
         name:
           type: string
@@ -963,25 +1113,25 @@ components:
         status:
           type: string
           enum:
-          - UNKNOWN
-          - PROGRESSING
-          - READY
-          - DISABLED
-          - DELETED
+            - UNKNOWN
+            - PROGRESSING
+            - READY
+            - DISABLED
+            - DELETED
         state:
           type: string
           enum:
-          - ACTIVE
-          - DISABLED
-          - DELETED
+            - ACTIVE
+            - DISABLED
+            - DELETED
         expectedStatus:
           type: string
           enum:
-          - UNKNOWN
-          - PROGRESSING
-          - READY
-          - DISABLED
-          - DELETED
+            - UNKNOWN
+            - PROGRESSING
+            - READY
+            - DISABLED
+            - DELETED
         lastStateUpdate:
           type: string
           format: date-time
@@ -991,95 +1141,85 @@ components:
         lastStatusUpdate:
           type: string
           format: date-time
-    BillingPortal:
-      type: object
-      required:
-      - url
-      properties:
-        url:
-          type: string
-          description: Billing portal URL
-    BillingSetup:
-      type: object
-      required:
-      - url
-      properties:
-        url:
-          type: string
-          description: Billing portal URL
     Stack:
       allOf:
-      - $ref: '#/components/schemas/StackData'
-      - $ref: '#/components/schemas/StackLifeCycle'
-      - type: object
-        required:
-        - id
-        - organizationId
-        - uri
-        - regionID
-        - stargateEnabled
-        properties:
-          id:
-            type: string
-            description: Stack ID
-          organizationId:
-            type: string
-            description: Organization ID
-          uri:
-            type: string
-            description: Base stack uri
-          regionID:
-            type: string
-            description: The region where the stack is installed
-          stargateEnabled:
-            type: boolean
-          createdAt:
-            type: string
-            format: date-time
-          deletedAt:
-            type: string
-            format: date-time
-          disabledAt:
-            type: string
-            format: date-time
+        - $ref: '#/components/schemas/StackData'
+        - $ref: '#/components/schemas/StackLifeCycle'
+        - type: object
+          required:
+            - id
+            - organizationId
+            - uri
+            - regionID
+            - stargateEnabled
+          properties:
+            id:
+              type: string
+              description: Stack ID
+            organizationId:
+              type: string
+              description: Organization ID
+            uri:
+              type: string
+              description: Base stack uri
+            regionID:
+              type: string
+              description: The region where the stack is installed
+            stargateEnabled:
+              type: boolean
+            createdAt:
+              type: string
+              format: date-time
+            deletedAt:
+              type: string
+              format: date-time
+            disabledAt:
+              type: string
+              format: date-time
     UserData:
       allOf:
-      - type: object
-        properties:
-          email:
-            type: string
-        required:
-        - email
+        - type: object
+          properties:
+            email:
+              type: string
+          required:
+            - email
     UpdatableUserRole:
       type: array
       items:
         allOf:
-        - type: string
-          enum: [ADMIN]
+          - type: string
+            enum: [ADMIN, GUEST]
+    UpdatableStackUserRole:
+      type: array
+      items:
+        allOf:
+          - type: string
+            enum: [ADMIN, GUEST]
     Roles:
       type: array
       description: User roles
       items:
         allOf:
-        - type: string
-          enum:
-          - ADMIN
-          - GUEST
+          - type: string
+            enum:
+              - ADMIN
+              - GUEST
     User:
       allOf:
-      - $ref: '#/components/schemas/UserData'
-      - type: object
-        properties:
-          roles:
-            $ref: '#/components/schemas/Roles'
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            type: string
-            description: User ID
-          
+        - $ref: '#/components/schemas/UserData'
+        - type: object
+          properties:
+            roles:
+              $ref: '#/components/schemas/Roles'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              description: User ID
+
     OrganizationArray:
       type: array
       items:
@@ -1092,6 +1232,32 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/User'
+    StackUserAccess:
+      allOf:
+        - type: object
+          properties:
+            roles:
+              $ref: '#/components/schemas/UpdatableStackUserRole'
+        - type: object
+          required:
+            - stackId
+            - userId
+          properties:
+            stackId:
+              type: string
+              description: Stack ID
+            userId:
+              type: string
+              description: User ID
+    StackUserAccessResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/StackUserAccessArray'
+    StackUserAccessArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/StackUserAccess'
     ListOrganizationResponse:
       type: object
       properties:
@@ -1111,16 +1277,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/StackArray'
-    BillingPortalResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BillingPortal'
-    BillingSetupResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BillingSetup'
     ListUsersResponse:
       type: object
       properties:
@@ -1128,13 +1284,13 @@ components:
           $ref: '#/components/schemas/UserArray'
     CreateStackRequest:
       allOf:
-      - $ref: '#/components/schemas/StackData'
-      - type: object
-        properties:
-          regionID:
-            type: string
-        required:
-        - regionID
+        - $ref: '#/components/schemas/StackData'
+        - type: object
+          properties:
+            regionID:
+              type: string
+          required:
+            - regionID
     CreateStackResponse:
       type: object
       properties:
@@ -1167,7 +1323,7 @@ components:
         errorMessage:
           type: string
       required:
-      - errorCode
+        - errorCode
     Invitation:
       type: object
       properties:
@@ -1180,9 +1336,9 @@ components:
         status:
           type: string
           enum:
-          - pending
-          - accepted
-          - rejected
+            - pending
+            - accepted
+            - rejected
         creationDate:
           type: string
           format: date-time
@@ -1190,19 +1346,19 @@ components:
           type: string
           format: date-time
       required:
-      - creationDate
-      - status
-      - userEmail
-      - organizationId
-      - id
+        - creationDate
+        - status
+        - userEmail
+        - organizationId
+        - id
     Region:
       type: object
       required:
-      - id
-      - baseUrl
-      - active
-      - createdAt
-      - name
+        - id
+        - baseUrl
+        - active
+        - createdAt
+        - name
       properties:
         id:
           type: string
@@ -1225,15 +1381,15 @@ components:
           type: array
           items:
             allOf:
-            - $ref: '#/components/schemas/Organization'
-            - type: object
-              properties:
-                totalStacks:
-                  type: integer
-                totalUsers:
-                  type: integer
-                owner:
-                  $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/Organization'
+              - type: object
+                properties:
+                  totalStacks:
+                    type: integer
+                  totalUsers:
+                    type: integer
+                  owner:
+                    $ref: '#/components/schemas/User'
     ListRegionsResponse:
       type: object
       properties:
@@ -1242,18 +1398,43 @@ components:
           items:
             $ref: '#/components/schemas/AnyRegion'
       required:
-      - data
+        - data
+
     GetRegionResponse:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/AnyRegion'
       required:
-      - data
+        - data
+
     ServerInfo:
       type: object
       required:
-      - version
+        - version
       properties:
         version:
           type: string
+
+    Version:
+      type: object
+      required:
+        - name
+        - versions
+      properties:
+        name:
+          type: string
+        versions:
+          type: object
+          additionalProperties:
+            type: string
+
+    GetRegionVersionsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+      required:
+        - data
