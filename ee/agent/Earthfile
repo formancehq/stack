@@ -80,3 +80,14 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/ee/agent
     DO --pass-args stack+GO_TIDY
+
+generate:
+    FROM core+builder-image
+    RUN apk add --no-cache protobuf git protobuf-dev && \
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 && \
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+    WORKDIR /src
+    RUN mkdir generated
+    COPY server.proto .
+    RUN protoc --go_out=generated --go_opt=paths=source_relative --go-grpc_out=generated --go-grpc_opt=paths=source_relative server.proto
+    SAVE ARTIFACT generated AS LOCAL internal/grpc/generated
