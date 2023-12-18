@@ -1100,6 +1100,9 @@ components:
           type: object
           additionalProperties:
             type: string
+        version:
+          type: string
+          description: Supported only with agent version >= v0.7.0
     StackLifeCycle:
       type: object
       required:

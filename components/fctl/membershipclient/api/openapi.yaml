@@ -1176,6 +1176,9 @@ components:
           additionalProperties:
             type: string
           type: object
+        version:
+          description: Supported only with agent version >= v0.7.0
+          type: string
       required:
       - metadata
       - name
