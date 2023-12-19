@@ -90,7 +90,6 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'build-images') || github.ref == 'refs/heads/main'
     needs:
       - Extract
-      - Dirty
     strategy:
       matrix:
         components: ${{ fromJson(needs.Extract.outputs.components) }}
