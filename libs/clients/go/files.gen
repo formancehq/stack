@@ -148,6 +148,7 @@ pkg/models/operations/retrytransferinitiation.go
 pkg/models/operations/udpatetransferinitiationstatus.go
 pkg/models/operations/uninstallconnector.go
 pkg/models/operations/uninstallconnectorv1.go
+pkg/models/operations/updateconnectorconfigv1.go
 pkg/models/operations/updatemetadata.go
 pkg/models/operations/createpolicy.go
 pkg/models/operations/deletepolicy.go
@@ -735,6 +736,8 @@ docs/models/operations/uninstallconnectorrequest.md
 docs/models/operations/uninstallconnectorresponse.md
 docs/models/operations/uninstallconnectorv1request.md
 docs/models/operations/uninstallconnectorv1response.md
+docs/models/operations/updateconnectorconfigv1request.md
+docs/models/operations/updateconnectorconfigv1response.md
 docs/models/operations/updatemetadatarequest.md
 docs/models/operations/updatemetadataresponse.md
 docs/models/operations/createpolicyresponse.md

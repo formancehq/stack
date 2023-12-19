@@ -189,6 +189,7 @@ func main() {
 * [UdpateTransferInitiationStatus](docs/sdks/payments/README.md#udpatetransferinitiationstatus) - Update the status of a transfer initiation
 * [~~UninstallConnector~~](docs/sdks/payments/README.md#uninstallconnector) - Uninstall a connector :warning: **Deprecated**
 * [UninstallConnectorV1](docs/sdks/payments/README.md#uninstallconnectorv1) - Uninstall a connector
+* [UpdateConnectorConfigV1](docs/sdks/payments/README.md#updateconnectorconfigv1) - Update the config of a connector
 * [UpdateMetadata](docs/sdks/payments/README.md#updatemetadata) - Update metadata
 
 ### [Reconciliation](docs/sdks/reconciliation/README.md)
