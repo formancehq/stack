@@ -64,6 +64,12 @@ func IdentifiersToMetadata(identifiers []*atlar_models.AccountIdentifier) metada
 			fmt.Sprintf("identifier/%s/%s", *i.Market, *i.Type),
 			*i.Number,
 		))
+		if *i.Type == "IBAN" {
+			result = result.Merge(ComputeAccountMetadata(
+				fmt.Sprintf("identifier/%s", *i.Type),
+				*i.Number,
+			))
+		}
 	}
 	return result
 }
