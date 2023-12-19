@@ -12,7 +12,7 @@ spec:
       clientConfig:
         service:
           name: webhook-service
-          namespace: formance-operator
+          namespace: formance-system
           path: /convert
       conversionReviewVersions:
       - v1
