@@ -83,6 +83,7 @@ func connectorRouter[Config models.ConnectorConfigObject](
 	addRoute(r, provider, "", http.MethodPost, install(b))
 	addRoute(r, provider, "/{connectorID}", http.MethodDelete, uninstall(b, V1))
 	addRoute(r, provider, "/{connectorID}/config", http.MethodGet, readConfig(b, V1))
+	addRoute(r, provider, "/{connectorID}/config", http.MethodPost, updateConfig(b, V1))
 	addRoute(r, provider, "/{connectorID}/reset", http.MethodPost, reset(b, V1))
 	addRoute(r, provider, "/{connectorID}/tasks", http.MethodGet, listTasks(b, V1))
 	addRoute(r, provider, "/{connectorID}/tasks/{taskID}", http.MethodGet, readTask(b, V1))

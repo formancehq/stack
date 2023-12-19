@@ -35,6 +35,17 @@ func newConnector(logger logging.Logger, cfg Config) *Connector {
 	}
 }
 
+func (c *Connector) UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error {
+	cfg, ok := config.(Config)
+	if !ok {
+		return connectors.ErrInvalidConfig
+	}
+
+	c.cfg = cfg
+
+	return nil
+}
+
 func (c *Connector) Install(ctx task.ConnectorContext) error {
 	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name: "Main task to periodically fetch accounts and transactions",

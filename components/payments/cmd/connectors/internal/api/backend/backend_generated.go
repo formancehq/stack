@@ -295,6 +295,20 @@ func (mr *MockManagerMockRecorder[ConnectorConfig]) Uninstall(ctx, connectorID i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Uninstall", reflect.TypeOf((*MockManager[ConnectorConfig])(nil).Uninstall), ctx, connectorID)
 }
 
+// UpdateConfig mocks base method.
+func (m *MockManager[ConnectorConfig]) UpdateConfig(ctx context.Context, connectorID models.ConnectorID, config ConnectorConfig) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateConfig", ctx, connectorID, config)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateConfig indicates an expected call of UpdateConfig.
+func (mr *MockManagerMockRecorder[ConnectorConfig]) UpdateConfig(ctx, connectorID, config interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateConfig", reflect.TypeOf((*MockManager[ConnectorConfig])(nil).UpdateConfig), ctx, connectorID, config)
+}
+
 // MockServiceBackend is a mock of ServiceBackend interface.
 type MockServiceBackend struct {
 	ctrl     *gomock.Controller

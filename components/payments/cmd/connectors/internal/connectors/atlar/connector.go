@@ -25,6 +25,17 @@ type Connector struct {
 	cfg    Config
 }
 
+func (c *Connector) UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error {
+	cfg, ok := config.(Config)
+	if !ok {
+		return connectors.ErrInvalidConfig
+	}
+
+	c.cfg = cfg
+
+	return nil
+}
+
 func (c *Connector) Install(ctx task.ConnectorContext) error {
 	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name: "Main task to periodically fetch transactions",

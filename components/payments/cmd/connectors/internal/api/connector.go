@@ -22,6 +22,40 @@ const (
 	V1 APIVersion = iota
 )
 
+func updateConfig[Config models.ConnectorConfigObject](
+	b backend.ManagerBackend[Config],
+	apiVersion APIVersion,
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		connectorID, err := getConnectorID(b, r, apiVersion)
+		if err != nil {
+			api.BadRequest(w, ErrInvalidID, err)
+			return
+		}
+
+		if connectorNotInstalled(b, connectorID, w, r) {
+			return
+		}
+
+		var config Config
+		if r.ContentLength > 0 {
+			err := json.NewDecoder(r.Body).Decode(&config)
+			if err != nil {
+				api.BadRequest(w, ErrMissingOrInvalidBody, err)
+				return
+			}
+		}
+
+		err = b.GetManager().UpdateConfig(r.Context(), connectorID, config)
+		if err != nil {
+			handleConnectorsManagerErrors(w, r, err)
+			return
+		}
+
+		api.NoContent(w)
+	}
+}
+
 func readConfig[Config models.ConnectorConfigObject](
 	b backend.ManagerBackend[Config],
 	apiVersion APIVersion,

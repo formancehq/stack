@@ -37,6 +37,17 @@ func newConnector(logger logging.Logger, cfg Config, fs fs) *Connector {
 	}
 }
 
+func (c *Connector) UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error {
+	cfg, ok := config.(Config)
+	if !ok {
+		return connectors.ErrInvalidConfig
+	}
+
+	c.cfg = cfg
+
+	return nil
+}
+
 // Install executes post-installation steps to read and generate files.
 // It is called after the connector is installed.
 func (c *Connector) Install(ctx task.ConnectorContext) error {

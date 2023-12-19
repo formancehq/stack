@@ -1,4 +1,4 @@
-package connectors
+package configs
 
 import (
 	"fmt"
@@ -13,15 +13,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	connectorsAvailable = []string{internal.StripeConnector} //internal.ModulrConnector, internal.BankingCircleConnector, internal.CurrencyCloudConnector, internal.WiseConnector}
-)
-
 type PaymentsGetConfigStore struct {
 	ConnectorConfig *shared.ConnectorConfigResponse `json:"connectorConfig"`
 	Provider        string                          `json:"provider"`
 	ConnectorID     string                          `json:"connectorId"`
 }
+
 type PaymentsGetConfigController struct {
 	PaymentsVersion versions.Version
 
@@ -54,10 +51,9 @@ func NewGetConfigCommand() *cobra.Command {
 	return fctl.NewCommand("get-config",
 		fctl.WithAliases("getconfig", "getconf", "gc", "get", "g"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithValidArgs(connectorsAvailable...),
 		fctl.WithStringFlag("provider", "", "Provider name"),
 		fctl.WithStringFlag("connector-id", "", "Connector ID"),
-		fctl.WithShortDescription(fmt.Sprintf("Read a connector config (Connectors available: %s)", connectorsAvailable)),
+		fctl.WithShortDescription(fmt.Sprintf("Read a connector config (Connectors available: %v)", internal.AllConnectors)),
 		fctl.WithController[*PaymentsGetConfigStore](c),
 	)
 }

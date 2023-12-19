@@ -25,6 +25,17 @@ type Connector struct {
 	cfg    Config
 }
 
+func (c *Connector) UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error {
+	cfg, ok := config.(Config)
+	if !ok {
+		return connectors.ErrInvalidConfig
+	}
+
+	c.cfg = cfg
+
+	return nil
+}
+
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
 	return connectors.ErrNotImplemented
 }

@@ -425,6 +425,20 @@ paths:
         '200':
           $ref: '#/components/responses/ConnectorConfig'
   /connectors/{connector}/{connectorId}/config:
+    post:
+      summary: Update the config of a connector
+      operationId: updateConnectorConfigV1
+      tags:
+        - Payments
+      description: Update connector config
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+        - $ref: '#/components/parameters/ConnectorID'
+      requestBody:
+        $ref: '#/components/requestBodies/ConnectorConfig'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
     get:
       summary: Read the config of a connector
       operationId: readConnectorConfigV1
