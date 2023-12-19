@@ -164,7 +164,9 @@ pr:
     BUILD --pass-args +tests-integration
 
 deploy-staging:
-    LOCALLY
+    FROM core+deployer-image
+    COPY ./.kubeconfig /root/.kube/config
+    RUN kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
     RUN kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
     RUN kubectl patch Versions default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
     RUN kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
@@ -175,7 +177,6 @@ deploy-staging:
     RUN kubectl patch Versions default -p "{\"spec\":{\"stargate\": \"${GITHUB_SHA}\"}}" --type=merge
     RUN kubectl patch Versions default -p "{\"spec\":{\"wallets\": \"${GITHUB_SHA}\"}}" --type=merge
     RUN kubectl patch Versions default -p "{\"spec\":{\"webhooks\": \"${GITHUB_SHA}\"}}" --type=merge
-
 
 INCLUDE_GO_LIBS:
     FUNCTION
