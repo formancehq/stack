@@ -8,29 +8,17 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func balanceTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
-	ingester ingestion.Ingester, resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry) error {
+	ingester ingestion.Ingester, resolver task.StateResolver) error {
 	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, ingester ingestion.Ingester,
-		resolver task.StateResolver, metricsRegistry metrics.MetricsRegistry,
+		resolver task.StateResolver,
 	) error {
 		logger.Infof("Create new balances trigger for account %s", account)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs)
-		}()
 
 		stripeAccount := account
 		if account == rootAccountReference {
@@ -40,7 +28,6 @@ func balanceTask(account string, client *client.DefaultClient) func(ctx context.
 
 		balances, err := client.ForAccount(stripeAccount).Balance(ctx)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
 
@@ -61,10 +48,8 @@ func balanceTask(account string, client *client.DefaultClient) func(ctx context.
 		}
 
 		if err := ingester.IngestBalances(ctx, batch, false); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances.Available)), balancesAttrs)
 
 		return nil
 	}

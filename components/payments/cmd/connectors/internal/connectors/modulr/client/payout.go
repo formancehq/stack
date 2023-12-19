@@ -2,9 +2,13 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"math/big"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type PayoutRequest struct {
@@ -28,7 +32,11 @@ type PayoutResponse struct {
 	Message           string `json:"message"`
 }
 
-func (c *Client) InitiatePayout(payoutRequest *PayoutRequest) (*PayoutResponse, error) {
+func (c *Client) InitiatePayout(ctx context.Context, payoutRequest *PayoutRequest) (*PayoutResponse, error) {
+	f := connectors.ClientMetrics(ctx, "modulr", "initiate_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	body, err := json.Marshal(payoutRequest)
 	if err != nil {
 		return nil, err
@@ -52,7 +60,11 @@ func (c *Client) InitiatePayout(payoutRequest *PayoutRequest) (*PayoutResponse, 
 	return &res, nil
 }
 
-func (c *Client) GetPayout(payoutID string) (*PayoutResponse, error) {
+func (c *Client) GetPayout(ctx context.Context, payoutID string) (*PayoutResponse, error) {
+	f := connectors.ClientMetrics(ctx, "modulr", "get_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	resp, err := c.httpClient.Get(c.buildEndpoint("payments?id=%s", payoutID))
 	if err != nil {
 		return nil, err

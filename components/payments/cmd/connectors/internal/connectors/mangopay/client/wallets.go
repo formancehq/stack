@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type wallet struct {
@@ -19,6 +22,10 @@ type wallet struct {
 }
 
 func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wallet, error) {
+	f := connectors.ClientMetrics(ctx, "mangopay", "list_wallets")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/v2.01/%s/users/%s/wallets", c.endpoint, c.clientID, userID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {

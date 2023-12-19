@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type accountsResponse struct {
@@ -20,6 +23,10 @@ type Account struct {
 }
 
 func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Account, error) {
+	f := connectors.ClientMetrics(ctx, "moneycorp", "list_accounts")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/accounts", c.endpoint)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {

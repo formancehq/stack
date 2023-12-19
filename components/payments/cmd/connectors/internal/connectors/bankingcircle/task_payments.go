@@ -10,19 +10,11 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	initiateTransferAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_transfer"))...)
-	initiatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_payout"))...)
 )
 
 func taskInitiatePayment(logger logging.Logger, bankingCircleClient *client.Client, transferID string) task.Task {
@@ -32,7 +24,6 @@ func taskInitiatePayment(logger logging.Logger, bankingCircleClient *client.Clie
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info("initiate payment for transfer-initiation %s", transferID)
 
@@ -42,13 +33,11 @@ func taskInitiatePayment(logger logging.Logger, bankingCircleClient *client.Clie
 			return err
 		}
 
-		attrs := metric.WithAttributes(connectorAttrs...)
 		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
 				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
@@ -60,17 +49,7 @@ func taskInitiatePayment(logger logging.Logger, bankingCircleClient *client.Clie
 			return err
 		}
 
-		attrs = initiateTransferAttrs
-		if transfer.Type == models.TransferInitiationTypePayout {
-			attrs = initiatePayoutAttrs
-		}
-
 		logger.Info("initiate payment between", transfer.SourceAccountID, " and %s", transfer.DestinationAccountID)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
 
 		if transfer.SourceAccount == nil {
 			err = errors.New("no source account provided")
@@ -184,7 +163,6 @@ func taskInitiatePayment(logger logging.Logger, bankingCircleClient *client.Clie
 			connectorPaymentID = resp.PaymentID
 			paymentType = models.PaymentTypePayOut
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
 
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
@@ -222,11 +200,6 @@ func taskInitiatePayment(logger logging.Logger, bankingCircleClient *client.Clie
 	}
 }
 
-var (
-	updateTransferAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_transfer"))...)
-	updatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_payout"))...)
-)
-
 func taskUpdatePaymentStatus(
 	logger logging.Logger,
 	bankingCircleClient *client.Client,
@@ -239,7 +212,6 @@ func taskUpdatePaymentStatus(
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
@@ -248,22 +220,6 @@ func taskUpdatePaymentStatus(
 			return err
 		}
 		logger.Info("attempt: ", attempt, " fetching status of ", pID)
-
-		attrs := updateTransferAttrs
-		if transfer.Type == models.TransferInitiationTypePayout {
-			attrs = updatePayoutAttrs
-		}
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
-
-		defer func() {
-			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-			}
-		}()
 
 		var status string
 		switch transfer.Type {

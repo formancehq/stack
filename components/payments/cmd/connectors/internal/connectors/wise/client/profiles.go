@@ -1,10 +1,14 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Profile struct {
@@ -12,7 +16,11 @@ type Profile struct {
 	Type string `json:"type"`
 }
 
-func (w *Client) GetProfiles() ([]Profile, error) {
+func (w *Client) GetProfiles(ctx context.Context) ([]Profile, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "list_profiles")
+	now := time.Now()
+	defer f(ctx, now)
+
 	var profiles []Profile
 
 	res, err := w.httpClient.Get(w.endpoint("v1/profiles"))

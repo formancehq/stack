@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 //nolint:tagliatelle // allow different styled tags in client
@@ -24,6 +27,10 @@ func (c *Client) GetTransactions(ctx context.Context, page int) ([]Transaction, 
 	if page < 1 {
 		return nil, 0, fmt.Errorf("page must be greater than 0")
 	}
+
+	f := connectors.ClientMetrics(ctx, "currencycloud", "list_transactions")
+	now := time.Now()
+	defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
 		c.buildEndpoint("v2/transactions/find?page=%d", page), http.NoBody)

@@ -21,14 +21,6 @@ import (
 	"github.com/get-momo/atlar-v1-go-client/client/accounts"
 	"github.com/get-momo/atlar-v1-go-client/client/counterparties"
 	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	accountsBalancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts_and_balances"))...)
-	accountsAttrs         = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
-	balancesAttrs         = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
@@ -41,11 +33,6 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		ingester ingestion.Ingester,
 		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsBalancesAttrs)
-		}()
-
 		// Pagination works by cursor token.
 		accountsParams := accounts.GetV1AccountsParams{
 			Limit: pointer.For(int64(config.ApiConfig.PageSize)),
@@ -59,7 +46,6 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 			accountsParams.Limit = &limit
 			pagedAccounts, err := client.Accounts.GetV1Accounts(&accountsParams)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
 			}
 
@@ -87,7 +73,6 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 			externalAccountsParams.Limit = &limit
 			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&externalAccountsParams)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
 			}
 
@@ -191,16 +176,12 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs)
 
 	if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), balancesAttrs)
 
 	return nil
 }
@@ -236,10 +217,8 @@ func ingestExternalAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs)
 
 	return nil
 }

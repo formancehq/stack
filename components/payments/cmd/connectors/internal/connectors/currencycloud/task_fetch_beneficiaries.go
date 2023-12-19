@@ -3,20 +3,12 @@ package currencycloud
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	beneficiariesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "beneficiaries"))...)
 )
 
 func taskFetchBeneficiaries(
@@ -28,14 +20,8 @@ func taskFetchBeneficiaries(
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info(taskFetchBeneficiaries)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), beneficiariesAttrs)
-		}()
 
 		page := 1
 		for {
@@ -45,17 +31,14 @@ func taskFetchBeneficiaries(
 
 			pagedBeneficiaries, nextPage, err := client.GetBeneficiaries(ctx, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 				return err
 			}
 
 			page = nextPage
 
 			if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedBeneficiaries)), beneficiariesAttrs)
 		}
 
 		return nil

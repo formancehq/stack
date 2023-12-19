@@ -4,20 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
 func taskFetchAccounts(
@@ -29,14 +21,8 @@ func taskFetchAccounts(
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info(taskNameFetchAccounts)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs)
-		}()
 
 		page := 1
 		for {
@@ -46,17 +32,14 @@ func taskFetchAccounts(
 
 			pagedAccounts, nextPage, err := client.GetAccounts(ctx, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
 
 			page = nextPage
 
 			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedAccounts)), accountsAttrs)
 		}
 
 		taskTransactions, err := models.EncodeTaskDescriptor(TaskDescriptor{

@@ -1,14 +1,22 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
-func (c *Client) authenticate() (string, error) {
+func (c *Client) authenticate(ctx context.Context) (string, error) {
+	f := connectors.ClientMetrics(ctx, "currencycloud", "authenticate")
+	now := time.Now()
+	defer f(ctx, now)
+
 	form := make(url.Values)
 
 	form.Add("login_id", c.loginID)

@@ -5,7 +5,6 @@ import (
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
-	"go.opentelemetry.io/otel/attribute"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -14,12 +13,6 @@ import (
 )
 
 const Name = models.ConnectorProviderWise
-
-var (
-	connectorAttrs = []attribute.KeyValue{
-		attribute.String("connector", Name.String()),
-	}
-)
 
 type Connector struct {
 	logger logging.Logger

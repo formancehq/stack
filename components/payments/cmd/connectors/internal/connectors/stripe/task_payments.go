@@ -9,20 +9,12 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	initiateTransferAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_transfer"))...)
-	initiatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_payout"))...)
 )
 
 func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) task.Task {
@@ -33,7 +25,6 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info("initiate payment for transfer-initiation %s", transferID)
 
@@ -43,13 +34,11 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 			return err
 		}
 
-		attrs := metric.WithAttributes(connectorAttrs...)
 		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
 				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
@@ -61,17 +50,7 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 			return err
 		}
 
-		attrs = initiateTransferAttrs
-		if transfer.Type == models.TransferInitiationTypePayout {
-			attrs = initiatePayoutAttrs
-		}
-
 		logger.Info("initiate payment between", transfer.SourceAccountID, " and %s", transfer.DestinationAccountID)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
 
 		if transfer.SourceAccount != nil {
 			if transfer.SourceAccount.Type == models.AccountTypeExternal {
@@ -132,7 +111,6 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 			connectorPaymentID = resp.BalanceTransaction.ID
 			paymentType = models.PaymentTypePayOut
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
 
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
@@ -170,11 +148,6 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 	}
 }
 
-var (
-	updateTransferAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_transfer"))...)
-	updatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_payout"))...)
-)
-
 func updatePaymentStatusTask(
 	transferID string,
 	pID string,
@@ -187,7 +160,6 @@ func updatePaymentStatusTask(
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
@@ -196,22 +168,6 @@ func updatePaymentStatusTask(
 			return err
 		}
 		logger.Info("attempt: ", attempt, " fetching status of ", paymentID)
-
-		attrs := updateTransferAttrs
-		if transfer.Type == models.TransferInitiationTypePayout {
-			attrs = updatePayoutAttrs
-		}
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
-
-		defer func() {
-			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-			}
-		}()
 
 		var status stripe.PayoutFailureCode
 		var resultMessage string

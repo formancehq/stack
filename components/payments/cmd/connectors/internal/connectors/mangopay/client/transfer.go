@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Funds struct {
@@ -41,6 +44,10 @@ type TransferResponse struct {
 }
 
 func (c *Client) InitiateWalletTransfer(ctx context.Context, transferRequest *TransferRequest) (*TransferResponse, error) {
+	f := connectors.ClientMetrics(ctx, "mangopay", "initiate_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/v2.01/%s/transfers", c.endpoint, c.clientID)
 
 	body, err := json.Marshal(transferRequest)
@@ -79,6 +86,10 @@ func (c *Client) InitiateWalletTransfer(ctx context.Context, transferRequest *Tr
 }
 
 func (c *Client) GetWalletTransfer(ctx context.Context, transferID string) (*TransferResponse, error) {
+	f := connectors.ClientMetrics(ctx, "mangopay", "get_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/v2.01/%s/transfers/%s", c.endpoint, c.clientID, transferID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {

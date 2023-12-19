@@ -10,7 +10,6 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
@@ -19,12 +18,6 @@ import (
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/transactions"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func FetchTransactionsTask(config Config, client *atlar_client.Rest) task.Task {
@@ -35,13 +28,7 @@ func FetchTransactionsTask(config Config, client *atlar_client.Rest) task.Task {
 		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
-		}()
-
 		// Pagination works by cursor token.
 		params := transactions.GetV1TransactionsParams{
 			Limit: pointer.For(int64(config.ApiConfig.PageSize)),
@@ -55,16 +42,14 @@ func FetchTransactionsTask(config Config, client *atlar_client.Rest) task.Task {
 			params.Limit = &limit
 			pagedTransactions, err := client.Transactions.GetV1Transactions(&params)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
 
 			token = pagedTransactions.Payload.NextToken
 
-			if err := ingestPaymentsBatch(ctx, connectorID, ingester, metricsRegistry, pagedTransactions); err != nil {
+			if err := ingestPaymentsBatch(ctx, connectorID, ingester, pagedTransactions); err != nil {
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedTransactions.Payload.Items)), paymentsAttrs)
 
 			if token == "" {
 				break
@@ -79,7 +64,6 @@ func ingestPaymentsBatch(
 	ctx context.Context,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
-	metricsRegistry metrics.MetricsRegistry,
 	pagedTransactions *transactions.GetV1TransactionsOK,
 ) error {
 	batch := ingestion.PaymentBatch{}

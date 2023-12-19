@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Balance struct {
@@ -18,6 +20,10 @@ type Balance struct {
 }
 
 func (c *Client) GetBalances(ctx context.Context, page int) ([]*Balance, int, error) {
+	f := connectors.ClientMetrics(ctx, "currencycloud", "list_balances")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
 		c.buildEndpoint("v2/balances/find?page=%d&per_page=25", page), http.NoBody)
 	if err != nil {

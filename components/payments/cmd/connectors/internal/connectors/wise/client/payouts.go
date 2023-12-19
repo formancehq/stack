@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Payout struct {
@@ -61,6 +63,10 @@ func (t *Payout) UnmarshalJSON(data []byte) error {
 }
 
 func (w *Client) GetPayout(ctx context.Context, payoutID string) (*Payout, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "get_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx,
 		http.MethodGet, w.endpoint("v1/transfers/"+payoutID), http.NoBody)
 	if err != nil {
@@ -91,7 +97,11 @@ func (w *Client) GetPayout(ctx context.Context, payoutID string) (*Payout, error
 	return &payout, nil
 }
 
-func (w *Client) CreatePayout(quote Quote, targetAccount uint64, transactionID string) (*Payout, error) {
+func (w *Client) CreatePayout(ctx context.Context, quote Quote, targetAccount uint64, transactionID string) (*Payout, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "initiate_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := json.Marshal(map[string]interface{}{
 		"targetAccount":         targetAccount,
 		"quoteUuid":             quote.ID.String(),

@@ -11,7 +11,6 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
@@ -20,12 +19,6 @@ import (
 	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/credit_transfers"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	initiatePayoutAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_payout"))...)
 )
 
 func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID string) task.Task {
@@ -37,7 +30,6 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info("initiate payment for transfer-initiation %s", transferID)
 
@@ -47,13 +39,11 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			return err
 		}
 
-		attrs := metric.WithAttributes(connectorAttrs...)
 		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
 				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
@@ -65,14 +55,7 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 			return err
 		}
 
-		attrs = initiatePayoutAttrs
-
 		logger.Info("initiate payment between", transfer.SourceAccountID, " and %s", transfer.DestinationAccountID)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
 
 		if transfer.SourceAccount != nil {
 			if transfer.SourceAccount.Type == models.AccountTypeExternal {
@@ -122,8 +105,6 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 		}
 		postCreditTransferResponse, err := client.CreditTransfers.PostV1CreditTransfers(&postCreditTransfersParams)
 
-		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
-
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
 				Reference: postCreditTransferResponse.Payload.ID,
@@ -172,10 +153,6 @@ func ValidateTransferInitiation(transfer *models.TransferInitiation) error {
 	return nil
 }
 
-var (
-	updatePayoutAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_payout"))...)
-)
-
 func UpdatePaymentStatusTask(
 	config Config,
 	client *atlar_client.Rest,
@@ -191,7 +168,6 @@ func UpdatePaymentStatusTask(
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		paymentID := models.MustPaymentIDFromString(stringPaymentID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
@@ -200,18 +176,6 @@ func UpdatePaymentStatusTask(
 			return err
 		}
 		logger.Info("attempt: ", attempt, " fetching status of ", paymentID)
-
-		attrs := updatePayoutAttrs
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
-
-		defer func() {
-			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-			}
-		}()
 
 		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 		defer cancel()

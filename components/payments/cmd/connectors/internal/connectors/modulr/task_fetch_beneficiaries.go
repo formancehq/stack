@@ -6,19 +6,12 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/internal/models"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
-)
-
-var (
-	beneficiariesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "beneficiaries"))...)
 )
 
 func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.Task {
@@ -27,22 +20,15 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info(taskNameFetchBeneficiaries)
 
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), beneficiariesAttrs)
-		}()
-
-		beneficiaries, err := client.GetBeneficiaries()
+		beneficiaries, err := client.GetBeneficiaries(ctx)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 			return err
 		}
 
-		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, metricsRegistry, beneficiaries); err != nil {
+		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, beneficiaries); err != nil {
 			return err
 		}
 
@@ -54,7 +40,6 @@ func ingestBeneficiariesAccountsBatch(
 	ctx context.Context,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
-	metricsRegistry metrics.MetricsRegistry,
 	beneficiaries []*client.Beneficiary,
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
@@ -85,10 +70,8 @@ func ingestBeneficiariesAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, beneficiariesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), beneficiariesAttrs)
 
 	return nil
 }

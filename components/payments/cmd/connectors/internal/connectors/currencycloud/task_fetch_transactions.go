@@ -6,21 +6,13 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func taskFetchTransactions(logger logging.Logger, client *client.Client, config Config) task.Task {
@@ -28,9 +20,8 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, config 
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		return ingestTransactions(ctx, logger, connectorID, client, ingester, metricsRegistry)
+		return ingestTransactions(ctx, logger, connectorID, client, ingester)
 	}
 }
 
@@ -40,13 +31,7 @@ func ingestTransactions(
 	connectorID models.ConnectorID,
 	client *client.Client,
 	ingester ingestion.Ingester,
-	metricsRegistry metrics.MetricsRegistry,
 ) error {
-	now := time.Now()
-	defer func() {
-		metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
-	}()
-
 	page := 1
 	for {
 		if page < 0 {
@@ -57,7 +42,6 @@ func ingestTransactions(
 
 		transactions, nextPage, err := client.GetTransactions(ctx, page)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
@@ -71,14 +55,12 @@ func ingestTransactions(
 			precision, ok := supportedCurrenciesWithDecimal[transaction.Currency]
 			if !ok {
 				logger.Errorf("currency %s is not supported", transaction.Currency)
-				metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
 				continue
 			}
 
 			var amount big.Float
 			_, ok = amount.SetString(transaction.Amount)
 			if !ok {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return fmt.Errorf("failed to parse amount %s", transaction.Amount)
 			}
 			var amountInt big.Int
@@ -88,7 +70,6 @@ func ingestTransactions(
 
 			rawData, err = json.Marshal(transaction)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return fmt.Errorf("failed to marshal transaction: %w", err)
 			}
 
@@ -133,10 +114,8 @@ func ingestTransactions(
 
 		err = ingester.IngestPayments(ctx, connectorID, batch, struct{}{})
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), paymentsAttrs)
 	}
 
 	return nil

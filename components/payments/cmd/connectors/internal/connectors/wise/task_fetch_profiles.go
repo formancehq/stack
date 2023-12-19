@@ -13,18 +13,9 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	profilesAndBalancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles_and_balances"))...)
-	profilesAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "profiles"))...)
-	balancesAttrs            = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func taskFetchProfiles(wiseClient *client.Client) task.Task {
@@ -34,16 +25,10 @@ func taskFetchProfiles(wiseClient *client.Client) task.Task {
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), profilesAndBalancesAttrs)
-		}()
 
-		profiles, err := wiseClient.GetProfiles()
+		profiles, err := wiseClient.GetProfiles(ctx)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs)
 			return err
 		}
 
@@ -51,7 +36,6 @@ func taskFetchProfiles(wiseClient *client.Client) task.Task {
 		for _, profile := range profiles {
 			balances, err := wiseClient.GetBalances(ctx, profile.ID)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 				return err
 			}
 
@@ -59,7 +43,6 @@ func taskFetchProfiles(wiseClient *client.Client) task.Task {
 				ctx,
 				logger,
 				connectorID,
-				metricsRegistry,
 				ingester,
 				profile.ID,
 				balances,
@@ -108,7 +91,6 @@ func ingestAccountsBatch(
 	ctx context.Context,
 	logger logging.Logger,
 	connectorID models.ConnectorID,
-	metricsRegistry metrics.MetricsRegistry,
 	ingester ingestion.Ingester,
 	profileID uint64,
 	balances []*client.Balance,
@@ -128,7 +110,6 @@ func ingestAccountsBatch(
 		precision, ok := supportedCurrenciesWithDecimal[balance.Amount.Currency]
 		if !ok {
 			logger.Errorf("currency %s is not supported", balance.Amount.Currency)
-			metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
 			continue
 		}
 
@@ -173,16 +154,12 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, profilesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), profilesAttrs)
 
 	if err := ingester.IngestBalances(ctx, balancesBatch, false); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balancesBatch)), balancesAttrs)
 
 	return nil
 }

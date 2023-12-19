@@ -2,7 +2,9 @@ package client
 
 import (
 	"context"
+	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/transfer"
@@ -17,6 +19,10 @@ type CreateTransferRequest struct {
 }
 
 func (d *DefaultClient) CreateTransfer(ctx context.Context, createTransferRequest *CreateTransferRequest, options ...ClientOption) (*stripe.Transfer, error) {
+	f := connectors.ClientMetrics(ctx, "stripe", "initiate_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	stripe.Key = d.apiKey
 
 	params := &stripe.TransferParams{

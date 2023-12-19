@@ -5,21 +5,13 @@ import (
 	"encoding/json"
 	"math"
 	"math/big"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func taskFetchPayments(
@@ -30,17 +22,10 @@ func taskFetchPayments(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
-		}()
-
 		for page := 1; ; page++ {
 			pagedPayments, err := client.GetPayments(ctx, page)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
 
@@ -48,11 +33,9 @@ func taskFetchPayments(
 				break
 			}
 
-			if err := ingestBatch(ctx, logger, metricsRegistry, connectorID, ingester, pagedPayments); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
+			if err := ingestBatch(ctx, logger, connectorID, ingester, pagedPayments); err != nil {
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedPayments)), paymentsAttrs)
 		}
 
 		return nil
@@ -62,7 +45,6 @@ func taskFetchPayments(
 func ingestBatch(
 	ctx context.Context,
 	logger logging.Logger,
-	metricsRegistry metrics.MetricsRegistry,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	payments []*client.Payment,
@@ -80,7 +62,6 @@ func ingestBatch(
 		precision, ok := supportedCurrenciesWithDecimal[paymentEl.Transfer.Amount.Currency]
 		if !ok {
 			logger.Errorf("currency %s is not supported", paymentEl.Transfer.Amount.Currency)
-			metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
 			continue
 		}
 

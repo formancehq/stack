@@ -10,16 +10,9 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/moneycorp/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	balancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
 )
 
 func taskFetchBalances(logger logging.Logger, client *client.Client, accountID string) task.Task {
@@ -27,26 +20,17 @@ func taskFetchBalances(logger logging.Logger, client *client.Client, accountID s
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info("Fetching transactions for account", accountID)
 
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), balancesAttrs)
-		}()
-
 		balances, err := client.GetAccountBalances(ctx, accountID)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
 
 		if err := ingestBalancesBatch(ctx, connectorID, ingester, accountID, balances); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(balances)), balancesAttrs)
 
 		return nil
 	}

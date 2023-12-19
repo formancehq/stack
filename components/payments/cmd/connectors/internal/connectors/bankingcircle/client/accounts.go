@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Account struct {
@@ -36,6 +39,10 @@ func (c *Client) GetAccounts(ctx context.Context, page int) ([]*Account, error) 
 	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
 		return nil, err
 	}
+
+	f := connectors.ClientMetrics(ctx, "bankingcircle", "list_accounts")
+	now := time.Now()
+	defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpoint+"/api/v1/accounts", http.NoBody)
 	if err != nil {
@@ -88,6 +95,10 @@ func (c *Client) GetAccount(ctx context.Context, accountID string) (*Account, er
 	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
 		return nil, err
 	}
+
+	f := connectors.ClientMetrics(ctx, "bankingcircle", "get_account")
+	now := time.Now()
+	defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/v1/accounts/%s", c.endpoint, accountID), http.NoBody)
 	if err != nil {

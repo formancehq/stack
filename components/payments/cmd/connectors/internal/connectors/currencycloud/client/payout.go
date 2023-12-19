@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type PayoutRequest struct {
@@ -51,6 +54,10 @@ type PayoutResponse struct {
 }
 
 func (c *Client) InitiatePayout(ctx context.Context, payoutRequest *PayoutRequest) (*PayoutResponse, error) {
+	f := connectors.ClientMetrics(ctx, "currencycloud", "initiate_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	form := payoutRequest.ToFormData()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
@@ -79,6 +86,10 @@ func (c *Client) InitiatePayout(ctx context.Context, payoutRequest *PayoutReques
 }
 
 func (c *Client) GetPayout(ctx context.Context, payoutID string) (*PayoutResponse, error) {
+	f := connectors.ClientMetrics(ctx, "currencycloud", "get_payment")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
 		c.buildEndpoint("v2/payments/%s", payoutID), http.NoBody)
 	if err != nil {

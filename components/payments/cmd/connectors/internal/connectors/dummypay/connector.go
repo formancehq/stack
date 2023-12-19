@@ -8,17 +8,10 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
 )
 
 // Name is the name of the connector.
 const Name = models.ConnectorProviderDummyPay
-
-var (
-	connectorAttrs = []attribute.KeyValue{
-		attribute.String("connector", Name.String()),
-	}
-)
 
 // Connector is the connector for the dummy payment connector.
 type Connector struct {

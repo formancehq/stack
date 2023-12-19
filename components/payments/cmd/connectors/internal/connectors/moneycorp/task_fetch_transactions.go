@@ -12,20 +12,13 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/moneycorp/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 )
 
 const (
 	pageSize = 100
-)
-
-var (
-	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
@@ -33,19 +26,12 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info("Fetching transactions for account", accountID)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
-		}()
 
 		for page := 0; ; page++ {
 			pagedTransactions, err := client.GetTransactions(ctx, accountID, page, pageSize)
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
 
@@ -54,10 +40,8 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 			}
 
 			if err := ingestBatch(ctx, connectorID, ingester, pagedTransactions); err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 				return err
 			}
-			metricsRegistry.ConnectorObjects().Add(ctx, int64(len(pagedTransactions)), paymentsAttrs)
 
 			if len(pagedTransactions) < pageSize {
 				break
