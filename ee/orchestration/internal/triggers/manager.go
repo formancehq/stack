@@ -26,7 +26,7 @@ type FilterEvaluationResult struct {
 }
 
 type TestTriggerResult struct {
-	Filter    *FilterEvaluationResult
+	Filter    *FilterEvaluationResult             `json:"filter"`
 	Variables map[string]VariableEvaluationResult `json:"variables"`
 }
 
