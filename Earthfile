@@ -163,26 +163,6 @@ pr:
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration
 
-deploy-staging:
-    FROM core+base-image
-    RUN apk update && apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community helm git jq kubectl kustomize aws-cli
-    COPY ./.kubeconfig /root/.kube/config
-    RUN kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
-    COPY . /src
-    WORKDIR /src
-    FOR COMPONENT IN $(cd ./components && ls -d */)
-        RUN --secret AWS_ACCESS_KEY_ID \
-            --secret AWS_SECRET_ACCESS_KEY \
-            --secret AWS_SESSION_TOKEN \
-             kubectl patch Versions default -p "{\"spec\":{\"${COMPONENT}\": \"${GITHUB_SHA}\"}}" --type=merge
-    END
-    FOR COMPONENT IN $(cd ./ee && ls -d */)
-        RUN --secret AWS_ACCESS_KEY_ID \
-            --secret AWS_SECRET_ACCESS_KEY \
-            --secret AWS_SESSION_TOKEN \
-             kubectl patch Versions default -p "{\"spec\":{\"${COMPONENT}\": \"${GITHUB_SHA}\"}}" --type=merge
-    END
-
 INCLUDE_GO_LIBS:
     FUNCTION
     ARG --required LOCATION
