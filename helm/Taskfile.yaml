@@ -8,8 +8,6 @@ tasks:
 
   build:
     cmds:
-      - task: build:agent
-      - task: build:operator
       - task: build:regions
 
   build:regions:
@@ -19,9 +17,3 @@ tasks:
       - helm dependencies build
       - helm package ./
       - mv regions-*.tgz ./../regions.tgz
-  build:operator:
-    cmds:
-      - helm package ./operator
-  build:agent:
-    cmds:
-      - helm package ./agent

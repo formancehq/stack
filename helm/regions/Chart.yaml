@@ -10,7 +10,7 @@ maintainers:
 icon: "https://avatars.githubusercontent.com/u/84325077?s=200&v=4"
 
 type: application
-version: 0.3.1
+version: 0.4.0
 appVersion: "latest"
 
 dependencies:
@@ -19,6 +19,18 @@ dependencies:
     repository: "file://../../ee/agent/helm"
     condition: agent.enabled
   - name: operator
-    version: 0.2.7
+    version: 0.3.0
     repository: "file://../../components/operator/helm"
     condition: operator.enabled
+  - name: nats
+    version: 1.1.4
+    repository: "https://nats-io.github.io/k8s/helm/charts/"
+    condition: demo.enabled
+  - name: postgresql
+    version: 13.2.24
+    repository: "oci://registry-1.docker.io/bitnamicharts"
+    condition: demo.enabled
+  - name: opensearch
+    version: 0.6.1
+    repository: "oci://registry-1.docker.io/bitnamicharts"
+    condition: demo.enabled

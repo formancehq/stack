@@ -41,8 +41,8 @@ agent:
 With this file in place, we can deploy our private region using Helm:
 
 ```bash
-helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
---version 0.3.1 \
+helm install regions oci://ghcr.io/formancehq/helm/regions \
+--version 0.4.0 \
 --namespace formance-system \
 --create-namespace \
 --values region.values.yaml
@@ -56,134 +56,36 @@ Two CRDs will be used by the Formance Operator to provision resources in our clu
 
 The "Versions" CRD defines the versions that we want to deploy — this allows the operator to provision the created stacks with a fixed set of versions for each stack service.
 
-```yaml
-# versions.crd.yml
-apiVersion: stack.formance.com/v1beta3
-kind: Versions
-metadata:
-  name: default
-spec:
-  auth: v0.4.3
-  control: v1.7.0
-  ledger: v1.10.4
-  payments: v0.9.4
-  search: v0.7.0
-  wallets: v0.4.3
-  stargate: v0.1.8
-  webhooks: v0.6.6
-  gateway: v0.1.7
-```
+The CRD Versions are automatically created by the operator to match the Stack version compatible with your Operator.
 
 :::tip
 Thanks to this CRD, you can also deploy a custom version of a service, including one you've modified yourself.
 :::
 
-Saving the CRD is as simple as running the following command:
-
+You can install the latest versions of CRD Versions with the following command:
 ```bash
-kubectl apply -f versions.crd.yml
+helm upgrade regions oci://ghcr.io/formancehq/helm/regions \
+--version 0.4.0 \
+--namespace formance-system \
+--create-namespace \
+--values region.values.yaml
 ```
 
 ### Configuration CRD
 
 The "Configuration" CRD defines the configuration of our application. This includes configuration settings such as listening ports, environment variables, and secrets.
 
-```yaml
-# configuration.crd.yaml
-apiVersion: stack.formance.com/v1beta3
-kind: Configuration
-metadata:
-  name: stacks
-spec:
-  broker:
-    nats:
-      url: NATS_URL
-  ingress:
-    annotations:
-      traefik.ingress.kubernetes.io/router.entrypoints: web
-  light: true
-  services:
-    auth:
-      postgres:
-        disableSSLMode: true
-        host: POSTGRESQL_HOST
-        port: POSTGRESQL_PORT
-        username: POSTGRESQL_USERNAME
-        password: POSTGRESQL_PASSWORD
-    control: {}
-    ledger:
-      postgres:
-        disableSSLMode: true
-        host: POSTGRESQL_HOST
-        port: POSTGRESQL_PORT
-        username: POSTGRESQL_USERNAME
-        password: POSTGRESQL_PASSWORD
-    orchestration:
-      postgres:
-        disableSSLMode: true
-        host: POSTGRESQL_HOST
-        port: POSTGRESQL_PORT
-        username: POSTGRESQL_USERNAME
-        password: POSTGRESQL_PASSWORD
-    payments:
-      encryptionKey: DEFAULT_ENCRYPTION_KEY
-      postgres:
-        disableSSLMode: true
-        host: POSTGRESQL_HOST
-        port: POSTGRESQL_PORT
-        username: POSTGRESQL_USERNAME
-        password: POSTGRESQL_PASSWORD
-    search:
-      batching:
-        count: 50
-        period: 1s
-      elasticSearch:
-        host: ELASTICSEARCH_URL
-        pathPrefix: ''
-        port: 443
-        scheme: https
-        tls: {}
-    wallets:
-      debug: false
-      dev: false
-    webhooks:
-      debug: false
-      dev: false
-      postgres:
-        disableSSLMode: true
-        host: POSTGRESQL_HOST
-        port: POSTGRESQL_PORT
-        username: POSTGRESQL_USERNAME
-        password: POSTGRESQL_PASSWORD
-  temporal:
-    address: TEMPORAL_ADDRESS
-    namespace: TEMPORAL_NAMESPACE
-    tls:
-      crt: TEMPORAL_TLS_CERT
-      key: TEMPORAL_TLS_KEY
-```
-
-Before saving the CRD, make sure to replace the following values with your own:
-
--   `NATS_URL`: The URL of your NATS instance
--   `POSTGRESQL_HOST`: The host of your PostgreSQL instance
--   `POSTGRESQL_PORT`: The port of your PostgreSQL instance
--   `POSTGRESQL_USERNAME`: The username of your PostgreSQL instance
--   `POSTGRESQL_PASSWORD`: The password of your PostgreSQL instance
--   `DEFAULT_ENCRYPTION_KEY`: The encryption key to use for the payments service
--   `ELASTICSEARCH_URL`: The URL of your Elasticsearch instance
-
-And the following values if you want to use Temporal:
--   `TEMPORAL_ADDRESS`: The address of your Temporal instance
--   `TEMPORAL_NAMESPACE`: The namespace of your Temporal instance
--   `TEMPORAL_TLS_CERT`: The TLS certificate of your Temporal instance
--   `TEMPORAL_TLS_KEY`: The TLS key of your Temporal instance
-
-Saving the CRD is then simply done by running the following command:
-
+:::tip
+If you wish to create all the configurations required for testing. You can run the following command:
 ```bash
-kubectl apply -f configuration.crd.yml
+helm upgrade regions oci://ghcr.io/formancehq/helm/regions \
+--version 0.4.0 \
+--namespace formance-system \
+--create-namespace \
+--values region.values.yaml
+--set demo.enabled=true
 ```
+:::
 
 
 ## Liveness check
