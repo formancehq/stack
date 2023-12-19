@@ -164,17 +164,17 @@ jobs:
           aws-region: eu-west-1
           output-credentials: true
       - name: Update kube config
-        run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1 --role-arn $(aws sts get-caller-identity | jq .Arn | sed 's|\(.*\)/.*|\1|')
+        run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1
       - run: kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
-#      - name: Deploy in staging
-#        run: |
-#          kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"gateway\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"orchestration\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"reconciliation\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"search\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"stargate\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"wallets\": \"${GITHUB_SHA}\"}}" --type=merge
-#          kubectl patch Versions default -p "{\"spec\":{\"webhooks\": \"${GITHUB_SHA}\"}}" --type=merge
+      - name: Deploy in staging
+        run: |
+          kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"gateway\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"orchestration\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"reconciliation\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"search\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"stargate\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"wallets\": \"${GITHUB_SHA}\"}}" --type=merge
+          kubectl patch Versions default -p "{\"spec\":{\"webhooks\": \"${GITHUB_SHA}\"}}" --type=merge
