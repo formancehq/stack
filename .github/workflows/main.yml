@@ -164,7 +164,7 @@ jobs:
           aws-region: eu-west-1
           output-credentials: true
       - name: Update kube config
-        run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1
+        run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1 --role-arn $(aws sts get-caller-identity | jq .Arn)
       - name: Deploy in staging
         run: |
           aws sts get-caller-identity | jq .Arn
