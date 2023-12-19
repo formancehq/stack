@@ -1,6 +1,7 @@
 package connectors
 
 import (
+	"github.com/formancehq/fctl/cmd/payments/connectors/configs"
 	"github.com/formancehq/fctl/cmd/payments/connectors/install"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -11,10 +12,11 @@ func NewConnectorsCommand() *cobra.Command {
 		fctl.WithAliases("c", "co", "con"),
 		fctl.WithShortDescription("Connectors management"),
 		fctl.WithChildCommands(
-			NewGetConfigCommand(),
 			NewUninstallCommand(),
 			NewListCommand(),
 			install.NewInstallCommand(),
+			configs.NewUpdateConfigCommands(),
+			configs.NewGetConfigCommand(),
 		),
 	)
 }

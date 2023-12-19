@@ -1,6 +1,7 @@
 package internal
 
 const (
+	AdyenConnector         = "adyen"
 	AtlarConnector         = "atlar"
 	BankingCircleConnector = "bankingcircle"
 	CurrencyCloudConnector = "currencycloud"
