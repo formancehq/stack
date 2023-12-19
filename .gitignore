@@ -37,3 +37,4 @@ openapi/node_modules
 releases/sdks
 
 openapi.json
+.kubeconfig

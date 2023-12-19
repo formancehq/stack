@@ -1,6 +1,6 @@
-VERSION --arg-scope-and-set --pass-args 0.7
+VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
 
-ARG core=github.com/formancehq/earthly:v0.5.2
+ARG core=github.com/formancehq/earthly:v0.6.0
 IMPORT $core AS core
 
 sources:
@@ -52,7 +52,9 @@ build-sdk:
     COPY (+speakeasy/speakeasy) /bin/speakeasy
     COPY (+build-final-spec/final.json) final-spec.json
     COPY --dir libs/clients/go ./sdks/go
-    RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
+    IF [ "SPEAKEASY_API_KEY" != "" ]
+        RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
+    END
     RUN rm -rf ./libs/clients/go
     SAVE ARTIFACT sdks/go AS LOCAL ./libs/clients/go
     SAVE ARTIFACT sdks/go
@@ -161,13 +163,28 @@ pr:
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration
 
+deploy-staging:
+    FROM core+deployer-image
+    COPY ./.kubeconfig /root/.kube/config
+    RUN kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
+    RUN kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"gateway\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"orchestration\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"reconciliation\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"search\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"stargate\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"wallets\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"webhooks\": \"${GITHUB_SHA}\"}}" --type=merge
+
 INCLUDE_GO_LIBS:
-    COMMAND
+    FUNCTION
     ARG --required LOCATION
     COPY (+sources/out --LOCATION=libs/go-libs) ${LOCATION}
 
 GO_LINT:
-    COMMAND
+    FUNCTION
     COPY (+sources/out --LOCATION=.golangci.yml) .golangci.yml
     ARG GOPROXY
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
@@ -176,7 +193,7 @@ GO_LINT:
         golangci-lint run --fix ./...
 
 GO_TIDY:
-    COMMAND
+    FUNCTION
     ARG GOPROXY
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
