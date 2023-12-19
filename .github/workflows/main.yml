@@ -127,3 +127,44 @@ jobs:
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+
+  Deploy:
+    runs-on: "ubuntu-latest"
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: staging
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      - GoReleaser
+      - Main
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: "latest"
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+      - name: Setup Env
+        uses: ./.github/actions/env
+      - name: Install and configure kubectl
+        run: |
+          VERSION=$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+          curl https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl \
+          --progress-bar \
+          --location \
+          --remote-name
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::955332203423:role/github-access
+          aws-region: eu-west-1
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1
+#      - name: Deploy in staging
+#        run: earthly -P +deploy-staging
+#

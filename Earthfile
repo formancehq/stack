@@ -1,4 +1,4 @@
-VERSION --arg-scope-and-set --pass-args 0.7
+VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
 
 ARG core=github.com/formancehq/earthly:v0.5.2
 IMPORT $core AS core
@@ -161,13 +161,27 @@ pr:
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration
 
+deploy-staging:
+    LOCALLY
+    RUN kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"gateway\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"orchestration\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"reconciliation\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"search\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"stargate\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"wallets\": \"${GITHUB_SHA}\"}}" --type=merge
+    RUN kubectl patch Versions default -p "{\"spec\":{\"webhooks\": \"${GITHUB_SHA}\"}}" --type=merge
+
+
 INCLUDE_GO_LIBS:
-    COMMAND
+    FUNCTION
     ARG --required LOCATION
     COPY (+sources/out --LOCATION=libs/go-libs) ${LOCATION}
 
 GO_LINT:
-    COMMAND
+    FUNCTION
     COPY (+sources/out --LOCATION=.golangci.yml) .golangci.yml
     ARG GOPROXY
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
@@ -176,7 +190,7 @@ GO_LINT:
         golangci-lint run --fix ./...
 
 GO_TIDY:
-    COMMAND
+    FUNCTION
     ARG GOPROXY
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
