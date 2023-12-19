@@ -1,6 +1,7 @@
 package atlar
 
 import (
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -26,7 +27,7 @@ type TaskDescriptor struct {
 }
 
 func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
-	client := createAtlarClient(&config)
+	client := client.NewClient(config.BaseUrl, config.AccessKey, config.Secret)
 
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		if taskDescriptor.Main {

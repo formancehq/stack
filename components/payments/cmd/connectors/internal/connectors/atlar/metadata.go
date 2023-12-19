@@ -54,8 +54,3 @@ func ExtractNamespacedMetadata(metadata map[string]string, key string) (*string,
 	}
 	return &value, nil
 }
-
-func ExtractNamespacedMetadataIgnoreEmpty(metadata map[string]string, key string) *string {
-	value := metadata[atlarMetadataSpecNamespace+key]
-	return &value
-}

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
@@ -16,17 +17,14 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
-	"github.com/get-momo/atlar-v1-go-client/client/credit_transfers"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
 )
 
-func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID string) task.Task {
+func InitiatePaymentTask(config Config, client *client.Client, transferID string) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
 		connectorID models.ConnectorID,
-		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
 		ingester ingestion.Ingester,
@@ -99,11 +97,7 @@ func InitiatePaymentTask(config Config, client *atlar_client.Rest, transferID st
 
 		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		postCreditTransfersParams := credit_transfers.PostV1CreditTransfersParams{
-			Context:        requestCtx,
-			CreditTransfer: &createPaymentRequest,
-		}
-		postCreditTransferResponse, err := client.CreditTransfers.PostV1CreditTransfers(&postCreditTransfersParams)
+		postCreditTransferResponse, err := client.PostV1CreditTransfers(requestCtx, &createPaymentRequest)
 
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
@@ -155,7 +149,7 @@ func ValidateTransferInitiation(transfer *models.TransferInitiation) error {
 
 func UpdatePaymentStatusTask(
 	config Config,
-	client *atlar_client.Rest,
+	client *client.Client,
 	transferID string,
 	stringPaymentID string,
 	attempt int,
@@ -164,7 +158,6 @@ func UpdatePaymentStatusTask(
 		ctx context.Context,
 		logger logging.Logger,
 		connectorID models.ConnectorID,
-		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
 		ingester ingestion.Ingester,
@@ -179,11 +172,10 @@ func UpdatePaymentStatusTask(
 
 		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		getCreditTransferParams := credit_transfers.GetV1CreditTransfersGetByExternalIDExternalIDParams{
-			Context:    requestCtx,
-			ExternalID: serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.Attempts),
-		}
-		getCreditTransferResponse, err := client.CreditTransfers.GetV1CreditTransfersGetByExternalIDExternalID(&getCreditTransferParams)
+		getCreditTransferResponse, err := client.GetV1CreditTransfersGetByExternalIDExternalID(
+			requestCtx,
+			serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.Attempts),
+		)
 		if err != nil {
 			return err
 		}
