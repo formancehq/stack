@@ -1,9 +1,6 @@
 on:
   schedule:
     - cron:  '30 4 * * *'
-  push:
-    paths:
-      - 'base.Dockerfile'
 
 jobs:
   Base:
