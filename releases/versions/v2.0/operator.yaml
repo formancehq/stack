@@ -1,0 +1,15 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Versions
+metadata:
+  name: v2.0
+spec:
+  ledger: v2.0.0-beta.7
+  search: v1.0.0
+  stargate: v1.0.0
+  auth: v1.0.0
+  wallets: v1.0.0
+  webhooks: v1.0.0
+  gateway: v1.0.0
+  payments: v1.0.0-rc.5
+  orchestration: v0.3.0
+  reconciliation: v0.1.1

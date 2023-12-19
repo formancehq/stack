@@ -4,7 +4,7 @@
       "inputFile": "./base.yaml"
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/auth/AUTH_VERSION/ee/auth/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/stack/releases/download/ee%2Fauth%2FAUTH_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/auth"
       },
@@ -13,7 +13,7 @@
       }
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/components/ledger/LEDGER_VERSION/components/ledger/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/ledger/releases/download/LEDGER_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/ledger"
       },
@@ -22,7 +22,7 @@
       }
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/components/payments/PAYMENTS_VERSION/components/payments/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/stack/releases/download/components%2Fpayments%2FPAYMENTS_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/payments"
       },
@@ -31,7 +31,7 @@
       }
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/search/SEARCH_VERSION/ee/search/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/stack/releases/download/ee%2Fsearch%2FSEARCH_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/search"
       },
@@ -40,7 +40,7 @@
       }
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/webhooks/WEBHOOKS_VERSION/ee/webhooks/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/stack/releases/download/ee%2Fwebhooks%2FWEBHOOKS_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/webhooks"
       },
@@ -52,7 +52,7 @@
       }
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/wallets/WALLETS_VERSION/ee/wallets/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/stack/releases/download/ee%2Fwallets%2FWALLETS_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/wallets"
       },
@@ -64,7 +64,7 @@
       }
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/orchestration/ORCHESTRATION_VERSION/ee/orchestration/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/stack/releases/download/ee%2Forchestration%2FORCHESTRATION_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/orchestration"
       },
@@ -76,7 +76,7 @@
       }
     },
     {
-      "inputURL": "https://raw.githubusercontent.com/formancehq/stack/ee/reconciliation/RECONCILIATION_VERSION/ee/reconciliation/openapi.yaml",
+      "inputURL": "https://github.com/formancehq/stack/releases/download/ee%2Freconciliation%2FRECONCILIATION_VERSION/openapi.yaml",
       "pathModification":{
         "prepend": "/api/reconciliation"
       },

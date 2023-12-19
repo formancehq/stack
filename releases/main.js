@@ -186,7 +186,7 @@ program.command('operator')
             "apiVersion": "stack.formance.com/v1beta3",
             "kind": "Versions",
             "metadata": {
-                "name": CONTENT.version
+                "name": version
             },
             "spec": CONTENT.components
         }

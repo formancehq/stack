@@ -26,7 +26,7 @@ build:
   ENV version_short=$(echo ${version} | sed 's![^.]*$!!' | sed '$ s/.$//')
   WORKDIR /src
   COPY (+install/src) /src
-  RUN --secret GITHUB_TOKEN node main.js create $version
+#  RUN --secret GITHUB_TOKEN node main.js create $version
   RUN --secret GITHUB_TOKEN node main.js generate $version
   RUN --secret GITHUB_TOKEN node main.js operator $version_short
   BUILD +sdk-generate-all --version=${version_short}
@@ -43,7 +43,7 @@ sdk-generate:
   COPY (stack+speakeasy/speakeasy) /bin/speakeasy
   COPY (+install/src) /src
   RUN git clone https://github.com/formancehq/formance-sdk-${LANG}.git ./sdks/${LANG}
-  RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows/speakeasy_sdk_publish.yml
+  RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows
   COPY --dir templates/sdk/${LANG}/* ./sdks/${LANG}/
   RUN --secret SPEAKEASY_API_KEY \
       speakeasy generate sdk -s ./versions/${version}/openapi.json -o ./sdks/${LANG} -l ${LANG}
@@ -66,8 +66,7 @@ sdk-publish:
   RUN git commit -m "release(sdk): ${version_full}"
   RUN git remote remove origin
   RUN --secret GITHUB_TOKEN git remote add origin https://${GITHUB_TOKEN}@github.com/formancehq/formance-sdk-${LANG}.git
-  RUN --secret GITHUB_TOKEN git push origin release/${version_full}
-  SAVE ARTIFACT /src/sdks/${LANG} AS LOCAL ./sdks/publish/${LANG}
+  RUN --secret GITHUB_TOKEN git push origin release/${version_full} --force
 
 sdk-generate-all:
   ARG --required version
@@ -79,7 +78,6 @@ sdk-generate-all:
 sdk-publish-all:
   ARG --required version
   LOCALLY
-  BUILD --pass-args +sdk-generate-all
   FOR lang IN $(ls templates/sdk)
       BUILD --pass-args +sdk-publish --LANG=${lang}
   END
@@ -87,8 +85,7 @@ sdk-publish-all:
 release:
   ARG --required version
   LOCALLY
-  ENV version_short=$(echo ${version} | sed 's![^.]*$!!' | sed '$ s/.$//')
-  RUN cp ./versions/${version_short}/operator.yaml ./../helm/regions/templates/versions/${version_short}.yaml
-  RUN cp ./versions/${version_short}/operator.yaml ./../docs/openapi/${version_short}.yaml
-  BUILD +sdk-publish-all --version=${version_short}
+  RUN cp ./versions/${version}/operator.yaml ./../helm/regions/templates/versions/${version}.yaml
+  RUN cp ./versions/${version}/operator.yaml ./../docs/openapi/${version}.yaml
+  BUILD +sdk-publish-all --version=${version}
 
