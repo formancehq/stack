@@ -30,6 +30,7 @@ type Backend interface {
 	ListTriggersOccurrences(ctx context.Context, query triggers.ListTriggersOccurrencesQuery) (*api.Cursor[triggers.Occurrence], error)
 	DeleteTrigger(ctx context.Context, triggerID string) error
 	GetTrigger(ctx context.Context, triggerID string) (*triggers.Trigger, error)
+	TestTrigger(ctx context.Context, triggerID string, data map[string]any) (*triggers.TestTriggerResult, error)
 }
 
 func NewDefaultBackend(triggersManager *triggers.TriggerManager, workflowManager *workflow.WorkflowManager) Backend {

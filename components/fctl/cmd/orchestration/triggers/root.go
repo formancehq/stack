@@ -15,6 +15,7 @@ func NewCommand() *cobra.Command {
 			NewShowCommand(),
 			NewDeleteCommand(),
 			NewCreateCommand(),
+			NewTestCommand(),
 			occurrences.NewCommand(),
 		),
 	)

@@ -21,6 +21,7 @@ func newRouter(backend api.Backend) *chi.Mux {
 				r.Get("/", getTrigger(backend))
 				r.Delete("/", deleteTrigger(backend))
 				r.Get("/occurrences", listTriggersOccurrences(backend))
+				r.Post("/test", testTrigger(backend))
 			})
 		})
 		r.Route("/workflows", func(r chi.Router) {

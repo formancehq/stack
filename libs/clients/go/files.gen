@@ -94,6 +94,7 @@ pkg/models/operations/orchestrationgetserverinfo.go
 pkg/models/operations/readtrigger.go
 pkg/models/operations/runworkflow.go
 pkg/models/operations/sendevent.go
+pkg/models/operations/testtrigger.go
 pkg/models/operations/v2cancelevent.go
 pkg/models/operations/v2createtrigger.go
 pkg/models/operations/v2createworkflow.go
@@ -334,6 +335,8 @@ pkg/models/shared/triggeroccurrence.go
 pkg/models/shared/listworkflowsresponse.go
 pkg/models/shared/readtriggerresponse.go
 pkg/models/shared/runworkflowresponse.go
+pkg/models/shared/v2testtriggerresponse.go
+pkg/models/shared/v2triggertest.go
 pkg/models/shared/v2error.go
 pkg/models/shared/v2createtriggerresponse.go
 pkg/models/shared/v2trigger.go
@@ -639,6 +642,8 @@ docs/models/operations/runworkflowresponse.md
 docs/models/operations/sendeventrequestbody.md
 docs/models/operations/sendeventrequest.md
 docs/models/operations/sendeventresponse.md
+docs/models/operations/testtriggerrequest.md
+docs/models/operations/testtriggerresponse.md
 docs/models/operations/v2canceleventrequest.md
 docs/models/operations/v2canceleventresponse.md
 docs/models/operations/v2createtriggerresponse.md
@@ -988,6 +993,10 @@ docs/models/shared/triggeroccurrence.md
 docs/models/shared/listworkflowsresponse.md
 docs/models/shared/readtriggerresponse.md
 docs/models/shared/runworkflowresponse.md
+docs/models/shared/v2testtriggerresponse.md
+docs/models/shared/v2triggertestfilter.md
+docs/models/shared/v2triggertestvariables.md
+docs/models/shared/v2triggertest.md
 docs/models/shared/v2errorerrorcode.md
 docs/models/shared/v2error.md
 docs/models/shared/v2createtriggerresponse.md

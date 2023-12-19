@@ -132,6 +132,7 @@ func main() {
 * [ReadTrigger](docs/sdks/orchestration/README.md#readtrigger) - Read trigger
 * [RunWorkflow](docs/sdks/orchestration/README.md#runworkflow) - Run workflow
 * [SendEvent](docs/sdks/orchestration/README.md#sendevent) - Send an event to a running workflow
+* [TestTrigger](docs/sdks/orchestration/README.md#testtrigger) - Test trigger
 * [V2CancelEvent](docs/sdks/orchestration/README.md#v2cancelevent) - Cancel a running workflow
 * [V2CreateTrigger](docs/sdks/orchestration/README.md#v2createtrigger) - Create trigger
 * [V2CreateWorkflow](docs/sdks/orchestration/README.md#v2createworkflow) - Create workflow

@@ -15,6 +15,21 @@ import (
 
 var ErrWorkflowNotExists = errors.New("workflow does not exists")
 
+type VariableEvaluationResult struct {
+	Value string `json:"value,omitempty"`
+	Error string `json:"error,omitempty"`
+}
+
+type FilterEvaluationResult struct {
+	Match bool   `json:"match"`
+	Error string `json:"error,omitempty"`
+}
+
+type TestTriggerResult struct {
+	Filter    *FilterEvaluationResult
+	Variables map[string]VariableEvaluationResult `json:"variables"`
+}
+
 type TriggerManager struct {
 	db *bun.DB
 }
@@ -26,6 +41,40 @@ func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQue
 		Where("deleted_at is null")
 
 	return bunpaginate.UsingOffset[any, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[any](query))
+}
+
+func (m *TriggerManager) TestTrigger(ctx context.Context, triggerID string, event map[string]any) (*TestTriggerResult, error) {
+	trigger := &Trigger{}
+	err := m.db.NewSelect().
+		Model(trigger).
+		Where("deleted_at is null").
+		Where("id = ?", triggerID).
+		Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := TestTriggerResult{}
+	if filter := trigger.Filter; filter != nil {
+		ret.Filter = &FilterEvaluationResult{}
+		ret.Filter.Match, err = evalFilter(event, *filter)
+		if err != nil {
+			ret.Filter.Error = err.Error()
+		}
+	}
+	if (ret.Filter == nil || ret.Filter.Match) && len(trigger.Vars) > 0 {
+		ret.Variables = map[string]VariableEvaluationResult{}
+		for key, expr := range trigger.Vars {
+			v := VariableEvaluationResult{}
+			v.Value, err = evalVariable(event, expr)
+			if err != nil {
+				v.Error = err.Error()
+			}
+			ret.Variables[key] = v
+		}
+	}
+
+	return &ret, nil
 }
 
 func (m *TriggerManager) GetTrigger(ctx context.Context, triggerID string) (*Trigger, error) {
