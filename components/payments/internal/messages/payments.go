@@ -10,16 +10,18 @@ import (
 )
 
 type paymentMessagePayload struct {
-	ID          string               `json:"id"`
-	Reference   string               `json:"reference"`
-	CreatedAt   time.Time            `json:"createdAt"`
-	ConnectorID string               `json:"connectorId"`
-	Provider    string               `json:"provider"`
-	Type        models.PaymentType   `json:"type"`
-	Status      models.PaymentStatus `json:"status"`
-	Scheme      models.PaymentScheme `json:"scheme"`
-	Asset       models.Asset         `json:"asset"`
-	RawData     json.RawMessage      `json:"rawData"`
+	ID                   string               `json:"id"`
+	Reference            string               `json:"reference"`
+	CreatedAt            time.Time            `json:"createdAt"`
+	ConnectorID          string               `json:"connectorId"`
+	Provider             string               `json:"provider"`
+	Type                 models.PaymentType   `json:"type"`
+	Status               models.PaymentStatus `json:"status"`
+	Scheme               models.PaymentScheme `json:"scheme"`
+	Asset                models.Asset         `json:"asset"`
+	SourceAccountID      *models.AccountID    `json:"sourceAccountId,omitempty"`
+	DestinationAccountID *models.AccountID    `json:"destinationAccountId,omitempty"`
+	RawData              json.RawMessage      `json:"rawData"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
 	InitialAmount *big.Int          `json:"initialAmount"`
@@ -29,18 +31,20 @@ type paymentMessagePayload struct {
 
 func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) events.EventMessage {
 	payload := paymentMessagePayload{
-		ID:            payment.ID.String(),
-		Reference:     payment.Reference,
-		Type:          payment.Type,
-		Status:        payment.Status,
-		InitialAmount: payment.InitialAmount,
-		Amount:        payment.Amount,
-		Scheme:        payment.Scheme,
-		Asset:         payment.Asset,
-		CreatedAt:     payment.CreatedAt,
-		ConnectorID:   payment.ConnectorID.String(),
-		Provider:      provider.String(),
-		RawData:       payment.RawData,
+		ID:                   payment.ID.String(),
+		Reference:            payment.Reference,
+		Type:                 payment.Type,
+		Status:               payment.Status,
+		InitialAmount:        payment.InitialAmount,
+		Amount:               payment.Amount,
+		Scheme:               payment.Scheme,
+		Asset:                payment.Asset,
+		CreatedAt:            payment.CreatedAt,
+		ConnectorID:          payment.ConnectorID.String(),
+		Provider:             provider.String(),
+		SourceAccountID:      payment.SourceAccountID,
+		DestinationAccountID: payment.DestinationAccountID,
+		RawData:              payment.RawData,
 		Metadata: func() map[string]string {
 			ret := make(map[string]string)
 			for _, m := range payment.Metadata {
