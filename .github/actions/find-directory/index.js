@@ -11,7 +11,7 @@ function findDockerFile(dir) {
             /* if it is a directory, recurse */
             results = results.concat(findDockerFile(file));
         } else {
-            if (path.basename(file) === "Dockerfile") {
+            if (path.basename(file) === ".goreleaser.yml") {
                 const obj = { component: path.basename(path.dirname(file)), type: path.basename(path.dirname(path.dirname(file))) };
                 results.push(obj);
             }
