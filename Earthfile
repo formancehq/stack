@@ -52,7 +52,9 @@ build-sdk:
     COPY (+speakeasy/speakeasy) /bin/speakeasy
     COPY (+build-final-spec/final.json) final-spec.json
     COPY --dir libs/clients/go ./sdks/go
-    RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
+    IF [ "SPEAKEASY_API_KEY" != "" ]
+        RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
+    END
     RUN rm -rf ./libs/clients/go
     SAVE ARTIFACT sdks/go AS LOCAL ./libs/clients/go
     SAVE ARTIFACT sdks/go
