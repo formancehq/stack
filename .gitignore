@@ -34,5 +34,6 @@ worktrees
 sdks
 .DS_Store
 openapi/node_modules
+releases/sdks
 
 openapi.json

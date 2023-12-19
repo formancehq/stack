@@ -154,6 +154,7 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
     FOR component IN $(cd ./ee && ls -d */)
         BUILD --pass-args ./ee/${component}+pre-commit
     END
+    BUILD --pass-args ./tests/integration+pre-commit
 
 pr:
     LOCALLY

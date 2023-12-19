@@ -58,3 +58,33 @@ tests:
             DOCKER_HOSTNAME=$(ip addr show docker0 | head -3 | tail -1 | cut -d / -f1 | cut -d\  -f6) \
             $cmd ./suite/...
     END
+
+sources:
+    WORKDIR src
+    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
+    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
+    COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
+    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
+    COPY --pass-args (stack+build-final-spec/final.json) /src/libs/clients/build/generate.json
+    COPY --pass-args (stack+build-sdk/go) /src/libs/clients/go
+    COPY . /src/tests/integration
+    WORKDIR /src/tests/integration
+    SAVE ARTIFACT /src
+
+lint:
+    FROM core+builder-image
+    COPY (+sources/*) /src
+    COPY --pass-args +tidy/go.* .
+    WORKDIR /src/tests/integration
+    DO --pass-args stack+GO_LINT
+    SAVE ARTIFACT * AS LOCAL ./
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/*) /src
+    WORKDIR /src/tests/integration
+    DO --pass-args stack+GO_TIDY
+
+pre-commit:
+    BUILD --pass-args +tidy
