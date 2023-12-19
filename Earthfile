@@ -165,7 +165,7 @@ pr:
 
 deploy-staging:
     FROM core+base-image
-    RUN apk update && apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community helm git jq kubectl kustomize
+    RUN apk update && apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community helm git jq kubectl kustomize aws-cli
     COPY ./.kubeconfig /root/.kube/config
     RUN kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
     RUN kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
