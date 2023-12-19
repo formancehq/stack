@@ -113,7 +113,7 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 				return err
 			}
 
-			connectorPaymentID = resp.ID
+			connectorPaymentID = resp.BalanceTransaction.ID
 			paymentType = models.PaymentTypeTransfer
 		case models.AccountTypeExternal:
 			// Payout to an external account
@@ -129,7 +129,7 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 				return err
 			}
 
-			connectorPaymentID = resp.ID
+			connectorPaymentID = resp.BalanceTransaction.ID
 			paymentType = models.PaymentTypePayOut
 		}
 		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
