@@ -101,6 +101,45 @@ func (l *ConnectorsManager[ConnectorConfig]) readConfig(
 	return config, nil
 }
 
+func (l *ConnectorsManager[ConnectorConfig]) UpdateConfig(
+	ctx context.Context,
+	connectorID models.ConnectorID,
+	config ConnectorConfig,
+) error {
+	l.logger(ctx).Infof("Updating config of connector: %s", connectorID)
+
+	connectorManager, err := l.getManager(connectorID)
+	if err != nil {
+		l.logger(ctx).Errorf("Connector not installed")
+		return err
+	}
+
+	config = l.loader.ApplyDefaults(config)
+	if err = config.Validate(); err != nil {
+		return err
+	}
+
+	cfg, err := config.Marshal()
+	if err != nil {
+		return err
+	}
+
+	if err := l.store.UpdateConfig(ctx, connectorID, cfg); err != nil {
+		return newStorageError(err, "updating connector config")
+	}
+
+	if err := connectorManager.connector.UpdateConfig(ctx, config); err != nil {
+		switch {
+		case errors.Is(err, connectors.ErrInvalidConfig):
+			return errors.Wrap(ErrValidation, err.Error())
+		default:
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (l *ConnectorsManager[ConnectorConfig]) load(
 	ctx context.Context,
 	connectorID models.ConnectorID,
