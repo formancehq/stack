@@ -8,9 +8,15 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 func (c *Client) login(ctx context.Context) error {
+	f := connectors.ClientMetrics(ctx, "bankingcircle", "authorize")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
 		c.authorizationEndpoint+"/api/v1/authorizations/authorize", http.NoBody)
 	if err != nil {

@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type recipientsResponse struct {
@@ -22,6 +25,10 @@ type Recipient struct {
 }
 
 func (c *Client) GetRecipients(ctx context.Context, accountID string, page int, pageSize int) ([]*Recipient, error) {
+	f := connectors.ClientMetrics(ctx, "moneycorp", "list_recipients")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/accounts/%s/recipients", c.endpoint, accountID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {

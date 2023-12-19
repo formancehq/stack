@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type RecipientAccount struct {
@@ -16,6 +19,10 @@ type RecipientAccount struct {
 }
 
 func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64) ([]*RecipientAccount, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "list_recipient_accounts")
+	now := time.Now()
+	defer f(ctx, now)
+
 	var recipientAccounts []*RecipientAccount
 
 	req, err := http.NewRequestWithContext(ctx,
@@ -52,6 +59,10 @@ func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64) ([]
 }
 
 func (w *Client) GetRecipientAccount(ctx context.Context, accountID uint64) (*RecipientAccount, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "get_recipient_account")
+	now := time.Now()
+	defer f(ctx, now)
+
 	if rc, ok := w.recipientAccountsCache.Get(accountID); ok {
 		return rc, nil
 	}

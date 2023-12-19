@@ -1,8 +1,12 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Beneficiary struct {
@@ -11,7 +15,11 @@ type Beneficiary struct {
 	Created string `json:"created"`
 }
 
-func (m *Client) GetBeneficiaries() ([]*Beneficiary, error) {
+func (m *Client) GetBeneficiaries(ctx context.Context) ([]*Beneficiary, error) {
+	f := connectors.ClientMetrics(ctx, "modulr", "list_beneficiaries")
+	now := time.Now()
+	defer f(ctx, now)
+
 	resp, err := m.httpClient.Get(m.buildEndpoint("beneficiaries"))
 	if err != nil {
 		return nil, err

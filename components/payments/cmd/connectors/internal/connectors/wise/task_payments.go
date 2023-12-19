@@ -9,23 +9,15 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-)
-
-var (
-	initiateTransferAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_transfer"))...)
-	initiatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "initiate_payout"))...)
 )
 
 func taskInitiatePayment(
@@ -39,7 +31,6 @@ func taskInitiatePayment(
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info("initiate payment for transfer-initiation %s", transferID)
 
@@ -49,13 +40,11 @@ func taskInitiatePayment(
 			return err
 		}
 
-		attrs := metric.WithAttributes(connectorAttrs...)
 		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
 				transfer.Status = models.TransferInitiationStatusFailed
 				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
@@ -68,17 +57,7 @@ func taskInitiatePayment(
 			return err
 		}
 
-		attrs = initiateTransferAttrs
-		if transfer.Type == models.TransferInitiationTypePayout {
-			attrs = initiatePayoutAttrs
-		}
-
 		logger.Info("initiate payment between", transfer.SourceAccountID, " and %s", transfer.DestinationAccountID)
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
 
 		if transfer.SourceAccount == nil {
 			err = errors.New("missing source account")
@@ -106,7 +85,7 @@ func taskInitiatePayment(
 		amount := big.NewFloat(0).SetInt(transfer.Amount)
 		amount = amount.Quo(amount, big.NewFloat(math.Pow(10, float64(precision))))
 
-		quote, err := wiseClient.CreateQuote(profileID, curr, amount)
+		quote, err := wiseClient.CreateQuote(ctx, profileID, curr, amount)
 		if err != nil {
 			return err
 		}
@@ -124,7 +103,7 @@ func taskInitiatePayment(
 			}
 
 			var resp *client.Transfer
-			resp, err = wiseClient.CreateTransfer(quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
+			resp, err = wiseClient.CreateTransfer(ctx, quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
 			if err != nil {
 				return err
 			}
@@ -140,7 +119,7 @@ func taskInitiatePayment(
 			}
 
 			var resp *client.Payout
-			resp, err = wiseClient.CreatePayout(quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
+			resp, err = wiseClient.CreatePayout(ctx, quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
 			if err != nil {
 				return err
 			}
@@ -148,7 +127,6 @@ func taskInitiatePayment(
 			connectorPaymentID = resp.ID
 			paymentType = models.PaymentTypePayOut
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, 1, attrs)
 
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
@@ -186,11 +164,6 @@ func taskInitiatePayment(
 	}
 }
 
-var (
-	updateTransferAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_transfer"))...)
-	updatePayoutAttrs   = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "update_payout"))...)
-)
-
 func taskUpdatePaymentStatus(
 	wiseClient *client.Client,
 	transferID string,
@@ -203,7 +176,6 @@ func taskUpdatePaymentStatus(
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
@@ -212,22 +184,6 @@ func taskUpdatePaymentStatus(
 			return err
 		}
 		logger.Info("attempt: ", attempt, " fetching status of ", paymentID)
-
-		attrs := updateTransferAttrs
-		if transfer.Type == models.TransferInitiationTypePayout {
-			attrs = updatePayoutAttrs
-		}
-
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), attrs)
-		}()
-
-		defer func() {
-			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, attrs)
-			}
-		}()
 
 		var status string
 		switch transfer.Type {

@@ -1,8 +1,12 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 //nolint:tagliatelle // allow different styled tags in client
@@ -19,7 +23,11 @@ type Transaction struct {
 	AdditionalInfo  interface{} `json:"additionalInfo"`
 }
 
-func (m *Client) GetTransactions(accountID string) ([]Transaction, error) {
+func (m *Client) GetTransactions(ctx context.Context, accountID string) ([]Transaction, error) {
+	f := connectors.ClientMetrics(ctx, "modulr", "list_transactions")
+	now := time.Now()
+	defer f(ctx, now)
+
 	resp, err := m.httpClient.Get(m.buildEndpoint("accounts/%s/transactions", accountID))
 	if err != nil {
 		return nil, err

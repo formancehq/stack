@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type PayoutRequest struct {
@@ -41,6 +44,10 @@ type PayoutResponse struct {
 }
 
 func (c *Client) InitiatePayout(ctx context.Context, payoutRequest *PayoutRequest) (*PayoutResponse, error) {
+	f := connectors.ClientMetrics(ctx, "mangopay", "initiate_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/v2.01/%s/payouts/bankwire", c.endpoint, c.clientID)
 
 	body, err := json.Marshal(payoutRequest)
@@ -79,6 +86,10 @@ func (c *Client) InitiatePayout(ctx context.Context, payoutRequest *PayoutReques
 }
 
 func (c *Client) GetPayout(ctx context.Context, payoutID string) (*PayoutResponse, error) {
+	f := connectors.ClientMetrics(ctx, "mangopay", "get_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/v2.01/%s/payouts/%s", c.endpoint, c.clientID, payoutID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)

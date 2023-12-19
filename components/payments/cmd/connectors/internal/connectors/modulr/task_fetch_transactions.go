@@ -7,21 +7,13 @@ import (
 	"math"
 	"math/big"
 	"strings"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
@@ -30,18 +22,11 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 		logger logging.Logger,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		logger.Info("Fetching transactions for account", accountID)
 
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
-		}()
-
-		transactions, err := client.GetTransactions(accountID)
+		transactions, err := client.GetTransactions(ctx, accountID)
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
@@ -60,7 +45,6 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 			precision, ok := supportedCurrenciesWithDecimal[transaction.Account.Currency]
 			if !ok {
 				logger.Errorf("currency %s is not supported", transaction.Account.Currency)
-				metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
 				continue
 			}
 
@@ -123,11 +107,9 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 		}
 
 		if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(transactions)), paymentsAttrs)
 		return nil
 	}
 }

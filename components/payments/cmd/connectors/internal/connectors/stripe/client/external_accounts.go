@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
 )
@@ -15,6 +17,10 @@ const (
 )
 
 func (d *DefaultClient) ExternalAccounts(ctx context.Context, options ...ClientOption) ([]*stripe.ExternalAccount, bool, error) {
+	f := connectors.ClientMetrics(ctx, "stripe", "list_external_accounts")
+	now := time.Now()
+	defer f(ctx, now)
+
 	if d.stripeAccount == "" {
 		return nil, false, errors.New("stripe account is required")
 	}

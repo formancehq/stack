@@ -8,6 +8,11 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
+	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 type Transfer struct {
@@ -61,6 +66,10 @@ func (t *Transfer) UnmarshalJSON(data []byte) error {
 }
 
 func (w *Client) GetTransfers(ctx context.Context, profile *Profile) ([]Transfer, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "list_transfers")
+	now := time.Now()
+	defer f(ctx, now)
+
 	var transfers []Transfer
 
 	limit := 10
@@ -184,6 +193,10 @@ func (w *Client) GetTransfers(ctx context.Context, profile *Profile) ([]Transfer
 }
 
 func (w *Client) GetTransfer(ctx context.Context, transferID string) (*Transfer, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "get_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx,
 		http.MethodGet, w.endpoint("v1/transfers/"+transferID), http.NoBody)
 	if err != nil {
@@ -215,7 +228,12 @@ func (w *Client) GetTransfer(ctx context.Context, transferID string) (*Transfer,
 	return &transfer, nil
 }
 
-func (w *Client) CreateTransfer(quote Quote, targetAccount uint64, transactionID string) (*Transfer, error) {
+func (w *Client) CreateTransfer(ctx context.Context, quote Quote, targetAccount uint64, transactionID string) (*Transfer, error) {
+	metrics.GetMetricsRegistry().ConnectorPSPCalls().Add(ctx, 1, metric.WithAttributes([]attribute.KeyValue{
+		attribute.String("connector", "wise"),
+		attribute.String("operation", "initiate_transfer"),
+	}...))
+
 	req, err := json.Marshal(map[string]interface{}{
 		"targetAccount":         targetAccount,
 		"quoteUuid":             quote.ID.String(),

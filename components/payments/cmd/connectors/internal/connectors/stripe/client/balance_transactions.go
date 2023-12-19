@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
 )
@@ -23,6 +25,10 @@ type TransactionsListResponse struct {
 func (d *DefaultClient) BalanceTransactions(ctx context.Context,
 	options ...ClientOption,
 ) ([]*stripe.BalanceTransaction, bool, error) {
+	f := connectors.ClientMetrics(ctx, "stripe", "list_balance_transactions")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, balanceTransactionsEndpoint, nil)
 	if err != nil {
 		return nil, false, errors.Wrap(err, "creating http request")

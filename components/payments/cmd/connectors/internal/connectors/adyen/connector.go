@@ -9,16 +9,9 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
 )
 
 const Name = models.ConnectorProviderAdyen
-
-var (
-	connectorAttrs = []attribute.KeyValue{
-		attribute.String("connector", Name.String()),
-	}
-)
 
 type Connector struct {
 	logger logging.Logger

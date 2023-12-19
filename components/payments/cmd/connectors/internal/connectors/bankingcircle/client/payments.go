@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 //nolint:tagliatelle // allow for client-side structures
@@ -83,6 +85,10 @@ func (c *Client) GetPayments(ctx context.Context, page int) ([]*Payment, error) 
 		return nil, err
 	}
 
+	f := connectors.ClientMetrics(ctx, "bankingcircle", "list_payments")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpoint+"/api/v1/payments/singles", http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create payments request: %w", err)
@@ -138,6 +144,10 @@ func (c *Client) GetPaymentStatus(ctx context.Context, paymentID string) (*Statu
 	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
 		return nil, err
 	}
+
+	f := connectors.ClientMetrics(ctx, "bankingcircle", "get_payment_status")
+	now := time.Now()
+	defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/v1/payments/singles/%s/status", c.endpoint, paymentID), http.NoBody)
 	if err != nil {

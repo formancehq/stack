@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -68,6 +69,10 @@ func (t *apiTransport) login(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to marshal login request: %w", err)
 	}
+
+	f := connectors.ClientMetrics(ctx, "moneycorp", "login")
+	now := time.Now()
+	defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
 		t.endpoint+"/login", bytes.NewBuffer(requestBody))

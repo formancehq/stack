@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type user struct {
@@ -31,6 +34,10 @@ func (c *Client) GetAllUsers(ctx context.Context) ([]*user, error) {
 }
 
 func (c *Client) getUsers(ctx context.Context, page int) ([]*user, error) {
+	f := connectors.ClientMetrics(ctx, "mangopay", "list_users")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/v2.01/%s/users", c.endpoint, c.clientID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {

@@ -8,6 +8,8 @@ import (
 	"math/big"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type PaymentAccount struct {
@@ -39,6 +41,10 @@ func (c *Client) InitiateTransferOrPayouts(ctx context.Context, transferRequest 
 	if err := c.ensureAccessTokenIsValid(ctx); err != nil {
 		return nil, err
 	}
+
+	f := connectors.ClientMetrics(ctx, "bankingcircle", "create_transfers_payouts")
+	now := time.Now()
+	defer f(ctx, now)
 
 	body, err := json.Marshal(transferRequest)
 	if err != nil {

@@ -8,22 +8,15 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 )
 
 const (
 	rootAccountReference = "root"
-)
-
-var (
-	accountsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
 )
 
 func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task.Task {
@@ -34,16 +27,9 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsAttrs)
-		}()
-
 		// Register root account.
 		if err := registerRootAccount(ctx, connectorID, ingester, scheduler); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 			return err
 		}
 
@@ -58,7 +44,6 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 					if err := ingestAccountsBatch(ctx, connectorID, ingester, batch); err != nil {
 						return err
 					}
-					metricsRegistry.ConnectorObjects().Add(ctx, int64(len(batch)), accountsAttrs)
 
 					for _, account := range batch {
 						transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
@@ -126,7 +111,6 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 			return err
 		}
 

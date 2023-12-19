@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Contact struct {
@@ -14,6 +17,10 @@ type Contact struct {
 }
 
 func (c *Client) GetContactID(ctx context.Context, accountID string) (*Contact, error) {
+	f := connectors.ClientMetrics(ctx, "currencycloud", "list_contacts")
+	now := time.Now()
+	defer f(ctx, now)
+
 	form := url.Values{}
 	form.Set("account_id", accountID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,

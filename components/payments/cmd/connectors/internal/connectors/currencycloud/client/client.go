@@ -1,8 +1,10 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -59,7 +61,9 @@ func NewClient(loginID, apiKey, endpoint string) (*Client, error) {
 		apiKey:     apiKey,
 	}
 
-	authToken, err := c.authenticate()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	authToken, err := c.authenticate(ctx)
 	if err != nil {
 		return nil, err
 	}

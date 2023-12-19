@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type Balance struct {
@@ -35,6 +37,10 @@ type Balance struct {
 }
 
 func (w *Client) GetBalances(ctx context.Context, profileID uint64) ([]*Balance, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "list_balances")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx,
 		http.MethodGet, w.endpoint(fmt.Sprintf("v4/profiles/%d/balances?types=STANDARD", profileID)), http.NoBody)
 	if err != nil {

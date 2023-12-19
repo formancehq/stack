@@ -6,21 +6,13 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	paymentsAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "payments"))...)
 )
 
 func taskFetchTransfers(wiseClient *client.Client, profileID uint64) task.Task {
@@ -30,18 +22,11 @@ func taskFetchTransfers(wiseClient *client.Client, profileID uint64) task.Task {
 		logger logging.Logger,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), paymentsAttrs)
-		}()
-
 		transfers, err := wiseClient.GetTransfers(ctx, &client.Profile{
 			ID: profileID,
 		})
 		if err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
 
@@ -69,7 +54,6 @@ func taskFetchTransfers(wiseClient *client.Client, profileID uint64) task.Task {
 			precision, ok := supportedCurrenciesWithDecimal[transfer.TargetCurrency]
 			if !ok {
 				logger.Errorf("currency %s is not supported", transfer.TargetCurrency)
-				metricsRegistry.ConnectorCurrencyNotSupported().Add(ctx, 1, metric.WithAttributes(connectorAttrs...))
 				continue
 			}
 
@@ -121,10 +105,8 @@ func taskFetchTransfers(wiseClient *client.Client, profileID uint64) task.Task {
 		}
 
 		if err := ingester.IngestPayments(ctx, connectorID, paymentBatch, struct{}{}); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, paymentsAttrs)
 			return err
 		}
-		metricsRegistry.ConnectorObjects().Add(ctx, int64(len(paymentBatch)), paymentsAttrs)
 
 		return nil
 	}

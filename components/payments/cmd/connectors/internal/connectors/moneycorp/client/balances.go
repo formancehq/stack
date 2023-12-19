@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type balancesResponse struct {
@@ -24,6 +27,10 @@ type Balance struct {
 }
 
 func (c *Client) GetAccountBalances(ctx context.Context, accountID string) ([]*Balance, error) {
+	f := connectors.ClientMetrics(ctx, "moneycorp", "list_account_balances")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/accounts/%s/balances", c.endpoint, accountID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {

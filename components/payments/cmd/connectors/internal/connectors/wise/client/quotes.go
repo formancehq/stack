@@ -2,12 +2,15 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"math/big"
 	"net/http"
+	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/google/uuid"
 )
 
@@ -15,7 +18,11 @@ type Quote struct {
 	ID uuid.UUID `json:"id"`
 }
 
-func (w *Client) CreateQuote(profileID string, currency string, amount *big.Float) (Quote, error) {
+func (w *Client) CreateQuote(ctx context.Context, profileID, currency string, amount *big.Float) (Quote, error) {
+	f := connectors.ClientMetrics(ctx, "wise", "create_quote")
+	now := time.Now()
+	defer f(ctx, now)
+
 	var response Quote
 
 	req, err := json.Marshal(map[string]interface{}{

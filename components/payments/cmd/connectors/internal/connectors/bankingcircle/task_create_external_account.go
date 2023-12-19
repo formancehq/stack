@@ -6,18 +6,11 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-)
-
-var (
-	bankAccountCreationAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "bank_account"))...)
 )
 
 // No need to call any API for banking circle since it does not support it.
@@ -33,7 +26,6 @@ func taskCreateExternalAccount(
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		storageReader storage.Reader,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
 		bankAccount, err := storageReader.GetBankAccount(ctx, bankAccountID, false)
 		if err != nil {
@@ -55,16 +47,13 @@ func taskCreateExternalAccount(
 				Type:        models.AccountTypeExternalFormance,
 			},
 		}); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, bankAccountCreationAttrs)
 			return err
 		}
 
 		if err = ingester.LinkBankAccountWithAccount(ctx, bankAccount, &accountID); err != nil {
-			metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, bankAccountCreationAttrs)
 			return err
 		}
 
-		metricsRegistry.ConnectorObjects().Add(ctx, 1, bankAccountCreationAttrs)
 		return nil
 	}
 }

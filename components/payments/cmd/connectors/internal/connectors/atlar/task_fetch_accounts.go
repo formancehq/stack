@@ -9,63 +9,37 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
-	atlar_client "github.com/get-momo/atlar-v1-go-client/client"
 	"github.com/get-momo/atlar-v1-go-client/client/accounts"
-	"github.com/get-momo/atlar-v1-go-client/client/counterparties"
 	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 )
 
-var (
-	accountsBalancesAttrs = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts_and_balances"))...)
-	accountsAttrs         = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "accounts"))...)
-	balancesAttrs         = metric.WithAttributes(append(connectorAttrs, attribute.String(metrics.ObjectAttributeKey, "balances"))...)
-)
-
-func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
+func FetchAccountsTask(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
 		connectorID models.ConnectorID,
-		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
-		metricsRegistry metrics.MetricsRegistry,
 	) error {
-		now := time.Now()
-		defer func() {
-			metricsRegistry.ConnectorObjectsLatency().Record(ctx, time.Since(now).Milliseconds(), accountsBalancesAttrs)
-		}()
-
 		// Pagination works by cursor token.
-		accountsParams := accounts.GetV1AccountsParams{
-			Limit: pointer.For(int64(config.ApiConfig.PageSize)),
-		}
 		for token := ""; ; {
 			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 			defer cancel()
-			accountsParams.Context = requestCtx
-			accountsParams.Token = &token
-			limit := int64(config.PageSize)
-			accountsParams.Limit = &limit
-			pagedAccounts, err := client.Accounts.GetV1Accounts(&accountsParams)
+			pagedAccounts, err := client.GetV1Accounts(requestCtx, token, int64(config.PageSize))
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
 			}
 
 			token = pagedAccounts.Payload.NextToken
 
-			if err := ingestAccountsBatch(ctx, connectorID, ingester, metricsRegistry, pagedAccounts); err != nil {
+			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
 				return err
 			}
 
@@ -75,25 +49,17 @@ func FetchAccountsTask(config Config, client *atlar_client.Rest) task.Task {
 		}
 
 		// Pagination works by cursor token.
-		externalAccountsParams := external_accounts.GetV1ExternalAccountsParams{
-			Limit: pointer.For(int64(config.ApiConfig.PageSize)),
-		}
 		for token := ""; ; {
 			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 			defer cancel()
-			externalAccountsParams.Context = requestCtx
-			externalAccountsParams.Token = &token
-			limit := int64(config.PageSize)
-			externalAccountsParams.Limit = &limit
-			pagedExternalAccounts, err := client.ExternalAccounts.GetV1ExternalAccounts(&externalAccountsParams)
+			pagedExternalAccounts, err := client.GetV1ExternalAccounts(requestCtx, token, int64(config.PageSize))
 			if err != nil {
-				metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsBalancesAttrs)
 				return err
 			}
 
 			token = pagedExternalAccounts.Payload.NextToken
 
-			if err := ingestExternalAccountsBatch(ctx, connectorID, ingester, metricsRegistry, pagedExternalAccounts, client); err != nil {
+			if err := ingestExternalAccountsBatch(ctx, connectorID, ingester, pagedExternalAccounts, client); err != nil {
 				return err
 			}
 
@@ -127,7 +93,6 @@ func ingestAccountsBatch(
 	ctx context.Context,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
-	metricsRegistry metrics.MetricsRegistry,
 	pagedAccounts *accounts.GetV1AccountsOK,
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
@@ -191,16 +156,12 @@ func ingestAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs)
 
 	if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, balancesAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), balancesAttrs)
 
 	return nil
 }
@@ -209,19 +170,15 @@ func ingestExternalAccountsBatch(
 	ctx context.Context,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
-	metricsRegistry metrics.MetricsRegistry,
 	pagedExternalAccounts *external_accounts.GetV1ExternalAccountsOK,
-	client *atlar_client.Rest,
+	client *client.Client,
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
 
-	var counterpartyParams counterparties.GetV1CounterpartiesIDParams
 	for _, externalAccount := range pagedExternalAccounts.Payload.Items {
 		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		counterpartyParams.Context = requestCtx
-		counterpartyParams.ID = externalAccount.CounterpartyID
-		counterparty_response, err := client.Counterparties.GetV1CounterpartiesID(&counterpartyParams)
+		counterparty_response, err := client.GetV1CounterpartiesID(requestCtx, externalAccount.CounterpartyID)
 		if err != nil {
 			return err
 		}
@@ -236,10 +193,8 @@ func ingestExternalAccountsBatch(
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		metricsRegistry.ConnectorObjectsErrors().Add(ctx, 1, accountsAttrs)
 		return err
 	}
-	metricsRegistry.ConnectorObjects().Add(ctx, int64(len(accountsBatch)), accountsAttrs)
 
 	return nil
 }

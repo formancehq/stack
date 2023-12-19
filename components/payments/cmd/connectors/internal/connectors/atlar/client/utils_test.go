@@ -1,4 +1,4 @@
-package atlar
+package client
 
 import (
 	"errors"

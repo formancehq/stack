@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type TransferRequest struct {
@@ -52,6 +55,10 @@ type TransferResponse struct {
 }
 
 func (c *Client) InitiateTransfer(ctx context.Context, transferRequest *TransferRequest) (*TransferResponse, error) {
+	f := connectors.ClientMetrics(ctx, "currencycloud", "initiate_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	form := transferRequest.ToFormData()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
 		c.buildEndpoint("v2/transfers/create"), strings.NewReader(form.Encode()))
@@ -79,6 +86,10 @@ func (c *Client) InitiateTransfer(ctx context.Context, transferRequest *Transfer
 }
 
 func (c *Client) GetTransfer(ctx context.Context, transferID string) (*TransferResponse, error) {
+	f := connectors.ClientMetrics(ctx, "currencycloud", "get_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
 		c.buildEndpoint("v2/transfers/%s", transferID), http.NoBody)
 	if err != nil {

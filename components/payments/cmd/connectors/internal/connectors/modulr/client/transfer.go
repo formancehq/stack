@@ -2,10 +2,14 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"math/big"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type DestinationType string
@@ -43,7 +47,11 @@ type TransferResponse struct {
 	Message           string `json:"message"`
 }
 
-func (c *Client) InitiateTransfer(transferRequest *TransferRequest) (*TransferResponse, error) {
+func (c *Client) InitiateTransfer(ctx context.Context, transferRequest *TransferRequest) (*TransferResponse, error) {
+	f := connectors.ClientMetrics(ctx, "modulr", "initiate_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	body, err := json.Marshal(transferRequest)
 	if err != nil {
 		return nil, err
@@ -73,7 +81,11 @@ func (c *Client) InitiateTransfer(transferRequest *TransferRequest) (*TransferRe
 	return &res, nil
 }
 
-func (c *Client) GetTransfer(transferID string) (*TransferResponse, error) {
+func (c *Client) GetTransfer(ctx context.Context, transferID string) (*TransferResponse, error) {
+	f := connectors.ClientMetrics(ctx, "modulr", "get_transfer")
+	now := time.Now()
+	defer f(ctx, now)
+
 	resp, err := c.httpClient.Get(c.buildEndpoint("payments?id=%s", transferID))
 	if err != nil {
 		return nil, err

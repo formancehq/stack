@@ -1,8 +1,12 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 //nolint:tagliatelle // allow for clients
@@ -22,7 +26,11 @@ type Account struct {
 	CreatedDate string `json:"createdDate"`
 }
 
-func (m *Client) GetAccounts() ([]*Account, error) {
+func (m *Client) GetAccounts(ctx context.Context) ([]*Account, error) {
+	f := connectors.ClientMetrics(ctx, "modulr", "list_accounts")
+	now := time.Now()
+	defer f(ctx, now)
+
 	resp, err := m.httpClient.Get(m.buildEndpoint("accounts"))
 	if err != nil {
 		return nil, err

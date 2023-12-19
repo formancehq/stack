@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type transactionsResponse struct {
@@ -28,6 +31,10 @@ type Transaction struct {
 }
 
 func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int) ([]*Transaction, error) {
+	f := connectors.ClientMetrics(ctx, "moneycorp", "list_transactions")
+	now := time.Now()
+	defer f(ctx, now)
+
 	endpoint := fmt.Sprintf("%s/accounts/%s/transactions/find", c.endpoint, accountID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, http.NoBody)
 	if err != nil {

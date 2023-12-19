@@ -2,7 +2,9 @@ package client
 
 import (
 	"context"
+	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/payout"
@@ -17,6 +19,10 @@ type CreatePayoutRequest struct {
 }
 
 func (d *DefaultClient) CreatePayout(ctx context.Context, createPayoutRequest *CreatePayoutRequest, options ...ClientOption) (*stripe.Payout, error) {
+	f := connectors.ClientMetrics(ctx, "stripe", "initiate_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	stripe.Key = d.apiKey
 
 	params := &stripe.PayoutParams{
@@ -50,6 +56,10 @@ func (d *DefaultClient) CreatePayout(ctx context.Context, createPayoutRequest *C
 }
 
 func (d *DefaultClient) GetPayout(ctx context.Context, payoutID string, options ...ClientOption) (*stripe.Payout, error) {
+	f := connectors.ClientMetrics(ctx, "stripe", "get_payout")
+	now := time.Now()
+	defer f(ctx, now)
+
 	stripe.Key = d.apiKey
 
 	payoutResponse, err := payout.Get(payoutID, nil)

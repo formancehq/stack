@@ -5,85 +5,61 @@ import (
 	"go.opentelemetry.io/otel/metric/noop"
 )
 
-const (
-	ObjectAttributeKey = "object"
-)
+var registry MetricsRegistry
+
+func GetMetricsRegistry() MetricsRegistry {
+	if registry == nil {
+		registry = NewNoOpMetricsRegistry()
+	}
+
+	return registry
+}
 
 type MetricsRegistry interface {
-	ConnectorCurrencyNotSupported() metric.Int64Counter
-	ConnectorObjects() metric.Int64Counter
-	ConnectorObjectsLatency() metric.Int64Histogram
-	ConnectorObjectsErrors() metric.Int64Counter
+	ConnectorPSPCalls() metric.Int64Counter
+	ConnectorPSPCallLatencies() metric.Int64Histogram
 }
 
 type metricsRegistry struct {
-	connectorCurrencyNotSupported metric.Int64Counter
-	connectorObjects              metric.Int64Counter
-	connectorObjectsLatency       metric.Int64Histogram
-	connectorObjectsErrors        metric.Int64Counter
+	connectorPSPCalls         metric.Int64Counter
+	connectorPSPCallLatencies metric.Int64Histogram
 }
 
 func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistry, error) {
 	meter := meterProvider.Meter("payments")
 
-	connectorCurrencyNotSupported, err := meter.Int64Counter(
-		"payments_connectors_currency_not_supported",
+	connectorPSPCalls, err := meter.Int64Counter(
+		"payments_connectors_psp_calls",
 		metric.WithUnit("1"),
-		metric.WithDescription("Currency not supported by connector"),
+		metric.WithDescription("payments connectors psp calls"),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	connectorObjects, err := meter.Int64Counter(
-		"payments_connectors_objects",
-		metric.WithUnit("1"),
-		metric.WithDescription("Object fetch from connectors (accounts, payments, balances, ...)"),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	connectorObjectLatencies, err := meter.Int64Histogram(
-		"payments_connectors_object_latencies",
+	connectorPSPCallLatencies, err := meter.Int64Histogram(
+		"payments_connectors_psp_calls_latencies",
 		metric.WithUnit("ms"),
-		metric.WithDescription("Object latencies from connectors (accounts, payments, balances, ...)"),
+		metric.WithDescription("payments connectors psp calls latencies"),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	connectorObjectErrors, err := meter.Int64Counter(
-		"payments_connectors_object_errors",
-		metric.WithUnit("1"),
-		metric.WithDescription("Obejct errors from connectors (accounts, payments, balances, ...)"),
-	)
-	if err != nil {
-		return nil, err
+	registry = &metricsRegistry{
+		connectorPSPCalls:         connectorPSPCalls,
+		connectorPSPCallLatencies: connectorPSPCallLatencies,
 	}
 
-	return &metricsRegistry{
-		connectorCurrencyNotSupported: connectorCurrencyNotSupported,
-		connectorObjects:              connectorObjects,
-		connectorObjectsLatency:       connectorObjectLatencies,
-		connectorObjectsErrors:        connectorObjectErrors,
-	}, nil
+	return registry, nil
 }
 
-func (m *metricsRegistry) ConnectorCurrencyNotSupported() metric.Int64Counter {
-	return m.connectorCurrencyNotSupported
+func (m *metricsRegistry) ConnectorPSPCalls() metric.Int64Counter {
+	return m.connectorPSPCalls
 }
 
-func (m *metricsRegistry) ConnectorObjects() metric.Int64Counter {
-	return m.connectorObjects
-}
-
-func (m *metricsRegistry) ConnectorObjectsLatency() metric.Int64Histogram {
-	return m.connectorObjectsLatency
-}
-
-func (m *metricsRegistry) ConnectorObjectsErrors() metric.Int64Counter {
-	return m.connectorObjectsErrors
+func (m *metricsRegistry) ConnectorPSPCallLatencies() metric.Int64Histogram {
+	return m.connectorPSPCallLatencies
 }
 
 type NoopMetricsRegistry struct{}
@@ -92,22 +68,17 @@ func NewNoOpMetricsRegistry() *NoopMetricsRegistry {
 	return &NoopMetricsRegistry{}
 }
 
-func (m *NoopMetricsRegistry) ConnectorCurrencyNotSupported() metric.Int64Counter {
-	counter, _ := noop.NewMeterProvider().Meter("payments").Int64Counter("payments_connectors_currency_not_supported")
+func (m *NoopMetricsRegistry) ConnectorPSPCalls() metric.Int64Counter {
+	counter, _ := noop.NewMeterProvider().Meter("payments").Int64Counter("payments_connectors_psp_calls")
 	return counter
 }
 
-func (m *NoopMetricsRegistry) ConnectorObjects() metric.Int64Counter {
-	counter, _ := noop.NewMeterProvider().Meter("payments").Int64Counter("payments_connectors_objects")
-	return counter
-}
-
-func (m *NoopMetricsRegistry) ConnectorObjectsLatency() metric.Int64Histogram {
-	histogram, _ := noop.NewMeterProvider().Meter("payments").Int64Histogram("payments_connectors_object_latencies")
+func (m *NoopMetricsRegistry) ConnectorPSPCallLatencies() metric.Int64Histogram {
+	histogram, _ := noop.NewMeterProvider().Meter("payments").Int64Histogram("payments_connectors_psp_calls_latencies")
 	return histogram
 }
 
-func (m *NoopMetricsRegistry) ConnectorObjectsErrors() metric.Int64Counter {
-	counter, _ := noop.NewMeterProvider().Meter("payments").Int64Counter("payments_connectors_object_errors")
-	return counter
-}
+var (
+	_ MetricsRegistry = (*metricsRegistry)(nil)
+	_ MetricsRegistry = (*NoopMetricsRegistry)(nil)
+)
