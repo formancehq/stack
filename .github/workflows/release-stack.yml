@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" | sed 's/\.[^.]*$//' >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/releases/*/}" | sed 's/\.[^.]*$//' >> $GITHUB_ENV
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
