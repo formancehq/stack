@@ -165,10 +165,9 @@ jobs:
           output-credentials: true
       - name: Update kube config
         run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1 --role-arn $(aws sts get-caller-identity | jq .Arn | sed 's|\(.*\)/.*|\1|')
+      - run: kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
       - name: Deploy in staging
         run: |
-          aws sts get-caller-identity | jq .Arn
-          kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
           kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
           kubectl patch Versions default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
           kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
