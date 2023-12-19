@@ -79,7 +79,7 @@ func (l module) Versions() map[string]modules.Version {
 				}}
 			},
 		},
-		"v2.0.0": {
+		"v2.0.0-alpha": {
 			DatabaseMigration: &modules.DatabaseMigration{
 				Shutdown: true,
 				Command:  []string{"buckets", "upgrade-all"},
