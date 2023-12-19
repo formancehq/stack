@@ -56,6 +56,7 @@ paths:
                 $ref: '#/components/schemas/V2CreateTriggerResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+
   /v2/triggers/{triggerID}:
     parameters:
       - name: triggerID
@@ -94,6 +95,37 @@ paths:
 
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+
+  /v2/triggers/{triggerID}/test:
+    parameters:
+      - name: triggerID
+        description: The trigger id
+        in: path
+        schema:
+          type: string
+        required: true
+    post:
+      summary: Test trigger
+      operationId: testTrigger
+      description: Test trigger
+      tags:
+        - Orchestration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Test a trigger
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2TestTriggerResponse'
+        default:
+          $ref: '#/components/responses/V2ErrorResponse'
+
   /v2/triggers/{triggerID}/occurrences:
     parameters:
       - name: triggerID
@@ -1520,6 +1552,34 @@ components:
           input: 100
           output: 10
           balance: 90
+
+    V2TestTriggerResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/V2TriggerTest'
+
+    V2TriggerTest:
+      type: object
+      properties:
+        filter:
+          type: object
+          properties:
+            match:
+              type: boolean
+            error:
+              type: string
+        variables:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              value:
+                type: string
+              error:
+                type: string
 
   responses:
     V2ErrorResponse:

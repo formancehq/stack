@@ -133,23 +133,30 @@ func evalFilter(event any, filter string) (bool, error) {
 	}
 }
 
+func evalVariable(rawObject any, e string) (string, error) {
+	p, err := expr.Compile(e)
+	if err != nil {
+		return "", err
+	}
+
+	output, err := expr.Run(p, map[string]any{
+		"event": rawObject,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprint(output), nil
+}
+
 func evalVariables(rawObject any, vars map[string]string) (map[string]string, error) {
 	results := make(map[string]string)
 	for k, v := range vars {
-
-		p, err := expr.Compile(v)
+		var err error
+		results[k], err = evalVariable(rawObject, v)
 		if err != nil {
 			return nil, err
 		}
-
-		output, err := expr.Run(p, map[string]any{
-			"event": rawObject,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		results[k] = fmt.Sprint(output)
 	}
 
 	return results, nil

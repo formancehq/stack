@@ -32,8 +32,11 @@ func (a Activities) ListTriggers(ctx context.Context, request ProcessEventReques
 		if trigger.Filter != nil && *trigger.Filter != "" {
 			ok, err = evalFilter(request.Event.Payload, *trigger.Filter)
 			if err != nil {
-				panic("unable to eval filter")
+				logging.WithFields(map[string]any{
+					"filter": *trigger.Filter,
+				}).Errorf("unable to eval filter: %s", err)
 			}
+			continue
 		}
 
 		logging.FromContext(ctx).

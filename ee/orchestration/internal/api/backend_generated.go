@@ -278,6 +278,21 @@ func (mr *MockBackendMockRecorder) RunWorkflow(ctx, id, input any) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunWorkflow", reflect.TypeOf((*MockBackend)(nil).RunWorkflow), ctx, id, input)
 }
 
+// TestTrigger mocks base method.
+func (m *MockBackend) TestTrigger(ctx context.Context, triggerID string, data map[string]any) (*triggers.TestTriggerResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TestTrigger", ctx, triggerID, data)
+	ret0, _ := ret[0].(*triggers.TestTriggerResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TestTrigger indicates an expected call of TestTrigger.
+func (mr *MockBackendMockRecorder) TestTrigger(ctx, triggerID, data any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TestTrigger", reflect.TypeOf((*MockBackend)(nil).TestTrigger), ctx, triggerID, data)
+}
+
 // Wait mocks base method.
 func (m *MockBackend) Wait(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
