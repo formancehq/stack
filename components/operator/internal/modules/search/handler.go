@@ -211,6 +211,7 @@ func reindexCron(ctx modules.ReconciliationConfig) []modules.Cron {
 					curl http://search-benthos.%s.svc.cluster.local:4195/ledger_reindex_all -X POST -H 'Content-Type: application/json' -d '{}'`, ctx.Stack.Name),
 				Image: "curlimages/curl:8.2.1",
 				Name:  "reindex-ledger",
+				Debug: ctx.Configuration.Spec.Services.Search.Debug,
 			},
 			Schedule: "* * * * *",
 			Suspend:  true,
@@ -252,6 +253,7 @@ func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 					resolveContext.Configuration.Spec.Services.Search.SearchResourceProperties,
 					modules.ResourceSizeSmall(),
 				),
+				Debug: ctx.Configuration.Spec.Services.Search.Debug,
 			}
 		},
 	}
@@ -395,6 +397,7 @@ func benthosService(ctx modules.ReconciliationConfig) *modules.Service {
 					resolveContext.Configuration.Spec.Services.Search.BenthosResourceProperties,
 					modules.ResourceSizeSmall(),
 				),
+				Debug: resolveContext.Configuration.Spec.Services.Search.Debug,
 			}
 		},
 	}

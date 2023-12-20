@@ -83,6 +83,10 @@ type Trigger struct {
 	CreatedAt time.Time `json:"createdAt" bun:"created_at"`
 }
 
+func (t Trigger) GetID() string {
+	return t.ID
+}
+
 func NewTrigger(data TriggerData) (*Trigger, error) {
 	return &Trigger{
 		TriggerData: data,
@@ -155,7 +159,7 @@ func evalVariables(rawObject any, vars map[string]string) (map[string]string, er
 		var err error
 		results[k], err = evalVariable(rawObject, v)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "evaluating variable: %s (expr: %s)", k, v)
 		}
 	}
 

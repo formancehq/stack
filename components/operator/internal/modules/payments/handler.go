@@ -56,6 +56,7 @@ func (p module) Versions() map[string]modules.Version {
 								resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
 								modules.ResourceSizeSmall(),
 							),
+							Debug: resolveContext.Configuration.Spec.Services.Payments.Debug,
 						}
 					},
 					InitContainer: func(resolveContext modules.ContainerResolutionConfiguration) []modules.Container {
@@ -64,6 +65,7 @@ func (p module) Versions() map[string]modules.Version {
 							Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
 							Env:     paymentsEnvVars(resolveContext),
 							Command: migrateCommand,
+							Debug:   resolveContext.Configuration.Spec.Services.Payments.Debug,
 						}}
 					},
 				}}
@@ -309,6 +311,7 @@ func paymentsServices(
 					resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
 					modules.ResourceSizeSmall(),
 				),
+				Debug: resolveContext.Configuration.Spec.Services.Payments.Debug,
 			}
 		},
 	}}
@@ -363,6 +366,7 @@ func paymentsServicesSplitted(
 						resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
 						modules.ResourceSizeSmall(),
 					),
+					Debug: resolveContext.Configuration.Spec.Services.Payments.Debug,
 				}
 			},
 		},
@@ -409,6 +413,7 @@ func paymentsServicesSplitted(
 						resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
 						modules.ResourceSizeSmall(),
 					),
+					Debug: resolveContext.Configuration.Spec.Services.Payments.Debug,
 				}
 			},
 		},

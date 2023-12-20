@@ -143,7 +143,6 @@ func EnableAuditPlugin(ctx modules.ReconciliationConfig) bool {
 }
 
 func createCaddyfile(context modules.ServiceInstallConfiguration) string {
-	fmt.Println("TOTOTOTOTO", context.Versions.Spec.Gateway)
 	buf := bytes.NewBufferString("")
 
 	type service struct {

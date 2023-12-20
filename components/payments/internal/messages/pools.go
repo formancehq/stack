@@ -3,6 +3,8 @@ package messages
 import (
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/google/uuid"
@@ -15,7 +17,7 @@ type poolMessagePayload struct {
 	AccountIDs []string  `json:"accountIDs"`
 }
 
-func (m *Messages) NewEventSavedPool(pool *models.Pool) events.EventMessage {
+func (m *Messages) NewEventSavedPool(pool *models.Pool) publish.EventMessage {
 	payload := poolMessagePayload{
 		ID:        pool.ID.String(),
 		Name:      pool.Name,
@@ -27,7 +29,7 @@ func (m *Messages) NewEventSavedPool(pool *models.Pool) events.EventMessage {
 		payload.AccountIDs[i] = a.AccountID.String()
 	}
 
-	return events.EventMessage{
+	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,
@@ -41,8 +43,8 @@ type deletePoolMessagePayload struct {
 	ID        string    `json:"id"`
 }
 
-func (m *Messages) NewEventDeletePool(id uuid.UUID) events.EventMessage {
-	return events.EventMessage{
+func (m *Messages) NewEventDeletePool(id uuid.UUID) publish.EventMessage {
+	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,

@@ -4,6 +4,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 )
@@ -16,7 +18,7 @@ type balanceMessagePayload struct {
 	Balance     *big.Int  `json:"balance"`
 }
 
-func (m *Messages) NewEventSavedBalances(balance *models.Balance) events.EventMessage {
+func (m *Messages) NewEventSavedBalances(balance *models.Balance) publish.EventMessage {
 	payload := balanceMessagePayload{
 		CreatedAt:   balance.CreatedAt,
 		ConnectorID: balance.ConnectorID.String(),
@@ -25,7 +27,7 @@ func (m *Messages) NewEventSavedBalances(balance *models.Balance) events.EventMe
 		Balance:     balance.Balance,
 	}
 
-	return events.EventMessage{
+	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,

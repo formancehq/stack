@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 )
@@ -35,7 +37,7 @@ type paymentMessagePayload struct {
 	Metadata      map[string]string `json:"metadata"`
 }
 
-func (m *Messages) NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) events.EventMessage {
+func (m *Messages) NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) publish.EventMessage {
 	payload := paymentMessagePayload{
 		ID:                   payment.ID.String(),
 		Reference:            payment.Reference,
@@ -75,7 +77,7 @@ func (m *Messages) NewEventSavedPayments(provider models.ConnectorProvider, paym
 		})
 	}
 
-	return events.EventMessage{
+	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,

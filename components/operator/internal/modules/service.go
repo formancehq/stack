@@ -547,7 +547,7 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 
 	if !init {
 		env = env.Append(
-			Env(fmt.Sprintf("%sDEBUG", r.service.EnvPrefix), fmt.Sprintf("%v", r.Stack.Spec.Debug)),
+			Env(fmt.Sprintf("%sDEBUG", r.service.EnvPrefix), fmt.Sprintf("%v", r.Stack.Spec.Debug || container.Debug)),
 			Env(fmt.Sprintf("%sDEV", r.service.EnvPrefix), fmt.Sprintf("%v", r.Stack.Spec.Dev)),
 			// TODO: the stack url is a full url, we can target the gateway. Need to find how to generalize this
 			// as the gateway is a component like another

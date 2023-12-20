@@ -31,7 +31,7 @@ func NewListenerModule(taskIDPrefix, taskQueue string, topics []string) fx.Optio
 	return fx.Options(
 		fx.Invoke(func(logger logging.Logger, r *message.Router, s message.Subscriber, temporalClient client.Client) {
 			logger.Infof("Listening events from topics: %s", strings.Join(topics, ","))
-			registerListener(logger, r, s, temporalClient, taskIDPrefix, taskQueue, topics)
+			registerListener(r, s, temporalClient, taskIDPrefix, taskQueue, topics)
 		}),
 	)
 }
