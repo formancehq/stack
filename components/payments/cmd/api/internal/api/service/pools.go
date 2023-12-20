@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
-	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -61,7 +60,7 @@ func (s *Service) CreatePool(
 	pool.PoolAccounts = poolAccounts
 
 	err = s.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedPool(pool)))
+		publish.NewMessage(ctx, s.messages.NewEventSavedPool(pool)))
 	if err != nil {
 		return nil, errors.Wrap(err, "publishing message")
 	}
@@ -109,7 +108,7 @@ func (s *Service) AddAccountToPool(
 	}
 
 	err = s.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedPool(pool)))
+		publish.NewMessage(ctx, s.messages.NewEventSavedPool(pool)))
 	if err != nil {
 		return errors.Wrap(err, "publishing message")
 	}
@@ -145,7 +144,7 @@ func (s *Service) RemoveAccountFromPool(
 	}
 
 	err = s.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedPool(pool)))
+		publish.NewMessage(ctx, s.messages.NewEventSavedPool(pool)))
 	if err != nil {
 		return errors.Wrap(err, "publishing message")
 	}
@@ -248,7 +247,7 @@ func (s *Service) DeletePool(
 	}
 
 	err = s.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventDeletePool(id)))
+		publish.NewMessage(ctx, s.messages.NewEventDeletePool(id)))
 	if err != nil {
 		return errors.Wrap(err, "publishing message")
 	}

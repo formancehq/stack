@@ -29,6 +29,7 @@ type ConnectorsManager[Config models.ConnectorConfigObject] struct {
 	store            Store
 	schedulerFactory TaskSchedulerFactory
 	publisher        message.Publisher
+	messages         *messages.Messages
 
 	connectors map[string]*ConnectorManager
 	mu         sync.RWMutex
@@ -252,7 +253,7 @@ func (l *ConnectorsManager[ConnectorConfig]) Uninstall(ctx context.Context, conn
 
 	if l.publisher != nil {
 		err = l.publisher.Publish(events.TopicPayments,
-			publish.NewMessage(ctx, messages.NewEventResetConnector(connectorID)))
+			publish.NewMessage(ctx, l.messages.NewEventResetConnector(connectorID)))
 		if err != nil {
 			l.logger(ctx).Errorf("Publishing message: %w", err)
 		}
@@ -384,7 +385,7 @@ func (l *ConnectorsManager[ConnectorConfig]) Reset(ctx context.Context, connecto
 	}
 
 	err = l.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventResetConnector(connectorID)))
+		publish.NewMessage(ctx, l.messages.NewEventResetConnector(connectorID)))
 	if err != nil {
 		l.logger(ctx).Errorf("Publishing message: %w", err)
 	}
@@ -493,6 +494,7 @@ func NewConnectorManager[ConnectorConfig models.ConnectorConfigObject](
 	loader Loader[ConnectorConfig],
 	schedulerFactory TaskSchedulerFactory,
 	publisher message.Publisher,
+	messages *messages.Messages,
 ) *ConnectorsManager[ConnectorConfig] {
 	return &ConnectorsManager[ConnectorConfig]{
 		provider:         provider,
@@ -501,5 +503,6 @@ func NewConnectorManager[ConnectorConfig models.ConnectorConfigObject](
 		loader:           loader,
 		schedulerFactory: schedulerFactory,
 		publisher:        publisher,
+		messages:         messages,
 	}
 }

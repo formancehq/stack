@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -144,7 +145,7 @@ func TestCreatePayment(t *testing.T) {
 			t.Parallel()
 
 			store := &MockStore{}
-			service := New(store.WithIsConnectorInstalled(tc.isConnectorInstalled), &MockPublisher{})
+			service := New(store.WithIsConnectorInstalled(tc.isConnectorInstalled), &MockPublisher{}, messages.NewMessages(""))
 			p, err := service.CreatePayment(context.Background(), tc.request)
 			if tc.expectedError != nil {
 				require.True(t, errors.Is(err, tc.expectedError))
@@ -189,7 +190,7 @@ func TestGetPayment(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
 
 	for _, tc := range testCases {
 		tc := tc

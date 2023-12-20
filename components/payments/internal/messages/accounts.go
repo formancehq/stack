@@ -18,7 +18,7 @@ type accountMessagePayload struct {
 	Type         string    `json:"type"`
 }
 
-func NewEventSavedAccounts(provider models.ConnectorProvider, account *models.Account) events.EventMessage {
+func (m *Messages) NewEventSavedAccounts(provider models.ConnectorProvider, account *models.Account) events.EventMessage {
 	payload := accountMessagePayload{
 		ID:           account.ID.String(),
 		CreatedAt:    account.CreatedAt,

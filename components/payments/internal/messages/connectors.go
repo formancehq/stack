@@ -12,7 +12,7 @@ type connectorMessagePayload struct {
 	ConnectorID string    `json:"connectorId"`
 }
 
-func NewEventResetConnector(connectorID models.ConnectorID) events.EventMessage {
+func (m *Messages) NewEventResetConnector(connectorID models.ConnectorID) events.EventMessage {
 	return events.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,

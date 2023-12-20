@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -18,6 +19,15 @@ var (
 		Provider:  models.ConnectorProviderDummyPay,
 	}
 
+	acc1 = models.AccountID{
+		Reference:   "acc1",
+		ConnectorID: connectorID,
+	}
+	acc2 = models.AccountID{
+		Reference:   "acc2",
+		ConnectorID: connectorID,
+	}
+
 	p1 = &models.Payment{
 		ID: models.PaymentID{
 			PaymentReference: models.PaymentReference{
@@ -26,14 +36,15 @@ var (
 			},
 			ConnectorID: connectorID,
 		},
-		ConnectorID: connectorID,
-		CreatedAt:   time.Date(2023, 11, 14, 4, 55, 0, 0, time.UTC),
-		Reference:   "p1",
-		Amount:      big.NewInt(100),
-		Type:        models.PaymentTypePayIn,
-		Status:      models.PaymentStatusCancelled,
-		Scheme:      models.PaymentSchemeA2A,
-		Asset:       models.Asset("USD/2"),
+		ConnectorID:     connectorID,
+		CreatedAt:       time.Date(2023, 11, 14, 4, 55, 0, 0, time.UTC),
+		Reference:       "p1",
+		Amount:          big.NewInt(100),
+		Type:            models.PaymentTypePayIn,
+		Status:          models.PaymentStatusCancelled,
+		Scheme:          models.PaymentSchemeA2A,
+		Asset:           models.Asset("USD/2"),
+		SourceAccountID: &acc1,
 	}
 
 	p2 = &models.Payment{
@@ -44,14 +55,15 @@ var (
 			},
 			ConnectorID: connectorID,
 		},
-		ConnectorID: connectorID,
-		CreatedAt:   time.Date(2023, 11, 14, 4, 54, 0, 0, time.UTC),
-		Reference:   "p2",
-		Amount:      big.NewInt(150),
-		Type:        models.PaymentTypeTransfer,
-		Status:      models.PaymentStatusSucceeded,
-		Scheme:      models.PaymentSchemeApplePay,
-		Asset:       models.Asset("EUR/2"),
+		ConnectorID:          connectorID,
+		CreatedAt:            time.Date(2023, 11, 14, 4, 54, 0, 0, time.UTC),
+		Reference:            "p2",
+		Amount:               big.NewInt(150),
+		Type:                 models.PaymentTypeTransfer,
+		Status:               models.PaymentStatusSucceeded,
+		Scheme:               models.PaymentSchemeApplePay,
+		Asset:                models.Asset("EUR/2"),
+		DestinationAccountID: &acc2,
 	}
 
 	p3 = &models.Payment{
@@ -62,20 +74,27 @@ var (
 			},
 			ConnectorID: connectorID,
 		},
-		ConnectorID: connectorID,
-		CreatedAt:   time.Date(2023, 11, 14, 4, 53, 0, 0, time.UTC),
-		Reference:   "p3",
-		Amount:      big.NewInt(200),
-		Type:        models.PaymentTypePayOut,
-		Status:      models.PaymentStatusPending,
-		Scheme:      models.PaymentSchemeCardMasterCard,
-		Asset:       models.Asset("USD/2"),
+		ConnectorID:          connectorID,
+		CreatedAt:            time.Date(2023, 11, 14, 4, 53, 0, 0, time.UTC),
+		Reference:            "p3",
+		Amount:               big.NewInt(200),
+		Type:                 models.PaymentTypePayOut,
+		Status:               models.PaymentStatusPending,
+		Scheme:               models.PaymentSchemeCardMasterCard,
+		Asset:                models.Asset("USD/2"),
+		SourceAccountID:      &acc1,
+		DestinationAccountID: &acc2,
 	}
 )
 
+type linkPayload struct {
+	Name string `json:"name"`
+	URI  string `json:"uri"`
+}
 type paymentMessagePayload struct {
 	Paylaod struct {
-		ID string `json:"id"`
+		ID    string        `json:"id"`
+		Links []linkPayload `json:"links"`
 	} `json:"payload"`
 }
 
@@ -150,6 +169,7 @@ func TestIngestPayments(t *testing.T) {
 				nil,
 				NewMockStore().WithPaymentIDsNotModified(tc.paymentIDsNotModified),
 				publisher,
+				messages.NewMessages(""),
 			)
 
 			err := ingester.IngestPayments(context.Background(), connectorID, tc.batch, nil)
@@ -162,8 +182,41 @@ func TestIngestPayments(t *testing.T) {
 				var payload paymentMessagePayload
 				require.NoError(t, json.Unmarshal(msg.Payload, &payload))
 				require.Equal(t, tc.requiredPublishedPaymentIDs[i].String(), payload.Paylaod.ID)
+
+				var expectedLinks []linkPayload
+				p := getPayment(tc.requiredPublishedPaymentIDs[i])
+				if p == nil {
+					continue
+				}
+				if p.SourceAccountID != nil {
+					expectedLinks = append(expectedLinks, linkPayload{
+						Name: "source_account",
+						URI:  "/api/payments/accounts/" + p.SourceAccountID.String(),
+					})
+				}
+				if p.DestinationAccountID != nil {
+					expectedLinks = append(expectedLinks, linkPayload{
+						Name: "destination_account",
+						URI:  "/api/payments/accounts/" + p.DestinationAccountID.String(),
+					})
+				}
+				require.Equal(t, expectedLinks, payload.Paylaod.Links)
+
 				i++
 			}
 		})
+	}
+}
+
+func getPayment(id models.PaymentID) *models.Payment {
+	switch id {
+	case p1.ID:
+		return p1
+	case p2.ID:
+		return p2
+	case p3.ID:
+		return p3
+	default:
+		return nil
 	}
 }

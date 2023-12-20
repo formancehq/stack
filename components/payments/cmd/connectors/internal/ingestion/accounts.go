@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -37,7 +36,7 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 			events.TopicPayments,
 			publish.NewMessage(
 				ctx,
-				messages.NewEventSavedAccounts(i.provider, account),
+				i.messages.NewEventSavedAccounts(i.provider, account),
 			),
 		); err != nil {
 			logging.FromContext(ctx).Errorf("Publishing message: %w", err)

@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
@@ -62,7 +63,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		}).
 		WithAllowedTasks(1).
 		Build()
-	manager := NewConnectorManager[ConnectorConfig](provider, managerStore, loader, schedulerFactory, nil)
+	manager := NewConnectorManager[ConnectorConfig](provider, managerStore, loader, schedulerFactory, nil, messages.NewMessages(""))
 
 	callback(&testContext[ConnectorConfig]{
 		manager:        manager,

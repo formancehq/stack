@@ -16,7 +16,7 @@ type balanceMessagePayload struct {
 	Balance     *big.Int  `json:"balance"`
 }
 
-func NewEventSavedBalances(balance *models.Balance) events.EventMessage {
+func (m *Messages) NewEventSavedBalances(balance *models.Balance) events.EventMessage {
 	payload := balanceMessagePayload{
 		CreatedAt:   balance.CreatedAt,
 		ConnectorID: balance.ConnectorID.String(),

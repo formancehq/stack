@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -35,6 +36,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 		fx.Provide(func(store *storage.Storage,
 			publisher message.Publisher,
 			metricsRegistry metrics.MetricsRegistry,
+			messages *messages.Messages,
 		) *manager.ConnectorsManager[ConnectorConfig] {
 			schedulerFactory := manager.TaskSchedulerFactoryFn(func(
 				connectorID models.ConnectorID, resolver task.Resolver, maxTasks int,
@@ -46,7 +48,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 					container := dig.New()
 
 					if err := container.Provide(func() ingestion.Ingester {
-						return ingestion.NewDefaultIngester(loader.Name(), descriptor, store, publisher)
+						return ingestion.NewDefaultIngester(loader.Name(), descriptor, store, publisher, messages)
 					}); err != nil {
 						return nil, err
 					}
@@ -62,7 +64,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 			})
 
 			return manager.NewConnectorManager(
-				loader.Name(), store, loader, schedulerFactory, publisher)
+				loader.Name(), store, loader, schedulerFactory, publisher, messages)
 		}),
 		fx.Provide(func(cm *manager.ConnectorsManager[ConnectorConfig]) backend.ManagerBackend[ConnectorConfig] {
 			return backend.NewDefaultManagerBackend[ConnectorConfig](cm)

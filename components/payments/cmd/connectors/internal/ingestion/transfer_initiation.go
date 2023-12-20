@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -25,7 +24,7 @@ func (i *DefaultIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Con
 		events.TopicPayments,
 		publish.NewMessage(
 			ctx,
-			messages.NewEventSavedTransferInitiations(tf),
+			i.messages.NewEventSavedTransferInitiations(tf),
 		),
 	); err != nil {
 		return err
@@ -54,7 +53,7 @@ func (i *DefaultIngester) AddTransferInitiationPaymentID(ctx context.Context, tf
 		events.TopicPayments,
 		publish.NewMessage(
 			ctx,
-			messages.NewEventSavedTransferInitiations(tf),
+			i.messages.NewEventSavedTransferInitiations(tf),
 		),
 	); err != nil {
 		return err
