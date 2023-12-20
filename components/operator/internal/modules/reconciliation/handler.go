@@ -59,6 +59,7 @@ func (o module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Reconciliation.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: resolveContext.Configuration.Spec.Services.Reconciliation.Debug,
 							}
 						},
 					},

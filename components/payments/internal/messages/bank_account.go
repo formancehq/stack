@@ -3,6 +3,8 @@ package messages
 import (
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 )
@@ -20,7 +22,7 @@ type bankAccountMessagePayload struct {
 	AccountID     string    `json:"accountId"`
 }
 
-func (m *Messages) NewEventSavedBankAccounts(bankAccount *models.BankAccount) events.EventMessage {
+func (m *Messages) NewEventSavedBankAccounts(bankAccount *models.BankAccount) publish.EventMessage {
 	bankAccount.Offuscate()
 
 	payload := bankAccountMessagePayload{
@@ -36,7 +38,7 @@ func (m *Messages) NewEventSavedBankAccounts(bankAccount *models.BankAccount) ev
 		AccountID:     bankAccount.AccountID.String(),
 	}
 
-	return events.EventMessage{
+	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,

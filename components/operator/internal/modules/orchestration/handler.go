@@ -53,6 +53,7 @@ func (o module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: resolveContext.Configuration.Spec.Services.Orchestration.Debug,
 							}
 						},
 					},
@@ -69,6 +70,7 @@ func (o module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: resolveContext.Configuration.Spec.Services.Orchestration.Debug,
 							}
 						},
 					},
@@ -96,6 +98,7 @@ func (o module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: resolveContext.Configuration.Spec.Services.Orchestration.Debug,
 							}
 						},
 					},
@@ -118,6 +121,7 @@ func (o module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Orchestration.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: resolveContext.Configuration.Spec.Services.Orchestration.Debug,
 							}
 						},
 					},

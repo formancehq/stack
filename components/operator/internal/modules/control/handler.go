@@ -51,6 +51,7 @@ func (c module) Versions() map[string]modules.Version {
 								resolveContext.Configuration.Spec.Services.Control.ResourceProperties,
 								modules.ResourceSizeMedium(),
 							),
+							Debug: resolveContext.Configuration.Spec.Services.Control.Debug,
 						}
 					},
 				}}

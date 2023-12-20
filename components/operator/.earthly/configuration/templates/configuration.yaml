@@ -63,6 +63,7 @@ spec:
         port: 5432
         disableSSLMode: true
     payments:
+      debug: true
       postgres:
         credentialsFromSecret: postgres
         host: postgres-postgresql.formance.svc.cluster.local
@@ -70,12 +71,14 @@ spec:
         disableSSLMode: true
       encryptionKey: ClaptonIsGod
     orchestration:
+      debug: true
       postgres:
         credentialsFromSecret: postgres
         host: postgres-postgresql.formance.svc.cluster.local
         port: 5432
         disableSSLMode: true
     search:
+      debug: true
       elasticSearch:
         host: elasticsearch-master.formance.svc.cluster.local
         port: 9200
@@ -83,6 +86,7 @@ spec:
         basicAuth:
           secretName: elasticsearch
     webhooks:
+      debug: true
       postgres:
         credentialsFromSecret: postgres
         host: postgres-postgresql.formance.svc.cluster.local

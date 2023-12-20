@@ -1,9 +1,5 @@
 package events
 
-import (
-	"time"
-)
-
 const (
 	TopicPayments = "payments"
 
@@ -20,11 +16,3 @@ const (
 	EventTypeDeleteTransferInitiation = "DELETED_TRANSFER_INITIATION"
 	EventTypeConnectorReset           = "CONNECTOR_RESET"
 )
-
-type EventMessage struct {
-	Date    time.Time `json:"date"`
-	App     string    `json:"app"`
-	Version string    `json:"version"`
-	Type    string    `json:"type"`
-	Payload any       `json:"payload"`
-}

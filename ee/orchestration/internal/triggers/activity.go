@@ -2,16 +2,47 @@ package triggers
 
 import (
 	"context"
+	"encoding/json"
+	"strings"
 
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/uptrace/bun"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Activities struct {
 	db      *bun.DB
 	manager *workflow.WorkflowManager
+}
+
+func (a Activities) processTrigger(ctx context.Context, request ProcessEventRequest, trigger Trigger) bool {
+	ctx, span := workflow.Tracer.Start(ctx, "Triggers:CheckRequirements", trace.WithAttributes(
+		attribute.String("trigger-id", trigger.ID),
+	))
+	defer span.End()
+
+	if trigger.Filter != nil && *trigger.Filter != "" {
+
+		ok, err := evalFilter(request.Event.Payload, *trigger.Filter)
+		if err != nil {
+			span.SetAttributes(
+				attribute.String("filter-error", err.Error()),
+			)
+		}
+		span.SetAttributes(
+			attribute.String("filter", *trigger.Filter),
+			attribute.Bool("match", ok),
+		)
+
+		if !ok {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (a Activities) ListTriggers(ctx context.Context, request ProcessEventRequest) ([]Trigger, error) {
@@ -26,24 +57,11 @@ func (a Activities) ListTriggers(ctx context.Context, request ProcessEventReques
 		return nil, err
 	}
 
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(attribute.String("found-triggers", strings.Join(collectionutils.Map(triggers, Trigger.GetID), ", ")))
+
 	for _, trigger := range triggers {
-		ok := true
-		var err error
-		if trigger.Filter != nil && *trigger.Filter != "" {
-			ok, err = evalFilter(request.Event.Payload, *trigger.Filter)
-			if err != nil {
-				logging.WithFields(map[string]any{
-					"filter": *trigger.Filter,
-				}).Errorf("unable to eval filter: %s", err)
-			}
-			continue
-		}
-
-		logging.FromContext(ctx).
-			WithField("trigger-id", trigger.ID).
-			Debugf("Checking expr '%s': %v", trigger.Filter, ok)
-
-		if ok {
+		if a.processTrigger(trace.ContextWithSpan(ctx, span), request, trigger) {
 			ret = append(ret, trigger)
 		}
 	}
@@ -52,6 +70,8 @@ func (a Activities) ListTriggers(ctx context.Context, request ProcessEventReques
 }
 
 func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request ProcessEventRequest) error {
+
+	span := trace.SpanFromContext(ctx)
 	var (
 		evaluated map[string]string
 		err       error
@@ -59,9 +79,17 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 	if trigger.Vars != nil {
 		evaluated, err = evalVariables(request.Event.Payload, trigger.Vars)
 		if err != nil {
+			span.RecordError(err)
 			return err
 		}
 	}
+
+	data, err := json.Marshal(evaluated)
+	if err != nil {
+		panic(err)
+	}
+
+	span.SetAttributes(attribute.String("variables", string(data)))
 
 	instance, err := a.manager.RunWorkflow(ctx, trigger.WorkflowID, evaluated)
 	if err != nil {

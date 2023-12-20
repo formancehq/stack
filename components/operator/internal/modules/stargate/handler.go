@@ -44,6 +44,7 @@ func (s module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Stargate.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: ctx.Configuration.Spec.Services.Stargate.Debug,
 							}
 						},
 					},

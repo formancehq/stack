@@ -88,6 +88,7 @@ func resolveAuthContainer(resolveContext modules.ContainerResolutionConfiguratio
 			resolveContext.Configuration.Spec.Services.Auth.ResourceProperties,
 			modules.ResourceSizeSmall(),
 		),
+		Debug: resolveContext.Configuration.Spec.Services.Auth.Debug,
 	}
 }
 

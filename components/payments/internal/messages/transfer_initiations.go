@@ -4,6 +4,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 )
@@ -35,7 +37,7 @@ type transferInitiationsMessagePayload struct {
 	RelatedPayments      []*transferInitiationsPaymentsMessagePayload `json:"relatedPayments"`
 }
 
-func (m *Messages) NewEventSavedTransferInitiations(tf *models.TransferInitiation) events.EventMessage {
+func (m *Messages) NewEventSavedTransferInitiations(tf *models.TransferInitiation) publish.EventMessage {
 	payload := transferInitiationsMessagePayload{
 		ID:                   tf.ID.String(),
 		CreatedAt:            tf.CreatedAt,
@@ -65,7 +67,7 @@ func (m *Messages) NewEventSavedTransferInitiations(tf *models.TransferInitiatio
 		}
 	}
 
-	return events.EventMessage{
+	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,
@@ -79,8 +81,8 @@ type deleteTransferInitiationMessagePayload struct {
 	ID        string    `json:"id"`
 }
 
-func (m *Messages) NewEventDeleteTransferInitiation(id models.TransferInitiationID) events.EventMessage {
-	return events.EventMessage{
+func (m *Messages) NewEventDeleteTransferInitiation(id models.TransferInitiationID) publish.EventMessage {
+	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,
 		Version: events.EventVersion,

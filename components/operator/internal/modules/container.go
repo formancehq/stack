@@ -13,6 +13,7 @@ type Container struct {
 	Name                 string
 	DisableRollingUpdate bool
 	Resources            corev1.ResourceRequirements
+	Debug                bool
 }
 
 func ResourceSizeSmall() corev1.ResourceRequirements {

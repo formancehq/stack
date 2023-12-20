@@ -74,6 +74,7 @@ func (l module) Versions() map[string]modules.Version {
 							Env: env.Append(
 								modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(NUMARY_POSTGRES_URI)"),
 							),
+							Debug: resolveContext.Configuration.Spec.Services.Ledger.Debug,
 						}
 					},
 				}}
@@ -108,6 +109,7 @@ func (l module) Versions() map[string]modules.Version {
 							Env: env.Append(
 								modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
 							),
+							Debug: resolveContext.Configuration.Spec.Services.Ledger.Debug,
 						}
 					}
 				}

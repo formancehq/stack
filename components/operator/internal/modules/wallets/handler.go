@@ -182,6 +182,7 @@ func service(ctx modules.ReconciliationConfig) modules.Services {
 					resolveContext.Configuration.Spec.Services.Wallets.ResourceProperties,
 					modules.ResourceSizeSmall(),
 				),
+				Debug: ctx.Configuration.Spec.Services.Wallets.Debug,
 			}
 		},
 	}}

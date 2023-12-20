@@ -36,6 +36,7 @@ func (w module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Webhooks.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: ctx.Configuration.Spec.Services.Webhooks.Debug,
 							}
 						},
 					},
@@ -59,6 +60,7 @@ func (w module) Versions() map[string]modules.Version {
 									resolveContext.Configuration.Spec.Services.Webhooks.ResourceProperties,
 									modules.ResourceSizeSmall(),
 								),
+								Debug: ctx.Configuration.Spec.Services.Webhooks.Debug,
 							}
 						},
 					},
