@@ -1,15 +1,14 @@
 package organizations
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type CreateStore struct {
-	OrganizationId   string `json:"organizationId"`
-	OrganizationName string `json:"organizationName"`
+	Organization *membershipclient.Organization `json:"organization"`
 }
 type CreateController struct {
 	store *CreateStore
@@ -28,10 +27,12 @@ func NewCreateController() *CreateController {
 }
 
 func NewCreateCommand() *cobra.Command {
-	return fctl.NewCommand("create <name>",
+	return fctl.NewCommand("create <name> --default-stack-role <defaultStackRole...> --default-organization-role <defaultOrganizationRole...>",
 		fctl.WithAliases("cr", "c"),
 		fctl.WithShortDescription("Create organization"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithStringSliceFlag("default-stack-role", []string{}, "Default Stack Role"),
+		fctl.WithStringSliceFlag("default-organization-role", []string{}, "Default Organization Role"),
 		fctl.WithConfirmFlag(),
 		fctl.WithController[*CreateStore](NewCreateController()),
 	)
@@ -60,21 +61,19 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	response, _, err := apiClient.DefaultApi.
 		CreateOrganization(cmd.Context()).
 		Body(membershipclient.OrganizationData{
-			Name: args[0],
+			Name:                      args[0],
+			DefaultOrganizationAccess: fctl.GetStringSlice(cmd, "default-organization-role"),
+			DefaultStackAccess:        fctl.GetStringSlice(cmd, "default-stack-role"),
 		}).Execute()
 	if err != nil {
 		return nil, err
 	}
 
-	c.store.OrganizationId = response.Data.Id
-	c.store.OrganizationName = args[0]
+	c.store.Organization = response.Data
 
 	return c, nil
 }
 
 func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Organization '%s' created with ID: %s", c.store.OrganizationName, c.store.OrganizationId)
-
-	return nil
-
+	return internal.PrintOrganization(c.store.Organization)
 }

@@ -110,6 +110,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
 *DefaultApi* | [**ReadUserOfOrganization**](docs/DefaultApi.md#readuseroforganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
+*DefaultApi* | [**UpdateOrganization**](docs/DefaultApi.md#updateorganization) | **Put** /organizations/{organizationId} | Update organization
 *DefaultApi* | [**UpsertOrganizationUser**](docs/DefaultApi.md#upsertorganizationuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
 *DefaultApi* | [**UpsertStackUserAccess**](docs/DefaultApi.md#upsertstackuseraccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 

@@ -21,6 +21,8 @@ var _ MappedNullable = &Organization{}
 type Organization struct {
 	// Organization name
 	Name string `json:"name"`
+	DefaultOrganizationAccess []string `json:"defaultOrganizationAccess,omitempty"`
+	DefaultStackAccess []string `json:"defaultStackAccess,omitempty"`
 	// Organization ID
 	Id string `json:"id"`
 	// Owner ID
@@ -73,6 +75,70 @@ func (o *Organization) GetNameOk() (*string, bool) {
 // SetName sets field value
 func (o *Organization) SetName(v string) {
 	o.Name = v
+}
+
+// GetDefaultOrganizationAccess returns the DefaultOrganizationAccess field value if set, zero value otherwise.
+func (o *Organization) GetDefaultOrganizationAccess() []string {
+	if o == nil || IsNil(o.DefaultOrganizationAccess) {
+		var ret []string
+		return ret
+	}
+	return o.DefaultOrganizationAccess
+}
+
+// GetDefaultOrganizationAccessOk returns a tuple with the DefaultOrganizationAccess field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Organization) GetDefaultOrganizationAccessOk() ([]string, bool) {
+	if o == nil || IsNil(o.DefaultOrganizationAccess) {
+		return nil, false
+	}
+	return o.DefaultOrganizationAccess, true
+}
+
+// HasDefaultOrganizationAccess returns a boolean if a field has been set.
+func (o *Organization) HasDefaultOrganizationAccess() bool {
+	if o != nil && !IsNil(o.DefaultOrganizationAccess) {
+		return true
+	}
+
+	return false
+}
+
+// SetDefaultOrganizationAccess gets a reference to the given []string and assigns it to the DefaultOrganizationAccess field.
+func (o *Organization) SetDefaultOrganizationAccess(v []string) {
+	o.DefaultOrganizationAccess = v
+}
+
+// GetDefaultStackAccess returns the DefaultStackAccess field value if set, zero value otherwise.
+func (o *Organization) GetDefaultStackAccess() []string {
+	if o == nil || IsNil(o.DefaultStackAccess) {
+		var ret []string
+		return ret
+	}
+	return o.DefaultStackAccess
+}
+
+// GetDefaultStackAccessOk returns a tuple with the DefaultStackAccess field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Organization) GetDefaultStackAccessOk() ([]string, bool) {
+	if o == nil || IsNil(o.DefaultStackAccess) {
+		return nil, false
+	}
+	return o.DefaultStackAccess, true
+}
+
+// HasDefaultStackAccess returns a boolean if a field has been set.
+func (o *Organization) HasDefaultStackAccess() bool {
+	if o != nil && !IsNil(o.DefaultStackAccess) {
+		return true
+	}
+
+	return false
+}
+
+// SetDefaultStackAccess gets a reference to the given []string and assigns it to the DefaultStackAccess field.
+func (o *Organization) SetDefaultStackAccess(v []string) {
+	o.DefaultStackAccess = v
 }
 
 // GetId returns the Id field value
@@ -198,6 +264,12 @@ func (o Organization) MarshalJSON() ([]byte, error) {
 func (o Organization) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
+	if !IsNil(o.DefaultOrganizationAccess) {
+		toSerialize["defaultOrganizationAccess"] = o.DefaultOrganizationAccess
+	}
+	if !IsNil(o.DefaultStackAccess) {
+		toSerialize["defaultStackAccess"] = o.DefaultStackAccess
+	}
 	toSerialize["id"] = o.Id
 	toSerialize["ownerId"] = o.OwnerId
 	if !IsNil(o.AvailableStacks) {

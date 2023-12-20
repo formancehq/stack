@@ -5,6 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Organization name | 
+**DefaultOrganizationAccess** | Pointer to **[]string** |  | [optional] 
+**DefaultStackAccess** | Pointer to **[]string** |  | [optional] 
 **Id** | **string** | Organization ID | 
 **OwnerId** | **string** | Owner ID | 
 **AvailableStacks** | Pointer to **int32** | Number of available stacks | [optional] 
@@ -48,6 +50,56 @@ and a boolean to check if the value has been set.
 
 SetName sets Name field to given value.
 
+
+### GetDefaultOrganizationAccess
+
+`func (o *Organization) GetDefaultOrganizationAccess() []string`
+
+GetDefaultOrganizationAccess returns the DefaultOrganizationAccess field if non-nil, zero value otherwise.
+
+### GetDefaultOrganizationAccessOk
+
+`func (o *Organization) GetDefaultOrganizationAccessOk() (*[]string, bool)`
+
+GetDefaultOrganizationAccessOk returns a tuple with the DefaultOrganizationAccess field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDefaultOrganizationAccess
+
+`func (o *Organization) SetDefaultOrganizationAccess(v []string)`
+
+SetDefaultOrganizationAccess sets DefaultOrganizationAccess field to given value.
+
+### HasDefaultOrganizationAccess
+
+`func (o *Organization) HasDefaultOrganizationAccess() bool`
+
+HasDefaultOrganizationAccess returns a boolean if a field has been set.
+
+### GetDefaultStackAccess
+
+`func (o *Organization) GetDefaultStackAccess() []string`
+
+GetDefaultStackAccess returns the DefaultStackAccess field if non-nil, zero value otherwise.
+
+### GetDefaultStackAccessOk
+
+`func (o *Organization) GetDefaultStackAccessOk() (*[]string, bool)`
+
+GetDefaultStackAccessOk returns a tuple with the DefaultStackAccess field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDefaultStackAccess
+
+`func (o *Organization) SetDefaultStackAccess(v []string)`
+
+SetDefaultStackAccess sets DefaultStackAccess field to given value.
+
+### HasDefaultStackAccess
+
+`func (o *Organization) HasDefaultStackAccess() bool`
+
+HasDefaultStackAccess returns a boolean if a field has been set.
 
 ### GetId
 

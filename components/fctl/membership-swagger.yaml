@@ -81,6 +81,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadOrganizationResponse'
+    put:
+      summary: Update organization
+      operationId: updateOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationData'
+      responses:
+        200:
+          description: Organization updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadOrganizationResponse'
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       summary: Delete organization
       operationId: deleteOrganization
@@ -1067,6 +1094,18 @@ components:
         name:
           type: string
           description: Organization name
+        defaultOrganizationAccess:
+          type: array
+          items:
+            allOf:
+              - type: string
+                enum: [ADMIN, GUEST]
+        defaultStackAccess:
+          type: array
+          items:
+            allOf:
+              - type: string
+                enum: [ADMIN, GUEST]
     Organization:
       allOf:
         - $ref: '#/components/schemas/OrganizationData'
@@ -1087,6 +1126,18 @@ components:
             availableSandboxes:
               type: integer
               description: Number of available sandboxes
+            defaultOrganizationAccess:
+              type: array
+              items:
+                allOf:
+                  - type: string
+                    enum: [ADMIN, GUEST]
+            defaultStackAccess:
+              type: array
+              items:
+                allOf:
+                  - type: string
+                    enum: [ADMIN, GUEST]
     StackData:
       type: object
       required:
