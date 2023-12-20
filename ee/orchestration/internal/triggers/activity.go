@@ -14,8 +14,9 @@ import (
 )
 
 type Activities struct {
-	db      *bun.DB
-	manager *workflow.WorkflowManager
+	db                  *bun.DB
+	manager             *workflow.WorkflowManager
+	expressionEvaluator *expressionEvaluator
 }
 
 func (a Activities) processTrigger(ctx context.Context, request ProcessEventRequest, trigger Trigger) bool {
@@ -26,7 +27,7 @@ func (a Activities) processTrigger(ctx context.Context, request ProcessEventRequ
 
 	if trigger.Filter != nil && *trigger.Filter != "" {
 
-		ok, err := evalFilter(request.Event.Payload, *trigger.Filter)
+		ok, err := a.expressionEvaluator.evalFilter(request.Event.Payload, *trigger.Filter)
 		if err != nil {
 			span.SetAttributes(
 				attribute.String("filter-error", err.Error()),
@@ -77,7 +78,7 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 		err       error
 	)
 	if trigger.Vars != nil {
-		evaluated, err = evalVariables(request.Event.Payload, trigger.Vars)
+		evaluated, err = a.expressionEvaluator.evalVariables(request.Event.Payload, trigger.Vars)
 		if err != nil {
 			span.RecordError(err)
 			return err
@@ -104,10 +105,11 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 	return err
 }
 
-func NewActivities(db *bun.DB, manager *workflow.WorkflowManager) Activities {
+func NewActivities(db *bun.DB, manager *workflow.WorkflowManager, expressionEvaluator *expressionEvaluator) Activities {
 	return Activities{
-		db:      db,
-		manager: manager,
+		db:                  db,
+		manager:             manager,
+		expressionEvaluator: expressionEvaluator,
 	}
 }
 

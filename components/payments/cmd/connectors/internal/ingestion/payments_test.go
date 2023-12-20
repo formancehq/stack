@@ -92,7 +92,7 @@ type linkPayload struct {
 	URI  string `json:"uri"`
 }
 type paymentMessagePayload struct {
-	Paylaod struct {
+	Payload struct {
 		ID    string        `json:"id"`
 		Links []linkPayload `json:"links"`
 	} `json:"payload"`
@@ -181,7 +181,7 @@ func TestIngestPayments(t *testing.T) {
 			for msg := range publisher.messages {
 				var payload paymentMessagePayload
 				require.NoError(t, json.Unmarshal(msg.Payload, &payload))
-				require.Equal(t, tc.requiredPublishedPaymentIDs[i].String(), payload.Paylaod.ID)
+				require.Equal(t, tc.requiredPublishedPaymentIDs[i].String(), payload.Payload.ID)
 
 				var expectedLinks []linkPayload
 				p := getPayment(tc.requiredPublishedPaymentIDs[i])
@@ -200,7 +200,7 @@ func TestIngestPayments(t *testing.T) {
 						URI:  "/api/payments/accounts/" + p.DestinationAccountID.String(),
 					})
 				}
-				require.Equal(t, expectedLinks, payload.Paylaod.Links)
+				require.Equal(t, expectedLinks, payload.Payload.Links)
 
 				i++
 			}

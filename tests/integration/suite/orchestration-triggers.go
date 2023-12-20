@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	paymentsevents "github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
@@ -12,23 +13,27 @@ import (
 	. "github.com/onsi/gomega"
 	"math/big"
 	"net/http"
-	"strings"
+	"net/http/httptest"
 	"time"
 )
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
-	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
-			Ledger: "default",
-		})
-		Expect(err).To(BeNil())
-		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
-	})
 	When("creating a new workflow and a trigger on payments creation", func() {
 		var (
 			createTriggerResponse *operations.CreateTriggerResponse
+			srv                   *httptest.Server
 		)
+		AfterEach(func() {
+			srv.Close()
+		})
 		BeforeEach(func() {
+			srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Header.Get("Authorization") == "" {
+					w.WriteHeader(http.StatusForbidden)
+					return
+				}
+				_, _ = w.Write([]byte(`{"data": {"name": "foo"}}`))
+			}))
 			response, err := Client().Orchestration.CreateWorkflow(
 				TestContext(),
 				&shared.CreateWorkflowRequest{
@@ -64,7 +69,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					Event:      paymentsevents.EventTypeSavedPayments,
 					WorkflowID: response.CreateWorkflowResponse.Data.ID,
 					Vars: map[string]any{
-						"account": `replace(event.id, "-", "_")`,
+						"account": `link(event, "destination_account").name`,
 						"amount":  "event.amount",
 						"asset":   "event.asset",
 					},
@@ -87,6 +92,12 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					"amount": 100,
 					"asset":  "USD/2",
 					"id":     uuid.NewString(),
+					"links": []api.Link{
+						{
+							Name: "destination_account",
+							URI:  srv.URL,
+						},
+					},
 				}
 				PublishPayments(publish.EventMessage{
 					Date:    time.Now(),
@@ -129,7 +140,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Source).
 					To(Equal("world"))
 				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Destination).
-					To(Equal(strings.Replace(payment["id"].(string), "-", "_", -1)))
+					To(Equal("foo"))
 				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Asset).
 					To(Equal("USD/2"))
 				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Amount).

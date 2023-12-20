@@ -5,16 +5,13 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/api"
+
 	"github.com/formancehq/stack/libs/go-libs/publish"
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 )
-
-type link struct {
-	Name string `json:"name"`
-	URI  string `json:"uri"`
-}
 
 type paymentMessagePayload struct {
 	ID                   string               `json:"id"`
@@ -28,7 +25,7 @@ type paymentMessagePayload struct {
 	Asset                models.Asset         `json:"asset"`
 	SourceAccountID      *models.AccountID    `json:"sourceAccountId,omitempty"`
 	DestinationAccountID *models.AccountID    `json:"destinationAccountId,omitempty"`
-	Links                []link               `json:"links"`
+	Links                []api.Link           `json:"links"`
 	RawData              json.RawMessage      `json:"rawData"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
@@ -64,14 +61,14 @@ func (m *Messages) NewEventSavedPayments(provider models.ConnectorProvider, paym
 	}
 
 	if payment.SourceAccountID != nil {
-		payload.Links = append(payload.Links, link{
+		payload.Links = append(payload.Links, api.Link{
 			Name: "source_account",
 			URI:  m.stackURL + "/api/payments/accounts/" + payment.SourceAccountID.String(),
 		})
 	}
 
 	if payment.DestinationAccountID != nil {
-		payload.Links = append(payload.Links, link{
+		payload.Links = append(payload.Links, api.Link{
 			Name: "destination_account",
 			URI:  m.stackURL + "/api/payments/accounts/" + payment.DestinationAccountID.String(),
 		})
