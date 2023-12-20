@@ -1,9 +1,15 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
+
+	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 
 	"github.com/formancehq/orchestration/internal/triggers"
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -93,5 +99,18 @@ func commonOptions(output io.Writer) fx.Option {
 		publish.CLIPublisherModule(viper.GetViper(), "orchestration"),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
+		fx.Provide(func() *http.Client {
+			oauthConfig := clientcredentials.Config{
+				ClientID:     viper.GetString(stackClientIDFlag),
+				ClientSecret: viper.GetString(stackClientSecretFlag),
+				TokenURL:     fmt.Sprintf("%s/api/auth/oauth/token", viper.GetString(stackURLFlag)),
+				Scopes:       []string{"openid", "ledger:read", "ledger:write", "wallets:read", "wallets:write", "payments:read", "payments:write"},
+			}
+			underlyingHTTPClient := &http.Client{
+				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),
+			}
+			return oauthConfig.Client(context.WithValue(context.Background(),
+				oauth2.HTTPClient, underlyingHTTPClient))
+		}),
 	)
 }
