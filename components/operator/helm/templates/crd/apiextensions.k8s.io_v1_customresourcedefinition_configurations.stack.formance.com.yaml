@@ -2,9 +2,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: formance-system/formance-system-serving-cert
-    config.kubernetes.io/origin: |
-      path: ../crd/bases/stack.formance.com_configurations.yaml
+    cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
     controller-gen.kubebuilder.io/version: v0.9.2
   name: configurations.stack.formance.com
 spec:
@@ -13,7 +11,7 @@ spec:
     webhook:
       clientConfig:
         service:
-          name: formance-system-webhook-service
+          name: webhook-service
           namespace: formance-system
           path: /convert
       conversionReviewVersions:

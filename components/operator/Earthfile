@@ -67,17 +67,14 @@ generate:
 helm-update:
     FROM core+builder-image
     RUN curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash -s -- 4.5.4 /bin
-
     WORKDIR /src
     COPY --pass-args (+manifests/config) /src/config
     COPY --dir helm hack .
-
+    RUN rm -f helm/templates/crd/*
+    RUN kustomize build config/crd --output helm/templates/crd
+    RUN rm -f helm/templates/crd/apiextensions.k8s.io_v1_customresourcedefinition_*.components.formance.com.yaml
     RUN rm -f helm/templates/gen/*
     RUN kustomize build config/default --output helm/templates/gen
-    RUN rm -f helm/templates/gen/v1_namespace*.yaml
-    RUN rm -f helm/templates/gen/apps_v1_deployment_*.yaml
-    RUN rm -f helm/templates/gen/apiextensions.k8s.io_v1_customresourcedefinition_*.components.formance.com.yaml
-
     SAVE ARTIFACT helm AS LOCAL helm
 
 deploy:

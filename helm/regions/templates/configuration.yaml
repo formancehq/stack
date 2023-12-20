@@ -1,0 +1,98 @@
+{{ if .Capabilities.APIVersions.Has "stack.formance.com/v1beta3/Configuration" -}}
+{{- if .Values.demo.enabled }}
+apiVersion: stack.formance.com/v1beta3
+kind: Configuration
+metadata:
+  name: default
+status: {}
+spec:
+  broker:
+    nats:
+      url: nats.{{ .Release.Namespace }}.svc:4222
+      replicas: 3
+  services:
+    auth:
+      postgres:
+        disableSSLMode: true
+        host: postgresql.{{ .Release.Namespace }}.svc
+        password: formance
+        port: 5432
+        username: postgres
+    control:
+      disabled: true
+    ledger:
+      allowPastTimestamps: false
+      debug: false
+      dev: false
+      locking:
+        strategy: memory
+        redis: {}
+      postgres:
+        disableSSLMode: true
+        host: postgresql.{{ .Release.Namespace }}.svc
+        password: formance
+        port: 5432
+        username: postgres
+    orchestration:
+      disabled: true
+      debug: false
+      dev: false
+      postgres:
+        disableSSLMode: true
+        host: postgresql.{{ .Release.Namespace }}.svc
+        password: formance
+        port: 5432
+        username: postgres
+    payments:
+      encryptionKey: default-encryption-key
+      postgres:
+        disableSSLMode: true
+        host: postgresql.{{ .Release.Namespace }}.svc
+        password: formance
+        port: 5432
+        username: postgres
+    reconciliation:
+      debug: false
+      dev: false
+      postgres:
+        disableSSLMode: true
+        host: postgresql.{{ .Release.Namespace }}.svc
+        password: formance
+        port: 5432
+        username: postgres
+    search:
+      batching:
+        count: 50
+        period: 1s
+      elasticSearch:
+        host: opensearch.{{ .Release.Namespace }}.svc
+        pathPrefix: ''
+        port: 9200
+        scheme: http
+        tls: {}
+    wallets:
+      debug: false
+      dev: false
+    stargate:
+      debug: false
+      dev: false
+    gateway:
+      enableAuditPlugin: true
+      enableScopes: false
+    webhooks:
+      debug: false
+      dev: false
+      postgres:
+        disableSSLMode: true
+        host: postgresql.{{ .Release.Namespace }}.svc
+        password: formance
+        port: 5432
+        username: postgres
+  temporal:
+    address: string
+    namespace: string
+    tls:
+      crt: string
+      key: string
+{{- end }}
+{{ end -}}
