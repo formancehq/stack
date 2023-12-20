@@ -130,6 +130,10 @@ func (m *MockStore) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID
 	return nil
 }
 
+func (m *MockStore) FetchLinkedAccountForBankAccount(ctx context.Context, bankAccountID uuid.UUID) (*models.AccountID, error) {
+	return nil, nil
+}
+
 func (m *MockStore) ListConnectorsByProvider(ctx context.Context, provider models.ConnectorProvider) ([]*models.Connector, error) {
 	switch m.listConnectorsNB {
 	case 0:

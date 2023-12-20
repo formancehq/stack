@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,6 +26,7 @@ func TestBankAccounts(t *testing.T) {
 	testInstallConnectors(t, store)
 	testCreateAccounts(t, store)
 	testCreateBankAccounts(t, store)
+	testFetchLinkedAccountForBankAccount(t, store)
 	testListBankAccounts(t, store)
 	testUninstallConnectors(t, store)
 	testBankAccountsDeletedAfterConnectorUninstall(t, store)
@@ -105,6 +107,19 @@ func testGetBankAccount(
 		require.Equal(t, bankAccount.IBAN, expectedBankAccount.IBAN)
 		require.Equal(t, bankAccount.AccountNumber, expectedBankAccount.AccountNumber)
 	}
+}
+
+func testFetchLinkedAccountForBankAccount(
+	t *testing.T,
+	store *storage.Storage,
+) {
+	accountID, err := store.FetchLinkedAccountForBankAccount(context.Background(), bankAccount2ID)
+	require.NoError(t, err)
+	require.Equal(t, &acc1ID, accountID)
+
+	accountID, err = store.FetchLinkedAccountForBankAccount(context.Background(), bankAccount1ID)
+	require.True(t, errors.Is(err, storage.ErrNotFound))
+	require.Nil(t, accountID)
 }
 
 func testListBankAccounts(t *testing.T, store *storage.Storage) {

@@ -51,6 +51,7 @@ func createBankAccountHandler(
 			CreatedAt:   bankAccount.CreatedAt,
 			Country:     bankAccount.Country,
 			ConnectorID: bankAccountRequest.ConnectorID,
+			AccountID:   bankAccount.AccountID.String(),
 			Provider:    bankAccount.ConnectorID.Provider.String(),
 		}
 

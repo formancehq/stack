@@ -38,6 +38,7 @@ func CreateExternalBankAccountTask(config Config, client *client.Client, newExte
 			connectorID,
 			ingester,
 			client,
+			newExternalBankAccount,
 			*externalAccountID,
 		)
 		if err != nil {
@@ -75,6 +76,7 @@ func ingestExternalAccountFromAtlar(
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	client *client.Client,
+	formanceBankAccount *models.BankAccount,
 	externalAccountID string,
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
@@ -99,6 +101,10 @@ func ingestExternalAccountFromAtlar(
 
 	err = ingester.IngestAccounts(ctx, accountsBatch)
 	if err != nil {
+		return err
+	}
+
+	if err := ingester.LinkBankAccountWithAccount(ctx, formanceBankAccount, &newAccount.ID); err != nil {
 		return err
 	}
 
