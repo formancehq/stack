@@ -8,6 +8,7 @@ import (
 )
 
 type BankAccount struct {
+	AccountID     *string           `json:"accountID,omitempty"`
 	AccountNumber *string           `json:"accountNumber,omitempty"`
 	ConnectorID   string            `json:"connectorID"`
 	Country       string            `json:"country"`
@@ -28,6 +29,13 @@ func (b *BankAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (o *BankAccount) GetAccountID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.AccountID
 }
 
 func (o *BankAccount) GetAccountNumber() *string {
