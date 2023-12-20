@@ -56,6 +56,24 @@ func (s *Storage) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, 
 	return nil
 }
 
+func (s *Storage) FetchLinkedAccountForBankAccount(ctx context.Context, bankAccountID uuid.UUID) (*models.AccountID, error) {
+	var accountID *models.AccountID
+	err := s.db.NewSelect().
+		Model((*models.BankAccount)(nil)).
+		Column("account_id").
+		Where("id = ?", bankAccountID).
+		Scan(ctx, &accountID)
+	if err != nil {
+		return nil, e("get account id for bank account", err)
+	}
+
+	if accountID == nil {
+		return nil, ErrNotFound
+	}
+
+	return accountID, nil
+}
+
 func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuery) ([]*models.BankAccount, PaginationDetails, error) {
 	var bankAccounts []*models.BankAccount
 

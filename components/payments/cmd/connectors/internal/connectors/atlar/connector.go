@@ -73,7 +73,9 @@ func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAcc
 	if err != nil {
 		return err
 	}
-	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{ScheduleOption: models.OPTIONS_RUN_NOW_SYNC}); err != nil {
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+	}); err != nil {
 		return err
 	}
 

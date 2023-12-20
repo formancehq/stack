@@ -5,6 +5,7 @@
 
 | Field                                     | Type                                      | Required                                  | Description                               |
 | ----------------------------------------- | ----------------------------------------- | ----------------------------------------- | ----------------------------------------- |
+| `AccountID`                               | **string*                                 | :heavy_minus_sign:                        | N/A                                       |
 | `AccountNumber`                           | **string*                                 | :heavy_minus_sign:                        | N/A                                       |
 | `ConnectorID`                             | *string*                                  | :heavy_check_mark:                        | N/A                                       |
 | `Country`                                 | *string*                                  | :heavy_check_mark:                        | N/A                                       |

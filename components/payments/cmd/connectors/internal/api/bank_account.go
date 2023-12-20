@@ -16,7 +16,7 @@ type bankAccountResponse struct {
 	Country       string    `json:"country"`
 	ConnectorID   string    `json:"connectorID"`
 	Provider      string    `json:"provider,omitempty"`
-	AccountID     string    `json:"accountId,omitempty"`
+	AccountID     string    `json:"accountID,omitempty"`
 	Iban          string    `json:"iban,omitempty"`
 	AccountNumber string    `json:"accountNumber,omitempty"`
 	SwiftBicCode  string    `json:"swiftBicCode,omitempty"`
@@ -51,6 +51,7 @@ func createBankAccountHandler(
 			CreatedAt:   bankAccount.CreatedAt,
 			Country:     bankAccount.Country,
 			ConnectorID: bankAccountRequest.ConnectorID,
+			AccountID:   bankAccount.AccountID.String(),
 			Provider:    bankAccount.ConnectorID.Provider.String(),
 		}
 

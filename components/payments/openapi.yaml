@@ -1558,6 +1558,8 @@ components:
           type: string
         connectorID:
           type: string
+        accountID:
+          type: string
         provider:
           type: string
         iban:

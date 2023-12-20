@@ -84,5 +84,17 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 		}
 	}
 
+	linkedAccountID, err := s.store.FetchLinkedAccountForBankAccount(ctx, bankAccount.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, storage.ErrNotFound):
+			// Nothing to do
+		default:
+			return nil, newStorageError(err, "fetching linked account for bank account")
+		}
+	} else {
+		bankAccount.AccountID = linkedAccountID
+	}
+
 	return bankAccount, nil
 }
