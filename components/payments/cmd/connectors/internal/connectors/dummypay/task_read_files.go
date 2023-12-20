@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/formancehq/payments/internal/models"
 
@@ -14,7 +13,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-const taskKeyReadFiles = "read-files"
+const (
+	taskKeyReadFiles = "read-files"
+)
 
 // newTaskReadFiles creates a new task descriptor for the taskReadFiles task.
 func newTaskReadFiles() TaskDescriptor {
@@ -30,37 +31,35 @@ func taskReadFiles(config Config, fs fs) task.Task {
 	return func(ctx context.Context, logger logging.Logger,
 		scheduler task.Scheduler,
 	) error {
-		for {
-			select {
-			case <-ctx.Done():
-				return nil
-			case <-time.After(config.FilePollingPeriod.Duration):
-				files, err := parseFilesToIngest(config, fs)
-				if err != nil {
-					return fmt.Errorf("error parsing files to ingest: %w", err)
-				}
-
-				for _, file := range files {
-					descriptor, err := models.EncodeTaskDescriptor(newTaskIngest(file))
-					if err != nil {
-						return err
-					}
-
-					// schedule a task to ingest the file into the payments system.
-					err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
-						ScheduleOption: models.OPTIONS_RUN_NOW,
-						RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-					})
-					if err != nil {
-						return fmt.Errorf("failed to schedule task to ingest file '%s': %w", file, err)
-					}
-
-					if err := os.Remove(file); err != nil {
-						return err
-					}
-				}
-			}
+		err := fs.Mkdir(config.Directory, 0o777) //nolint:gomnd
+		if err != nil && !os.IsExist(err) {
+			return fmt.Errorf(
+				"failed to create dummypay config directory '%s': %w", config.Directory, err)
 		}
+
+		files, err := parseFilesToIngest(config, fs)
+		if err != nil {
+			return fmt.Errorf("error parsing files to ingest: %w", err)
+		}
+
+		for _, file := range files {
+			descriptor, err := models.EncodeTaskDescriptor(newTaskIngest(file))
+			if err != nil {
+				return err
+			}
+
+			// schedule a task to ingest the file into the payments system.
+			err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				RestartOption:  models.OPTIONS_RESTART_NEVER,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to schedule task to ingest file '%s': %w", file, err)
+			}
+
+		}
+
+		return nil
 	}
 }
 
@@ -74,9 +73,16 @@ func parseFilesToIngest(config Config, fs fs) ([]string, error) {
 
 	// iterate over all files in the directory.
 	for _, file := range dir {
-		// skip files that do not match the generatedFilePrefix.
-		if !strings.HasPrefix(file.Name(), generatedFilePrefix) {
+		// skip files that match the generatedFilePrefix because they were already ingested.
+		if strings.HasPrefix(file.Name(), generatedFilePrefix) {
 			continue
+		}
+
+		if config.PrefixFileToIngest != "" {
+			// skip files that do not match the toIngestFilePrefix.
+			if !strings.HasPrefix(file.Name(), config.PrefixFileToIngest) {
+				continue
+			}
 		}
 
 		files = append(files, file.Name())

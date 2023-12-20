@@ -143,13 +143,6 @@ func (u *ConnectorConfig) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	dummyPayConfig := DummyPayConfig{}
-	if err := utils.UnmarshalJSON(data, &dummyPayConfig, "", true, true); err == nil {
-		u.DummyPayConfig = &dummyPayConfig
-		u.Type = ConnectorConfigTypeDummyPayConfig
-		return nil
-	}
-
 	modulrConfig := ModulrConfig{}
 	if err := utils.UnmarshalJSON(data, &modulrConfig, "", true, true); err == nil {
 		u.ModulrConfig = &modulrConfig
@@ -182,6 +175,13 @@ func (u *ConnectorConfig) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &adyenConfig, "", true, true); err == nil {
 		u.AdyenConfig = &adyenConfig
 		u.Type = ConnectorConfigTypeAdyenConfig
+		return nil
+	}
+
+	dummyPayConfig := DummyPayConfig{}
+	if err := utils.UnmarshalJSON(data, &dummyPayConfig, "", true, true); err == nil {
+		u.DummyPayConfig = &dummyPayConfig
+		u.Type = ConnectorConfigTypeDummyPayConfig
 		return nil
 	}
 

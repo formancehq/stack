@@ -4,9 +4,11 @@ import (
 	"context"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/formancehq/payments/internal/models"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -51,7 +53,7 @@ func TestConnector(t *testing.T) {
 		task task.Task
 	}{
 		{taskKeyReadFiles, taskReadFiles(config, fileSystem)},
-		{taskKeyGenerateFiles, taskGenerateFiles(config, fileSystem)},
+		{taskKeyInitDirectory, taskGenerateFiles(config, fileSystem)},
 		{taskKeyIngest, taskIngest(config, TaskDescriptor{}, fileSystem)},
 	}
 
@@ -77,3 +79,31 @@ func TestConnector(t *testing.T) {
 
 	assert.NoError(t, connector.Uninstall(context.TODO()))
 }
+
+type MockIngester struct{}
+
+func (m *MockIngester) IngestAccounts(ctx context.Context, batch ingestion.AccountBatch) error {
+	return nil
+}
+
+func (m *MockIngester) IngestPayments(ctx context.Context, connectorID models.ConnectorID, batch ingestion.PaymentBatch, commitState any) error {
+	return nil
+}
+
+func (m *MockIngester) IngestBalances(ctx context.Context, batch ingestion.BalanceBatch, checkIfAccountExists bool) error {
+	return nil
+}
+
+func (m *MockIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error {
+	return nil
+}
+
+func (m *MockIngester) AddTransferInitiationPaymentID(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, updatedAt time.Time) error {
+	return nil
+}
+
+func (m *MockIngester) LinkBankAccountWithAccount(ctx context.Context, bankAccount *models.BankAccount, accountID *models.AccountID) error {
+	return nil
+}
+
+var _ ingestion.Ingester = (*MockIngester)(nil)

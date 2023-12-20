@@ -176,9 +176,6 @@ func TestReadConfig(t *testing.T) {
 				FilePollingPeriod: connectors.Duration{
 					Duration: 2 * time.Minute,
 				},
-				FileGenerationPeriod: connectors.Duration{
-					Duration: 2 * time.Minute,
-				},
 			}
 
 			backend, _ := newServiceTestingBackend(t)
@@ -1010,9 +1007,6 @@ func TestInstall(t *testing.T) {
 		Name:      "test",
 		Directory: "test",
 		FilePollingPeriod: connectors.Duration{
-			Duration: 2 * time.Minute,
-		},
-		FileGenerationPeriod: connectors.Duration{
 			Duration: 2 * time.Minute,
 		},
 	}

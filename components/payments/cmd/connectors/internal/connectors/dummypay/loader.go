@@ -23,17 +23,10 @@ func (l *Loader) AllowTasks() int {
 const (
 	// defaultFilePollingPeriod is the default period between file polling.
 	defaultFilePollingPeriod = 10 * time.Second
-
-	// defaultFileGenerationPeriod is the default period between file generation.
-	defaultFileGenerationPeriod = 5 * time.Second
 )
 
 // ApplyDefaults applies default values to the configuration.
 func (l *Loader) ApplyDefaults(cfg Config) Config {
-	if cfg.FileGenerationPeriod.Duration == 0 {
-		cfg.FileGenerationPeriod = connectors.Duration{Duration: defaultFileGenerationPeriod}
-	}
-
 	if cfg.FilePollingPeriod.Duration == 0 {
 		cfg.FilePollingPeriod = connectors.Duration{Duration: defaultFilePollingPeriod}
 	}

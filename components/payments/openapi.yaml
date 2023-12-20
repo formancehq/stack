@@ -1231,14 +1231,17 @@ components:
           example: '60s'
           description: The frequency at which the connector will try to fetch new payment objects from the directory
           default: '10s'
-        fileGenerationPeriod:
-          type: string
-          example: '60s'
-          description: The frequency at which the connector will create new payment objects in the directory
-          default: '10s'
         directory:
           type: string
           example: '/tmp/dummypay'
+        prefixFileToIngest:
+          type: string
+        numberOfAccountsPreGenerated:
+          type: integer
+          format: int64
+        numberOfPaymentsPreGenerated:
+          type: integer
+          format: int64
     WiseConfig:
       type: object
       required:

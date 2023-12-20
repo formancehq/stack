@@ -49,6 +49,19 @@ func (at AccountType) String() string {
 	return string(at)
 }
 
+func AccountTypeFromString(t string) (AccountType, error) {
+	switch t {
+	case AccountTypeInternal.String():
+		return AccountTypeInternal, nil
+	case AccountTypeExternal.String():
+		return AccountTypeExternal, nil
+	case AccountTypeExternalFormance.String():
+		return AccountTypeExternalFormance, nil
+	}
+
+	return AccountTypeUnknown, fmt.Errorf("unknown account type: %s", t)
+}
+
 type AccountID struct {
 	Reference   string
 	ConnectorID ConnectorID

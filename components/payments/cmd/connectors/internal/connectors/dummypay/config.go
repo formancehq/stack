@@ -19,14 +19,19 @@ type Config struct {
 	// FilePollingPeriod is the period between file polling.
 	FilePollingPeriod connectors.Duration `json:"filePollingPeriod" yaml:"filePollingPeriod" bson:"filePollingPeriod"`
 
-	// FileGenerationPeriod is the period between file generation
-	FileGenerationPeriod connectors.Duration `json:"fileGenerationPeriod" yaml:"fileGenerationPeriod" bson:"fileGenerationPeriod"`
+	// PrefixFileToIngest is the prefix of the file to ingest.
+	PrefixFileToIngest string `json:"prefixFileToIngest" yaml:"prefixFileToIngest" bson:"prefixFileToIngest"`
+
+	// NumberOfAccountsPreGenerated is the number of accounts to pre-generate.
+	NumberOfAccountsPreGenerated int `json:"numberOfAccountsPreGenerated" yaml:"numberOfAccountsPreGenerated" bson:"numberOfAccountsPreGenerated"`
+	// NumberOfPaymentsPreGenerated is the number of payments to pre-generate.
+	NumberOfPaymentsPreGenerated int `json:"numberOfPaymentsPreGenerated" yaml:"numberOfPaymentsPreGenerated" bson:"numberOfPaymentsPreGenerated"`
 }
 
 // String returns a string representation of the configuration.
 func (c Config) String() string {
-	return fmt.Sprintf("directory=%s, filePollingPeriod=%s, fileGenerationPeriod=%s",
-		c.Directory, c.FilePollingPeriod.String(), c.FileGenerationPeriod.String())
+	return fmt.Sprintf("directory=%s, filePollingPeriod=%s",
+		c.Directory, c.FilePollingPeriod.String())
 }
 
 func (c Config) Marshal() ([]byte, error) {
@@ -50,12 +55,6 @@ func (c Config) Validate() error {
 			ErrFilePollingPeriodInvalid)
 	}
 
-	// check if file generation period is set properly
-	if c.FileGenerationPeriod.Duration <= 0 {
-		return fmt.Errorf("fileGenerationPeriod must be greater than 0: %w",
-			ErrFileGenerationPeriodInvalid)
-	}
-
 	if c.Name == "" {
 		return fmt.Errorf("name must be set: %w", ErrMissingName)
 	}
@@ -69,7 +68,9 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("name", configtemplate.TypeString, true)
 	cfg.AddParameter("directory", configtemplate.TypeString, true)
 	cfg.AddParameter("filePollingPeriod", configtemplate.TypeDurationNs, true)
-	cfg.AddParameter("fileGenerationPeriod", configtemplate.TypeDurationNs, false)
+	cfg.AddParameter("prefixFileToIngest", configtemplate.TypeString, false)
+	cfg.AddParameter("numberOfAccountsPreGenerated", configtemplate.TypeDurationUnsignedInteger, false)
+	cfg.AddParameter("numberOfPaymentsPreGenerated", configtemplate.TypeDurationUnsignedInteger, false)
 
 	return Name.String(), cfg
 }
