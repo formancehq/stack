@@ -21,6 +21,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
@@ -43,7 +44,7 @@ const (
 	ErrValidation           = "VALIDATION"
 )
 
-func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
+func HTTPModule(serviceInfo api.ServiceInfo, bind, stackURL string) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
@@ -56,6 +57,9 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
 		fx.Provide(backend.NewDefaultBackend),
 		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, ``, `group:"connectorHandlers"`))),
+		fx.Provide(func() *messages.Messages {
+			return messages.NewMessages(stackURL)
+		}),
 		addConnector[dummypay.Config](dummypay.NewLoader()),
 		addConnector[modulr.Config](modulr.NewLoader()),
 		addConnector[stripe.Config](stripe.NewLoader()),

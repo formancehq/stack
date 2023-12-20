@@ -9,6 +9,11 @@ import (
 	"github.com/formancehq/payments/pkg/events"
 )
 
+type link struct {
+	Name string `json:"name"`
+	URI  string `json:"uri"`
+}
+
 type paymentMessagePayload struct {
 	ID                   string               `json:"id"`
 	Reference            string               `json:"reference"`
@@ -21,6 +26,7 @@ type paymentMessagePayload struct {
 	Asset                models.Asset         `json:"asset"`
 	SourceAccountID      *models.AccountID    `json:"sourceAccountId,omitempty"`
 	DestinationAccountID *models.AccountID    `json:"destinationAccountId,omitempty"`
+	Links                []link               `json:"links"`
 	RawData              json.RawMessage      `json:"rawData"`
 
 	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
@@ -29,7 +35,7 @@ type paymentMessagePayload struct {
 	Metadata      map[string]string `json:"metadata"`
 }
 
-func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) events.EventMessage {
+func (m *Messages) NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) events.EventMessage {
 	payload := paymentMessagePayload{
 		ID:                   payment.ID.String(),
 		Reference:            payment.Reference,
@@ -44,7 +50,8 @@ func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Pa
 		Provider:             provider.String(),
 		SourceAccountID:      payment.SourceAccountID,
 		DestinationAccountID: payment.DestinationAccountID,
-		RawData:              payment.RawData,
+
+		RawData: payment.RawData,
 		Metadata: func() map[string]string {
 			ret := make(map[string]string)
 			for _, m := range payment.Metadata {
@@ -52,6 +59,20 @@ func NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Pa
 			}
 			return ret
 		}(),
+	}
+
+	if payment.SourceAccountID != nil {
+		payload.Links = append(payload.Links, link{
+			Name: "source_account",
+			URI:  m.stackURL + "/api/payments/accounts/" + payment.SourceAccountID.String(),
+		})
+	}
+
+	if payment.DestinationAccountID != nil {
+		payload.Links = append(payload.Links, link{
+			Name: "destination_account",
+			URI:  m.stackURL + "/api/payments/accounts/" + payment.DestinationAccountID.String(),
+		})
 	}
 
 	return events.EventMessage{

@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
@@ -31,13 +32,16 @@ const (
 	ErrValidation           = "VALIDATION"
 )
 
-func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
+func HTTPModule(serviceInfo api.ServiceInfo, bind string, stackURL string) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
 		}),
 		fx.Provide(func(store *storage.Storage) service.Store {
 			return store
+		}),
+		fx.Provide(func() *messages.Messages {
+			return messages.NewMessages(stackURL)
 		}),
 		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
 		fx.Provide(backend.NewDefaultBackend),

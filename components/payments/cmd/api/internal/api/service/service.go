@@ -6,6 +6,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 )
@@ -37,11 +38,13 @@ type Store interface {
 type Service struct {
 	store     Store
 	publisher message.Publisher
+	messages  *messages.Messages
 }
 
-func New(store Store, publisher message.Publisher) *Service {
+func New(store Store, publisher message.Publisher, messages *messages.Messages) *Service {
 	return &Service{
 		store:     store,
 		publisher: publisher,
+		messages:  messages,
 	}
 }

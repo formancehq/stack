@@ -20,7 +20,7 @@ type bankAccountMessagePayload struct {
 	AccountID     string    `json:"accountId"`
 }
 
-func NewEventSavedBankAccounts(bankAccount *models.BankAccount) events.EventMessage {
+func (m *Messages) NewEventSavedBankAccounts(bankAccount *models.BankAccount) events.EventMessage {
 	bankAccount.Offuscate()
 
 	payload := bankAccountMessagePayload{

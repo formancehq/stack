@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -151,7 +152,7 @@ func TestCreateBankAccounts(t *testing.T) {
 				}
 			}
 
-			service := New(&MockStore{}, &MockPublisher{}, handlers)
+			service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""), handlers)
 
 			_, err := service.CreateBankAccount(context.Background(), tc.req)
 			if tc.expectedError != nil {

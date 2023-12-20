@@ -35,7 +35,7 @@ type transferInitiationsMessagePayload struct {
 	RelatedPayments      []*transferInitiationsPaymentsMessagePayload `json:"relatedPayments"`
 }
 
-func NewEventSavedTransferInitiations(tf *models.TransferInitiation) events.EventMessage {
+func (m *Messages) NewEventSavedTransferInitiations(tf *models.TransferInitiation) events.EventMessage {
 	payload := transferInitiationsMessagePayload{
 		ID:                   tf.ID.String(),
 		CreatedAt:            tf.CreatedAt,
@@ -79,7 +79,7 @@ type deleteTransferInitiationMessagePayload struct {
 	ID        string    `json:"id"`
 }
 
-func NewEventDeleteTransferInitiation(id models.TransferInitiationID) events.EventMessage {
+func (m *Messages) NewEventDeleteTransferInitiation(id models.TransferInitiationID) events.EventMessage {
 	return events.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,

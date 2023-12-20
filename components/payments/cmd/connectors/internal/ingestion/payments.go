@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -79,7 +78,7 @@ func (i *DefaultIngester) IngestPayments(
 			continue
 		}
 		err = i.publisher.Publish(events.TopicPayments,
-			publish.NewMessage(ctx, messages.NewEventSavedPayments(i.provider, allPayments[paymentIdx])))
+			publish.NewMessage(ctx, i.messages.NewEventSavedPayments(i.provider, allPayments[paymentIdx])))
 		if err != nil {
 			logging.FromContext(ctx).Errorf("Publishing message: %w", err)
 

@@ -141,7 +141,8 @@ func (m *MockStore) DeletePool(ctx context.Context, poolID uuid.UUID) error {
 }
 
 type MockPublisher struct {
-	errorToSend error
+	errorToSend  error
+	messagesChan chan *message.Message
 }
 
 func (m *MockPublisher) WithError(err error) *MockPublisher {
@@ -149,8 +150,23 @@ func (m *MockPublisher) WithError(err error) *MockPublisher {
 	return m
 }
 
+func (m *MockPublisher) WithMessagesChan(messagesChan chan *message.Message) *MockPublisher {
+	m.messagesChan = messagesChan
+	return m
+}
+
 func (m *MockPublisher) Publish(topic string, messages ...*message.Message) error {
-	return m.errorToSend
+	if m.errorToSend != nil {
+		return m.errorToSend
+	}
+
+	if m.messagesChan != nil {
+		for _, msg := range messages {
+			m.messagesChan <- msg
+		}
+	}
+
+	return nil
 }
 
 func (m *MockPublisher) Close() error {

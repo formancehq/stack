@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
-	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -144,7 +143,7 @@ func (s *Service) CreatePayment(ctx context.Context, req *CreatePaymentRequest) 
 	}
 
 	err = s.publisher.Publish(events.TopicPayments,
-		publish.NewMessage(ctx, messages.NewEventSavedPayments(connectorID.Provider, payment)))
+		publish.NewMessage(ctx, s.messages.NewEventSavedPayments(connectorID.Provider, payment)))
 	if err != nil {
 		return nil, errors.Wrap(err, "publishing message")
 	}

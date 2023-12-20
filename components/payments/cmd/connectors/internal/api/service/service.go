@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 )
@@ -36,6 +37,7 @@ type Store interface {
 type Service struct {
 	store             Store
 	publisher         message.Publisher
+	messages          *messages.Messages
 	connectorHandlers map[models.ConnectorProvider]*ConnectorHandlers
 }
 
@@ -47,11 +49,13 @@ type ConnectorHandlers struct {
 func New(
 	store Store,
 	publisher message.Publisher,
+	messages *messages.Messages,
 	connectorHandlers map[models.ConnectorProvider]*ConnectorHandlers,
 ) *Service {
 	return &Service{
 		store:             store,
 		publisher:         publisher,
 		connectorHandlers: connectorHandlers,
+		messages:          messages,
 	}
 }

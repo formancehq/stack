@@ -8,6 +8,7 @@ import (
 
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
@@ -287,7 +288,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 					},
 				}
 			}
-			service := New(s.WithListConnectorsNB(tc.listConnectorLength), m.WithError(errPublish), handlers)
+			service := New(s.WithListConnectorsNB(tc.listConnectorLength), m.WithError(errPublish), messages.NewMessages(""), handlers)
 
 			tf, err := service.CreateTransferInitiation(context.Background(), tc.req)
 			if tc.expectedError != nil {
@@ -464,7 +465,7 @@ func TestUpdateTransferInitiationStatus(t *testing.T) {
 					},
 				}
 			}
-			service := New(&MockStore{}, m.WithError(errPublish), handlers)
+			service := New(&MockStore{}, m.WithError(errPublish), messages.NewMessages(""), handlers)
 
 			err := service.UpdateTransferInitiationStatus(context.Background(), tc.transferID, tc.req)
 			if tc.expectedError != nil {
@@ -550,7 +551,7 @@ func TestRetryTransferInitiation(t *testing.T) {
 					},
 				}
 			}
-			service := New(&MockStore{}, m.WithError(errPublish), handlers)
+			service := New(&MockStore{}, m.WithError(errPublish), messages.NewMessages(""), handlers)
 
 			err := service.RetryTransferInitiation(context.Background(), tc.transferID)
 			if tc.expectedError != nil {
@@ -608,7 +609,7 @@ func TestDeleteTransferInitiation(t *testing.T) {
 				errPublish = errors.New("publish error")
 			}
 
-			service := New(&MockStore{}, m.WithError(errPublish), nil)
+			service := New(&MockStore{}, m.WithError(errPublish), messages.NewMessages(""), nil)
 
 			err := service.DeleteTransferInitiation(context.Background(), tc.transferID)
 			if tc.expectedError != nil {

@@ -23,6 +23,7 @@ import (
 )
 
 const (
+	stackURLFlag            = "stack-url"
 	postgresURIFlag         = "postgres-uri"
 	configEncryptionKeyFlag = "config-encryption-key"
 	envFlag                 = "env"
@@ -65,7 +66,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 		options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
 		options = append(options, api.HTTPModule(sharedapi.ServiceInfo{
 			Version: version,
-		}, viper.GetString(listenFlag)))
+		}, viper.GetString(listenFlag), viper.GetString(stackURLFlag)))
 
 		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	}

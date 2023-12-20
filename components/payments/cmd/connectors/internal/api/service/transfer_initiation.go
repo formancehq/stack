@@ -7,7 +7,6 @@ import (
 	"time"
 
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
-	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -149,7 +148,7 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		events.TopicPayments,
 		publish.NewMessage(
 			ctx,
-			messages.NewEventSavedTransferInitiations(tf),
+			s.messages.NewEventSavedTransferInitiations(tf),
 		),
 	); err != nil {
 		return nil, errors.Wrap(ErrPublish, err.Error())
@@ -235,7 +234,7 @@ func (s *Service) UpdateTransferInitiationStatus(ctx context.Context, id string,
 		events.TopicPayments,
 		publish.NewMessage(
 			ctx,
-			messages.NewEventSavedTransferInitiations(previousTransferInitiation),
+			s.messages.NewEventSavedTransferInitiations(previousTransferInitiation),
 		),
 	); err != nil {
 		return errors.Wrap(ErrPublish, err.Error())
@@ -289,7 +288,7 @@ func (s *Service) RetryTransferInitiation(ctx context.Context, id string) error 
 		events.TopicPayments,
 		publish.NewMessage(
 			ctx,
-			messages.NewEventSavedTransferInitiations(previousTransferInitiation),
+			s.messages.NewEventSavedTransferInitiations(previousTransferInitiation),
 		),
 	); err != nil {
 		return errors.Wrap(ErrPublish, err.Error())
@@ -339,7 +338,7 @@ func (s *Service) DeleteTransferInitiation(ctx context.Context, id string) error
 		events.TopicPayments,
 		publish.NewMessage(
 			ctx,
-			messages.NewEventDeleteTransferInitiation(tf.ID),
+			s.messages.NewEventDeleteTransferInitiation(tf.ID),
 		),
 	); err != nil {
 		return errors.Wrap(ErrPublish, err.Error())

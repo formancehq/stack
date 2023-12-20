@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -40,7 +41,7 @@ func TestGetAccount(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
 
 	for _, tc := range testCases {
 		tc := tc

@@ -15,7 +15,7 @@ type poolMessagePayload struct {
 	AccountIDs []string  `json:"accountIDs"`
 }
 
-func NewEventSavedPool(pool *models.Pool) events.EventMessage {
+func (m *Messages) NewEventSavedPool(pool *models.Pool) events.EventMessage {
 	payload := poolMessagePayload{
 		ID:        pool.ID.String(),
 		Name:      pool.Name,
@@ -41,7 +41,7 @@ type deletePoolMessagePayload struct {
 	ID        string    `json:"id"`
 }
 
-func NewEventDeletePool(id uuid.UUID) events.EventMessage {
+func (m *Messages) NewEventDeletePool(id uuid.UUID) events.EventMessage {
 	return events.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,

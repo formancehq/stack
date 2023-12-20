@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 )
@@ -24,6 +25,7 @@ type DefaultIngester struct {
 	store      Store
 	descriptor models.TaskDescriptor
 	publisher  message.Publisher
+	messages   *messages.Messages
 }
 
 type Store interface {
@@ -41,12 +43,14 @@ func NewDefaultIngester(
 	descriptor models.TaskDescriptor,
 	repo Store,
 	publisher message.Publisher,
+	messages *messages.Messages,
 ) *DefaultIngester {
 	return &DefaultIngester{
 		provider:   provider,
 		descriptor: descriptor,
 		store:      repo,
 		publisher:  publisher,
+		messages:   messages,
 	}
 }
 

@@ -2,10 +2,14 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"math/big"
 	"testing"
+	"time"
 
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -47,7 +51,9 @@ func TestCreatePool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	m := &MockPublisher{}
+	messageChan := make(chan *message.Message, 1)
+	service := New(&MockStore{}, m.WithMessagesChan(messageChan), messages.NewMessages(""))
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -59,6 +65,26 @@ func TestCreatePool(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, pool)
+
+				require.Eventually(t, func() bool {
+					select {
+					case msg := <-messageChan:
+						type poolPayload struct {
+							Payload struct {
+								ID         string   `json:"id"`
+								Name       string   `json:"name"`
+								AccountIDS []string `json:"accountIDs"`
+							} `json:"payload"`
+						}
+
+						var p poolPayload
+						require.NoError(t, json.Unmarshal(msg.Payload, &p))
+						require.Equal(t, pool.ID.String(), p.Payload.ID)
+						require.Equal(t, tc.request.Name, p.Payload.Name)
+						require.Equal(t, tc.request.AccountIDs, p.Payload.AccountIDS)
+						return true
+					}
+				}, 10*time.Second, 100*time.Millisecond)
 			}
 		})
 	}
@@ -88,7 +114,7 @@ func TestGetPool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
 
 	for _, tc := range testCases {
 		tc := tc
@@ -145,7 +171,7 @@ func TestAddAccountToPool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -204,7 +230,7 @@ func TestRemoveAccountFromPool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -244,7 +270,7 @@ func TestDeletePool(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
 
 	for _, tc := range testCases {
 		tc := tc
@@ -294,7 +320,7 @@ func TestGetPoolBalance(t *testing.T) {
 		},
 	}
 
-	service := New(&MockStore{}, &MockPublisher{})
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
