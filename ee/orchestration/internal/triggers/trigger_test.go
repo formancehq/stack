@@ -2,6 +2,8 @@ package triggers
 
 import (
 	"math"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -60,7 +62,9 @@ func TestFilters(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			ok, err := evalFilter(tc.object, tc.filter)
+			e := NewExpressionEvaluator(http.DefaultClient)
+
+			ok, err := e.evalFilter(tc.object, tc.filter)
 			require.NoError(t, err)
 			require.Equal(t, tc.shouldBeOk, ok)
 		})
@@ -68,15 +72,58 @@ func TestFilters(t *testing.T) {
 }
 
 func TestEvalVariables(t *testing.T) {
-	evaluated, err := evalVariables(map[string]any{
-		"metadata": map[string]any{
-			"psp": "stripe",
+
+	type testCase struct {
+		name           string
+		rawObject      any
+		variables      map[string]string
+		expectedResult map[string]string
+	}
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"data": {"role": "admin"}}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	for _, testCase := range []testCase{
+		{
+			name: "nominal",
+			rawObject: map[string]any{
+				"metadata": map[string]any{
+					"psp": "stripe",
+				},
+			},
+			variables: map[string]string{
+				"psp": "event.metadata.psp",
+			},
+			expectedResult: map[string]string{
+				"psp": "stripe",
+			},
 		},
-	}, map[string]string{
-		"psp": "event.metadata.psp",
-	})
-	require.NoError(t, err)
-	require.Equal(t, map[string]string{
-		"psp": "stripe",
-	}, evaluated)
+		{
+			name: "using links",
+			rawObject: map[string]any{
+				"links": []map[string]any{
+					{
+						"name": "source_account",
+						"uri":  srv.URL,
+					},
+				},
+			},
+			variables: map[string]string{
+				"role": `link(event, "source_account").role`,
+			},
+			expectedResult: map[string]string{
+				"role": "admin",
+			},
+		},
+	} {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			e := NewExpressionEvaluator(http.DefaultClient)
+			evaluated, err := e.evalVariables(testCase.rawObject, testCase.variables)
+			require.NoError(t, err)
+			require.Equal(t, testCase.expectedResult, evaluated)
+		})
+	}
 }

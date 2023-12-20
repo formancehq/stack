@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -83,7 +84,8 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 
 	require.NoError(t, storage.Migrate(context.Background(), db))
 	workflowManager := workflow.NewManager(db, newMockedClient(t, db), "default")
-	triggersManager := triggers.NewManager(db)
+	expressionEvaluator := triggers.NewExpressionEvaluator(http.DefaultClient)
+	triggersManager := triggers.NewManager(db, expressionEvaluator)
 	backend := api.NewDefaultBackend(triggersManager, workflowManager)
 	router := newRouter(backend)
 	fn(router, backend, db)
