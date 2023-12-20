@@ -31,7 +31,8 @@ type TestTriggerResult struct {
 }
 
 type TriggerManager struct {
-	db *bun.DB
+	db                  *bun.DB
+	expressionEvaluator *expressionEvaluator
 }
 
 func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQuery) (*sharedapi.Cursor[Trigger], error) {
@@ -57,7 +58,7 @@ func (m *TriggerManager) TestTrigger(ctx context.Context, triggerID string, even
 	ret := TestTriggerResult{}
 	if filter := trigger.Filter; filter != nil {
 		ret.Filter = &FilterEvaluationResult{}
-		ret.Filter.Match, err = evalFilter(event, *filter)
+		ret.Filter.Match, err = m.expressionEvaluator.evalFilter(event, *filter)
 		if err != nil {
 			ret.Filter.Error = err.Error()
 		}
@@ -66,7 +67,7 @@ func (m *TriggerManager) TestTrigger(ctx context.Context, triggerID string, even
 		ret.Variables = map[string]VariableEvaluationResult{}
 		for key, expr := range trigger.Vars {
 			v := VariableEvaluationResult{}
-			v.Value, err = evalVariable(event, expr)
+			v.Value, err = m.expressionEvaluator.evalVariable(event, expr)
 			if err != nil {
 				v.Error = err.Error()
 			}
@@ -155,9 +156,10 @@ func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, query List
 	return bunpaginate.UsingOffset[ListTriggersOccurrencesOptions, Occurrence](ctx, q, bunpaginate.OffsetPaginatedQuery[ListTriggersOccurrencesOptions](query))
 }
 
-func NewManager(db *bun.DB) *TriggerManager {
+func NewManager(db *bun.DB, expressionEvaluator *expressionEvaluator) *TriggerManager {
 	return &TriggerManager{
-		db: db,
+		db:                  db,
+		expressionEvaluator: expressionEvaluator,
 	}
 }
 

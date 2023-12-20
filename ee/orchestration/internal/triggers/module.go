@@ -1,6 +1,7 @@
 package triggers
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -14,14 +15,17 @@ import (
 func NewModule(taskQueue string) fx.Option {
 	return fx.Options(
 		fx.Provide(NewManager),
+		fx.Provide(func(httpClient *http.Client) *expressionEvaluator {
+			return NewExpressionEvaluator(httpClient)
+		}),
 		fx.Provide(
 			fx.Annotate(func(db *bun.DB) *triggerWorkflow {
 				return NewWorkflow(db, taskQueue)
 			}, fx.As(new(any)), fx.ResultTags(`group:"workflows"`)),
 		),
 		fx.Provide(
-			fx.Annotate(func(db *bun.DB, manager *workflow.WorkflowManager) Activities {
-				return NewActivities(db, manager)
+			fx.Annotate(func(db *bun.DB, manager *workflow.WorkflowManager, expressionEvaluator *expressionEvaluator) Activities {
+				return NewActivities(db, manager, expressionEvaluator)
 			}, fx.As(new(any)), fx.ResultTags(`group:"activities"`)),
 		),
 	)
