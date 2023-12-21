@@ -14,17 +14,18 @@ import (
 )
 
 type CreateTransferInitiationRequest struct {
-	Reference            string    `json:"reference"`
-	ScheduledAt          time.Time `json:"scheduledAt"`
-	Description          string    `json:"description"`
-	SourceAccountID      string    `json:"sourceAccountID"`
-	DestinationAccountID string    `json:"destinationAccountID"`
-	ConnectorID          string    `json:"connectorID"`
-	Provider             string    `json:"provider"`
-	Type                 string    `json:"type"`
-	Amount               *big.Int  `json:"amount"`
-	Asset                string    `json:"asset"`
-	Validated            bool      `json:"validated"`
+	Reference            string            `json:"reference"`
+	ScheduledAt          time.Time         `json:"scheduledAt"`
+	Description          string            `json:"description"`
+	SourceAccountID      string            `json:"sourceAccountID"`
+	DestinationAccountID string            `json:"destinationAccountID"`
+	ConnectorID          string            `json:"connectorID"`
+	Provider             string            `json:"provider"`
+	Type                 string            `json:"type"`
+	Amount               *big.Int          `json:"amount"`
+	Asset                string            `json:"asset"`
+	Validated            bool              `json:"validated"`
+	Metadata             map[string]string `json:"metadata"`
 }
 
 func (r *CreateTransferInitiationRequest) Validate() error {
@@ -133,6 +134,7 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		Amount:               req.Amount,
 		Asset:                models.Asset(req.Asset),
 		Status:               status,
+		Metadata:             req.Metadata,
 	}
 
 	if req.SourceAccountID != "" {

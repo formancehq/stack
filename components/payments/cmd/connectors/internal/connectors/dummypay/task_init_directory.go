@@ -40,7 +40,6 @@ func taskGenerateFiles(config Config, fs fs) task.Task {
 		}
 
 		var accountIDs []*models.AccountID
-		fmt.Println("TATA", config.NumberOfAccountsPreGenerated, config.NumberOfPaymentsPreGenerated)
 		for i := 0; i < config.NumberOfAccountsPreGenerated; i++ {
 			accountID, err := generateAccountsFile(ctx, connectorID, ingester, config, fs)
 			if err != nil {

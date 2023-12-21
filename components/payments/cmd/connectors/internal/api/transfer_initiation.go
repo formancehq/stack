@@ -14,19 +14,20 @@ import (
 )
 
 type transferInitiationResponse struct {
-	ID                   string    `json:"id"`
-	CreatedAt            time.Time `json:"createdAt"`
-	UpdatedAt            time.Time `json:"updatedAt"`
-	ScheduledAt          time.Time `json:"scheduledAt"`
-	Description          string    `json:"description"`
-	SourceAccountID      string    `json:"sourceAccountID"`
-	DestinationAccountID string    `json:"destinationAccountID"`
-	ConnectorID          string    `json:"connectorID"`
-	Type                 string    `json:"type"`
-	Amount               *big.Int  `json:"amount"`
-	Asset                string    `json:"asset"`
-	Status               string    `json:"status"`
-	Error                string    `json:"error"`
+	ID                   string            `json:"id"`
+	CreatedAt            time.Time         `json:"createdAt"`
+	UpdatedAt            time.Time         `json:"updatedAt"`
+	ScheduledAt          time.Time         `json:"scheduledAt"`
+	Description          string            `json:"description"`
+	SourceAccountID      string            `json:"sourceAccountID"`
+	DestinationAccountID string            `json:"destinationAccountID"`
+	ConnectorID          string            `json:"connectorID"`
+	Type                 string            `json:"type"`
+	Amount               *big.Int          `json:"amount"`
+	Asset                string            `json:"asset"`
+	Status               string            `json:"status"`
+	Error                string            `json:"error"`
+	Metadata             map[string]string `json:"metadata"`
 }
 
 func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
@@ -64,6 +65,7 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 			Asset:                tf.Asset.String(),
 			Status:               tf.Status.String(),
 			Error:                tf.Error,
+			Metadata:             tf.Metadata,
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[transferInitiationResponse]{

@@ -1523,6 +1523,11 @@ components:
           $ref: '#/components/schemas/TransferInitiationStatus'
         error:
           type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
         relatedPayments:
           type: array
           items:
@@ -2076,6 +2081,11 @@ components:
           example: USD
         validated:
           type: boolean
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
     UpdateTransferInitiationStatusRequest:
       type: object
       required:

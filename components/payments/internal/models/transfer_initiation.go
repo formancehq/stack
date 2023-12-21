@@ -176,6 +176,8 @@ type TransferInitiation struct {
 	Status TransferInitiationStatus
 	Error  string
 
+	Metadata map[string]string
+
 	SourceAccount      *Account `bun:"-"`
 	DestinationAccount *Account `bun:"-"`
 

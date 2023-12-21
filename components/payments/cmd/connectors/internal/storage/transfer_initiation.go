@@ -13,7 +13,7 @@ import (
 
 func (s *Storage) CreateTransferInitiation(ctx context.Context, transferInitiation *models.TransferInitiation) error {
 	query := s.db.NewInsert().
-		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error").
+		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error", "metadata").
 		Model(transferInitiation)
 
 	if transferInitiation.SourceAccountID != nil {
@@ -32,7 +32,7 @@ func (s *Storage) ReadTransferInitiation(ctx context.Context, id models.Transfer
 	var transferInitiation models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error").
+		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error", "metadata").
 		Model(&transferInitiation).
 		Where("id = ?", id)
 
@@ -70,7 +70,7 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 	var tfs []*models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error").
+		Column("id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "status", "error", "metadata").
 		Model(&tfs)
 
 	if pagination.queryBuilder != nil {

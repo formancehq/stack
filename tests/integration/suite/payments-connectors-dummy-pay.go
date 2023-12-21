@@ -1,7 +1,6 @@
 package suite
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -54,7 +53,6 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 		})
 		It("should trigger some events", func() {
 			msg := WaitOnChanWithTimeout(msgs, 20*time.Second)
-			fmt.Println("TOTO", string(msg.Data))
 			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(Succeed())
 		})
 		It("should generate some payments", func() {
