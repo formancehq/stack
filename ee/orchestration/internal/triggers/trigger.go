@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/orchestration/internal/workflow"
+
 	"github.com/formancehq/stack/libs/go-libs/publish"
 
 	"github.com/expr-lang/expr"
@@ -101,6 +103,7 @@ type Occurrence struct {
 	EventID            string               `json:"-" bun:"event_id,pk"`
 	TriggerID          string               `json:"triggerID" bun:"trigger_id,pk"`
 	WorkflowInstanceID string               `json:"workflowInstanceID" bun:"workflow_instance_id"`
+	WorkflowInstance   workflow.Instance    `json:"workflowInstance" bun:"rel:belongs-to,join:workflow_instance_id=id"`
 	Date               time.Time            `json:"date" bun:"date"`
 	Event              publish.EventMessage `json:"event" bun:"event"`
 }

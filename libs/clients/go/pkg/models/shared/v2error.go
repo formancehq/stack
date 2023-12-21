@@ -12,6 +12,7 @@ type V2ErrorErrorCode string
 const (
 	V2ErrorErrorCodeValidation V2ErrorErrorCode = "VALIDATION"
 	V2ErrorErrorCodeNotFound   V2ErrorErrorCode = "NOT_FOUND"
+	V2ErrorErrorCodeInternal   V2ErrorErrorCode = "INTERNAL"
 )
 
 func (e V2ErrorErrorCode) ToPointer() *V2ErrorErrorCode {
@@ -27,6 +28,8 @@ func (e *V2ErrorErrorCode) UnmarshalJSON(data []byte) error {
 	case "VALIDATION":
 		fallthrough
 	case "NOT_FOUND":
+		fallthrough
+	case "INTERNAL":
 		*e = V2ErrorErrorCode(v)
 		return nil
 	default:

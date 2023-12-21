@@ -26,6 +26,7 @@ var Orchestration = internal.NewModule("orchestration").
 					"--publisher-nats-url=" + internal.GetNatsAddress(),
 					fmt.Sprintf("--topics=%s-ledger", test.ID()),
 					fmt.Sprintf("--topics=%s-payments", test.ID()),
+					"--debug",
 				}
 			}),
 	)

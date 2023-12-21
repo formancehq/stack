@@ -2064,6 +2064,7 @@ components:
       required:
         - triggerID
         - workflowInstanceID
+        - workflowInstance
         - date
         - event
       properties:
@@ -2072,6 +2073,8 @@ components:
           format: date-time
         workflowInstanceID:
           type: string
+        workflowInstance:
+          $ref: '#/components/schemas/V2WorkflowInstance'
         triggerID:
           type: string
         event:

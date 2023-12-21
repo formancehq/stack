@@ -111,13 +111,18 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					listTriggersOccurrencesResponse *operations.V2ListTriggersOccurrencesResponse
 					err                             error
 				)
-				Eventually(func(g Gomega) []shared.V2TriggerOccurrence {
+				Eventually(func(g Gomega) bool {
 					listTriggersOccurrencesResponse, err = Client().Orchestration.V2ListTriggersOccurrences(TestContext(), operations.V2ListTriggersOccurrencesRequest{
 						TriggerID: createTriggerResponse.CreateTriggerResponse.Data.ID,
 					})
 					g.Expect(err).To(BeNil())
-					return listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data
-				}).ShouldNot(BeEmpty())
+					g.Expect(listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data).NotTo(BeEmpty())
+					occurrence := listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data[0]
+					g.Expect(occurrence.WorkflowInstance.Terminated).To(BeTrue())
+					g.Expect(occurrence.WorkflowInstance.TerminatedAt).ShouldNot(BeNil())
+					g.Expect(occurrence.WorkflowInstance.Error).Should(BeNil())
+					return true
+				}).Should(BeTrue())
 
 				var getInstanceResponse *operations.V2GetInstanceResponse
 				Eventually(func() bool {
@@ -129,7 +134,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					return getInstanceResponse.V2GetWorkflowInstanceResponse.Data.Terminated
 				}).Should(BeTrue())
 
-				Expect(*getInstanceResponse.V2GetWorkflowInstanceResponse.Data.Error).To(BeEmpty())
+				Expect(getInstanceResponse.V2GetWorkflowInstanceResponse.Data.Error).To(BeNil())
 
 				listTransactionsResponse, err := Client().Ledger.V2ListTransactions(TestContext(), operations.V2ListTransactionsRequest{
 					Ledger: "default",

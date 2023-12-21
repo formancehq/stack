@@ -147,7 +147,8 @@ func (m *TriggerManager) CreateTrigger(ctx context.Context, data TriggerData) (*
 func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, query ListTriggersOccurrencesQuery) (*sharedapi.Cursor[Occurrence], error) {
 	ret := make([]Occurrence, 0)
 	q := m.db.NewSelect().
-		Model(&ret)
+		Model(&ret).
+		Relation("WorkflowInstance")
 
 	if query.Options.TriggerID != "" {
 		q = q.Where("trigger_id = ?", query.Options.TriggerID)

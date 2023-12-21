@@ -11,6 +11,7 @@ type TriggerOccurrence struct {
 	Date               time.Time              `json:"date"`
 	Event              map[string]interface{} `json:"event"`
 	TriggerID          string                 `json:"triggerID"`
+	WorkflowInstance   WorkflowInstance       `json:"workflowInstance"`
 	WorkflowInstanceID string                 `json:"workflowInstanceID"`
 }
 
@@ -44,6 +45,13 @@ func (o *TriggerOccurrence) GetTriggerID() string {
 		return ""
 	}
 	return o.TriggerID
+}
+
+func (o *TriggerOccurrence) GetWorkflowInstance() WorkflowInstance {
+	if o == nil {
+		return WorkflowInstance{}
+	}
+	return o.WorkflowInstance
 }
 
 func (o *TriggerOccurrence) GetWorkflowInstanceID() string {
