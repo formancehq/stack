@@ -55,11 +55,13 @@ func TestCreatePool(t *testing.T) {
 			},
 		},
 		{
-			name: "no accounts, but should still pass",
+			name: "no accounts",
 			req: &service.CreatePoolRequest{
 				Name:       "test",
 				AccountIDs: []string{},
 			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
 		},
 		{
 			name: "missing name",
