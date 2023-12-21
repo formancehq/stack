@@ -17,19 +17,19 @@ type Retrier struct {
 	httpClient *http.Client
 	store      storage.Store
 
-	retriesCron     time.Duration
-	retriesSchedule []time.Duration
+	retriesCron time.Duration
+	retryPolicy webhooks.BackoffPolicy
 
 	stopChan chan chan struct{}
 }
 
-func NewRetrier(store storage.Store, httpClient *http.Client, retriesCron time.Duration, retriesSchedule []time.Duration) (*Retrier, error) {
+func NewRetrier(store storage.Store, httpClient *http.Client, retriesCron time.Duration, retryPolicy webhooks.BackoffPolicy) (*Retrier, error) {
 	return &Retrier{
-		httpClient:      httpClient,
-		store:           store,
-		retriesCron:     retriesCron,
-		retriesSchedule: retriesSchedule,
-		stopChan:        make(chan chan struct{}),
+		httpClient:  httpClient,
+		store:       store,
+		retriesCron: retriesCron,
+		retryPolicy: retryPolicy,
+		stopChan:    make(chan chan struct{}),
 	}, nil
 }
 
@@ -104,7 +104,7 @@ func (w *Retrier) attemptRetries(ctx context.Context, errChan chan error) {
 				}
 
 				newAttemptNb := atts[0].RetryAttempt + 1
-				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule, uuid.NewString(),
+				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retryPolicy, uuid.NewString(),
 					webhookID, newAttemptNb, atts[0].Config, []byte(atts[0].Payload), false)
 				if err != nil {
 					errChan <- errors.Wrap(err, "webhooks.MakeAttempt")

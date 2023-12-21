@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
+	"github.com/formancehq/webhooks/pkg/backoff"
 	"github.com/formancehq/webhooks/pkg/server/apierrors"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
@@ -23,7 +24,8 @@ func (h *serverHandler) testOneConfigHandle(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		logging.FromContext(r.Context()).Debugf("GET %s/%s%s", PathConfigs, id, PathTest)
-		attempt, err := webhooks.MakeAttempt(r.Context(), h.httpClient, nil, uuid.NewString(),
+		retryPolicy := backoff.NewNoRetry()
+		attempt, err := webhooks.MakeAttempt(r.Context(), h.httpClient, retryPolicy, uuid.NewString(),
 			uuid.NewString(), 0, cfgs[0], []byte(`{"data":"test"}`), true)
 		if err != nil {
 			logging.FromContext(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, err)

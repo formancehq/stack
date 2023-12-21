@@ -23,17 +23,17 @@ import (
 	"go.uber.org/fx"
 )
 
-func StartModule(serviceName string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
+func StartModule(serviceName string, retriesCron time.Duration, retryPolicy webhooks.BackoffPolicy) fx.Option {
 	var options []fx.Option
 
 	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
-		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retriesSchedule, pond.New(50, 50))
+		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retryPolicy, pond.New(50, 50))
 	}))
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
 	options = append(options, fx.Provide(
-		func() (time.Duration, []time.Duration) {
-			return retriesCron, retriesSchedule
+		func() (time.Duration, webhooks.BackoffPolicy) {
+			return retriesCron, retryPolicy
 		},
 		NewRetrier,
 	))
@@ -71,14 +71,14 @@ func run(lc fx.Lifecycle, w *Retrier) {
 }
 
 func configureMessageRouter(r *message.Router, subscriber message.Subscriber, topics []string,
-	store storage.Store, httpClient *http.Client, retriesSchedule []time.Duration, pool *pond.WorkerPool,
+	store storage.Store, httpClient *http.Client, retryPolicy webhooks.BackoffPolicy, pool *pond.WorkerPool,
 ) {
 	for _, topic := range topics {
-		r.AddNoPublisherHandler(fmt.Sprintf("messages-%s", topic), topic, subscriber, processMessages(store, httpClient, retriesSchedule, pool))
+		r.AddNoPublisherHandler(fmt.Sprintf("messages-%s", topic), topic, subscriber, processMessages(store, httpClient, retryPolicy, pool))
 	}
 }
 
-func processMessages(store storage.Store, httpClient *http.Client, retriesSchedule []time.Duration, pool *pond.WorkerPool) func(msg *message.Message) error {
+func processMessages(store storage.Store, httpClient *http.Client, retryPolicy webhooks.BackoffPolicy, pool *pond.WorkerPool) func(msg *message.Message) error {
 	return func(msg *message.Message) error {
 		pool.Submit(func() {
 			var ev webhooks.EventMessage
@@ -115,7 +115,7 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 					return
 				}
 
-				attempt, err := webhooks.MakeAttempt(context.Background(), httpClient, retriesSchedule, uuid.NewString(),
+				attempt, err := webhooks.MakeAttempt(context.Background(), httpClient, retryPolicy, uuid.NewString(),
 					uuid.NewString(), 0, cfg, data, false)
 				if err != nil {
 					logging.FromContext(context.Background()).Error(err)
