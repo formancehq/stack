@@ -1,7 +1,7 @@
 apiVersion: stack.formance.com/v1beta3
 kind: Versions
 metadata:
-  name: v1.0.3
+  name: v1.0
 spec:
   orchestration: v0.2.1
   reconciliation: v0.1.0
