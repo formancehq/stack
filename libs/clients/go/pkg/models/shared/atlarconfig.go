@@ -25,6 +25,9 @@ type AtlarConfig struct {
 	// You can obtain it along with the associated access key from the Atlar dashboard.
 	//
 	Secret string `json:"secret"`
+	// The frequency at which the connector tries to fetch the status of payment initiations from the Atlar API.
+	//
+	TransferInitiationStatusPollingPeriod *string `default:"120s" json:"transferInitiationStatusPollingPeriod"`
 }
 
 func (a AtlarConfig) MarshalJSON() ([]byte, error) {
@@ -78,4 +81,11 @@ func (o *AtlarConfig) GetSecret() string {
 		return ""
 	}
 	return o.Secret
+}
+
+func (o *AtlarConfig) GetTransferInitiationStatusPollingPeriod() *string {
+	if o == nil {
+		return nil
+	}
+	return o.TransferInitiationStatusPollingPeriod
 }
