@@ -88,9 +88,15 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 				}
 				return "Formance Cloud"
 			}(),
+			func() string {
+				if i.Version == nil {
+					return ""
+				}
+				return *i.Version
+			}(),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Base url", "Public", "Active", "Last ping", "Owner"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Base url", "Public", "Active", "Last ping", "Owner", "Version"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
