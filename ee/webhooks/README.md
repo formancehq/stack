@@ -12,31 +12,16 @@ The service has 3 starting modes, split into 3 separate commands:
 - `server`: REST web service API managing webhooks configs for users.
 - `worker`: background service consuming kafka events on selected topics to send webhooks based on user configs and periodically finding failed webhooks requests to retry and sending new attempts.
 
-## Run the stack locally
+## Run linters and tests 
+
+Run the linters:
 ```
-docker compose up
+earthly +lint
 ```
 
-## Run linters and tests locally
-
+Run the tests:
 ```
-task install:lint
-task
-```
-
-Run the tests for a specific package:
-```
-task tests:local PKG=./pkg/model
-```
-
-Run a specific test (regexp):
-```
-task tests:local RUN=TestServer
-```
-
-## Build locally
-```
-task build:local
+earthly -P +tests
 ```
 
 ## Usage
