@@ -98,6 +98,9 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 		defer cancel()
 		postCreditTransferResponse, err := client.PostV1CreditTransfers(requestCtx, &createPaymentRequest)
+		if err != nil {
+			return err
+		}
 
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
@@ -197,7 +200,7 @@ func UpdatePaymentStatusTask(
 
 			err = scheduler.Schedule(ctx, taskDescriptor, models.TaskSchedulerOptions{
 				ScheduleOption: models.OPTIONS_RUN_IN_DURATION,
-				Duration:       2 * time.Minute,
+				Duration:       config.TransferInitiationStatusPollingPeriod.Duration,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {

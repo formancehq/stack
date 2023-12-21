@@ -44,6 +44,10 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 		cfg.PollingPeriod = connectors.Duration{Duration: 2 * time.Minute}
 	}
 
+	if cfg.TransferInitiationStatusPollingPeriod.Duration == 0 {
+		cfg.TransferInitiationStatusPollingPeriod = connectors.Duration{Duration: 2 * time.Minute}
+	}
+
 	if cfg.Name == "" {
 		cfg.Name = Name.String()
 	}
