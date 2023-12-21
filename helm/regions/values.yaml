@@ -29,3 +29,50 @@ agent:
         issuer: https://app.formance.cloud/api
         clientID: "REGION_ID"
         clientSecret: ""
+
+
+# External Services
+nats:
+  fullnameOverride: nats
+  config:
+    cluster:
+      enabled: true
+      replicas: 3
+    jetstream:
+      enabled: true
+      fileStore:
+        enabled: true
+        dir: /data
+        pvc:
+          enabled: false
+          size: 20Gi
+
+postgresql:
+  fullnameOverride: postgresql
+  architecture: standalone
+  global:
+    postgresql:
+      auth:
+        username: formance
+        password: formance
+        database: formance
+        postgresPassword: formance
+  primary:
+    persistence:
+      enabled: false
+
+opensearch:
+  fullnameOverride: opensearch
+  security:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+    replicaCount: 1
+  data:
+    replicaCount: 0
+  coordinating:
+    replicaCount: 0
+  ingest:
+    enabled: false
+    replicaCount: 0

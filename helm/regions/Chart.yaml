@@ -22,3 +22,16 @@ dependencies:
     version: 0.3.2
     repository: "file://../../components/operator/helm"
     condition: operator.enabled
+  - name: nats
+    version: 1.1.4
+    repository: "https://nats-io.github.io/k8s/helm/charts/"
+    condition: demo.enabled
+  - name: postgresql
+    version: 13.2.24
+    repository: "oci://registry-1.docker.io/bitnamicharts"
+    condition: demo.enabled
+  - name: opensearch
+    version: 0.6.1
+    repository: "oci://registry-1.docker.io/bitnamicharts"
+    condition: demo.enabled
+
