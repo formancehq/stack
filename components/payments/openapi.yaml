@@ -1448,6 +1448,12 @@ components:
           description: |
             The frequency at which the connector tries to fetch new Transaction objects from the Atlar API.
           default: '120s'
+        transferInitiationStatusPollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector tries to fetch the status of payment initiations from the Atlar API.
+          default: '120s'
         accessKey:
           type: string
           example: XXX
