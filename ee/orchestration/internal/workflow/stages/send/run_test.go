@@ -44,12 +44,49 @@ func TestSendSchemaValidation(t *testing.T) {
 				},
 				Destination: Destination{
 					Wallet: &WalletDestination{
-						ID:      "foo",
+						WalletReference: WalletReference{
+							ID: "foo",
+						},
 						Balance: "main",
 					},
 					Account: &LedgerAccountSource{
 						ID:     "foo",
 						Ledger: "default",
+					},
+				},
+				Amount: &shared.Monetary{
+					Amount: big.NewInt(100),
+					Asset:  "USD",
+				},
+			},
+			ExpectedValidationError: true,
+		},
+		{
+			Name: "invalid wallet reference",
+			Data: map[string]any{
+				"source": map[string]any{
+					"account": map[string]any{
+						"id": "bar",
+					},
+				},
+				"destination": map[string]any{
+					"wallet": map[string]any{},
+				},
+				"amount": map[string]any{
+					"amount": float64(100),
+					"asset":  "USD",
+				},
+			},
+			ExpectedResolved: Send{
+				Source: Source{
+					Account: &LedgerAccountSource{
+						ID:     "bar",
+						Ledger: "default",
+					},
+				},
+				Destination: Destination{
+					Wallet: &WalletDestination{
+						Balance: "main",
 					},
 				},
 				Amount: &shared.Monetary{
@@ -131,7 +168,9 @@ func TestSendSchemaValidation(t *testing.T) {
 				},
 				Destination: Destination{
 					Wallet: &WalletSource{
-						ID:      "foo",
+						WalletReference: WalletReference{
+							ID: "foo",
+						},
 						Balance: "main",
 					},
 				},
@@ -152,7 +191,9 @@ var (
 				ID: "payment1",
 			}),
 			Destination: NewDestination().WithWallet(&WalletDestination{
-				ID:      "wallet1",
+				WalletReference: WalletReference{
+					ID: "wallet1",
+				},
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
@@ -231,6 +272,128 @@ var (
 						Data: shared.WalletWithBalances{
 							ID:     "wallet1",
 							Ledger: "default",
+						},
+					}, nil,
+				},
+			},
+			{
+				Activity: activities.CreditWalletActivity,
+				Args: []any{
+					mock.Anything, activities.CreditWalletRequest{
+						ID: "wallet1",
+						Data: &shared.CreditWalletRequest{
+							Amount: shared.Monetary{
+								Amount: big.NewInt(100),
+								Asset:  "USD",
+							},
+							Sources: []shared.Subject{{
+								LedgerAccountSubject: &shared.LedgerAccountSubject{
+									Identifier: "world",
+									Type:       "ACCOUNT",
+								},
+								Type: shared.SubjectTypeAccount,
+							}},
+							Balance: pointer.For("main"),
+							Metadata: map[string]string{
+								moveFromLedgerMetadata: internalLedger,
+							},
+						},
+					},
+				},
+				Returns: []any{nil},
+			},
+		},
+	}
+	paymentToWalletByName = stagestesting.WorkflowTestCase[Send]{
+		Name: "payment to wallet by name",
+		Stage: Send{
+			Source: NewSource().WithPayment(&PaymentSource{
+				ID: "payment1",
+			}),
+			Destination: NewDestination().WithWallet(&WalletDestination{
+				WalletReference: WalletReference{
+					Name: "user:1",
+				},
+				Balance: "main",
+			}),
+			Amount: &shared.Monetary{
+				Amount: big.NewInt(100),
+				Asset:  "USD",
+			},
+		},
+		MockedActivities: []stagestesting.MockedActivity{
+			{
+				Activity: activities.GetPaymentActivity,
+				Args: []any{mock.Anything, activities.GetPaymentRequest{
+					ID: "payment1",
+				}},
+				Returns: []any{
+					&shared.PaymentResponse{
+						Data: shared.Payment{
+							InitialAmount: big.NewInt(100),
+							Asset:         "USD",
+							Status:        shared.PaymentStatusSucceeded,
+							Scheme:        shared.PaymentSchemeUnknown,
+							Type:          shared.PaymentTypeOther,
+						},
+					}, nil,
+				},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
+								Amount:      big.NewInt(100),
+								Asset:       "USD",
+								Destination: paymentAccountName("payment1"),
+								Source:      "world",
+							}},
+							Reference: pointer.For(paymentAccountName("payment1")),
+							Metadata:  map[string]interface{}{},
+						},
+					},
+				},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
+				}, nil},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: shared.PostTransaction{
+							Postings: []shared.Posting{{
+								Amount:      big.NewInt(100),
+								Asset:       "USD",
+								Destination: "world",
+								Source:      paymentAccountName("payment1"),
+							}},
+							Metadata: map[string]any{
+								moveToLedgerMetadata: "default",
+							},
+						},
+					},
+				},
+				Returns: []any{&shared.TransactionsResponse{
+					Data: []shared.Transaction{{}},
+				}, nil},
+			},
+			{
+				Activity: activities.ListWalletsActivity,
+				Args: []any{mock.Anything, activities.ListWalletsRequest{
+					Name: "user:1",
+				}},
+				Returns: []any{
+					&shared.ListWalletsResponse{
+						Cursor: shared.ListWalletsResponseCursor{
+							Data: []shared.Wallet{{
+								ID:     "wallet1",
+								Ledger: "default",
+							}},
 						},
 					}, nil,
 				},
@@ -571,7 +734,9 @@ var (
 				Ledger: "default",
 			}),
 			Destination: NewDestination().WithWallet(&WalletDestination{
-				ID:      "bar",
+				WalletReference: WalletReference{
+					ID: "bar",
+				},
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
@@ -587,6 +752,7 @@ var (
 				}},
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
+						ID:     "bar",
 						Ledger: "default",
 					},
 				}, nil},
@@ -624,7 +790,9 @@ var (
 				Ledger: "ledger1",
 			}),
 			Destination: NewDestination().WithWallet(&WalletDestination{
-				ID:      "wallet",
+				WalletReference: WalletReference{
+					ID: "wallet",
+				},
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
@@ -641,6 +809,7 @@ var (
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
 						Ledger: "ledger2",
+						ID:     "wallet",
 					},
 				}, nil},
 			},
@@ -766,7 +935,9 @@ var (
 		Name: "wallet to account",
 		Stage: Send{
 			Source: NewSource().WithWallet(&WalletSource{
-				ID:      "foo",
+				WalletReference: WalletReference{
+					ID: "foo",
+				},
 				Balance: "main",
 			}),
 			Destination: NewDestination().WithAccount(&LedgerAccountDestination{
@@ -823,7 +994,9 @@ var (
 		Name: "wallet to account mixed ledger",
 		Stage: Send{
 			Source: NewSource().WithWallet(&WalletSource{
-				ID:      "wallet",
+				WalletReference: WalletReference{
+					ID: "wallet",
+				},
 				Balance: "main",
 			}),
 			Destination: NewDestination().WithAccount(&LedgerAccountDestination{
@@ -895,11 +1068,15 @@ var (
 		Name: "wallet to wallet",
 		Stage: Send{
 			Source: NewSource().WithWallet(&WalletSource{
-				ID:      "foo",
+				WalletReference: WalletReference{
+					ID: "foo",
+				},
 				Balance: "main",
 			}),
 			Destination: NewDestination().WithWallet(&WalletDestination{
-				ID:      "bar",
+				WalletReference: WalletReference{
+					ID: "bar",
+				},
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
@@ -915,6 +1092,7 @@ var (
 				}},
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
+						ID:     "foo",
 						Ledger: "default",
 					},
 				}, nil},
@@ -927,6 +1105,7 @@ var (
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
 						Ledger: "default",
+						ID:     "bar",
 					},
 				}, nil},
 			},
@@ -961,11 +1140,15 @@ var (
 		Name: "wallet to wallet mixed ledger",
 		Stage: Send{
 			Source: NewSource().WithWallet(&WalletSource{
-				ID:      "wallet1",
+				WalletReference: WalletReference{
+					ID: "wallet1",
+				},
 				Balance: "main",
 			}),
 			Destination: NewDestination().WithWallet(&WalletDestination{
-				ID:      "wallet2",
+				WalletReference: WalletReference{
+					ID: "wallet2",
+				},
 				Balance: "main",
 			}),
 			Amount: &shared.Monetary{
@@ -982,6 +1165,7 @@ var (
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
 						Ledger: "ledger1",
+						ID:     "wallet1",
 					},
 				}, nil},
 			},
@@ -993,6 +1177,7 @@ var (
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
 						Ledger: "ledger2",
+						ID:     "wallet2",
 					},
 				}, nil},
 			},
@@ -1041,7 +1226,9 @@ var (
 		Stage: Send{
 			ConnectorID: nil,
 			Source: NewSource().WithWallet(&WalletSource{
-				ID:      "foo",
+				WalletReference: WalletReference{
+					ID: "foo",
+				},
 				Balance: "main",
 			}),
 			Destination: NewDestination().WithPayment(&PaymentDestination{
@@ -1061,6 +1248,7 @@ var (
 				}},
 				Returns: []any{&shared.GetWalletResponse{
 					Data: shared.WalletWithBalances{
+						ID: "foo",
 						Metadata: map[string]string{
 							"stripeConnectID": "abcd",
 						},
@@ -1102,6 +1290,7 @@ var (
 
 var testCases = []stagestesting.WorkflowTestCase[Send]{
 	paymentToWallet,
+	paymentToWalletByName,
 	paymentToAccount,
 	paymentToAccountWithAlreadyUsedPayment,
 	accountToAccount,

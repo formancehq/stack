@@ -10,6 +10,7 @@ type WorkflowInstanceHistoryStageInput struct {
 	GetAccount        *ActivityGetAccount        `json:"GetAccount,omitempty"`
 	GetPayment        *ActivityGetPayment        `json:"GetPayment,omitempty"`
 	GetWallet         *ActivityGetWallet         `json:"GetWallet,omitempty"`
+	ListWallets       *ActivityListWallets       `json:"ListWallets,omitempty"`
 	RevertTransaction *ActivityRevertTransaction `json:"RevertTransaction,omitempty"`
 	StripeTransfer    *ActivityStripeTransfer    `json:"StripeTransfer,omitempty"`
 	VoidHold          *ActivityVoidHold          `json:"VoidHold,omitempty"`
@@ -62,6 +63,13 @@ func (o *WorkflowInstanceHistoryStageInput) GetGetWallet() *ActivityGetWallet {
 		return nil
 	}
 	return o.GetWallet
+}
+
+func (o *WorkflowInstanceHistoryStageInput) GetListWallets() *ActivityListWallets {
+	if o == nil {
+		return nil
+	}
+	return o.ListWallets
 }
 
 func (o *WorkflowInstanceHistoryStageInput) GetRevertTransaction() *ActivityRevertTransaction {

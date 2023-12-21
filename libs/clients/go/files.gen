@@ -296,6 +296,8 @@ pkg/models/shared/workflowinstancehistorystage.go
 pkg/models/shared/workflowinstancehistorystageoutput.go
 pkg/models/shared/activityreverttransactionoutput.go
 pkg/models/shared/orchestrationtransaction.go
+pkg/models/shared/orchestrationlistwalletsresponse.go
+pkg/models/shared/wallet.go
 pkg/models/shared/activitygetwalletoutput.go
 pkg/models/shared/walletwithbalances.go
 pkg/models/shared/assetholder.go
@@ -317,6 +319,7 @@ pkg/models/shared/workflowinstancehistorystageinput.go
 pkg/models/shared/activityvoidhold.go
 pkg/models/shared/activitystripetransfer.go
 pkg/models/shared/activityreverttransaction.go
+pkg/models/shared/activitylistwallets.go
 pkg/models/shared/activitygetwallet.go
 pkg/models/shared/activitygetpayment.go
 pkg/models/shared/activitygetaccount.go
@@ -366,6 +369,8 @@ pkg/models/shared/v2stagewaitevent.go
 pkg/models/shared/v2getworkflowinstancehistorystageresponse.go
 pkg/models/shared/v2workflowinstancehistorystage.go
 pkg/models/shared/v2workflowinstancehistorystageoutput.go
+pkg/models/shared/v2listwalletsresponse.go
+pkg/models/shared/v2wallet.go
 pkg/models/shared/v2activitygetwalletoutput.go
 pkg/models/shared/v2walletwithbalances.go
 pkg/models/shared/v2assetholder.go
@@ -386,6 +391,7 @@ pkg/models/shared/orchestrationv2transaction.go
 pkg/models/shared/v2workflowinstancehistorystageinput.go
 pkg/models/shared/v2activityvoidhold.go
 pkg/models/shared/v2activitystripetransfer.go
+pkg/models/shared/v2activitylistwallets.go
 pkg/models/shared/v2activitygetwallet.go
 pkg/models/shared/v2activitygetpayment.go
 pkg/models/shared/v2activitygetaccount.go
@@ -481,7 +487,6 @@ pkg/models/shared/createbalanceresponse.go
 pkg/models/shared/balance.go
 pkg/models/shared/createbalancerequest.go
 pkg/models/shared/createwalletresponse.go
-pkg/models/shared/wallet.go
 pkg/models/shared/createwalletrequest.go
 pkg/models/shared/debitwalletresponse.go
 pkg/models/shared/getbalanceresponse.go
@@ -947,6 +952,9 @@ docs/models/shared/workflowinstancehistorystage.md
 docs/models/shared/workflowinstancehistorystageoutput.md
 docs/models/shared/activityreverttransactionoutput.md
 docs/models/shared/orchestrationtransaction.md
+docs/models/shared/orchestrationlistwalletsresponsecursor.md
+docs/models/shared/orchestrationlistwalletsresponse.md
+docs/models/shared/wallet.md
 docs/models/shared/activitygetwalletoutput.md
 docs/models/shared/walletwithbalancesbalances.md
 docs/models/shared/walletwithbalances.md
@@ -974,6 +982,7 @@ docs/models/shared/activityvoidhold.md
 docs/models/shared/activitystripetransfermetadata.md
 docs/models/shared/activitystripetransfer.md
 docs/models/shared/activityreverttransaction.md
+docs/models/shared/activitylistwallets.md
 docs/models/shared/activitygetwallet.md
 docs/models/shared/activitygetpayment.md
 docs/models/shared/activitygetaccount.md
@@ -1027,6 +1036,9 @@ docs/models/shared/v2stagewaitevent.md
 docs/models/shared/v2getworkflowinstancehistorystageresponse.md
 docs/models/shared/v2workflowinstancehistorystage.md
 docs/models/shared/v2workflowinstancehistorystageoutput.md
+docs/models/shared/v2listwalletsresponsecursor.md
+docs/models/shared/v2listwalletsresponse.md
+docs/models/shared/v2wallet.md
 docs/models/shared/v2activitygetwalletoutput.md
 docs/models/shared/v2walletwithbalancesbalances.md
 docs/models/shared/v2walletwithbalances.md
@@ -1053,6 +1065,7 @@ docs/models/shared/v2workflowinstancehistorystageinput.md
 docs/models/shared/v2activityvoidhold.md
 docs/models/shared/v2activitystripetransfermetadata.md
 docs/models/shared/v2activitystripetransfer.md
+docs/models/shared/v2activitylistwallets.md
 docs/models/shared/v2activitygetwallet.md
 docs/models/shared/v2activitygetpayment.md
 docs/models/shared/v2activitygetaccount.md
@@ -1194,7 +1207,6 @@ docs/models/shared/createbalanceresponse.md
 docs/models/shared/balance.md
 docs/models/shared/createbalancerequest.md
 docs/models/shared/createwalletresponse.md
-docs/models/shared/wallet.md
 docs/models/shared/createwalletrequest.md
 docs/models/shared/debitwalletresponse.md
 docs/models/shared/getbalanceresponse.md

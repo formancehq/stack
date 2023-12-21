@@ -71,6 +71,8 @@ type ListWalletsResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// OK
+	WalletsErrorResponse *shared.WalletsErrorResponse
 }
 
 func (o *ListWalletsResponse) GetContentType() string {
@@ -99,4 +101,11 @@ func (o *ListWalletsResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
+}
+
+func (o *ListWalletsResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
+	if o == nil {
+		return nil
+	}
+	return o.WalletsErrorResponse
 }

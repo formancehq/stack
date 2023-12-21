@@ -6,8 +6,13 @@ import (
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 )
 
+type WalletReference struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type WalletSource struct {
-	ID      string `json:"id" validate:"required"`
+	WalletReference
 	Balance string `json:"balance" spec:"default:main" validate:"required"`
 }
 
@@ -92,6 +97,6 @@ func (s Send) GetWorkflow() any {
 }
 
 func init() {
-	schema.RegisterOneOf(&Source{}, &Destination{})
+	schema.RegisterOneOf(&Source{}, &Destination{}, &WalletReference{})
 	stages.Register("send", Send{})
 }
