@@ -19,7 +19,7 @@ dependencies:
     repository: "file://../../ee/agent/helm"
     condition: agent.enabled
   - name: operator
-    version: 0.3.2
+    version: 0.3.3
     repository: "file://../../components/operator/helm"
     condition: operator.enabled
   - name: nats

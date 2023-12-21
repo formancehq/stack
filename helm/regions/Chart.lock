@@ -4,7 +4,7 @@ dependencies:
   version: 0.3.0
 - name: operator
   repository: file://../../components/operator/helm
-  version: 0.3.2
+  version: 0.3.3
 - name: nats
   repository: https://nats-io.github.io/k8s/helm/charts/
   version: 1.1.4
@@ -14,5 +14,5 @@ dependencies:
 - name: opensearch
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 0.6.1
-digest: sha256:1a49aa950846d624957df86450c85ddff5fefa80dd8c310f1ac6ee1c42cc8961
-generated: "2023-12-21T16:12:47.924867+01:00"
+digest: sha256:fe6b0d58ddafa26dce91383212bf0277154331b376434e509a245c22bb81e5b2
+generated: "2023-12-21T16:21:39.498275+01:00"
