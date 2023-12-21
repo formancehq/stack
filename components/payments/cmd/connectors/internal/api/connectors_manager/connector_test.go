@@ -56,13 +56,13 @@ type BuiltConnector struct {
 	name                      string
 	uninstall                 func(ctx context.Context) error
 	resolve                   func(name models.TaskDescriptor) task.Task
-	updateConfig              func(ctx context.Context, config models.ConnectorConfigObject) error
+	updateConfig              func(ctx task.ConnectorContext, config models.ConnectorConfigObject) error
 	install                   func(ctx task.ConnectorContext) error
 	initiatePayment           func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
 	createExternalBankAccount func(ctx task.ConnectorContext, account *models.BankAccount) error
 }
 
-func (b *BuiltConnector) UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error {
+func (b *BuiltConnector) UpdateConfig(ctx task.ConnectorContext, config models.ConnectorConfigObject) error {
 	if b.updateConfig != nil {
 		return b.updateConfig(ctx, config)
 	}

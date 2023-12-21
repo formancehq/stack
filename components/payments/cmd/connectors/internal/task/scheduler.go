@@ -105,7 +105,12 @@ func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.T
 	}
 
 	if _, ok := s.tasks[taskID]; ok {
-		return returnErrorFunc(ErrAlreadyScheduled)
+		switch options.RestartOption {
+		case models.OPTIONS_STOP_AND_RESTART, models.OPTIONS_RESTART_ALWAYS:
+			// We still want to restart the task
+		default:
+			return returnErrorFunc(ErrAlreadyScheduled)
+		}
 	}
 
 	switch options.RestartOption {
@@ -118,6 +123,11 @@ func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.T
 		task, err := s.ReadTaskByDescriptor(ctx, descriptor)
 		if err == nil && task.Status == models.TaskStatusActive {
 			return nil
+		}
+	case models.OPTIONS_STOP_AND_RESTART:
+		err := s.stopTask(ctx, descriptor)
+		if err != nil {
+			return returnErrorFunc(err)
 		}
 	case models.OPTIONS_RESTART_ALWAYS:
 		// Do nothing
@@ -260,6 +270,44 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 }
 
 type StopChan chan chan struct{}
+
+// Lock should be held when calling this function
+func (s *DefaultTaskScheduler) stopTask(ctx context.Context, descriptor models.TaskDescriptor) error {
+	taskID, err := descriptor.EncodeToString()
+	if err != nil {
+		return err
+	}
+
+	task, ok := s.tasks[taskID]
+	if !ok {
+		return nil
+	}
+
+	task.logger.Infof("Stopping task...")
+
+	if task.stopChan != nil {
+		errCh := make(chan struct{})
+		task.stopChan <- errCh
+		select {
+		case <-errCh:
+		case <-time.After(time.Second): // TODO: Make configurable
+			task.logger.Debugf("Stopping using stop chan timeout, canceling context")
+			task.cancel()
+		}
+	} else {
+		task.cancel()
+	}
+
+	err = s.store.UpdateTaskStatus(ctx, s.connectorID, descriptor, models.TaskStatusStopped, "")
+	if err != nil {
+		task.logger.Errorf("Error updating task status: %s", err)
+		return err
+	}
+
+	delete(s.tasks, taskID)
+
+	return nil
+}
 
 func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor, options models.TaskSchedulerOptions) <-chan error {
 	errChan := make(chan error, 1)

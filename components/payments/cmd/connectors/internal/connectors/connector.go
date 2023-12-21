@@ -14,7 +14,7 @@ type Connector interface {
 	// Uninstall is used to uninstall the connector. It has to close all related resources opened by the connector.
 	Uninstall(ctx context.Context) error
 	// UpdateConfig is used to update the configuration of the connector.
-	UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error
+	UpdateConfig(ctx task.ConnectorContext, config models.ConnectorConfigObject) error
 	// Resolve is used to recover state of a failed or restarted task
 	Resolve(descriptor models.TaskDescriptor) task.Task
 	// InitiateTransfer is used to initiate a transfer from the connector to a bank account.
