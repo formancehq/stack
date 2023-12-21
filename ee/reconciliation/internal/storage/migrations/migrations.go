@@ -2,7 +2,6 @@ package migrations
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/uptrace/bun"
@@ -11,7 +10,6 @@ import (
 func Migrate(ctx context.Context, db *bun.DB) error {
 	migrator := migrations.NewMigrator()
 	registerMigrations(migrator)
-	fmt.Println("TOTOTOTOTTO")
 
 	return migrator.Up(ctx, db)
 }
