@@ -30,7 +30,7 @@ func newConnector(logger logging.Logger, cfg Config, fs fs) *Connector {
 	}
 }
 
-func (c *Connector) UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error {
+func (c *Connector) UpdateConfig(ctx task.ConnectorContext, config models.ConnectorConfigObject) error {
 	cfg, ok := config.(Config)
 	if !ok {
 		return connectors.ErrInvalidConfig

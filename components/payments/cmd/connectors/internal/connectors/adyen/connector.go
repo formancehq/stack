@@ -13,18 +13,45 @@ import (
 
 const Name = models.ConnectorProviderAdyen
 
+var (
+	mainTaskDescriptor = TaskDescriptor{
+		Name: "Main task to periodically fetch users and transactions",
+		Key:  taskNameMain,
+	}
+)
+
 type Connector struct {
 	logger logging.Logger
 	cfg    Config
 }
 
-func (c *Connector) UpdateConfig(ctx context.Context, config models.ConnectorConfigObject) error {
+func (c *Connector) UpdateConfig(ctx task.ConnectorContext, config models.ConnectorConfigObject) error {
 	cfg, ok := config.(Config)
 	if !ok {
 		return connectors.ErrInvalidConfig
 	}
 
+	restartTask := c.cfg.PollingPeriod.Duration != cfg.PollingPeriod.Duration
+
 	c.cfg = cfg
+
+	if restartTask {
+		// Restart the main task to use the new polling period.
+		taskDescriptor, err := models.EncodeTaskDescriptor(mainTaskDescriptor)
+		if err != nil {
+			return err
+		}
+
+		return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, models.TaskSchedulerOptions{
+			// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
+			// and their transactions.
+			ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+			Duration:       c.cfg.PollingPeriod.Duration,
+			// No need to restart this task, since the connector is not existing or
+			// was uninstalled previously, the task does not exists in the database
+			RestartOption: models.OPTIONS_STOP_AND_RESTART,
+		})
+	}
 
 	return nil
 }
@@ -42,10 +69,7 @@ func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
-	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-		Name: "Main task to periodically fetch users and transactions",
-		Key:  taskNameMain,
-	})
+	taskDescriptor, err := models.EncodeTaskDescriptor(mainTaskDescriptor)
 	if err != nil {
 		return err
 	}

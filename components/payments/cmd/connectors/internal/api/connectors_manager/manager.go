@@ -129,7 +129,10 @@ func (l *ConnectorsManager[ConnectorConfig]) UpdateConfig(
 		return newStorageError(err, "updating connector config")
 	}
 
-	if err := connectorManager.connector.UpdateConfig(ctx, config); err != nil {
+	if err := connectorManager.connector.UpdateConfig(task.NewConnectorContext(logging.ContextWithLogger(
+		context.TODO(),
+		logging.FromContext(ctx),
+	), connectorManager.scheduler), config); err != nil {
 		switch {
 		case errors.Is(err, connectors.ErrInvalidConfig):
 			return errors.Wrap(ErrValidation, err.Error())
