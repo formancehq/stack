@@ -16,4 +16,4 @@ tasks:
       - helm dependencies update
       - helm dependencies build
       - helm package ./
-      - mv regions-*.tgz ./../regions.tgz
+      - mv *.tgz ./../

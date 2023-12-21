@@ -1,6 +1,3 @@
-demo:
-  enabled: false
-
 operator:
   enabled: true
   fullnameOverride: "operator"
@@ -10,7 +7,6 @@ operator:
     tag: "v0.22.2"
   operator:
     disableWebhooks: false
-    enableStackFinalizer: false
     region: "private"
     env: "private"
     metricsAddr: ":8080"
@@ -26,57 +22,10 @@ agent:
       enabled: true
       insecureSkipVerify: true
   agent:
-    id: "REGION_ID"
-    baseUrl: https://dev.formance.dev
-    production: false
+    id: "aws-eu-west-1-sandbox"
+    baseUrl: https://sandbox.formance.cloud
     authentication:
         mode: bearer
         issuer: https://app.formance.cloud/api
         clientID: "REGION_ID"
-        clientSecret: "REGION_SECRET"
-
-# External Services
-nats:
-  fullnameOverride: nats
-  config:
-    cluster:
-      enabled: true
-      replicas: 3
-    jetstream:
-      enabled: true
-      fileStore:
-        enabled: true
-        dir: /data
-        pvc:
-          enabled: false
-          size: 20Gi
-
-postgresql:
-  fullnameOverride: postgresql
-  architecture: standalone
-  global:
-    postgresql:
-      auth:
-        username: formance
-        password: formance
-        database: formance
-        postgresPassword: formance
-  primary:
-    persistence:
-      enabled: false
-
-opensearch:
-  fullnameOverride: opensearch
-  security:
-    enabled: false
-  master:
-    persistence:
-      enabled: false
-    replicaCount: 1
-  data:
-    replicaCount: 0
-  coordinating:
-    replicaCount: 0
-  ingest:
-    enabled: false
-    replicaCount: 0
+        clientSecret: ""
