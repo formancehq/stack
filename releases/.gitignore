@@ -1,2 +1,6 @@
-node_modules
 build
+sdks/php
+sdks/ruby
+sdks/typescript
+sdks/java
+sdks/python

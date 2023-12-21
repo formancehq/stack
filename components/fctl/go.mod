@@ -82,4 +82,4 @@ replace github.com/formancehq/fctl/membershipclient => ./membershipclient
 
 replace github.com/spf13/cobra v1.6.1 => github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9
 
-replace github.com/formancehq/formance-sdk-go => ../../libs/clients/go
+replace github.com/formancehq/formance-sdk-go => ../../releases/sdks/go

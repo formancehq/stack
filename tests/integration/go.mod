@@ -256,7 +256,7 @@ require (
 
 replace (
 	github.com/formancehq/auth => ../../ee/auth
-	github.com/formancehq/formance-sdk-go => ../../libs/clients/go
+	github.com/formancehq/formance-sdk-go => ../../releases/sdks/go
 	github.com/formancehq/ledger => ../../components/ledger
 	github.com/formancehq/orchestration => ../../ee/orchestration
 	github.com/formancehq/payments => ../../components/payments

@@ -3,6 +3,7 @@ VERSION --pass-args --arg-scope-and-set 0.7
 ARG core=github.com/formancehq/earthly:v0.6.0
 IMPORT $core AS core
 IMPORT ../.. AS stack
+IMPORT ../../releases AS releases
 IMPORT .. AS ee
 
 FROM core+base-image
@@ -10,7 +11,7 @@ FROM core+base-image
 sources:
     WORKDIR src
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
-    COPY --pass-args (stack+build-sdk/go) libs/clients/go
+    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     WORKDIR /src/ee/reconciliation
     COPY go.* .
     COPY --dir cmd internal .

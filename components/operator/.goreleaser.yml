@@ -4,7 +4,7 @@ includes:
       path: ./../../.goreleaser.default.yaml
 
 monorepo:
-  tag_prefix: components/operator/
+  tag_prefix: v
   dir: ./
 
 builds:

@@ -14,7 +14,7 @@ features:
     ignores: 2.81.1
     unions: 2.84.1
 go:
-  version: v0.1.0
+  version: ""
   author: Formance
   flattenGlobalSecurity: false
   maxMethodParams: 0

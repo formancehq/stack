@@ -4,7 +4,7 @@
       "inputFile": "./base.yaml"
     },
     {
-      "inputFile": "./../../ee/auth/openapi.yaml",
+      "inputFile": "./../ee/auth/openapi.yaml",
       "pathModification":{
         "prepend": "/api/auth"
       },
@@ -13,13 +13,13 @@
       }
     },
     {
-      "inputFile": "./../../components/ledger/openapi.yaml",
+      "inputFile": "./../components/ledger/openapi.yaml",
       "pathModification":{
         "prepend": "/api/ledger"
       }
     },
     {
-      "inputFile": "./../../components/payments/openapi.yaml",
+      "inputFile": "./../components/payments/openapi.yaml",
       "pathModification":{
         "prepend": "/api/payments"
       },
@@ -28,7 +28,7 @@
       }
     },
     {
-      "inputFile": "./../../ee/search/openapi.yaml",
+      "inputFile": "./../ee/search/openapi.yaml",
       "pathModification":{
         "prepend": "/api/search"
       },
@@ -37,7 +37,7 @@
       }
     },
     {
-      "inputFile": "./../../ee/webhooks/openapi.yaml",
+      "inputFile": "./../ee/webhooks/openapi.yaml",
       "pathModification":{
         "prepend": "/api/webhooks"
       },
@@ -49,7 +49,7 @@
       }
     },
     {
-      "inputFile": "./../../ee/wallets/openapi.yaml",
+      "inputFile": "./../ee/wallets/openapi.yaml",
       "pathModification":{
         "prepend": "/api/wallets"
       },
@@ -61,7 +61,7 @@
       }
     },
     {
-      "inputFile": "./../../ee/orchestration/openapi.yaml",
+      "inputFile": "./../ee/orchestration/openapi.yaml",
       "pathModification":{
         "prepend": "/api/orchestration"
       },
@@ -73,7 +73,7 @@
       }
     },
     {
-      "inputFile": "./../../ee/reconciliation/openapi.yaml",
+      "inputFile": "./../ee/reconciliation/openapi.yaml",
       "pathModification":{
         "prepend": "/api/reconciliation"
       },
