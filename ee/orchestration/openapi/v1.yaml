@@ -409,6 +409,7 @@ components:
           enum:
           - VALIDATION
           - NOT_FOUND
+          - INTERNAL
         errorMessage:
           type: string
     WorkflowConfig:
@@ -594,6 +595,7 @@ components:
       required:
         - triggerID
         - workflowInstanceID
+        - workflowInstance
         - date
         - event
       properties:
@@ -602,6 +604,8 @@ components:
           format: date-time
         workflowInstanceID:
           type: string
+        workflowInstance:
+          $ref: '#/components/schemas/WorkflowInstance'
         triggerID:
           type: string
         event:

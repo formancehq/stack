@@ -12,6 +12,7 @@ type ErrorErrorCode string
 const (
 	ErrorErrorCodeValidation ErrorErrorCode = "VALIDATION"
 	ErrorErrorCodeNotFound   ErrorErrorCode = "NOT_FOUND"
+	ErrorErrorCodeInternal   ErrorErrorCode = "INTERNAL"
 )
 
 func (e ErrorErrorCode) ToPointer() *ErrorErrorCode {
@@ -27,6 +28,8 @@ func (e *ErrorErrorCode) UnmarshalJSON(data []byte) error {
 	case "VALIDATION":
 		fallthrough
 	case "NOT_FOUND":
+		fallthrough
+	case "INTERNAL":
 		*e = ErrorErrorCode(v)
 		return nil
 	default:

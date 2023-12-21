@@ -11,6 +11,7 @@ type V2TriggerOccurrence struct {
 	Date               time.Time              `json:"date"`
 	Event              map[string]interface{} `json:"event"`
 	TriggerID          string                 `json:"triggerID"`
+	WorkflowInstance   V2WorkflowInstance     `json:"workflowInstance"`
 	WorkflowInstanceID string                 `json:"workflowInstanceID"`
 }
 
@@ -44,6 +45,13 @@ func (o *V2TriggerOccurrence) GetTriggerID() string {
 		return ""
 	}
 	return o.TriggerID
+}
+
+func (o *V2TriggerOccurrence) GetWorkflowInstance() V2WorkflowInstance {
+	if o == nil {
+		return V2WorkflowInstance{}
+	}
+	return o.WorkflowInstance
 }
 
 func (o *V2TriggerOccurrence) GetWorkflowInstanceID() string {

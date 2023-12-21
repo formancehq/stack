@@ -7,3 +7,4 @@
 | -------------------------- | -------------------------- |
 | `ErrorErrorCodeValidation` | VALIDATION                 |
 | `ErrorErrorCodeNotFound`   | NOT_FOUND                  |
+| `ErrorErrorCodeInternal`   | INTERNAL                   |

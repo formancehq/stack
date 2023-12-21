@@ -93,9 +93,17 @@ func (c *OccurrencesListController) Render(cmd *cobra.Command, args []string) er
 						return []string{
 							src.WorkflowInstanceID,
 							src.Date.Format(time.RFC3339),
+							fctl.BoolToString(src.WorkflowInstance.Terminated),
+							src.WorkflowInstance.TerminatedAt.Format(time.RFC3339),
+							func() string {
+								if src.WorkflowInstance.Error == nil {
+									return ""
+								}
+								return *src.WorkflowInstance.Error
+							}(),
 						}
 					}),
-				[]string{"Workflow instance ID", "Date"},
+				[]string{"Workflow instance ID", "Date", "Terminated", "Terminated at", "Error"},
 			),
 		).Render(); err != nil {
 		return errors.Wrap(err, "rendering table")
