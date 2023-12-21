@@ -180,6 +180,51 @@ func TestSendSchemaValidation(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "use metadata",
+			Data: map[string]any{
+				"source": map[string]any{
+					"account": map[string]any{
+						"id": "bar",
+					},
+				},
+				"destination": map[string]any{
+					"wallet": map[string]any{
+						"id": "foo",
+					},
+				},
+				"amount": map[string]any{
+					"amount": float64(100),
+					"asset":  "USD",
+				},
+				"metadata": map[string]string{
+					"foo": "bar",
+				},
+			},
+			ExpectedResolved: Send{
+				Source: Source{
+					Account: &LedgerAccountSource{
+						ID:     "bar",
+						Ledger: "default",
+					},
+				},
+				Destination: Destination{
+					Wallet: &WalletSource{
+						WalletReference: WalletReference{
+							ID: "foo",
+						},
+						Balance: "main",
+					},
+				},
+				Amount: &shared.Monetary{
+					Asset:  "USD",
+					Amount: big.NewInt(100),
+				},
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+		},
 	}...)
 }
 
@@ -639,6 +684,9 @@ var (
 				Amount: big.NewInt(100),
 				Asset:  "USD",
 			},
+			Metadata: map[string]string{
+				"foo": "bar",
+			},
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -653,7 +701,9 @@ var (
 								Destination: "bar",
 								Source:      "foo",
 							}},
-							Metadata: map[string]any{},
+							Metadata: map[string]any{
+								"foo": "bar",
+							},
 						},
 					},
 				},
@@ -774,7 +824,8 @@ var (
 								},
 								Type: shared.SubjectTypeAccount,
 							}},
-							Balance: pointer.For("main"),
+							Balance:  pointer.For("main"),
+							Metadata: map[string]string{},
 						},
 					},
 				},
@@ -866,14 +917,14 @@ var (
 	accountToPayment = stagestesting.WorkflowTestCase[Send]{
 		Name: "account to payment",
 		Stage: Send{
-			ConnectorID: nil,
 			Source: NewSource().WithAccount(&LedgerAccountSource{
 				ID:     "foo",
 				Ledger: "default",
 			}),
 			Destination: NewDestination().WithPayment(&PaymentDestination{
-				PSP:      "stripe",
-				Metadata: "stripeConnectID",
+				PSP:         "stripe",
+				Metadata:    "stripeConnectID",
+				ConnectorID: nil,
 			}),
 			Amount: &shared.Monetary{
 				Amount: big.NewInt(100),
@@ -899,12 +950,13 @@ var (
 			{
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
-					mock.Anything, shared.ActivityStripeTransfer{
+					mock.Anything, activities.StripeTransferRequest{
 						Amount:            big.NewInt(100),
 						Asset:             pointer.For("USD"),
 						Destination:       pointer.For("abcd"),
 						ConnectorID:       nil,
 						WaitingValidation: pointer.For(false),
+						Metadata:          map[string]string{},
 					},
 				},
 				Returns: []any{nil},
@@ -1224,7 +1276,6 @@ var (
 	walletToPayment = stagestesting.WorkflowTestCase[Send]{
 		Name: "wallet to payment",
 		Stage: Send{
-			ConnectorID: nil,
 			Source: NewSource().WithWallet(&WalletSource{
 				WalletReference: WalletReference{
 					ID: "foo",
@@ -1232,8 +1283,9 @@ var (
 				Balance: "main",
 			}),
 			Destination: NewDestination().WithPayment(&PaymentDestination{
-				PSP:      "stripe",
-				Metadata: "stripeConnectID",
+				PSP:         "stripe",
+				Metadata:    "stripeConnectID",
+				ConnectorID: nil,
 			}),
 			Amount: &shared.Monetary{
 				Amount: big.NewInt(100),
@@ -1258,12 +1310,13 @@ var (
 			{
 				Activity: activities.StripeTransferActivity,
 				Args: []any{
-					mock.Anything, shared.ActivityStripeTransfer{
+					mock.Anything, activities.StripeTransferRequest{
 						Amount:            big.NewInt(100),
 						Asset:             pointer.For("USD"),
 						Destination:       pointer.For("abcd"),
 						ConnectorID:       nil,
 						WaitingValidation: pointer.For(false),
+						Metadata:          map[string]string{},
 					},
 				},
 				Returns: []any{nil},
@@ -1279,6 +1332,7 @@ var (
 								Amount: big.NewInt(100),
 							},
 							Balances: []string{"main"},
+							Metadata: map[string]string{},
 						},
 					},
 				},

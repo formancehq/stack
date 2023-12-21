@@ -1128,6 +1128,10 @@ components:
           $ref: '#/components/schemas/StageSendDestination'
         source:
           $ref: '#/components/schemas/StageSendSource'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
     StageDelay:
       type: object
       properties:

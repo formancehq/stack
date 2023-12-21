@@ -5,6 +5,7 @@ package shared
 type V2StageSend struct {
 	Amount      *V2Monetary             `json:"amount,omitempty"`
 	Destination *V2StageSendDestination `json:"destination,omitempty"`
+	Metadata    map[string]string       `json:"metadata,omitempty"`
 	Source      *V2StageSendSource      `json:"source,omitempty"`
 }
 
@@ -20,6 +21,13 @@ func (o *V2StageSend) GetDestination() *V2StageSendDestination {
 		return nil
 	}
 	return o.Destination
+}
+
+func (o *V2StageSend) GetMetadata() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
 }
 
 func (o *V2StageSend) GetSource() *V2StageSendSource {

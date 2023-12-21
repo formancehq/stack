@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 type WalletReference struct {
@@ -30,9 +31,10 @@ type PaymentSource struct {
 }
 
 type PaymentDestination struct {
-	PSP               string `json:"psp"`
-	Metadata          string `json:"metadata" spec:"default:formanceAccountID"`
-	WaitingValidation bool   `json:"waitingValidation" spec:"default:false"`
+	PSP               string  `json:"psp"`
+	Metadata          string  `json:"metadata" spec:"default:formanceAccountID"`
+	WaitingValidation bool    `json:"waitingValidation" spec:"default:false"`
+	ConnectorID       *string `json:"connectorId,omitempty"`
 }
 
 type Source struct {
@@ -86,10 +88,10 @@ func (s Destination) WithAccount(src *LedgerAccountDestination) Destination {
 }
 
 type Send struct {
-	Source      Source           `json:"source"`
-	Destination Destination      `json:"destination"`
-	ConnectorID *string          `json:"connectorId,omitempty"`
-	Amount      *shared.Monetary `json:"amount,omitempty"`
+	Source      Source            `json:"source"`
+	Destination Destination       `json:"destination"`
+	Amount      *shared.Monetary  `json:"amount,omitempty"`
+	Metadata    metadata.Metadata `json:"metadata,omitempty"`
 }
 
 func (s Send) GetWorkflow() any {
