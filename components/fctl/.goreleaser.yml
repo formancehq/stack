@@ -5,7 +5,7 @@ includes:
   - from_file:
       path: ./../../.goreleaser.default.yaml
 monorepo:
-  tag_prefix: components/fctl/
+  tag_prefix: v
   dir: ./
 
 builds:
