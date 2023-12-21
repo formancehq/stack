@@ -16,11 +16,11 @@ sdk-generate:
   RUN apk update && apk add yq git
   WORKDIR /src
   COPY (stack+speakeasy/speakeasy) /bin/speakeasy
-  COPY (stack+build-final-spec/final.json --version=$version) /src/releases/build/final.json
+  COPY (stack+build-final-spec/latest.json --version=$version) /src/releases/build/latest.json
   WORKDIR /src/releases
   RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows
   COPY --dir templates/sdk/${LANG}/* ./sdks/${LANG}/
-  RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./build/final.json -o ./sdks/${LANG} -l ${LANG}
+  RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./build/latest.json -o ./sdks/${LANG} -l ${LANG}
   SAVE ARTIFACT /src/releases/sdks/${LANG} AS LOCAL ./sdks/${LANG}
 
 sdk-publish:
@@ -29,7 +29,7 @@ sdk-publish:
   FROM node:20-alpine
   RUN apk update && apk add yq git
   WORKDIR /src
-  RUN RUN git clone https://github.com/formancehq/formance-sdk-${LANG}.git ./sdks/${LANG}
+  GIT CLONE https://github.com/formancehq/formance-sdk-${LANG}.git ./sdks/${LANG}
   COPY --dir ./sdks/generate/${LANG} ./sdks/${LANG}
   WORKDIR /src/sdks/${LANG}
   RUN git config --global user.email "support@formance.com"

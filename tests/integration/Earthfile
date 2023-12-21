@@ -32,7 +32,7 @@ tests:
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
     COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
-    COPY --pass-args (stack+build-final-spec/final.json) /src/libs/clients/build/generate.json
+    COPY --pass-args (stack+build-final-spec/latest.json) /src/libs/clients/build/generate.json
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
@@ -67,7 +67,7 @@ sources:
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
     COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
-    COPY --pass-args (stack+build-final-spec/final.json) /src/libs/clients/build/generate.json
+    COPY --pass-args (stack+build-final-spec/latest.json) /src/libs/clients/build/generate.json
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration

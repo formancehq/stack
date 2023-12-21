@@ -41,15 +41,15 @@ build-final-spec:
     COPY releases/openapi-merge.json .
     RUN mkdir ./build
     RUN npm run build
-    RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/final.json
+    RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/latest.json
     IF [ "$version" = "INTERNAL" ]
-        RUN sed -i 's/SDK_VERSION/INTERNAL/g' build/final.json
-        SAVE ARTIFACT build/final.json AS LOCAL releases/build/final.json
+        RUN sed -i 's/SDK_VERSION/INTERNAL/g' build/latest.json
+        SAVE ARTIFACT build/latest.json AS LOCAL releases/build/latest.json
     ELSE
-        RUN sed -i 's/SDK_VERSION/'$version'/g' build/final.json
-        SAVE ARTIFACT build/final.json AS LOCAL releases/build/$version.json
+        RUN sed -i 's/SDK_VERSION/'$version'/g' build/latest.json
+        SAVE ARTIFACT build/latest.json AS LOCAL releases/build/$version.json
     END
-    SAVE ARTIFACT build/final.json
+    SAVE ARTIFACT build/latest.json
 
 openapi:
     FROM core+base-image
