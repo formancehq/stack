@@ -46,6 +46,7 @@ type TransferInitiation struct {
 	DestinationAccountID string                       `json:"destinationAccountID"`
 	Error                string                       `json:"error"`
 	ID                   string                       `json:"id"`
+	Metadata             map[string]string            `json:"metadata,omitempty"`
 	Reference            string                       `json:"reference"`
 	RelatedPayments      []TransferInitiationPayments `json:"relatedPayments,omitempty"`
 	ScheduledAt          time.Time                    `json:"scheduledAt"`
@@ -120,6 +121,13 @@ func (o *TransferInitiation) GetID() string {
 		return ""
 	}
 	return o.ID
+}
+
+func (o *TransferInitiation) GetMetadata() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
 }
 
 func (o *TransferInitiation) GetReference() string {

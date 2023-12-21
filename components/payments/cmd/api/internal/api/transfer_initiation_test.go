@@ -194,6 +194,9 @@ func TestListTransferInitiations(t *testing.T) {
 							Error:     "",
 						},
 					},
+					Metadata: map[string]string{
+						"foo": "bar",
+					},
 				},
 				{
 					ID: models.TransferInitiationID{
@@ -240,6 +243,7 @@ func TestListTransferInitiations(t *testing.T) {
 					Status:               listTFsResponse[0].Status.String(),
 					ConnectorID:          listTFsResponse[0].ConnectorID.String(),
 					Error:                listTFsResponse[0].Error,
+					Metadata:             listTFsResponse[0].Metadata,
 				},
 				{
 					ID:                   listTFsResponse[1].ID.String(),
@@ -257,6 +261,7 @@ func TestListTransferInitiations(t *testing.T) {
 					ConnectorID:          listTFsResponse[1].ConnectorID.String(),
 					Status:               listTFsResponse[1].Status.String(),
 					Error:                listTFsResponse[1].Error,
+					Metadata:             listTFsResponse[1].Metadata,
 				},
 			}
 			expectedPaginationDetails := storage.PaginationDetails{
@@ -435,6 +440,9 @@ func TestGetTransferInitiation(t *testing.T) {
 							Error:     "",
 						},
 					},
+					Metadata: map[string]string{
+						"foo": "bar",
+					},
 				}
 
 				expectedTransferInitiationResponse = &readTransferInitiationResponse{
@@ -454,6 +462,7 @@ func TestGetTransferInitiation(t *testing.T) {
 						Asset:                getTransferInitiationResponse.Asset.String(),
 						Status:               getTransferInitiationResponse.Status.String(),
 						Error:                getTransferInitiationResponse.Error,
+						Metadata:             getTransferInitiationResponse.Metadata,
 					},
 					RelatedPayments: []*transferInitiationPaymentsResponse{
 						{
@@ -508,6 +517,7 @@ func TestGetTransferInitiation(t *testing.T) {
 						Asset:                getTransferInitiationResponse.Asset.String(),
 						Status:               getTransferInitiationResponse.Status.String(),
 						Error:                getTransferInitiationResponse.Error,
+						Metadata:             getTransferInitiationResponse.Metadata,
 					},
 				}
 			}

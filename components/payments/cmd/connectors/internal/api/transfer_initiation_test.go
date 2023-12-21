@@ -62,6 +62,9 @@ func TestCreateTransferInitiations(t *testing.T) {
 				Amount:               big.NewInt(100),
 				Asset:                "EUR/2",
 				Validated:            false,
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
 			},
 		},
 		{
@@ -331,6 +334,9 @@ func TestCreateTransferInitiations(t *testing.T) {
 				Asset:                "EUR/2",
 				Attempts:             0,
 				Status:               models.TransferInitiationStatusProcessing,
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
 			}
 
 			expectedCreateTransferInitiationResponse := &transferInitiationResponse{
@@ -350,6 +356,7 @@ func TestCreateTransferInitiations(t *testing.T) {
 				Asset:                createTransferInitiationResponse.Asset.String(),
 				Status:               createTransferInitiationResponse.Status.String(),
 				Error:                createTransferInitiationResponse.Error,
+				Metadata:             createTransferInitiationResponse.Metadata,
 			}
 
 			backend, mockService := newServiceTestingBackend(t)

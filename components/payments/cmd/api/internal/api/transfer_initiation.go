@@ -13,21 +13,22 @@ import (
 )
 
 type transferInitiationResponse struct {
-	ID                   string    `json:"id"`
-	Reference            string    `json:"reference"`
-	CreatedAt            time.Time `json:"createdAt"`
-	UpdatedAt            time.Time `json:"updatedAt"`
-	ScheduledAt          time.Time `json:"scheduledAt"`
-	Description          string    `json:"description"`
-	SourceAccountID      string    `json:"sourceAccountID"`
-	DestinationAccountID string    `json:"destinationAccountID"`
-	ConnectorID          string    `json:"connectorID"`
-	Provider             string    `json:"provider"`
-	Type                 string    `json:"type"`
-	Amount               *big.Int  `json:"amount"`
-	Asset                string    `json:"asset"`
-	Status               string    `json:"status"`
-	Error                string    `json:"error"`
+	ID                   string            `json:"id"`
+	Reference            string            `json:"reference"`
+	CreatedAt            time.Time         `json:"createdAt"`
+	UpdatedAt            time.Time         `json:"updatedAt"`
+	ScheduledAt          time.Time         `json:"scheduledAt"`
+	Description          string            `json:"description"`
+	SourceAccountID      string            `json:"sourceAccountID"`
+	DestinationAccountID string            `json:"destinationAccountID"`
+	ConnectorID          string            `json:"connectorID"`
+	Provider             string            `json:"provider"`
+	Type                 string            `json:"type"`
+	Amount               *big.Int          `json:"amount"`
+	Asset                string            `json:"asset"`
+	Status               string            `json:"status"`
+	Error                string            `json:"error"`
+	Metadata             map[string]string `json:"metadata"`
 }
 
 type transferInitiationPaymentsResponse struct {
@@ -75,6 +76,7 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 				Asset:                ret.Asset.String(),
 				Status:               ret.Status.String(),
 				Error:                ret.Error,
+				Metadata:             ret.Metadata,
 			},
 		}
 
@@ -131,6 +133,7 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 				Asset:                ret[i].Asset.String(),
 				Status:               ret[i].Status.String(),
 				Error:                ret[i].Error,
+				Metadata:             ret[i].Metadata,
 			}
 		}
 
