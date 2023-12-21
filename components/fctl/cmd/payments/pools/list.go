@@ -1,9 +1,10 @@
-package accounts
+package pools
 
 import (
 	"fmt"
-	"time"
+	"strings"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -11,39 +12,53 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ListBalancesStore struct {
-	Cursor *shared.BalancesCursorCursor `json:"cursor"`
+type ListStore struct {
+	Cursor *shared.PoolsCursorCursor `json:"cursor"`
 }
 
-type ListBalancesController struct {
-	store *ListBalancesStore
+type ListController struct {
+	PaymentsVersion versions.Version
+
+	store *ListStore
 
 	cursorFlag   string
 	pageSizeFlag string
 }
 
-var _ fctl.Controller[*ListBalancesStore] = (*ListBalancesController)(nil)
+func (c *ListController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
+}
 
-func NewListBalanceStore() *ListBalancesStore {
-	return &ListBalancesStore{
-		Cursor: &shared.BalancesCursorCursor{},
+var _ fctl.Controller[*ListStore] = (*ListController)(nil)
+
+func NewListStore() *ListStore {
+	return &ListStore{
+		Cursor: &shared.PoolsCursorCursor{},
 	}
 }
 
-func NewListBalancesController() *ListBalancesController {
-	return &ListBalancesController{
-		store: NewListBalanceStore(),
+func NewListController() *ListController {
+	return &ListController{
+		store: NewListStore(),
 
 		cursorFlag:   "cursor",
 		pageSizeFlag: "page-size",
 	}
 }
 
-func (c *ListBalancesController) GetStore() *ListBalancesStore {
+func (c *ListController) GetStore() *ListStore {
 	return c.store
 }
 
-func (c *ListBalancesController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
+	}
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -74,12 +89,11 @@ func (c *ListBalancesController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		pageSize = fctl.Ptr(int64(ps))
 	}
 
-	response, err := client.Payments.GetAccountBalances(
+	response, err := client.Payments.ListPools(
 		cmd.Context(),
-		operations.GetAccountBalancesRequest{
-			Cursor:    cursor,
-			PageSize:  pageSize,
-			AccountID: args[0],
+		operations.ListPoolsRequest{
+			Cursor:   cursor,
+			PageSize: pageSize,
 		},
 	)
 	if err != nil {
@@ -90,23 +104,22 @@ func (c *ListBalancesController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Cursor = &response.BalancesCursor.Cursor
+	c.store.Cursor = &response.PoolsCursor.Cursor
 
 	return c, nil
 }
 
-func (c *ListBalancesController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.Cursor.Data, func(balance shared.AccountBalance) []string {
+func (c *ListController) Render(cmd *cobra.Command, args []string) error {
+	tableData := fctl.Map(c.store.Cursor.Data, func(bc shared.Pool) []string {
 		return []string{
-			balance.AccountID,
-			balance.Asset,
-			balance.Balance.String(),
-			balance.CreatedAt.Format(time.RFC3339),
-			balance.LastUpdatedAt.Format(time.RFC3339),
+			bc.ID,
+			bc.Name,
+			func() string {
+				return strings.Join(bc.Accounts, ", ")
+			}(),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "Asset", "Balance",
-		"CreatedAt", "LastUpdatedAt"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Accounts"})
 	if err := pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
@@ -141,13 +154,14 @@ func (c *ListBalancesController) Render(cmd *cobra.Command, args []string) error
 	return nil
 }
 
-func NewListBalanceCommand() *cobra.Command {
-	c := NewListBalancesController()
-	return fctl.NewCommand("balances <accountID>",
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithShortDescription("List accounts balances"),
+func NewListCommand() *cobra.Command {
+	c := NewListController()
+	return fctl.NewCommand("list",
+		fctl.WithAliases("ls", "l"),
+		fctl.WithArgs(cobra.ExactArgs(0)),
+		fctl.WithShortDescription("List pools"),
 		fctl.WithStringFlag(c.cursorFlag, "", "Cursor"),
 		fctl.WithIntFlag(c.pageSizeFlag, 0, "PageSize"),
-		fctl.WithController[*ListBalancesStore](c),
+		fctl.WithController[*ListStore](c),
 	)
 }

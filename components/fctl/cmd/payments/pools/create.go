@@ -1,4 +1,4 @@
-package bankaccounts
+package pools
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 )
 
 type CreateStore struct {
-	BankAccountID string `json:"bankAccountId"`
+	PoolID string `json:"poolID"`
 }
 type CreateController struct {
 	PaymentsVersion versions.Version
@@ -41,7 +41,7 @@ func NewCreateCommand() *cobra.Command {
 	c := NewCreateController()
 	return fctl.NewCommand("create <file>|-",
 		fctl.WithConfirmFlag(),
-		fctl.WithShortDescription("Create a bank account"),
+		fctl.WithShortDescription("Create a pool"),
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*CreateStore](c),
@@ -58,7 +58,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 
 	if c.PaymentsVersion < versions.V1 {
-		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
+		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
 	}
 
 	soc, err := fctl.GetStackOrganizationConfig(cmd)
@@ -66,7 +66,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, soc.Stack, "You are about to create a bank account") {
+	if !fctl.CheckStackApprobation(cmd, soc.Stack, "You are about to create a new pool") {
 		return nil, fctl.ErrMissingApproval
 	}
 
@@ -80,13 +80,13 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	request := shared.BankAccountRequest{}
+	request := shared.PoolRequest{}
 	if err := json.Unmarshal([]byte(script), &request); err != nil {
 		return nil, err
 	}
 
 	//nolint:gosimple
-	response, err := client.Payments.CreateBankAccount(cmd.Context(), request)
+	response, err := client.Payments.CreatePool(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
@@ -95,13 +95,13 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.BankAccountID = response.BankAccountResponse.Data.ID
+	c.store.PoolID = response.PoolResponse.Data.ID
 
 	return c, nil
 }
 
 func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Bank Account created with ID: %s", c.store.BankAccountID)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Pool created with ID: %s", c.store.PoolID)
 
 	return nil
 }
