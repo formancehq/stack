@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "docs:operator": "cp -R ./../components/operator/docs/crd.md ./docs/operator/crd.md",
+    "start": "npm run docs:operator && docusaurus start",
+    "build": "npm run docs:operator && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
