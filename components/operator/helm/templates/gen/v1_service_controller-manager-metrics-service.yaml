@@ -3,13 +3,16 @@ kind: Service
 metadata:
   annotations:
     config.kubernetes.io/origin: |
-      path: ../webhook/service.yaml
-  name: formance-system-webhook-service
+      path: ../rbac/auth_proxy_service.yaml
+  labels:
+    control-plane: controller-manager
+  name: controller-manager-metrics-service
   namespace: formance-system
 spec:
   ports:
-  - port: 443
+  - name: https
+    port: 8443
     protocol: TCP
-    targetPort: 9443
+    targetPort: https
   selector:
     control-plane: controller-manager

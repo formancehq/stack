@@ -4,13 +4,13 @@ metadata:
   annotations:
     config.kubernetes.io/origin: |
       path: ../certmanager/certificate.yaml
-  name: formance-system-serving-cert
+  name: serving-cert
   namespace: formance-system
 spec:
   dnsNames:
-  - formance-system-webhook-service.formance-system.svc
-  - formance-system-webhook-service.formance-system.svc.cluster.local
+  - webhook-service.formance-system.svc
+  - webhook-service.formance-system.svc.cluster.local
   issuerRef:
     kind: Issuer
-    name: formance-system-selfsigned-issuer
+    name: selfsigned-issuer
   secretName: webhook-server-cert

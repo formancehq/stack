@@ -3,13 +3,13 @@ kind: ClusterRoleBinding
 metadata:
   annotations:
     config.kubernetes.io/origin: |
-      path: ../rbac/auth_proxy_role_binding.yaml
-  name: formance-system-proxy-rolebinding
+      path: ../rbac/role_binding.yaml
+  name: manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: formance-system-proxy-role
+  name: manager-role
 subjects:
 - kind: ServiceAccount
-  name: formance-system-controller-manager
+  name: controller-manager
   namespace: formance-system
