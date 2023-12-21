@@ -27,10 +27,11 @@ func TestLoader(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, Config{
-		Name:          "ATLAR",
-		BaseUrl:       *baseUrl,
-		PollingPeriod: connectors.Duration{Duration: 2 * time.Minute},
-		ApiConfig:     ApiConfig{PageSize: 25},
+		Name:                                  "ATLAR",
+		BaseUrl:                               *baseUrl,
+		PollingPeriod:                         connectors.Duration{Duration: 2 * time.Minute},
+		TransferInitiationStatusPollingPeriod: connectors.Duration{Duration: 2 * time.Minute},
+		ApiConfig:                             ApiConfig{PageSize: 25},
 	}, loader.ApplyDefaults(config))
 
 	assert.EqualValues(t, newConnector(logger, config), loader.Load(logger, config))
