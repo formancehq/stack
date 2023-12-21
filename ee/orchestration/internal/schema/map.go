@@ -35,8 +35,26 @@ func interpolate(ctx Context, v string) string {
 	})
 }
 
-func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
+func mapObjectField(ctx Context, raw any, spec reflect.Value, fieldTag tag) error {
 	switch spec.Kind() {
+	case reflect.Map:
+		if raw == nil {
+			return nil
+		}
+		vRaw := reflect.ValueOf(raw)
+		if vRaw.Kind() != reflect.Map {
+			return fmt.Errorf("expecting map, got type: %T", raw)
+		}
+
+		spec.Set(reflect.MakeMap(spec.Type()))
+		for _, key := range vRaw.MapKeys() {
+			value := vRaw.MapIndex(key)
+			targetValue := reflect.New(spec.Type().Elem()).Elem()
+			if err := mapObjectField(ctx, value.Interface(), targetValue, tag{}); err != nil {
+				return err
+			}
+			spec.SetMapIndex(key, targetValue)
+		}
 	case reflect.Pointer:
 		if raw == nil {
 			return nil
@@ -46,7 +64,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			case string:
 				interpolated := interpolate(ctx, json)
 				if interpolated == "" {
-					interpolated = tag.defaultValue
+					interpolated = fieldTag.defaultValue
 					if interpolated == "" {
 						return nil
 					}
@@ -59,7 +77,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			case float64:
 				spec.Set(reflect.ValueOf(big.NewInt(int64(json))))
 			case nil:
-				defaultValue := tag.defaultValue
+				defaultValue := fieldTag.defaultValue
 				if defaultValue == "" {
 					return nil
 				}
@@ -74,17 +92,17 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			return nil
 		}
 		spec.Set(reflect.New(spec.Type().Elem()))
-		return mapObjectField(ctx, raw, spec.Elem(), tag)
+		return mapObjectField(ctx, raw, spec.Elem(), fieldTag)
 	case reflect.String:
 		switch json := raw.(type) {
 		case string:
 			interpolated := interpolate(ctx, json)
 			if interpolated == "" {
-				interpolated = tag.defaultValue
+				interpolated = fieldTag.defaultValue
 			}
 			spec.SetString(interpolated)
 		case nil:
-			spec.SetString(tag.defaultValue)
+			spec.SetString(fieldTag.defaultValue)
 		default:
 			return fmt.Errorf("expected string but was %T", json)
 		}
@@ -94,7 +112,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 		case string:
 			interpolated := interpolate(ctx, json)
 			if interpolated == "" {
-				interpolated = tag.defaultValue
+				interpolated = fieldTag.defaultValue
 				if interpolated == "" {
 					return nil
 				}
@@ -107,7 +125,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 		case float64:
 			spec.SetUint(uint64(json))
 		case nil:
-			defaultValue := tag.defaultValue
+			defaultValue := fieldTag.defaultValue
 			if defaultValue == "" {
 				return nil
 			}
@@ -125,7 +143,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			case string:
 				interpolated := interpolate(ctx, json)
 				if interpolated == "" {
-					interpolated = tag.defaultValue
+					interpolated = fieldTag.defaultValue
 					if interpolated == "" {
 						return nil
 					}
@@ -136,7 +154,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 				}
 				spec.SetInt(int64(duration))
 			case nil:
-				defaultValue := tag.defaultValue
+				defaultValue := fieldTag.defaultValue
 				if defaultValue == "" {
 					return nil
 				}
@@ -154,7 +172,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 		case string:
 			interpolated := interpolate(ctx, json)
 			if interpolated == "" {
-				interpolated = tag.defaultValue
+				interpolated = fieldTag.defaultValue
 				if interpolated == "" {
 					return nil
 				}
@@ -167,7 +185,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 		case float64:
 			spec.SetInt(int64(json))
 		case nil:
-			defaultValue := tag.defaultValue
+			defaultValue := fieldTag.defaultValue
 			if defaultValue == "" {
 				return nil
 			}
@@ -190,7 +208,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 		case bool:
 			spec.SetBool(json)
 		case nil:
-			defaultValue := strings.ToLower(tag.defaultValue)
+			defaultValue := strings.ToLower(fieldTag.defaultValue)
 			if defaultValue != "true" && defaultValue != "false" {
 				return fmt.Errorf("unable to resolve field '%s' to bool value", spec.Type().Name())
 			}
@@ -210,7 +228,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 		case float64:
 			spec.SetFloat(json)
 		case nil:
-			defaultValue := tag.defaultValue
+			defaultValue := fieldTag.defaultValue
 			if defaultValue == "" {
 				return nil
 			}
@@ -228,7 +246,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			case string:
 				interpolated := interpolate(ctx, json)
 				if interpolated == "" {
-					interpolated = tag.defaultValue
+					interpolated = fieldTag.defaultValue
 				}
 				date, err := time.Parse(time.RFC3339, interpolated)
 				if err != nil {
@@ -236,7 +254,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 				}
 				spec.Set(reflect.ValueOf(date))
 			case nil:
-				date, err := time.Parse(time.RFC3339, tag.defaultValue)
+				date, err := time.Parse(time.RFC3339, fieldTag.defaultValue)
 				if err != nil {
 					return fmt.Errorf("expected date as rfc3339 format")
 				}

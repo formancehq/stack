@@ -3,6 +3,7 @@ package activities
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -10,7 +11,19 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityStripeTransfer) error {
+type StripeTransferRequest struct {
+	Amount      *big.Int `json:"amount,omitempty"`
+	Asset       *string  `json:"asset,omitempty"`
+	ConnectorID *string  `json:"connectorID,omitempty"`
+	Destination *string  `json:"destination,omitempty"`
+	// A set of key/value pairs that you can attach to a transfer object.
+	// It can be useful for storing additional information about the transfer in a structured format.
+	//
+	Metadata          map[string]string `json:"metadata"`
+	WaitingValidation *bool             `default:"false" json:"waitingValidation"`
+}
+
+func (a Activities) StripeTransfer(ctx context.Context, request StripeTransferRequest) error {
 	validated := true
 	if request.WaitingValidation != nil && *request.WaitingValidation {
 		validated = false
@@ -49,6 +62,6 @@ func (a Activities) StripeTransfer(ctx context.Context, request shared.ActivityS
 
 var StripeTransferActivity = Activities{}.StripeTransfer
 
-func StripeTransfer(ctx workflow.Context, request shared.ActivityStripeTransfer) error {
+func StripeTransfer(ctx workflow.Context, request StripeTransferRequest) error {
 	return executeActivity(ctx, StripeTransferActivity, nil, request)
 }

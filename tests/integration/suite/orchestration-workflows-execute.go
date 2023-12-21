@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
-	"net/http"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
@@ -17,13 +16,6 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledger}, func() {
-	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
-			Ledger: "default",
-		})
-		Expect(err).To(BeNil())
-		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
-	})
 	When("creating a new workflow", func() {
 		var (
 			createWorkflowResponse *shared.V2CreateWorkflowResponse
@@ -52,6 +44,9 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 									"amount": 100,
 									"asset":  "EUR/2",
 								},
+								"metadata": map[string]any{
+									"foo": "${userID}",
+								},
 							},
 						},
 					},
@@ -71,8 +66,10 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 				response, err := Client().Orchestration.V2RunWorkflow(
 					TestContext(),
 					operations.V2RunWorkflowRequest{
-						RequestBody: map[string]string{},
-						WorkflowID:  createWorkflowResponse.Data.ID,
+						RequestBody: map[string]string{
+							"userID": "bar",
+						},
+						WorkflowID: createWorkflowResponse.Data.ID,
 					},
 				)
 				Expect(err).ToNot(HaveOccurred())
@@ -180,6 +177,9 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 										Ledger: ptr("default"),
 									},
 								},
+								Metadata: map[string]string{
+									"foo": "bar",
+								},
 							}))
 					})
 					Then("reading first stage history", func() {
@@ -211,7 +211,9 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 									Ledger: ptr("default"),
 									Data: &shared.V2PostTransaction{
 										Postings: postings,
-										Metadata: metadata.Metadata{},
+										Metadata: metadata.Metadata{
+											"foo": "bar",
+										},
 									},
 								},
 							}))
@@ -229,7 +231,9 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 									Data: []shared.OrchestrationV2Transaction{{
 										Txid:     big.NewInt(0),
 										Postings: postings,
-										Metadata: map[string]string{},
+										Metadata: map[string]string{
+											"foo": "bar",
+										},
 									}},
 								},
 							}))
