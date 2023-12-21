@@ -1,3 +1,4 @@
+{{ if .Capabilities.APIVersions.Has "stack.formance.com/v1beta3/Versions" }}
 apiVersion: stack.formance.com/v1beta3
 kind: Versions
 metadata:
@@ -13,3 +14,4 @@ spec:
   stargate: v0.1.10
   gateway: v0.1.7
   ledger: v1.10.14
+{{ end }}
