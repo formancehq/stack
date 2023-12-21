@@ -264,6 +264,13 @@ func mapObject(ctx Context, raw map[string]any, spec reflect.Value) error {
 		specFieldType := specType.Field(i)
 		specField := spec.Field(i)
 
+		if specFieldType.Anonymous {
+			if err := mapObject(ctx, raw, specField); err != nil {
+				return err
+			}
+			continue
+		}
+
 		jsonKey := strings.Split(specFieldType.Tag.Get("json"), ",")[0]
 
 		if err := mapObjectField(ctx, raw[jsonKey], specField, parseTag(specFieldType.Tag.Get("spec"))); err != nil {

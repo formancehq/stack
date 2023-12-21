@@ -1067,10 +1067,10 @@ components:
           $ref: '#/components/schemas/WorkflowInstanceHistoryStageList'
     StageSendSourceWallet:
       type: object
-      required:
-        - id
       properties:
         id:
+          type: string
+        name:
           type: string
         balance:
           type: string
@@ -1322,6 +1322,13 @@ components:
       properties:
         id:
           type: string
+    ActivityListWallets:
+      type: object
+      properties:
+        name:
+          type: string
+    ActivityListWalletsOutput:
+      $ref: '#/components/schemas/ListWalletsResponse'
     ActivityVoidHold:
       type: object
       required:
@@ -1609,6 +1616,8 @@ components:
           $ref: '#/components/schemas/ActivityGetWallet'
         VoidHold:
           $ref: '#/components/schemas/ActivityVoidHold'
+        ListWallets:
+          $ref: '#/components/schemas/ActivityListWallets'
     WorkflowInstanceHistoryStageOutput:
       type: object
       properties:
@@ -1622,6 +1631,8 @@ components:
           $ref: '#/components/schemas/ActivityDebitWalletOutput'
         GetWallet:
           $ref: '#/components/schemas/ActivityGetWalletOutput'
+        ListWallets:
+          $ref: '#/components/schemas/ListWalletsResponse'
     Monetary:
       type: object
       required:
@@ -1767,6 +1778,67 @@ components:
           input: 100
           output: 10
           balance: 90
+    Cursor:
+      type: object
+      required:
+        - pageSize
+      properties:
+        pageSize:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          example: 15
+        hasMore:
+          type: boolean
+          example: false
+        previous:
+          type: string
+          example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+        next:
+          type: string
+          example: ""
+    Wallet:
+      type: object
+      required:
+        - name
+        - id
+        - metadata
+        - createdAt
+        - ledger
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of the wallet.
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Metadata associated with the wallet.
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        ledger:
+          type: string
+    ListWalletsResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/Cursor'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/components/schemas/Wallet'
+                  type: array
+              type: object
+              required:
+                - data
     V2ServerInfo:
       type: object
       required:

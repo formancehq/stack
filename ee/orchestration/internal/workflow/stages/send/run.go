@@ -34,6 +34,37 @@ func justError[T any](v T, err error) error {
 	return err
 }
 
+func getWalletFromReference(ctx workflow.Context, ref WalletReference) (*shared.Wallet, error) {
+	if ref.ID != "" {
+		walletSource, err := activities.GetWallet(internal.InfiniteRetryContext(ctx), ref.ID)
+		if err != nil {
+			return nil, err
+		}
+		return &shared.Wallet{
+			CreatedAt: walletSource.CreatedAt,
+			ID:        walletSource.ID,
+			Ledger:    walletSource.Ledger,
+			Metadata:  walletSource.Metadata,
+			Name:      walletSource.Name,
+		}, nil
+	} else {
+		wallets, err := activities.ListWallets(internal.InfiniteRetryContext(ctx), activities.ListWalletsRequest{
+			Name: ref.Name,
+		})
+		if err != nil {
+			return nil, err
+		}
+		switch len(wallets.Cursor.Data) {
+		case 0:
+			return nil, errors.New("wallet not found")
+		case 1:
+			return &wallets.Cursor.Data[0], nil
+		default:
+			return nil, errors.New("found multiple wallets with the same name")
+		}
+	}
+}
+
 func RunSend(ctx workflow.Context, send Send) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
@@ -136,22 +167,22 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
-	walletSource, err := activities.GetWallet(internal.InfiniteRetryContext(ctx), source.ID)
+	sourceWallet, err := getWalletFromReference(ctx, source.WalletReference)
 	if err != nil {
 		return err
 	}
-	walletDestination, err := activities.GetWallet(internal.InfiniteRetryContext(ctx), destination.ID)
+	destinationWallet, err := getWalletFromReference(ctx, destination.WalletReference)
 	if err != nil {
 		return err
 	}
-	if walletSource.Ledger == walletDestination.Ledger {
+	if sourceWallet.Ledger == destinationWallet.Ledger {
 		mainBalance := "main"
 		sourceSubject := shared.WalletSubject{
 			Balance:    &mainBalance,
-			Identifier: source.ID,
+			Identifier: sourceWallet.ID,
 			Type:       "WALLET",
 		}
-		return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destination.ID, &shared.CreditWalletRequest{
+		return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destinationWallet.ID, &shared.CreditWalletRequest{
 			Amount:   *amount,
 			Balance:  &destination.Balance,
 			Metadata: map[string]string{},
@@ -159,21 +190,21 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 		})
 	}
 
-	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, &shared.DebitWalletRequest{
+	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
 		Metadata: map[string]string{
-			moveToLedgerMetadata: walletDestination.Ledger,
+			moveToLedgerMetadata: destinationWallet.Ledger,
 		},
 	})); err != nil {
 		return err
 	}
 
-	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destination.ID, &shared.CreditWalletRequest{
+	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destinationWallet.ID, &shared.CreditWalletRequest{
 		Amount:  *amount,
 		Balance: &destination.Balance,
 		Metadata: map[string]string{
-			moveFromLedgerMetadata: walletSource.Ledger,
+			moveFromLedgerMetadata: sourceWallet.Ledger,
 		},
 	})
 }
@@ -185,12 +216,12 @@ func runWalletToPayment(ctx workflow.Context, connectorID *string, source *Walle
 	if destination.PSP != "stripe" {
 		return errors.New("only stripe actually supported")
 	}
-	wallet, err := activities.GetWallet(internal.InfiniteRetryContext(ctx), source.ID)
+	sourceWallet, err := getWalletFromReference(ctx, source.WalletReference)
 	if err != nil {
 		return errors.Wrapf(err, "reading account: %s", source.ID)
 	}
 
-	formanceAccountID, err := extractFormanceAccountID(destination.Metadata, wallet.Metadata)
+	formanceAccountID, err := extractFormanceAccountID(destination.Metadata, sourceWallet.Metadata)
 	if err != nil {
 		return err
 	}
@@ -204,7 +235,7 @@ func runWalletToPayment(ctx workflow.Context, connectorID *string, source *Walle
 	}); err != nil {
 		return err
 	}
-	return justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, &shared.DebitWalletRequest{
+	return justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
 	}))
@@ -214,13 +245,13 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
-	wallet, err := activities.GetWallet(internal.InfiniteRetryContext(ctx), source.ID)
+	sourceWallet, err := getWalletFromReference(ctx, source.WalletReference)
 	if err != nil {
 		return err
 	}
-	if wallet.Ledger == destination.Ledger {
+	if sourceWallet.Ledger == destination.Ledger {
 
-		return justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, &shared.DebitWalletRequest{
+		return justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 			Amount: *amount,
 			Destination: &shared.Subject{
 				LedgerAccountSubject: &shared.LedgerAccountSubject{
@@ -232,7 +263,7 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 		}))
 	}
 
-	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, &shared.DebitWalletRequest{
+	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
 		Metadata: map[string]string{
@@ -250,7 +281,7 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 			Source:      "world",
 		}},
 		Metadata: map[string]any{
-			moveFromLedgerMetadata: wallet.Ledger,
+			moveFromLedgerMetadata: sourceWallet.Ledger,
 		},
 	}))
 }
@@ -259,12 +290,12 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
-	wallet, err := activities.GetWallet(internal.InfiniteRetryContext(ctx), destination.ID)
+	destinationWallet, err := getWalletFromReference(ctx, destination.WalletReference)
 	if err != nil {
 		return err
 	}
-	if wallet.Ledger == source.Ledger {
-		return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destination.ID, &shared.CreditWalletRequest{
+	if destinationWallet.Ledger == source.Ledger {
+		return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destinationWallet.ID, &shared.CreditWalletRequest{
 			Amount: *amount,
 			Sources: []shared.Subject{{
 				LedgerAccountSubject: &shared.LedgerAccountSubject{
@@ -284,13 +315,13 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 			Source:      source.ID,
 		}},
 		Metadata: map[string]any{
-			moveToLedgerMetadata: wallet.Ledger,
+			moveToLedgerMetadata: destinationWallet.Ledger,
 		},
 	})); err != nil {
 		return err
 	}
 
-	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destination.ID, &shared.CreditWalletRequest{
+	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destinationWallet.ID, &shared.CreditWalletRequest{
 		Amount: *amount,
 		Sources: []shared.Subject{{
 			LedgerAccountSubject: &shared.LedgerAccountSubject{

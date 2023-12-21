@@ -3,12 +3,13 @@
 package shared
 
 type WorkflowInstanceHistoryStageOutput struct {
-	CreateTransaction *ActivityCreateTransactionOutput `json:"CreateTransaction,omitempty"`
-	DebitWallet       *ActivityDebitWalletOutput       `json:"DebitWallet,omitempty"`
-	GetAccount        *ActivityGetAccountOutput        `json:"GetAccount,omitempty"`
-	GetPayment        *ActivityGetPaymentOutput        `json:"GetPayment,omitempty"`
-	GetWallet         *ActivityGetWalletOutput         `json:"GetWallet,omitempty"`
-	RevertTransaction *ActivityRevertTransactionOutput `json:"RevertTransaction,omitempty"`
+	CreateTransaction *ActivityCreateTransactionOutput  `json:"CreateTransaction,omitempty"`
+	DebitWallet       *ActivityDebitWalletOutput        `json:"DebitWallet,omitempty"`
+	GetAccount        *ActivityGetAccountOutput         `json:"GetAccount,omitempty"`
+	GetPayment        *ActivityGetPaymentOutput         `json:"GetPayment,omitempty"`
+	GetWallet         *ActivityGetWalletOutput          `json:"GetWallet,omitempty"`
+	ListWallets       *OrchestrationListWalletsResponse `json:"ListWallets,omitempty"`
+	RevertTransaction *ActivityRevertTransactionOutput  `json:"RevertTransaction,omitempty"`
 }
 
 func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() *ActivityCreateTransactionOutput {
@@ -44,6 +45,13 @@ func (o *WorkflowInstanceHistoryStageOutput) GetGetWallet() *ActivityGetWalletOu
 		return nil
 	}
 	return o.GetWallet
+}
+
+func (o *WorkflowInstanceHistoryStageOutput) GetListWallets() *OrchestrationListWalletsResponse {
+	if o == nil {
+		return nil
+	}
+	return o.ListWallets
 }
 
 func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransaction() *ActivityRevertTransactionOutput {

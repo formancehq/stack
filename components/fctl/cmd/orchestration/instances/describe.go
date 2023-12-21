@@ -252,6 +252,8 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 				}
 			case historyStage.Input.VoidHold != nil:
 				listItems = append(listItems, historyItemTitle("Cancel debit hold %s", historyStage.Input.VoidHold.ID))
+			case historyStage.Input.ListWallets != nil:
+				listItems = append(listItems, historyItemTitle("List wallets"))
 			}
 			if historyStage.LastFailure != nil {
 				listItems = append(listItems, historyItemError(*historyStage.LastFailure))

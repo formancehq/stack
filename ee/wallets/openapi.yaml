@@ -120,6 +120,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListWalletsResponse'
+
+        default:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       summary: Create a new wallet
       operationId: createWallet
