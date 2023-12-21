@@ -40,6 +40,7 @@ func NewRetryController() *RetryController {
 func NewRetryCommand() *cobra.Command {
 	c := NewRetryController()
 	return fctl.NewCommand("retry <transferID>",
+		fctl.WithConfirmFlag(),
 		fctl.WithShortDescription("Retry a failed transfer initiation"),
 		fctl.WithAliases("r"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
@@ -64,6 +65,11 @@ func (c *RetryController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	if err != nil {
 		return nil, err
 	}
+
+	if !fctl.CheckStackApprobation(cmd, soc.Stack, "You are about to retry the transfer initiation '%s'", args[0]) {
+		return nil, fctl.ErrMissingApproval
+	}
+
 	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")

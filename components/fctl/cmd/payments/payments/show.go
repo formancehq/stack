@@ -1,10 +1,9 @@
-package bankaccounts
+package payments
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -13,16 +12,10 @@ import (
 )
 
 type ShowStore struct {
-	BankAccount *shared.BankAccount `json:"bankAccount"`
+	Payment *shared.Payment `json:"payment"`
 }
 type ShowController struct {
-	PaymentsVersion versions.Version
-
 	store *ShowStore
-}
-
-func (c *ShowController) SetVersion(version versions.Version) {
-	c.PaymentsVersion = version
 }
 
 var _ fctl.Controller[*ShowStore] = (*ShowController)(nil)
@@ -39,8 +32,8 @@ func NewShowController() *ShowController {
 
 func NewShowCommand() *cobra.Command {
 	c := NewShowController()
-	return fctl.NewCommand("get <bankAccountID>",
-		fctl.WithShortDescription("Get bank account"),
+	return fctl.NewCommand("get <paymentID>",
+		fctl.WithShortDescription("Get payment"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithAliases("sh", "s"),
 		fctl.WithController[*ShowStore](c),
@@ -52,14 +45,6 @@ func (c *ShowController) GetStore() *ShowStore {
 }
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
-		return nil, err
-	}
-
-	if c.PaymentsVersion < versions.V1 {
-		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
-	}
-
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -80,8 +65,8 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := ledgerClient.Payments.GetBankAccount(cmd.Context(), operations.GetBankAccountRequest{
-		BankAccountID: args[0],
+	response, err := ledgerClient.Payments.GetPayment(cmd.Context(), operations.GetPaymentRequest{
+		PaymentID: args[0],
 	})
 	if err != nil {
 		return nil, err
@@ -91,7 +76,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.BankAccount = &response.BankAccountResponse.Data
+	c.store.Payment = &response.PaymentResponse.Data
 
 	return c, nil
 }
@@ -99,25 +84,24 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.BankAccount.ID})
-	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.BankAccount.CreatedAt.Format(time.RFC3339)})
-	tableData = append(tableData, []string{pterm.LightCyan("Country"), c.store.BankAccount.Country})
-	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), string(c.store.BankAccount.ConnectorID)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Payment.ID})
+	tableData = append(tableData, []string{pterm.LightCyan("Reference"), c.store.Payment.Reference})
+	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.Payment.CreatedAt.Format(time.RFC3339)})
+	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), c.store.Payment.ConnectorID})
+	tableData = append(tableData, []string{pterm.LightCyan("Asset"), c.store.Payment.Asset})
+	tableData = append(tableData, []string{pterm.LightCyan("Amount"), c.store.Payment.Amount.String()})
+	tableData = append(tableData, []string{pterm.LightCyan("InitialAmount"), c.store.Payment.InitialAmount.String()})
+	tableData = append(tableData, []string{pterm.LightCyan("Type"), string(c.store.Payment.Type)})
+	tableData = append(tableData, []string{pterm.LightCyan("Scheme"), string(c.store.Payment.Scheme)})
+	tableData = append(tableData, []string{pterm.LightCyan("Status"), string(c.store.Payment.Status)})
+	tableData = append(tableData, []string{pterm.LightCyan("DestinationAccountID"), c.store.Payment.DestinationAccountID})
+	tableData = append(tableData, []string{pterm.LightCyan("SourceAccountID"), c.store.Payment.SourceAccountID})
 	tableData = append(tableData, []string{pterm.LightCyan("Provider"), func() string {
-		if c.store.BankAccount.Provider != nil {
-			return *c.store.BankAccount.Provider
+		if c.store.Payment.Provider == nil {
+			return ""
 		}
-		return ""
+		return string(*c.store.Payment.Provider)
 	}()})
-	if c.store.BankAccount.AccountNumber != nil {
-		tableData = append(tableData, []string{pterm.LightCyan("AccountNumber"), *c.store.BankAccount.AccountNumber})
-	}
-	if c.store.BankAccount.Iban != nil {
-		tableData = append(tableData, []string{pterm.LightCyan("Iban"), *c.store.BankAccount.Iban})
-	}
-	if c.store.BankAccount.SwiftBicCode != nil {
-		tableData = append(tableData, []string{pterm.LightCyan("SwiftBicCode"), *c.store.BankAccount.SwiftBicCode})
-	}
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
@@ -126,5 +110,5 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.BankAccount.Metadata)
+	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.Payment.Metadata)
 }

@@ -40,6 +40,7 @@ func NewCreateController() *CreateController {
 func NewCreateCommand() *cobra.Command {
 	c := NewCreateController()
 	return fctl.NewCommand("create <file>|-",
+		fctl.WithConfirmFlag(),
 		fctl.WithShortDescription("Create a transfer initiation"),
 		fctl.WithAliases("cr", "c"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
@@ -64,6 +65,11 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	if err != nil {
 		return nil, err
 	}
+
+	if !fctl.CheckStackApprobation(cmd, soc.Stack, "You are about to create a transfer initation") {
+		return nil, fctl.ErrMissingApproval
+	}
+
 	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")

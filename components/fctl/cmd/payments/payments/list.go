@@ -16,6 +16,9 @@ type ListStore struct {
 }
 type ListController struct {
 	store *ListStore
+
+	cursorFlag   string
+	pageSizeFlag string
 }
 
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
@@ -29,6 +32,9 @@ func NewListStore() *ListStore {
 func NewListController() *ListController {
 	return &ListController{
 		store: NewListStore(),
+
+		cursorFlag:   "cursor",
+		pageSizeFlag: "page-size",
 	}
 }
 
@@ -58,9 +64,22 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
+	var cursor *string
+	if c := fctl.GetString(cmd, c.cursorFlag); c != "" {
+		cursor = &c
+	}
+
+	var pageSize *int64
+	if ps := fctl.GetInt(cmd, c.pageSizeFlag); ps > 0 {
+		pageSize = fctl.Ptr(int64(ps))
+	}
+
 	response, err := client.Payments.ListPayments(
 		cmd.Context(),
-		operations.ListPaymentsRequest{},
+		operations.ListPaymentsRequest{
+			Cursor:   cursor,
+			PageSize: pageSize,
+		},
 	)
 	if err != nil {
 		return nil, err
@@ -80,6 +99,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return []string{
 			payment.ID,
 			string(payment.Type),
+			fmt.Sprint(payment.Amount),
 			fmt.Sprint(payment.InitialAmount),
 			payment.Asset,
 			string(payment.Status),
@@ -91,20 +111,50 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			payment.CreatedAt.Format(time.RFC3339),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "Type", "Amount", "Asset", "Status",
-		"Scheme", "Reference", "Source Account ID", "Destination Account ID", "ConnectorID", "Created at"})
-	return pterm.DefaultTable.
+	tableData = fctl.Prepend(tableData, []string{"ID", "Type", "Amount", "InitialAmount", "Asset", "Status",
+		"Scheme", "Reference", "Source Account ID", "Destination Account ID", "ConnectorID", "CreatedAt"})
+	if err := pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
-		Render()
+		Render(); err != nil {
+		return err
+	}
+
+	tableData = pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("HasMore"), fmt.Sprintf("%v", c.store.Cursor.HasMore)})
+	tableData = append(tableData, []string{pterm.LightCyan("PageSize"), fmt.Sprintf("%d", c.store.Cursor.PageSize)})
+	tableData = append(tableData, []string{pterm.LightCyan("Next"), func() string {
+		if c.store.Cursor.Next == nil {
+			return ""
+		}
+		return *c.store.Cursor.Next
+	}()})
+	tableData = append(tableData, []string{pterm.LightCyan("Previous"), func() string {
+		if c.store.Cursor.Previous == nil {
+			return ""
+		}
+		return *c.store.Cursor.Previous
+	}()})
+
+	if err := pterm.DefaultTable.
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewListCommand() *cobra.Command {
+	c := NewListController()
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithShortDescription("List payments"),
-		fctl.WithController[*ListStore](NewListController()),
+		fctl.WithStringFlag(c.cursorFlag, "", "Cursor"),
+		fctl.WithIntFlag(c.pageSizeFlag, 0, "PageSize"),
+		fctl.WithController[*ListStore](c),
 	)
 }

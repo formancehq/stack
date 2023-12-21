@@ -40,6 +40,7 @@ func NewDeleteController() *DeleteController {
 func NewDeleteCommand() *cobra.Command {
 	c := NewDeleteController()
 	return fctl.NewCommand("delete <transferID>",
+		fctl.WithConfirmFlag(),
 		fctl.WithAliases("d"),
 		fctl.WithShortDescription("Delete a transfer Initiation"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
@@ -75,6 +76,10 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
+	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete '%s'", args[0]) {
+		return nil, fctl.ErrMissingApproval
+	}
+
 	client, err := fctl.NewStackClient(cmd, cfg, stack)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")
@@ -102,6 +107,6 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 }
 
 func (c *DeleteController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithShowLineNumber().Printfln("Transfer Initiation %s Deleted!", c.store.TransferID)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Transfer Initiation %s Deleted!", c.store.TransferID)
 	return nil
 }

@@ -11,6 +11,8 @@ func NewPaymentsCommand() *cobra.Command {
 		fctl.WithShortDescription("Payments management"),
 		fctl.WithChildCommands(
 			NewListCommand(),
+			NewShowCommand(),
+			NewSetMetadataCommand(),
 		),
 	)
 }
