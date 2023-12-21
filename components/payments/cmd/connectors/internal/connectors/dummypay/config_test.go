@@ -14,12 +14,11 @@ func TestConfigString(t *testing.T) {
 	t.Parallel()
 
 	config := Config{
-		Directory:            "test",
-		FilePollingPeriod:    connectors.Duration{Duration: time.Second},
-		FileGenerationPeriod: connectors.Duration{Duration: time.Minute},
+		Directory:         "test",
+		FilePollingPeriod: connectors.Duration{Duration: time.Second},
 	}
 
-	assert.Equal(t, "directory=test, filePollingPeriod=1s, fileGenerationPeriod=1m0s", config.String())
+	assert.Equal(t, "directory=test, filePollingPeriod=1s", config.String())
 }
 
 // TestConfigValidate tests the validation of the config.
@@ -49,12 +48,7 @@ func TestConfigValidate(t *testing.T) {
 	config.FilePollingPeriod.Duration = -1
 	assert.ErrorIs(t, config.Validate(), ErrFilePollingPeriodInvalid)
 
-	// fail on invalid file generation period
-	config.FilePollingPeriod.Duration = 1
-	config.FileGenerationPeriod.Duration = -1
-	assert.ErrorIs(t, config.Validate(), ErrFileGenerationPeriodInvalid)
-
 	// success
-	config.FileGenerationPeriod.Duration = 1
+	config.FilePollingPeriod.Duration = 1
 	assert.NoError(t, config.Validate())
 }

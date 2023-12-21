@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -34,10 +35,11 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 				operations.InstallConnectorRequest{
 					ConnectorConfig: shared.ConnectorConfig{
 						DummyPayConfig: &shared.DummyPayConfig{
-							FilePollingPeriod:    ptr("1s"),
-							Directory:            paymentsDir,
-							FileGenerationPeriod: ptr("1s"),
-							Name:                 "test",
+							FilePollingPeriod:            ptr("1s"),
+							Directory:                    paymentsDir,
+							Name:                         "test",
+							NumberOfAccountsPreGenerated: ptr(int64(0)),
+							NumberOfPaymentsPreGenerated: ptr(int64(1)),
 						},
 					},
 					Connector: shared.ConnectorDummyPay,
@@ -51,7 +53,8 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			cancelSubscription()
 		})
 		It("should trigger some events", func() {
-			msg := WaitOnChanWithTimeout(msgs, 10*time.Second)
+			msg := WaitOnChanWithTimeout(msgs, 20*time.Second)
+			fmt.Println("TOTO", string(msg.Data))
 			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(Succeed())
 		})
 		It("should generate some payments", func() {

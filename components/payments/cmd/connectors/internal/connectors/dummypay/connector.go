@@ -44,30 +44,31 @@ func (c *Connector) UpdateConfig(ctx task.ConnectorContext, config models.Connec
 // Install executes post-installation steps to read and generate files.
 // It is called after the connector is installed.
 func (c *Connector) Install(ctx task.ConnectorContext) error {
+	initDirectoryDescriptor, err := models.EncodeTaskDescriptor(newTaskGenerateFiles())
+	if err != nil {
+		return fmt.Errorf("failed to create generate files task descriptor: %w", err)
+	}
+
+	if err = ctx.Scheduler().Schedule(ctx.Context(), initDirectoryDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+		RestartOption:  models.OPTIONS_RESTART_NEVER,
+	}); err != nil {
+		return fmt.Errorf("failed to schedule task to generate files: %w", err)
+	}
+
 	readFilesDescriptor, err := models.EncodeTaskDescriptor(newTaskReadFiles())
 	if err != nil {
 		return fmt.Errorf("failed to create read files task descriptor: %w", err)
 	}
 
 	if err = ctx.Scheduler().Schedule(ctx.Context(), readFilesDescriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_NOW,
+		ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+		Duration:       c.cfg.FilePollingPeriod.Duration,
 		// No need to restart this task, since the connector is not existing or
 		// was uninstalled previously, the task does not exists in the database
 		RestartOption: models.OPTIONS_RESTART_NEVER,
 	}); err != nil {
 		return fmt.Errorf("failed to schedule task to read files: %w", err)
-	}
-
-	generateFilesDescriptor, err := models.EncodeTaskDescriptor(newTaskGenerateFiles())
-	if err != nil {
-		return fmt.Errorf("failed to create generate files task descriptor: %w", err)
-	}
-
-	if err = ctx.Scheduler().Schedule(ctx.Context(), generateFilesDescriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_NOW,
-		RestartOption:  models.OPTIONS_RESTART_NEVER,
-	}); err != nil {
-		return fmt.Errorf("failed to schedule task to generate files: %w", err)
 	}
 
 	return nil

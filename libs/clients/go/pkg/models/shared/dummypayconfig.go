@@ -8,11 +8,12 @@ import (
 
 type DummyPayConfig struct {
 	Directory string `json:"directory"`
-	// The frequency at which the connector will create new payment objects in the directory
-	FileGenerationPeriod *string `default:"10s" json:"fileGenerationPeriod"`
 	// The frequency at which the connector will try to fetch new payment objects from the directory
-	FilePollingPeriod *string `default:"10s" json:"filePollingPeriod"`
-	Name              string  `json:"name"`
+	FilePollingPeriod            *string `default:"10s" json:"filePollingPeriod"`
+	Name                         string  `json:"name"`
+	NumberOfAccountsPreGenerated *int64  `json:"numberOfAccountsPreGenerated,omitempty"`
+	NumberOfPaymentsPreGenerated *int64  `json:"numberOfPaymentsPreGenerated,omitempty"`
+	PrefixFileToIngest           *string `json:"prefixFileToIngest,omitempty"`
 }
 
 func (d DummyPayConfig) MarshalJSON() ([]byte, error) {
@@ -33,13 +34,6 @@ func (o *DummyPayConfig) GetDirectory() string {
 	return o.Directory
 }
 
-func (o *DummyPayConfig) GetFileGenerationPeriod() *string {
-	if o == nil {
-		return nil
-	}
-	return o.FileGenerationPeriod
-}
-
 func (o *DummyPayConfig) GetFilePollingPeriod() *string {
 	if o == nil {
 		return nil
@@ -52,4 +46,25 @@ func (o *DummyPayConfig) GetName() string {
 		return ""
 	}
 	return o.Name
+}
+
+func (o *DummyPayConfig) GetNumberOfAccountsPreGenerated() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.NumberOfAccountsPreGenerated
+}
+
+func (o *DummyPayConfig) GetNumberOfPaymentsPreGenerated() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.NumberOfPaymentsPreGenerated
+}
+
+func (o *DummyPayConfig) GetPrefixFileToIngest() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PrefixFileToIngest
 }

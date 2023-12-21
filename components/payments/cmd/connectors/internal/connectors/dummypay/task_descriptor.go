@@ -23,7 +23,7 @@ func handleResolve(config Config, descriptor TaskDescriptor, fs fs) task.Task {
 		return taskReadFiles(config, fs)
 	case taskKeyIngest:
 		return taskIngest(config, descriptor, fs)
-	case taskKeyGenerateFiles:
+	case taskKeyInitDirectory:
 		return taskGenerateFiles(config, fs)
 	}
 

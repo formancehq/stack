@@ -36,10 +36,10 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 			operations.InstallConnectorRequest{
 				ConnectorConfig: shared.ConnectorConfig{
 					DummyPayConfig: &shared.DummyPayConfig{
-						FilePollingPeriod:    ptr("1s"),
-						Directory:            paymentsDir,
-						FileGenerationPeriod: ptr("1s"),
-						Name:                 "test",
+						FilePollingPeriod:            ptr("1s"),
+						Directory:                    paymentsDir,
+						Name:                         "test",
+						NumberOfPaymentsPreGenerated: ptr(int64(1)),
 					},
 				},
 				Connector: shared.ConnectorDummyPay,

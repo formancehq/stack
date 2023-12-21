@@ -1,6 +1,7 @@
 package dummypay
 
 import (
+	"context"
 	"testing"
 
 	"github.com/formancehq/payments/internal/models"
@@ -16,7 +17,7 @@ func TestTasks(t *testing.T) {
 	fs := newTestFS()
 
 	// test generating files
-	err := generateFile(config, fs)
+	err := generatePaymentsFile(context.Background(), "", models.ConnectorID{}, &MockIngester{}, []*models.AccountID{}, config, fs)
 	assert.NoError(t, err)
 
 	files, err := afero.ReadDir(fs, config.Directory)
@@ -28,11 +29,17 @@ func TestTasks(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, filesList, 1)
 
+	// test getting object
+	object, err := getObject(config, TaskDescriptor{Key: taskKeyIngest, FileName: files[0].Name()}, fs)
+	assert.NoError(t, err)
+	assert.NotNil(t, object)
+	assert.NotNil(t, object.Payment)
+
 	// test ingesting files
-	payload, err := parseIngestionPayload(models.ConnectorID{
+	payload, err := handlePayment(models.ConnectorID{
 		Reference: uuid.New(),
 		Provider:  models.ConnectorProviderDummyPay,
-	}, config, TaskDescriptor{Key: taskKeyIngest, FileName: files[0].Name()}, fs)
+	}, object.Payment)
 	assert.NoError(t, err)
 	assert.Len(t, payload, 1)
 
