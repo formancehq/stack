@@ -15,7 +15,7 @@ type Config struct {
 	Name                                  string              `json:"name" yaml:"name" bson:"name"`
 	PollingPeriod                         connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 	TransferInitiationStatusPollingPeriod connectors.Duration `json:"transferInitiationStatusPollingPeriod" yaml:"transferInitiationStatusPollingPeriod" bson:"transferInitiationStatusPollingPeriod"`
-	BaseUrl                               url.URL             `json:"baseUrl" yaml:"baseUrl" bson:"baseUrl"`
+	BaseUrl                               url.URL             `json:"-" yaml:"-" bson:"-"` // Already marshalled as string in the MarshalJson function
 	AccessKey                             string              `json:"accessKey" yaml:"accessKey" bson:"accessKey"`
 	Secret                                string              `json:"secret" yaml:"secret" bson:"secret"`
 	ApiConfig                             `bson:",inline"`
