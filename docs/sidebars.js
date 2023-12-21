@@ -527,6 +527,10 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'operator/crd',
+            },
+            {
+              type: 'doc',
               id: 'operator/upgrade',
               label: 'Upgrade',
             },

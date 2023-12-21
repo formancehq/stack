@@ -138,13 +138,23 @@ tests:
         SAVE ARTIFACT internal/controllers/stack/testdata AS LOCAL internal/controllers/stack/testdata
     END
 
+generate-docs:
+    FROM core+builder-image
+    COPY (+sources/*) /src
+    RUN go install github.com/elastic/crd-ref-docs@latest
+    WORKDIR /src/components/operator
+    COPY docs.config.yaml /src/components/operator/docs.config.yaml
+    COPY --dir docs .
+    RUN crd-ref-docs --source-path=apis/stack/v1beta3 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
+    SAVE ARTIFACT docs/crd.md AS LOCAL docs/crd.md
+
 pre-commit:
     BUILD --pass-args +tidy
     BUILD --pass-args +lint
     BUILD --pass-args +generate
     BUILD --pass-args +manifests
     BUILD --pass-args +helm-update
-
+    BUILD +generate-docs
 
 openapi:
     RUN echo "not implemented"
