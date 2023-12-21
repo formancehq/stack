@@ -31,8 +31,6 @@ archives:
 
 release:
   prerelease: auto
-  extra_files:
-    - glob: openapi.yaml
   footer: |
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)

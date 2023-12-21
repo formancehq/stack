@@ -329,6 +329,9 @@ func main() {
         Asset: "USD",
         Description: "Multi-tiered incremental methodology",
         DestinationAccountID: "string",
+        Metadata: map[string]string{
+            "key": "string",
+        },
         Reference: "XXX",
         ScheduledAt: types.MustTimeFromString("2022-05-04T12:05:29.406Z"),
         SourceAccountID: "string",

@@ -10,7 +10,7 @@ maintainers:
 icon: "https://avatars.githubusercontent.com/u/84325077?s=200&v=4"
 
 type: application
-version: 0.4.2
+version: 0.4.3
 appVersion: "latest"
 
 dependencies:
