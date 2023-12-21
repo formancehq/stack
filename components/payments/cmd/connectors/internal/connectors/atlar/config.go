@@ -12,19 +12,20 @@ import (
 )
 
 type Config struct {
-	Name          string              `json:"name" yaml:"name" bson:"name"`
-	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
-	BaseUrl       url.URL             `json:"baseUrl" yaml:"baseUrl" bson:"baseUrl"`
-	AccessKey     string              `json:"accessKey" yaml:"accessKey" bson:"accessKey"`
-	Secret        string              `json:"secret" yaml:"secret" bson:"secret"`
-	ApiConfig     `bson:",inline"`
+	Name                                  string              `json:"name" yaml:"name" bson:"name"`
+	PollingPeriod                         connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
+	TransferInitiationStatusPollingPeriod connectors.Duration `json:"transferInitiationStatusPollingPeriod" yaml:"transferInitiationStatusPollingPeriod" bson:"transferInitiationStatusPollingPeriod"`
+	BaseUrl                               url.URL             `json:"baseUrl" yaml:"baseUrl" bson:"baseUrl"`
+	AccessKey                             string              `json:"accessKey" yaml:"accessKey" bson:"accessKey"`
+	Secret                                string              `json:"secret" yaml:"secret" bson:"secret"`
+	ApiConfig                             `bson:",inline"`
 }
 
 // String obfuscates sensitive fields and returns a string representation of the config.
 // This is used for logging.
 func (c Config) String() string {
-	return fmt.Sprintf("baseUrl=%s, pollingPeriod=%s, pageSize=%d, accessKey=%s, secret=****",
-		c.BaseUrl.String(), c.PollingPeriod, c.PageSize, c.AccessKey)
+	return fmt.Sprintf("baseUrl=%s, pollingPeriod=%s, transferInitiationStatusPollingPeriod=%s, pageSize=%d, accessKey=%s, secret=****",
+		c.BaseUrl.String(), c.PollingPeriod, c.TransferInitiationStatusPollingPeriod, c.PageSize, c.AccessKey)
 }
 
 func (c Config) Validate() error {
@@ -92,6 +93,7 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("accessKey", configtemplate.TypeString, true)
 	cfg.AddParameter("secret", configtemplate.TypeString, true)
 	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
+	cfg.AddParameter("transferInitiationStatusPollingPeriod", configtemplate.TypeDurationNs, false)
 	cfg.AddParameter("pageSize", configtemplate.TypeDurationUnsignedInteger, false)
 
 	return Name.String(), cfg
