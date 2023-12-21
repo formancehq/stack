@@ -1,0 +1,97 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+permissions:
+  contents: write
+
+jobs:
+  Dirty:
+    runs-on: "formance-runner"
+    steps:
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+      - name: Setup Env
+        uses: ./.github/actions/env
+      - run: >
+          earthly
+          --allow-privileged
+          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
+          --secret GITHUB_TOKEN=$GITHUB_TOKEN
+          ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
+          +pre-commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          since_last_remote_commit: true
+      - name: Run step if test file(s) change
+        if: steps.changed-files.outputs.all_changed_files == 'true'
+        run: |
+          echo "One or more test file(s) has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.all_changed_files }}"
+          exit 1
+
+  Extract:
+    name: Extract
+    runs-on: "ubuntu-latest"
+    outputs:
+      components: ${{ steps.extract.outputs.components }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Extract service name
+        id: extract
+        run: echo "components=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
+
+  GoReleaser:
+    runs-on: "ubuntu-latest"
+    if: contains(github.event.pull_request.labels.*.name, 'build-images') || github.ref == 'refs/heads/main'
+    needs:
+      - Extract
+      - Dirty
+    strategy:
+      matrix:
+        components: ${{ fromJson(needs.Extract.outputs.components) }}
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: "latest"
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+      - name: Setup Env
+        uses: ./.github/actions/env
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: "NumaryBot"
+          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - run: >
+          earthly
+          --no-output
+          --allow-privileged
+          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
+          --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY
+          --secret GITHUB_TOKEN=$GITHUB_TOKEN
+          --secret FURY_TOKEN=$FURY_TOKEN
+          --secret GORELEASER_KEY=$GORELEASER_KEY
+          ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
+          +goreleaser --type=${{ matrix.components.type }} --components=${{ matrix.components.component }} --mode=ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+          SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}

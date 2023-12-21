@@ -13,7 +13,7 @@ It has been generated successfully based on your OpenAPI spec. However, it is no
 - [ ] 🎁 Publish your SDK to package managers by [configuring automatic publishing](https://www.speakeasyapi.dev/docs/productionize-sdks/publish-sdks)
 - [ ] ✨ When ready to productionize, delete this section from the README
 <!-- Start SDK Installation -->
-## SDK Installation
+# SDK Installation
 
 ```bash
 go get github.com/formancehq/formance-sdk-go
@@ -22,6 +22,8 @@ go get github.com/formancehq/formance-sdk-go
 
 ## SDK Example Usage
 <!-- Start SDK Example Usage -->
+
+
 ```go
 package main
 
@@ -49,14 +51,14 @@ func main() {
 <!-- End SDK Example Usage -->
 
 <!-- Start SDK Available Operations -->
-## Available Resources and Operations
+# Available Resources and Operations
 
-### [Formance SDK](docs/sdks/formance/README.md)
+## [Formance SDK](docs/sdks/formance/README.md)
 
 * [GetVersions](docs/sdks/formance/README.md#getversions) - Show stack version information
 * [GetAPIAuthWellKnownOpenidConfiguration](docs/sdks/formance/README.md#getapiauthwellknownopenidconfiguration)
 
-### [Auth](docs/sdks/auth/README.md)
+## [Auth](docs/sdks/auth/README.md)
 
 * [CreateClient](docs/sdks/auth/README.md#createclient) - Create client
 * [CreateSecret](docs/sdks/auth/README.md#createsecret) - Add a secret to a client
@@ -69,7 +71,7 @@ func main() {
 * [ReadUser](docs/sdks/auth/README.md#readuser) - Read user
 * [UpdateClient](docs/sdks/auth/README.md#updateclient) - Update client
 
-### [Ledger](docs/sdks/ledger/README.md)
+## [Ledger](docs/sdks/ledger/README.md)
 
 * [CreateTransactions](docs/sdks/ledger/README.md#createtransactions) - Create a new batch of transactions to a ledger
 * [AddMetadataOnTransaction](docs/sdks/ledger/README.md#addmetadataontransaction) - Set the metadata of a transaction by its ID
@@ -113,7 +115,7 @@ func main() {
 * [V2ReadStats](docs/sdks/ledger/README.md#v2readstats) - Get statistics from a ledger
 * [V2RevertTransaction](docs/sdks/ledger/README.md#v2reverttransaction) - Revert a ledger transaction by its ID
 
-### [Orchestration](docs/sdks/orchestration/README.md)
+## [Orchestration](docs/sdks/orchestration/README.md)
 
 * [CancelEvent](docs/sdks/orchestration/README.md#cancelevent) - Cancel a running workflow
 * [CreateTrigger](docs/sdks/orchestration/README.md#createtrigger) - Create trigger
@@ -151,7 +153,7 @@ func main() {
 * [V2RunWorkflow](docs/sdks/orchestration/README.md#v2runworkflow) - Run workflow
 * [V2SendEvent](docs/sdks/orchestration/README.md#v2sendevent) - Send an event to a running workflow
 
-### [Payments](docs/sdks/payments/README.md)
+## [Payments](docs/sdks/payments/README.md)
 
 * [AddAccountToPool](docs/sdks/payments/README.md#addaccounttopool) - Add an account to a pool
 * [ConnectorsTransfer](docs/sdks/payments/README.md#connectorstransfer) - Transfer funds between Connector accounts
@@ -193,7 +195,7 @@ func main() {
 * [UpdateConnectorConfigV1](docs/sdks/payments/README.md#updateconnectorconfigv1) - Update the config of a connector
 * [UpdateMetadata](docs/sdks/payments/README.md#updatemetadata) - Update metadata
 
-### [Reconciliation](docs/sdks/reconciliation/README.md)
+## [Reconciliation](docs/sdks/reconciliation/README.md)
 
 * [CreatePolicy](docs/sdks/reconciliation/README.md#createpolicy) - Create a policy
 * [DeletePolicy](docs/sdks/reconciliation/README.md#deletepolicy) - Delete a policy
@@ -204,12 +206,12 @@ func main() {
 * [Reconcile](docs/sdks/reconciliation/README.md#reconcile) - Reconcile using a policy
 * [ReconciliationgetServerInfo](docs/sdks/reconciliation/README.md#reconciliationgetserverinfo) - Get server info
 
-### [Search](docs/sdks/search/README.md)
+## [Search](docs/sdks/search/README.md)
 
 * [Search](docs/sdks/search/README.md#search) - Search
 * [SearchgetServerInfo](docs/sdks/search/README.md#searchgetserverinfo) - Get server info
 
-### [Wallets](docs/sdks/wallets/README.md)
+## [Wallets](docs/sdks/wallets/README.md)
 
 * [ConfirmHold](docs/sdks/wallets/README.md#confirmhold) - Confirm a hold
 * [CreateBalance](docs/sdks/wallets/README.md#createbalance) - Create a balance
@@ -228,7 +230,7 @@ func main() {
 * [VoidHold](docs/sdks/wallets/README.md#voidhold) - Cancel a hold
 * [WalletsgetServerInfo](docs/sdks/wallets/README.md#walletsgetserverinfo) - Get server info
 
-### [Webhooks](docs/sdks/webhooks/README.md)
+## [Webhooks](docs/sdks/webhooks/README.md)
 
 * [ActivateConfig](docs/sdks/webhooks/README.md#activateconfig) - Activate one config
 * [ChangeConfigSecret](docs/sdks/webhooks/README.md#changeconfigsecret) - Change the signing secret of a config
@@ -240,6 +242,8 @@ func main() {
 <!-- End SDK Available Operations -->
 
 <!-- Start Dev Containers -->
+
+
 
 <!-- End Dev Containers -->
 

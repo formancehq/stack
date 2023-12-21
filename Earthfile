@@ -20,10 +20,11 @@ speakeasy:
     SAVE ARTIFACT speakeasy
 
 build-final-spec:
+    ARG version=INTERNAL
     FROM core+base-image
     RUN apk update && apk add yarn nodejs npm jq
-    WORKDIR /src/libs/clients
-    COPY libs/clients/package.* .
+    WORKDIR /src/releases
+    COPY releases/package.* .
     RUN npm install
     WORKDIR /src/components
     FOR c IN payments ledger
@@ -34,30 +35,21 @@ build-final-spec:
         COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
     END
 
-    WORKDIR /src/libs/clients
-    COPY libs/clients/base.yaml .
-    COPY libs/clients/openapi-overlay.json .
-    COPY libs/clients/openapi-merge.json .
+    WORKDIR /src/releases
+    COPY releases/base.yaml .
+    COPY releases/openapi-overlay.json .
+    COPY releases/openapi-merge.json .
     RUN mkdir ./build
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/final.json
-    RUN sed -i 's/SDK_VERSION/INTERNAL/g' build/final.json
-    SAVE ARTIFACT build/final.json AS LOCAL libs/clients/build/generate.json
-
-build-sdk:
-    BUILD --pass-args +build-final-spec # Force output of the final spec
-    FROM core+base-image
-    WORKDIR /src
-    RUN apk update && apk add yq
-    COPY (+speakeasy/speakeasy) /bin/speakeasy
-    COPY (+build-final-spec/final.json) final-spec.json
-    COPY --dir libs/clients/go ./sdks/go
-    IF [ "SPEAKEASY_API_KEY" != "" ]
-        RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./final-spec.json -o ./sdks/go -l go
+    IF [ "$version" = "INTERNAL" ]
+        RUN sed -i 's/SDK_VERSION/INTERNAL/g' build/final.json
+        SAVE ARTIFACT build/final.json AS LOCAL releases/build/final.json
+    ELSE
+        RUN sed -i 's/SDK_VERSION/'$version'/g' build/final.json
+        SAVE ARTIFACT build/final.json AS LOCAL releases/build/$version.json
     END
-    RUN rm -rf ./libs/clients/go
-    SAVE ARTIFACT sdks/go AS LOCAL ./libs/clients/go
-    SAVE ARTIFACT sdks/go
+    SAVE ARTIFACT build/final.json
 
 openapi:
     FROM core+base-image
@@ -77,7 +69,6 @@ goreleaser:
     ARG --required components
     ARG --required type
     COPY . /src
-    COPY (+build-sdk/go --LANG=go) /src/libs/clients/go
     WORKDIR /src/$type/$components
     ARG mode=local
     LET buildArgs = --clean
@@ -149,7 +140,7 @@ tests-integration:
 
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
-    BUILD --pass-args +build-sdk
+    BUILD --pass-args ./releases+sdk-generate
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+pre-commit
     END

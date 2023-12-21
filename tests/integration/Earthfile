@@ -3,6 +3,7 @@ VERSION --pass-args --arg-scope-and-set 0.7
 ARG core=github.com/formancehq/earthly:v0.6.0
 IMPORT $core AS core
 IMPORT ../.. AS stack
+IMPORT ../../releases AS releases
 
 FROM core+base-image
 
@@ -32,7 +33,7 @@ tests:
     COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     COPY --pass-args (stack+build-final-spec/final.json) /src/libs/clients/build/generate.json
-    COPY --pass-args (stack+build-sdk/go) /src/libs/clients/go
+    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
     DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo
@@ -67,7 +68,7 @@ sources:
     COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     COPY --pass-args (stack+build-final-spec/final.json) /src/libs/clients/build/generate.json
-    COPY --pass-args (stack+build-sdk/go) /src/libs/clients/go
+    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
     SAVE ARTIFACT /src
