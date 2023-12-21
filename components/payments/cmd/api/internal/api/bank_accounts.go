@@ -12,15 +12,16 @@ import (
 )
 
 type bankAccountResponse struct {
-	ID            string    `json:"id"`
-	CreatedAt     time.Time `json:"createdAt"`
-	Country       string    `json:"country"`
-	ConnectorID   string    `json:"connectorID"`
-	Provider      string    `json:"provider,omitempty"`
-	AccountID     string    `json:"accountId,omitempty"`
-	Iban          string    `json:"iban,omitempty"`
-	AccountNumber string    `json:"accountNumber,omitempty"`
-	SwiftBicCode  string    `json:"swiftBicCode,omitempty"`
+	ID            string            `json:"id"`
+	CreatedAt     time.Time         `json:"createdAt"`
+	Country       string            `json:"country"`
+	ConnectorID   string            `json:"connectorID"`
+	Provider      string            `json:"provider,omitempty"`
+	AccountID     string            `json:"accountId,omitempty"`
+	Iban          string            `json:"iban,omitempty"`
+	AccountNumber string            `json:"accountNumber,omitempty"`
+	SwiftBicCode  string            `json:"swiftBicCode,omitempty"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
 }
 
 func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
@@ -49,6 +50,7 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 				ConnectorID: ret[i].ConnectorID.String(),
 				AccountID:   ret[i].AccountID.String(),
 				Provider:    ret[i].ConnectorID.Provider.String(),
+				Metadata:    ret[i].Metadata,
 			}
 		}
 
@@ -99,6 +101,7 @@ func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 			Iban:          account.IBAN,
 			AccountNumber: account.AccountNumber,
 			SwiftBicCode:  account.SwiftBicCode,
+			Metadata:      account.Metadata,
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{
