@@ -34,7 +34,9 @@ func main() {
     ctx := context.Background()
     res, err := s.Reconciliation.CreatePolicy(ctx, shared.PolicyRequest{
         LedgerName: "default",
-        LedgerQuery: "{\"$match\": {\"metadata[reconciliation]\": \"pool:main\"}}",
+        LedgerQuery: map[string]interface{}{
+            "key": "string",
+        },
         Name: "XXX",
         PaymentsPoolID: "XXX",
     })
