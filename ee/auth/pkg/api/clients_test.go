@@ -92,11 +92,9 @@ func TestCreateClient(t *testing.T) {
 
 				createdClient := readTestResponse[clientView](t, res)
 				require.NotEmpty(t, createdClient.ID)
-				tcScopes := tc.options.Scopes
-				tc.options.Scopes = nil
 				require.Equal(t, tc.options, createdClient.ClientOptions)
 				require.True(t, func() bool {
-					for _, scope := range tcScopes {
+					for _, scope := range tc.options.Scopes {
 						contain := collectionutils.Contains[string](createdClient.Scopes, scope)
 						if !contain {
 							t.Logf("scope %s not found in created client scopes", scope)
@@ -107,7 +105,6 @@ func TestCreateClient(t *testing.T) {
 					return true
 				}())
 				tc.options.Id = createdClient.ID
-				tc.options.Scopes = tcScopes
 				clientFromDatabase := auth.Client{}
 				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", createdClient.ID).Error)
 				require.Equal(t, auth.Client{
@@ -175,13 +172,10 @@ func TestUpdateClient(t *testing.T) {
 				require.Equal(t, http.StatusOK, res.Code)
 
 				updatedClient := readTestResponse[clientView](t, res)
-				tcScopes := tc.options.Scopes
-				tc.options.Scopes = nil
 				require.NotEmpty(t, updatedClient.ID)
 				require.Equal(t, tc.options, updatedClient.ClientOptions)
 
 				tc.options.Id = updatedClient.ID
-				tc.options.Scopes = tcScopes
 				clientFromDatabase := auth.Client{}
 				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", updatedClient.ID).Error)
 				require.Equal(t, auth.Client{
@@ -244,7 +238,6 @@ func TestReadClient(t *testing.T) {
 		require.Equal(t, clientView{
 			ClientOptions: opts,
 			ID:            client1.Id,
-			Scopes:        []string{"XXX"},
 			Secrets: []clientSecretView{{
 				ClientSecret: secret,
 			}},

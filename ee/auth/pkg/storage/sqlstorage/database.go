@@ -112,7 +112,7 @@ func MigrateData(ctx context.Context, db *gorm.DB) error {
 			},
 		},
 	})
-
+	logging.FromContext(ctx).Info("Migrating data...")
 	return gormigrate.Migrate()
 }
 
