@@ -219,9 +219,9 @@ func TestReadClient(t *testing.T) {
 			Metadata: map[string]string{
 				"foo": "bar",
 			},
+			Scopes: []string{"XXX"},
 		}
 		client1 := auth.NewClient(opts)
-		client1.Scopes = append(client1.Scopes, "XXX")
 		secret, _ := client1.GenerateNewSecret(auth.SecretCreate{
 			Name: "testing",
 		})
