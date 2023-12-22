@@ -23,6 +23,10 @@ func (c *CreatePoolRequest) Validate() error {
 		return errors.New("name is required")
 	}
 
+	if len(c.AccountIDs) == 0 {
+		return errors.New("accountIDs is required")
+	}
+
 	return nil
 }
 

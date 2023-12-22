@@ -100,6 +100,7 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.TransferInitiation.ID})
+	tableData = append(tableData, []string{pterm.LightCyan("Reference"), c.store.TransferInitiation.Reference})
 	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.TransferInitiation.CreatedAt.Format(time.RFC3339)})
 	tableData = append(tableData, []string{pterm.LightCyan("UpdatedAt"), c.store.TransferInitiation.UpdatedAt.Format(time.RFC3339)})
 	tableData = append(tableData, []string{pterm.LightCyan("ScheduledAt"), c.store.TransferInitiation.ScheduledAt.Format(time.RFC3339)})
@@ -120,5 +121,22 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return nil
+	tableData = fctl.Map(c.store.TransferInitiation.RelatedPayments, func(tf shared.TransferInitiationPayments) []string {
+		return []string{
+			tf.PaymentID,
+			tf.CreatedAt.Format(time.RFC3339),
+			string(tf.Status),
+			tf.Error,
+		}
+	})
+	tableData = fctl.Prepend(tableData, []string{"PaymentID", "CreatedAt", "Status", "Error"})
+	if err := pterm.DefaultTable.
+		WithHasHeader().
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
+	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.TransferInitiation.Metadata)
 }

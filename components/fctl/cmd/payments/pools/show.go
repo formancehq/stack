@@ -1,8 +1,8 @@
-package bankaccounts
+package pools
 
 import (
 	"fmt"
-	"time"
+	"strings"
 
 	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -13,7 +13,7 @@ import (
 )
 
 type ShowStore struct {
-	BankAccount *shared.BankAccount `json:"bankAccount"`
+	Pool *shared.Pool `json:"pool"`
 }
 type ShowController struct {
 	PaymentsVersion versions.Version
@@ -39,8 +39,8 @@ func NewShowController() *ShowController {
 
 func NewShowCommand() *cobra.Command {
 	c := NewShowController()
-	return fctl.NewCommand("get <bankAccountID>",
-		fctl.WithShortDescription("Get bank account"),
+	return fctl.NewCommand("get <poolOD>",
+		fctl.WithShortDescription("Get pool"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithAliases("sh", "s"),
 		fctl.WithController[*ShowStore](c),
@@ -57,7 +57,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 
 	if c.PaymentsVersion < versions.V1 {
-		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
+		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
 	}
 
 	cfg, err := fctl.GetConfig(cmd)
@@ -80,8 +80,8 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := ledgerClient.Payments.GetBankAccount(cmd.Context(), operations.GetBankAccountRequest{
-		BankAccountID: args[0],
+	response, err := ledgerClient.Payments.GetPool(cmd.Context(), operations.GetPoolRequest{
+		PoolID: args[0],
 	})
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.BankAccount = &response.BankAccountResponse.Data
+	c.store.Pool = &response.PoolResponse.Data
 
 	return c, nil
 }
@@ -99,25 +99,11 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.BankAccount.ID})
-	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.BankAccount.CreatedAt.Format(time.RFC3339)})
-	tableData = append(tableData, []string{pterm.LightCyan("Country"), c.store.BankAccount.Country})
-	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), string(c.store.BankAccount.ConnectorID)})
-	tableData = append(tableData, []string{pterm.LightCyan("Provider"), func() string {
-		if c.store.BankAccount.Provider != nil {
-			return *c.store.BankAccount.Provider
-		}
-		return ""
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Pool.ID})
+	tableData = append(tableData, []string{pterm.LightCyan("Name"), c.store.Pool.Name})
+	tableData = append(tableData, []string{pterm.LightCyan("Accounts"), func() string {
+		return strings.Join(c.store.Pool.Accounts, ", ")
 	}()})
-	if c.store.BankAccount.AccountNumber != nil {
-		tableData = append(tableData, []string{pterm.LightCyan("AccountNumber"), *c.store.BankAccount.AccountNumber})
-	}
-	if c.store.BankAccount.Iban != nil {
-		tableData = append(tableData, []string{pterm.LightCyan("Iban"), *c.store.BankAccount.Iban})
-	}
-	if c.store.BankAccount.SwiftBicCode != nil {
-		tableData = append(tableData, []string{pterm.LightCyan("SwiftBicCode"), *c.store.BankAccount.SwiftBicCode})
-	}
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
@@ -126,5 +112,5 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.BankAccount.Metadata)
+	return nil
 }

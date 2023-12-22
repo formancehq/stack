@@ -1,9 +1,10 @@
-package accounts
+package pools
 
 import (
 	"fmt"
-	"time"
+	"strings"
 
+	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -12,21 +13,27 @@ import (
 )
 
 type ListStore struct {
-	Cursor *shared.AccountsCursorCursor `json:"cursor"`
+	Cursor *shared.PoolsCursorCursor `json:"cursor"`
 }
 
 type ListController struct {
+	PaymentsVersion versions.Version
+
 	store *ListStore
 
 	cursorFlag   string
 	pageSizeFlag string
 }
 
+func (c *ListController) SetVersion(version versions.Version) {
+	c.PaymentsVersion = version
+}
+
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
 
 func NewListStore() *ListStore {
 	return &ListStore{
-		Cursor: &shared.AccountsCursorCursor{},
+		Cursor: &shared.PoolsCursorCursor{},
 	}
 }
 
@@ -44,6 +51,14 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
+		return nil, err
+	}
+
+	if c.PaymentsVersion < versions.V1 {
+		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
+	}
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -74,9 +89,9 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		pageSize = fctl.Ptr(int64(ps))
 	}
 
-	response, err := client.Payments.PaymentslistAccounts(
+	response, err := client.Payments.ListPools(
 		cmd.Context(),
-		operations.PaymentslistAccountsRequest{
+		operations.ListPoolsRequest{
 			Cursor:   cursor,
 			PageSize: pageSize,
 		},
@@ -89,26 +104,22 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.Cursor = &response.AccountsCursor.Cursor
+	c.store.Cursor = &response.PoolsCursor.Cursor
 
 	return c, nil
 }
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
-	tableData := fctl.Map(c.store.Cursor.Data, func(acc shared.PaymentsAccount) []string {
+	tableData := fctl.Map(c.store.Cursor.Data, func(bc shared.Pool) []string {
 		return []string{
-			acc.ID,
-			acc.Reference,
-			acc.CreatedAt.Format(time.RFC3339),
-			acc.AccountName,
-			acc.DefaultAsset,
-			acc.DefaultCurrency,
-			acc.Type,
-			acc.ConnectorID,
+			bc.ID,
+			bc.Name,
+			func() string {
+				return strings.Join(bc.Accounts, ", ")
+			}(),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "Reference", "CreatedAt", "AccountName",
-		"DefaultAsset", "DefaultCurrency", "Type", "ConnectorID"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Accounts"})
 	if err := pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
@@ -148,7 +159,7 @@ func NewListCommand() *cobra.Command {
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithShortDescription("List connector accounts"),
+		fctl.WithShortDescription("List pools"),
 		fctl.WithStringFlag(c.cursorFlag, "", "Cursor"),
 		fctl.WithIntFlag(c.pageSizeFlag, 0, "PageSize"),
 		fctl.WithController[*ListStore](c),

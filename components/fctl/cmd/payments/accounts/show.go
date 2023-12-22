@@ -99,5 +99,5 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return nil
+	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.Account.Metadata)
 }

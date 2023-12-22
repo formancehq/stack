@@ -1,4 +1,4 @@
-package transferinitiation
+package pools
 
 import (
 	"fmt"
@@ -12,8 +12,8 @@ import (
 )
 
 type DeleteStore struct {
-	TransferID string `json:"transferId"`
-	Success    bool   `json:"success"`
+	PoolID  string `json:"poolID"`
+	Success bool   `json:"success"`
 }
 
 type DeleteController struct {
@@ -39,10 +39,10 @@ func NewDeleteController() *DeleteController {
 }
 func NewDeleteCommand() *cobra.Command {
 	c := NewDeleteController()
-	return fctl.NewCommand("delete <transferID>",
+	return fctl.NewCommand("delete <poolID>",
 		fctl.WithConfirmFlag(),
 		fctl.WithAliases("d"),
-		fctl.WithShortDescription("Delete a transfer Initiation"),
+		fctl.WithShortDescription("Delete a pool"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*DeleteStore](c),
 	)
@@ -58,7 +58,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 
 	if c.PaymentsVersion < versions.V1 {
-		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
+		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
 	}
 
 	cfg, err := fctl.GetConfig(cmd)
@@ -85,10 +85,10 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, errors.Wrap(err, "creating stack client")
 	}
 
-	response, err := client.Payments.DeleteTransferInitiation(
+	response, err := client.Payments.DeletePool(
 		cmd.Context(),
-		operations.DeleteTransferInitiationRequest{
-			TransferID: args[0],
+		operations.DeletePoolRequest{
+			PoolID: args[0],
 		},
 	)
 
@@ -100,13 +100,13 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.store.TransferID = args[0]
+	c.store.PoolID = args[0]
 	c.store.Success = true
 
 	return c, nil
 }
 
 func (c *DeleteController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Transfer Initiation %s Deleted!", c.store.TransferID)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Pool %s Deleted!", c.store.PoolID)
 	return nil
 }

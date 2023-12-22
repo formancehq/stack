@@ -17,6 +17,9 @@ type ListBalancesStore struct {
 
 type ListBalancesController struct {
 	store *ListBalancesStore
+
+	cursorFlag   string
+	pageSizeFlag string
 }
 
 var _ fctl.Controller[*ListBalancesStore] = (*ListBalancesController)(nil)
@@ -30,6 +33,9 @@ func NewListBalanceStore() *ListBalancesStore {
 func NewListBalancesController() *ListBalancesController {
 	return &ListBalancesController{
 		store: NewListBalanceStore(),
+
+		cursorFlag:   "cursor",
+		pageSizeFlag: "page-size",
 	}
 }
 
@@ -58,9 +64,21 @@ func (c *ListBalancesController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, err
 	}
 
+	var cursor *string
+	if c := fctl.GetString(cmd, c.cursorFlag); c != "" {
+		cursor = &c
+	}
+
+	var pageSize *int64
+	if ps := fctl.GetInt(cmd, c.pageSizeFlag); ps > 0 {
+		pageSize = fctl.Ptr(int64(ps))
+	}
+
 	response, err := client.Payments.GetAccountBalances(
 		cmd.Context(),
 		operations.GetAccountBalancesRequest{
+			Cursor:    cursor,
+			PageSize:  pageSize,
 			AccountID: args[0],
 		},
 	)
@@ -89,17 +107,47 @@ func (c *ListBalancesController) Render(cmd *cobra.Command, args []string) error
 	})
 	tableData = fctl.Prepend(tableData, []string{"ID", "Asset", "Balance",
 		"CreatedAt", "LastUpdatedAt"})
-	return pterm.DefaultTable.
+	if err := pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
-		Render()
+		Render(); err != nil {
+		return err
+	}
+
+	tableData = pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("HasMore"), fmt.Sprintf("%v", c.store.Cursor.HasMore)})
+	tableData = append(tableData, []string{pterm.LightCyan("PageSize"), fmt.Sprintf("%d", c.store.Cursor.PageSize)})
+	tableData = append(tableData, []string{pterm.LightCyan("Next"), func() string {
+		if c.store.Cursor.Next == nil {
+			return ""
+		}
+		return *c.store.Cursor.Next
+	}()})
+	tableData = append(tableData, []string{pterm.LightCyan("Previous"), func() string {
+		if c.store.Cursor.Previous == nil {
+			return ""
+		}
+		return *c.store.Cursor.Previous
+	}()})
+
+	if err := pterm.DefaultTable.
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewListBalanceCommand() *cobra.Command {
+	c := NewListBalancesController()
 	return fctl.NewCommand("balances <accountID>",
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithShortDescription("List accounts balances"),
-		fctl.WithController[*ListBalancesStore](NewListBalancesController()),
+		fctl.WithStringFlag(c.cursorFlag, "", "Cursor"),
+		fctl.WithIntFlag(c.pageSizeFlag, 0, "PageSize"),
+		fctl.WithController[*ListBalancesStore](c),
 	)
 }
