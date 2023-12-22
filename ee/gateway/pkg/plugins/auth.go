@@ -173,7 +173,7 @@ func (ja *JWTAuth) getAccessTokenVerifier(ctx context.Context) (op.AccessTokenVe
 		keySet := rp.NewRemoteKeySet(ja.httpClient, fmt.Sprintf("http://auth:%s/keys", authServicePort))
 
 		ja.accessTokenVerifier = op.NewAccessTokenVerifier(
-			ja.Issuer,
+			os.Getenv("STACK_PUBLIC_URL")+"/api/auth",
 			keySet,
 		)
 	}

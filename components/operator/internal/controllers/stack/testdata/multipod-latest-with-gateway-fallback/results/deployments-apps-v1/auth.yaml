@@ -70,6 +70,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: auth

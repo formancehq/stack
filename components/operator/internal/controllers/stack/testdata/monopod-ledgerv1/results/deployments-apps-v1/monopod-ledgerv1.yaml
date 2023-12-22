@@ -70,6 +70,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: auth
@@ -137,13 +139,15 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: control
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: API_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: ENCRYPTION_KEY
                       value: 9h44y2ZqrDuUy5R9NGLA9hca7uRUr932
                     - name: ENCRYPTION_IV
@@ -153,7 +157,7 @@ spec:
                     - name: CLIENT_SECRET
                       value: mocked-secret
                     - name: REDIRECT_URI
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: UNSECURE_COOKIES
                       value: "false"
                   image: ghcr.io/formancehq/control:latest
@@ -200,6 +204,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: gateway
@@ -267,6 +273,8 @@ spec:
                     - name: NUMARY_DEV
                       value: "false"
                     - name: NUMARY_STACK_URL
+                      value: http://gateway:8000
+                    - name: NUMARY_STACK_PUBLIC_URL
                       value: http://example.net
                     - name: NUMARY_OTEL_SERVICE_NAME
                       value: ledger
@@ -346,6 +354,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: orchestration
@@ -425,6 +435,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: orchestration-worker
@@ -501,6 +513,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: payments-api
@@ -582,6 +596,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: payments-connectors
@@ -646,6 +662,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: search
@@ -734,6 +752,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: search-benthos
@@ -823,6 +843,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: stargate
@@ -886,6 +908,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: wallets
@@ -959,6 +983,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks
@@ -1036,6 +1062,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks-worker

@@ -23,7 +23,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: O2wSHZvTjKpciRKExI9BiFy8Tg6kfU6YhrPgP4QTwTs=
+                stack.formance.cloud/volumes-hash: p5pQZXjK5E8HRVm-_at6B85L4GBKtWmd4-W936qQJms=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: gateway
@@ -60,6 +60,8 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: gateway

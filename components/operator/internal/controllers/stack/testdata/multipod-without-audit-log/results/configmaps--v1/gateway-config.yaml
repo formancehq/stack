@@ -12,7 +12,7 @@ data:
 
         (auth) {
         	auth {
-        		issuer http://example.net/api/auth
+        		issuer http://gateway:8000/api/auth
 
         		read_key_set_max_retries 10
         	}
