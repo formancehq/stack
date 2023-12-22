@@ -66,13 +66,17 @@ opensearch:
   security:
     enabled: false
   master:
+    replicaCount: 1
     persistence:
       enabled: false
-    replicaCount: 1
   data:
-    replicaCount: 0
+    replicaCount: 2
+    persistence:
+      enabled: false
   coordinating:
     replicaCount: 0
   ingest:
     enabled: false
     replicaCount: 0
+  dashboards:
+    enabled: true
