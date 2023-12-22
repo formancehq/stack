@@ -14,8 +14,8 @@ type Client struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Scopes      string `json:"scopes"`
 	IsPublic    string `json:"isPublic"`
+	Scopes      string `json:"scopes"`
 }
 
 type ListStore struct {
@@ -90,7 +90,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 				}
 				return ""
 			}(),
-			Scopes:   strings.Join(o.Scopes, ","),
+			Scopes:   strings.Join(o.Scopes, ", "),
 			IsPublic: fctl.BoolPointerToString(o.Public),
 		}
 	})
@@ -104,12 +104,12 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			o.ID,
 			o.Name,
 			o.Description,
-			o.Scopes,
 			o.IsPublic,
+			o.Scopes,
 		}
 	})
 
-	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Description", "Scopes", "Public"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Description", "Public", "Scopes"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
