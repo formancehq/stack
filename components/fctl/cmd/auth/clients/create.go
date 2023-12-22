@@ -126,7 +126,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		IsPublic:              fctl.BoolPointerToString(response.CreateClientResponse.Data.Public),
 		RedirectUri:           strings.Join(response.CreateClientResponse.Data.RedirectUris, ","),
 		PostLogoutRedirectUri: strings.Join(response.CreateClientResponse.Data.PostLogoutRedirectUris, ","),
-		Scopes:                strings.Join(response.CreateClientResponse.Data.Scopes, ","),
+		Scopes:                strings.Join(response.CreateClientResponse.Data.Scopes, " "),
 	}
 
 	return c, nil

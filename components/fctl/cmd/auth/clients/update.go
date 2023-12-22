@@ -136,7 +136,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	c.store.Client.IsPublic = fctl.BoolPointerToString(response.UpdateClientResponse.Data.Public)
 	c.store.Client.RedirectUri = strings.Join(response.UpdateClientResponse.Data.RedirectUris, ",")
 	c.store.Client.PostLogoutRedirectUri = strings.Join(response.UpdateClientResponse.Data.PostLogoutRedirectUris, ",")
-	c.store.Client.Scopes = strings.Join(response.UpdateClientResponse.Data.Scopes, ",")
+	c.store.Client.Scopes = strings.Join(response.UpdateClientResponse.Data.Scopes, " ")
 
 	return c, nil
 }
