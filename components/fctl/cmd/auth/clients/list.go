@@ -14,7 +14,7 @@ type Client struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Scope       string `json:"scope"`
+	Scopes      string `json:"scopes"`
 	IsPublic    string `json:"isPublic"`
 }
 
@@ -90,7 +90,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 				}
 				return ""
 			}(),
-			Scope:    strings.Join(o.Scopes, ","),
+			Scopes:   strings.Join(o.Scopes, ","),
 			IsPublic: fctl.BoolPointerToString(o.Public),
 		}
 	})
@@ -104,7 +104,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			o.ID,
 			o.Name,
 			o.Description,
-			o.Scope,
+			o.Scopes,
 			o.IsPublic,
 		}
 	})
