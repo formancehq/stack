@@ -168,6 +168,8 @@ jobs:
       - run: kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
       - name: Deploy in staging
         run: |
+          kubectl patch deployment -n formance-system operator -p "{\"spec\":{\"template\": {\"spec\": {\"containers\": [{\"image\": \"ghcr.io/formancehq/operator:${GITHUB_SHA}\", \"name\": \"operator\" }]}}}}" --type=merge
+          kubectl patch deployment -n formance-system agent -p "{\"spec\":{\"template\": {\"spec\": {\"containers\": [{\"image\": \"ghcr.io/formancehq/agent:${GITHUB_SHA}\", \"name\": \"agent\" }]}}}}" --type=merge
           kubectl patch Versions default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
           kubectl patch Versions default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
           kubectl patch Versions default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
