@@ -207,7 +207,7 @@ func (s *Stack) GetScheme() string {
 }
 
 func (s *Stack) URL() string {
-	return fmt.Sprintf("%s://%s", s.GetScheme(), s.Spec.Host)
+	return "http://gateway:8000"
 }
 
 func (in *Stack) GetServiceNamespacedName(service string) types.NamespacedName {
