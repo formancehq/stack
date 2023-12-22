@@ -104,16 +104,11 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			o.Name,
 			o.Description,
 			o.IsPublic,
-			func() string {
-				if len(o.Scopes) == 0 {
-					return "No permissions"
-				}
-				return fmt.Sprintf("%d", len(o.Scopes))
-			}(),
+			fmt.Sprintf("%d", len(o.Scopes)),
 		}
 	})
 
-	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Description", "Public", "Scopes count"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Description", "Public", "Permissions"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

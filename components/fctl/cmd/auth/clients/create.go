@@ -11,13 +11,13 @@ import (
 )
 
 type CreateClient struct {
-	ID                    string `json:"id"`
-	Name                  string `json:"name"`
-	Description           string `json:"description"`
-	IsPublic              string `json:"isPublic"`
-	RedirectUri           string `json:"redirectUri"`
-	PostLogoutRedirectUri string `json:"postLogoutRedirectUri"`
-	Scopes                string `json:"scopes"`
+	ID                    string   `json:"id"`
+	Name                  string   `json:"name"`
+	Description           string   `json:"description"`
+	IsPublic              string   `json:"isPublic"`
+	RedirectUri           string   `json:"redirectUri"`
+	PostLogoutRedirectUri string   `json:"postLogoutRedirectUri"`
+	Scopes                []string `json:"scopes"`
 }
 
 type CreateStore struct {
@@ -126,7 +126,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		IsPublic:              fctl.BoolPointerToString(response.CreateClientResponse.Data.Public),
 		RedirectUri:           strings.Join(response.CreateClientResponse.Data.RedirectUris, ","),
 		PostLogoutRedirectUri: strings.Join(response.CreateClientResponse.Data.PostLogoutRedirectUris, ","),
-		Scopes:                strings.Join(response.CreateClientResponse.Data.Scopes, " "),
+		Scopes:                response.CreateClientResponse.Data.Scopes,
 	}
 
 	return c, nil
@@ -140,7 +140,7 @@ func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Public"), c.store.Client.IsPublic})
 	tableData = append(tableData, []string{pterm.LightCyan("Redirect URIs"), c.store.Client.RedirectUri})
 	tableData = append(tableData, []string{pterm.LightCyan("Post logout redirect URIs"), c.store.Client.PostLogoutRedirectUri})
-	tableData = append(tableData, []string{pterm.LightCyan("Scopes"), c.store.Client.Scopes})
+	tableData = append(tableData, []string{pterm.LightCyan("Scopes"), strings.Join(c.store.Client.Scopes, " ")})
 	return pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).

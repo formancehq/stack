@@ -16,13 +16,13 @@ import (
 // We should get the client before updating it to get replace informations
 
 type UpdateClient struct {
-	ID                    string `json:"id"`
-	Name                  string `json:"name"`
-	Description           string `json:"description"`
-	IsPublic              string `json:"isPublic"`
-	RedirectUri           string `json:"redirectUri"`
-	PostLogoutRedirectUri string `json:"postLogoutRedirectUri"`
-	Scopes                string `json:"scopes"`
+	ID                    string   `json:"id"`
+	Name                  string   `json:"name"`
+	Description           string   `json:"description"`
+	IsPublic              string   `json:"isPublic"`
+	RedirectUri           string   `json:"redirectUri"`
+	PostLogoutRedirectUri string   `json:"postLogoutRedirectUri"`
+	Scopes                []string `json:"scopes"`
 }
 
 type UpdateStore struct {
@@ -136,7 +136,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	c.store.Client.IsPublic = fctl.BoolPointerToString(response.UpdateClientResponse.Data.Public)
 	c.store.Client.RedirectUri = strings.Join(response.UpdateClientResponse.Data.RedirectUris, ",")
 	c.store.Client.PostLogoutRedirectUri = strings.Join(response.UpdateClientResponse.Data.PostLogoutRedirectUris, ",")
-	c.store.Client.Scopes = strings.Join(response.UpdateClientResponse.Data.Scopes, " ")
+	c.store.Client.Scopes = response.UpdateClientResponse.Data.Scopes
 
 	return c, nil
 }
@@ -149,7 +149,7 @@ func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Public"), c.store.Client.IsPublic})
 	tableData = append(tableData, []string{pterm.LightCyan("Redirect URIs"), c.store.Client.RedirectUri})
 	tableData = append(tableData, []string{pterm.LightCyan("Post logout redirect URIs"), c.store.Client.PostLogoutRedirectUri})
-	tableData = append(tableData, []string{pterm.LightCyan("Scopes"), c.store.Client.Scopes})
+	tableData = append(tableData, []string{pterm.LightCyan("Scopes"), strings.Join(c.store.Client.Scopes, " ")})
 	return pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
