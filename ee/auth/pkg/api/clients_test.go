@@ -8,6 +8,7 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
@@ -29,6 +30,7 @@ func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *g
 	defer sqlDB.Close()
 
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
+	require.NoError(t, sqlstorage.MigrateData(context.Background(), db))
 
 	router := mux.NewRouter()
 	addClientRoutes(db, router)
@@ -63,6 +65,19 @@ func TestCreateClient(t *testing.T) {
 				Public: true,
 			},
 		},
+		{
+			name: "confidential client",
+			options: auth.ClientOptions{
+				Name:                   "confidential client",
+				RedirectURIs:           []string{"http://localhost:8080"},
+				Description:            "abc",
+				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+				Scopes: []string{"ledger:read", "ledger:write", "formance:test"},
+			},
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -77,10 +92,22 @@ func TestCreateClient(t *testing.T) {
 
 				createdClient := readTestResponse[clientView](t, res)
 				require.NotEmpty(t, createdClient.ID)
+				tcScopes := tc.options.Scopes
+				tc.options.Scopes = nil
 				require.Equal(t, tc.options, createdClient.ClientOptions)
+				require.True(t, func() bool {
+					for _, scope := range tcScopes {
+						contain := collectionutils.Contains[string](createdClient.Scopes, scope)
+						if !contain {
+							t.Logf("scope %s not found in created client scopes", scope)
+							return false
+						}
+					}
 
+					return true
+				}())
 				tc.options.Id = createdClient.ID
-
+				tc.options.Scopes = tcScopes
 				clientFromDatabase := auth.Client{}
 				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", createdClient.ID).Error)
 				require.Equal(t, auth.Client{
@@ -119,6 +146,19 @@ func TestUpdateClient(t *testing.T) {
 				Public: true,
 			},
 		},
+		{
+			name: "confidential client",
+			options: auth.ClientOptions{
+				Name:                   "confidential client",
+				RedirectURIs:           []string{"http://localhost:8080"},
+				Description:            "abc",
+				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+				Scopes: []string{"ledger:read", "ledger:write", "formance:test"},
+			},
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -135,11 +175,13 @@ func TestUpdateClient(t *testing.T) {
 				require.Equal(t, http.StatusOK, res.Code)
 
 				updatedClient := readTestResponse[clientView](t, res)
+				tcScopes := tc.options.Scopes
+				tc.options.Scopes = nil
 				require.NotEmpty(t, updatedClient.ID)
 				require.Equal(t, tc.options, updatedClient.ClientOptions)
 
 				tc.options.Id = updatedClient.ID
-
+				tc.options.Scopes = tcScopes
 				clientFromDatabase := auth.Client{}
 				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", updatedClient.ID).Error)
 				require.Equal(t, auth.Client{

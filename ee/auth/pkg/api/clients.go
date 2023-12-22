@@ -40,6 +40,7 @@ func mapBusinessClient(c auth.Client) clientView {
 			Name:                   c.Name,
 			PostLogoutRedirectUris: c.PostLogoutRedirectUris,
 			Metadata:               c.Metadata,
+			Scopes:                 c.Scopes,
 		},
 		ID:     c.Id,
 		Scopes: c.Scopes,
