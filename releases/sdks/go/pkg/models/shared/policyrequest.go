@@ -3,10 +3,10 @@
 package shared
 
 type PolicyRequest struct {
-	LedgerName     string `json:"ledgerName"`
-	LedgerQuery    string `json:"ledgerQuery"`
-	Name           string `json:"name"`
-	PaymentsPoolID string `json:"paymentsPoolID"`
+	LedgerName     string                 `json:"ledgerName"`
+	LedgerQuery    map[string]interface{} `json:"ledgerQuery"`
+	Name           string                 `json:"name"`
+	PaymentsPoolID string                 `json:"paymentsPoolID"`
 }
 
 func (o *PolicyRequest) GetLedgerName() string {
@@ -16,9 +16,9 @@ func (o *PolicyRequest) GetLedgerName() string {
 	return o.LedgerName
 }
 
-func (o *PolicyRequest) GetLedgerQuery() string {
+func (o *PolicyRequest) GetLedgerQuery() map[string]interface{} {
 	if o == nil {
-		return ""
+		return map[string]interface{}{}
 	}
 	return o.LedgerQuery
 }

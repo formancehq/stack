@@ -3,12 +3,12 @@
 package shared
 
 type PolicyResponse struct {
-	Policy *Policy `json:"policy,omitempty"`
+	Data Policy `json:"data"`
 }
 
-func (o *PolicyResponse) GetPolicy() *Policy {
+func (o *PolicyResponse) GetData() Policy {
 	if o == nil {
-		return nil
+		return Policy{}
 	}
-	return o.Policy
+	return o.Data
 }

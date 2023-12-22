@@ -3,12 +3,12 @@
 package shared
 
 type ReconciliationResponse struct {
-	Reconciliation *Reconciliation `json:"reconciliation,omitempty"`
+	Data Reconciliation `json:"data"`
 }
 
-func (o *ReconciliationResponse) GetReconciliation() *Reconciliation {
+func (o *ReconciliationResponse) GetData() Reconciliation {
 	if o == nil {
-		return nil
+		return Reconciliation{}
 	}
-	return o.Reconciliation
+	return o.Data
 }

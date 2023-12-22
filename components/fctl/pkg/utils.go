@@ -14,6 +14,14 @@ func Map[SRC any, DST any](srcs []SRC, mapper func(SRC) DST) []DST {
 	return ret
 }
 
+func MapMap[KEY comparable, VALUE any, DST any](srcs map[KEY]VALUE, mapper func(KEY, VALUE) DST) []DST {
+	ret := make([]DST, 0)
+	for k, v := range srcs {
+		ret = append(ret, mapper(k, v))
+	}
+	return ret
+}
+
 func MapKeys[K comparable, V any](m map[K]V) []K {
 	ret := make([]K, 0)
 	for k := range m {
