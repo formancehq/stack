@@ -17,7 +17,7 @@ func PrintClient(out io.Writer, client *shared.Client) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Description"), fctl.StringPointerToString(client.Description)})
 	tableData = append(tableData, []string{pterm.LightCyan("Public"), fctl.BoolPointerToString(client.Public)})
 	if len(client.Scopes) > 0 {
-		tableData = append(tableData, []string{pterm.LightCyan("Scopes"), strings.Join(client.Scopes, ", ")})
+		tableData = append(tableData, []string{pterm.LightCyan("Scopes"), strings.Join(client.Scopes, " ")})
 	}
 
 	fctl.Section.WithWriter(out).Println("Information :")
