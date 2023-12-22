@@ -26,7 +26,7 @@ func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuer
 	var bankAccounts []*models.BankAccount
 
 	query := s.db.NewSelect().
-		Column("id", "name", "created_at", "country", "connector_id", "account_id").
+		Column("id", "name", "created_at", "country", "connector_id", "account_id", "metadata").
 		Model(&bankAccounts)
 
 	query = pagination.apply(query, "bank_account.created_at")
@@ -78,7 +78,7 @@ func (s *Storage) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool)
 	var account models.BankAccount
 	query := s.db.NewSelect().
 		Model(&account).
-		Column("id", "name", "created_at", "country", "connector_id", "account_id")
+		Column("id", "name", "created_at", "country", "connector_id", "account_id", "metadata")
 
 	if expand {
 		query = query.ColumnExpr("pgp_sym_decrypt(account_number, ?, ?) AS decrypted_account_number", s.configEncryptionKey, encryptionOptions).

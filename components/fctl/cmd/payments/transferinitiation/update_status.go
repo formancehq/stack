@@ -42,6 +42,7 @@ func NewUpdateStatusController() *UpdateStatusController {
 func NewUpdateStatusCommand() *cobra.Command {
 	c := NewUpdateStatusController()
 	return fctl.NewCommand("update_status <transferID> <status>",
+		fctl.WithConfirmFlag(),
 		fctl.WithShortDescription("Update the status of a transfer initiation"),
 		fctl.WithAliases("u"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
@@ -66,6 +67,11 @@ func (c *UpdateStatusController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	if err != nil {
 		return nil, err
 	}
+
+	if !fctl.CheckStackApprobation(cmd, soc.Stack, "You are about to update the status of the transfer initiation '%s' to '%s'", args[0], args[1]) {
+		return nil, fctl.ErrMissingApproval
+	}
+
 	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack client")

@@ -1,6 +1,7 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -19,13 +20,7 @@ type PaymentsConnectorsModulrStore struct {
 }
 
 type PaymentsConnectorsModulrController struct {
-	store                *PaymentsConnectorsModulrStore
-	endpointFlag         string
-	defaultEndpoint      string
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-	nameFlag             string
-	defaultName          string
+	store *PaymentsConnectorsModulrStore
 }
 
 var _ fctl.Controller[*PaymentsConnectorsModulrStore] = (*PaymentsConnectorsModulrController)(nil)
@@ -38,24 +33,15 @@ func NewDefaultPaymentsConnectorsModulrStore() *PaymentsConnectorsModulrStore {
 
 func NewPaymentsConnectorsModulrController() *PaymentsConnectorsModulrController {
 	return &PaymentsConnectorsModulrController{
-		store:                NewDefaultPaymentsConnectorsModulrStore(),
-		endpointFlag:         "endpoint",
-		defaultEndpoint:      "https://api-sandbox.modulrfinance.com",
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
-		nameFlag:             "name",
-		defaultName:          "modulr",
+		store: NewDefaultPaymentsConnectorsModulrStore(),
 	}
 }
 
 func NewModulrCommand() *cobra.Command {
 	c := NewPaymentsConnectorsModulrController()
-	return fctl.NewCommand(internal.ModulrConnector+" <api-key> <api-secret>",
+	return fctl.NewCommand(internal.ModulrConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Modulr connector"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
+		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*PaymentsConnectorsModulrStore](c),
 	)
 }
@@ -75,20 +61,19 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 		return nil, err
 	}
 
-	var endpoint *string
-	if e := fctl.GetString(cmd, c.endpointFlag); e != "" {
-		endpoint = &e
+	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	var config shared.ModulrConfig
+	if err := json.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
 	}
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
-			ModulrConfig: &shared.ModulrConfig{
-				Name:          fctl.GetString(cmd, c.nameFlag),
-				APIKey:        args[0],
-				APISecret:     args[1],
-				Endpoint:      endpoint,
-				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
-			},
+			ModulrConfig: &config,
 		},
 		Connector: shared.ConnectorModulr,
 	})

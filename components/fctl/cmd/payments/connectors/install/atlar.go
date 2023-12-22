@@ -1,6 +1,7 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -15,12 +16,11 @@ import (
 type PaymentsConnectorsAtlarStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
+	ConnectorID   string `json:"connectorId"`
 }
 
 type PaymentsConnectorsAtlarController struct {
-	store              *PaymentsConnectorsAtlarStore
-	atlarAccessKeyFlag string
-	atlarSecretFlag    string
+	store *PaymentsConnectorsAtlarStore
 }
 
 var _ fctl.Controller[*PaymentsConnectorsAtlarStore] = (*PaymentsConnectorsAtlarController)(nil)
@@ -33,20 +33,16 @@ func NewDefaultPaymentsConnectorsAtlarStore() *PaymentsConnectorsAtlarStore {
 
 func NewPaymentsConnectorsAtlarController() *PaymentsConnectorsAtlarController {
 	return &PaymentsConnectorsAtlarController{
-		store:              NewDefaultPaymentsConnectorsAtlarStore(),
-		atlarAccessKeyFlag: "access-key",
-		atlarSecretFlag:    "secret",
+		store: NewDefaultPaymentsConnectorsAtlarStore(),
 	}
 }
 
 func NewAtlarCommand() *cobra.Command {
 	c := NewPaymentsConnectorsAtlarController()
-	return fctl.NewCommand(internal.AtlarConnector+" <access-key> <secret>",
+	return fctl.NewCommand(internal.AtlarConnector+" <file>|-",
 		fctl.WithShortDescription("Install an atlar connector"),
 		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.atlarAccessKeyFlag, "", "Atlar API access key"),
-		fctl.WithStringFlag(c.atlarSecretFlag, "", "Atlar API secret"),
+		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*PaymentsConnectorsAtlarStore](c),
 	)
 }
@@ -66,12 +62,19 @@ func (c *PaymentsConnectorsAtlarController) Run(cmd *cobra.Command, args []strin
 		return nil, err
 	}
 
+	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	var config shared.AtlarConfig
+	if err := json.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
+	}
+
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
-			AtlarConfig: &shared.AtlarConfig{
-				AccessKey: args[0],
-				Secret:    args[1],
-			},
+			AtlarConfig: &config,
 		},
 		Connector: shared.ConnectorAtlar,
 	})
@@ -86,12 +89,19 @@ func (c *PaymentsConnectorsAtlarController) Run(cmd *cobra.Command, args []strin
 	c.store.Success = true
 	c.store.ConnectorName = internal.AtlarConnector
 
+	if response.ConnectorResponse != nil {
+		c.store.ConnectorID = response.ConnectorResponse.Data.ConnectorID
+	}
+
 	return c, nil
 }
 
 func (c *PaymentsConnectorsAtlarController) Render(cmd *cobra.Command, args []string) error {
-
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' installed!", c.store.ConnectorName)
+	if c.store.ConnectorID == "" {
+		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector installed!", c.store.ConnectorName)
+	} else {
+		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector '%s' installed!", c.store.ConnectorName, c.store.ConnectorID)
+	}
 
 	return nil
 }

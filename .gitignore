@@ -29,11 +29,8 @@ worktrees
 
 # Earthly
 .tmp-earthly-out
-
-# Ignore SDKS
-sdks
 .DS_Store
 openapi/node_modules
-releases/sdks
+
 
 .kubeconfig

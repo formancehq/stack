@@ -20,6 +20,9 @@ type ListController struct {
 	PaymentsVersion versions.Version
 
 	store *ListStore
+
+	cursorFlag   string
+	pageSizeFlag string
 }
 
 func (c *ListController) SetVersion(version versions.Version) {
@@ -37,6 +40,9 @@ func NewListStore() *ListStore {
 func NewListController() *ListController {
 	return &ListController{
 		store: NewListStore(),
+
+		cursorFlag:   "cursor",
+		pageSizeFlag: "page-size",
 	}
 }
 
@@ -73,9 +79,22 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
+	var cursor *string
+	if c := fctl.GetString(cmd, c.cursorFlag); c != "" {
+		cursor = &c
+	}
+
+	var pageSize *int64
+	if ps := fctl.GetInt(cmd, c.pageSizeFlag); ps > 0 {
+		pageSize = fctl.Ptr(int64(ps))
+	}
+
 	response, err := client.Payments.ListBankAccounts(
 		cmd.Context(),
-		operations.ListBankAccountsRequest{},
+		operations.ListBankAccountsRequest{
+			Cursor:   cursor,
+			PageSize: pageSize,
+		},
 	)
 	if err != nil {
 		return nil, err
@@ -97,9 +116,16 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			bc.CreatedAt.Format(time.RFC3339),
 			bc.Country,
 			string(bc.ConnectorID),
+			func() string {
+				if bc.Provider == nil {
+					return ""
+				}
+
+				return string(*bc.Provider)
+			}(),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "Country", "ConnectorID"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "Country", "ConnectorID", "Provider"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
@@ -113,6 +139,8 @@ func NewListCommand() *cobra.Command {
 		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithShortDescription("List bank accounts"),
+		fctl.WithStringFlag(c.cursorFlag, "", "Cursor"),
+		fctl.WithIntFlag(c.pageSizeFlag, 0, "PageSize"),
 		fctl.WithController[*ListStore](c),
 	)
 }

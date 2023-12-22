@@ -49,7 +49,7 @@ func (*Attempt) AfterCreateTable(ctx context.Context, q *bun.CreateTableQuery) e
 	return nil
 }
 
-func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.Duration, id, webhookID string, attemptNb int, cfg Config, payload []byte, isTest bool) (Attempt, error) {
+func MakeAttempt(ctx context.Context, httpClient *http.Client, retryPolicy BackoffPolicy, id, webhookID string, attemptNb int, cfg Config, payload []byte, isTest bool) (Attempt, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, cfg.Endpoint, bytes.NewBuffer(payload))
 	if err != nil {
 		return Attempt{}, errors.Wrap(err, "http.NewRequestWithContext")
@@ -101,12 +101,13 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.D
 		return attempt, nil
 	}
 
-	if attemptNb == len(schedule) {
+	delay, err := retryPolicy.GetRetryDelay(attemptNb)
+	if err != nil {
 		attempt.Status = StatusAttemptFailed
 		return attempt, nil
 	}
 
 	attempt.Status = StatusAttemptToRetry
-	attempt.NextRetryAfter = ts.Add(schedule[attemptNb])
+	attempt.NextRetryAfter = ts.Add(delay)
 	return attempt, nil
 }

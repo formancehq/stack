@@ -1,6 +1,7 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -18,13 +19,7 @@ type PaymentsConnectorsMoneycorpStore struct {
 	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsMoneycorpController struct {
-	store                *PaymentsConnectorsMoneycorpStore
-	endpointFlag         string
-	defaultEndpoint      string
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-	nameFlag             string
-	defaultName          string
+	store *PaymentsConnectorsMoneycorpStore
 }
 
 func NewDefaultPaymentsConnectorsMoneycorpStore() *PaymentsConnectorsMoneycorpStore {
@@ -35,24 +30,15 @@ func NewDefaultPaymentsConnectorsMoneycorpStore() *PaymentsConnectorsMoneycorpSt
 }
 func NewPaymentsConnectorsMoneycorpController() *PaymentsConnectorsMoneycorpController {
 	return &PaymentsConnectorsMoneycorpController{
-		store:                NewDefaultPaymentsConnectorsMoneycorpStore(),
-		endpointFlag:         "endpoint",
-		defaultEndpoint:      "https://sandbox-corpapi.moneycorp.com",
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
-		nameFlag:             "name",
-		defaultName:          "moneycorp",
+		store: NewDefaultPaymentsConnectorsMoneycorpStore(),
 	}
 }
 func NewMoneycorpCommand() *cobra.Command {
 	c := NewPaymentsConnectorsMoneycorpController()
 
-	return fctl.NewCommand(internal.MoneycorpConnector+" <clientID> <apiKey>",
+	return fctl.NewCommand(internal.MoneycorpConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Moneycorp connector"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
+		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*PaymentsConnectorsMoneycorpStore](c),
 	)
 }
@@ -86,16 +72,20 @@ func (c *PaymentsConnectorsMoneycorpController) Run(cmd *cobra.Command, args []s
 		return nil, err
 	}
 
+	script, err := fctl.ReadFile(cmd, stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	var config shared.MoneycorpConfig
+	if err := json.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
+	}
+
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorMoneycorp,
 		ConnectorConfig: shared.ConnectorConfig{
-			MoneycorpConfig: &shared.MoneycorpConfig{
-				Name:          fctl.GetString(cmd, c.nameFlag),
-				ClientID:      args[0],
-				APIKey:        args[1],
-				Endpoint:      fctl.GetString(cmd, c.endpointFlag),
-				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
-			},
+			MoneycorpConfig: &config,
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)

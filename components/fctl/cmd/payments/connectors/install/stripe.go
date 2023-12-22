@@ -1,6 +1,7 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -18,12 +19,7 @@ type PaymentsConnectorsStripeStore struct {
 	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsStripeController struct {
-	store                *PaymentsConnectorsStripeStore
-	stripeApiKeyFlag     string
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-	nameFlag             string
-	defaultName          string
+	store *PaymentsConnectorsStripeStore
 }
 
 var _ fctl.Controller[*PaymentsConnectorsStripeStore] = (*PaymentsConnectorsStripeController)(nil)
@@ -36,24 +32,16 @@ func NewDefaultPaymentsConnectorsStripeStore() *PaymentsConnectorsStripeStore {
 
 func NewPaymentsConnectorsStripeController() *PaymentsConnectorsStripeController {
 	return &PaymentsConnectorsStripeController{
-		store:                NewDefaultPaymentsConnectorsStripeStore(),
-		stripeApiKeyFlag:     "api-key",
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
-		nameFlag:             "name",
-		defaultName:          "stripe",
+		store: NewDefaultPaymentsConnectorsStripeStore(),
 	}
 }
 
 func NewStripeCommand() *cobra.Command {
 	c := NewPaymentsConnectorsStripeController()
-	return fctl.NewCommand(internal.StripeConnector+" <api-key>",
+	return fctl.NewCommand(internal.StripeConnector+" <file>|-",
 		fctl.WithShortDescription("Install a stripe connector"),
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithStringFlag(c.stripeApiKeyFlag, "", "Stripe API key"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
 		fctl.WithController[*PaymentsConnectorsStripeStore](c),
 	)
 }
@@ -73,13 +61,19 @@ func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []stri
 		return nil, err
 	}
 
+	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	var config shared.StripeConfig
+	if err := json.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
+	}
+
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
-			StripeConfig: &shared.StripeConfig{
-				Name:          fctl.GetString(cmd, c.nameFlag),
-				APIKey:        args[0],
-				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
-			},
+			StripeConfig: &config,
 		},
 		Connector: shared.ConnectorStripe,
 	})

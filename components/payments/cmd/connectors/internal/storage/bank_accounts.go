@@ -16,6 +16,7 @@ func (s *Storage) CreateBankAccount(ctx context.Context, bankAccount *models.Ban
 		Name:        bankAccount.Name,
 		AccountID:   bankAccount.AccountID,
 		ConnectorID: bankAccount.ConnectorID,
+		Metadata:    bankAccount.Metadata,
 	}
 
 	var id uuid.UUID

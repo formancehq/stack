@@ -103,6 +103,12 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.BankAccount.CreatedAt.Format(time.RFC3339)})
 	tableData = append(tableData, []string{pterm.LightCyan("Country"), c.store.BankAccount.Country})
 	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), string(c.store.BankAccount.ConnectorID)})
+	tableData = append(tableData, []string{pterm.LightCyan("Provider"), func() string {
+		if c.store.BankAccount.Provider != nil {
+			return *c.store.BankAccount.Provider
+		}
+		return ""
+	}()})
 	if c.store.BankAccount.AccountNumber != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("AccountNumber"), *c.store.BankAccount.AccountNumber})
 	}
@@ -120,5 +126,5 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return nil
+	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.BankAccount.Metadata)
 }

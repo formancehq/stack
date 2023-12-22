@@ -15,8 +15,10 @@ const (
 	Listen   = "listen"
 	Worker   = "worker"
 
-	RetriesSchedule = "retries-schedule"
-	RetriesCron     = "retries-cron"
+	RetryPeriod     = "retry-period"
+	AbortAfter      = "abort-after"
+	MinBackoffDelay = "min-backoff-delay"
+	MaxBackoffDelay = "max-backoff-delay"
 
 	StoragePostgresConnString = "storage-postgres-conn-string"
 
@@ -32,8 +34,7 @@ const (
 )
 
 var (
-	DefaultRetriesSchedule = []time.Duration{time.Minute, 5 * time.Minute, 30 * time.Minute, 5 * time.Hour, 24 * time.Hour}
-	DefaultRetriesCron     = time.Minute
+	DefaultRetryPeriod = time.Minute
 )
 
 func Init(flagSet *pflag.FlagSet) {
@@ -41,12 +42,15 @@ func Init(flagSet *pflag.FlagSet) {
 	flagSet.String(LogLevel, logrus.InfoLevel.String(), "Log level")
 
 	flagSet.String(Listen, DefaultBindAddressServer, "server HTTP bind address")
-	flagSet.DurationSlice(RetriesSchedule, DefaultRetriesSchedule, "worker retries schedule")
-	flagSet.Duration(RetriesCron, DefaultRetriesCron, "worker retries cron")
+	flagSet.Duration(RetryPeriod, DefaultRetryPeriod, "worker retry period")
 	flagSet.String(StoragePostgresConnString, DefaultPostgresConnString, "Postgres connection string")
 	flagSet.Bool(Worker, false, "Enable worker on server")
 
 	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka topics")
+
+	flagSet.Duration(AbortAfter, 30*24*time.Hour, "consider a webhook as failed after retrying it for this duration.")
+	flagSet.Duration(MinBackoffDelay, time.Minute, "minimum backoff delay")
+	flagSet.Duration(MaxBackoffDelay, time.Hour, "maximum backoff delay")
 }
 
 func LoadEnv(v *viper.Viper) {

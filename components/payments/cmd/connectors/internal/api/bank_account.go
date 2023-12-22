@@ -11,15 +11,16 @@ import (
 )
 
 type bankAccountResponse struct {
-	ID            string    `json:"id"`
-	CreatedAt     time.Time `json:"createdAt"`
-	Country       string    `json:"country"`
-	ConnectorID   string    `json:"connectorID"`
-	Provider      string    `json:"provider,omitempty"`
-	AccountID     string    `json:"accountID,omitempty"`
-	Iban          string    `json:"iban,omitempty"`
-	AccountNumber string    `json:"accountNumber,omitempty"`
-	SwiftBicCode  string    `json:"swiftBicCode,omitempty"`
+	ID            string            `json:"id"`
+	CreatedAt     time.Time         `json:"createdAt"`
+	Country       string            `json:"country"`
+	ConnectorID   string            `json:"connectorID"`
+	Provider      string            `json:"provider,omitempty"`
+	AccountID     string            `json:"accountID,omitempty"`
+	Iban          string            `json:"iban,omitempty"`
+	AccountNumber string            `json:"accountNumber,omitempty"`
+	SwiftBicCode  string            `json:"swiftBicCode,omitempty"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
 }
 
 func createBankAccountHandler(
@@ -53,6 +54,7 @@ func createBankAccountHandler(
 			ConnectorID: bankAccountRequest.ConnectorID,
 			AccountID:   bankAccount.AccountID.String(),
 			Provider:    bankAccount.ConnectorID.Provider.String(),
+			Metadata:    bankAccount.Metadata,
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{

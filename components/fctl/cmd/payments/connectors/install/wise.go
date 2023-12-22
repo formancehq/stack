@@ -1,6 +1,7 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -18,11 +19,7 @@ type PaymentsConnectorsWiseStore struct {
 	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsWiseController struct {
-	store                *PaymentsConnectorsWiseStore
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-	nameFlag             string
-	defaultName          string
+	store *PaymentsConnectorsWiseStore
 }
 
 var _ fctl.Controller[*PaymentsConnectorsWiseStore] = (*PaymentsConnectorsWiseController)(nil)
@@ -35,21 +32,15 @@ func NewDefaultPaymentsConnectorsWiseStore() *PaymentsConnectorsWiseStore {
 
 func NewPaymentsConnectorsWiseController() *PaymentsConnectorsWiseController {
 	return &PaymentsConnectorsWiseController{
-		store:                NewDefaultPaymentsConnectorsWiseStore(),
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
-		nameFlag:             "name",
-		defaultName:          "wise",
+		store: NewDefaultPaymentsConnectorsWiseStore(),
 	}
 }
 
 func NewWiseCommand() *cobra.Command {
 	c := NewPaymentsConnectorsWiseController()
-	return fctl.NewCommand(internal.WiseConnector+" <api-key>",
+	return fctl.NewCommand(internal.WiseConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Wise connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
 		fctl.WithController[*PaymentsConnectorsWiseStore](c),
 	)
 }
@@ -69,13 +60,19 @@ func (c *PaymentsConnectorsWiseController) Run(cmd *cobra.Command, args []string
 		return nil, err
 	}
 
+	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	var config shared.WiseConfig
+	if err := json.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
+	}
+
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
-			WiseConfig: &shared.WiseConfig{
-				Name:          fctl.GetString(cmd, c.nameFlag),
-				APIKey:        args[0],
-				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
-			},
+			WiseConfig: &config,
 		},
 		Connector: shared.ConnectorWise,
 	})

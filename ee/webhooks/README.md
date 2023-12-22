@@ -26,33 +26,52 @@ earthly -P +tests
 
 ## Usage
 ```
-$> ./webhooks
 Usage:
   webhooks [command]
 
 Available Commands:
-  help                 Help about any command
-  version              Get webhooks version
-  server               Start webhooks server
-  worker               Start webhooks worker
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  serve       Run webhooks server
+  version     Get webhooks version
+  worker      Run webhooks worker
 
 Flags:
+      --abort-after duration                          consider a webhook as failed after retrying it for this duration. (default 720h0m0s)
+      --debug                                         Debug mode
   -h, --help                                          help for webhooks
-      --http-bind-address-server string               server HTTP bind address (default ":8080")
-      --http-bind-address-worker string               worker HTTP bind address (default ":8081")
-      --retries-schedule durations                    worker retry schedule (default [1m,5m,30m,5h,24h])
-      --retries-cron duration                         worker retry cron (default 1m)
-      --kafka-brokers strings                         Kafka brokers (default [localhost:9092])
-      --kafka-consumer-group string                   Kafka consumer group (default "webhooks")
-      --kafka-password string                         Kafka password
-      --kafka-sasl-enabled                            Kafka SASL enabled
-      --kafka-sasl-mechanism string                   Kafka SASL mechanism
-      --kafka-tls-enabled                             Kafka TLS enabled
       --kafka-topics strings                          Kafka topics (default [default])
-      --kafka-username string                         Kafka username
+      --listen string                                 server HTTP bind address (default ":8080")
       --log-level string                              Log level (default "info")
-      --storage-mongo-conn-string string              Mongo connection string (default "mongodb://admin:admin@localhost:27017/")
-      --storage-mongo-database-name string            Mongo database name (default "webhooks")
-
-Use "webhooks [command] --help" for more information about a command.
+      --max-backoff-delay duration                    maximum backoff delay (default 1h0m0s)
+      --min-backoff-delay duration                    minimum backoff delay (default 1m0s)
+      --otel-resource-attributes strings              Additional OTLP resource attributes
+      --otel-service-name string                      OpenTelemetry service name
+      --otel-traces                                   Enable OpenTelemetry traces support
+      --otel-traces-batch                             Use OpenTelemetry batching
+      --otel-traces-exporter string                   OpenTelemetry traces exporter (default "stdout")
+      --otel-traces-exporter-jaeger-endpoint string   OpenTelemetry traces Jaeger exporter endpoint
+      --otel-traces-exporter-jaeger-password string   OpenTelemetry traces Jaeger exporter password
+      --otel-traces-exporter-jaeger-user string       OpenTelemetry traces Jaeger exporter user
+      --otel-traces-exporter-otlp-endpoint string     OpenTelemetry traces grpc endpoint
+      --otel-traces-exporter-otlp-insecure            OpenTelemetry traces grpc insecure
+      --otel-traces-exporter-otlp-mode string         OpenTelemetry traces OTLP exporter mode (grpc|http) (default "grpc")
+      --publisher-http-enabled                        Sent write event to http endpoint
+      --publisher-kafka-broker strings                Kafka address is kafka enabled (default [localhost:9092])
+      --publisher-kafka-enabled                       Publish write events to kafka
+      --publisher-kafka-sasl-enabled                  Enable SASL authentication on kafka publisher
+      --publisher-kafka-sasl-mechanism string         SASL authentication mechanism
+      --publisher-kafka-sasl-password string          SASL password
+      --publisher-kafka-sasl-scram-sha-size int       SASL SCRAM SHA size (default 512)
+      --publisher-kafka-sasl-username string          SASL username
+      --publisher-kafka-tls-enabled                   Enable TLS to connect on kafka
+      --publisher-nats-client-id string               Nats client ID
+      --publisher-nats-enabled                        Publish write events to nats
+      --publisher-nats-max-reconnect int              Nats: set the maximum number of reconnect attempts. (default 30)
+      --publisher-nats-reconnect-wait duration        Nats: the wait time between reconnect attempts. (default 2s)
+      --publisher-nats-url string                     Nats url
+      --publisher-topic-mapping strings               Define mapping between internal event types and topics
+      --retry-period duration                         worker retry period (default 1m0s)
+      --storage-postgres-conn-string string           Postgres connection string (default "postgresql://webhooks:webhooks@127.0.0.1/webhooks?sslmode=disable")
+      --worker                                        Enable worker on server
 ```

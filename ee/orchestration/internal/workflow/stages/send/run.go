@@ -5,6 +5,9 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
+
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal"
@@ -72,31 +75,35 @@ func RunSend(ctx workflow.Context, send Send) (err error) {
 		}
 	}()
 	amount := send.Amount
+	metadata := send.Metadata
+	if metadata == nil {
+		metadata = map[string]string{}
+	}
 	switch {
 	case send.Source.Account != nil && send.Destination.Account != nil:
-		return runAccountToAccount(ctx, send.Source.Account, send.Destination.Account, amount)
+		return runAccountToAccount(ctx, send.Source.Account, send.Destination.Account, amount, metadata)
 	case send.Source.Account != nil && send.Destination.Payment != nil:
-		return runAccountToPayment(ctx, send.ConnectorID, send.Source.Account, send.Destination.Payment, amount)
+		return runAccountToPayment(ctx, send.Source.Account, send.Destination.Payment, amount, metadata)
 	case send.Source.Account != nil && send.Destination.Wallet != nil:
-		return runAccountToWallet(ctx, send.Source.Account, send.Destination.Wallet, amount)
+		return runAccountToWallet(ctx, send.Source.Account, send.Destination.Wallet, amount, metadata)
 	case send.Source.Wallet != nil && send.Destination.Account != nil:
-		return runWalletToAccount(ctx, send.Source.Wallet, send.Destination.Account, amount)
+		return runWalletToAccount(ctx, send.Source.Wallet, send.Destination.Account, amount, send.Metadata)
 	case send.Source.Wallet != nil && send.Destination.Payment != nil:
-		return runWalletToPayment(ctx, send.ConnectorID, send.Source.Wallet, send.Destination.Payment, amount)
+		return runWalletToPayment(ctx, send.Source.Wallet, send.Destination.Payment, amount, metadata)
 	case send.Source.Wallet != nil && send.Destination.Wallet != nil:
-		return runWalletToWallet(ctx, send.Source.Wallet, send.Destination.Wallet, amount)
+		return runWalletToWallet(ctx, send.Source.Wallet, send.Destination.Wallet, amount, metadata)
 	case send.Source.Payment != nil && send.Destination.Account != nil:
-		return runPaymentToAccount(ctx, send.Source.Payment, send.Destination.Account, amount)
+		return runPaymentToAccount(ctx, send.Source.Payment, send.Destination.Account, amount, metadata)
 	case send.Source.Payment != nil && send.Destination.Wallet != nil:
-		return runPaymentToWallet(ctx, send.Source.Payment, send.Destination.Wallet, amount)
+		return runPaymentToWallet(ctx, send.Source.Payment, send.Destination.Wallet, amount, metadata)
 	case send.Source.Payment != nil && send.Destination.Payment != nil:
 		return errors.New("send from payment to payment is not supported")
 	}
 	panic("should not happen")
 }
 
-func runPaymentToWallet(ctx workflow.Context, source *PaymentSource, destination *WalletSource, amount *shared.Monetary) error {
-	payment, err := savePayment(ctx, source.ID)
+func runPaymentToWallet(ctx workflow.Context, source *PaymentSource, destination *WalletSource, amount *shared.Monetary, m metadata.Metadata) error {
+	payment, err := savePayment(ctx, source.ID, m)
 	if err != nil {
 		return err
 	}
@@ -109,7 +116,7 @@ func runPaymentToWallet(ctx workflow.Context, source *PaymentSource, destination
 	return runAccountToWallet(ctx, &LedgerAccountSource{
 		ID:     paymentAccountName(source.ID),
 		Ledger: internalLedger,
-	}, destination, amount)
+	}, destination, amount, m)
 }
 
 func paymentAccountName(paymentID string) string {
@@ -117,7 +124,7 @@ func paymentAccountName(paymentID string) string {
 	return fmt.Sprintf("payment:%s", paymentID)
 }
 
-func savePayment(ctx workflow.Context, paymentID string) (*shared.Payment, error) {
+func savePayment(ctx workflow.Context, paymentID string, m metadata.Metadata) (*shared.Payment, error) {
 	payment, err := activities.GetPayment(internal.InfiniteRetryContext(ctx), paymentID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "retrieving payment: %s", paymentID)
@@ -130,7 +137,7 @@ func savePayment(ctx workflow.Context, paymentID string) (*shared.Payment, error
 			Destination: paymentAccountName(paymentID),
 			Source:      "world",
 		}},
-		Metadata:  map[string]interface{}{},
+		Metadata:  collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
 		Reference: &reference,
 	})
 	if err != nil {
@@ -146,8 +153,8 @@ func savePayment(ctx workflow.Context, paymentID string) (*shared.Payment, error
 	return payment, nil
 }
 
-func runPaymentToAccount(ctx workflow.Context, source *PaymentSource, destination *LedgerAccountDestination, amount *shared.Monetary) error {
-	payment, err := savePayment(ctx, source.ID)
+func runPaymentToAccount(ctx workflow.Context, source *PaymentSource, destination *LedgerAccountDestination, amount *shared.Monetary, m metadata.Metadata) error {
+	payment, err := savePayment(ctx, source.ID, m)
 	if err != nil {
 		return err
 	}
@@ -160,10 +167,10 @@ func runPaymentToAccount(ctx workflow.Context, source *PaymentSource, destinatio
 	return runAccountToAccount(ctx, &LedgerAccountSource{
 		ID:     paymentAccountName(source.ID),
 		Ledger: internalLedger,
-	}, destination, amount)
+	}, destination, amount, m)
 }
 
-func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *WalletDestination, amount *shared.Monetary) error {
+func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *WalletDestination, amount *shared.Monetary, m metadata.Metadata) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -185,7 +192,7 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 		return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destinationWallet.ID, &shared.CreditWalletRequest{
 			Amount:   *amount,
 			Balance:  &destination.Balance,
-			Metadata: map[string]string{},
+			Metadata: m,
 			Sources:  []shared.Subject{{WalletSubject: &sourceSubject}},
 		})
 	}
@@ -193,9 +200,9 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
-		Metadata: map[string]string{
+		Metadata: collectionutils.MergeMaps(m, map[string]string{
 			moveToLedgerMetadata: destinationWallet.Ledger,
-		},
+		}),
 	})); err != nil {
 		return err
 	}
@@ -203,13 +210,13 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destinationWallet.ID, &shared.CreditWalletRequest{
 		Amount:  *amount,
 		Balance: &destination.Balance,
-		Metadata: map[string]string{
+		Metadata: collectionutils.MergeMaps(m, map[string]string{
 			moveFromLedgerMetadata: sourceWallet.Ledger,
-		},
+		}),
 	})
 }
 
-func runWalletToPayment(ctx workflow.Context, connectorID *string, source *WalletSource, destination *PaymentDestination, amount *shared.Monetary) error {
+func runWalletToPayment(ctx workflow.Context, source *WalletSource, destination *PaymentDestination, amount *shared.Monetary, m metadata.Metadata) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -226,22 +233,25 @@ func runWalletToPayment(ctx workflow.Context, connectorID *string, source *Walle
 		return err
 	}
 
-	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.ActivityStripeTransfer{
+	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), activities.StripeTransferRequest{
 		Amount:            amount.Amount,
 		Asset:             &amount.Asset,
 		Destination:       &formanceAccountID,
 		WaitingValidation: &destination.WaitingValidation,
-		ConnectorID:       connectorID,
+		ConnectorID:       destination.ConnectorID,
+		Metadata:          m,
 	}); err != nil {
 		return err
 	}
+
 	return justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
+		Metadata: m,
 	}))
 }
 
-func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination *LedgerAccountDestination, amount *shared.Monetary) error {
+func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination *LedgerAccountDestination, amount *shared.Monetary, m metadata.Metadata) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -250,7 +260,6 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 		return err
 	}
 	if sourceWallet.Ledger == destination.Ledger {
-
 		return justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 			Amount: *amount,
 			Destination: &shared.Subject{
@@ -260,15 +269,16 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 				},
 			},
 			Balances: []string{source.Balance},
+			Metadata: m,
 		}))
 	}
 
 	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), sourceWallet.ID, &shared.DebitWalletRequest{
 		Amount:   *amount,
 		Balances: []string{source.Balance},
-		Metadata: map[string]string{
+		Metadata: collectionutils.MergeMaps(m, map[string]string{
 			moveToLedgerMetadata: destination.Ledger,
-		},
+		}),
 	})); err != nil {
 		return err
 	}
@@ -280,13 +290,13 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: map[string]any{
+		Metadata: collectionutils.MergeMaps(collectionutils.ConvertMap(m, collectionutils.ToAny[string]), map[string]any{
 			moveFromLedgerMetadata: sourceWallet.Ledger,
-		},
+		}),
 	}))
 }
 
-func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, destination *WalletDestination, amount *shared.Monetary) error {
+func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, destination *WalletDestination, amount *shared.Monetary, m metadata.Metadata) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -303,7 +313,8 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 					Type:       "ACCOUNT",
 				},
 			}},
-			Balance: &destination.Balance,
+			Balance:  &destination.Balance,
+			Metadata: m,
 		})
 	}
 
@@ -314,9 +325,12 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: map[string]any{
-			moveToLedgerMetadata: destinationWallet.Ledger,
-		},
+		Metadata: collectionutils.MergeMaps(
+			collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
+			map[string]any{
+				moveToLedgerMetadata: destinationWallet.Ledger,
+			},
+		),
 	})); err != nil {
 		return err
 	}
@@ -330,13 +344,13 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 			},
 		}},
 		Balance: &destination.Balance,
-		Metadata: map[string]string{
+		Metadata: collectionutils.MergeMaps(m, map[string]string{
 			moveFromLedgerMetadata: source.Ledger,
-		},
+		}),
 	})
 }
 
-func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, destination *LedgerAccountDestination, amount *shared.Monetary) error {
+func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, destination *LedgerAccountDestination, amount *shared.Monetary, m metadata.Metadata) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -348,7 +362,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 				Destination: destination.ID,
 				Source:      source.ID,
 			}},
-			Metadata: map[string]interface{}{},
+			Metadata: collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
 		}))
 	}
 	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, shared.PostTransaction{
@@ -358,9 +372,12 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: map[string]any{
-			moveToLedgerMetadata: destination.Ledger,
-		},
+		Metadata: collectionutils.MergeMaps(
+			collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
+			map[string]any{
+				moveToLedgerMetadata: destination.Ledger,
+			},
+		),
 	})); err != nil {
 		return err
 	}
@@ -371,13 +388,16 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: map[string]any{
-			moveFromLedgerMetadata: source.Ledger,
-		},
+		Metadata: collectionutils.MergeMaps(
+			collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
+			map[string]any{
+				moveFromLedgerMetadata: source.Ledger,
+			},
+		),
 	}))
 }
 
-func runAccountToPayment(ctx workflow.Context, connectorID *string, source *LedgerAccountSource, destination *PaymentDestination, amount *shared.Monetary) error {
+func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, destination *PaymentDestination, amount *shared.Monetary, m metadata.Metadata) error {
 	if amount == nil {
 		return errors.New("amount must be specified")
 	}
@@ -393,12 +413,13 @@ func runAccountToPayment(ctx workflow.Context, connectorID *string, source *Ledg
 		return err
 	}
 
-	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), shared.ActivityStripeTransfer{
+	if err := activities.StripeTransfer(internal.InfiniteRetryContext(ctx), activities.StripeTransferRequest{
 		Amount:            amount.Amount,
 		Asset:             &amount.Asset,
 		Destination:       &formanceAccountID,
 		WaitingValidation: &destination.WaitingValidation,
-		ConnectorID:       connectorID,
+		ConnectorID:       destination.ConnectorID,
+		Metadata:          m,
 	}); err != nil {
 		return err
 	}
@@ -409,6 +430,6 @@ func runAccountToPayment(ctx workflow.Context, connectorID *string, source *Ledg
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: map[string]any{},
+		Metadata: collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
 	}))
 }

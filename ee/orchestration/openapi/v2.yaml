@@ -894,6 +894,10 @@ components:
           $ref: '#/components/schemas/V2StageSendDestination'
         source:
           $ref: '#/components/schemas/V2StageSendSource'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
     V2StageDelay:
       type: object
       properties:

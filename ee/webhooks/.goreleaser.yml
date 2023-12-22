@@ -3,7 +3,7 @@ includes:
   - from_file:
       path: ./../../.goreleaser.default.yaml
 monorepo:
-  tag_prefix: ee/webhooks/
+  tag_prefix: v
   dir: ./
 
 builds:
@@ -31,8 +31,6 @@ archives:
 
 release:
   prerelease: auto
-  extra_files:
-    - glob: openapi.yaml
   footer: |
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)

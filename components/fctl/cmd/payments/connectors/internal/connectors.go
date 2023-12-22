@@ -13,6 +13,7 @@ const (
 )
 
 var AllConnectors = []string{
+	AdyenConnector,
 	AtlarConnector,
 	BankingCircleConnector,
 	CurrencyCloudConnector,

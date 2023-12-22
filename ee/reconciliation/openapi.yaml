@@ -304,8 +304,8 @@ components:
           type: string
           example: "default"
         ledgerQuery:
-          type: string
-          example: "{\"$match\": {\"metadata[reconciliation]\": \"pool:main\"}}"
+          type: object
+          additionalProperties: true
         paymentsPoolID:
           type: string
           example: "XXX"
@@ -314,7 +314,7 @@ components:
       required:
         - data
       properties:
-        policy:
+        data:
           $ref: '#/components/schemas/Policy'
     ReconciliationRequest:
       type: object
@@ -335,7 +335,7 @@ components:
       required:
         - data
       properties:
-        reconciliation:
+        data:
           $ref: '#/components/schemas/Reconciliation'
     Policy:
       type: object
@@ -361,8 +361,8 @@ components:
           type: string
           example: "default"
         ledgerQuery:
-          type: string
-          example: "{\"$match\": {\"metadata[reconciliation]\": \"pool:main\"}}"
+          type: object
+          additionalProperties: true
         paymentsPoolID:
           type: string
           example: "XXX"
