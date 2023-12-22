@@ -1,6 +1,7 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -18,13 +19,7 @@ type PaymentsConnectorsMangoPayStore struct {
 	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsMangoPayController struct {
-	store                *PaymentsConnectorsMangoPayStore
-	endpointFlag         string
-	defaultEndpoint      string
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-	nameFlag             string
-	defaultName          string
+	store *PaymentsConnectorsMangoPayStore
 }
 
 func NewDefaultPaymentsConnectorsMangoPayStore() *PaymentsConnectorsMangoPayStore {
@@ -35,24 +30,15 @@ func NewDefaultPaymentsConnectorsMangoPayStore() *PaymentsConnectorsMangoPayStor
 }
 func NewPaymentsConnectorsMangoPayController() *PaymentsConnectorsMangoPayController {
 	return &PaymentsConnectorsMangoPayController{
-		store:                NewDefaultPaymentsConnectorsMangoPayStore(),
-		endpointFlag:         "endpoint",
-		defaultEndpoint:      "https://api.sandbox.mangopay.com",
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
-		nameFlag:             "name",
-		defaultName:          "mangopay",
+		store: NewDefaultPaymentsConnectorsMangoPayStore(),
 	}
 }
 
 func NewMangoPayCommand() *cobra.Command {
 	c := NewPaymentsConnectorsMangoPayController()
-	return fctl.NewCommand(internal.MangoPayConnector+" <clientID> <apiKey>",
+	return fctl.NewCommand(internal.MangoPayConnector+" <file>|-",
 		fctl.WithShortDescription("Install a MangoPay connector"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
+		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*PaymentsConnectorsMangoPayStore](c),
 	)
 }
@@ -86,16 +72,20 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 		return nil, err
 	}
 
+	script, err := fctl.ReadFile(cmd, stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	var config shared.MangoPayConfig
+	if err := json.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
+	}
+
 	request := operations.InstallConnectorRequest{
 		Connector: shared.ConnectorMangopay,
 		ConnectorConfig: shared.ConnectorConfig{
-			MangoPayConfig: &shared.MangoPayConfig{
-				ClientID:      args[0],
-				APIKey:        args[1],
-				Endpoint:      fctl.GetString(cmd, c.endpointFlag),
-				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
-				Name:          fctl.GetString(cmd, c.nameFlag),
-			},
+			MangoPayConfig: &config,
 		},
 	}
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)
