@@ -88,7 +88,7 @@ deploy:
     END
     FROM --pass-args core+vcluster-deployer-image
     COPY --pass-args (+helm-update/helm) helm
-    RUN rm -rf helm/templates/gen/admissionregistration.k8s.io_v1_mutatingwebhookconfiguration_formance-system-mutating-webhook-configuration.yaml
+    RUN rm -rf helm/templates/gen/admissionregistration.k8s.io_v1_mutatingwebhookconfiguration_mutating-webhook-configuration.yaml
     WORKDIR helm
     RUN helm upgrade --namespace formance-system --install formance-operator \
         --wait \
