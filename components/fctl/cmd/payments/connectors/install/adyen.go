@@ -13,45 +13,46 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PaymentsConnectorsModulrStore struct {
+type PaymentsConnectorsAdyenStore struct {
 	Success       bool   `json:"success"`
 	ConnectorName string `json:"connectorName"`
 	ConnectorID   string `json:"connectorId"`
 }
 
-type PaymentsConnectorsModulrController struct {
-	store *PaymentsConnectorsModulrStore
+type PaymentsConnectorsAdyenController struct {
+	store *PaymentsConnectorsAdyenStore
 }
 
-var _ fctl.Controller[*PaymentsConnectorsModulrStore] = (*PaymentsConnectorsModulrController)(nil)
+var _ fctl.Controller[*PaymentsConnectorsAdyenStore] = (*PaymentsConnectorsAdyenController)(nil)
 
-func NewDefaultPaymentsConnectorsModulrStore() *PaymentsConnectorsModulrStore {
-	return &PaymentsConnectorsModulrStore{
+func NewDefaultPaymentsConnectorsAdyenStore() *PaymentsConnectorsAdyenStore {
+	return &PaymentsConnectorsAdyenStore{
 		Success: false,
 	}
 }
 
-func NewPaymentsConnectorsModulrController() *PaymentsConnectorsModulrController {
-	return &PaymentsConnectorsModulrController{
-		store: NewDefaultPaymentsConnectorsModulrStore(),
+func NewPaymentsConnectorsAdyenController() *PaymentsConnectorsAdyenController {
+	return &PaymentsConnectorsAdyenController{
+		store: NewDefaultPaymentsConnectorsAdyenStore(),
 	}
 }
 
-func NewModulrCommand() *cobra.Command {
-	c := NewPaymentsConnectorsModulrController()
-	return fctl.NewCommand(internal.ModulrConnector+" <file>|-",
-		fctl.WithShortDescription("Install a Modulr connector"),
+func NewAdyenCommand() *cobra.Command {
+	c := NewPaymentsConnectorsAdyenController()
+	return fctl.NewCommand(internal.AdyenConnector+" <file>|-",
+		fctl.WithShortDescription("Install an adyen connector"),
+		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*PaymentsConnectorsModulrStore](c),
+		fctl.WithController[*PaymentsConnectorsAdyenStore](c),
 	)
 }
 
-func (c *PaymentsConnectorsModulrController) GetStore() *PaymentsConnectorsModulrStore {
+func (c *PaymentsConnectorsAdyenController) GetStore() *PaymentsConnectorsAdyenStore {
 	return c.store
 }
 
-func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.ModulrConnector)
+func (c *PaymentsConnectorsAdyenController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.AdyenConnector)
 	if err != nil {
 		return nil, fctl.ErrMissingApproval
 	}
@@ -66,16 +67,16 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 		return nil, err
 	}
 
-	var config shared.ModulrConfig
+	var config shared.AdyenConfig
 	if err := json.Unmarshal([]byte(script), &config); err != nil {
 		return nil, err
 	}
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
-			ModulrConfig: &config,
+			AdyenConfig: &config,
 		},
-		Connector: shared.ConnectorModulr,
+		Connector: shared.ConnectorAdyen,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "installing connector")
@@ -86,7 +87,7 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 	}
 
 	c.store.Success = true
-	c.store.ConnectorName = internal.ModulrConnector
+	c.store.ConnectorName = internal.AdyenConnector
 
 	if response.ConnectorResponse != nil {
 		c.store.ConnectorID = response.ConnectorResponse.Data.ConnectorID
@@ -95,7 +96,7 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 	return c, nil
 }
 
-func (c *PaymentsConnectorsModulrController) Render(cmd *cobra.Command, args []string) error {
+func (c *PaymentsConnectorsAdyenController) Render(cmd *cobra.Command, args []string) error {
 	if c.store.ConnectorID == "" {
 		pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("%s: connector installed!", c.store.ConnectorName)
 	} else {

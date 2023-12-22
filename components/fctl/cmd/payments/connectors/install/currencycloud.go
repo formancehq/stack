@@ -1,6 +1,7 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
@@ -18,13 +19,7 @@ type PaymentsConnectorsCurrencyCloudStore struct {
 	ConnectorID   string `json:"connectorId"`
 }
 type PaymentsConnectorsCurrencyCloudController struct {
-	store                *PaymentsConnectorsCurrencyCloudStore
-	endpointFlag         string
-	defaultEndpoint      string
-	pollingPeriodFlag    string
-	defaultpollingPeriod string
-	nameFlag             string
-	defaultName          string
+	store *PaymentsConnectorsCurrencyCloudStore
 }
 
 var _ fctl.Controller[*PaymentsConnectorsCurrencyCloudStore] = (*PaymentsConnectorsCurrencyCloudController)(nil)
@@ -37,24 +32,15 @@ func NewDefaultPaymentsConnectorsCurrencyCloudStore() *PaymentsConnectorsCurrenc
 
 func NewPaymentsConnectorsCurrencyCloudController() *PaymentsConnectorsCurrencyCloudController {
 	return &PaymentsConnectorsCurrencyCloudController{
-		store:                NewDefaultPaymentsConnectorsCurrencyCloudStore(),
-		endpointFlag:         "endpoint",
-		defaultEndpoint:      "https://devapi.currencycloud.com",
-		pollingPeriodFlag:    "polling-period",
-		defaultpollingPeriod: "2m",
-		nameFlag:             "name",
-		defaultName:          "currencycloud",
+		store: NewDefaultPaymentsConnectorsCurrencyCloudStore(),
 	}
 }
 
 func NewCurrencyCloudCommand() *cobra.Command {
 	c := NewPaymentsConnectorsCurrencyCloudController()
-	return fctl.NewCommand(internal.CurrencyCloudConnector+" <login-id> <api-key>",
+	return fctl.NewCommand(internal.CurrencyCloudConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Currency Cloud connector"),
-		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithStringFlag(c.endpointFlag, c.defaultEndpoint, "API endpoint"),
-		fctl.WithStringFlag(c.pollingPeriodFlag, c.defaultpollingPeriod, "Polling duration"),
-		fctl.WithStringFlag(c.nameFlag, c.defaultName, "Connector name"),
+		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*PaymentsConnectorsCurrencyCloudStore](c),
 	)
 }
@@ -74,20 +60,19 @@ func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args
 		return nil, err
 	}
 
-	var endpoint *string
-	if e := fctl.GetString(cmd, c.endpointFlag); e != "" {
-		endpoint = &e
+	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	var config shared.CurrencyCloudConfig
+	if err := json.Unmarshal([]byte(script), &config); err != nil {
+		return nil, err
 	}
 
 	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
-			CurrencyCloudConfig: &shared.CurrencyCloudConfig{
-				Name:          fctl.GetString(cmd, c.nameFlag),
-				APIKey:        args[1],
-				LoginID:       args[0],
-				Endpoint:      endpoint,
-				PollingPeriod: fctl.Ptr(fctl.GetString(cmd, c.pollingPeriodFlag)),
-			},
+			CurrencyCloudConfig: &config,
 		},
 		Connector: shared.ConnectorCurrencyCloud,
 	})
