@@ -2,6 +2,7 @@ package modules
 
 import (
 	"fmt"
+
 	"github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/webhooks/cmd"
 )
@@ -20,8 +21,9 @@ var Webhooks = internal.NewModule("webhooks").
 					"--publisher-nats-client-id=webhooks",
 					"--publisher-nats-url=" + internal.GetNatsAddress(),
 					fmt.Sprintf("--kafka-topics=%s-ledger", test.ID()),
-					"--retries-cron=1s",
-					"--retries-schedule=1s,1s",
+					"--retry-period=1s",
+					"--min-backoff-delay=1s",
+					"--abort-after=3s",
 				}
 			}),
 	)

@@ -2,11 +2,12 @@ package suite
 
 import (
 	"database/sql"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"time"
+
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -30,7 +31,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
 	})
 	Context("the endpoint only returning errors", func() {
-		It("with a retries schedule of [1s,2s], 3 attempts have to be made and all should have a failed status", func() {
+		It("with an exponential backoff starting at 1s with a 3s timeout, 3 attempts have to be made and all should have a failed status", func() {
 			httpServer := httptest.NewServer(http.HandlerFunc(
 				func(w http.ResponseWriter, _ *http.Request) {
 					http.Error(w, "error", http.StatusNotFound)
@@ -81,16 +82,17 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 			Eventually(db.Ping()).
 				WithTimeout(5 * time.Second).Should(Succeed())
 
-			Eventually(getNumAttempts).WithArguments(db).
+			Eventually(getNumAttemptsToRetry).WithArguments(db).
 				WithTimeout(5 * time.Second).
-				Should(BeNumerically("==", 3))
+				Should(BeNumerically(">", 0))
 
-			att, err := getAttempts(db)
+			Eventually(getNumFailedAttempts).WithArguments(db).
+				WithTimeout(5 * time.Second).
+				Should(BeNumerically(">=", 3))
+
+			toRetry, err := getNumAttemptsToRetry(db)
 			Expect(err).ToNot(HaveOccurred())
-
-			for _, a := range att {
-				Expect(a.Status).To(Equal("failed"))
-			}
+			Expect(toRetry).To(Equal(0))
 		})
 	})
 })
@@ -103,10 +105,43 @@ func getNumAttempts(db *bun.DB) (int, error) {
 	return len(results), nil
 }
 
+func getNumAttemptsToRetry(db *bun.DB) (int, error) {
+	var results []webhooks.Attempt
+	err := db.NewSelect().Model(&results).
+		Where("status = ?", "to retry").
+		Scan(TestContext())
+	if err != nil {
+		return 0, err
+	}
+	return len(results), nil
+}
+
+func getNumFailedAttempts(db *bun.DB) (int, error) {
+	var results []webhooks.Attempt
+	err := db.NewSelect().Model(&results).
+		Where("status = ?", "failed").
+		Scan(TestContext())
+	if err != nil {
+		return 0, err
+	}
+	return len(results), nil
+}
+
 func getAttempts(db *bun.DB) ([]webhooks.Attempt, error) {
 	var results []webhooks.Attempt
 	if err := db.NewSelect().Model(&results).Scan(TestContext()); err != nil {
 		return []webhooks.Attempt{}, err
 	}
 	return results, nil
+}
+
+func getAttemptsStatus(db *bun.DB) (string, error) {
+	atts, err := getAttempts(db)
+	if err != nil {
+		return "", err
+	}
+	if len(atts) == 0 {
+		return "", nil
+	}
+	return atts[0].Status, nil
 }
