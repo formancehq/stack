@@ -81,6 +81,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.8 // indirect
 	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/go-chi/render v1.0.2 // indirect
+	github.com/go-gormigrate/gormigrate/v2 v2.1.1 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -250,7 +251,7 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.4.8 // indirect
-	gorm.io/gorm v1.24.5 // indirect
+	gorm.io/gorm v1.25.4 // indirect
 	mellium.im/sasl v0.3.1 // indirect
 )
 

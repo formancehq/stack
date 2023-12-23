@@ -47,6 +47,7 @@ func (c *Client) Update(opts ClientOptions) {
 	c.Metadata = opts.Metadata
 	c.Trusted = opts.Trusted
 	c.Public = opts.Public
+	c.Scopes = opts.Scopes
 }
 
 func (c *Client) GenerateNewSecret(opts SecretCreate) (ClientSecret, string) {

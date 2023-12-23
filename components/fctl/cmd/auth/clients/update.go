@@ -16,12 +16,13 @@ import (
 // We should get the client before updating it to get replace informations
 
 type UpdateClient struct {
-	ID                    string `json:"id"`
-	Name                  string `json:"name"`
-	Description           string `json:"description"`
-	IsPublic              string `json:"isPublic"`
-	RedirectUri           string `json:"redirectUri"`
-	PostLogoutRedirectUri string `json:"postLogoutRedirectUri"`
+	ID                    string   `json:"id"`
+	Name                  string   `json:"name"`
+	Description           string   `json:"description"`
+	IsPublic              string   `json:"isPublic"`
+	RedirectUri           string   `json:"redirectUri"`
+	PostLogoutRedirectUri string   `json:"postLogoutRedirectUri"`
+	Scopes                []string `json:"scopes"`
 }
 
 type UpdateStore struct {
@@ -34,6 +35,7 @@ type UpdateController struct {
 	descriptionFlag           string
 	redirectUriFlag           string
 	postLogoutRedirectUriFlag string
+	scopes                    string
 }
 
 var _ fctl.Controller[*UpdateStore] = (*UpdateController)(nil)
@@ -52,6 +54,7 @@ func NewUpdateController() *UpdateController {
 		descriptionFlag:           "description",
 		redirectUriFlag:           "redirect-uri",
 		postLogoutRedirectUriFlag: "post-logout-redirect-uri",
+		scopes:                    "scopes",
 	}
 }
 
@@ -67,6 +70,7 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithStringFlag(c.descriptionFlag, "", "Client description"),
 		fctl.WithStringSliceFlag(c.redirectUriFlag, []string{}, "Redirect URIS"),
 		fctl.WithStringSliceFlag(c.postLogoutRedirectUriFlag, []string{}, "Post logout redirect uris"),
+		fctl.WithStringSliceFlag(c.scopes, []string{}, "Scopes"),
 		fctl.WithController[*UpdateStore](c),
 	)
 }
@@ -114,6 +118,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			Name:                   args[0],
 			Trusted:                &trusted,
 			PostLogoutRedirectUris: fctl.GetStringSlice(cmd, c.postLogoutRedirectUriFlag),
+			Scopes:                 fctl.GetStringSlice(cmd, c.scopes),
 		},
 	}
 	response, err := authClient.Auth.UpdateClient(cmd.Context(), request)
@@ -131,6 +136,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	c.store.Client.IsPublic = fctl.BoolPointerToString(response.UpdateClientResponse.Data.Public)
 	c.store.Client.RedirectUri = strings.Join(response.UpdateClientResponse.Data.RedirectUris, ",")
 	c.store.Client.PostLogoutRedirectUri = strings.Join(response.UpdateClientResponse.Data.PostLogoutRedirectUris, ",")
+	c.store.Client.Scopes = response.UpdateClientResponse.Data.Scopes
 
 	return c, nil
 }
@@ -143,6 +149,7 @@ func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Public"), c.store.Client.IsPublic})
 	tableData = append(tableData, []string{pterm.LightCyan("Redirect URIs"), c.store.Client.RedirectUri})
 	tableData = append(tableData, []string{pterm.LightCyan("Post logout redirect URIs"), c.store.Client.PostLogoutRedirectUri})
+	tableData = append(tableData, []string{pterm.LightCyan("Scopes"), strings.Join(c.store.Client.Scopes, " ")})
 	return pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).

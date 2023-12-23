@@ -23,7 +23,7 @@ require (
 	golang.org/x/text v0.12.0
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gorm.io/driver/postgres v1.4.8
-	gorm.io/gorm v1.24.5
+	gorm.io/gorm v1.25.4
 )
 
 require (
@@ -40,6 +40,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/go-gormigrate/gormigrate/v2 v2.1.1
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect

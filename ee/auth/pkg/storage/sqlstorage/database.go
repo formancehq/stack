@@ -6,6 +6,7 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/go-gormigrate/gormigrate/v2"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -60,6 +61,61 @@ func LoadGorm(d gorm.Dialector, gormConfig *gorm.Config) (*gorm.DB, error) {
 	return db, nil
 }
 
+const (
+	Wallets        = "wallets"
+	Orchestration  = "orchestration"
+	Ledger         = "ledger"
+	Payments       = "payments"
+	Webhooks       = "webhooks"
+	Auth           = "auth"
+	Reconciliation = "reconciliation"
+	Search         = "search"
+)
+
+type Services []string
+
+var AllServices = Services{
+	Wallets,
+	Orchestration,
+	Ledger,
+	Payments,
+	Webhooks,
+	Auth,
+	Reconciliation,
+	Search,
+}
+
+func MigrateData(ctx context.Context, db *gorm.DB) error {
+
+	gormigrate := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
+		{
+			ID: "202312221800",
+			Migrate: func(tx *gorm.DB) error {
+				scopes := auth.Array[string]{"openid"}
+				for _, service := range AllServices {
+					scopes = append(scopes, service+":read", service+":write")
+				}
+				return tx.Exec(
+					`
+						UPDATE clients
+						SET scopes = ?;
+
+					`, scopes).Error
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.Exec(
+					`
+						UPDATE clients
+						SET scopes = NULL;
+					`,
+				).Error
+			},
+		},
+	})
+	logging.FromContext(ctx).Info("Migrating data...")
+	return gormigrate.Migrate()
+}
+
 func MigrateTables(ctx context.Context, db *gorm.DB) error {
 	return db.WithContext(ctx).AutoMigrate(
 		&auth.Client{},
@@ -91,7 +147,13 @@ func gormModule(kind, uri string) fx.Option {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					logging.FromContext(ctx).Info("Migrate tables")
-					return MigrateTables(ctx, db)
+
+					err := MigrateTables(ctx, db)
+					if err != nil {
+						return err
+					}
+
+					return MigrateData(ctx, db)
 				},
 				OnStop: func(ctx context.Context) error {
 					logging.FromContext(ctx).Info("Closing database...")

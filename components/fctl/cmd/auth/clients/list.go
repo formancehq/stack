@@ -2,7 +2,6 @@ package clients
 
 import (
 	"fmt"
-	"strings"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -11,11 +10,11 @@ import (
 )
 
 type Client struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Scope       string `json:"scope"`
-	IsPublic    string `json:"isPublic"`
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	IsPublic    string   `json:"isPublic"`
+	Scopes      []string `json:"scopes"`
 }
 
 type ListStore struct {
@@ -90,7 +89,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 				}
 				return ""
 			}(),
-			Scope:    strings.Join(o.Scopes, ","),
+			Scopes:   o.Scopes,
 			IsPublic: fctl.BoolPointerToString(o.Public),
 		}
 	})
@@ -104,12 +103,12 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			o.ID,
 			o.Name,
 			o.Description,
-			o.Scope,
 			o.IsPublic,
+			fmt.Sprintf("%d", len(o.Scopes)),
 		}
 	})
 
-	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Description", "Scopes", "Public"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Description", "Public", "Permissions"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
