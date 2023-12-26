@@ -5,9 +5,9 @@ data:
             - public: false
               description: null
               redirectUris:
-                - http://example.net/auth/login
+                - http://gateway:8000/auth/login
               PostLogoutRedirectUris:
-                - http://example.net/auth/destroy
+                - http://gateway:8000/auth/destroy
               scopes:
                 - openid
                 - profile

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -15,7 +16,6 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp/caddyauth"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/zitadel/oidc/v2/pkg/client"
 	"github.com/zitadel/oidc/v2/pkg/client/rp"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"github.com/zitadel/oidc/v2/pkg/op"
@@ -158,19 +158,22 @@ func (ja *JWTAuth) Authenticate(w http.ResponseWriter, r *http.Request) (caddyau
 // Helpers
 //------------------------------------------------------------------------------
 
-func (ja *JWTAuth) getAccessTokenVerifier(
-	ctx context.Context,
-) (op.AccessTokenVerifier, error) {
+func (ja *JWTAuth) getAccessTokenVerifier(ctx context.Context) (op.AccessTokenVerifier, error) {
 	if ja.accessTokenVerifier == nil {
-		discoveryConfiguration, err := client.Discover(ja.Issuer, ja.httpClient)
-		if err != nil {
-			return nil, err
-		}
+		//discoveryConfiguration, err := client.Discover(ja.Issuer, ja.httpClient)
+		//if err != nil {
+		//	return nil, err
+		//}
 
-		keySet := rp.NewRemoteKeySet(ja.httpClient, discoveryConfiguration.JwksURI)
+		// todo: ugly quick fix
+		authServicePort := "8080"
+		if fromEnv := os.Getenv("AUTH_SERVICE_PORT"); fromEnv != "" {
+			authServicePort = fromEnv
+		}
+		keySet := rp.NewRemoteKeySet(ja.httpClient, fmt.Sprintf("http://auth:%s/keys", authServicePort))
 
 		ja.accessTokenVerifier = op.NewAccessTokenVerifier(
-			ja.Issuer,
+			os.Getenv("STACK_PUBLIC_URL")+"/api/auth",
 			keySet,
 		)
 	}

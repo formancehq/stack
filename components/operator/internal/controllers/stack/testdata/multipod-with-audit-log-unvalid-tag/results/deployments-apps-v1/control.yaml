@@ -35,13 +35,15 @@ spec:
                     - name: DEV
                       value: "false"
                     - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: control
                     - name: STACK
                       value: multipod-with-audit-log-unvalid-tag
                     - name: API_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: ENCRYPTION_KEY
                       value: 9h44y2ZqrDuUy5R9NGLA9hca7uRUr932
                     - name: ENCRYPTION_IV
@@ -51,7 +53,7 @@ spec:
                     - name: CLIENT_SECRET
                       value: mocked-secret
                     - name: REDIRECT_URI
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: UNSECURE_COOKIES
                       value: "false"
                   image: ghcr.io/formancehq/control:latest
