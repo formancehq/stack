@@ -1,5 +1,3 @@
-{{ if .Capabilities.APIVersions.Has "stack.formance.com/v1beta3/Configuration" -}}
-{{- if .Values.demo.enabled }}
 apiVersion: stack.formance.com/v1beta3
 kind: Configuration
 metadata:
@@ -94,5 +92,3 @@ spec:
     tls:
       crt: string
       key: string
-{{- end }}
-{{ end -}}

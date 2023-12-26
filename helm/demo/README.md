@@ -1,8 +1,8 @@
-# regions
+# demo
 
-![Version: 0.4.4](https://img.shields.io/badge/Version-0.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
-Formance Private Regions Helm Chart
+Formance Private Regions Demo Helm Chart
 
 **Homepage:** <https://formance.com>
 
@@ -20,8 +20,6 @@ Formance Private Regions Helm Chart
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../../components/operator/helm | operator | 0.3.2 |
-| file://../../ee/agent/helm | agent | 0.3.0 |
 | https://nats-io.github.io/k8s/helm/charts/ | nats | 1.1.4 |
 | oci://registry-1.docker.io/bitnamicharts | opensearch | 0.6.1 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 13.2.24 |
@@ -30,17 +28,6 @@ Formance Private Regions Helm Chart
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| agent.agent.authentication.clientID | string | `"REGION_ID"` |  |
-| agent.agent.authentication.clientSecret | string | `""` |  |
-| agent.agent.authentication.issuer | string | `"https://app.formance.cloud/api"` |  |
-| agent.agent.authentication.mode | string | `"bearer"` |  |
-| agent.agent.baseUrl | string | `"https://sandbox.formance.cloud"` |  |
-| agent.agent.id | string | `"aws-eu-west-1-sandbox"` |  |
-| agent.enabled | bool | `true` |  |
-| agent.image.tag | string | `"v0.6.0"` |  |
-| agent.server.address | string | `"app.formance.cloud:443"` |  |
-| agent.server.tls.enabled | bool | `true` |  |
-| agent.server.tls.insecureSkipVerify | bool | `true` |  |
 | nats.config.cluster.enabled | bool | `true` |  |
 | nats.config.cluster.replicas | int | `3` |  |
 | nats.config.jetstream.enabled | bool | `true` |  |
@@ -48,29 +35,21 @@ Formance Private Regions Helm Chart
 | nats.config.jetstream.fileStore.enabled | bool | `true` |  |
 | nats.config.jetstream.fileStore.pvc.enabled | bool | `false` |  |
 | nats.config.jetstream.fileStore.pvc.size | string | `"20Gi"` |  |
+| nats.enabled | bool | `true` |  |
 | nats.fullnameOverride | string | `"nats"` |  |
 | opensearch.coordinating.replicaCount | int | `0` |  |
 | opensearch.dashboards.enabled | bool | `true` |  |
 | opensearch.data.persistence.enabled | bool | `false` |  |
 | opensearch.data.replicaCount | int | `2` |  |
+| opensearch.enabled | bool | `true` |  |
 | opensearch.fullnameOverride | string | `"opensearch"` |  |
 | opensearch.ingest.enabled | bool | `false` |  |
 | opensearch.ingest.replicaCount | int | `0` |  |
 | opensearch.master.persistence.enabled | bool | `false` |  |
 | opensearch.master.replicaCount | int | `1` |  |
 | opensearch.security.enabled | bool | `false` |  |
-| operator.enabled | bool | `true` |  |
-| operator.fullnameOverride | string | `"operator"` |  |
-| operator.image.repository | string | `"ghcr.io/formancehq/operator"` |  |
-| operator.image.tag | string | `"v0.22.2"` |  |
-| operator.nameOverride | string | `"operator"` |  |
-| operator.operator.disableWebhooks | bool | `false` |  |
-| operator.operator.enableLeaderElection | bool | `true` |  |
-| operator.operator.env | string | `"private"` |  |
-| operator.operator.metricsAddr | string | `":8080"` |  |
-| operator.operator.probeAddr | string | `":8081"` |  |
-| operator.operator.region | string | `"private"` |  |
 | postgresql.architecture | string | `"standalone"` |  |
+| postgresql.enabled | bool | `true` |  |
 | postgresql.fullnameOverride | string | `"postgresql"` |  |
 | postgresql.global.postgresql.auth.database | string | `"formance"` |  |
 | postgresql.global.postgresql.auth.password | string | `"formance"` |  |
