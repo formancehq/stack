@@ -70,13 +70,9 @@ func Contains[T any](slice []T, t T) bool {
 
 type Set[T comparable] map[T]struct{}
 
-func (s Set[T]) Put(t T) {
-	s[t] = struct{}{}
-}
-
-func (s Set[T]) PutSlice(t ...T) {
+func (s Set[T]) Put(t ...T) {
 	for _, t2 := range t {
-		s.Put(t2)
+		s[t2] = struct{}{}
 	}
 }
 
