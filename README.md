@@ -60,6 +60,11 @@ docker compose up
 
 The Stack's API is exposed at http://localhost/api.
 
+You can run :
+````
+curl http://localhost/api/ledger/_info
+````
+
 ## ☁️ Cloud Native Deployment
 
 The Formance Stack is distributed as a collection of binaries, with optional packaging as Docker images and configuration support through command line options and environment variables. The recommended, standard way to deploy the collection of services is to a Kubernetes cluster through our Formance official Helm charts, which repository is available at [helm.formance.com](https://helm.formance.com/).
