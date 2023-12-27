@@ -12,6 +12,7 @@ type OrgRow struct {
 	Name       string `json:"name"`
 	OwnerID    string `json:"ownerId"`
 	OwnerEmail string `json:"ownerEmail"`
+	Domain     string `json:"domain"`
 	IsMine     string `json:"isMine"`
 }
 
@@ -76,7 +77,13 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 			Name:       o.Name,
 			OwnerID:    o.OwnerId,
 			OwnerEmail: o.Owner.Email,
-			IsMine:     isMine,
+			Domain: func() string {
+				if o.Domain == nil {
+					return ""
+				}
+				return *o.Domain
+			}(),
+			IsMine: isMine,
 		}
 	})
 
@@ -85,10 +92,10 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	OrgMap := fctl.Map(c.store.Organizations, func(o *OrgRow) []string {
-		return []string{o.ID, o.Name, o.OwnerID, o.OwnerEmail, o.IsMine}
+		return []string{o.ID, o.Name, o.OwnerID, o.OwnerEmail, o.Domain, o.IsMine}
 	})
 
-	tableData := fctl.Prepend(OrgMap, []string{"ID", "Name", "Owner ID", "Owner email", "Is mine?"})
+	tableData := fctl.Prepend(OrgMap, []string{"ID", "Name", "Owner ID", "Owner email", "Domain", "Is mine?"})
 
 	return pterm.DefaultTable.WithHasHeader().WithWriter(cmd.OutOrStdout()).WithData(tableData).Render()
 }

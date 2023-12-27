@@ -1195,6 +1195,7 @@ components:
         defaultStackAccess:
         - ""
         - ""
+        domain: domain
         name: name
       properties:
         name:
@@ -1216,6 +1217,9 @@ components:
               - GUEST
               type: string
           type: array
+        domain:
+          description: Organization domain
+          type: string
       required:
       - name
       type: object

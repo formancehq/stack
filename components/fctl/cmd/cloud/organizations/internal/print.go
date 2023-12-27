@@ -25,6 +25,12 @@ func PrintOrganization(organization *membershipclient.Organization) error {
 			}
 			return strings.Join(organization.DefaultOrganizationAccess, ", ")
 		}()},
+		{"Domain", func() string {
+			if organization.Domain == nil {
+				return "None"
+			}
+			return *organization.Domain
+		}()},
 	}
 
 	return pterm.DefaultTable.WithHasHeader().WithData(data).Render()

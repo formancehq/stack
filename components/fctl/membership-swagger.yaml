@@ -1111,6 +1111,9 @@ components:
             allOf:
               - type: string
                 enum: [ADMIN, GUEST]
+        domain:
+          type: string
+          description: Organization domain
     Organization:
       allOf:
         - $ref: '#/components/schemas/OrganizationData'

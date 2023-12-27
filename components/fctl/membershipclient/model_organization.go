@@ -23,6 +23,8 @@ type Organization struct {
 	Name string `json:"name"`
 	DefaultOrganizationAccess []string `json:"defaultOrganizationAccess,omitempty"`
 	DefaultStackAccess []string `json:"defaultStackAccess,omitempty"`
+	// Organization domain
+	Domain *string `json:"domain,omitempty"`
 	// Organization ID
 	Id string `json:"id"`
 	// Owner ID
@@ -139,6 +141,38 @@ func (o *Organization) HasDefaultStackAccess() bool {
 // SetDefaultStackAccess gets a reference to the given []string and assigns it to the DefaultStackAccess field.
 func (o *Organization) SetDefaultStackAccess(v []string) {
 	o.DefaultStackAccess = v
+}
+
+// GetDomain returns the Domain field value if set, zero value otherwise.
+func (o *Organization) GetDomain() string {
+	if o == nil || IsNil(o.Domain) {
+		var ret string
+		return ret
+	}
+	return *o.Domain
+}
+
+// GetDomainOk returns a tuple with the Domain field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Organization) GetDomainOk() (*string, bool) {
+	if o == nil || IsNil(o.Domain) {
+		return nil, false
+	}
+	return o.Domain, true
+}
+
+// HasDomain returns a boolean if a field has been set.
+func (o *Organization) HasDomain() bool {
+	if o != nil && !IsNil(o.Domain) {
+		return true
+	}
+
+	return false
+}
+
+// SetDomain gets a reference to the given string and assigns it to the Domain field.
+func (o *Organization) SetDomain(v string) {
+	o.Domain = &v
 }
 
 // GetId returns the Id field value
@@ -269,6 +303,9 @@ func (o Organization) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.DefaultStackAccess) {
 		toSerialize["defaultStackAccess"] = o.DefaultStackAccess
+	}
+	if !IsNil(o.Domain) {
+		toSerialize["domain"] = o.Domain
 	}
 	toSerialize["id"] = o.Id
 	toSerialize["ownerId"] = o.OwnerId

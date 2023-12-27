@@ -34,6 +34,7 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithStringFlag("name", "", "Organization Name"),
 		fctl.WithStringSliceFlag("default-stack-role", []string{}, "Default Stack Role"),
+		fctl.WithStringFlag("domain", "", "Organization Domain"),
 		fctl.WithStringSliceFlag("default-organization-role", []string{}, "Default Organization Role"),
 		fctl.WithController[*UpdateStore](NewUpdateController()),
 	)
@@ -82,6 +83,14 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 				return fctl.GetStringSlice(cmd, "default-stack-role")
 			}
 			return org.Data.DefaultStackAccess
+		}(),
+		Domain: func() *string {
+			str := fctl.GetString(cmd, "domain")
+			if str != "" {
+				return &str
+			}
+
+			return org.Data.Domain
 		}(),
 	}
 

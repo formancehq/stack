@@ -23,6 +23,8 @@ type OrganizationData struct {
 	Name string `json:"name"`
 	DefaultOrganizationAccess []string `json:"defaultOrganizationAccess,omitempty"`
 	DefaultStackAccess []string `json:"defaultStackAccess,omitempty"`
+	// Organization domain
+	Domain *string `json:"domain,omitempty"`
 }
 
 // NewOrganizationData instantiates a new OrganizationData object
@@ -131,6 +133,38 @@ func (o *OrganizationData) SetDefaultStackAccess(v []string) {
 	o.DefaultStackAccess = v
 }
 
+// GetDomain returns the Domain field value if set, zero value otherwise.
+func (o *OrganizationData) GetDomain() string {
+	if o == nil || IsNil(o.Domain) {
+		var ret string
+		return ret
+	}
+	return *o.Domain
+}
+
+// GetDomainOk returns a tuple with the Domain field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *OrganizationData) GetDomainOk() (*string, bool) {
+	if o == nil || IsNil(o.Domain) {
+		return nil, false
+	}
+	return o.Domain, true
+}
+
+// HasDomain returns a boolean if a field has been set.
+func (o *OrganizationData) HasDomain() bool {
+	if o != nil && !IsNil(o.Domain) {
+		return true
+	}
+
+	return false
+}
+
+// SetDomain gets a reference to the given string and assigns it to the Domain field.
+func (o *OrganizationData) SetDomain(v string) {
+	o.Domain = &v
+}
+
 func (o OrganizationData) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -147,6 +181,9 @@ func (o OrganizationData) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.DefaultStackAccess) {
 		toSerialize["defaultStackAccess"] = o.DefaultStackAccess
+	}
+	if !IsNil(o.Domain) {
+		toSerialize["domain"] = o.Domain
 	}
 	return toSerialize, nil
 }
