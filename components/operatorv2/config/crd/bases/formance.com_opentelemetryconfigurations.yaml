@@ -1,0 +1,92 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.13.0
+  name: opentelemetryconfigurations.formance.com
+spec:
+  group: formance.com
+  names:
+    kind: OpenTelemetryConfiguration
+    listKind: OpenTelemetryConfigurationList
+    plural: opentelemetryconfigurations
+    singular: opentelemetryconfiguration
+  scope: Cluster
+  versions:
+  - name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: OpenTelemetryConfiguration is the Schema for the opentelemetrytraces
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: OpenTelemetryConfigurationSpec defines the desired state
+              of OpenTelemetryConfiguration
+            properties:
+              metrics:
+                properties:
+                  otlp:
+                    properties:
+                      endpoint:
+                        type: string
+                      insecure:
+                        type: boolean
+                      mode:
+                        enum:
+                        - grpc
+                        - http
+                        type: string
+                      port:
+                        format: int32
+                        type: integer
+                      resourceAttributes:
+                        type: string
+                    type: object
+                type: object
+              stack:
+                type: string
+              traces:
+                properties:
+                  otlp:
+                    properties:
+                      endpoint:
+                        type: string
+                      insecure:
+                        type: boolean
+                      mode:
+                        enum:
+                        - grpc
+                        - http
+                        type: string
+                      port:
+                        format: int32
+                        type: integer
+                      resourceAttributes:
+                        type: string
+                    type: object
+                type: object
+            required:
+            - stack
+            type: object
+          status:
+            description: OpenTelemetryConfigurationStatus defines the observed state
+              of OpenTelemetryConfiguration
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

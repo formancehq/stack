@@ -1,0 +1,12 @@
+apiVersion: formance.com/v1beta1
+kind: BrokerConfig
+metadata:
+  labels:
+    app.kubernetes.io/name: brokerconfig
+    app.kubernetes.io/instance: brokerconfig-sample
+    app.kubernetes.io/part-of: operatorv2
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operatorv2
+  name: brokerconfig-sample
+spec:
+  # TODO(user): Add fields here

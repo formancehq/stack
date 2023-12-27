@@ -1,0 +1,12 @@
+apiVersion: formance.com/v1beta1
+kind: HTTPAPI
+metadata:
+  labels:
+    app.kubernetes.io/name: httpapi
+    app.kubernetes.io/instance: httpapi-sample
+    app.kubernetes.io/part-of: operatorv2
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operatorv2
+  name: httpapi-sample
+spec:
+  # TODO(user): Add fields here

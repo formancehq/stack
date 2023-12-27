@@ -1,0 +1,351 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - deletecollection
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - HTTPAPIs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - HTTPAPIs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - HTTPAPIs/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - auths
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - auths/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - auths/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - configurations
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - databases
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - databases/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - databases/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - gateways
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - gateways/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - gateways/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - ledgers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - ledgers/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - ledgers/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - stacks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - stacks/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - stacks/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - topicqueries
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - topicqueries/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - topicqueries/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - topics
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - topics/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - topics/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - versions
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
@@ -125,6 +126,7 @@ func newServeCommand() *cobra.Command {
 				return errors.Wrap(err, "unmarshal viper config")
 			}
 
+			spew.Dump(o)
 			zLogging.SetOutput(cmd.OutOrStdout())
 
 			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(

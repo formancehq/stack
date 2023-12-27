@@ -1,0 +1,9 @@
+clients:
+    - id: client0
+      public: false
+      redirectUris: []
+      PostLogoutRedirectUris: []
+      scopes: []
+      secret: secret
+      secrets:
+        - secret

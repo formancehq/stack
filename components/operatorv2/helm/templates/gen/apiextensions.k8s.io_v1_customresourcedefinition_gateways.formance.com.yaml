@@ -1,0 +1,89 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.9.2
+  creationTimestamp: null
+  name: gateways.formance.com
+spec:
+  group: formance.com
+  names:
+    kind: Gateway
+    listKind: GatewayList
+    plural: gateways
+    singular: gateway
+  scope: Cluster
+  versions:
+  - name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: Gateway is the Schema for the gateways API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: GatewaySpec defines the desired state of Gateway
+            properties:
+              enableAudit:
+                type: boolean
+              ingress:
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  host:
+                    type: string
+                  scheme:
+                    type: string
+                  tls:
+                    properties:
+                      secretName:
+                        type: string
+                    required:
+                    - secretName
+                    type: object
+                required:
+                - host
+                - scheme
+                type: object
+              resourceProperties:
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                  request:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                type: object
+              stack:
+                type: string
+            required:
+            - stack
+            type: object
+          status:
+            description: GatewayStatus defines the observed state of Gateway
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

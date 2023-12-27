@@ -1,0 +1,2 @@
+* auth not restarted on new oauth2 client
+* gateway not restarted on new http service ?

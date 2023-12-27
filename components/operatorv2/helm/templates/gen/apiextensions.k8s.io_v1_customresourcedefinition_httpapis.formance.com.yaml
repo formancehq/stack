@@ -1,0 +1,75 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.9.2
+  creationTimestamp: null
+  name: httpapis.formance.com
+spec:
+  group: formance.com
+  names:
+    kind: HTTPAPI
+    listKind: HTTPAPIList
+    plural: httpapis
+    singular: httpapi
+  scope: Cluster
+  versions:
+  - name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: 'todo: rename to API HTTPAPI is the Schema for the HTTPAPIs API'
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: HTTPAPISpec defines the desired state of HTTPAPI
+            properties:
+              annotations:
+                additionalProperties:
+                  type: string
+                type: object
+              hasVersionEndpoint:
+                description: HasVersionEndpoint indicates if the service has a /_info
+                  endpoint
+                type: boolean
+              liveness:
+                description: Liveness indicates if the service has a /_health(check)
+                  endpoint
+                type: integer
+              name:
+                description: Name indicates prefix api
+                type: string
+              portName:
+                description: Port name of the container
+                type: string
+              secured:
+                description: Secured indicate if the service is able to handle security
+                type: boolean
+              stack:
+                type: string
+            required:
+            - hasVersionEndpoint
+            - liveness
+            - name
+            - portName
+            - secured
+            - stack
+            type: object
+          status:
+            description: HTTPAPIStatus defines the observed state of HTTPAPI
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

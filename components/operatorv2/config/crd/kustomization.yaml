@@ -1,0 +1,59 @@
+# This kustomization.yaml is not intended to be run by itself,
+# since it depends on service name and namespace that are out of this kustomize package.
+# It should be run by config/default
+resources:
+- bases/formance.com_databases.yaml
+- bases/formance.com_databaseconfigurations.yaml
+- bases/formance.com_stacks.yaml
+- bases/formance.com_topics.yaml
+- bases/formance.com_brokerconfigurations.yaml
+- bases/formance.com_topicqueries.yaml
+- bases/formance.com_httpapis.yaml
+- bases/formance.com_ledgers.yaml
+- bases/formance.com_opentelemetryconfigurations.yaml
+- bases/formance.com_gateways.yaml
+- bases/formance.com_auths.yaml
+- bases/formance.com_authclients.yaml
+- bases/formance.com_wallets.yaml
+#+kubebuilder:scaffold:crdkustomizeresource
+
+patches:
+# [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
+# patches here are for enabling the conversion webhook for each CRD
+#- path: patches/webhook_in_databases.yaml
+#- path: patches/webhook_in_databaseconfigurations.yaml
+#- path: patches/webhook_in_stacks.yaml
+#- path: patches/webhook_in_topics.yaml
+#- path: patches/webhook_in_brokerconfigurations.yaml
+#- path: patches/webhook_in_topicqueries.yaml
+#- path: patches/webhook_in_httpapis.yaml
+#- path: patches/webhook_in_ledgers.yaml
+#- path: patches/webhook_in_opentelemetryconfigurations.yaml
+#- path: patches/webhook_in_gateways.yaml
+#- path: patches/webhook_in_auths.yaml
+#- path: patches/webhook_in_authclients.yaml
+#- path: patches/webhook_in_wallets.yaml
+#+kubebuilder:scaffold:crdkustomizewebhookpatch
+
+# [CERTMANAGER] To enable cert-manager, uncomment all the sections with [CERTMANAGER] prefix.
+# patches here are for enabling the CA injection for each CRD
+#- path: patches/cainjection_in_databases.yaml
+#- path: patches/cainjection_in_databaseconfigurations.yaml
+#- path: patches/cainjection_in_stacks.yaml
+#- path: patches/cainjection_in_topics.yaml
+#- path: patches/cainjection_in_brokerconfigurations.yaml
+#- path: patches/cainjection_in_topicqueries.yaml
+#- path: patches/cainjection_in_httpapis.yaml
+#- path: patches/cainjection_in_ledgers.yaml
+#- path: patches/cainjection_in_opentelemetryconfigurations.yaml
+#- path: patches/cainjection_in_gateways.yaml
+#- path: patches/cainjection_in_auths.yaml
+#- path: patches/cainjection_in_authclients.yaml
+#- path: patches/cainjection_in_wallets.yaml
+#+kubebuilder:scaffold:crdkustomizecainjectionpatch
+
+# [WEBHOOK] To enable webhook, uncomment the following section
+# the following config is for teaching kustomize how to do kustomization for CRDs.
+
+#configurations:
+#- kustomizeconfig.yaml

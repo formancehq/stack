@@ -1,0 +1,16 @@
+## Append samples of your project ##
+resources:
+- formance_v1beta1_database.yaml
+- formance_v1beta1_databaseconfiguration.yaml
+- formance_v1beta1_stack.yaml
+- formance_v1beta1_topic.yaml
+- formance_v1beta1_brokerconfig.yaml
+- formance_v1beta1_topicquery.yaml
+- formance_v1beta1_httpapi.yaml
+- formance_v1beta1_ledger.yaml
+- formance_v1beta1_opentelemetryconfigurations.yaml
+- formance_v1beta1_gateway.yaml
+- formance_v1beta1_auth.yaml
+- formance_v1beta1_authclient.yaml
+- formance_v1beta1_wallet.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples
