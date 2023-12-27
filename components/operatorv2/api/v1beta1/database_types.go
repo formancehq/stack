@@ -33,12 +33,16 @@ type CreatedDatabase struct {
 
 // DatabaseStatus defines the observed state of Database
 type DatabaseStatus struct {
-	Error string `json:"error"`
-	Ready bool   `json:"ready"`
+	//+optional
+	Error string `json:"error,omitempty"`
+	//+optional
+	Ready bool `json:"ready,omitempty"`
 	//+optional
 	Configuration *CreatedDatabase `json:"configuration,omitempty"`
 	//+optional
 	BoundTo string `json:"boundTo,omitempty"`
+	//+optional
+	OutOfSync bool `json:"outOfSync,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -46,6 +50,7 @@ type DatabaseStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 //+kubebuilder:printcolumn:name="Bound to",type=string,JSONPath=".status.boundTo",description="Bound to database configuration"
+//+kubebuilder:printcolumn:name="Out of sync",type=string,JSONPath=".status.boundTo",description="Is the databse configuration out of sync"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Database is the Schema for the databases API

@@ -107,7 +107,6 @@ spec:
                 type: array
             required:
             - authEnabled
-            - syncHTTPAPIs
             type: object
         type: object
     served: true

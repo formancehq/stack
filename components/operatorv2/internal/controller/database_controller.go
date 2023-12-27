@@ -19,22 +19,24 @@ package controller
 import (
 	"context"
 	"fmt"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -82,40 +84,38 @@ func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, err
 	}
 
+	patch := client.MergeFrom(database.DeepCopy())
+
 	switch len(databaseConfigurationList.Items) {
 	case 0:
 		database.Status.Error = "unable to find a database configuration"
 		database.Status.Ready = false
 	case 1:
-		databaseConfiguration := databaseConfigurationList.Items[0]
-		jobName := fmt.Sprintf("%s-create-database", database.Spec.Service)
-		dbName := GetObjectName(database.Spec.Stack, database.Spec.Service)
+		if database.Status.BoundTo == "" || !database.Status.Ready {
+			databaseConfiguration := databaseConfigurationList.Items[0]
+			dbName := GetObjectName(database.Spec.Stack, database.Spec.Service)
 
-		job := &batchv1.Job{}
-		if err := r.Client.Get(ctx, GetNamespacedResourceName(database.Spec.Stack, jobName), job); err != nil {
-			if !errors.IsNotFound(err) {
-				return ctrl.Result{}, err
-			}
-
-			job, err = r.createJob(ctx, databaseConfiguration, database, dbName)
+			job, err := r.createJob(ctx, databaseConfiguration, database, dbName)
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-		}
 
-		database.Status.Ready = job.Status.Succeeded > 0
-		database.Status.Error = ""
-		database.Status.Configuration = &v1beta1.CreatedDatabase{
-			DatabaseConfigurationSpec: databaseConfiguration.Spec,
-			Database:                  dbName,
+			database.Status.Ready = job.Status.Succeeded > 0
+			database.Status.Error = ""
+			database.Status.Configuration = &v1beta1.CreatedDatabase{
+				DatabaseConfigurationSpec: databaseConfiguration.Spec,
+				Database:                  dbName,
+			}
+			database.Status.BoundTo = databaseConfiguration.Name
+		} else if !reflect.DeepEqual(database.Status.Configuration.DatabaseConfigurationSpec, databaseConfigurationList.Items[0].Spec) {
+			database.Status.OutOfSync = true
 		}
-		database.Status.BoundTo = databaseConfiguration.Name
 	default:
 		database.Status.Error = "multiple database configuration object found"
 		database.Status.Ready = false
 	}
 
-	if err := r.Client.Status().Update(ctx, database); err != nil {
+	if err := r.Client.Status().Patch(ctx, database, patch); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -124,50 +124,53 @@ func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 func (r *DatabaseReconciler) createJob(ctx context.Context, databaseConfiguration v1beta1.DatabaseConfiguration,
 	database *v1beta1.Database, dbName string) (*batchv1.Job, error) {
-	// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
-	createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
-	if databaseConfiguration.Spec.DisableSSLMode {
-		createDBCommand += ` "sslmode=disable"`
-	}
 
-	job := &batchv1.Job{
-		ObjectMeta: metav1.ObjectMeta{
-			Namespace: database.Spec.Stack,
-			Name:      fmt.Sprintf("%s-create-database", database.Spec.Service),
+	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, r.Client, types.NamespacedName{
+		Namespace: database.Spec.Stack,
+		Name:      fmt.Sprintf("%s-create-database", database.Spec.Service),
+	},
+		func(t *batchv1.Job) {
+			// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
+			createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
+			if databaseConfiguration.Spec.DisableSSLMode {
+				createDBCommand += ` "sslmode=disable"`
+			}
+
+			t.Spec.Template.Spec = corev1.PodSpec{
+				RestartPolicy: corev1.RestartPolicyOnFailure,
+				Containers: []corev1.Container{{
+					Name:  "create-database",
+					Image: "postgres:15-alpine",
+					Args:  []string{"sh", "-c", createDBCommand},
+					Env: append(PostgresEnvVars(databaseConfiguration.Spec, dbName),
+						// psql use PGPASSWORD env var
+						Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
+					),
+				}},
+			}
 		},
-		Spec: batchv1.JobSpec{
-			Template: corev1.PodTemplateSpec{
-				Spec: corev1.PodSpec{
-					RestartPolicy: corev1.RestartPolicyOnFailure,
-					Containers: []corev1.Container{{
-						Name:  "create-database",
-						Image: "postgres:15-alpine",
-						Args:  []string{"sh", "-c", createDBCommand},
-						Env: append(PostgresEnvVars(databaseConfiguration.Spec, dbName),
-							// psql use PGPASSWORD env var
-							Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
-						),
-					}},
-				},
-			},
-		},
-	}
-	if err := controllerutil.SetControllerReference(database, job, r.Scheme); err != nil {
-		return nil, err
-	}
-
-	if err := r.Client.Create(ctx, job); err != nil {
-		return nil, err
-	}
-
-	return job, nil
+		WithController[*batchv1.Job](r.Scheme, database),
+	)
+	return job, err
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *DatabaseReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Database{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		//TODO: Watch database configurations
+		Watches(
+			&v1beta1.DatabaseConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
+				list := &v1beta1.DatabaseList{}
+				if err := mgr.GetClient().List(ctx, list); err != nil {
+					return []reconcile.Request{}
+				}
+
+				return MapObjectToReconcileRequests(
+					Map(list.Items, ToPointer[v1beta1.Database])...,
+				)
+			}),
+		).
 		Owns(&batchv1.Job{}).
 		Complete(r)
 }

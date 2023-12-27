@@ -23,6 +23,10 @@ spec:
       jsonPath: .status.boundTo
       name: Bound to
       type: string
+    - description: Is the databse configuration out of sync
+      jsonPath: .status.boundTo
+      name: Out of sync
+      type: string
     - description: Error
       jsonPath: .status.error
       name: Error
@@ -85,11 +89,10 @@ spec:
                 type: object
               error:
                 type: string
+              outOfSync:
+                type: boolean
               ready:
                 type: boolean
-            required:
-            - error
-            - ready
             type: object
         type: object
     served: true

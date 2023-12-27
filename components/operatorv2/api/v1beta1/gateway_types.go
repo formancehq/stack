@@ -45,6 +45,7 @@ type GatewaySpec struct {
 
 // GatewayStatus defines the observed state of Gateway
 type GatewayStatus struct {
+	//+optional
 	SyncHTTPAPIs []string `json:"syncHTTPAPIs"`
 	// +kubebuilder:default:=false
 	AuthEnabled bool `json:"authEnabled"`

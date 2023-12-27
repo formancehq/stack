@@ -7,7 +7,6 @@ import (
 	"reflect"
 
 	appsv1 "k8s.io/api/apps/v1"
-	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -85,23 +84,4 @@ func CreateOrUpdate[T client.Object](ctx context.Context, client client.Client,
 		return nil
 	})
 	return ret, operationResult, err
-}
-
-func Update[T client.Object](ctx context.Context, client client.Client,
-	t T, mutators ...ObjectMutator[T]) (T, controllerutil.OperationResult, error) {
-
-	var ret T
-	existing := t.DeepCopyObject().(T)
-	for _, mutate := range mutators {
-		mutate(existing)
-	}
-
-	if equality.Semantic.DeepEqual(existing, t) {
-		return t, controllerutil.OperationResultNone, nil
-	}
-
-	if err := client.Update(ctx, existing); err != nil {
-		return ret, controllerutil.OperationResultNone, err
-	}
-	return ret, controllerutil.OperationResultUpdated, nil
 }

@@ -103,8 +103,6 @@ spec:
                 items:
                   type: string
                 type: array
-            required:
-            - clients
             type: object
         type: object
     served: true

@@ -64,5 +64,24 @@ var _ = Describe("DatabaseController", func() {
 					Should(BeNotFound())
 			})
 		})
+		Context("Then when updating the DatabaseConfiguration object", func() {
+			BeforeEach(func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", database.Name, database)).To(Succeed())
+					return database.Status.Ready
+				}).Should(BeTrue())
+
+				patch := client.MergeFrom(databaseConfiguration.DeepCopy())
+				databaseConfiguration.Spec.Host = "xxx"
+				Expect(Patch(databaseConfiguration, patch)).To(Succeed())
+			})
+			It("Should declare the Database object as out of sync", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", database.Name, database)).To(Succeed())
+
+					return database.Status.OutOfSync
+				}).Should(BeTrue())
+			})
+		})
 	})
 })

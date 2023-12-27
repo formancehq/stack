@@ -29,8 +29,10 @@ type TopicSpec struct {
 
 // TopicStatus defines the observed state of Topic
 type TopicStatus struct {
-	Ready bool   `json:"ready"`
-	Error string `json:"error"`
+	//+optional
+	Ready bool `json:"ready,omitempty"`
+	//+optional
+	Error string `json:"error,omitempty"`
 }
 
 //+kubebuilder:object:root=true

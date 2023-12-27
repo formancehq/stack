@@ -42,8 +42,6 @@ type LedgerStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
-//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Ledger is the Schema for the ledgers API
 type Ledger struct {

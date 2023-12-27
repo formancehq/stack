@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/google/uuid"
 	"reflect"
 
@@ -18,6 +19,11 @@ func CreateDatabase(ctx context.Context, client client.Client, stack *v1beta1.St
 		t.Spec.Stack = stack.Name
 		t.Spec.Service = name
 	})
+	spew.Dump(database.Status)
+	spew.Dump(database.Status)
+	spew.Dump(database.Status)
+	spew.Dump(database.Status)
+	spew.Dump(database.Status)
 	if !database.Status.Ready {
 		return nil, ErrPending
 	}

@@ -29,7 +29,8 @@ type TopicQuerySpec struct {
 
 // TopicQueryStatus defines the observed state of TopicQuery
 type TopicQueryStatus struct {
-	Ready bool `json:"ready"`
+	//+optional
+	Ready bool `json:"ready,omitempty"`
 }
 
 //+kubebuilder:object:root=true

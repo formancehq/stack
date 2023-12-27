@@ -41,6 +41,7 @@ type AuthSpec struct {
 
 // AuthStatus defines the observed state of Auth
 type AuthStatus struct {
+	//+optional
 	Clients []string `json:"clients"`
 }
 
