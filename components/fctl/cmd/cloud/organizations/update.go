@@ -55,7 +55,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	if !fctl.CheckOrganizationApprobation(cmd, "You are about to Update a new organization") {
+	if !fctl.CheckOrganizationApprobation(cmd, "You are about to update an organization") {
 		return nil, fctl.ErrMissingApproval
 	}
 
