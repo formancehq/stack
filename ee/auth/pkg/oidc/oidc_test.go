@@ -101,7 +101,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	require.NoError(t, err)
 
 	// Construct our oidc provider
-	provider, err := oidc.NewOpenIDProvider(storageFacade, serverUrl, mockOIDC.Issuer(), *keySet)
+	provider, err := oidc.NewOpenIDProvider(storageFacade, serverUrl, mockOIDC.Issuer(), keySet)
 	require.NoError(t, err)
 
 	// Create the router

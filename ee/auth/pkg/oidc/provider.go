@@ -62,8 +62,32 @@ func (p provider) JWTProfileVerifier() JWTProfileVerifier {
 
 var _ JWTAuthorizationGrantExchanger = (*provider)(nil)
 
-func NewOpenIDProvider(storage op.Storage, issuer, delegatedIssuer string, delegatedIssuerJsonWebKeySet jose.JSONWebKeySet) (op.OpenIDProvider, error) {
+func NewOpenIDProvider(storage op.Storage, issuer, delegatedIssuer string, delegatedIssuerJsonWebKeySet *jose.JSONWebKeySet) (op.OpenIDProvider, error) {
 	var p op.OpenIDProvider
+
+	interceptors := make([]op.Option, 0)
+	if delegatedIssuer != "" {
+		interceptors = append(interceptors, op.WithHttpInterceptors(func(handler http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// Intercept token requests with grant_type of type bearer assertion
+				// as the library does not implement what we needs
+				if r.URL.Path == op.DefaultEndpoints.Token.Relative() &&
+					r.FormValue("grant_type") == string(oidc.GrantTypeBearer) {
+					grantTypeBearer(issuer, &provider{
+						issuer:                       issuer,
+						OpenIDProvider:               p,
+						delegatedIssuerJsonWebKeySet: *delegatedIssuerJsonWebKeySet,
+						delegatedIssuer:              delegatedIssuer,
+					}).ServeHTTP(w, r)
+					return
+				}
+				handler.ServeHTTP(w, r)
+			})
+
+		}))
+	}
+	interceptors = append(interceptors, op.WithAllowInsecure())
+
 	p, err := op.NewOpenIDProvider(issuer, &op.Config{
 		CryptoKey:                sha256.Sum256([]byte("test")),
 		DefaultLogoutRedirectURI: pathLoggedOut,
@@ -73,23 +97,6 @@ func NewOpenIDProvider(storage op.Storage, issuer, delegatedIssuer string, deleg
 		GrantTypeRefreshToken:    true,
 		RequestObjectSupported:   true,
 		SupportedUILocales:       []language.Tag{language.English},
-	}, storage, op.WithHttpInterceptors(func(handler http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Intercept token requests with grant_type of type bearer assertion
-			// as the library does not implement what we needs
-			if r.URL.Path == op.DefaultEndpoints.Token.Relative() &&
-				r.FormValue("grant_type") == string(oidc.GrantTypeBearer) {
-				grantTypeBearer(issuer, &provider{
-					issuer:                       issuer,
-					OpenIDProvider:               p,
-					delegatedIssuerJsonWebKeySet: delegatedIssuerJsonWebKeySet,
-					delegatedIssuer:              delegatedIssuer,
-				}).ServeHTTP(w, r)
-				return
-			}
-			handler.ServeHTTP(w, r)
-		})
-
-	}), op.WithAllowInsecure())
+	}, storage, interceptors...)
 	return p, err
 }

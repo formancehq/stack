@@ -95,21 +95,6 @@ func newServeCommand() *cobra.Command {
 				return errors.New("base url must be defined")
 			}
 
-			delegatedClientID := viper.GetString(delegatedClientIDFlag)
-			if delegatedClientID == "" {
-				return errors.New("delegated client id must be defined")
-			}
-
-			delegatedClientSecret := viper.GetString(delegatedClientSecretFlag)
-			if delegatedClientSecret == "" {
-				return errors.New("delegated client secret must be defined")
-			}
-
-			delegatedIssuer := viper.GetString(delegatedIssuerFlag)
-			if delegatedIssuer == "" {
-				return errors.New("delegated issuer must be defined")
-			}
-
 			signingKey := viper.GetString(signingKeyFlag)
 			if signingKey == "" {
 				return errors.New("signing key must be defined")
@@ -145,24 +130,39 @@ func newServeCommand() *cobra.Command {
 			options := []fx.Option{
 				otlpHttpClientModule(viper.GetBool(service.DebugFlag)),
 				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-				fx.Supply(delegatedauth.Config{
-					Issuer:       delegatedIssuer,
-					ClientID:     delegatedClientID,
-					ClientSecret: delegatedClientSecret,
-					RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
-				}),
 				sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag), key, o.Clients...),
 				api.Module(viper.GetString(listenFlag), viper.GetString(baseUrlFlag), sharedapi.ServiceInfo{
 					Version: Version,
 				}),
 				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 				authorization.Module(),
-				delegatedauth.Module(),
 				fx.Decorate(func(logger logging.Logger) *gorm.Config {
 					return &gorm.Config{
 						Logger: sqlstorage.NewLogger(logger),
 					}
 				}),
+			}
+
+			if delegatedIssuer := viper.GetString(delegatedIssuerFlag); delegatedIssuer != "" {
+				delegatedClientID := viper.GetString(delegatedClientIDFlag)
+				if delegatedClientID == "" {
+					return errors.New("delegated client id must be defined")
+				}
+
+				delegatedClientSecret := viper.GetString(delegatedClientSecretFlag)
+				if delegatedClientSecret == "" {
+					return errors.New("delegated client secret must be defined")
+				}
+
+				options = append(options,
+					fx.Supply(delegatedauth.Config{
+						Issuer:       delegatedIssuer,
+						ClientID:     delegatedClientID,
+						ClientSecret: delegatedClientSecret,
+						RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
+					}),
+					delegatedauth.Module(),
+				)
 			}
 
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))

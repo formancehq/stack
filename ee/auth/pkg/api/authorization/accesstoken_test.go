@@ -79,7 +79,7 @@ func TestVerifyAccessToken(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	provider, err := authoidc.NewOpenIDProvider(storageFacade, serverURL, mockOIDC.Issuer(), *keySet)
+	provider, err := authoidc.NewOpenIDProvider(storageFacade, serverURL, mockOIDC.Issuer(), keySet)
 	require.NoError(t, err)
 
 	ar := &oidc.AuthRequest{
