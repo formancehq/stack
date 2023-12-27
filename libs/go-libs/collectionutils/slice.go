@@ -74,6 +74,12 @@ func (s Set[T]) Put(t T) {
 	s[t] = struct{}{}
 }
 
+func (s Set[T]) PutSlice(t ...T) {
+	for _, t2 := range t {
+		s.Put(t2)
+	}
+}
+
 func (s Set[T]) Contains(t T) bool {
 	_, ok := s[t]
 	return ok
