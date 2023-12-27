@@ -81,6 +81,14 @@ func (s Set[T]) Contains(t T) bool {
 	return ok
 }
 
+func (s Set[T]) ToSlice() []T {
+	ret := make([]T, 0)
+	for k := range s {
+		ret = append(ret, k)
+	}
+	return ret
+}
+
 func NewSet[T comparable]() Set[T] {
 	return make(Set[T], 0)
 }
