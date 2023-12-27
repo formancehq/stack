@@ -1399,6 +1399,16 @@ components:
         updatedAt:
           type: string
           format: date-time
+        stackClaims:
+          type: array
+          items:
+            allOf:
+              - type: Object
+                properties:
+                  stackId:
+                    type: string
+                  roles:
+                    $ref: '#/components/schemas/Roles'
       required:
         - creationDate
         - status
