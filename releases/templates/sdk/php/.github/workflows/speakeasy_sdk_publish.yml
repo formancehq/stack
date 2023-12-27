@@ -26,3 +26,6 @@ jobs:
           release_name: Release ${{ steps.extract_branch.outputs.branch }}
           draft: false
           prerelease: false
+      - run: gh repo edit --default-branch=release/${{ steps.extract_branch.outputs.branch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
