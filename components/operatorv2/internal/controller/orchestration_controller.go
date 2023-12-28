@@ -20,6 +20,7 @@ import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -50,7 +51,7 @@ func (r *OrchestrationController) Reconcile(ctx context.Context, orchestration *
 // SetupWithManager sets up the controller with the Manager.
 func (r *OrchestrationController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Orchestration{}), nil
+		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
 func ForOrchestration(client client.Client, scheme *runtime.Scheme) *OrchestrationController {

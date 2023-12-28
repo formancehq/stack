@@ -23,8 +23,8 @@ import (
 
 // AuthClientSpec defines the desired state of AuthClient
 type AuthClientSpec struct {
-	ID    string `json:"id" yaml:"id"`
-	Stack string `json:"stack" yaml:"-"`
+	StackDependency `json:",inline" yaml:",inline"`
+	ID              string `json:"id" yaml:"id"`
 	// +optional
 	Public bool `json:"public" yaml:"public"`
 	// +optional

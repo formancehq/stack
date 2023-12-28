@@ -1,2 +1,4 @@
 * add readiness/liveness probes
 * add conditions
+* add registries
+* webhooks on payments / gateway authent

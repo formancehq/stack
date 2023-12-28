@@ -33,6 +33,11 @@ spec:
             type: object
           spec:
             description: WebhooksSpec defines the desired state of Webhooks
+            properties:
+              stack:
+                type: string
+            required:
+            - stack
             type: object
           status:
             description: WebhooksStatus defines the observed state of Webhooks

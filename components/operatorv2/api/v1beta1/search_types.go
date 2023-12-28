@@ -22,6 +22,7 @@ import (
 
 // SearchSpec defines the desired state of Search
 type SearchSpec struct {
+	StackDependency `json:",inline"`
 }
 
 // SearchStatus defines the observed state of Search

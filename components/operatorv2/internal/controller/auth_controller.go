@@ -25,12 +25,13 @@ import (
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sort"
 )
@@ -47,13 +48,8 @@ type AuthController struct {
 
 func (r *AuthController) Reconcile(ctx context.Context, auth *v1beta1.Auth) error {
 
-	stack := &v1beta1.Stack{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: auth.Spec.Stack,
-	}, stack); err != nil {
-		if errors.IsNotFound(err) {
-			return nil
-		}
+	stack, err := GetStack(ctx, r.Client, auth.Spec)
+	if err != nil {
 		return err
 	}
 
@@ -212,7 +208,7 @@ func (r *AuthController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, erro
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Auth{}).
+		For(&v1beta1.Auth{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&appsv1.Deployment{}).
 		Owns(&v1beta1.HTTPAPI{}).
 		Owns(&v1beta1.Database{}).

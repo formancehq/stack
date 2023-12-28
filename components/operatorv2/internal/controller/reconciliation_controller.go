@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -49,7 +50,7 @@ func (r *ReconciliationController) Reconcile(ctx context.Context, reconciliation
 // SetupWithManager sets up the controller with the Manager.
 func (r *ReconciliationController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Reconciliation{}), nil
+		For(&v1beta1.Reconciliation{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
 func ForReconciliation(client client.Client, scheme *runtime.Scheme) *ReconciliationController {

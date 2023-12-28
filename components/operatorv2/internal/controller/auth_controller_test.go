@@ -28,7 +28,9 @@ var _ = Describe("AuthController", func() {
 			gateway = &v1beta1.Gateway{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.GatewaySpec{
-					Stack:   stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Ingress: &v1beta1.GatewayIngress{},
 				},
 			}
@@ -45,7 +47,9 @@ var _ = Describe("AuthController", func() {
 			auth = &v1beta1.Auth{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.AuthSpec{
-					Stack: stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 				},
 			}
 		})
@@ -82,8 +86,10 @@ var _ = Describe("AuthController", func() {
 				authClient = &v1beta1.AuthClient{
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.AuthClientSpec{
-						ID:     "client0",
-						Stack:  stack.Name,
+						ID: "client0",
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
 						Secret: "secret",
 					},
 				}

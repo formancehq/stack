@@ -28,7 +28,9 @@ var _ = Describe("WalletController", func() {
 			gateway = &v1beta1.Gateway{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.GatewaySpec{
-					Stack:   stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Ingress: &v1beta1.GatewayIngress{},
 				},
 			}
@@ -45,13 +47,17 @@ var _ = Describe("WalletController", func() {
 			wallet = &v1beta1.Wallet{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.WalletSpec{
-					Stack: stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 				},
 			}
 			ledger = &v1beta1.Ledger{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.LedgerSpec{
-					Stack: stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 				},
 			}
 		})

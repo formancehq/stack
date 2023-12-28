@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
@@ -131,7 +132,7 @@ func (r *TopicController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, 
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Topic{}), nil
+		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
 func ForTopic(client client.Client, scheme *runtime.Scheme) *TopicController {

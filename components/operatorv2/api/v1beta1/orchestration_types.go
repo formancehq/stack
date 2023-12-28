@@ -22,6 +22,7 @@ import (
 
 // OrchestrationSpec defines the desired state of Orchestration
 type OrchestrationSpec struct {
+	StackDependency `json:",inline"`
 }
 
 // OrchestrationStatus defines the observed state of Orchestration

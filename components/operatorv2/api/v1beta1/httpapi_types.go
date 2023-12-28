@@ -47,7 +47,7 @@ func (l Liveness) String() string {
 
 // HTTPAPISpec defines the desired state of HTTPAPI
 type HTTPAPISpec struct {
-	Stack string `json:"stack"`
+	StackDependency `json:",inline"`
 	// Name indicates prefix api
 	Name string `json:"name"`
 	// Secured indicate if the service is able to handle security

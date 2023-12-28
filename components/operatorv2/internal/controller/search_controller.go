@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -47,7 +48,7 @@ func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search
 // SetupWithManager sets up the controller with the Manager.
 func (r *SearchController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Search{}), nil
+		For(&v1beta1.Search{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
 func ForSearch(client client.Client, scheme *runtime.Scheme) *SearchController {

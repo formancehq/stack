@@ -23,7 +23,9 @@ var _ = Describe("HTTPAPI", func() {
 			httpAPI = &v1beta1.HTTPAPI{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.HTTPAPISpec{
-					Stack:    stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Name:     "ledger",
 					PortName: "http",
 				},

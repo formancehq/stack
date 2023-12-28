@@ -30,7 +30,7 @@ const (
 // LedgerSpec defines the desired state of Ledger
 type LedgerSpec struct {
 	CommonServiceProperties `json:",inline"`
-	Stack                   string `json:"stack"`
+	StackDependency         `json:",inline"`
 	//+optional
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 }

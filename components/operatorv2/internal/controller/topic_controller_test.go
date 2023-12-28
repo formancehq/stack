@@ -41,7 +41,9 @@ var _ = Describe("TopicController", func() {
 					Name: uuid.NewString(),
 				},
 				Spec: v1beta1.TopicSpec{
-					Stack:   stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Queries: []string{"orchestration"},
 				},
 			}

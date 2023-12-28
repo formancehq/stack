@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -49,7 +50,7 @@ func (r *WebhooksController) Reconcile(ctx context.Context, webhooks *v1beta1.We
 // SetupWithManager sets up the controller with the Manager.
 func (r *WebhooksController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Webhooks{}), nil
+		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
 func ForWebhooks(client client.Client, scheme *runtime.Scheme) *WebhooksController {

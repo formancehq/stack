@@ -95,7 +95,9 @@ func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta
 			},
 			Spec: v1beta1.TopicSpec{
 				Queries: []string{topicQuery.Spec.QueriedBy},
-				Stack:   topicQuery.Spec.Stack,
+				StackDependency: v1beta1.StackDependency{
+					Stack: topicQuery.Spec.Stack,
+				},
 				Service: topicQuery.Spec.Service,
 			},
 		}); err != nil {

@@ -17,24 +17,21 @@ limitations under the License.
 package controller
 
 import (
-	"bytes"
 	"context"
 	_ "embed"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"text/template"
-
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	pkgError "github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
@@ -53,13 +50,8 @@ type LedgerController struct {
 
 func (r *LedgerController) Reconcile(ctx context.Context, ledger *v1beta1.Ledger) error {
 
-	stack := &v1beta1.Stack{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: ledger.Spec.Stack,
-	}, stack); err != nil {
-		if errors.IsNotFound(err) {
-			return nil
-		}
+	stack, err := GetStack(ctx, r.Client, ledger.Spec)
+	if err != nil {
 		return err
 	}
 
@@ -77,10 +69,6 @@ func (r *LedgerController) Reconcile(ctx context.Context, ledger *v1beta1.Ledger
 	}
 
 	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, ledger, "ledger"); err != nil {
-		return err
-	}
-
-	if err := r.Client.Status().Update(ctx, ledger); err != nil {
 		return err
 	}
 
@@ -221,7 +209,7 @@ func (r *LedgerController) createK8SService(ctx context.Context, stack *v1beta1.
 		Name:      name,
 		Namespace: stack.Name,
 	},
-		ConfigureHTTPService(name),
+		ConfigureK8SService(name),
 		WithController[*corev1.Service](r.Scheme, owner),
 	)
 	return err
@@ -278,7 +266,7 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx context.Context, stac
 		return nil, err
 	}
 	if needPublisher {
-		brokerEnvVars, err := GetBrokerEnvVarsIfEnabled(ctx, r.Client, stack.Name, "ledger")
+		brokerEnvVars, err := GetBrokerEnvVars(ctx, r.Client, stack.Name, "ledger")
 		if err != nil {
 			return nil, err
 		}
@@ -300,32 +288,12 @@ func (r *LedgerController) createLedgerContainerV2ReadOnly() *corev1.Container {
 
 func (r *LedgerController) createGatewayDeployment(ctx context.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger) error {
 
-	tpl := template.Must(template.New("ledger-caddyfile").Parse(ledgerCaddyfile))
-	buf := bytes.NewBufferString("")
-
-	openTelemetryEnabled, err := IsOpenTelemetryEnabled(ctx, r.Client, stack.Name)
+	caddyfileConfigMap, err := CreateCaddyfileConfigMap(ctx, r.Client, stack, "ledger", ledgerCaddyfile, map[string]any{
+		"Debug": stack.Spec.Debug || ledger.Spec.Debug,
+	}, WithController[*corev1.ConfigMap](r.Scheme, ledger))
 	if err != nil {
 		return err
 	}
-
-	if err := tpl.Execute(buf, map[string]any{
-		"EnableOpenTelemetry": openTelemetryEnabled,
-		"Debug":               stack.Spec.Debug || ledger.Spec.Debug,
-	}); err != nil {
-		return err
-	}
-
-	caddyfileConfigMap, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, r.Client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      "ledger-gateway",
-	},
-		func(t *corev1.ConfigMap) {
-			t.Data = map[string]string{
-				"Caddyfile": buf.String(),
-			}
-		},
-		WithController[*corev1.ConfigMap](r.Scheme, ledger),
-	)
 
 	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "ledger", ledger.Spec)
 	if err != nil {
@@ -359,7 +327,7 @@ func (r *LedgerController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder,
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Ledger{}).
+		For(&v1beta1.Ledger{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.Topic{},
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {

@@ -109,3 +109,11 @@ func (c *Conditions) SetCondition(condition Condition) {
 	c.DeleteCondition(condition.Type)
 	c.Conditions = append(c.Conditions, condition)
 }
+
+type StackDependency struct {
+	Stack string `json:"stack" yaml:"-"`
+}
+
+func (d StackDependency) GetStack() string {
+	return d.Stack
+}

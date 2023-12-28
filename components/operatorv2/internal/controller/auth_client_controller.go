@@ -22,11 +22,12 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 // AuthClientController reconciles a Auth object
@@ -41,17 +42,12 @@ type AuthClientController struct {
 
 func (r *AuthClientController) Reconcile(ctx context.Context, authClient *v1beta1.AuthClient) error {
 
-	stack := &v1beta1.Stack{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: authClient.Spec.Stack,
-	}, stack); err != nil {
-		if errors.IsNotFound(err) {
-			return nil
-		}
+	stack, err := GetStack(ctx, r.Client, authClient.Spec)
+	if err != nil {
 		return err
 	}
 
-	_, _, err := CreateOrUpdate[*corev1.Secret](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*corev1.Secret](ctx, r.Client, types.NamespacedName{
 		Name:      fmt.Sprintf("auth-client-%s", authClient.Name),
 		Namespace: stack.Name,
 	},
@@ -76,7 +72,7 @@ func (r *AuthClientController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.AuthClient{}).
+		For(&v1beta1.AuthClient{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.Secret{}), nil
 }
 

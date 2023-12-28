@@ -39,7 +39,9 @@ var _ = Describe("TopicQueryController", func() {
 				Spec: v1beta1.TopicQuerySpec{
 					Service:   "ledger",
 					QueriedBy: "orchestration",
-					Stack:     stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 				},
 			}
 			Expect(Create(topicQuery)).To(Succeed())
@@ -76,7 +78,9 @@ var _ = Describe("TopicQueryController", func() {
 						Spec: v1beta1.TopicQuerySpec{
 							Service:   topicQuery.Spec.Service,
 							QueriedBy: "webhooks",
-							Stack:     stack.Name,
+							StackDependency: v1beta1.StackDependency{
+								Stack: stack.Name,
+							},
 						},
 					}
 					Expect(Create(topicQuery2)).To(Succeed())

@@ -30,7 +30,7 @@ type DelegatedOIDCServerConfiguration struct {
 // AuthSpec defines the desired state of Auth
 type AuthSpec struct {
 	CommonServiceProperties `json:",inline"`
-	Stack                   string `json:"stack"`
+	StackDependency         `json:",inline"`
 	//+optional
 	DelegatedOIDCServer *DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer,omitempty"`
 	//+optional

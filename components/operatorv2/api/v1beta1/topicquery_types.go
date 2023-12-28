@@ -22,9 +22,9 @@ import (
 
 // TopicQuerySpec defines the desired state of TopicQuery
 type TopicQuerySpec struct {
-	Stack     string `json:"stack"`
-	Service   string `json:"service"`
-	QueriedBy string `json:"queriedBy"`
+	StackDependency `json:",inline"`
+	Service         string `json:"service"`
+	QueriedBy       string `json:"queriedBy"`
 }
 
 // TopicQueryStatus defines the observed state of TopicQuery

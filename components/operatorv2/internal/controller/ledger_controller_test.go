@@ -39,7 +39,9 @@ var _ = Describe("LedgerController", func() {
 			ledger = &v1beta1.Ledger{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.LedgerSpec{
-					Stack: stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 				},
 			}
 		})
@@ -60,7 +62,7 @@ var _ = Describe("LedgerController", func() {
 			}).Should(Succeed())
 			Expect(deployment).To(BeOwnedBy(ledger))
 		})
-		It("Should create a new HTTPService object", func() {
+		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}
 			Eventually(func() error {
 				return LoadResource("", internal.GetObjectName(stack.Name, "ledger"), httpService)
@@ -139,7 +141,9 @@ var _ = Describe("LedgerController", func() {
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.TopicSpec{
 						Queries: []string{"orchestration"},
-						Stack:   stack.Name,
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
 						Service: "ledger",
 					},
 				}

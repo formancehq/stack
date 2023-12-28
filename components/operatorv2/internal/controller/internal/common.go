@@ -5,8 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"k8s.io/apimachinery/pkg/types"
 	"strings"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
@@ -148,13 +150,13 @@ func GetBrokerConfiguration(ctx context.Context, _client client.Client, stackNam
 	}
 }
 
-func GetBrokerEnvVarsIfEnabled(ctx context.Context, _client client.Client, stackName, serviceName string) ([]corev1.EnvVar, error) {
+func GetBrokerEnvVars(ctx context.Context, _client client.Client, stackName, serviceName string) ([]corev1.EnvVar, error) {
 	configuration, err := GetBrokerConfiguration(ctx, _client, stackName)
 	if err != nil {
 		return nil, err
 	}
 	if configuration == nil {
-		return nil, nil
+		return nil, errors.New("no configuration found")
 	}
 
 	return BrokerEnvVars(*configuration, serviceName), nil
@@ -258,7 +260,7 @@ func volumeMount(name, mountPath string) corev1.VolumeMount {
 	}
 }
 
-func ConfigureHTTPService(name string, options ...func(service *corev1.Service)) func(service *corev1.Service) {
+func ConfigureK8SService(name string, options ...func(service *corev1.Service)) func(service *corev1.Service) {
 	return func(t *corev1.Service) {
 		t.Labels = map[string]string{
 			"app.kubernetes.io/service-name": name,
@@ -376,4 +378,17 @@ func GetAuthClientEnvVars(authClient *v1beta1.AuthClient) []corev1.EnvVar {
 		EnvFromSecret("STACK_CLIENT_ID", fmt.Sprintf("auth-client-%s", authClient.Name), "id"),
 		EnvFromSecret("STACK_CLIENT_SECRET", fmt.Sprintf("auth-client-%s", authClient.Name), "secret"),
 	}
+}
+
+func GetStack(ctx context.Context, client client.Client, spec interface {
+	GetStack() string
+}) (*v1beta1.Stack, error) {
+	stack := &v1beta1.Stack{}
+	if err := client.Get(ctx, types.NamespacedName{
+		Name: spec.GetStack(),
+	}, stack); err != nil {
+		return nil, err
+	}
+
+	return stack, nil
 }

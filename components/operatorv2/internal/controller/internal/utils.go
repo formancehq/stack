@@ -11,12 +11,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func CreateDatabase(ctx context.Context, client client.Client, stack *v1beta1.Stack, name string) (*v1beta1.Database, error) {
+func CreateDatabase(ctx context.Context, client client.Client, stack *v1beta1.Stack, serviceName string) (*v1beta1.Database, error) {
 	database, _, err := CreateOrUpdate[*v1beta1.Database](ctx, client, types.NamespacedName{
-		Name: GetObjectName(stack.Name, name),
+		Name: GetObjectName(stack.Name, serviceName),
 	}, func(t *v1beta1.Database) {
 		t.Spec.Stack = stack.Name
-		t.Spec.Service = name
+		t.Spec.Service = serviceName
 	})
 	if !database.Status.Ready {
 		return nil, ErrPending
@@ -31,7 +31,9 @@ func CreateHTTPAPI(ctx context.Context, _client client.Client, scheme *runtime.S
 	},
 		func(t *v1beta1.HTTPAPI) {
 			t.Spec = v1beta1.HTTPAPISpec{
-				Stack:              stack.Name,
+				StackDependency: v1beta1.StackDependency{
+					Stack: stack.Name,
+				},
 				PortName:           "http",
 				HasVersionEndpoint: true,
 				Name:               objectName,

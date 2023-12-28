@@ -22,9 +22,9 @@ import (
 
 // TopicSpec defines the desired state of Topic
 type TopicSpec struct {
-	Stack   string   `json:"stack"`
-	Service string   `json:"service"`
-	Queries []string `json:"queries"`
+	StackDependency `json:",inline"`
+	Service         string   `json:"service"`
+	Queries         []string `json:"queries"`
 }
 
 // TopicStatus defines the observed state of Topic

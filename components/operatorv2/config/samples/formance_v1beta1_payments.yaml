@@ -9,4 +9,5 @@ metadata:
     app.kubernetes.io/created-by: operatorv2
   name: payments-sample
 spec:
-  # TODO(user): Add fields here
+  stack: stack0
+  encryptionKey: ClaptonIsGod

@@ -22,9 +22,8 @@ import (
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -44,13 +43,8 @@ type WalletController struct {
 
 func (r *WalletController) Reconcile(ctx context.Context, wallet *v1beta1.Wallet) error {
 
-	stack := &v1beta1.Stack{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: wallet.Spec.Stack,
-	}, stack); err != nil {
-		if errors.IsNotFound(err) {
-			return nil
-		}
+	stack, err := GetStack(ctx, r.Client, wallet.Spec)
+	if err != nil {
 		return err
 	}
 
@@ -100,7 +94,7 @@ func (r *WalletController) createDeployment(ctx context.Context, stack *formance
 // SetupWithManager sets up the controller with the Manager.
 func (r *WalletController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Wallet{}), nil
+		For(&formancev1beta1.Wallet{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
 func ForWallet(client client.Client, scheme *runtime.Scheme) *WalletController {

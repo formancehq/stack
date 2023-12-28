@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
 	"strings"
 	"text/template"
@@ -32,7 +33,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -60,13 +60,8 @@ type GatewayController struct {
 
 func (r *GatewayController) Reconcile(ctx context.Context, gateway *v1beta1.Gateway) error {
 
-	stack := &v1beta1.Stack{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: gateway.Spec.Stack,
-	}, stack); err != nil {
-		if errors.IsNotFound(err) {
-			return nil
-		}
+	stack, err := GetStack(ctx, r.Client, gateway.Spec)
+	if err != nil {
 		return err
 	}
 
@@ -167,7 +162,7 @@ func (r *GatewayController) createService(ctx context.Context, stack *v1beta1.St
 		Name:      "gateway",
 		Namespace: stack.Name,
 	},
-		ConfigureHTTPService("gateway"),
+		ConfigureK8SService("gateway"),
 		WithController[*corev1.Service](r.Scheme, gateway),
 	)
 	return err
@@ -290,7 +285,7 @@ func (r *GatewayController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Gateway{}).
+		For(&v1beta1.Gateway{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.ConfigMap{}).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

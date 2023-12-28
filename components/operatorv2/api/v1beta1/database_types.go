@@ -22,8 +22,8 @@ import (
 
 // DatabaseSpec defines the desired state of Database
 type DatabaseSpec struct {
-	Stack   string `json:"stack"`
-	Service string `json:"service"`
+	StackDependency `json:",inline"`
+	Service         string `json:"service"`
 }
 
 type CreatedDatabase struct {

@@ -26,7 +26,9 @@ var _ = Describe("GatewayController", func() {
 			gateway = &v1beta1.Gateway{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.GatewaySpec{
-					Stack: stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Ingress: &v1beta1.GatewayIngress{
 						Host: "example.net",
 					},
@@ -35,7 +37,9 @@ var _ = Describe("GatewayController", func() {
 			httpService = &v1beta1.HTTPAPI{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.HTTPAPISpec{
-					Stack:              stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Name:               "ledger",
 					PortName:           "http",
 					HasVersionEndpoint: true,
@@ -116,7 +120,9 @@ var _ = Describe("GatewayController", func() {
 				anotherHttpService = &v1beta1.HTTPAPI{
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.HTTPAPISpec{
-						Stack:              stack.Name,
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
 						Name:               "another",
 						PortName:           "http",
 						HasVersionEndpoint: true,
@@ -143,7 +149,9 @@ var _ = Describe("GatewayController", func() {
 				auth := &v1beta1.Auth{
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.AuthSpec{
-						Stack: stack.Name,
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
 					},
 				}
 				Expect(Create(auth)).To(Succeed())

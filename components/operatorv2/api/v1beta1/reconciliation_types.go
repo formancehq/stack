@@ -22,6 +22,7 @@ import (
 
 // ReconciliationSpec defines the desired state of Reconciliation
 type ReconciliationSpec struct {
+	StackDependency `json:",inline"`
 }
 
 // ReconciliationStatus defines the observed state of Reconciliation

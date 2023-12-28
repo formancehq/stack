@@ -24,8 +24,10 @@ var _ = Describe("AuthClientController", func() {
 			authClient = &v1beta1.AuthClient{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.AuthClientSpec{
-					ID:     uuid.NewString(),
-					Stack:  stack.Name,
+					ID: uuid.NewString(),
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Secret: uuid.NewString(),
 				},
 			}

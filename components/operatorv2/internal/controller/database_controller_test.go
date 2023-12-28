@@ -37,7 +37,9 @@ var _ = Describe("DatabaseController", func() {
 			database = &v1beta1.Database{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.DatabaseSpec{
-					Stack:   stack.Name,
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
 					Service: "ledger",
 				},
 			}

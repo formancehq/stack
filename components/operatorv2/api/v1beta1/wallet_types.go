@@ -23,7 +23,7 @@ import (
 // WalletSpec defines the desired state of Wallet
 type WalletSpec struct {
 	CommonServiceProperties `json:",inline"`
-	Stack                   string `json:"stack"`
+	StackDependency         `json:",inline"`
 }
 
 // WalletStatus defines the observed state of Wallet

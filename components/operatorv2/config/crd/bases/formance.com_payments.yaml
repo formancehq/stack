@@ -33,6 +33,37 @@ spec:
             type: object
           spec:
             description: PaymentsSpec defines the desired state of Payments
+            properties:
+              debug:
+                type: boolean
+              dev:
+                type: boolean
+              encryptionKey:
+                type: string
+              resourceProperties:
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                  request:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                type: object
+              stack:
+                type: string
+              version:
+                type: string
+            required:
+            - encryptionKey
+            - stack
             type: object
           status:
             description: PaymentsStatus defines the observed state of Payments

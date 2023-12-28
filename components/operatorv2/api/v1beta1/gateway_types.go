@@ -35,7 +35,7 @@ type GatewayIngress struct {
 
 // GatewaySpec defines the desired state of Gateway
 type GatewaySpec struct {
-	Stack                   string `json:"stack"`
+	StackDependency         `json:",inline"`
 	CommonServiceProperties `json:",inline"`
 	//+optional
 	Ingress *GatewayIngress `json:"ingress,omitempty"`
