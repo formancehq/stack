@@ -18,4 +18,6 @@ resources:
 - formance_v1beta1_reconciliation.yaml
 - formance_v1beta1_payments.yaml
 - formance_v1beta1_search.yaml
+- formance_v1beta1_stream.yaml
+- formance_v1beta1_streamprocessor.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

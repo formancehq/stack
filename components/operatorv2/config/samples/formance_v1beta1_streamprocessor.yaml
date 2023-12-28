@@ -1,0 +1,12 @@
+apiVersion: formance.com/v1beta1
+kind: StreamProcessor
+metadata:
+  labels:
+    app.kubernetes.io/name: streamprocessor
+    app.kubernetes.io/instance: streamprocessor-sample
+    app.kubernetes.io/part-of: operatorv2
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operatorv2
+  name: streamprocessor-sample
+spec:
+  # TODO(user): Add fields here
