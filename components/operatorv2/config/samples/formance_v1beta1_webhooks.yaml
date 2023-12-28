@@ -9,4 +9,4 @@ metadata:
     app.kubernetes.io/created-by: operatorv2
   name: webhooks-sample
 spec:
-  # TODO(user): Add fields here
+  stack: stack0

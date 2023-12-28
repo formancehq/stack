@@ -126,6 +126,17 @@ func MonitoringOTLPEnvVars(otlp *v1beta1.OtlpSpec, monitoringType monitoringType
 	}
 }
 
+func RequireBrokerConfiguration(ctx context.Context, _client client.Client, stackName string) (*v1beta1.BrokerConfiguration, error) {
+	brokerConfiguration, err := GetBrokerConfiguration(ctx, _client, stackName)
+	if err != nil {
+		return nil, err
+	}
+	if brokerConfiguration == nil {
+		return nil, errors.New("no broker configuration found")
+	}
+	return brokerConfiguration, nil
+}
+
 func GetBrokerConfiguration(ctx context.Context, _client client.Client, stackName string) (*v1beta1.BrokerConfiguration, error) {
 
 	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})

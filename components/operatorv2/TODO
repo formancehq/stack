@@ -3,3 +3,4 @@
 * add registries
 * webhooks on payments / gateway authent
 * react to broker configuration and trigger topic reco if in error
+* add finalizers
