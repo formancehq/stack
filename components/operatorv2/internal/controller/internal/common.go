@@ -501,22 +501,22 @@ func GetPaymentsIfEnabled(ctx context.Context, _client client.Client, stackName 
 	}
 }
 
-func GetWalletIfEnabled(ctx context.Context, _client client.Client, stackName string) (*v1beta1.Wallet, error) {
+func GetWalletsIfEnabled(ctx context.Context, _client client.Client, stackName string) (*v1beta1.Wallets, error) {
 
-	WalletList := &v1beta1.WalletList{}
-	if err := _client.List(ctx, WalletList, client.MatchingFields{
+	WalletsList := &v1beta1.WalletsList{}
+	if err := _client.List(ctx, WalletsList, client.MatchingFields{
 		".spec.stack": stackName,
 	}); err != nil {
 		return nil, err
 	}
 
-	switch len(WalletList.Items) {
+	switch len(WalletsList.Items) {
 	case 0:
 		return nil, nil
 	case 1:
-		return &WalletList.Items[0], nil
+		return &WalletsList.Items[0], nil
 	default:
-		return nil, pkgError.New("found multiple Wallet")
+		return nil, pkgError.New("found multiple Wallets")
 	}
 }
 

@@ -31,8 +31,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-// WalletController reconciles a Wallet object
-type WalletController struct {
+// WalletsController reconciles a Wallets object
+type WalletsController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -41,7 +41,7 @@ type WalletController struct {
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletController) Reconcile(ctx context.Context, wallet *v1beta1.Wallet) error {
+func (r *WalletsController) Reconcile(ctx context.Context, wallet *v1beta1.Wallets) error {
 
 	stack, err := GetStack(ctx, r.Client, wallet.Spec)
 	if err != nil {
@@ -66,7 +66,7 @@ func (r *WalletController) Reconcile(ctx context.Context, wallet *v1beta1.Wallet
 	return nil
 }
 
-func (r *WalletController) createDeployment(ctx context.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallet, authClient *formancev1beta1.AuthClient) error {
+func (r *WalletsController) createDeployment(ctx context.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallets, authClient *formancev1beta1.AuthClient) error {
 	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "wallets", wallet.Spec)
 	if err != nil {
 		return err
@@ -92,20 +92,20 @@ func (r *WalletController) createDeployment(ctx context.Context, stack *formance
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WalletController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *WalletsController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.Wallet{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.Wallet).Spec.Stack}
+	if err := indexer.IndexField(context.Background(), &v1beta1.Wallets{}, ".spec.stack", func(rawObj client.Object) []string {
+		return []string{rawObj.(*v1beta1.Wallets).Spec.Stack}
 	}); err != nil {
 		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Wallet{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
+		For(&formancev1beta1.Wallets{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
-func ForWallet(client client.Client, scheme *runtime.Scheme) *WalletController {
-	return &WalletController{
+func ForWallets(client client.Client, scheme *runtime.Scheme) *WalletsController {
+	return &WalletsController{
 		Client: client,
 		Scheme: scheme,
 	}

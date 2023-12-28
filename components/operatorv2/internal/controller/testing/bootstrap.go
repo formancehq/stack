@@ -103,7 +103,7 @@ var _ = BeforeEach(func() {
 		reconcilers.New[*v1beta1.Auth](mgr.GetClient(), mgr.GetScheme(), controller.ForAuth(mgr.GetClient(), mgr.GetScheme())),
 		reconcilers.New[*v1beta1.Database](mgr.GetClient(), mgr.GetScheme(), controller.ForDatabase(mgr.GetClient(), mgr.GetScheme())),
 		reconcilers.New[*v1beta1.AuthClient](mgr.GetClient(), mgr.GetScheme(), controller.ForAuthClient(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Wallet](mgr.GetClient(), mgr.GetScheme(), controller.ForWallet(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Wallets](mgr.GetClient(), mgr.GetScheme(), controller.ForWallets(mgr.GetClient(), mgr.GetScheme())),
 		reconcilers.New[*v1beta1.Orchestration](mgr.GetClient(), mgr.GetScheme(), controller.ForOrchestration(mgr.GetClient(), mgr.GetScheme())),
 		reconcilers.New[*v1beta1.Payments](mgr.GetClient(), mgr.GetScheme(), controller.ForPayments(mgr.GetClient(), mgr.GetScheme())),
 		reconcilers.New[*v1beta1.Reconciliation](mgr.GetClient(), mgr.GetScheme(), controller.ForReconciliation(mgr.GetClient(), mgr.GetScheme())),

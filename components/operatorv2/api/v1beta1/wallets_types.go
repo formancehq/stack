@@ -20,38 +20,38 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// WalletSpec defines the desired state of Wallet
-type WalletSpec struct {
+// WalletsSpec defines the desired state of Wallets
+type WalletsSpec struct {
 	CommonServiceProperties `json:",inline"`
 	StackDependency         `json:",inline"`
 }
 
-// WalletStatus defines the observed state of Wallet
-type WalletStatus struct {
+// WalletsStatus defines the observed state of Wallets
+type WalletsStatus struct {
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 
-// Wallet is the Schema for the wallets API
-type Wallet struct {
+// Wallets is the Schema for the wallets API
+type Wallets struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   WalletSpec   `json:"spec,omitempty"`
-	Status WalletStatus `json:"status,omitempty"`
+	Spec   WalletsSpec   `json:"spec,omitempty"`
+	Status WalletsStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// WalletList contains a list of Wallet
-type WalletList struct {
+// WalletsList contains a list of Wallets
+type WalletsList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Wallet `json:"items"`
+	Items           []Wallets `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Wallet{}, &WalletList{})
+	SchemeBuilder.Register(&Wallets{}, &WalletsList{})
 }

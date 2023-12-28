@@ -114,11 +114,11 @@ func (r *OrchestrationController) handleTopics(ctx context.Context, stack *forma
 	if payments != nil {
 		availableServices = append(availableServices, "payments")
 	}
-	wallet, err := GetWalletIfEnabled(ctx, r.Client, stack.Name)
+	wallets, err := GetWalletsIfEnabled(ctx, r.Client, stack.Name)
 	if err != nil {
 		return err
 	}
-	if wallet != nil {
+	if wallets != nil {
 		availableServices = append(availableServices, "wallets")
 	}
 

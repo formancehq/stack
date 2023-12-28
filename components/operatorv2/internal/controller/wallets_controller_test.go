@@ -11,14 +11,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var _ = Describe("WalletController", func() {
-	Context("When creating a Wallet object", func() {
+var _ = Describe("WalletsController", func() {
+	Context("When creating a Wallets object", func() {
 		var (
 			stack                 *v1beta1.Stack
 			gateway               *v1beta1.Gateway
 			ledger                *v1beta1.Ledger
 			databaseConfiguration *v1beta1.DatabaseConfiguration
-			wallet                *v1beta1.Wallet
+			wallets               *v1beta1.Wallets
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -44,9 +44,9 @@ var _ = Describe("WalletController", func() {
 				},
 				Spec: v1beta1.DatabaseConfigurationSpec{},
 			}
-			wallet = &v1beta1.Wallet{
+			wallets = &v1beta1.Wallets{
 				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.WalletSpec{
+				Spec: v1beta1.WalletsSpec{
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
@@ -66,10 +66,10 @@ var _ = Describe("WalletController", func() {
 			Expect(Create(gateway)).To(Succeed())
 			Expect(Create(databaseConfiguration)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
-			Expect(Create(wallet)).To(Succeed())
+			Expect(Create(wallets)).To(Succeed())
 		})
 		AfterEach(func() {
-			Expect(Delete(wallet)).To(Succeed())
+			Expect(Delete(wallets)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())
 			Expect(Delete(databaseConfiguration)).To(Succeed())
@@ -80,7 +80,7 @@ var _ = Describe("WalletController", func() {
 			Eventually(func() error {
 				return LoadResource(stack.Name, "wallets", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(wallet))
+			Expect(deployment).To(BeOwnedBy(wallets))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}

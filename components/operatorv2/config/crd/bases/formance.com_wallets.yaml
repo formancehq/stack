@@ -8,16 +8,16 @@ metadata:
 spec:
   group: formance.com
   names:
-    kind: Wallet
-    listKind: WalletList
+    kind: Wallets
+    listKind: WalletsList
     plural: wallets
-    singular: wallet
+    singular: wallets
   scope: Cluster
   versions:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Wallet is the Schema for the wallets API
+        description: Wallets is the Schema for the wallets API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -32,7 +32,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: WalletSpec defines the desired state of Wallet
+            description: WalletsSpec defines the desired state of Wallets
             properties:
               debug:
                 type: boolean
@@ -63,7 +63,7 @@ spec:
             - stack
             type: object
           status:
-            description: WalletStatus defines the observed state of Wallet
+            description: WalletsStatus defines the observed state of Wallets
             type: object
         type: object
     served: true
