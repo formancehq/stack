@@ -1,12 +1,12 @@
 apiVersion: formance.com/v1beta1
-kind: BrokerConfiguration
+kind: Reconciliation
 metadata:
   labels:
-    app.kubernetes.io/name: brokerconfiguration
-    app.kubernetes.io/instance: brokerconfiguration-sample
+    app.kubernetes.io/name: reconciliation
+    app.kubernetes.io/instance: reconciliation-sample
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
-  name: brokerconfiguration-sample
+  name: reconciliation-sample
 spec:
   # TODO(user): Add fields here

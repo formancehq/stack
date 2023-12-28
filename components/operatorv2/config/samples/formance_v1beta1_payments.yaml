@@ -1,12 +1,12 @@
 apiVersion: formance.com/v1beta1
-kind: BrokerConfiguration
+kind: Payments
 metadata:
   labels:
-    app.kubernetes.io/name: brokerconfiguration
-    app.kubernetes.io/instance: brokerconfiguration-sample
+    app.kubernetes.io/name: payments
+    app.kubernetes.io/instance: payments-sample
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
-  name: brokerconfiguration-sample
+  name: payments-sample
 spec:
   # TODO(user): Add fields here

@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: ledgers.formance.com
+  name: webhooks.formance.com
 spec:
   group: formance.com
   names:
-    kind: Ledger
-    listKind: LedgerList
-    plural: ledgers
-    singular: ledger
+    kind: Webhooks
+    listKind: WebhooksList
+    plural: webhooks
+    singular: webhooks
   scope: Cluster
   versions:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Ledger is the Schema for the ledgers API
+        description: Webhooks is the Schema for the webhooks API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -32,40 +32,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: LedgerSpec defines the desired state of Ledger
-            properties:
-              debug:
-                type: boolean
-              deploymentStrategy:
-                type: string
-              dev:
-                type: boolean
-              resourceProperties:
-                properties:
-                  limits:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                    type: object
-                  request:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                    type: object
-                type: object
-              stack:
-                type: string
-              version:
-                type: string
-            required:
-            - stack
+            description: WebhooksSpec defines the desired state of Webhooks
             type: object
           status:
-            description: LedgerStatus defines the observed state of Ledger
+            description: WebhooksStatus defines the observed state of Webhooks
             type: object
         type: object
     served: true

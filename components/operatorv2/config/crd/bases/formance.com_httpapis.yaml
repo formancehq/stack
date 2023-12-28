@@ -17,7 +17,7 @@ spec:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: 'todo: rename to API HTTPAPI is the Schema for the HTTPAPIs API'
+        description: HTTPAPI is the Schema for the HTTPAPIs API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation

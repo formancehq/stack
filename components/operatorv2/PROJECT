@@ -108,4 +108,44 @@ resources:
   kind: Wallet
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: com
+  group: formance
+  kind: Orchestration
+  path: github.com/formancehq/operator/v2/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: com
+  group: formance
+  kind: Webhooks
+  path: github.com/formancehq/operator/v2/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: com
+  group: formance
+  kind: Reconciliation
+  path: github.com/formancehq/operator/v2/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: com
+  group: formance
+  kind: Payments
+  path: github.com/formancehq/operator/v2/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: com
+  group: formance
+  kind: Search
+  path: github.com/formancehq/operator/v2/api/v1beta1
+  version: v1beta1
 version: "3"

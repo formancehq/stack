@@ -358,6 +358,110 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - orchestrations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - orchestrations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - orchestrations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - payments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - payments/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - payments/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - reconciliations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - reconciliations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - reconciliations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - searches
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - searches/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - searches/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - stacks
   verbs:
   - create
@@ -463,6 +567,32 @@ rules:
   - formance.com
   resources:
   - wallets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - webhooks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - webhooks/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - webhooks/status
   verbs:
   - get
   - patch

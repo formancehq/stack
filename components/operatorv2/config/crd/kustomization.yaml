@@ -15,6 +15,11 @@ resources:
 - bases/formance.com_auths.yaml
 - bases/formance.com_authclients.yaml
 - bases/formance.com_wallets.yaml
+- bases/formance.com_orchestrations.yaml
+- bases/formance.com_webhooks.yaml
+- bases/formance.com_reconciliations.yaml
+- bases/formance.com_payments.yaml
+- bases/formance.com_searches.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patches:
@@ -33,6 +38,11 @@ patches:
 #- path: patches/webhook_in_auths.yaml
 #- path: patches/webhook_in_authclients.yaml
 #- path: patches/webhook_in_wallets.yaml
+#- path: patches/webhook_in_orchestrations.yaml
+#- path: patches/webhook_in_webhooks.yaml
+#- path: patches/webhook_in_reconciliations.yaml
+#- path: patches/webhook_in_payments.yaml
+#- path: patches/webhook_in_searches.yaml
 #+kubebuilder:scaffold:crdkustomizewebhookpatch
 
 # [CERTMANAGER] To enable cert-manager, uncomment all the sections with [CERTMANAGER] prefix.
@@ -50,6 +60,11 @@ patches:
 #- path: patches/cainjection_in_auths.yaml
 #- path: patches/cainjection_in_authclients.yaml
 #- path: patches/cainjection_in_wallets.yaml
+#- path: patches/cainjection_in_orchestrations.yaml
+#- path: patches/cainjection_in_webhooks.yaml
+#- path: patches/cainjection_in_reconciliations.yaml
+#- path: patches/cainjection_in_payments.yaml
+#- path: patches/cainjection_in_searches.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
 # [WEBHOOK] To enable webhook, uncomment the following section

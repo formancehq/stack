@@ -112,6 +112,11 @@ func main() {
 		controller.NewDatabaseReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewAuthClientReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewWalletReconciler(mgr.GetClient(), mgr.GetScheme()),
+		controller.NewOrchestrationReconciler(mgr.GetClient(), mgr.GetScheme()),
+		controller.NewPaymentsReconciler(mgr.GetClient(), mgr.GetScheme()),
+		controller.NewReconciliationReconciler(mgr.GetClient(), mgr.GetScheme()),
+		controller.NewWebhooksReconciler(mgr.GetClient(), mgr.GetScheme()),
+		controller.NewSearchReconciler(mgr.GetClient(), mgr.GetScheme()),
 	); err != nil {
 		setupLog.Error(err, "unable to create controllers")
 		os.Exit(1)

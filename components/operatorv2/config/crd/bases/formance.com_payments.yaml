@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: ledgers.formance.com
+  name: payments.formance.com
 spec:
   group: formance.com
   names:
-    kind: Ledger
-    listKind: LedgerList
-    plural: ledgers
-    singular: ledger
+    kind: Payments
+    listKind: PaymentsList
+    plural: payments
+    singular: payments
   scope: Cluster
   versions:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Ledger is the Schema for the ledgers API
+        description: Payments is the Schema for the payments API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -32,40 +32,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: LedgerSpec defines the desired state of Ledger
-            properties:
-              debug:
-                type: boolean
-              deploymentStrategy:
-                type: string
-              dev:
-                type: boolean
-              resourceProperties:
-                properties:
-                  limits:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                    type: object
-                  request:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                    type: object
-                type: object
-              stack:
-                type: string
-              version:
-                type: string
-            required:
-            - stack
+            description: PaymentsSpec defines the desired state of Payments
             type: object
           status:
-            description: LedgerStatus defines the observed state of Ledger
+            description: PaymentsStatus defines the observed state of Payments
             type: object
         type: object
     served: true

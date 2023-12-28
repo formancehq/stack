@@ -70,7 +70,6 @@ type HTTPAPIStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 
-// todo: rename to API
 // HTTPAPI is the Schema for the HTTPAPIs API
 type HTTPAPI struct {
 	metav1.TypeMeta   `json:",inline"`

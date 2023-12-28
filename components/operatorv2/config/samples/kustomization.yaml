@@ -13,4 +13,9 @@ resources:
 - formance_v1beta1_auth.yaml
 - formance_v1beta1_authclient.yaml
 - formance_v1beta1_wallet.yaml
+- formance_v1beta1_orchestration.yaml
+- formance_v1beta1_webhooks.yaml
+- formance_v1beta1_reconciliation.yaml
+- formance_v1beta1_payments.yaml
+- formance_v1beta1_search.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

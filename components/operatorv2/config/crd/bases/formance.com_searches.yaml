@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: ledgers.formance.com
+  name: searches.formance.com
 spec:
   group: formance.com
   names:
-    kind: Ledger
-    listKind: LedgerList
-    plural: ledgers
-    singular: ledger
+    kind: Search
+    listKind: SearchList
+    plural: searches
+    singular: search
   scope: Cluster
   versions:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Ledger is the Schema for the ledgers API
+        description: Search is the Schema for the searches API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -32,40 +32,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: LedgerSpec defines the desired state of Ledger
-            properties:
-              debug:
-                type: boolean
-              deploymentStrategy:
-                type: string
-              dev:
-                type: boolean
-              resourceProperties:
-                properties:
-                  limits:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                    type: object
-                  request:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                    type: object
-                type: object
-              stack:
-                type: string
-              version:
-                type: string
-            required:
-            - stack
+            description: SearchSpec defines the desired state of Search
             type: object
           status:
-            description: LedgerStatus defines the observed state of Ledger
+            description: SearchStatus defines the observed state of Search
             type: object
         type: object
     served: true
