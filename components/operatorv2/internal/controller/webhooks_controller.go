@@ -18,17 +18,18 @@ package controller
 
 import (
 	"context"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
+	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 )
 
-// WebhooksReconciler reconciles a Webhooks object
-type WebhooksReconciler struct {
+// WebhooksController reconciles a Webhooks object
+type WebhooksController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -37,23 +38,22 @@ type WebhooksReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/finalizers,verbs=update
 
-func (r *WebhooksReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *WebhooksController) Reconcile(ctx context.Context, webhooks *v1beta1.Webhooks) error {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
 
-	return ctrl.Result{}, nil
+	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WebhooksReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *WebhooksController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Webhooks{}).
-		Complete(r)
+		For(&v1beta1.Webhooks{}), nil
 }
 
-func NewWebhooksReconciler(client client.Client, scheme *runtime.Scheme) *WebhooksReconciler {
-	return &WebhooksReconciler{
+func ForWebhooks(client client.Client, scheme *runtime.Scheme) *WebhooksController {
+	return &WebhooksController{
 		Client: client,
 		Scheme: scheme,
 	}

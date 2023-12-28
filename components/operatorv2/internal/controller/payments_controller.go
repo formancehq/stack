@@ -18,6 +18,8 @@ package controller
 
 import (
 	"context"
+	"github.com/formancehq/operator/v2/api/v1beta1"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -27,8 +29,8 @@ import (
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 )
 
-// PaymentsReconciler reconciles a Payments object
-type PaymentsReconciler struct {
+// PaymentsController reconciles a Payments object
+type PaymentsController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -37,23 +39,22 @@ type PaymentsReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=payments/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=payments/finalizers,verbs=update
 
-func (r *PaymentsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *PaymentsController) Reconcile(ctx context.Context, payments *v1beta1.Payments) error {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
 
-	return ctrl.Result{}, nil
+	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *PaymentsReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *PaymentsController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Payments{}).
-		Complete(r)
+		For(&formancev1beta1.Payments{}), nil
 }
 
-func NewPaymentsReconciler(client client.Client, scheme *runtime.Scheme) *PaymentsReconciler {
-	return &PaymentsReconciler{
+func ForPayments(client client.Client, scheme *runtime.Scheme) *PaymentsController {
+	return &PaymentsController{
 		Client: client,
 		Scheme: scheme,
 	}

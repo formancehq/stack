@@ -9,7 +9,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -17,7 +16,7 @@ import (
 
 type Controller[T client.Object] interface {
 	Reconcile(ctx context.Context, req T) error
-	SetupWithManager(mgr ctrl.Manager, builder *builder.Builder) error
+	SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error)
 }
 
 type Reconciler[T client.Object] struct {
@@ -57,16 +56,11 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	return ctrl.Result{}, nil
 }
 
-// SetupWithManager sets up the controller with the Manager.
 func (r *Reconciler[T]) SetupWithManager(mgr ctrl.Manager) error {
-	var t T
-
-	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
-	builder := ctrl.NewControllerManagedBy(mgr).For(t)
-	if err := r.Controller.SetupWithManager(mgr, builder); err != nil {
+	builder, err := r.Controller.SetupWithManager(mgr)
+	if err != nil {
 		return err
 	}
-
 	return builder.Complete(r)
 }
 
@@ -78,7 +72,7 @@ func New[T client.Object](client client.Client, scheme *runtime.Scheme, ctrl Con
 	}
 }
 
-func SetupReconcilers(mgr ctrl.Manager, reconcilers ...interface {
+func Setup(mgr ctrl.Manager, reconcilers ...interface {
 	SetupWithManager(mgr ctrl.Manager) error
 }) error {
 	for _, reconciler := range reconcilers {

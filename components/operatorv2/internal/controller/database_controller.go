@@ -30,18 +30,16 @@ import (
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// DatabaseReconciler reconciles a Database object
-type DatabaseReconciler struct {
+// DatabaseController reconciles a Database object
+type DatabaseController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -50,29 +48,16 @@ type DatabaseReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=databases/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=databases/finalizers,verbs=update
 
-func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
-	log := log.FromContext(ctx, "database", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
-	database := &v1beta1.Database{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, database); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
+func (r *DatabaseController) Reconcile(ctx context.Context, database *v1beta1.Database) error {
 
 	serviceSelectorRequirement, err := labels.NewRequirement("formance.com/service", selection.In, []string{"any", database.Spec.Service})
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", database.Spec.Stack})
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	selector := labels.NewSelector().Add(*serviceSelectorRequirement, *stackSelectorRequirement)
@@ -81,10 +66,8 @@ func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	if err := r.Client.List(ctx, databaseConfigurationList, &client.ListOptions{
 		LabelSelector: selector,
 	}); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
-
-	patch := client.MergeFrom(database.DeepCopy())
 
 	switch len(databaseConfigurationList.Items) {
 	case 0:
@@ -97,7 +80,7 @@ func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 			job, err := r.createJob(ctx, databaseConfiguration, database, dbName)
 			if err != nil {
-				return ctrl.Result{}, err
+				return err
 			}
 
 			database.Status.Ready = job.Status.Succeeded > 0
@@ -115,14 +98,10 @@ func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		database.Status.Ready = false
 	}
 
-	if err := r.Client.Status().Patch(ctx, database, patch); err != nil {
-		return ctrl.Result{}, err
-	}
-
-	return ctrl.Result{}, nil
+	return nil
 }
 
-func (r *DatabaseReconciler) createJob(ctx context.Context, databaseConfiguration v1beta1.DatabaseConfiguration,
+func (r *DatabaseController) createJob(ctx context.Context, databaseConfiguration v1beta1.DatabaseConfiguration,
 	database *v1beta1.Database, dbName string) (*batchv1.Job, error) {
 
 	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, r.Client, types.NamespacedName{
@@ -155,7 +134,7 @@ func (r *DatabaseReconciler) createJob(ctx context.Context, databaseConfiguratio
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *DatabaseReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *DatabaseController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Database{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
@@ -171,12 +150,11 @@ func (r *DatabaseReconciler) SetupWithManager(mgr ctrl.Manager) error {
 				)
 			}),
 		).
-		Owns(&batchv1.Job{}).
-		Complete(r)
+		Owns(&batchv1.Job{}), nil
 }
 
-func NewDatabaseReconciler(client client.Client, scheme *runtime.Scheme) *DatabaseReconciler {
-	return &DatabaseReconciler{
+func ForDatabase(client client.Client, scheme *runtime.Scheme) *DatabaseController {
+	return &DatabaseController{
 		Client: client,
 		Scheme: scheme,
 	}

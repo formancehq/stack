@@ -18,17 +18,18 @@ package controller
 
 import (
 	"context"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
+	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 )
 
-// SearchReconciler reconciles a Search object
-type SearchReconciler struct {
+// SearchController reconciles a Search object
+type SearchController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -37,23 +38,20 @@ type SearchReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=searches/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
-func (r *SearchReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search) error {
 	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
-
-	return ctrl.Result{}, nil
+	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *SearchReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *SearchController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Search{}).
-		Complete(r)
+		For(&v1beta1.Search{}), nil
 }
 
-func NewSearchReconciler(client client.Client, scheme *runtime.Scheme) *SearchReconciler {
-	return &SearchReconciler{
+func ForSearch(client client.Client, scheme *runtime.Scheme) *SearchController {
+	return &SearchController{
 		Client: client,
 		Scheme: scheme,
 	}

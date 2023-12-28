@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sort"
 	"strings"
 	"text/template"
@@ -34,7 +35,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	_ "embed"
@@ -47,8 +47,8 @@ import (
 //go:embed templates/Caddyfile.gotpl
 var caddyfile string
 
-// GatewayReconciler reconciles a Gateway object
-type GatewayReconciler struct {
+// GatewayController reconciles a Gateway object
+type GatewayController struct {
 	client.Client
 	Scheme   *runtime.Scheme
 	Platform shared.Platform
@@ -58,74 +58,56 @@ type GatewayReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/finalizers,verbs=update
 
-func (r *GatewayReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
-	log := log.FromContext(ctx, "gateway", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
-	gateway := &v1beta1.Gateway{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, gateway); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
+func (r *GatewayController) Reconcile(ctx context.Context, gateway *v1beta1.Gateway) error {
 
 	stack := &v1beta1.Stack{}
 	if err := r.Client.Get(ctx, types.NamespacedName{
 		Name: gateway.Spec.Stack,
 	}, stack); err != nil {
 		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
+			return nil
 		}
-		return ctrl.Result{}, err
+		return err
 	}
 
 	httpAPIList := &v1beta1.HTTPAPIList{}
 	if err := r.Client.List(ctx, httpAPIList, client.MatchingFields{
 		".spec.stack": stack.Name,
 	}); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	authEnabled, err := IsAuthEnabled(ctx, r.Client, stack.Name)
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	configMap, err := r.createConfigMap(ctx, stack, gateway, httpAPIList, authEnabled)
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := r.createDeployment(ctx, stack, gateway, configMap); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := r.createService(ctx, stack, gateway); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := r.handleIngress(ctx, stack, gateway); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
-	patch := client.MergeFrom(gateway.DeepCopy())
 	gateway.Status.SyncHTTPAPIs = Map(httpAPIList.Items, func(from v1beta1.HTTPAPI) string {
 		return from.Spec.Name
 	})
 	gateway.Status.AuthEnabled = authEnabled
 
-	if err := r.Client.Status().Patch(ctx, gateway, patch); err != nil {
-		return ctrl.Result{}, err
-	}
-
-	return ctrl.Result{}, nil
+	return nil
 }
 
-func (r *GatewayReconciler) createConfigMap(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createConfigMap(ctx context.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs *v1beta1.HTTPAPIList, authEnabled bool) (*corev1.ConfigMap, error) {
 
 	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs.Items, authEnabled)
@@ -148,7 +130,7 @@ func (r *GatewayReconciler) createConfigMap(ctx context.Context, stack *v1beta1.
 	return caddyfileConfigMap, err
 }
 
-func (r *GatewayReconciler) createDeployment(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createDeployment(ctx context.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap) error {
 
 	env, err := GetURLSAsEnvVarsIfGatewayEnabled(ctx, r.Client, stack.Name)
@@ -179,7 +161,7 @@ func (r *GatewayReconciler) createDeployment(ctx context.Context, stack *v1beta1
 	return err
 }
 
-func (r *GatewayReconciler) createService(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createService(ctx context.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
 	_, _, err := CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
 		Name:      "gateway",
@@ -191,7 +173,7 @@ func (r *GatewayReconciler) createService(ctx context.Context, stack *v1beta1.St
 	return err
 }
 
-func (r *GatewayReconciler) handleIngress(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) handleIngress(ctx context.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
 
 	name := types.NamespacedName{
@@ -244,7 +226,7 @@ func (r *GatewayReconciler) handleIngress(ctx context.Context, stack *v1beta1.St
 	return err
 }
 
-func (r *GatewayReconciler) createCaddyfile(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createCaddyfile(ctx context.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs []v1beta1.HTTPAPI, authEnabled bool) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
@@ -299,12 +281,12 @@ func (r *GatewayReconciler) createCaddyfile(ctx context.Context, stack *v1beta1.
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *GatewayReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *GatewayController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Gateway{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Gateway).Spec.Stack}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
@@ -343,12 +325,11 @@ func (r *GatewayReconciler) SetupWithManager(mgr ctrl.Manager) error {
 					Map(list.Items, ToPointer[v1beta1.Gateway])...,
 				)
 			}),
-		).
-		Complete(r)
+		), nil
 }
 
-func NewGatewayReconciler(client client.Client, scheme *runtime.Scheme, platform shared.Platform) *GatewayReconciler {
-	return &GatewayReconciler{
+func ForGateway(client client.Client, scheme *runtime.Scheme, platform shared.Platform) *GatewayController {
+	return &GatewayController{
 		Client:   client,
 		Scheme:   scheme,
 		Platform: platform,

@@ -18,6 +18,8 @@ package controller
 
 import (
 	"context"
+	"github.com/formancehq/operator/v2/api/v1beta1"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -27,8 +29,8 @@ import (
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 )
 
-// OrchestrationReconciler reconciles a Orchestration object
-type OrchestrationReconciler struct {
+// OrchestrationController reconciles a Orchestration object
+type OrchestrationController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -37,23 +39,22 @@ type OrchestrationReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/finalizers,verbs=update
 
-func (r *OrchestrationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *OrchestrationController) Reconcile(ctx context.Context, orchestration *v1beta1.Orchestration) error {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
 
-	return ctrl.Result{}, nil
+	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *OrchestrationReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *OrchestrationController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Orchestration{}).
-		Complete(r)
+		For(&formancev1beta1.Orchestration{}), nil
 }
 
-func NewOrchestrationReconciler(client client.Client, scheme *runtime.Scheme) *OrchestrationReconciler {
-	return &OrchestrationReconciler{
+func ForOrchestration(client client.Client, scheme *runtime.Scheme) *OrchestrationController {
+	return &OrchestrationController{
 		Client: client,
 		Scheme: scheme,
 	}

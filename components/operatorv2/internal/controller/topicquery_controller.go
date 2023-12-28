@@ -39,8 +39,8 @@ const (
 	gcTopicsFinalizer = "gc-topics"
 )
 
-// TopicQueryReconciler reconciles a TopicQuery object
-type TopicQueryReconciler struct {
+// TopicQueryController reconciles a TopicQuery object
+type TopicQueryController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -49,20 +49,7 @@ type TopicQueryReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/finalizers,verbs=update
 
-func (r *TopicQueryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
-	log := log.FromContext(ctx, "topicquery", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
-	topicQuery := &v1beta1.TopicQuery{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, topicQuery); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
+func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta1.TopicQuery) error {
 
 	if !topicQuery.DeletionTimestamp.IsZero() {
 		topic := &v1beta1.Topic{}
@@ -70,28 +57,28 @@ func (r *TopicQueryReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 			Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 		}, topic); err != nil {
 			if !errors.IsNotFound(err) {
-				return ctrl.Result{}, err
+				return err
 			}
 		} else {
 			topic.Spec.Queries = Filter(topic.Spec.Queries, func(s string) bool {
 				return s != topicQuery.Spec.QueriedBy
 			})
 			if err := r.Client.Update(ctx, topic); err != nil {
-				return ctrl.Result{}, err
+				return err
 			}
 		}
 
 		if updated := controllerutil.RemoveFinalizer(topicQuery, gcTopicsFinalizer); updated {
 			if err := r.Client.Update(ctx, topicQuery); err != nil {
-				return ctrl.Result{}, err
+				return err
 			}
 		}
-		return ctrl.Result{}, nil
+		return nil
 	}
 
 	if updated := controllerutil.AddFinalizer(topicQuery, gcTopicsFinalizer); updated {
 		if err := r.Client.Update(ctx, topicQuery); err != nil {
-			return ctrl.Result{}, err
+			return err
 		}
 	}
 
@@ -100,7 +87,7 @@ func (r *TopicQueryReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 	}, topic); err != nil {
 		if !errors.IsNotFound(err) {
-			return ctrl.Result{}, err
+			return err
 		}
 		if err := r.Client.Create(ctx, &v1beta1.Topic{
 			ObjectMeta: ctrl.ObjectMeta{
@@ -112,41 +99,41 @@ func (r *TopicQueryReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 				Service: topicQuery.Spec.Service,
 			},
 		}); err != nil {
-			return ctrl.Result{}, err
+			return err
 		}
-		return ctrl.Result{}, nil
+		return nil
 	}
 
 	if !Contains(topic.Spec.Queries, topicQuery.Spec.QueriedBy) {
 		topic.Spec.Queries = append(topic.Spec.Queries, topicQuery.Spec.QueriedBy)
 		if err := r.Client.Update(ctx, topic); err != nil {
-			return ctrl.Result{}, err
+			return err
 		}
 	}
 
 	if topicQuery.Status.Ready != topic.Status.Ready {
 		topicQuery.Status.Ready = topic.Status.Ready
 		if err := r.Client.Status().Update(ctx, topicQuery); err != nil {
-			return ctrl.Result{}, err
+			return err
 		}
 	}
 
-	return ctrl.Result{}, nil
+	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicQueryReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *TopicQueryController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.TopicQuery{}, ".spec.service", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.TopicQuery).Spec.Service}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := indexer.IndexField(context.Background(), &v1beta1.TopicQuery{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.TopicQuery).Spec.Stack}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
@@ -168,12 +155,11 @@ func (r *TopicQueryReconciler) SetupWithManager(mgr ctrl.Manager) error {
 					Map(list.Items, ToPointer[v1beta1.TopicQuery])...,
 				)
 			}),
-		).
-		Complete(r)
+		), nil
 }
 
-func NewTopicQueryReconciler(client client.Client, scheme *runtime.Scheme) *TopicQueryReconciler {
-	return &TopicQueryReconciler{
+func ForTopicQuery(client client.Client, scheme *runtime.Scheme) *TopicQueryController {
+	return &TopicQueryController{
 		Client: client,
 		Scheme: scheme,
 	}

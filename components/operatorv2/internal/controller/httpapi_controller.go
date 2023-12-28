@@ -102,17 +102,17 @@ func (r *HTTPAPI) Reconcile(ctx context.Context, httpAPI *v1beta1.HTTPAPI) error
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *HTTPAPI) SetupWithManager(mgr ctrl.Manager, builder *ctrl.Builder) error {
+func (r *HTTPAPI) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.HTTPAPI{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.HTTPAPI).Spec.Stack}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
-	builder.Owns(&corev1.Service{})
-
-	return nil
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&v1beta1.HTTPAPI{}).
+		Owns(&corev1.Service{}), nil
 }
 
 func ForHTTPAPI(client client.Client, scheme *runtime.Scheme) *HTTPAPI {

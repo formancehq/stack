@@ -18,23 +18,20 @@ package controller
 
 import (
 	"context"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	"github.com/nats-io/nats.go"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/selection"
-	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/selection"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// TopicReconciler reconciles a Topic object
-type TopicReconciler struct {
+// TopicController reconciles a Topic object
+type TopicController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -43,37 +40,24 @@ type TopicReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=topics/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topics/finalizers,verbs=update
 
-func (r *TopicReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
-	log := log.FromContext(ctx, "topic", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
-	topic := &v1beta1.Topic{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, topic); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
+func (r *TopicController) Reconcile(ctx context.Context, topic *v1beta1.Topic) error {
 
 	if len(topic.Spec.Queries) == 0 {
 		if err := r.Client.Delete(ctx, topic); err != nil {
-			return ctrl.Result{}, nil
+			return nil
 		}
 	}
 
 	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", topic.Spec.Stack})
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	brokerConfigList := &v1beta1.BrokerConfigurationList{}
 	if err := r.Client.List(ctx, brokerConfigList, &client.ListOptions{
 		LabelSelector: labels.NewSelector().Add(*stackSelectorRequirement),
 	}); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	switch len(brokerConfigList.Items) {
@@ -100,14 +84,10 @@ func (r *TopicReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 		topic.Status.Ready = false
 	}
 
-	if err := r.Client.Status().Update(ctx, topic); err != nil {
-		return ctrl.Result{}, err
-	}
-
-	return ctrl.Result{}, nil
+	return nil
 }
 
-func (r *TopicReconciler) createNATSStream(topicName string, configuration v1beta1.BrokerConfiguration) error {
+func (r *TopicController) createNATSStream(topicName string, configuration v1beta1.BrokerConfiguration) error {
 	nc, err := nats.Connect(configuration.Spec.Nats.URL)
 	if err != nil {
 		return err
@@ -136,27 +116,26 @@ func (r *TopicReconciler) createNATSStream(topicName string, configuration v1bet
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *TopicController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Topic{}, ".spec.service", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Topic).Spec.Service}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := indexer.IndexField(context.Background(), &v1beta1.Topic{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Topic).Spec.Stack}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Topic{}).
-		Complete(r)
+		For(&v1beta1.Topic{}), nil
 }
 
-func NewTopicReconciler(client client.Client, scheme *runtime.Scheme) *TopicReconciler {
-	return &TopicReconciler{
+func ForTopic(client client.Client, scheme *runtime.Scheme) *TopicController {
+	return &TopicController{
 		Client: client,
 		Scheme: scheme,
 	}

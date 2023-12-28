@@ -31,13 +31,12 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sort"
 )
 
-// AuthReconciler reconciles a Auth object
-type AuthReconciler struct {
+// AuthController reconciles a Auth object
+type AuthController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -46,49 +45,37 @@ type AuthReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=auths/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=auths/finalizers,verbs=update
 
-func (r *AuthReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log := log.FromContext(ctx, "auth", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
-	auth := &v1beta1.Auth{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, auth); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
+func (r *AuthController) Reconcile(ctx context.Context, auth *v1beta1.Auth) error {
 
 	stack := &v1beta1.Stack{}
 	if err := r.Client.Get(ctx, types.NamespacedName{
 		Name: auth.Spec.Stack,
 	}, stack); err != nil {
 		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
+			return nil
 		}
-		return ctrl.Result{}, err
+		return err
 	}
 
 	database, err := CreateDatabase(ctx, r.Client, stack, "auth")
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	authClientsList := &v1beta1.AuthClientList{}
 	if err := r.Client.List(ctx, authClientsList, client.MatchingFields{
 		".spec.stack": stack.Name,
 	}); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	configMap, err := r.createConfiguration(ctx, stack, authClientsList.Items)
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := r.createDeployment(ctx, stack, auth, database, configMap); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, auth, "auth",
@@ -96,21 +83,16 @@ func (r *AuthReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			spec.Secured = true
 		},
 	); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
-	patch := client.MergeFrom(auth.DeepCopy())
 	auth.Status.Clients = Map(authClientsList.Items, func(from v1beta1.AuthClient) string {
 		return from.Name
 	})
-	if err := r.Client.Status().Patch(ctx, auth, patch); err != nil {
-		return ctrl.Result{}, err
-	}
-
-	return ctrl.Result{}, nil
+	return nil
 }
 
-func (r *AuthReconciler) createConfiguration(ctx context.Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
+func (r *AuthController) createConfiguration(ctx context.Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
 
 	sort.Slice(items, func(i, j int) bool {
 		return items[i].Name < items[j].Name
@@ -142,7 +124,7 @@ func (r *AuthReconciler) createConfiguration(ctx context.Context, stack *v1beta1
 	return cm, nil
 }
 
-func (r *AuthReconciler) createDeployment(ctx context.Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
+func (r *AuthController) createDeployment(ctx context.Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
 
 	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "auth", auth.Spec)
 	if err != nil {
@@ -221,12 +203,12 @@ func (r *AuthReconciler) createDeployment(ctx context.Context, stack *v1beta1.St
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *AuthReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *AuthController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Auth{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Auth).Spec.Stack}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
@@ -250,12 +232,11 @@ func (r *AuthReconciler) SetupWithManager(mgr ctrl.Manager) error {
 					Map(list.Items, ToPointer[v1beta1.Auth])...,
 				)
 			}),
-		).
-		Complete(r)
+		), nil
 }
 
-func NewAuthReconciler(client client.Client, scheme *runtime.Scheme) *AuthReconciler {
-	return &AuthReconciler{
+func ForAuth(client client.Client, scheme *runtime.Scheme) *AuthController {
+	return &AuthController{
 		Client: client,
 		Scheme: scheme,
 	}

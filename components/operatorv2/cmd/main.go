@@ -18,10 +18,11 @@ package main
 
 import (
 	"flag"
+	"github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/internal/controller"
+	"github.com/formancehq/operator/v2/internal/controller/shared"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"os"
-
-	"github.com/formancehq/operator/v2/internal/controller/shared"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -36,7 +37,6 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/controller"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -102,23 +102,22 @@ func main() {
 		Environment: env,
 	}
 
-	if err := reconcilers.SetupReconcilers(mgr,
-		controller.NewStackReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewTopicQueryReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewTopicReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewLedgerReconciler(mgr.GetClient(), mgr.GetScheme()),
-		reconcilers.New[*formancev1beta1.HTTPAPI](mgr.GetClient(), mgr.GetScheme(),
-			controller.ForHTTPAPI(mgr.GetClient(), mgr.GetScheme())),
-		controller.NewGatewayReconciler(mgr.GetClient(), mgr.GetScheme(), platform),
-		controller.NewAuthReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewDatabaseReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewAuthClientReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewWalletReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewOrchestrationReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewPaymentsReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewReconciliationReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewWebhooksReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewSearchReconciler(mgr.GetClient(), mgr.GetScheme()),
+	if err := reconcilers.Setup(mgr,
+		reconcilers.New[*v1beta1.Stack](mgr.GetClient(), mgr.GetScheme(), controller.ForStack(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Topic](mgr.GetClient(), mgr.GetScheme(), controller.ForTopic(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.TopicQuery](mgr.GetClient(), mgr.GetScheme(), controller.ForTopicQuery(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Ledger](mgr.GetClient(), mgr.GetScheme(), controller.ForLedger(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.HTTPAPI](mgr.GetClient(), mgr.GetScheme(), controller.ForHTTPAPI(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Gateway](mgr.GetClient(), mgr.GetScheme(), controller.ForGateway(mgr.GetClient(), mgr.GetScheme(), platform)),
+		reconcilers.New[*v1beta1.Auth](mgr.GetClient(), mgr.GetScheme(), controller.ForAuth(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Database](mgr.GetClient(), mgr.GetScheme(), controller.ForDatabase(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.AuthClient](mgr.GetClient(), mgr.GetScheme(), controller.ForAuthClient(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Wallet](mgr.GetClient(), mgr.GetScheme(), controller.ForWallet(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Orchestration](mgr.GetClient(), mgr.GetScheme(), controller.ForOrchestration(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Payments](mgr.GetClient(), mgr.GetScheme(), controller.ForPayments(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Reconciliation](mgr.GetClient(), mgr.GetScheme(), controller.ForReconciliation(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Webhooks](mgr.GetClient(), mgr.GetScheme(), controller.ForWebhooks(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Search](mgr.GetClient(), mgr.GetScheme(), controller.ForSearch(mgr.GetClient(), mgr.GetScheme())),
 	); err != nil {
 		setupLog.Error(err, "unable to create controllers")
 		os.Exit(1)

@@ -18,17 +18,18 @@ package controller
 
 import (
 	"context"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/api/v1beta1"
 )
 
-// ReconciliationReconciler reconciles a Reconciliation object
-type ReconciliationReconciler struct {
+// ReconciliationController reconciles a Reconciliation object
+type ReconciliationController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -37,23 +38,22 @@ type ReconciliationReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
-func (r *ReconciliationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *ReconciliationController) Reconcile(ctx context.Context, reconciliation *v1beta1.Reconciliation) error {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
 
-	return ctrl.Result{}, nil
+	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *ReconciliationReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *ReconciliationController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Reconciliation{}).
-		Complete(r)
+		For(&v1beta1.Reconciliation{}), nil
 }
 
-func NewReconciliationReconciler(client client.Client, scheme *runtime.Scheme) *ReconciliationReconciler {
-	return &ReconciliationReconciler{
+func ForReconciliation(client client.Client, scheme *runtime.Scheme) *ReconciliationController {
+	return &ReconciliationController{
 		Client: client,
 		Scheme: scheme,
 	}

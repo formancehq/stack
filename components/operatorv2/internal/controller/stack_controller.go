@@ -12,7 +12,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -56,38 +55,28 @@ const (
 // +kubebuilder:rbac:groups=formance.com,resources=brokerconfigurations/finalizers,verbs=update
 
 // Reconciler reconciles a Stack object
-type StackReconciler struct {
+type StackController struct {
 	Client client.Client
 	Scheme *runtime.Scheme
 }
 
-func (r *StackReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
-	stack := &v1beta1.Stack{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, stack); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
+func (r *StackController) Reconcile(ctx context.Context, stack *v1beta1.Stack) error {
 
 	_, _, err := CreateOrUpdate(ctx, r.Client, types.NamespacedName{
 		Name: stack.Name,
 	}, WithController[*corev1.Namespace](r.Scheme, stack))
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := r.handleSecrets(ctx, stack); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
-	return ctrl.Result{}, nil
+	return nil
 }
 
-func (r *StackReconciler) handleSecrets(ctx context.Context, stack *v1beta1.Stack) error {
+func (r *StackController) handleSecrets(ctx context.Context, stack *v1beta1.Stack) error {
 	secrets, err := r.copySecrets(ctx, stack)
 	if err != nil {
 		return err
@@ -96,7 +85,7 @@ func (r *StackReconciler) handleSecrets(ctx context.Context, stack *v1beta1.Stac
 	return r.cleanSecrets(ctx, stack, secrets)
 }
 
-func (r *StackReconciler) copySecrets(ctx context.Context, stack *v1beta1.Stack) ([]corev1.Secret, error) {
+func (r *StackController) copySecrets(ctx context.Context, stack *v1beta1.Stack) ([]corev1.Secret, error) {
 
 	requirement, err := labels.NewRequirement(ApplyToStacksLabel, selection.In, []string{stack.Name, AnyValue})
 	if err != nil {
@@ -139,7 +128,7 @@ func (r *StackReconciler) copySecrets(ctx context.Context, stack *v1beta1.Stack)
 	return secretsToCopy.Items, nil
 }
 
-func (r *StackReconciler) cleanSecrets(ctx context.Context, stack *v1beta1.Stack, copiedSecrets []corev1.Secret) error {
+func (r *StackController) cleanSecrets(ctx context.Context, stack *v1beta1.Stack, copiedSecrets []corev1.Secret) error {
 	requirement, err := labels.NewRequirement(CopiedSecretLabel, selection.Equals, []string{TrueValue})
 	if err != nil {
 		return err
@@ -171,22 +160,21 @@ l:
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *StackReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *StackController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.OpenTelemetryConfiguration{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.OpenTelemetryConfiguration).Spec.Stack}
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Complete(r)
+		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
-func NewStackReconciler(client client.Client, scheme *runtime.Scheme) *StackReconciler {
-	return &StackReconciler{
+func ForStack(client client.Client, scheme *runtime.Scheme) *StackController {
+	return &StackController{
 		Client: client,
 		Scheme: scheme,
 	}

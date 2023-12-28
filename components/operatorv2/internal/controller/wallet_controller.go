@@ -24,17 +24,16 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 
+	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 )
 
-// WalletReconciler reconciles a Wallet object
-type WalletReconciler struct {
+// WalletController reconciles a Wallet object
+type WalletController struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -43,49 +42,37 @@ type WalletReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log := log.FromContext(ctx, "wallets", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
-	wallet := &v1beta1.Wallet{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, wallet); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
+func (r *WalletController) Reconcile(ctx context.Context, wallet *v1beta1.Wallet) error {
 
 	stack := &v1beta1.Stack{}
 	if err := r.Client.Get(ctx, types.NamespacedName{
 		Name: wallet.Spec.Stack,
 	}, stack); err != nil {
 		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
+			return nil
 		}
-		return ctrl.Result{}, err
+		return err
 	}
 
 	authClient, err := CreateAuthClient(ctx, r.Client, r.Scheme, stack, wallet, "wallets", func(spec *formancev1beta1.AuthClientSpec) {
 		spec.Scopes = []string{"ledger:read", "ledger:write"}
 	})
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := r.createDeployment(ctx, stack, wallet, authClient); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
 	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, wallet, "wallets"); err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
-	return ctrl.Result{}, nil
+	return nil
 }
 
-func (r *WalletReconciler) createDeployment(ctx context.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallet, authClient *formancev1beta1.AuthClient) error {
+func (r *WalletController) createDeployment(ctx context.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallet, authClient *formancev1beta1.AuthClient) error {
 	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "wallets", wallet.Spec)
 	if err != nil {
 		return err
@@ -111,14 +98,13 @@ func (r *WalletReconciler) createDeployment(ctx context.Context, stack *formance
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WalletReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *WalletController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Wallet{}).
-		Complete(r)
+		For(&formancev1beta1.Wallet{}), nil
 }
 
-func NewWalletReconciler(client client.Client, scheme *runtime.Scheme) *WalletReconciler {
-	return &WalletReconciler{
+func ForWallet(client client.Client, scheme *runtime.Scheme) *WalletController {
+	return &WalletController{
 		Client: client,
 		Scheme: scheme,
 	}
