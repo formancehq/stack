@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/controller"
 	"github.com/formancehq/operator/v2/internal/controller/shared"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
@@ -77,7 +78,6 @@ var (
 
 var _ = BeforeEach(func() {
 	ctx, cancel = context.WithCancel(context.Background())
-	done = make(chan struct{})
 	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 		Scheme: GetScheme(),
 		Metrics: server.Options{
@@ -93,12 +93,13 @@ var _ = BeforeEach(func() {
 		Environment: "staging",
 	}
 
-	Expect(shared.SetupReconcilers(mgr,
+	Expect(reconcilers.SetupReconcilers(mgr,
 		controller.NewStackReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewTopicQueryReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewTopicReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewLedgerReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewHTTPAPIReconciler(mgr.GetClient(), mgr.GetScheme()),
+		reconcilers.New[*v1beta1.HTTPAPI](mgr.GetClient(), mgr.GetScheme(),
+			controller.ForHTTPAPI(mgr.GetClient(), mgr.GetScheme())),
 		controller.NewGatewayReconciler(mgr.GetClient(), mgr.GetScheme(), platform),
 		controller.NewAuthReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewDatabaseReconciler(mgr.GetClient(), mgr.GetScheme()),
@@ -164,6 +165,7 @@ var _ = BeforeEach(func() {
 
 	go func() {
 		defer GinkgoRecover()
+		done = make(chan struct{})
 		err := mgr.Start(ctx)
 		Expect(err).ToNot(HaveOccurred(), "failed to run manager")
 		close(done)
@@ -172,7 +174,9 @@ var _ = BeforeEach(func() {
 
 var _ = AfterEach(func() {
 	cancel()
-	<-done
+	if done != nil {
+		<-done
+	}
 })
 
 func Create(ob client.Object) error {

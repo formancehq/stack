@@ -18,6 +18,7 @@ package main
 
 import (
 	"flag"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"os"
 
 	"github.com/formancehq/operator/v2/internal/controller/shared"
@@ -101,12 +102,13 @@ func main() {
 		Environment: env,
 	}
 
-	if err := shared.SetupReconcilers(mgr,
+	if err := reconcilers.SetupReconcilers(mgr,
 		controller.NewStackReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewTopicQueryReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewTopicReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewLedgerReconciler(mgr.GetClient(), mgr.GetScheme()),
-		controller.NewHTTPAPIReconciler(mgr.GetClient(), mgr.GetScheme()),
+		reconcilers.New[*formancev1beta1.HTTPAPI](mgr.GetClient(), mgr.GetScheme(),
+			controller.ForHTTPAPI(mgr.GetClient(), mgr.GetScheme())),
 		controller.NewGatewayReconciler(mgr.GetClient(), mgr.GetScheme(), platform),
 		controller.NewAuthReconciler(mgr.GetClient(), mgr.GetScheme()),
 		controller.NewDatabaseReconciler(mgr.GetClient(), mgr.GetScheme()),

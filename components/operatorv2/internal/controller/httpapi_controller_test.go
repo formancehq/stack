@@ -8,7 +8,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-var _ = Describe("HTTPAPIController", func() {
+var _ = Describe("HTTPAPI", func() {
 	Context("When creating an HTTPAPI", func() {
 		var (
 			stack   *v1beta1.Stack

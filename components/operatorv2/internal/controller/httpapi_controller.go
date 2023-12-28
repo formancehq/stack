@@ -21,22 +21,18 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/equality"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/pointer"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
-// HTTPAPIReconciler reconciles a HTTPAPI object
-type HTTPAPIReconciler struct {
+// HTTPAPI reconciles a HTTPAPI object
+type HTTPAPI struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -45,35 +41,7 @@ type HTTPAPIReconciler struct {
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
 
-func (r *HTTPAPIReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
-	log := log.FromContext(ctx, "HTTPAPI", req.NamespacedName)
-	log.Info("Starting reconciliation")
-
-	httpAPI := &v1beta1.HTTPAPI{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
-		Name: req.Name,
-	}, httpAPI); err != nil {
-		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
-		}
-		return ctrl.Result{}, err
-	}
-
-	reconciledHTTPAPI := httpAPI.DeepCopy()
-	r.reconcile(ctx, reconciledHTTPAPI)
-
-	if !equality.Semantic.DeepEqual(httpAPI, reconciledHTTPAPI) {
-		patch := client.MergeFrom(httpAPI)
-		if err := r.Client.Status().Patch(ctx, reconciledHTTPAPI, patch); err != nil {
-			return ctrl.Result{}, err
-		}
-	}
-
-	return ctrl.Result{}, nil
-}
-
-func (r *HTTPAPIReconciler) reconcile(ctx context.Context, httpAPI *v1beta1.HTTPAPI) {
+func (r *HTTPAPI) Reconcile(ctx context.Context, httpAPI *v1beta1.HTTPAPI) error {
 	_, operationResult, err := CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
 		Namespace: httpAPI.Spec.Stack,
 		Name:      httpAPI.Spec.Name,
@@ -108,7 +76,7 @@ func (r *HTTPAPIReconciler) reconcile(ctx context.Context, httpAPI *v1beta1.HTTP
 			Message:            err.Error(),
 		})
 		httpAPI.Status.Ready = false
-		return
+		return nil
 	}
 	httpAPI.Status.Ready = true
 
@@ -129,11 +97,12 @@ func (r *HTTPAPIReconciler) reconcile(ctx context.Context, httpAPI *v1beta1.HTTP
 			LastTransitionTime: metav1.Now(),
 		})
 	}
+
+	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *HTTPAPIReconciler) SetupWithManager(mgr ctrl.Manager) error {
-
+func (r *HTTPAPI) SetupWithManager(mgr ctrl.Manager, builder *ctrl.Builder) error {
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.HTTPAPI{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.HTTPAPI).Spec.Stack}
@@ -141,14 +110,13 @@ func (r *HTTPAPIReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		return err
 	}
 
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.HTTPAPI{}).
-		Owns(&corev1.Service{}).
-		Complete(r)
+	builder.Owns(&corev1.Service{})
+
+	return nil
 }
 
-func NewHTTPAPIReconciler(client client.Client, scheme *runtime.Scheme) *HTTPAPIReconciler {
-	return &HTTPAPIReconciler{
+func ForHTTPAPI(client client.Client, scheme *runtime.Scheme) *HTTPAPI {
+	return &HTTPAPI{
 		Client: client,
 		Scheme: scheme,
 	}
