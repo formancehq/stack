@@ -1,7 +1,6 @@
 package controller_test
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/controller/internal"
 	. "github.com/formancehq/operator/v2/internal/controller/testing"
@@ -59,7 +58,6 @@ var _ = Describe("TopicQueryController", func() {
 				Eventually(func(g Gomega) bool {
 					g.Expect(Get(internal.GetResourceName(
 						internal.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)).To(Succeed())
-					spew.Dump(t.Status)
 					return t.Status.Ready
 				}).Should(BeTrue())
 			})

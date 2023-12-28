@@ -18,14 +18,16 @@ package controller
 
 import (
 	"context"
-
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/pointer"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -48,25 +50,39 @@ func (r *HTTPAPIReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	log := log.FromContext(ctx, "HTTPAPI", req.NamespacedName)
 	log.Info("Starting reconciliation")
 
-	HTTPAPI := &v1beta1.HTTPAPI{}
+	httpAPI := &v1beta1.HTTPAPI{}
 	if err := r.Client.Get(ctx, types.NamespacedName{
 		Name: req.Name,
-	}, HTTPAPI); err != nil {
+	}, httpAPI); err != nil {
 		if errors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
 		return ctrl.Result{}, err
 	}
 
-	_, _, err := CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
-		Namespace: HTTPAPI.Spec.Stack,
-		Name:      HTTPAPI.Spec.Name,
+	reconciledHTTPAPI := httpAPI.DeepCopy()
+	r.reconcile(ctx, reconciledHTTPAPI)
+
+	if !equality.Semantic.DeepEqual(httpAPI, reconciledHTTPAPI) {
+		patch := client.MergeFrom(httpAPI)
+		if err := r.Client.Status().Patch(ctx, reconciledHTTPAPI, patch); err != nil {
+			return ctrl.Result{}, err
+		}
+	}
+
+	return ctrl.Result{}, nil
+}
+
+func (r *HTTPAPIReconciler) reconcile(ctx context.Context, httpAPI *v1beta1.HTTPAPI) {
+	_, operationResult, err := CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
+		Namespace: httpAPI.Spec.Stack,
+		Name:      httpAPI.Spec.Name,
 	},
 		func(t *corev1.Service) {
-			t.ObjectMeta.Annotations = HTTPAPI.Spec.Annotations
+			t.ObjectMeta.Annotations = httpAPI.Spec.Annotations
 
 			t.Labels = map[string]string{
-				"app.kubernetes.io/service-name": HTTPAPI.Name,
+				"app.kubernetes.io/service-name": httpAPI.Name,
 			}
 			t.Spec = corev1.ServiceSpec{
 				Ports: []corev1.ServicePort{{
@@ -74,20 +90,45 @@ func (r *HTTPAPIReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 					Port:        8080,
 					Protocol:    "TCP",
 					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(HTTPAPI.Spec.PortName),
+					TargetPort:  intstr.FromString(httpAPI.Spec.PortName),
 				}},
 				Selector: map[string]string{
-					"app.kubernetes.io/name": HTTPAPI.Spec.Name,
+					"app.kubernetes.io/name": httpAPI.Spec.Name,
 				},
 			}
 		},
-		WithController[*corev1.Service](r.Scheme, HTTPAPI),
+		WithController[*corev1.Service](r.Scheme, httpAPI),
 	)
 	if err != nil {
-		return ctrl.Result{}, err
+		httpAPI.Status.SetCondition(v1beta1.Condition{
+			Type:               "ServiceExists",
+			Status:             metav1.ConditionFalse,
+			ObservedGeneration: httpAPI.Generation,
+			LastTransitionTime: metav1.Now(),
+			Message:            err.Error(),
+		})
+		httpAPI.Status.Ready = false
+		return
 	}
+	httpAPI.Status.Ready = true
 
-	return ctrl.Result{}, nil
+	switch operationResult {
+	case controllerutil.OperationResultNone:
+	case controllerutil.OperationResultCreated:
+		httpAPI.Status.SetCondition(v1beta1.Condition{
+			Type:               "ServiceExists",
+			Status:             metav1.ConditionTrue,
+			ObservedGeneration: httpAPI.Generation,
+			LastTransitionTime: metav1.Now(),
+		})
+	case controllerutil.OperationResultUpdated:
+		httpAPI.Status.SetCondition(v1beta1.Condition{
+			Type:               "ServiceExists",
+			Status:             metav1.ConditionTrue,
+			ObservedGeneration: httpAPI.Generation,
+			LastTransitionTime: metav1.Now(),
+		})
+	}
 }
 
 // SetupWithManager sets up the controller with the Manager.
