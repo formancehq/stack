@@ -18,15 +18,16 @@ package controller
 
 import (
 	"context"
+	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
+	"github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	"github.com/formancehq/operator/v2/api/v1beta1"
 )
 
 // ReconciliationController reconciles a Reconciliation object
@@ -40,11 +41,67 @@ type ReconciliationController struct {
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
 func (r *ReconciliationController) Reconcile(ctx context.Context, reconciliation *v1beta1.Reconciliation) error {
-	_ = log.FromContext(ctx)
+	stack, err := GetStack(ctx, r.Client, reconciliation.Spec)
+	if err != nil {
+		return err
+	}
 
-	// TODO(user): your logic here
+	database, err := CreateDatabase(ctx, r.Client, stack, "reconciliation")
+	if err != nil {
+		return err
+	}
+
+	authClient, err := CreateAuthClient(ctx, r.Client, r.Scheme, stack, reconciliation, "reconciliation", func(spec *v1beta1.AuthClientSpec) {
+		spec.Scopes = []string{"ledger:read", "payments:read"}
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := r.createDeployment(ctx, stack, reconciliation, database, authClient); err != nil {
+		return err
+	}
+
+	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, reconciliation, "reconciliation"); err != nil {
+		return err
+	}
 
 	return nil
+}
+
+func (r *ReconciliationController) createDeployment(ctx context.Context, stack *v1beta1.Stack,
+	reconciliation *v1beta1.Reconciliation, database *v1beta1.Database, authClient *v1beta1.AuthClient) error {
+	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "reconciliation", reconciliation.Spec)
+	if err != nil {
+		return err
+	}
+
+	env = append(env,
+		PostgresEnvVars(
+			database.Status.Configuration.DatabaseConfigurationSpec,
+			GetObjectName(stack.Name, "reconciliation"),
+		)...,
+	)
+	env = append(env,
+		Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
+	)
+	env = append(env, GetAuthClientEnvVars(authClient)...)
+
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client,
+		GetNamespacedResourceName(stack.Name, "reconciliation"),
+		func(t *appsv1.Deployment) {
+			t.Spec.Template.Spec.Containers = []corev1.Container{{
+				Name:      "reconciliation",
+				Env:       env,
+				Image:     GetImage("reconciliation", GetVersion(stack, reconciliation.Spec.Version)),
+				Resources: GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, ResourceSizeSmall()),
+				Ports:     []corev1.ContainerPort{StandardHTTPPort()},
+			}}
+		},
+		WithMatchingLabels("reconciliation"),
+		WithController[*appsv1.Deployment](r.Scheme, reconciliation),
+	)
+	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.

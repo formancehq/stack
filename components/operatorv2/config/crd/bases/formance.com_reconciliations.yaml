@@ -34,7 +34,30 @@ spec:
           spec:
             description: ReconciliationSpec defines the desired state of Reconciliation
             properties:
+              debug:
+                type: boolean
+              dev:
+                type: boolean
+              resourceProperties:
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                  request:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                type: object
               stack:
+                type: string
+              version:
                 type: string
             required:
             - stack

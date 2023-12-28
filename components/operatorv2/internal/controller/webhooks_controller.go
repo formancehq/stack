@@ -24,6 +24,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"strings"
 
 	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -105,7 +106,10 @@ func (r *WebhooksController) createDeployment(ctx context.Context, stack *v1beta
 	env := PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
 	env = append(env, BrokerEnvVars(*brokerConfiguration, "webhooks")...)
 	env = append(env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
-
+	env = append(env, Env("KAFKA_TOPICS", strings.Join([]string{
+		GetObjectName(stack.Name, "ledger"),
+		GetObjectName(stack.Name, "payments"),
+	}, " ")))
 	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
 		Namespace: webhooks.Spec.Stack,
 		Name:      "webhooks",
