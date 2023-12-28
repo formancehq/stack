@@ -792,6 +792,11 @@ paths:
           schema:
             type: string
           required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StackClaims'
       responses:
         201:
           description: Invitation created
@@ -1400,21 +1405,28 @@ components:
           type: string
           format: date-time
         stackClaims:
-          type: array
-          items:
-            allOf:
-              - type: Object
-                properties:
-                  stackId:
-                    type: string
-                  roles:
-                    $ref: '#/components/schemas/Roles'
+          $ref: '#/components/schemas/StackClaims'
       required:
         - creationDate
         - status
         - userEmail
         - organizationId
         - id
+    StackClaims:
+      type: array
+      items:
+        allOf:
+          - $ref: '#/components/schemas/StackClaim'
+    StackClaim:
+      type: object
+      required:
+        - id
+        - roles
+      properties:
+        id:
+          type: string
+        roles:
+          $ref: '#/components/schemas/Roles'
     Region:
       type: object
       required:

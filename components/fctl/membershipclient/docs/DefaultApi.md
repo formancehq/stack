@@ -110,7 +110,7 @@ Name | Type | Description  | Notes
 
 ## CreateInvitation
 
-> CreateInvitationResponse CreateInvitation(ctx, organizationId).Email(email).Execute()
+> CreateInvitationResponse CreateInvitation(ctx, organizationId).Email(email).StackClaimsInner(stackClaimsInner).Execute()
 
 Create invitation
 
@@ -129,10 +129,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     email := "email_example" // string | 
+    stackClaimsInner := []openapiclient.StackClaimsInner{*openapiclient.NewStackClaimsInner("StackId_example", []string{"Roles_example"})} // []StackClaimsInner |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.CreateInvitation(context.Background(), organizationId).Email(email).Execute()
+    resp, r, err := apiClient.DefaultApi.CreateInvitation(context.Background(), organizationId).Email(email).StackClaimsInner(stackClaimsInner).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.CreateInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -159,6 +160,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **email** | **string** |  | 
+ **stackClaimsInner** | [**[]StackClaimsInner**](StackClaimsInner.md) |  | 
 
 ### Return type
 
@@ -170,7 +172,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

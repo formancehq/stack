@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **Status** | **string** |  | 
 **CreationDate** | **time.Time** |  | 
 **UpdatedAt** | Pointer to **time.Time** |  | [optional] 
+**StackClaims** | Pointer to [**[]StackClaimsInner**](StackClaimsInner.md) |  | [optional] 
 
 ## Methods
 
@@ -154,6 +155,31 @@ SetUpdatedAt sets UpdatedAt field to given value.
 `func (o *Invitation) HasUpdatedAt() bool`
 
 HasUpdatedAt returns a boolean if a field has been set.
+
+### GetStackClaims
+
+`func (o *Invitation) GetStackClaims() []StackClaimsInner`
+
+GetStackClaims returns the StackClaims field if non-nil, zero value otherwise.
+
+### GetStackClaimsOk
+
+`func (o *Invitation) GetStackClaimsOk() (*[]StackClaimsInner, bool)`
+
+GetStackClaimsOk returns a tuple with the StackClaims field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStackClaims
+
+`func (o *Invitation) SetStackClaims(v []StackClaimsInner)`
+
+SetStackClaims sets StackClaims field to given value.
+
+### HasStackClaims
+
+`func (o *Invitation) HasStackClaims() bool`
+
+HasStackClaims returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

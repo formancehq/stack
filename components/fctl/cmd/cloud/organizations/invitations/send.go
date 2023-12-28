@@ -1,13 +1,17 @@
 package invitations
 
 import (
+	"encoding/json"
+
+	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type InvitationSend struct {
-	Email string `json:"email"`
+	Email       string                              `json:"email"`
+	StackClaims []membershipclient.StackClaimsInner `json:"stackClaims"`
 }
 
 type SendStore struct {
@@ -36,6 +40,7 @@ func NewSendCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithShortDescription("Invite a user by email"),
 		fctl.WithAliases("s"),
+		fctl.WithStringFlag("stack-claims", "", "Pre assign stack roles e.g. '[{stackId: <stackId>, roles:[]},...]'"),
 		fctl.WithConfirmFlag(),
 		fctl.WithController[*SendStore](NewSendController()),
 	)
@@ -65,15 +70,27 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fctl.ErrMissingApproval
 	}
 
-	_, _, err = apiClient.DefaultApi.
+	req := apiClient.DefaultApi.
 		CreateInvitation(cmd.Context(), organizationID).
-		Email(args[0]).
-		Execute()
+		Email(args[0])
+
+	stackClaimsStrings := fctl.GetString(cmd, "stack-claims")
+	if stackClaimsStrings != "" {
+		stackClaims := make([]membershipclient.StackClaimsInner, 0)
+		err := json.Unmarshal([]byte(stackClaimsStrings), &stackClaims)
+		if err != nil {
+			return nil, err
+		}
+		req = req.StackClaimsInner(stackClaims)
+	}
+
+	invitations, _, err := req.Execute()
 	if err != nil {
 		return nil, err
 	}
 
-	c.store.Invitation.Email = args[0]
+	c.store.Invitation.Email = invitations.Data.UserEmail
+	c.store.Invitation.StackClaims = invitations.Data.StackClaims
 
 	return c, nil
 }

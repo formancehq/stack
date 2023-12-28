@@ -150,10 +150,16 @@ type ApiCreateInvitationRequest struct {
 	ApiService *DefaultApiService
 	organizationId string
 	email *string
+	stackClaimsInner *[]StackClaimsInner
 }
 
 func (r ApiCreateInvitationRequest) Email(email string) ApiCreateInvitationRequest {
 	r.email = &email
+	return r
+}
+
+func (r ApiCreateInvitationRequest) StackClaimsInner(stackClaimsInner []StackClaimsInner) ApiCreateInvitationRequest {
+	r.stackClaimsInner = &stackClaimsInner
 	return r
 }
 
@@ -203,7 +209,7 @@ func (a *DefaultApiService) CreateInvitationExecute(r ApiCreateInvitationRequest
 
 	parameterAddToHeaderOrQuery(localVarQueryParams, "email", r.email, "")
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -219,6 +225,8 @@ func (a *DefaultApiService) CreateInvitationExecute(r ApiCreateInvitationRequest
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	// body params
+	localVarPostBody = r.stackClaimsInner
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
