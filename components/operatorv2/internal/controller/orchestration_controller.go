@@ -19,15 +19,18 @@ package controller
 import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
+	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/pkg/errors"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
+	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 )
 
 // OrchestrationController reconciles a Orchestration object
@@ -41,16 +44,144 @@ type OrchestrationController struct {
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/finalizers,verbs=update
 
 func (r *OrchestrationController) Reconcile(ctx context.Context, orchestration *v1beta1.Orchestration) error {
-	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	stack, err := GetStack(ctx, r.Client, orchestration.Spec)
+	if err != nil {
+		return err
+	}
+
+	database, err := CreateDatabase(ctx, r.Client, stack, "orchestration")
+	if err != nil {
+		return err
+	}
+
+	authClient, err := r.handleAuthClient(ctx, stack, orchestration)
+	if err != nil {
+		return err
+	}
+
+	if err := r.handleTopics(ctx, stack); err != nil {
+		return err
+	}
+
+	if err := r.createDeployment(ctx, stack, orchestration, database, authClient); err != nil {
+		return err
+	}
+
+	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, orchestration, "orchestration"); err != nil {
+		return err
+	}
 
 	return nil
+}
+
+func (r *OrchestrationController) handleAuthClient(ctx context.Context, stack *formancev1beta1.Stack, orchestration *formancev1beta1.Orchestration) (*formancev1beta1.AuthClient, error) {
+
+	auth, err := GetAuthIfEnabled(ctx, r.Client, stack.Name)
+	if err != nil {
+		return nil, err
+	}
+	if auth == nil {
+		return nil, errors.New("requires auth service")
+	}
+
+	return CreateAuthClient(ctx, r.Client, r.Scheme, stack, orchestration, "orchestration",
+		func(spec *formancev1beta1.AuthClientSpec) {
+			spec.Scopes = []string{
+				"ledger:read",
+				"ledger:write",
+				"payments:read",
+				"payments:write",
+				"wallets:read",
+				"wallets:write",
+			}
+		})
+}
+
+func (r *OrchestrationController) handleTopics(ctx context.Context, stack *formancev1beta1.Stack) error {
+	availableServices := make([]string, 0)
+	ledger, err := GetLedgerIfEnabled(ctx, r.Client, stack.Name)
+	if err != nil {
+		return err
+	}
+	if ledger != nil {
+		availableServices = append(availableServices, "ledger")
+	}
+	payments, err := GetPaymentsIfEnabled(ctx, r.Client, stack.Name)
+	if err != nil {
+		return err
+	}
+	if payments != nil {
+		availableServices = append(availableServices, "payments")
+	}
+	wallet, err := GetWalletIfEnabled(ctx, r.Client, stack.Name)
+	if err != nil {
+		return err
+	}
+	if wallet != nil {
+		availableServices = append(availableServices, "wallets")
+	}
+
+	for _, service := range availableServices {
+		if err := CreateTopicQuery(ctx, r.Client, stack, service, "orchestration"); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *OrchestrationController) createDeployment(ctx context.Context, stack *v1beta1.Stack,
+	orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *formancev1beta1.AuthClient) error {
+	env := PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
+	env = append(env,
+		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
+		Env("TEMPORAL_TASK_QUEUE", stack.Name),
+		Env("TEMPORAL_ADDRESS", orchestration.Spec.Temporal.Address),
+		Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
+	)
+
+	env = append(env, GetAuthClientEnvVars(client)...)
+
+	if orchestration.Spec.Temporal.TLS.SecretName == "" {
+		env = append(env,
+			Env("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.Key),
+			Env("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.CRT),
+		)
+	} else {
+		env = append(env,
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.SecretName, "tls.key"),
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.SecretName, "tls.crt"),
+		)
+	}
+
+	brokerEnvVars, err := GetBrokerEnvVars(ctx, r.Client, stack.Name, "orchestration")
+	if err != nil && !errors.Is(err, ErrNoConfigurationFound) {
+		return err
+	}
+	env = append(env, brokerEnvVars...)
+
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+		Namespace: orchestration.Spec.Stack,
+		Name:      "orchestration",
+	},
+		WithController[*appsv1.Deployment](r.Scheme, orchestration),
+		WithMatchingLabels("orchestration"),
+		WithContainers(corev1.Container{
+			Name:      "api",
+			Env:       env,
+			Image:     GetImage("orchestration", GetVersion(stack, orchestration.Spec.Version)),
+			Resources: GetResourcesWithDefault(orchestration.Spec.ResourceProperties, ResourceSizeSmall()),
+			Ports:     []corev1.ContainerPort{StandardHTTPPort()},
+		}),
+	)
+	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *OrchestrationController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		// todo: Watch broker configuration
 		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

@@ -23,12 +23,12 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // WalletController reconciles a Wallet object
@@ -93,6 +93,13 @@ func (r *WalletController) createDeployment(ctx context.Context, stack *formance
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *WalletController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+	indexer := mgr.GetFieldIndexer()
+	if err := indexer.IndexField(context.Background(), &v1beta1.Wallet{}, ".spec.stack", func(rawObj client.Object) []string {
+		return []string{rawObj.(*v1beta1.Wallet).Spec.Stack}
+	}); err != nil {
+		return nil, err
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&formancev1beta1.Wallet{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

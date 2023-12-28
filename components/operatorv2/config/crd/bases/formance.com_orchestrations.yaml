@@ -34,10 +34,53 @@ spec:
           spec:
             description: OrchestrationSpec defines the desired state of Orchestration
             properties:
+              debug:
+                type: boolean
+              dev:
+                type: boolean
+              resourceProperties:
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                  request:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                type: object
               stack:
+                type: string
+              temporal:
+                properties:
+                  address:
+                    type: string
+                  namespace:
+                    type: string
+                  tls:
+                    properties:
+                      crt:
+                        type: string
+                      key:
+                        type: string
+                      secretName:
+                        type: string
+                    type: object
+                required:
+                - address
+                - namespace
+                type: object
+              version:
                 type: string
             required:
             - stack
+            - temporal
             type: object
           status:
             description: OrchestrationStatus defines the observed state of Orchestration

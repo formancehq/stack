@@ -18,12 +18,15 @@ package controller
 
 import (
 	"context"
+	"fmt"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
+	types "k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
-	"github.com/nats-io/nats.go"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/selection"
@@ -69,12 +72,13 @@ func (r *TopicController) Reconcile(ctx context.Context, topic *v1beta1.Topic) e
 		configuration := brokerConfigList.Items[0]
 		switch {
 		case configuration.Spec.Nats != nil:
-			if err := r.createNATSStream(GetObjectName(topic.Spec.Stack, topic.Name), configuration); err != nil {
+			job, err := r.createJob(ctx, topic, configuration)
+			if err != nil {
 				topic.Status.Error = err.Error()
 				topic.Status.Ready = false
 			} else {
 				topic.Status.Error = ""
-				topic.Status.Ready = true
+				topic.Status.Ready = job.Status.Succeeded > 0
 			}
 		default:
 			topic.Status.Error = ""
@@ -88,32 +92,35 @@ func (r *TopicController) Reconcile(ctx context.Context, topic *v1beta1.Topic) e
 	return nil
 }
 
-func (r *TopicController) createNATSStream(topicName string, configuration v1beta1.BrokerConfiguration) error {
-	nc, err := nats.Connect(configuration.Spec.Nats.URL)
-	if err != nil {
-		return err
-	}
-	defer nc.Close()
+func (r *TopicController) createJob(ctx context.Context,
+	topic *v1beta1.Topic, configuration v1beta1.BrokerConfiguration) (*batchv1.Job, error) {
 
-	js, err := nc.JetStream()
-	if err != nil {
-		return err
-	}
-	streamConfig := nats.StreamConfig{
-		Name:      topicName,
-		Subjects:  []string{topicName},
-		Retention: nats.InterestPolicy,
-		Replicas:  configuration.Spec.Nats.Replicas,
-	}
+	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, r.Client, types.NamespacedName{
+		Namespace: topic.Spec.Stack,
+		Name:      fmt.Sprintf("%s-create-topic", topic.Spec.Service),
+	},
+		func(t *batchv1.Job) {
+			args := []string{"nats", "stream", "add",
+				"--server", fmt.Sprintf("nats://%s", configuration.Spec.Nats.URL),
+				"--retention", "interest",
+				"--subjects", GetObjectName(topic.Spec.Stack, topic.Name),
+				"--defaults",
+			}
+			if configuration.Spec.Nats.Replicas > 0 {
+				args = append(args, "--replicas", fmt.Sprint(configuration.Spec.Nats.Replicas))
+			}
+			args = append(args, GetObjectName(topic.Spec.Stack, topic.Name))
 
-	_, err = js.StreamInfo(topicName)
-	if err != nil {
-		_, err := js.AddStream(&streamConfig)
-		return err
-	}
-
-	_, err = js.UpdateStream(&streamConfig)
-	return err
+			t.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyOnFailure
+			t.Spec.Template.Spec.Containers = []corev1.Container{{
+				Image: "natsio/nats-box:0.14.1",
+				Name:  "create-topic",
+				Args:  args,
+			}}
+		},
+		WithController[*batchv1.Job](r.Scheme, topic),
+	)
+	return job, err
 }
 
 // SetupWithManager sets up the controller with the Manager.
@@ -132,7 +139,8 @@ func (r *TopicController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, 
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
+		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&batchv1.Job{}), nil
 }
 
 func ForTopic(client client.Client, scheme *runtime.Scheme) *TopicController {

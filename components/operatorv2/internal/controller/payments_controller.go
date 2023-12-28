@@ -222,6 +222,12 @@ func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, databa
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *PaymentsController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+	indexer := mgr.GetFieldIndexer()
+	if err := indexer.IndexField(context.Background(), &v1beta1.Payments{}, ".spec.stack", func(rawObj client.Object) []string {
+		return []string{rawObj.(*v1beta1.Payments).Spec.Stack}
+	}); err != nil {
+		return nil, err
+	}
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Payments{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

@@ -150,13 +150,15 @@ func GetBrokerConfiguration(ctx context.Context, _client client.Client, stackNam
 	}
 }
 
+var ErrNoConfigurationFound = pkgError.New("no configuration found")
+
 func GetBrokerEnvVars(ctx context.Context, _client client.Client, stackName, serviceName string) ([]corev1.EnvVar, error) {
 	configuration, err := GetBrokerConfiguration(ctx, _client, stackName)
 	if err != nil {
 		return nil, err
 	}
 	if configuration == nil {
-		return nil, errors.New("no configuration found")
+		return nil, ErrNoConfigurationFound
 	}
 
 	return BrokerEnvVars(*configuration, serviceName), nil
@@ -391,4 +393,129 @@ func GetStack(ctx context.Context, client client.Client, spec interface {
 	}
 
 	return stack, nil
+}
+
+var ErrMultipleInstancesFound = errors.New("multiple resources found")
+
+//func GetSingleStackDependencyObject[T client.Object](ctx context.Context, scheme *runtime.Scheme, _client client.Client, stackName string) (T, error) {
+//
+//	fmt.Println("find object")
+//	fmt.Println("find object")
+//	fmt.Println("find object")
+//	fmt.Println("find object")
+//	fmt.Println("find object")
+//
+//	var t T
+//	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+//	kinds, _, err := scheme.ObjectKinds(t)
+//	if err != nil {
+//		return t, err
+//	}
+//	spew.Dump(kinds)
+//
+//	list := &unstructured.UnstructuredList{}
+//	list.SetGroupVersionKind(kinds[0])
+//	err = _client.List(ctx, list, client.MatchingFields{
+//		".spec.stack": stackName,
+//	})
+//	if err != nil {
+//		return t, err
+//	}
+//
+//	switch len(list.Items) {
+//	case 0:
+//		return t, nil
+//	case 1:
+//		if err := runtime.DefaultUnstructuredConverter.
+//			FromUnstructured(list.Items[0].UnstructuredContent(), t); err != nil {
+//			return t, err
+//		}
+//		return t, nil
+//	default:
+//		return t, ErrMultipleInstancesFound
+//	}
+//}
+
+func GetAuthIfEnabled(ctx context.Context, _client client.Client, stackName string) (*v1beta1.Auth, error) {
+	authList := &v1beta1.AuthList{}
+	if err := _client.List(ctx, authList, client.MatchingFields{
+		".spec.stack": stackName,
+	}); err != nil {
+		return nil, err
+	}
+
+	switch len(authList.Items) {
+	case 0:
+		return nil, nil
+	case 1:
+		return &authList.Items[0], nil
+	default:
+		return nil, pkgError.New("found multiple auth")
+	}
+}
+
+func GetLedgerIfEnabled(ctx context.Context, _client client.Client, stackName string) (*v1beta1.Ledger, error) {
+	LedgerList := &v1beta1.LedgerList{}
+	if err := _client.List(ctx, LedgerList, client.MatchingFields{
+		".spec.stack": stackName,
+	}); err != nil {
+		return nil, err
+	}
+
+	switch len(LedgerList.Items) {
+	case 0:
+		return nil, nil
+	case 1:
+		return &LedgerList.Items[0], nil
+	default:
+		return nil, pkgError.New("found multiple Ledger")
+	}
+}
+
+func GetPaymentsIfEnabled(ctx context.Context, _client client.Client, stackName string) (*v1beta1.Payments, error) {
+	PaymentsList := &v1beta1.PaymentsList{}
+	if err := _client.List(ctx, PaymentsList, client.MatchingFields{
+		".spec.stack": stackName,
+	}); err != nil {
+		return nil, err
+	}
+
+	switch len(PaymentsList.Items) {
+	case 0:
+		return nil, nil
+	case 1:
+		return &PaymentsList.Items[0], nil
+	default:
+		return nil, pkgError.New("found multiple Payments")
+	}
+}
+
+func GetWalletIfEnabled(ctx context.Context, _client client.Client, stackName string) (*v1beta1.Wallet, error) {
+
+	WalletList := &v1beta1.WalletList{}
+	if err := _client.List(ctx, WalletList, client.MatchingFields{
+		".spec.stack": stackName,
+	}); err != nil {
+		return nil, err
+	}
+
+	switch len(WalletList.Items) {
+	case 0:
+		return nil, nil
+	case 1:
+		return &WalletList.Items[0], nil
+	default:
+		return nil, pkgError.New("found multiple Wallet")
+	}
+}
+
+func CreateTopicQuery(ctx context.Context, _client client.Client, stack *v1beta1.Stack, service, queriedBy string) error {
+	_, _, err := CreateOrUpdate[*v1beta1.TopicQuery](ctx, _client, types.NamespacedName{
+		Name: GetObjectName(stack.Name, fmt.Sprintf("%s-%s", queriedBy, service)),
+	}, func(t *v1beta1.TopicQuery) {
+		t.Spec.QueriedBy = queriedBy
+		t.Spec.Stack = stack.Name
+		t.Spec.Service = service
+	})
+	return err
 }
