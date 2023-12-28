@@ -26,6 +26,9 @@ servers:
 - url: http://localhost
   description: local server
 
+security:
+  - Authorization: []
+
 components:
   securitySchemes:
     Authorization:
