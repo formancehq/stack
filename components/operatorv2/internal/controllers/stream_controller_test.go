@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -34,7 +34,7 @@ var _ = Describe("StreamController", func() {
 		It("Should create a ConfigMap", func() {
 			t := &corev1.ConfigMap{}
 			Eventually(func() error {
-				return Get(common.GetNamespacedResourceName(stack.Name, "stream-"+stream.Name), t)
+				return Get(core.GetNamespacedResourceName(stack.Name, "stream-"+stream.Name), t)
 			}).Should(BeNil())
 		})
 	})

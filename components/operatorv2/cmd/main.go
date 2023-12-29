@@ -18,6 +18,7 @@ package main
 
 import (
 	"flag"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"os"
 
@@ -95,7 +96,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	platform := reconcilers.Platform{
+	platform := core.Platform{
 		Region:      region,
 		Environment: env,
 	}

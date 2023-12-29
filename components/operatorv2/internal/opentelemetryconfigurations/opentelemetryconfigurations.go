@@ -3,8 +3,8 @@ package opentelemetryconfigurations
 import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	"github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/core"
+
 	"github.com/pkg/errors"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -12,7 +12,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func GetOpenTelemetryConfiguration(ctx reconcilers.Context, stackName string) (*v1beta1.OpenTelemetryConfiguration, error) {
+func GetOpenTelemetryConfiguration(ctx core.Context, stackName string) (*v1beta1.OpenTelemetryConfiguration, error) {
 	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func GetOpenTelemetryConfiguration(ctx reconcilers.Context, stackName string) (*
 	}
 }
 
-func IsOpenTelemetryEnabled(ctx reconcilers.Context, stackName string) (bool, error) {
+func IsOpenTelemetryEnabled(ctx core.Context, stackName string) (bool, error) {
 	configuration, err := GetOpenTelemetryConfiguration(ctx, stackName)
 	if err == nil {
 		return false, err
@@ -70,15 +70,15 @@ func MonitoringEnvVars(config *v1beta1.OpenTelemetryConfiguration, serviceName s
 
 func MonitoringOTLPEnvVars(otlp *v1beta1.OtlpSpec, monitoringType MonitoringType, serviceName string) []v1.EnvVar {
 	return []v1.EnvVar{
-		utils.Env(fmt.Sprintf("OTEL_%s", string(monitoringType)), "true"),
-		utils.Env(fmt.Sprintf("OTEL_%s_EXPORTER", string(monitoringType)), "otlp"),
-		utils.EnvFromBool(fmt.Sprintf("OTEL_%s_EXPORTER_OTLP_INSECURE", string(monitoringType)), otlp.Insecure),
-		utils.Env(fmt.Sprintf("OTEL_%s_EXPORTER_OTLP_MODE", string(monitoringType)), otlp.Mode),
-		utils.Env(fmt.Sprintf("OTEL_%s_PORT", string(monitoringType)), fmt.Sprint(otlp.Port)),
-		utils.Env(fmt.Sprintf("OTEL_%s_ENDPOINT", string(monitoringType)), otlp.Endpoint),
-		utils.Env(fmt.Sprintf("OTEL_%s_EXPORTER_OTLP_ENDPOINT", string(monitoringType)), utils.ComputeEnvVar("%s:%s", fmt.Sprintf("OTEL_%s_ENDPOINT", string(monitoringType)), fmt.Sprintf("OTEL_%s_PORT", string(monitoringType)))),
-		utils.Env("OTEL_RESOURCE_ATTRIBUTES", otlp.ResourceAttributes),
-		utils.Env("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", utils.ComputeEnvVar("http://%s", fmt.Sprintf("OTEL_TRACES_EXPORTER_OTLP_ENDPOINT"))),
-		utils.Env("OTEL_SERVICE_NAME", serviceName),
+		core.Env(fmt.Sprintf("OTEL_%s", string(monitoringType)), "true"),
+		core.Env(fmt.Sprintf("OTEL_%s_EXPORTER", string(monitoringType)), "otlp"),
+		core.EnvFromBool(fmt.Sprintf("OTEL_%s_EXPORTER_OTLP_INSECURE", string(monitoringType)), otlp.Insecure),
+		core.Env(fmt.Sprintf("OTEL_%s_EXPORTER_OTLP_MODE", string(monitoringType)), otlp.Mode),
+		core.Env(fmt.Sprintf("OTEL_%s_PORT", string(monitoringType)), fmt.Sprint(otlp.Port)),
+		core.Env(fmt.Sprintf("OTEL_%s_ENDPOINT", string(monitoringType)), otlp.Endpoint),
+		core.Env(fmt.Sprintf("OTEL_%s_EXPORTER_OTLP_ENDPOINT", string(monitoringType)), core.ComputeEnvVar("%s:%s", fmt.Sprintf("OTEL_%s_ENDPOINT", string(monitoringType)), fmt.Sprintf("OTEL_%s_PORT", string(monitoringType)))),
+		core.Env("OTEL_RESOURCE_ATTRIBUTES", otlp.ResourceAttributes),
+		core.Env("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", core.ComputeEnvVar("http://%s", fmt.Sprintf("OTEL_TRACES_EXPORTER_OTLP_ENDPOINT"))),
+		core.Env("OTEL_SERVICE_NAME", serviceName),
 	}
 }

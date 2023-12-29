@@ -1,4 +1,4 @@
-package reconcilers
+package core
 
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -20,7 +20,7 @@ func (d defaultManager) GetPlatform() Platform {
 
 var _ Manager = (*defaultManager)(nil)
 
-func newDefaultManager(m ctrl.Manager, platform Platform) *defaultManager {
+func NewDefaultManager(m ctrl.Manager, platform Platform) *defaultManager {
 	return &defaultManager{
 		Manager:  m,
 		platform: platform,

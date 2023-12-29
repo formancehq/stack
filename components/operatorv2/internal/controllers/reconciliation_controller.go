@@ -18,12 +18,11 @@ package controllers
 
 import (
 	"github.com/formancehq/operator/v2/internal/authclients"
-	common "github.com/formancehq/operator/v2/internal/common"
-	databases "github.com/formancehq/operator/v2/internal/databases"
+	common "github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/databases"
 	"github.com/formancehq/operator/v2/internal/deployments"
 	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -40,8 +39,8 @@ type ReconciliationController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
-func (r *ReconciliationController) Reconcile(ctx reconcilers.Context, reconciliation *v1beta1.Reconciliation) error {
-	stack, err := common.GetStack(ctx, reconciliation.Spec)
+func (r *ReconciliationController) Reconcile(ctx common.Context, reconciliation *v1beta1.Reconciliation) error {
+	stack, err := stacks.GetStack(ctx, reconciliation.Spec)
 	if err != nil {
 		return err
 	}
@@ -68,9 +67,9 @@ func (r *ReconciliationController) Reconcile(ctx reconcilers.Context, reconcilia
 	return nil
 }
 
-func (r *ReconciliationController) createDeployment(ctx reconcilers.Context, stack *v1beta1.Stack,
+func (r *ReconciliationController) createDeployment(ctx common.Context, stack *v1beta1.Stack,
 	reconciliation *v1beta1.Reconciliation, database *v1beta1.Database, authClient *v1beta1.AuthClient) error {
-	env, err := common.GetCommonServicesEnvVars(ctx, stack, "reconciliation", reconciliation.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, "reconciliation", reconciliation.Spec)
 	if err != nil {
 		return err
 	}
@@ -82,29 +81,29 @@ func (r *ReconciliationController) createDeployment(ctx reconcilers.Context, sta
 		)...,
 	)
 	env = append(env,
-		Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
+		common.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
 	)
 	env = append(env, authclients.GetEnvVars(authClient)...)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
+	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx,
 		common.GetNamespacedResourceName(stack.Name, "reconciliation"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:      "reconciliation",
 				Env:       env,
 				Image:     common.GetImage("reconciliation", common.GetVersion(stack, reconciliation.Spec.Version)),
-				Resources: GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, ResourceSizeSmall()),
-				Ports:     []corev1.ContainerPort{common.StandardHTTPPort()},
+				Resources: common.GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, common.ResourceSizeSmall()),
+				Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			}}
 		},
 		deployments.WithMatchingLabels("reconciliation"),
-		WithController[*appsv1.Deployment](ctx.GetScheme(), reconciliation),
+		common.WithController[*appsv1.Deployment](ctx.GetScheme(), reconciliation),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *ReconciliationController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *ReconciliationController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Reconciliation{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

@@ -18,8 +18,7 @@ package controllers
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	. "github.com/formancehq/operator/v2/internal/core"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -38,7 +37,7 @@ type HTTPAPI struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
 
-func (r *HTTPAPI) Reconcile(ctx reconcilers.Context, httpAPI *v1beta1.HTTPAPI) error {
+func (r *HTTPAPI) Reconcile(ctx Context, httpAPI *v1beta1.HTTPAPI) error {
 	_, operationResult, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Namespace: httpAPI.Spec.Stack,
 		Name:      httpAPI.Spec.Name,
@@ -99,7 +98,7 @@ func (r *HTTPAPI) Reconcile(ctx reconcilers.Context, httpAPI *v1beta1.HTTPAPI) e
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *HTTPAPI) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *HTTPAPI) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.HTTPAPI{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.Service{}), nil

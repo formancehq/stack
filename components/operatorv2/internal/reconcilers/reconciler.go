@@ -3,6 +3,7 @@ package reconcilers
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/v2/internal/core"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -14,8 +15,8 @@ import (
 )
 
 type Reconciler[T client.Object] struct {
-	Controller Controller[T]
-	Manager    Manager
+	Controller core.Controller[T]
+	Manager    core.Manager
 }
 
 func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
@@ -37,7 +38,7 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	cp := t.DeepCopyObject().(T)
 	if err := r.Controller.Reconcile(struct {
 		context.Context
-		Manager
+		core.Manager
 	}{
 		Context: ctx,
 		Manager: r.Manager,
@@ -55,7 +56,7 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	return ctrl.Result{}, nil
 }
 
-func (r *Reconciler[T]) SetupWithManager(mgr Manager) error {
+func (r *Reconciler[T]) SetupWithManager(mgr core.Manager) error {
 	r.Manager = mgr
 	builder, err := r.Controller.SetupWithManager(mgr)
 	if err != nil {
@@ -64,7 +65,7 @@ func (r *Reconciler[T]) SetupWithManager(mgr Manager) error {
 	return builder.Complete(r)
 }
 
-func New[T client.Object](ctrl Controller[T]) *Reconciler[T] {
+func New[T client.Object](ctrl core.Controller[T]) *Reconciler[T] {
 	return &Reconciler[T]{
 		Controller: ctrl,
 	}

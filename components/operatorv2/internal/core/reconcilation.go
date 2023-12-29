@@ -1,4 +1,4 @@
-package utils
+package core
 
 import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"

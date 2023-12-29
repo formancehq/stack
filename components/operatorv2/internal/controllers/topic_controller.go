@@ -19,8 +19,7 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	. "github.com/formancehq/operator/v2/internal/core"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	types "k8s.io/apimachinery/pkg/types"
@@ -41,7 +40,7 @@ type TopicController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=topics/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topics/finalizers,verbs=update
 
-func (r *TopicController) Reconcile(ctx reconcilers.Context, topic *v1beta1.Topic) error {
+func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 
 	if len(topic.Spec.Queries) == 0 {
 		if err := ctx.GetClient().Delete(ctx, topic); err != nil {
@@ -89,7 +88,7 @@ func (r *TopicController) Reconcile(ctx reconcilers.Context, topic *v1beta1.Topi
 	return nil
 }
 
-func (r *TopicController) createJob(ctx reconcilers.Context,
+func (r *TopicController) createJob(ctx Context,
 	topic *v1beta1.Topic, configuration v1beta1.BrokerConfiguration) (*batchv1.Job, error) {
 
 	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
@@ -121,7 +120,7 @@ func (r *TopicController) createJob(ctx reconcilers.Context,
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Topic{}, ".spec.service", func(rawObj client.Object) []string {

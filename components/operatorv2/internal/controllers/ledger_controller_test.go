@@ -2,10 +2,9 @@ package controllers_test
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/opentelemetryconfigurations"
-	"github.com/formancehq/operator/v2/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
@@ -67,13 +66,13 @@ var _ = Describe("LedgerController", func() {
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}
 			Eventually(func() error {
-				return LoadResource("", common.GetObjectName(stack.Name, "ledger"), httpService)
+				return LoadResource("", core.GetObjectName(stack.Name, "ledger"), httpService)
 			}).Should(Succeed())
 		})
 		It("Should create a new Database object", func() {
 			database := &v1beta1.Database{}
 			Eventually(func() error {
-				return LoadResource("", common.GetObjectName(stack.Name, "ledger"), database)
+				return LoadResource("", core.GetObjectName(stack.Name, "ledger"), database)
 			}).Should(Succeed())
 		})
 		Context("with monitoring enabled", func() {
@@ -99,7 +98,7 @@ var _ = Describe("LedgerController", func() {
 			It("Should add correct env vars to the deployment", func() {
 				Eventually(func(g Gomega) []corev1.EnvVar {
 					deployment := &appsv1.Deployment{}
-					g.Expect(Get(common.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
+					g.Expect(Get(core.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
 					return deployment.Spec.Template.Spec.Containers[0].Env
 				}).Should(ContainElements(
 					collectionutils.Map(
@@ -113,9 +112,9 @@ var _ = Describe("LedgerController", func() {
 			deploymentShouldBeConfigured := func() {
 				deployment := &appsv1.Deployment{}
 				Eventually(func(g Gomega) bool {
-					g.Expect(Get(common.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
+					g.Expect(Get(core.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
 					g.Expect(deployment.Spec.Template.Spec.Containers[0].Env).
-						Should(ContainElement(utils.Env("BROKER", "nats")))
+						Should(ContainElement(core.Env("BROKER", "nats")))
 					return true
 				}).Should(BeTrue())
 			}
@@ -160,9 +159,9 @@ var _ = Describe("LedgerController", func() {
 				It("Should restart the deployment without broker env vars", func() {
 					deployment := &appsv1.Deployment{}
 					Eventually(func(g Gomega) bool {
-						g.Expect(Get(common.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
+						g.Expect(Get(core.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
 						g.Expect(deployment.Spec.Template.Spec.Containers[0].Env).
-							ShouldNot(ContainElements(utils.Env("BROKER", "nats")))
+							ShouldNot(ContainElements(core.Env("BROKER", "nats")))
 						return true
 					}).Should(BeTrue())
 				})

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	_ "github.com/formancehq/operator/v2/internal/controllers"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -75,7 +76,7 @@ var _ = BeforeSuite(func() {
 
 	SetDefaultEventuallyTimeout(5 * time.Second)
 
-	Expect(reconcilers.Setup(mgr, reconcilers.Platform{
+	Expect(reconcilers.Setup(mgr, core.Platform{
 		Region:      "us-west-1",
 		Environment: "staging",
 	})).To(Succeed())

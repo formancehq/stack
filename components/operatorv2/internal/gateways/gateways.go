@@ -4,15 +4,16 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	"github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/stacks"
+
 	"k8s.io/api/core/v1"
 )
 
 //go:embed Caddyfile.gotpl
 var Caddyfile string
 
-func GetURLSAsEnvVarsIfEnabled(ctx reconcilers.Context, stackName string) ([]v1.EnvVar, error) {
+func GetURLSAsEnvVarsIfEnabled(ctx core.Context, stackName string) ([]v1.EnvVar, error) {
 	gateway, err := GetIfEnabled(ctx, stackName)
 	if err != nil {
 		return nil, err
@@ -34,6 +35,6 @@ func GetURLSAsEnvVarsIfEnabled(ctx reconcilers.Context, stackName string) ([]v1.
 	return ret, nil
 }
 
-func GetIfEnabled(ctx reconcilers.Context, stackName string) (*v1beta1.Gateway, error) {
-	return utils.GetSingleStackDependencyObject[*v1beta1.GatewayList, *v1beta1.Gateway](ctx, stackName)
+func GetIfEnabled(ctx core.Context, stackName string) (*v1beta1.Gateway, error) {
+	return stacks.GetSingleStackDependencyObject[*v1beta1.GatewayList, *v1beta1.Gateway](ctx, stackName)
 }

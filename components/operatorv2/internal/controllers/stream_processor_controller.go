@@ -20,12 +20,11 @@ import (
 	"embed"
 	"fmt"
 	"github.com/formancehq/operator/v2/internal/brokerconfigurations"
+	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/deployments"
 	"github.com/formancehq/operator/v2/internal/elasticsearchconfigurations"
 	"github.com/formancehq/operator/v2/internal/opentelemetryconfigurations"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
 	benthosOperator "github.com/formancehq/operator/v2/internal/searches/benthos"
-	. "github.com/formancehq/operator/v2/internal/utils"
 	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -49,7 +48,7 @@ type StreamProcessorController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/finalizers,verbs=update
 
-func (r *StreamProcessorController) Reconcile(ctx reconcilers.Context, streamProcessor *v1beta1.StreamProcessor) error {
+func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1beta1.StreamProcessor) error {
 
 	brokerConfiguration, err := brokerconfigurations.Require(ctx, streamProcessor.Spec.Stack)
 	if err != nil {
@@ -250,7 +249,7 @@ func (r *StreamProcessorController) Reconcile(ctx reconcilers.Context, streamPro
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *StreamProcessorController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *StreamProcessorController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	//TODO: Watch streams
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.StreamProcessor{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).

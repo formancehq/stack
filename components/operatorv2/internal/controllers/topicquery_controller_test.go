@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -49,8 +49,8 @@ var _ = Describe("TopicQueryController", func() {
 		It("Should create a Topic", func() {
 			t := &v1beta1.Topic{}
 			Eventually(func() error {
-				return Get(common.GetResourceName(
-					common.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)
+				return Get(core.GetResourceName(
+					core.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)
 			}).Should(BeNil())
 			Expect(t.Spec.Queries).To(ContainElement(topicQuery.Spec.QueriedBy))
 		})
@@ -58,8 +58,8 @@ var _ = Describe("TopicQueryController", func() {
 			t := &v1beta1.Topic{}
 			BeforeEach(func() {
 				Eventually(func(g Gomega) bool {
-					g.Expect(Get(common.GetResourceName(
-						common.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)).To(Succeed())
+					g.Expect(Get(core.GetResourceName(
+						core.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)).To(Succeed())
 					return t.Status.Ready
 				}).Should(BeTrue())
 			})
@@ -99,7 +99,7 @@ var _ = Describe("TopicQueryController", func() {
 					It("Should remove the service from the queries of the topic", func() {
 						Eventually(func(g Gomega) []string {
 							topic := &v1beta1.Topic{}
-							g.Expect(Get(common.GetResourceName(common.GetObjectName(stack.Name, topicQuery.Spec.Service)), topic)).To(Succeed())
+							g.Expect(Get(core.GetResourceName(core.GetObjectName(stack.Name, topicQuery.Spec.Service)), topic)).To(Succeed())
 							return topic.Spec.Queries
 						}).Should(Equal([]string{topicQuery2.Spec.QueriedBy}))
 					})
@@ -109,7 +109,7 @@ var _ = Describe("TopicQueryController", func() {
 						})
 						It("Should completely remove the Topic object", func() {
 							Eventually(func(g Gomega) bool {
-								return errors.IsNotFound(Get(common.GetResourceName(common.GetObjectName(stack.Name, topicQuery.Spec.Service)), &v1beta1.Topic{}))
+								return errors.IsNotFound(Get(core.GetResourceName(core.GetObjectName(stack.Name, topicQuery.Spec.Service)), &v1beta1.Topic{}))
 							}).Should(BeTrue())
 						})
 					})

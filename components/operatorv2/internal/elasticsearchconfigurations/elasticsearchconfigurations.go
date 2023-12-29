@@ -2,28 +2,29 @@ package elasticsearchconfigurations
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	"github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/stacks"
+
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Require(ctx reconcilers.Context, stackName string) (*v1beta1.ElasticSearchConfiguration, error) {
+func Require(ctx core.Context, stackName string) (*v1beta1.ElasticSearchConfiguration, error) {
 
 	elasticSearchConfiguration, err := Get(ctx, stackName)
 	if err != nil {
 		return nil, err
 	}
 	if elasticSearchConfiguration == nil {
-		return nil, utils.ErrNotFound
+		return nil, stacks.ErrNotFound
 	}
 
 	return elasticSearchConfiguration, nil
 }
 
-func Get(ctx reconcilers.Context, stackName string) (*v1beta1.ElasticSearchConfiguration, error) {
+func Get(ctx core.Context, stackName string) (*v1beta1.ElasticSearchConfiguration, error) {
 
 	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})
 	if err != nil {

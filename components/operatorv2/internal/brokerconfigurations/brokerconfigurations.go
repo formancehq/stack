@@ -1,11 +1,11 @@
 package brokerconfigurations
 
 import (
-	"errors"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	utils2 "github.com/formancehq/operator/v2/internal/utils"
-	errors2 "github.com/pkg/errors"
+	"github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/stacks"
+
+	"github.com/pkg/errors"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func Require(ctx reconcilers.Context, stackName string) (*v1beta1.BrokerConfiguration, error) {
+func Require(ctx core.Context, stackName string) (*v1beta1.BrokerConfiguration, error) {
 	brokerConfiguration, err := Get(ctx, stackName)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func Require(ctx reconcilers.Context, stackName string) (*v1beta1.BrokerConfigur
 	return brokerConfiguration, nil
 }
 
-func Get(ctx reconcilers.Context, stackName string) (*v1beta1.BrokerConfiguration, error) {
+func Get(ctx core.Context, stackName string) (*v1beta1.BrokerConfiguration, error) {
 
 	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})
 	if err != nil {
@@ -44,17 +44,17 @@ func Get(ctx reconcilers.Context, stackName string) (*v1beta1.BrokerConfiguratio
 	case 1:
 		return &brokerConfigurationList.Items[0], nil
 	default:
-		return nil, errors2.New("found multiple broker config")
+		return nil, errors.New("found multiple broker config")
 	}
 }
 
-func GetEnvVars(ctx reconcilers.Context, stackName, serviceName string) ([]v1.EnvVar, error) {
+func GetEnvVars(ctx core.Context, stackName, serviceName string) ([]v1.EnvVar, error) {
 	configuration, err := Get(ctx, stackName)
 	if err != nil {
 		return nil, err
 	}
 	if configuration == nil {
-		return nil, utils2.ErrNotFound
+		return nil, stacks.ErrNotFound
 	}
 
 	return BrokerEnvVars(*configuration, serviceName), nil
@@ -65,30 +65,30 @@ func BrokerEnvVars(broker v1beta1.BrokerConfiguration, serviceName string) []v1.
 
 	if broker.Spec.Kafka != nil {
 		ret = append(ret,
-			utils2.Env("BROKER", "kafka"),
-			utils2.Env("PUBLISHER_KAFKA_ENABLED", "true"),
-			utils2.Env("PUBLISHER_KAFKA_BROKER", strings.Join(broker.Spec.Kafka.Brokers, " ")),
+			core.Env("BROKER", "kafka"),
+			core.Env("PUBLISHER_KAFKA_ENABLED", "true"),
+			core.Env("PUBLISHER_KAFKA_BROKER", strings.Join(broker.Spec.Kafka.Brokers, " ")),
 		)
 		if broker.Spec.Kafka.SASL != nil {
 			ret = append(ret,
-				utils2.Env("PUBLISHER_KAFKA_SASL_ENABLED", "true"),
-				utils2.Env("PUBLISHER_KAFKA_SASL_USERNAME", broker.Spec.Kafka.SASL.Username),
-				utils2.Env("PUBLISHER_KAFKA_SASL_PASSWORD", broker.Spec.Kafka.SASL.Password),
-				utils2.Env("PUBLISHER_KAFKA_SASL_MECHANISM", broker.Spec.Kafka.SASL.Mechanism),
-				utils2.Env("PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE", broker.Spec.Kafka.SASL.ScramSHASize),
+				core.Env("PUBLISHER_KAFKA_SASL_ENABLED", "true"),
+				core.Env("PUBLISHER_KAFKA_SASL_USERNAME", broker.Spec.Kafka.SASL.Username),
+				core.Env("PUBLISHER_KAFKA_SASL_PASSWORD", broker.Spec.Kafka.SASL.Password),
+				core.Env("PUBLISHER_KAFKA_SASL_MECHANISM", broker.Spec.Kafka.SASL.Mechanism),
+				core.Env("PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE", broker.Spec.Kafka.SASL.ScramSHASize),
 			)
 		}
 		if broker.Spec.Kafka.TLS {
 			ret = append(ret,
-				utils2.Env("PUBLISHER_KAFKA_TLS_ENABLED", "true"),
+				core.Env("PUBLISHER_KAFKA_TLS_ENABLED", "true"),
 			)
 		}
 	} else {
 		ret = append(ret,
-			utils2.Env("BROKER", "nats"),
-			utils2.Env("PUBLISHER_NATS_ENABLED", "true"),
-			utils2.Env("PUBLISHER_NATS_URL", broker.Spec.Nats.URL),
-			utils2.Env("PUBLISHER_NATS_CLIENT_ID", serviceName),
+			core.Env("BROKER", "nats"),
+			core.Env("PUBLISHER_NATS_ENABLED", "true"),
+			core.Env("PUBLISHER_NATS_URL", broker.Spec.Nats.URL),
+			core.Env("PUBLISHER_NATS_CLIENT_ID", serviceName),
 		)
 	}
 	return ret

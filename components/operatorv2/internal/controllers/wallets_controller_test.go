@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -85,13 +85,13 @@ var _ = Describe("WalletsController", func() {
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}
 			Eventually(func() error {
-				return LoadResource("", common.GetObjectName(stack.Name, "wallets"), httpService)
+				return LoadResource("", core.GetObjectName(stack.Name, "wallets"), httpService)
 			}).Should(Succeed())
 		})
 		It("Should create a new AuthClient object", func() {
 			authClient := &v1beta1.AuthClient{}
 			Eventually(func() error {
-				return LoadResource("", common.GetObjectName(stack.Name, "wallets"), authClient)
+				return LoadResource("", core.GetObjectName(stack.Name, "wallets"), authClient)
 			}).Should(Succeed())
 		})
 	})

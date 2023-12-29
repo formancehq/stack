@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -52,7 +52,7 @@ var _ = Describe("TopicController", func() {
 		It("Should be set to ready status", func() {
 			t := &v1beta1.Topic{}
 			Eventually(func(g Gomega) bool {
-				g.Expect(Get(common.GetResourceName(topic.Name), t)).To(Succeed())
+				g.Expect(Get(core.GetResourceName(topic.Name), t)).To(Succeed())
 				return t.Status.Ready
 			}).Should(BeTrue())
 		})
@@ -63,7 +63,7 @@ var _ = Describe("TopicController", func() {
 			})
 			It("Should trigger the removal of the topic object", func() {
 				Eventually(func(g Gomega) bool {
-					return errors.IsNotFound(Get(common.GetResourceName(topic.Name), topic))
+					return errors.IsNotFound(Get(core.GetResourceName(topic.Name), topic))
 				}).Should(BeTrue())
 			})
 		})

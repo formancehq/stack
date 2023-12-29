@@ -19,11 +19,10 @@ package controllers
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/authclients"
-	common "github.com/formancehq/operator/v2/internal/common"
+	common "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/deployments"
 	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -40,9 +39,9 @@ type WalletsController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletsController) Reconcile(ctx reconcilers.Context, wallet *v1beta1.Wallets) error {
+func (r *WalletsController) Reconcile(ctx common.Context, wallet *v1beta1.Wallets) error {
 
-	stack, err := common.GetStack(ctx, wallet.Spec)
+	stack, err := stacks.GetStack(ctx, wallet.Spec)
 	if err != nil {
 		return err
 	}
@@ -65,14 +64,14 @@ func (r *WalletsController) Reconcile(ctx reconcilers.Context, wallet *v1beta1.W
 	return nil
 }
 
-func (r *WalletsController) createDeployment(ctx reconcilers.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallets, authClient *formancev1beta1.AuthClient) error {
-	env, err := common.GetCommonServicesEnvVars(ctx, stack, "wallets", wallet.Spec)
+func (r *WalletsController) createDeployment(ctx common.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallets, authClient *formancev1beta1.AuthClient) error {
+	env, err := GetCommonServicesEnvVars(ctx, stack, "wallets", wallet.Spec)
 	if err != nil {
 		return err
 	}
 	env = append(env, authclients.GetEnvVars(authClient)...)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
+	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx,
 		common.GetNamespacedResourceName(stack.Name, "wallets"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
@@ -80,18 +79,18 @@ func (r *WalletsController) createDeployment(ctx reconcilers.Context, stack *for
 				Args:      []string{"serve"},
 				Env:       env,
 				Image:     common.GetImage("wallets", common.GetVersion(stack, wallet.Spec.Version)),
-				Resources: GetResourcesWithDefault(wallet.Spec.ResourceProperties, ResourceSizeSmall()),
-				Ports:     []corev1.ContainerPort{common.StandardHTTPPort()},
+				Resources: common.GetResourcesWithDefault(wallet.Spec.ResourceProperties, common.ResourceSizeSmall()),
+				Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			}}
 		},
 		deployments.WithMatchingLabels("wallets"),
-		WithController[*appsv1.Deployment](ctx.GetScheme(), wallet),
+		common.WithController[*appsv1.Deployment](ctx.GetScheme(), wallet),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WalletsController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *WalletsController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&formancev1beta1.Wallets{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

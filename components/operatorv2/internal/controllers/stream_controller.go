@@ -19,8 +19,7 @@ package controllers
 import (
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	. "github.com/formancehq/operator/v2/internal/core"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -36,7 +35,7 @@ type StreamController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=streams/finalizers,verbs=update
 
 // TODO: Check if we can add a worker to the operator to fetch stats from benthos api
-func (r *StreamController) Reconcile(ctx reconcilers.Context, stream *v1beta1.Stream) error {
+func (r *StreamController) Reconcile(ctx Context, stream *v1beta1.Stream) error {
 	_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stream.Spec.Stack,
 		Name:      fmt.Sprintf("stream-%s", stream.Name),
@@ -56,7 +55,7 @@ func (r *StreamController) Reconcile(ctx reconcilers.Context, stream *v1beta1.St
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *StreamController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *StreamController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stream{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

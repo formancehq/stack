@@ -22,12 +22,11 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/internal/auths"
 	"github.com/formancehq/operator/v2/internal/brokerconfigurations"
-	common "github.com/formancehq/operator/v2/internal/common"
+	common "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/deployments"
 	"github.com/formancehq/operator/v2/internal/gateways"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"github.com/formancehq/operator/v2/internal/services"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/stacks"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
@@ -56,9 +55,9 @@ type GatewayController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/finalizers,verbs=update
 
-func (r *GatewayController) Reconcile(ctx reconcilers.Context, gateway *v1beta1.Gateway) error {
+func (r *GatewayController) Reconcile(ctx common.Context, gateway *v1beta1.Gateway) error {
 
-	stack, err := common.GetStack(ctx, gateway.Spec)
+	stack, err := stacks.GetStack(ctx, gateway.Spec)
 	if err != nil {
 		return err
 	}
@@ -100,7 +99,7 @@ func (r *GatewayController) Reconcile(ctx reconcilers.Context, gateway *v1beta1.
 	return nil
 }
 
-func (r *GatewayController) createConfigMap(ctx reconcilers.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createConfigMap(ctx common.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs *v1beta1.HTTPAPIList, authEnabled bool) (*corev1.ConfigMap, error) {
 
 	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs.Items, authEnabled)
@@ -108,7 +107,7 @@ func (r *GatewayController) createConfigMap(ctx reconcilers.Context, stack *v1be
 		return nil, err
 	}
 
-	caddyfileConfigMap, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
+	caddyfileConfigMap, _, err := common.CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "gateway",
 	},
@@ -117,13 +116,13 @@ func (r *GatewayController) createConfigMap(ctx reconcilers.Context, stack *v1be
 				"Caddyfile": caddyfile,
 			}
 		},
-		WithController[*corev1.ConfigMap](ctx.GetScheme(), gateway),
+		common.WithController[*corev1.ConfigMap](ctx.GetScheme(), gateway),
 	)
 
 	return caddyfileConfigMap, err
 }
 
-func (r *GatewayController) createDeployment(ctx reconcilers.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createDeployment(ctx common.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap) error {
 
 	env, err := gateways.GetURLSAsEnvVarsIfEnabled(ctx, stack.Name)
@@ -142,11 +141,11 @@ func (r *GatewayController) createDeployment(ctx reconcilers.Context, stack *v1b
 
 	mutators := common.ConfigureCaddy(caddyfileConfigMap, common.GetImage("gateway", common.GetVersion(stack, gateway.Spec.Version)), env, gateway.Spec.ResourceProperties)
 	mutators = append(mutators,
-		WithController[*appsv1.Deployment](ctx.GetScheme(), gateway),
+		common.WithController[*appsv1.Deployment](ctx.GetScheme(), gateway),
 		deployments.WithMatchingLabels("gateway"),
 	)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "gateway",
 	}, mutators...)
@@ -154,19 +153,19 @@ func (r *GatewayController) createDeployment(ctx reconcilers.Context, stack *v1b
 	return err
 }
 
-func (r *GatewayController) createService(ctx reconcilers.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createService(ctx common.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
-	_, _, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
+	_, _, err := common.CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Name:      "gateway",
 		Namespace: stack.Name,
 	},
 		services.ConfigureK8SService("gateway"),
-		WithController[*corev1.Service](ctx.GetScheme(), gateway),
+		common.WithController[*corev1.Service](ctx.GetScheme(), gateway),
 	)
 	return err
 }
 
-func (r *GatewayController) handleIngress(ctx reconcilers.Context, stack *v1beta1.Stack,
+func (r *GatewayController) handleIngress(ctx common.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
 
 	name := types.NamespacedName{
@@ -174,10 +173,10 @@ func (r *GatewayController) handleIngress(ctx reconcilers.Context, stack *v1beta
 		Name:      "gateway",
 	}
 	if gateway.Spec.Ingress == nil {
-		return DeleteIfExists[*networkingv1.Ingress](ctx, name)
+		return common.DeleteIfExists[*networkingv1.Ingress](ctx, name)
 	}
 
-	_, _, err := CreateOrUpdate[*networkingv1.Ingress](ctx, name,
+	_, _, err := common.CreateOrUpdate[*networkingv1.Ingress](ctx, name,
 		func(ingress *networkingv1.Ingress) {
 			pathType := networkingv1.PathTypePrefix
 			ingress.ObjectMeta.Annotations = gateway.Spec.Ingress.Annotations
@@ -213,13 +212,13 @@ func (r *GatewayController) handleIngress(ctx reconcilers.Context, stack *v1beta
 				},
 			}
 		},
-		WithController[*networkingv1.Ingress](ctx.GetScheme(), gateway),
+		common.WithController[*networkingv1.Ingress](ctx.GetScheme(), gateway),
 	)
 
 	return err
 }
 
-func (r *GatewayController) createCaddyfile(ctx reconcilers.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createCaddyfile(ctx common.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs []v1beta1.HTTPAPI, authEnabled bool) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
@@ -277,7 +276,7 @@ func (r *GatewayController) createCaddyfile(ctx reconcilers.Context, stack *v1be
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *GatewayController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *GatewayController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Gateway{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.ConfigMap{}).
@@ -294,7 +293,7 @@ func (r *GatewayController) SetupWithManager(mgr reconcilers.Manager) (*builder.
 					return []reconcile.Request{}
 				}
 
-				return MapObjectToReconcileRequests(
+				return common.MapObjectToReconcileRequests(
 					Map(list.Items, ToPointer[v1beta1.Gateway])...,
 				)
 			}),
@@ -310,7 +309,7 @@ func (r *GatewayController) SetupWithManager(mgr reconcilers.Manager) (*builder.
 					return []reconcile.Request{}
 				}
 
-				return MapObjectToReconcileRequests(
+				return common.MapObjectToReconcileRequests(
 					Map(list.Items, ToPointer[v1beta1.Gateway])...,
 				)
 			}),

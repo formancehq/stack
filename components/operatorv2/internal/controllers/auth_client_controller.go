@@ -19,9 +19,8 @@ package controllers
 import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/stacks"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -36,14 +35,14 @@ type AuthClientController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=authclients/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=authclients/finalizers,verbs=update
 
-func (r *AuthClientController) Reconcile(ctx reconcilers.Context, authClient *v1beta1.AuthClient) error {
+func (r *AuthClientController) Reconcile(ctx core.Context, authClient *v1beta1.AuthClient) error {
 
-	stack, err := common.GetStack(ctx, authClient.Spec)
+	stack, err := stacks.GetStack(ctx, authClient.Spec)
 	if err != nil {
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*corev1.Secret](ctx, types.NamespacedName{
+	_, _, err = core.CreateOrUpdate[*corev1.Secret](ctx, types.NamespacedName{
 		Name:      fmt.Sprintf("auth-client-%s", authClient.Name),
 		Namespace: stack.Name,
 	},
@@ -53,13 +52,13 @@ func (r *AuthClientController) Reconcile(ctx reconcilers.Context, authClient *v1
 				"secret": authClient.Spec.Secret,
 			}
 		},
-		WithController[*corev1.Secret](ctx.GetScheme(), authClient),
+		core.WithController[*corev1.Secret](ctx.GetScheme(), authClient),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *AuthClientController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *AuthClientController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.AuthClient{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.Secret{}), nil

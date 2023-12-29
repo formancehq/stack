@@ -2,16 +2,14 @@ package httpapis
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	"github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/core"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Create(ctx reconcilers.Context, stack *v1beta1.Stack, owner client.Object, objectName string, options ...func(spec *v1beta1.HTTPAPISpec)) error {
-	_, _, err := utils.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
-		Name: common.GetObjectName(stack.Name, objectName),
+func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectName string, options ...func(spec *v1beta1.HTTPAPISpec)) error {
+	_, _, err := core.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
+		Name: core.GetObjectName(stack.Name, objectName),
 	},
 		func(t *v1beta1.HTTPAPI) {
 			t.Spec = v1beta1.HTTPAPISpec{
@@ -26,7 +24,7 @@ func Create(ctx reconcilers.Context, stack *v1beta1.Stack, owner client.Object, 
 				option(&t.Spec)
 			}
 		},
-		utils.WithController[*v1beta1.HTTPAPI](ctx.GetScheme(), owner),
+		core.WithController[*v1beta1.HTTPAPI](ctx.GetScheme(), owner),
 	)
 	return err
 }

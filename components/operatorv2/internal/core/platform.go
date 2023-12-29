@@ -1,4 +1,4 @@
-package reconcilers
+package core
 
 type Platform struct {
 	// Cloud region where the stack is deployed

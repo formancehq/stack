@@ -18,11 +18,8 @@ package controllers
 
 import (
 	"context"
-	. "github.com/formancehq/operator/v2/internal/common"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
-
 	"github.com/formancehq/operator/v2/api/v1beta1"
+	. "github.com/formancehq/operator/v2/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -47,7 +44,7 @@ type TopicQueryController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/finalizers,verbs=update
 
-func (r *TopicQueryController) Reconcile(ctx reconcilers.Context, topicQuery *v1beta1.TopicQuery) error {
+func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQuery) error {
 
 	if !topicQuery.DeletionTimestamp.IsZero() {
 		topic := &v1beta1.Topic{}
@@ -122,7 +119,7 @@ func (r *TopicQueryController) Reconcile(ctx reconcilers.Context, topicQuery *v1
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicQueryController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *TopicQueryController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.TopicQuery{}, ".spec.service", func(rawObj client.Object) []string {

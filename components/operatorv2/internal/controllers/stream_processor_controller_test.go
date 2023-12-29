@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -64,19 +64,19 @@ var _ = Describe("StreamProcessorController", func() {
 		It("Should create a deployment", func() {
 			t := &appsv1.Deployment{}
 			Eventually(func() error {
-				return Get(common.GetNamespacedResourceName(stack.Name, "stream-processor"), t)
+				return Get(core.GetNamespacedResourceName(stack.Name, "stream-processor"), t)
 			}).Should(BeNil())
 		})
 		It("Should create a ConfigMap for templates configuration", func() {
 			t := &corev1.ConfigMap{}
 			Eventually(func() error {
-				return Get(common.GetNamespacedResourceName(stack.Name, "stream-processor-templates"), t)
+				return Get(core.GetNamespacedResourceName(stack.Name, "stream-processor-templates"), t)
 			}).Should(BeNil())
 		})
 		It("Should create a ConfigMap for resources configuration", func() {
 			t := &corev1.ConfigMap{}
 			Eventually(func() error {
-				return Get(common.GetNamespacedResourceName(stack.Name, "stream-processor-resources"), t)
+				return Get(core.GetNamespacedResourceName(stack.Name, "stream-processor-resources"), t)
 			}).Should(BeNil())
 		})
 	})

@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	. "github.com/formancehq/operator/v2/internal/core"
 	pkgError "github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
@@ -59,7 +58,7 @@ const (
 // Reconciler reconciles a Stack object
 type StackController struct{}
 
-func (r *StackController) Reconcile(ctx reconcilers.Context, stack *v1beta1.Stack) error {
+func (r *StackController) Reconcile(ctx Context, stack *v1beta1.Stack) error {
 
 	_, _, err := CreateOrUpdate(ctx, types.NamespacedName{
 		Name: stack.Name,
@@ -75,7 +74,7 @@ func (r *StackController) Reconcile(ctx reconcilers.Context, stack *v1beta1.Stac
 	return nil
 }
 
-func (r *StackController) handleSecrets(ctx reconcilers.Context, stack *v1beta1.Stack) error {
+func (r *StackController) handleSecrets(ctx Context, stack *v1beta1.Stack) error {
 	secrets, err := r.copySecrets(ctx, stack)
 	if err != nil {
 		return err
@@ -84,7 +83,7 @@ func (r *StackController) handleSecrets(ctx reconcilers.Context, stack *v1beta1.
 	return r.cleanSecrets(ctx, stack, secrets)
 }
 
-func (r *StackController) copySecrets(ctx reconcilers.Context, stack *v1beta1.Stack) ([]corev1.Secret, error) {
+func (r *StackController) copySecrets(ctx Context, stack *v1beta1.Stack) ([]corev1.Secret, error) {
 
 	requirement, err := labels.NewRequirement(ApplyToStacksLabel, selection.In, []string{stack.Name, AnyValue})
 	if err != nil {
@@ -127,7 +126,7 @@ func (r *StackController) copySecrets(ctx reconcilers.Context, stack *v1beta1.St
 	return secretsToCopy.Items, nil
 }
 
-func (r *StackController) cleanSecrets(ctx reconcilers.Context, stack *v1beta1.Stack, copiedSecrets []corev1.Secret) error {
+func (r *StackController) cleanSecrets(ctx Context, stack *v1beta1.Stack, copiedSecrets []corev1.Secret) error {
 	requirement, err := labels.NewRequirement(CopiedSecretLabel, selection.Equals, []string{TrueValue})
 	if err != nil {
 		return err
@@ -159,7 +158,7 @@ l:
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *StackController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *StackController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	//TODO: need to update opentelemetry configuration to retrieve by label
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).

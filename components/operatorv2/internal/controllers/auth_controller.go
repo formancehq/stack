@@ -17,15 +17,13 @@ limitations under the License.
 package controllers
 
 import (
-	"context"
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	common "github.com/formancehq/operator/v2/internal/common"
-	databases "github.com/formancehq/operator/v2/internal/databases"
+	common "github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/databases"
 	"github.com/formancehq/operator/v2/internal/deployments"
 	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	. "github.com/formancehq/operator/v2/internal/utils"
+	"github.com/formancehq/operator/v2/internal/stacks"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
@@ -36,7 +34,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sort"
 )
 
@@ -47,9 +44,9 @@ type AuthController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=auths/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=auths/finalizers,verbs=update
 
-func (r *AuthController) Reconcile(ctx reconcilers.Context, auth *v1beta1.Auth) error {
+func (r *AuthController) Reconcile(ctx common.Context, auth *v1beta1.Auth) error {
 
-	stack, err := common.GetStack(ctx, auth.Spec)
+	stack, err := stacks.GetStack(ctx, auth.Spec)
 	if err != nil {
 		return err
 	}
@@ -85,7 +82,7 @@ func (r *AuthController) Reconcile(ctx reconcilers.Context, auth *v1beta1.Auth) 
 	return nil
 }
 
-func (r *AuthController) createConfiguration(ctx reconcilers.Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
+func (r *AuthController) createConfiguration(ctx common.Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
 
 	sort.Slice(items, func(i, j int) bool {
 		return items[i].Name < items[j].Name
@@ -102,7 +99,7 @@ func (r *AuthController) createConfiguration(ctx reconcilers.Context, stack *v1b
 		return nil, err
 	}
 
-	cm, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
+	cm, _, err := common.CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "auth-configuration",
 	}, func(t *corev1.ConfigMap) {
@@ -117,9 +114,9 @@ func (r *AuthController) createConfiguration(ctx reconcilers.Context, stack *v1b
 	return cm, nil
 }
 
-func (r *AuthController) createDeployment(ctx reconcilers.Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
+func (r *AuthController) createDeployment(ctx common.Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
 
-	env, err := common.GetCommonServicesEnvVars(ctx, stack, "auth", auth.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, "auth", auth.Spec)
 	if err != nil {
 		return err
 	}
@@ -131,14 +128,14 @@ func (r *AuthController) createDeployment(ctx reconcilers.Context, stack *v1beta
 		)...,
 	)
 	env = append(env,
-		Env("CONFIG", "/config/config.yaml"),
-		Env("BASE_URL", "$(STACK_PUBLIC_URL)/api/auth"),
+		common.Env("CONFIG", "/config/config.yaml"),
+		common.Env("BASE_URL", "$(STACK_PUBLIC_URL)/api/auth"),
 	)
 	if auth.Spec.SigningKey != "" && auth.Spec.SigningKeyFromSecret != nil {
 		return fmt.Errorf("cannot specify signing key using both .spec.signingKey and .spec.signingKeyFromSecret fields")
 	}
 	if auth.Spec.SigningKey != "" {
-		env = append(env, Env("SIGNING_KEY", auth.Spec.SigningKey))
+		env = append(env, common.Env("SIGNING_KEY", auth.Spec.SigningKey))
 	}
 	if auth.Spec.SigningKeyFromSecret != nil {
 		env = append(env, corev1.EnvVar{
@@ -150,33 +147,33 @@ func (r *AuthController) createDeployment(ctx reconcilers.Context, stack *v1beta
 	}
 	if auth.Spec.DelegatedOIDCServer != nil {
 		env = append(env,
-			Env("DELEGATED_CLIENT_SECRET", auth.Spec.DelegatedOIDCServer.ClientSecret),
-			Env("DELEGATED_CLIENT_ID", auth.Spec.DelegatedOIDCServer.ClientID),
-			Env("DELEGATED_ISSUER", auth.Spec.DelegatedOIDCServer.Issuer),
+			common.Env("DELEGATED_CLIENT_SECRET", auth.Spec.DelegatedOIDCServer.ClientSecret),
+			common.Env("DELEGATED_CLIENT_ID", auth.Spec.DelegatedOIDCServer.ClientID),
+			common.Env("DELEGATED_ISSUER", auth.Spec.DelegatedOIDCServer.Issuer),
 		)
 	}
 	if stack.Spec.Dev || auth.Spec.Dev {
-		env = append(env, Env("CAOS_OIDC_DEV", "1"))
+		env = append(env, common.Env("CAOS_OIDC_DEV", "1"))
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
+	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx,
 		common.GetNamespacedResourceName(stack.Name, "auth"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
-				"config-hash": HashFromConfigMap(configMap),
+				"config-hash": common.HashFromConfigMap(configMap),
 			})
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:      "auth",
 				Args:      []string{"serve"},
 				Env:       env,
 				Image:     common.GetImage("auth", common.GetVersion(stack, auth.Spec.Version)),
-				Resources: GetResourcesWithDefault(auth.Spec.ResourceProperties, ResourceSizeSmall()),
+				Resources: common.GetResourcesWithDefault(auth.Spec.ResourceProperties, common.ResourceSizeSmall()),
 				VolumeMounts: []corev1.VolumeMount{{
 					Name:      "config",
 					ReadOnly:  true,
 					MountPath: "/config",
 				}},
-				Ports: []corev1.ContainerPort{common.StandardHTTPPort()},
+				Ports: []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			}}
 			t.Spec.Template.Spec.Volumes = []corev1.Volume{{
 				Name: "config",
@@ -190,13 +187,13 @@ func (r *AuthController) createDeployment(ctx reconcilers.Context, stack *v1beta
 			}}
 		},
 		deployments.WithMatchingLabels("auth"),
-		WithController[*appsv1.Deployment](ctx.GetScheme(), auth),
+		common.WithController[*appsv1.Deployment](ctx.GetScheme(), auth),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *AuthController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+func (r *AuthController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Auth{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&appsv1.Deployment{}).
@@ -204,20 +201,7 @@ func (r *AuthController) SetupWithManager(mgr reconcilers.Manager) (*builder.Bui
 		Owns(&v1beta1.Database{}).
 		Watches(
 			&v1beta1.AuthClient{},
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-				authClient := object.(*v1beta1.AuthClient)
-
-				list := &v1beta1.AuthList{}
-				if err := mgr.GetClient().List(ctx, list, client.MatchingFields{
-					".spec.stack": authClient.Spec.Stack,
-				}); err != nil {
-					return []reconcile.Request{}
-				}
-
-				return MapObjectToReconcileRequests(
-					Map(list.Items, ToPointer[v1beta1.Auth])...,
-				)
-			}),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.AuthList, *v1beta1.Auth](mgr)),
 		), nil
 }
 

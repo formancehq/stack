@@ -1,4 +1,4 @@
-package utils
+package core
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"

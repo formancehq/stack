@@ -2,9 +2,9 @@ package controllers_test
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/common"
 	"github.com/formancehq/operator/v2/internal/controllers"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -30,7 +30,7 @@ var _ = Describe("StackController", func() {
 		})
 		It("Should create a new namespace", func() {
 			Eventually(func() error {
-				return Get(common.GetResourceName(stack.Name), &corev1.Namespace{})
+				return Get(core.GetResourceName(stack.Name), &corev1.Namespace{})
 			}).Should(Succeed())
 		})
 		Context("With some secrets annotated with our annotations", func() {
