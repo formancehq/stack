@@ -36,6 +36,7 @@ Method | HTTP request | Description
 [**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
 [**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
+[**UpdateOrganization**](DefaultApi.md#UpdateOrganization) | **Put** /organizations/{organizationId} | Update organization
 [**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
 [**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
@@ -2206,6 +2207,76 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpdateOrganization
+
+> CreateOrganizationResponse UpdateOrganization(ctx, organizationId).OrganizationData(organizationData).Execute()
+
+Update organization
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    organizationData := *openapiclient.NewOrganizationData("Name_example") // OrganizationData |  (optional)
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.UpdateOrganization(context.Background(), organizationId).OrganizationData(organizationData).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateOrganization``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `UpdateOrganization`: CreateOrganizationResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateOrganization`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateOrganizationRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **organizationData** | [**OrganizationData**](OrganizationData.md) |  | 
+
+### Return type
+
+[**CreateOrganizationResponse**](CreateOrganizationResponse.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

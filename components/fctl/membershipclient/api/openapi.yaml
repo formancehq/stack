@@ -108,6 +108,35 @@ paths:
                 $ref: '#/components/schemas/ReadOrganizationResponse'
           description: OK
       summary: Read organization
+    put:
+      operationId: updateOrganization
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationData'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadOrganizationResponse'
+          description: Organization updated
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+      summary: Update organization
   /organizations/{organizationId}/users:
     get:
       operationId: listUsersOfOrganization
@@ -1155,11 +1184,33 @@ components:
       - $ref: '#/components/schemas/AnyRegion_allOf'
     OrganizationData:
       example:
+        defaultOrganizationAccess:
+        - ""
+        - ""
+        defaultStackAccess:
+        - ""
+        - ""
         name: name
       properties:
         name:
           description: Organization name
           type: string
+        defaultOrganizationAccess:
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
+        defaultStackAccess:
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
       required:
       - name
       type: object
@@ -1595,6 +1646,22 @@ components:
         availableSandboxes:
           description: Number of available sandboxes
           type: integer
+        defaultOrganizationAccess:
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
+        defaultStackAccess:
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
       required:
       - id
       - ownerId

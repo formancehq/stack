@@ -15,6 +15,8 @@ func NewCommand() *cobra.Command {
 			NewListCommand(),
 			NewCreateCommand(),
 			NewDeleteCommand(),
+			NewUpdateCommand(),
+			NewDescribeCommand(),
 			users.NewCommand(),
 			invitations.NewCommand(),
 		),
