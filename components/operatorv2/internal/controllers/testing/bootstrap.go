@@ -3,30 +3,28 @@ package testing
 import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/reconcilers"
-	"os"
-	"path/filepath"
-	osRuntime "runtime"
-	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
-	"time"
-
-	batchv1 "k8s.io/api/batch/v1"
-	controllerruntime "sigs.k8s.io/controller-runtime/pkg/controller"
-
 	_ "github.com/formancehq/operator/v2/internal/controllers"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	"os"
+	"path/filepath"
+	osRuntime "runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	controllerruntime "sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"time"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -65,17 +63,7 @@ var _ = BeforeSuite(func() {
 	k8sClient, err = client.New(restConfig, client.Options{Scheme: scheme.Scheme})
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sClient).NotTo(BeNil())
-})
 
-var _ = AfterSuite(func() {
-	Expect(testEnv.Stop())
-})
-
-var (
-	done chan struct{}
-)
-
-var _ = BeforeEach(func() {
 	ctx, cancel = context.WithCancel(context.Background())
 	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 		Scheme: GetScheme(),
@@ -152,12 +140,17 @@ var _ = BeforeEach(func() {
 	}()
 })
 
-var _ = AfterEach(func() {
+var _ = AfterSuite(func() {
 	cancel()
 	if done != nil {
 		<-done
 	}
+	Expect(testEnv.Stop())
 })
+
+var (
+	done chan struct{}
+)
 
 func Create(ob client.Object) error {
 	return k8sClient.Create(ctx, ob)
