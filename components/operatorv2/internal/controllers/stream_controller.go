@@ -17,7 +17,6 @@ limitations under the License.
 package controllers
 
 import (
-	"context"
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
@@ -26,7 +25,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
@@ -59,14 +57,6 @@ func (r *StreamController) Reconcile(ctx reconcilers.Context, stream *v1beta1.St
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *StreamController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
-	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.Stream{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.Stream).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stream{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

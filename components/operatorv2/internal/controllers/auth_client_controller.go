@@ -17,7 +17,6 @@ limitations under the License.
 package controllers
 
 import (
-	"context"
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/common"
@@ -27,7 +26,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
@@ -62,14 +60,6 @@ func (r *AuthClientController) Reconcile(ctx reconcilers.Context, authClient *v1
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *AuthClientController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
-	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.AuthClient{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.AuthClient).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.AuthClient{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.Secret{}), nil

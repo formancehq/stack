@@ -130,12 +130,6 @@ func (r *TopicController) SetupWithManager(mgr reconcilers.Manager) (*builder.Bu
 		return nil, err
 	}
 
-	if err := indexer.IndexField(context.Background(), &v1beta1.Topic{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.Topic).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&batchv1.Job{}), nil

@@ -251,7 +251,6 @@ func (r *StreamProcessorController) Reconcile(ctx reconcilers.Context, streamPro
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *StreamProcessorController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
 	//TODO: Watch streams
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.StreamProcessor{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).

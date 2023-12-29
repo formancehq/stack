@@ -326,14 +326,6 @@ func (r *LedgerController) createGatewayDeployment(ctx reconcilers.Context, stac
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *LedgerController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
-	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.Ledger{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.Ledger).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Ledger{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(

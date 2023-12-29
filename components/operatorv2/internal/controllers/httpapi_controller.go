@@ -17,7 +17,6 @@ limitations under the License.
 package controllers
 
 import (
-	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	. "github.com/formancehq/operator/v2/internal/utils"
@@ -28,7 +27,6 @@ import (
 	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
@@ -102,14 +100,6 @@ func (r *HTTPAPI) Reconcile(ctx reconcilers.Context, httpAPI *v1beta1.HTTPAPI) e
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *HTTPAPI) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
-	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.HTTPAPI{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.HTTPAPI).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.HTTPAPI{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.Service{}), nil

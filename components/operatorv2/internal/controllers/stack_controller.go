@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	. "github.com/formancehq/operator/v2/internal/utils"
 	pkgError "github.com/pkg/errors"
@@ -161,15 +160,7 @@ l:
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *StackController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
-	indexer := mgr.GetFieldIndexer()
-	//TODO: opentelemetry configuration must retrievable using labels
-	if err := indexer.IndexField(context.Background(), &v1beta1.OpenTelemetryConfiguration{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.OpenTelemetryConfiguration).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
+	//TODO: need to update opentelemetry configuration to retrieve by label
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

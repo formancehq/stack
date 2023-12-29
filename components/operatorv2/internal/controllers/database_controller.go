@@ -134,7 +134,6 @@ func (r *DatabaseController) createJob(ctx reconcilers.Context, databaseConfigur
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *DatabaseController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Database{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(

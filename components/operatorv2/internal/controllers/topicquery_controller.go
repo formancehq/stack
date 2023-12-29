@@ -131,12 +131,6 @@ func (r *TopicQueryController) SetupWithManager(mgr reconcilers.Manager) (*build
 		return nil, err
 	}
 
-	if err := indexer.IndexField(context.Background(), &v1beta1.TopicQuery{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.TopicQuery).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.TopicQuery{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(

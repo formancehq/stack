@@ -2,6 +2,7 @@ package reconcilers
 
 import (
 	"context"
+	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -26,11 +27,37 @@ func Register(newReconcilers ...reconciler) {
 	reconcilers = append(reconcilers, newReconcilers...)
 }
 
+type stackDependency interface {
+	GetStack() string
+}
+
 func Setup(mgr ctrl.Manager, platform Platform) error {
 	wrappedMgr := newDefaultManager(mgr, platform)
 	for _, reconciler := range reconcilers {
 		if err := reconciler.SetupWithManager(wrappedMgr); err != nil {
 			return err
+		}
+	}
+	for _, rtype := range mgr.GetScheme().AllKnownTypes() {
+		specField, ok := rtype.FieldByName("Spec")
+		if !ok {
+			continue
+		}
+
+		if specField.Type.AssignableTo(reflect.TypeOf((*stackDependency)(nil)).Elem()) {
+			mgr.GetLogger().Info("Detect stack dependency object, automatically index field", "type", rtype)
+			if err := mgr.GetFieldIndexer().
+				IndexField(context.Background(), reflect.New(rtype).Interface().(client.Object), ".spec.stack", func(object client.Object) []string {
+					return []string{
+						reflect.ValueOf(object).
+							FieldByName("Spec").
+							Interface().(stackDependency).
+							GetStack(),
+					}
+				}); err != nil {
+				mgr.GetLogger().Error(err, "indexing .spec.stack field", "type", rtype)
+				return err
+			}
 		}
 	}
 	return nil

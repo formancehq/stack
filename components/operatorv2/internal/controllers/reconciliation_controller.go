@@ -105,7 +105,6 @@ func (r *ReconciliationController) createDeployment(ctx reconcilers.Context, sta
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *ReconciliationController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Reconciliation{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

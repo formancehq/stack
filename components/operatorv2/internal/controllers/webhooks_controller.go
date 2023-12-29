@@ -132,7 +132,6 @@ func (r *WebhooksController) createDeployment(ctx reconcilers.Context, stack *v1
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *WebhooksController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
 	return ctrl.NewControllerManagedBy(mgr).
 		//TODO: Watch services able to trigger events
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

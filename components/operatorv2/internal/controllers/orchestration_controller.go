@@ -178,7 +178,6 @@ func (r *OrchestrationController) createDeployment(ctx reconcilers.Context, stac
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *OrchestrationController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
 	return ctrl.NewControllerManagedBy(mgr).
 		// todo: Watch broker configuration
 		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

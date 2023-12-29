@@ -197,14 +197,6 @@ func (r *AuthController) createDeployment(ctx reconcilers.Context, stack *v1beta
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *AuthController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
-	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.Auth{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.Auth).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Auth{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&appsv1.Deployment{}).

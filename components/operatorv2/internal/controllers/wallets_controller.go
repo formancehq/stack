@@ -17,7 +17,6 @@ limitations under the License.
 package controllers
 
 import (
-	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/authclients"
 	common "github.com/formancehq/operator/v2/internal/common"
@@ -28,7 +27,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
@@ -94,14 +92,6 @@ func (r *WalletsController) createDeployment(ctx reconcilers.Context, stack *for
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *WalletsController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
-
-	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.Wallets{}, ".spec.stack", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.Wallets).Spec.Stack}
-	}); err != nil {
-		return nil, err
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&formancev1beta1.Wallets{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
