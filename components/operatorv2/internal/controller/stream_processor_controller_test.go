@@ -16,7 +16,7 @@ var _ = Describe("StreamProcessorController", func() {
 
 	Context("When creating a stream", func() {
 		var (
-			stream                     *v1beta1.Stream
+			streamProcessor            *v1beta1.StreamProcessor
 			stack                      *v1beta1.Stack
 			elasticSearchConfiguration *v1beta1.ElasticSearchConfiguration
 			brokerConfiguration        *v1beta1.BrokerConfiguration
@@ -51,24 +51,15 @@ var _ = Describe("StreamProcessorController", func() {
 			}
 			Expect(Create(brokerConfiguration)).To(Succeed())
 
-			stream = &v1beta1.Stream{
+			streamProcessor = &v1beta1.StreamProcessor{
 				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.StreamSpec{
-					Data: "foo",
+				Spec: v1beta1.StreamProcessorSpec{
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
 				},
 			}
-			Expect(Create(stream)).To(Succeed())
-
-			By("it should create a StreamProcessor", func() {
-				t := &v1beta1.StreamProcessor{}
-				Eventually(func() error {
-					return Get(internal.GetResourceName(
-						internal.GetObjectName(stack.Name, "stream-processor")), t)
-				}).Should(BeNil())
-			})
+			Expect(Create(streamProcessor)).To(Succeed())
 		})
 		It("Should create a deployment", func() {
 			t := &appsv1.Deployment{}

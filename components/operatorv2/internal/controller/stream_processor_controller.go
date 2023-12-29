@@ -213,6 +213,7 @@ func (r *StreamProcessorController) Reconcile(ctx context.Context, streamProcess
 	},
 		WithController[*appsv1.Deployment](r.Scheme, streamProcessor),
 		WithMatchingLabels("stream-processor"),
+		WithInitContainers(streamProcessor.Spec.InitContainers...),
 		WithContainers(corev1.Container{
 			Name:    "stream-processor",
 			Image:   "public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es",

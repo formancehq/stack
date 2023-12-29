@@ -74,6 +74,12 @@ func WithContainers(containers ...corev1.Container) func(r *appsv1.Deployment) {
 	}
 }
 
+func WithInitContainers(containers ...corev1.Container) func(r *appsv1.Deployment) {
+	return func(r *appsv1.Deployment) {
+		r.Spec.Template.Spec.InitContainers = containers
+	}
+}
+
 func WithVolumes(volumes ...corev1.Volume) func(t *appsv1.Deployment) {
 	return func(t *appsv1.Deployment) {
 		t.Spec.Template.Spec.Volumes = volumes

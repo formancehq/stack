@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -33,6 +34,8 @@ type StreamProcessorSpec struct {
 	ResourceProperties *ResourceProperties `json:"resourceProperties,omitempty"`
 	//+optional
 	Batching *Batching `json:"batching,omitempty"`
+	//+optional
+	InitContainers []corev1.Container `json:"initContainers"`
 }
 
 // StreamProcessorStatus defines the observed state of StreamProcessor
