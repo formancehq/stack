@@ -19,11 +19,11 @@ package controllers
 import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	common "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/databases"
-	"github.com/formancehq/operator/v2/internal/deployments"
-	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/stacks"
+	"github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/resources/databases"
+	"github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
@@ -44,7 +44,7 @@ type AuthController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=auths/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=auths/finalizers,verbs=update
 
-func (r *AuthController) Reconcile(ctx common.Context, auth *v1beta1.Auth) error {
+func (r *AuthController) Reconcile(ctx core.Context, auth *v1beta1.Auth) error {
 
 	stack, err := stacks.GetStack(ctx, auth.Spec)
 	if err != nil {
@@ -82,7 +82,7 @@ func (r *AuthController) Reconcile(ctx common.Context, auth *v1beta1.Auth) error
 	return nil
 }
 
-func (r *AuthController) createConfiguration(ctx common.Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
+func (r *AuthController) createConfiguration(ctx core.Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
 
 	sort.Slice(items, func(i, j int) bool {
 		return items[i].Name < items[j].Name
@@ -99,7 +99,7 @@ func (r *AuthController) createConfiguration(ctx common.Context, stack *v1beta1.
 		return nil, err
 	}
 
-	cm, _, err := common.CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
+	cm, _, err := core.CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "auth-configuration",
 	}, func(t *corev1.ConfigMap) {
@@ -114,7 +114,7 @@ func (r *AuthController) createConfiguration(ctx common.Context, stack *v1beta1.
 	return cm, nil
 }
 
-func (r *AuthController) createDeployment(ctx common.Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
+func (r *AuthController) createDeployment(ctx core.Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
 
 	env, err := GetCommonServicesEnvVars(ctx, stack, "auth", auth.Spec)
 	if err != nil {
@@ -124,18 +124,18 @@ func (r *AuthController) createDeployment(ctx common.Context, stack *v1beta1.Sta
 	env = append(env,
 		databases.PostgresEnvVars(
 			database.Status.Configuration.DatabaseConfigurationSpec,
-			common.GetObjectName(stack.Name, "auth"),
+			core.GetObjectName(stack.Name, "auth"),
 		)...,
 	)
 	env = append(env,
-		common.Env("CONFIG", "/config/config.yaml"),
-		common.Env("BASE_URL", "$(STACK_PUBLIC_URL)/api/auth"),
+		core.Env("CONFIG", "/config/config.yaml"),
+		core.Env("BASE_URL", "$(STACK_PUBLIC_URL)/api/auth"),
 	)
 	if auth.Spec.SigningKey != "" && auth.Spec.SigningKeyFromSecret != nil {
 		return fmt.Errorf("cannot specify signing key using both .spec.signingKey and .spec.signingKeyFromSecret fields")
 	}
 	if auth.Spec.SigningKey != "" {
-		env = append(env, common.Env("SIGNING_KEY", auth.Spec.SigningKey))
+		env = append(env, core.Env("SIGNING_KEY", auth.Spec.SigningKey))
 	}
 	if auth.Spec.SigningKeyFromSecret != nil {
 		env = append(env, corev1.EnvVar{
@@ -147,27 +147,27 @@ func (r *AuthController) createDeployment(ctx common.Context, stack *v1beta1.Sta
 	}
 	if auth.Spec.DelegatedOIDCServer != nil {
 		env = append(env,
-			common.Env("DELEGATED_CLIENT_SECRET", auth.Spec.DelegatedOIDCServer.ClientSecret),
-			common.Env("DELEGATED_CLIENT_ID", auth.Spec.DelegatedOIDCServer.ClientID),
-			common.Env("DELEGATED_ISSUER", auth.Spec.DelegatedOIDCServer.Issuer),
+			core.Env("DELEGATED_CLIENT_SECRET", auth.Spec.DelegatedOIDCServer.ClientSecret),
+			core.Env("DELEGATED_CLIENT_ID", auth.Spec.DelegatedOIDCServer.ClientID),
+			core.Env("DELEGATED_ISSUER", auth.Spec.DelegatedOIDCServer.Issuer),
 		)
 	}
 	if stack.Spec.Dev || auth.Spec.Dev {
-		env = append(env, common.Env("CAOS_OIDC_DEV", "1"))
+		env = append(env, core.Env("CAOS_OIDC_DEV", "1"))
 	}
 
-	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx,
-		common.GetNamespacedResourceName(stack.Name, "auth"),
+	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx,
+		core.GetNamespacedResourceName(stack.Name, "auth"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
-				"config-hash": common.HashFromConfigMap(configMap),
+				"config-hash": core.HashFromConfigMap(configMap),
 			})
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:      "auth",
 				Args:      []string{"serve"},
 				Env:       env,
-				Image:     common.GetImage("auth", common.GetVersion(stack, auth.Spec.Version)),
-				Resources: common.GetResourcesWithDefault(auth.Spec.ResourceProperties, common.ResourceSizeSmall()),
+				Image:     core.GetImage("auth", core.GetVersion(stack, auth.Spec.Version)),
+				Resources: core.GetResourcesWithDefault(auth.Spec.ResourceProperties, core.ResourceSizeSmall()),
 				VolumeMounts: []corev1.VolumeMount{{
 					Name:      "config",
 					ReadOnly:  true,
@@ -187,18 +187,23 @@ func (r *AuthController) createDeployment(ctx common.Context, stack *v1beta1.Sta
 			}}
 		},
 		deployments.WithMatchingLabels("auth"),
-		common.WithController[*appsv1.Deployment](ctx.GetScheme(), auth),
+		core.WithController[*appsv1.Deployment](ctx.GetScheme(), auth),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *AuthController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
+func (r *AuthController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Auth{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&appsv1.Deployment{}).
 		Owns(&v1beta1.HTTPAPI{}).
 		Owns(&v1beta1.Database{}).
+		Owns(&corev1.ConfigMap{}).
+		Watches(
+			&v1beta1.Database{},
+			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.AuthList, *v1beta1.Auth](mgr, "auth")),
+		).
 		Watches(
 			&v1beta1.AuthClient{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.AuthList, *v1beta1.Auth](mgr)),

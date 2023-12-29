@@ -4,7 +4,7 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
 	"github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/opentelemetryconfigurations"
+	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"

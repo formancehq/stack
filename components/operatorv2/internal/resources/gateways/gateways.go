@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/stacks"
-
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"k8s.io/api/core/v1"
 )
 

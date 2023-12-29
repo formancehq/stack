@@ -18,21 +18,22 @@ package controllers
 
 import (
 	"bytes"
-	"context"
 	"fmt"
-	"github.com/formancehq/operator/v2/internal/auths"
-	"github.com/formancehq/operator/v2/internal/brokerconfigurations"
-	common "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/deployments"
-	"github.com/formancehq/operator/v2/internal/gateways"
-	"github.com/formancehq/operator/v2/internal/services"
-	"github.com/formancehq/operator/v2/internal/stacks"
+	. "github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/resources/auths"
+	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/gateways"
+	gateways2 "github.com/formancehq/operator/v2/internal/resources/gateways"
+	"github.com/formancehq/operator/v2/internal/resources/services"
+	stacks2 "github.com/formancehq/operator/v2/internal/resources/stacks"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
 	"strings"
 	"text/template"
 
+	_ "embed"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
@@ -40,9 +41,6 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	_ "embed"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -55,9 +53,9 @@ type GatewayController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/finalizers,verbs=update
 
-func (r *GatewayController) Reconcile(ctx common.Context, gateway *v1beta1.Gateway) error {
+func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) error {
 
-	stack, err := stacks.GetStack(ctx, gateway.Spec)
+	stack, err := stacks2.GetStack(ctx, gateway.Spec)
 	if err != nil {
 		return err
 	}
@@ -99,7 +97,7 @@ func (r *GatewayController) Reconcile(ctx common.Context, gateway *v1beta1.Gatew
 	return nil
 }
 
-func (r *GatewayController) createConfigMap(ctx common.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs *v1beta1.HTTPAPIList, authEnabled bool) (*corev1.ConfigMap, error) {
 
 	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs.Items, authEnabled)
@@ -107,7 +105,7 @@ func (r *GatewayController) createConfigMap(ctx common.Context, stack *v1beta1.S
 		return nil, err
 	}
 
-	caddyfileConfigMap, _, err := common.CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
+	caddyfileConfigMap, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "gateway",
 	},
@@ -116,16 +114,16 @@ func (r *GatewayController) createConfigMap(ctx common.Context, stack *v1beta1.S
 				"Caddyfile": caddyfile,
 			}
 		},
-		common.WithController[*corev1.ConfigMap](ctx.GetScheme(), gateway),
+		WithController[*corev1.ConfigMap](ctx.GetScheme(), gateway),
 	)
 
 	return caddyfileConfigMap, err
 }
 
-func (r *GatewayController) createDeployment(ctx common.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap) error {
 
-	env, err := gateways.GetURLSAsEnvVarsIfEnabled(ctx, stack.Name)
+	env, err := gateways2.GetURLSAsEnvVarsIfEnabled(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -139,13 +137,13 @@ func (r *GatewayController) createDeployment(ctx common.Context, stack *v1beta1.
 		)
 	}
 
-	mutators := common.ConfigureCaddy(caddyfileConfigMap, common.GetImage("gateway", common.GetVersion(stack, gateway.Spec.Version)), env, gateway.Spec.ResourceProperties)
+	mutators := ConfigureCaddy(caddyfileConfigMap, GetImage("gateway", GetVersion(stack, gateway.Spec.Version)), env, gateway.Spec.ResourceProperties)
 	mutators = append(mutators,
-		common.WithController[*appsv1.Deployment](ctx.GetScheme(), gateway),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), gateway),
 		deployments.WithMatchingLabels("gateway"),
 	)
 
-	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "gateway",
 	}, mutators...)
@@ -153,19 +151,19 @@ func (r *GatewayController) createDeployment(ctx common.Context, stack *v1beta1.
 	return err
 }
 
-func (r *GatewayController) createService(ctx common.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createService(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
-	_, _, err := common.CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Name:      "gateway",
 		Namespace: stack.Name,
 	},
 		services.ConfigureK8SService("gateway"),
-		common.WithController[*corev1.Service](ctx.GetScheme(), gateway),
+		WithController[*corev1.Service](ctx.GetScheme(), gateway),
 	)
 	return err
 }
 
-func (r *GatewayController) handleIngress(ctx common.Context, stack *v1beta1.Stack,
+func (r *GatewayController) handleIngress(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
 
 	name := types.NamespacedName{
@@ -173,10 +171,10 @@ func (r *GatewayController) handleIngress(ctx common.Context, stack *v1beta1.Sta
 		Name:      "gateway",
 	}
 	if gateway.Spec.Ingress == nil {
-		return common.DeleteIfExists[*networkingv1.Ingress](ctx, name)
+		return DeleteIfExists[*networkingv1.Ingress](ctx, name)
 	}
 
-	_, _, err := common.CreateOrUpdate[*networkingv1.Ingress](ctx, name,
+	_, _, err := CreateOrUpdate[*networkingv1.Ingress](ctx, name,
 		func(ingress *networkingv1.Ingress) {
 			pathType := networkingv1.PathTypePrefix
 			ingress.ObjectMeta.Annotations = gateway.Spec.Ingress.Annotations
@@ -212,13 +210,13 @@ func (r *GatewayController) handleIngress(ctx common.Context, stack *v1beta1.Sta
 				},
 			}
 		},
-		common.WithController[*networkingv1.Ingress](ctx.GetScheme(), gateway),
+		WithController[*networkingv1.Ingress](ctx.GetScheme(), gateway),
 	)
 
 	return err
 }
 
-func (r *GatewayController) createCaddyfile(ctx common.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs []v1beta1.HTTPAPI, authEnabled bool) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
@@ -276,7 +274,7 @@ func (r *GatewayController) createCaddyfile(ctx common.Context, stack *v1beta1.S
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *GatewayController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
+func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Gateway{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.ConfigMap{}).
@@ -285,34 +283,12 @@ func (r *GatewayController) SetupWithManager(mgr common.Manager) (*builder.Build
 		Owns(&networkingv1.Ingress{}).
 		Watches(
 			&v1beta1.HTTPAPI{},
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-				list := v1beta1.GatewayList{}
-				if err := mgr.GetClient().List(ctx, &list, client.MatchingFields{
-					".spec.stack": object.(*v1beta1.HTTPAPI).Spec.Stack,
-				}); err != nil {
-					return []reconcile.Request{}
-				}
-
-				return common.MapObjectToReconcileRequests(
-					Map(list.Items, ToPointer[v1beta1.Gateway])...,
-				)
-			}),
+			handler.EnqueueRequestsFromMapFunc(stacks2.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
 		).
 		// Watch Auth object to enable authentication
 		Watches(
 			&v1beta1.Auth{},
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-				list := v1beta1.GatewayList{}
-				if err := mgr.GetClient().List(ctx, &list, client.MatchingFields{
-					".spec.stack": object.(*v1beta1.Auth).Name,
-				}); err != nil {
-					return []reconcile.Request{}
-				}
-
-				return common.MapObjectToReconcileRequests(
-					Map(list.Items, ToPointer[v1beta1.Gateway])...,
-				)
-			}),
+			handler.EnqueueRequestsFromMapFunc(stacks2.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
 		), nil
 }
 

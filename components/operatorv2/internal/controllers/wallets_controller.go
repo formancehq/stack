@@ -18,11 +18,11 @@ package controllers
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/authclients"
 	common "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/deployments"
-	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/stacks"
+	"github.com/formancehq/operator/v2/internal/resources/authclients"
+	deployments2 "github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -80,10 +80,10 @@ func (r *WalletsController) createDeployment(ctx common.Context, stack *formance
 				Env:       env,
 				Image:     common.GetImage("wallets", common.GetVersion(stack, wallet.Spec.Version)),
 				Resources: common.GetResourcesWithDefault(wallet.Spec.ResourceProperties, common.ResourceSizeSmall()),
-				Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				Ports:     []corev1.ContainerPort{deployments2.StandardHTTPPort()},
 			}}
 		},
-		deployments.WithMatchingLabels("wallets"),
+		deployments2.WithMatchingLabels("wallets"),
 		common.WithController[*appsv1.Deployment](ctx.GetScheme(), wallet),
 	)
 	return err

@@ -3,8 +3,7 @@ package elasticsearchconfigurations
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/stacks"
-
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"

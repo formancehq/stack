@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	. "github.com/formancehq/operator/v2/internal/core"
-	. "github.com/formancehq/operator/v2/internal/databases"
+	. "github.com/formancehq/operator/v2/internal/resources/databases"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/builder"

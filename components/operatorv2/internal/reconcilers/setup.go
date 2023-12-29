@@ -3,7 +3,7 @@ package reconcilers
 import (
 	"context"
 	"github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/stacks"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"

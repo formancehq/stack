@@ -17,19 +17,20 @@ limitations under the License.
 package controllers
 
 import (
-	"github.com/formancehq/operator/v2/internal/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/databases"
-	"github.com/formancehq/operator/v2/internal/deployments"
-	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/ledgers"
-	"github.com/formancehq/operator/v2/internal/payments"
-	"github.com/formancehq/operator/v2/internal/stacks"
-	"github.com/formancehq/operator/v2/internal/topicqueries"
+	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/v2/internal/resources/databases"
+	"github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/ledgers"
+	"github.com/formancehq/operator/v2/internal/resources/payments"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
+	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"strings"
 
@@ -132,6 +133,10 @@ func (r *WebhooksController) createDeployment(ctx core.Context, stack *v1beta1.S
 // SetupWithManager sets up the controller with the Manager.
 func (r *WebhooksController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		Watches(
+			&v1beta1.Database{},
+			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr, "ledger")),
+		).
 		//TODO: Watch services able to trigger events
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

@@ -19,22 +19,23 @@ package controllers
 import (
 	_ "embed"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/databases"
-	"github.com/formancehq/operator/v2/internal/deployments"
-	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/payments"
-	"github.com/formancehq/operator/v2/internal/services"
-	"github.com/formancehq/operator/v2/internal/stacks"
-	"github.com/formancehq/operator/v2/internal/streams"
-	"github.com/formancehq/operator/v2/internal/topics"
+	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/v2/internal/resources/databases"
+	"github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/payments"
+	"github.com/formancehq/operator/v2/internal/resources/services"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
+	"github.com/formancehq/operator/v2/internal/resources/streams"
+	"github.com/formancehq/operator/v2/internal/resources/topics"
 	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
@@ -228,6 +229,10 @@ func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, databa
 // SetupWithManager sets up the controller with the Manager.
 func (r *PaymentsController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		Watches(
+			&v1beta1.Database{},
+			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr, "ledger")),
+		).
 		For(&v1beta1.Payments{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

@@ -17,12 +17,12 @@ limitations under the License.
 package controllers
 
 import (
-	"github.com/formancehq/operator/v2/internal/authclients"
 	common "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/databases"
-	"github.com/formancehq/operator/v2/internal/deployments"
-	"github.com/formancehq/operator/v2/internal/httpapis"
-	"github.com/formancehq/operator/v2/internal/stacks"
+	"github.com/formancehq/operator/v2/internal/resources/authclients"
+	databases2 "github.com/formancehq/operator/v2/internal/resources/databases"
+	deployments2 "github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -45,7 +45,7 @@ func (r *ReconciliationController) Reconcile(ctx common.Context, reconciliation 
 		return err
 	}
 
-	database, err := databases.Create(ctx, stack, "reconciliation")
+	database, err := databases2.Create(ctx, stack, "reconciliation")
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (r *ReconciliationController) createDeployment(ctx common.Context, stack *v
 	}
 
 	env = append(env,
-		databases.PostgresEnvVars(
+		databases2.PostgresEnvVars(
 			database.Status.Configuration.DatabaseConfigurationSpec,
 			common.GetObjectName(stack.Name, "reconciliation"),
 		)...,
@@ -93,10 +93,10 @@ func (r *ReconciliationController) createDeployment(ctx common.Context, stack *v
 				Env:       env,
 				Image:     common.GetImage("reconciliation", common.GetVersion(stack, reconciliation.Spec.Version)),
 				Resources: common.GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, common.ResourceSizeSmall()),
-				Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				Ports:     []corev1.ContainerPort{deployments2.StandardHTTPPort()},
 			}}
 		},
-		deployments.WithMatchingLabels("reconciliation"),
+		deployments2.WithMatchingLabels("reconciliation"),
 		common.WithController[*appsv1.Deployment](ctx.GetScheme(), reconciliation),
 	)
 	return err
