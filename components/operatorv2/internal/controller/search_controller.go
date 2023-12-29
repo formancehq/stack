@@ -17,38 +17,33 @@ limitations under the License.
 package controller
 
 import (
-	"context"
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 // SearchController reconciles a Search object
-type SearchController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type SearchController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=searches,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=searches/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
-func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search) error {
+func (r *SearchController) Reconcile(ctx reconcilers.ContextualManager, search *v1beta1.Search) error {
 
-	stack, err := GetStack(ctx, r.Client, search.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), search.Spec)
 	if err != nil {
 		return err
 	}
 
-	elasticSearchConfiguration, err := RequireElasticSearchConfiguration(ctx, r.Client, stack.Name)
+	elasticSearchConfiguration, err := RequireElasticSearchConfiguration(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
@@ -73,10 +68,10 @@ func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search
 	}
 
 	image := GetImage("search", GetVersion(stack, search.Spec.Version))
-	_, _, err = CreateOrUpdate[*v1beta1.StreamProcessor](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*v1beta1.StreamProcessor](ctx, ctx.GetClient(), types.NamespacedName{
 		Name: GetObjectName(stack.Name, "stream-processor"),
 	},
-		WithController[*v1beta1.StreamProcessor](r.Scheme, search),
+		WithController[*v1beta1.StreamProcessor](ctx.GetScheme(), search),
 		func(t *v1beta1.StreamProcessor) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Batching = search.Spec.Batching
@@ -94,11 +89,11 @@ func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "search",
 	},
-		WithController[*appsv1.Deployment](r.Scheme, search),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), search),
 		WithMatchingLabels("search"),
 		WithContainers(corev1.Container{
 			Name:            "search",
@@ -110,7 +105,7 @@ func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search
 		}),
 	)
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, search, "search"); err != nil {
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, search, "search"); err != nil {
 		return err
 	}
 
@@ -118,7 +113,7 @@ func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *SearchController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *SearchController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Search{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&v1beta1.StreamProcessor{}).
@@ -126,9 +121,6 @@ func (r *SearchController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder,
 		Owns(&appsv1.Deployment{}), nil
 }
 
-func ForSearch(client client.Client, scheme *runtime.Scheme) *SearchController {
-	return &SearchController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForSearch() *SearchController {
+	return &SearchController{}
 }

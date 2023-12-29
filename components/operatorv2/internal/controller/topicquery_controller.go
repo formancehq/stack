@@ -18,12 +18,12 @@ package controller
 
 import (
 	"context"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -40,20 +40,17 @@ const (
 )
 
 // TopicQueryController reconciles a TopicQuery object
-type TopicQueryController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type TopicQueryController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/finalizers,verbs=update
 
-func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta1.TopicQuery) error {
+func (r *TopicQueryController) Reconcile(ctx reconcilers.ContextualManager, topicQuery *v1beta1.TopicQuery) error {
 
 	if !topicQuery.DeletionTimestamp.IsZero() {
 		topic := &v1beta1.Topic{}
-		if err := r.Client.Get(ctx, types.NamespacedName{
+		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 			Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 		}, topic); err != nil {
 			if !errors.IsNotFound(err) {
@@ -63,13 +60,13 @@ func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta
 			topic.Spec.Queries = Filter(topic.Spec.Queries, func(s string) bool {
 				return s != topicQuery.Spec.QueriedBy
 			})
-			if err := r.Client.Update(ctx, topic); err != nil {
+			if err := ctx.GetClient().Update(ctx, topic); err != nil {
 				return err
 			}
 		}
 
 		if updated := controllerutil.RemoveFinalizer(topicQuery, gcFinalizer); updated {
-			if err := r.Client.Update(ctx, topicQuery); err != nil {
+			if err := ctx.GetClient().Update(ctx, topicQuery); err != nil {
 				return err
 			}
 		}
@@ -77,19 +74,19 @@ func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta
 	}
 
 	if updated := controllerutil.AddFinalizer(topicQuery, gcFinalizer); updated {
-		if err := r.Client.Update(ctx, topicQuery); err != nil {
+		if err := ctx.GetClient().Update(ctx, topicQuery); err != nil {
 			return err
 		}
 	}
 
 	topic := &v1beta1.Topic{}
-	if err := r.Client.Get(ctx, types.NamespacedName{
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 	}, topic); err != nil {
 		if !errors.IsNotFound(err) {
 			return err
 		}
-		if err := r.Client.Create(ctx, &v1beta1.Topic{
+		if err := ctx.GetClient().Create(ctx, &v1beta1.Topic{
 			ObjectMeta: ctrl.ObjectMeta{
 				Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 			},
@@ -108,14 +105,14 @@ func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta
 
 	if !Contains(topic.Spec.Queries, topicQuery.Spec.QueriedBy) {
 		topic.Spec.Queries = append(topic.Spec.Queries, topicQuery.Spec.QueriedBy)
-		if err := r.Client.Update(ctx, topic); err != nil {
+		if err := ctx.GetClient().Update(ctx, topic); err != nil {
 			return err
 		}
 	}
 
 	if topicQuery.Status.Ready != topic.Status.Ready {
 		topicQuery.Status.Ready = topic.Status.Ready
-		if err := r.Client.Status().Update(ctx, topicQuery); err != nil {
+		if err := ctx.GetClient().Status().Update(ctx, topicQuery); err != nil {
 			return err
 		}
 	}
@@ -124,7 +121,8 @@ func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicQueryController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *TopicQueryController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.TopicQuery{}, ".spec.service", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.TopicQuery).Spec.Service}
@@ -160,9 +158,6 @@ func (r *TopicQueryController) SetupWithManager(mgr ctrl.Manager) (*builder.Buil
 		), nil
 }
 
-func ForTopicQuery(client client.Client, scheme *runtime.Scheme) *TopicQueryController {
-	return &TopicQueryController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForTopicQuery() *TopicQueryController {
+	return &TopicQueryController{}
 }

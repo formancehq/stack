@@ -17,41 +17,36 @@ limitations under the License.
 package controller
 
 import (
-	"context"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ReconciliationController reconciles a Reconciliation object
-type ReconciliationController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type ReconciliationController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
-func (r *ReconciliationController) Reconcile(ctx context.Context, reconciliation *v1beta1.Reconciliation) error {
-	stack, err := GetStack(ctx, r.Client, reconciliation.Spec)
+func (r *ReconciliationController) Reconcile(ctx reconcilers.ContextualManager, reconciliation *v1beta1.Reconciliation) error {
+	stack, err := GetStack(ctx, ctx.GetClient(), reconciliation.Spec)
 	if err != nil {
 		return err
 	}
 
-	database, err := CreateDatabase(ctx, r.Client, stack, "reconciliation")
+	database, err := CreateDatabase(ctx, ctx.GetClient(), stack, "reconciliation")
 	if err != nil {
 		return err
 	}
 
-	authClient, err := CreateAuthClient(ctx, r.Client, r.Scheme, stack, reconciliation, "reconciliation", func(spec *v1beta1.AuthClientSpec) {
+	authClient, err := CreateAuthClient(ctx, ctx.GetClient(), ctx.GetScheme(), stack, reconciliation, "reconciliation", func(spec *v1beta1.AuthClientSpec) {
 		spec.Scopes = []string{"ledger:read", "payments:read"}
 	})
 	if err != nil {
@@ -62,16 +57,16 @@ func (r *ReconciliationController) Reconcile(ctx context.Context, reconciliation
 		return err
 	}
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, reconciliation, "reconciliation"); err != nil {
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, reconciliation, "reconciliation"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *ReconciliationController) createDeployment(ctx context.Context, stack *v1beta1.Stack,
+func (r *ReconciliationController) createDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	reconciliation *v1beta1.Reconciliation, database *v1beta1.Database, authClient *v1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "reconciliation", reconciliation.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, ctx.GetClient(), stack, "reconciliation", reconciliation.Spec)
 	if err != nil {
 		return err
 	}
@@ -87,7 +82,7 @@ func (r *ReconciliationController) createDeployment(ctx context.Context, stack *
 	)
 	env = append(env, GetAuthClientEnvVars(authClient)...)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client,
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(),
 		GetNamespacedResourceName(stack.Name, "reconciliation"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
@@ -99,20 +94,18 @@ func (r *ReconciliationController) createDeployment(ctx context.Context, stack *
 			}}
 		},
 		WithMatchingLabels("reconciliation"),
-		WithController[*appsv1.Deployment](r.Scheme, reconciliation),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), reconciliation),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *ReconciliationController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *ReconciliationController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Reconciliation{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
-func ForReconciliation(client client.Client, scheme *runtime.Scheme) *ReconciliationController {
-	return &ReconciliationController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForReconciliation() *ReconciliationController {
+	return &ReconciliationController{}
 }

@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
@@ -28,7 +29,6 @@ import (
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
-	"github.com/formancehq/operator/v2/internal/controller/shared"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -39,7 +39,6 @@ import (
 
 	_ "embed"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -48,31 +47,27 @@ import (
 var caddyfile string
 
 // GatewayController reconciles a Gateway object
-type GatewayController struct {
-	client.Client
-	Scheme   *runtime.Scheme
-	Platform shared.Platform
-}
+type GatewayController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=gateways,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=gateways/finalizers,verbs=update
 
-func (r *GatewayController) Reconcile(ctx context.Context, gateway *v1beta1.Gateway) error {
+func (r *GatewayController) Reconcile(ctx reconcilers.ContextualManager, gateway *v1beta1.Gateway) error {
 
-	stack, err := GetStack(ctx, r.Client, gateway.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), gateway.Spec)
 	if err != nil {
 		return err
 	}
 
 	httpAPIList := &v1beta1.HTTPAPIList{}
-	if err := r.Client.List(ctx, httpAPIList, client.MatchingFields{
+	if err := ctx.GetClient().List(ctx, httpAPIList, client.MatchingFields{
 		".spec.stack": stack.Name,
 	}); err != nil {
 		return err
 	}
 
-	authEnabled, err := IsAuthEnabled(ctx, r.Client, stack.Name)
+	authEnabled, err := IsAuthEnabled(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
@@ -102,7 +97,7 @@ func (r *GatewayController) Reconcile(ctx context.Context, gateway *v1beta1.Gate
 	return nil
 }
 
-func (r *GatewayController) createConfigMap(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createConfigMap(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs *v1beta1.HTTPAPIList, authEnabled bool) (*corev1.ConfigMap, error) {
 
 	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs.Items, authEnabled)
@@ -110,7 +105,7 @@ func (r *GatewayController) createConfigMap(ctx context.Context, stack *v1beta1.
 		return nil, err
 	}
 
-	caddyfileConfigMap, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, r.Client, types.NamespacedName{
+	caddyfileConfigMap, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "gateway",
 	},
@@ -119,21 +114,21 @@ func (r *GatewayController) createConfigMap(ctx context.Context, stack *v1beta1.
 				"Caddyfile": caddyfile,
 			}
 		},
-		WithController[*corev1.ConfigMap](r.Scheme, gateway),
+		WithController[*corev1.ConfigMap](ctx.GetScheme(), gateway),
 	)
 
 	return caddyfileConfigMap, err
 }
 
-func (r *GatewayController) createDeployment(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap) error {
 
-	env, err := GetURLSAsEnvVarsIfGatewayEnabled(ctx, r.Client, stack.Name)
+	env, err := GetURLSAsEnvVarsIfGatewayEnabled(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
 	if gateway.Spec.EnableAudit {
-		brokerConfiguration, err := GetBrokerConfiguration(ctx, r.Client, stack.Name)
+		brokerConfiguration, err := GetBrokerConfiguration(ctx, ctx.GetClient(), stack.Name)
 		if err != nil {
 			return err
 		}
@@ -144,11 +139,11 @@ func (r *GatewayController) createDeployment(ctx context.Context, stack *v1beta1
 
 	mutators := ConfigureCaddy(caddyfileConfigMap, GetImage("gateway", GetVersion(stack, gateway.Spec.Version)), env, gateway.Spec.ResourceProperties)
 	mutators = append(mutators,
-		WithController[*appsv1.Deployment](r.Scheme, gateway),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), gateway),
 		WithMatchingLabels("gateway"),
 	)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "gateway",
 	}, mutators...)
@@ -156,19 +151,19 @@ func (r *GatewayController) createDeployment(ctx context.Context, stack *v1beta1
 	return err
 }
 
-func (r *GatewayController) createService(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createService(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
-	_, _, err := CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*corev1.Service](ctx, ctx.GetClient(), types.NamespacedName{
 		Name:      "gateway",
 		Namespace: stack.Name,
 	},
 		ConfigureK8SService("gateway"),
-		WithController[*corev1.Service](r.Scheme, gateway),
+		WithController[*corev1.Service](ctx.GetScheme(), gateway),
 	)
 	return err
 }
 
-func (r *GatewayController) handleIngress(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) handleIngress(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
 
 	name := types.NamespacedName{
@@ -176,10 +171,10 @@ func (r *GatewayController) handleIngress(ctx context.Context, stack *v1beta1.St
 		Name:      "gateway",
 	}
 	if gateway.Spec.Ingress == nil {
-		return DeleteIfExists[*networkingv1.Ingress](ctx, r.Client, name)
+		return DeleteIfExists[*networkingv1.Ingress](ctx, ctx.GetClient(), name)
 	}
 
-	_, _, err := CreateOrUpdate[*networkingv1.Ingress](ctx, r.Client, name,
+	_, _, err := CreateOrUpdate[*networkingv1.Ingress](ctx, ctx.GetClient(), name,
 		func(ingress *networkingv1.Ingress) {
 			pathType := networkingv1.PathTypePrefix
 			ingress.ObjectMeta.Annotations = gateway.Spec.Ingress.Annotations
@@ -215,13 +210,13 @@ func (r *GatewayController) handleIngress(ctx context.Context, stack *v1beta1.St
 				},
 			}
 		},
-		WithController[*networkingv1.Ingress](r.Scheme, gateway),
+		WithController[*networkingv1.Ingress](ctx.GetScheme(), gateway),
 	)
 
 	return err
 }
 
-func (r *GatewayController) createCaddyfile(ctx context.Context, stack *v1beta1.Stack,
+func (r *GatewayController) createCaddyfile(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs []v1beta1.HTTPAPI, authEnabled bool) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
@@ -233,7 +228,7 @@ func (r *GatewayController) createCaddyfile(ctx context.Context, stack *v1beta1.
 		"Services": Map(httpAPIs, func(from v1beta1.HTTPAPI) v1beta1.HTTPAPISpec {
 			return from.Spec
 		}),
-		"Platform": r.Platform,
+		"Platform": ctx.GetPlatform(),
 		"Debug":    stack.Spec.Debug,
 		"Port":     8080,
 	}
@@ -250,7 +245,7 @@ func (r *GatewayController) createCaddyfile(ctx context.Context, stack *v1beta1.
 	}
 
 	if gateway.Spec.EnableAudit {
-		brokerConfiguration, err := GetBrokerConfiguration(ctx, r.Client, stack.Name)
+		brokerConfiguration, err := GetBrokerConfiguration(ctx, ctx.GetClient(), stack.Name)
 		if err != nil {
 			return "", err
 		}
@@ -276,7 +271,8 @@ func (r *GatewayController) createCaddyfile(ctx context.Context, stack *v1beta1.
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *GatewayController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *GatewayController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Gateway{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Gateway).Spec.Stack}
@@ -323,10 +319,6 @@ func (r *GatewayController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder
 		), nil
 }
 
-func ForGateway(client client.Client, scheme *runtime.Scheme, platform shared.Platform) *GatewayController {
-	return &GatewayController{
-		Client:   client,
-		Scheme:   scheme,
-		Platform: platform,
-	}
+func ForGateway() *GatewayController {
+	return &GatewayController{}
 }

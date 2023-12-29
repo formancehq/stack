@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	types "k8s.io/apimachinery/pkg/types"
@@ -28,26 +29,22 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
 	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/selection"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // TopicController reconciles a Topic object
-type TopicController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type TopicController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=topics,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=topics/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topics/finalizers,verbs=update
 
-func (r *TopicController) Reconcile(ctx context.Context, topic *v1beta1.Topic) error {
+func (r *TopicController) Reconcile(ctx reconcilers.ContextualManager, topic *v1beta1.Topic) error {
 
 	if len(topic.Spec.Queries) == 0 {
-		if err := r.Client.Delete(ctx, topic); err != nil {
+		if err := ctx.GetClient().Delete(ctx, topic); err != nil {
 			return nil
 		}
 	}
@@ -58,7 +55,7 @@ func (r *TopicController) Reconcile(ctx context.Context, topic *v1beta1.Topic) e
 	}
 
 	brokerConfigList := &v1beta1.BrokerConfigurationList{}
-	if err := r.Client.List(ctx, brokerConfigList, &client.ListOptions{
+	if err := ctx.GetClient().List(ctx, brokerConfigList, &client.ListOptions{
 		LabelSelector: labels.NewSelector().Add(*stackSelectorRequirement),
 	}); err != nil {
 		return err
@@ -92,10 +89,10 @@ func (r *TopicController) Reconcile(ctx context.Context, topic *v1beta1.Topic) e
 	return nil
 }
 
-func (r *TopicController) createJob(ctx context.Context,
+func (r *TopicController) createJob(ctx reconcilers.ContextualManager,
 	topic *v1beta1.Topic, configuration v1beta1.BrokerConfiguration) (*batchv1.Job, error) {
 
-	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, r.Client, types.NamespacedName{
+	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: topic.Spec.Stack,
 		Name:      fmt.Sprintf("%s-create-topic", topic.Spec.Service),
 	},
@@ -118,13 +115,14 @@ func (r *TopicController) createJob(ctx context.Context,
 				Args:  args,
 			}}
 		},
-		WithController[*batchv1.Job](r.Scheme, topic),
+		WithController[*batchv1.Job](ctx.GetScheme(), topic),
 	)
 	return job, err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *TopicController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Topic{}, ".spec.service", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Topic).Spec.Service}
@@ -143,9 +141,6 @@ func (r *TopicController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, 
 		Owns(&batchv1.Job{}), nil
 }
 
-func ForTopic(client client.Client, scheme *runtime.Scheme) *TopicController {
-	return &TopicController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForTopic() *TopicController {
+	return &TopicController{}
 }

@@ -21,12 +21,12 @@ import (
 	_ "embed"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	pkgError "github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -40,23 +40,20 @@ import (
 var ledgerCaddyfile string
 
 // LedgerController reconciles a Ledger object
-type LedgerController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type LedgerController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers/finalizers,verbs=update
 
-func (r *LedgerController) Reconcile(ctx context.Context, ledger *v1beta1.Ledger) error {
+func (r *LedgerController) Reconcile(ctx reconcilers.ContextualManager, ledger *v1beta1.Ledger) error {
 
-	stack, err := GetStack(ctx, r.Client, ledger.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), ledger.Spec)
 	if err != nil {
 		return err
 	}
 
-	database, err := CreateDatabase(ctx, r.Client, stack, "ledger")
+	database, err := CreateDatabase(ctx, ctx.GetClient(), stack, "ledger")
 	if err != nil {
 		if pkgError.Is(err, ErrPending) {
 			return nil
@@ -69,23 +66,23 @@ func (r *LedgerController) Reconcile(ctx context.Context, ledger *v1beta1.Ledger
 		return err
 	}
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, ledger, "ledger"); err != nil {
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, ledger, "ledger"); err != nil {
 		return err
 	}
 
-	if err := LoadStreams(ctx, r.Client, benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0"); err != nil {
+	if err := LoadStreams(ctx, ctx.GetClient(), benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *LedgerController) installLedger(ctx context.Context, stack *v1beta1.Stack,
+func (r *LedgerController) installLedger(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	ledger *v1beta1.Ledger, database *v1beta1.Database, version string) error {
 
 	switch ledger.Spec.DeploymentStrategy {
 	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
-		if err := DeleteIfExists[*appsv1.Deployment](ctx, r.Client, GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
+		if err := DeleteIfExists[*appsv1.Deployment](ctx, ctx.GetClient(), GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
 			return err
 		}
 		return r.installLedgerV2MonoWriterMultipleReader(ctx, stack, ledger, database, version)
@@ -97,7 +94,7 @@ func (r *LedgerController) installLedger(ctx context.Context, stack *v1beta1.Sta
 	}
 }
 
-func (r *LedgerController) installLedgerV2SingleInstance(ctx context.Context, stack *v1beta1.Stack,
+func (r *LedgerController) installLedgerV2SingleInstance(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	ledger *v1beta1.Ledger, database *v1beta1.Database, version string) error {
 	container, err := r.createLedgerContainerV2Full(ctx, stack)
 	if err != nil {
@@ -138,7 +135,7 @@ func (r *LedgerController) setInitContainer(database *v1beta1.Database, version 
 	}
 }
 
-func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx context.Context, stack *v1beta1.Stack,
+func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	ledger *v1beta1.Ledger, database *v1beta1.Database, version string) error {
 
 	createDeployment := func(name string, container corev1.Container, mutators ...ObjectMutator[*appsv1.Deployment]) error {
@@ -181,13 +178,13 @@ func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx context.C
 	return nil
 }
 
-func (r *LedgerController) uninstallLedgerV2MonoWriterMultipleReader(ctx context.Context, stack *v1beta1.Stack) error {
+func (r *LedgerController) uninstallLedgerV2MonoWriterMultipleReader(ctx reconcilers.ContextualManager, stack *v1beta1.Stack) error {
 
 	remove := func(name string) error {
-		if err := DeleteIfExists[*appsv1.Deployment](ctx, r.Client, GetNamespacedResourceName(stack.Name, name)); err != nil {
+		if err := DeleteIfExists[*appsv1.Deployment](ctx, ctx.GetClient(), GetNamespacedResourceName(stack.Name, name)); err != nil {
 			return err
 		}
-		if err := DeleteIfExists[*corev1.Service](ctx, r.Client, GetNamespacedResourceName(stack.Name, name)); err != nil {
+		if err := DeleteIfExists[*corev1.Service](ctx, ctx.GetClient(), GetNamespacedResourceName(stack.Name, name)); err != nil {
 			return err
 		}
 
@@ -202,42 +199,42 @@ func (r *LedgerController) uninstallLedgerV2MonoWriterMultipleReader(ctx context
 		return err
 	}
 
-	if err := DeleteIfExists[*appsv1.Deployment](ctx, r.Client, GetNamespacedResourceName(stack.Name, "ledger-gateway")); err != nil {
+	if err := DeleteIfExists[*appsv1.Deployment](ctx, ctx.GetClient(), GetNamespacedResourceName(stack.Name, "ledger-gateway")); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *LedgerController) createK8SService(ctx context.Context, stack *v1beta1.Stack, owner *v1beta1.Ledger, name string) error {
-	_, _, err := CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
+func (r *LedgerController) createK8SService(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, owner *v1beta1.Ledger, name string) error {
+	_, _, err := CreateOrUpdate[*corev1.Service](ctx, ctx.GetClient(), types.NamespacedName{
 		Name:      name,
 		Namespace: stack.Name,
 	},
 		ConfigureK8SService(name),
-		WithController[*corev1.Service](r.Scheme, owner),
+		WithController[*corev1.Service](ctx.GetScheme(), owner),
 	)
 	return err
 }
 
-func (r *LedgerController) createDeployment(ctx context.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
+func (r *LedgerController) createDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
 	name string, container corev1.Container, mutators ...ObjectMutator[*appsv1.Deployment]) error {
 	mutators = append([]ObjectMutator[*appsv1.Deployment]{
 		WithContainers(container),
 		WithMatchingLabels(name),
-		WithController[*appsv1.Deployment](r.Scheme, ledger),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), ledger),
 	}, mutators...)
-	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx, r.Client,
+	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(),
 		GetNamespacedResourceName(stack.Name, name),
 		mutators...,
 	)
 	return err
 }
 
-func (r *LedgerController) setCommonContainerConfiguration(ctx context.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
+func (r *LedgerController) setCommonContainerConfiguration(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
 	version string, database *v1beta1.Database, container *corev1.Container) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "ledger", ledger.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, ctx.GetClient(), stack, "ledger", ledger.Spec)
 	if err != nil {
 		return err
 	}
@@ -264,14 +261,14 @@ func (r *LedgerController) createBaseLedgerContainerV2() *corev1.Container {
 	}
 }
 
-func (r *LedgerController) createLedgerContainerV2Full(ctx context.Context, stack *v1beta1.Stack) (*corev1.Container, error) {
+func (r *LedgerController) createLedgerContainerV2Full(ctx reconcilers.ContextualManager, stack *v1beta1.Stack) (*corev1.Container, error) {
 	container := r.createBaseLedgerContainerV2()
-	needPublisher, err := TopicExists(ctx, r.Client, stack, "ledger")
+	needPublisher, err := TopicExists(ctx, ctx.GetClient(), stack, "ledger")
 	if err != nil {
 		return nil, err
 	}
 	if needPublisher {
-		brokerEnvVars, err := GetBrokerEnvVars(ctx, r.Client, stack.Name, "ledger")
+		brokerEnvVars, err := GetBrokerEnvVars(ctx, ctx.GetClient(), stack.Name, "ledger")
 		if err != nil {
 			return nil, err
 		}
@@ -281,7 +278,7 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx context.Context, stac
 	return container, nil
 }
 
-func (r *LedgerController) createLedgerContainerV2WriteOnly(ctx context.Context, stack *v1beta1.Stack) (*corev1.Container, error) {
+func (r *LedgerController) createLedgerContainerV2WriteOnly(ctx reconcilers.ContextualManager, stack *v1beta1.Stack) (*corev1.Container, error) {
 	return r.createLedgerContainerV2Full(ctx, stack)
 }
 
@@ -291,16 +288,16 @@ func (r *LedgerController) createLedgerContainerV2ReadOnly() *corev1.Container {
 	return container
 }
 
-func (r *LedgerController) createGatewayDeployment(ctx context.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger) error {
+func (r *LedgerController) createGatewayDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, ledger *v1beta1.Ledger) error {
 
-	caddyfileConfigMap, err := CreateCaddyfileConfigMap(ctx, r.Client, stack, "ledger", ledgerCaddyfile, map[string]any{
+	caddyfileConfigMap, err := CreateCaddyfileConfigMap(ctx, ctx.GetClient(), stack, "ledger", ledgerCaddyfile, map[string]any{
 		"Debug": stack.Spec.Debug || ledger.Spec.Debug,
-	}, WithController[*corev1.ConfigMap](r.Scheme, ledger))
+	}, WithController[*corev1.ConfigMap](ctx.GetScheme(), ledger))
 	if err != nil {
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "ledger", ledger.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, ctx.GetClient(), stack, "ledger", ledger.Spec)
 	if err != nil {
 		return err
 	}
@@ -310,11 +307,11 @@ func (r *LedgerController) createGatewayDeployment(ctx context.Context, stack *v
 
 	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
 	mutators = append(mutators,
-		WithController[*appsv1.Deployment](r.Scheme, ledger),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), ledger),
 		WithMatchingLabels("ledger"),
 	)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "ledger-gateway",
 	}, mutators...)
@@ -322,7 +319,7 @@ func (r *LedgerController) createGatewayDeployment(ctx context.Context, stack *v
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *LedgerController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *LedgerController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
 
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Ledger{}, ".spec.stack", func(rawObj client.Object) []string {
@@ -378,9 +375,6 @@ func (r *LedgerController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder,
 		Owns(&v1beta1.Database{}), nil
 }
 
-func ForLedger(client client.Client, scheme *runtime.Scheme) *LedgerController {
-	return &LedgerController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForLedger() *LedgerController {
+	return &LedgerController{}
 }

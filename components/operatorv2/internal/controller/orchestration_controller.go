@@ -17,40 +17,35 @@ limitations under the License.
 package controller
 
 import (
-	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 // OrchestrationController reconciles a Orchestration object
-type OrchestrationController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type OrchestrationController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/finalizers,verbs=update
 
-func (r *OrchestrationController) Reconcile(ctx context.Context, orchestration *v1beta1.Orchestration) error {
+func (r *OrchestrationController) Reconcile(ctx reconcilers.ContextualManager, orchestration *v1beta1.Orchestration) error {
 
-	stack, err := GetStack(ctx, r.Client, orchestration.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), orchestration.Spec)
 	if err != nil {
 		return err
 	}
 
-	database, err := CreateDatabase(ctx, r.Client, stack, "orchestration")
+	database, err := CreateDatabase(ctx, ctx.GetClient(), stack, "orchestration")
 	if err != nil {
 		return err
 	}
@@ -68,16 +63,16 @@ func (r *OrchestrationController) Reconcile(ctx context.Context, orchestration *
 		return err
 	}
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, orchestration, "orchestration"); err != nil {
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, orchestration, "orchestration"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *OrchestrationController) handleAuthClient(ctx context.Context, stack *formancev1beta1.Stack, orchestration *formancev1beta1.Orchestration) (*formancev1beta1.AuthClient, error) {
+func (r *OrchestrationController) handleAuthClient(ctx reconcilers.ContextualManager, stack *formancev1beta1.Stack, orchestration *formancev1beta1.Orchestration) (*formancev1beta1.AuthClient, error) {
 
-	auth, err := GetAuthIfEnabled(ctx, r.Client, stack.Name)
+	auth, err := GetAuthIfEnabled(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +80,7 @@ func (r *OrchestrationController) handleAuthClient(ctx context.Context, stack *f
 		return nil, errors.New("requires auth service")
 	}
 
-	return CreateAuthClient(ctx, r.Client, r.Scheme, stack, orchestration, "orchestration",
+	return CreateAuthClient(ctx, ctx.GetClient(), ctx.GetScheme(), stack, orchestration, "orchestration",
 		func(spec *formancev1beta1.AuthClientSpec) {
 			spec.Scopes = []string{
 				"ledger:read",
@@ -98,16 +93,16 @@ func (r *OrchestrationController) handleAuthClient(ctx context.Context, stack *f
 		})
 }
 
-func (r *OrchestrationController) handleTopics(ctx context.Context, stack *formancev1beta1.Stack) error {
+func (r *OrchestrationController) handleTopics(ctx reconcilers.ContextualManager, stack *formancev1beta1.Stack) error {
 	availableServices := make([]string, 0)
-	ledger, err := GetLedgerIfEnabled(ctx, r.Client, stack.Name)
+	ledger, err := GetLedgerIfEnabled(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
 	if ledger != nil {
 		availableServices = append(availableServices, "ledger")
 	}
-	payments, err := GetPaymentsIfEnabled(ctx, r.Client, stack.Name)
+	payments, err := GetPaymentsIfEnabled(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
@@ -116,7 +111,7 @@ func (r *OrchestrationController) handleTopics(ctx context.Context, stack *forma
 	}
 
 	for _, service := range availableServices {
-		if err := CreateTopicQuery(ctx, r.Client, stack, service, "orchestration"); err != nil {
+		if err := CreateTopicQuery(ctx, ctx.GetClient(), stack, service, "orchestration"); err != nil {
 			return err
 		}
 	}
@@ -124,7 +119,7 @@ func (r *OrchestrationController) handleTopics(ctx context.Context, stack *forma
 	return nil
 }
 
-func (r *OrchestrationController) createDeployment(ctx context.Context, stack *v1beta1.Stack,
+func (r *OrchestrationController) createDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack,
 	orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *formancev1beta1.AuthClient) error {
 	env := PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
 	env = append(env,
@@ -148,17 +143,17 @@ func (r *OrchestrationController) createDeployment(ctx context.Context, stack *v
 		)
 	}
 
-	brokerEnvVars, err := GetBrokerEnvVars(ctx, r.Client, stack.Name, "orchestration")
+	brokerEnvVars, err := GetBrokerEnvVars(ctx, ctx.GetClient(), stack.Name, "orchestration")
 	if err != nil && !errors.Is(err, ErrNoConfigurationFound) {
 		return err
 	}
 	env = append(env, brokerEnvVars...)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: orchestration.Spec.Stack,
 		Name:      "orchestration",
 	},
-		WithController[*appsv1.Deployment](r.Scheme, orchestration),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), orchestration),
 		WithMatchingLabels("orchestration"),
 		WithContainers(corev1.Container{
 			Name:      "api",
@@ -172,15 +167,13 @@ func (r *OrchestrationController) createDeployment(ctx context.Context, stack *v
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *OrchestrationController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *OrchestrationController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	return ctrl.NewControllerManagedBy(mgr).
 		// todo: Watch broker configuration
 		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
-func ForOrchestration(client client.Client, scheme *runtime.Scheme) *OrchestrationController {
-	return &OrchestrationController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForOrchestration() *OrchestrationController {
+	return &OrchestrationController{}
 }

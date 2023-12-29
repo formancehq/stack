@@ -20,6 +20,7 @@ import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -27,28 +28,24 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 // WalletsController reconciles a Wallets object
-type WalletsController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type WalletsController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=wallets,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletsController) Reconcile(ctx context.Context, wallet *v1beta1.Wallets) error {
+func (r *WalletsController) Reconcile(ctx reconcilers.ContextualManager, wallet *v1beta1.Wallets) error {
 
-	stack, err := GetStack(ctx, r.Client, wallet.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), wallet.Spec)
 	if err != nil {
 		return err
 	}
 
-	authClient, err := CreateAuthClient(ctx, r.Client, r.Scheme, stack, wallet, "wallets", func(spec *formancev1beta1.AuthClientSpec) {
+	authClient, err := CreateAuthClient(ctx, ctx.GetClient(), ctx.GetScheme(), stack, wallet, "wallets", func(spec *formancev1beta1.AuthClientSpec) {
 		spec.Scopes = []string{"ledger:read", "ledger:write"}
 	})
 	if err != nil {
@@ -59,21 +56,21 @@ func (r *WalletsController) Reconcile(ctx context.Context, wallet *v1beta1.Walle
 		return err
 	}
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, wallet, "wallets"); err != nil {
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, wallet, "wallets"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *WalletsController) createDeployment(ctx context.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallets, authClient *formancev1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "wallets", wallet.Spec)
+func (r *WalletsController) createDeployment(ctx reconcilers.ContextualManager, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallets, authClient *formancev1beta1.AuthClient) error {
+	env, err := GetCommonServicesEnvVars(ctx, ctx.GetClient(), stack, "wallets", wallet.Spec)
 	if err != nil {
 		return err
 	}
 	env = append(env, GetAuthClientEnvVars(authClient)...)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client,
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(),
 		GetNamespacedResourceName(stack.Name, "wallets"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
@@ -86,13 +83,14 @@ func (r *WalletsController) createDeployment(ctx context.Context, stack *formanc
 			}}
 		},
 		WithMatchingLabels("wallets"),
-		WithController[*appsv1.Deployment](r.Scheme, wallet),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), wallet),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WalletsController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *WalletsController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Wallets{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Wallets).Spec.Stack}
@@ -104,9 +102,6 @@ func (r *WalletsController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder
 		For(&formancev1beta1.Wallets{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
-func ForWallets(client client.Client, scheme *runtime.Scheme) *WalletsController {
-	return &WalletsController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForWallets() *WalletsController {
+	return &WalletsController{}
 }

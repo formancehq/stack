@@ -21,10 +21,10 @@ import (
 	_ "embed"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -36,23 +36,20 @@ import (
 var paymentsCaddyfile string
 
 // PaymentsController reconciles a Payments object
-type PaymentsController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type PaymentsController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=payments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=payments/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=payments/finalizers,verbs=update
 
-func (r *PaymentsController) Reconcile(ctx context.Context, payments *v1beta1.Payments) error {
+func (r *PaymentsController) Reconcile(ctx reconcilers.ContextualManager, payments *v1beta1.Payments) error {
 
-	stack, err := GetStack(ctx, r.Client, payments.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), payments.Spec)
 	if err != nil {
 		return err
 	}
 
-	database, err := CreateDatabase(ctx, r.Client, stack, "payments")
+	database, err := CreateDatabase(ctx, ctx.GetClient(), stack, "payments")
 	if err != nil {
 		return err
 	}
@@ -69,7 +66,7 @@ func (r *PaymentsController) Reconcile(ctx context.Context, payments *v1beta1.Pa
 		return err
 	}
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, payments, "payments"); err != nil {
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, payments, "payments"); err != nil {
 		return err
 	}
 
@@ -85,15 +82,15 @@ func (r *PaymentsController) commonEnvVars(payments *v1beta1.Payments, database 
 	return env
 }
 
-func (r *PaymentsController) createReadDeployment(ctx context.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func (r *PaymentsController) createReadDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
 
 	env := r.commonEnvVars(payments, database)
 
-	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-read",
 	},
-		WithController[*appsv1.Deployment](r.Scheme, payments),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
 		WithMatchingLabels("payments-read"),
 		WithContainers(corev1.Container{
 			Name:      "api",
@@ -108,35 +105,35 @@ func (r *PaymentsController) createReadDeployment(ctx context.Context, stack *v1
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*corev1.Service](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-read",
 	},
-		WithController[*corev1.Service](r.Scheme, payments),
+		WithController[*corev1.Service](ctx.GetScheme(), payments),
 		ConfigureK8SService("payments-read"),
 	)
 	if err != nil {
 		return err
 	}
 
-	if err := LoadStreams(ctx, r.Client, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0"); err != nil {
+	if err := LoadStreams(ctx, ctx.GetClient(), benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *PaymentsController) createWriteDeployment(ctx context.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func (r *PaymentsController) createWriteDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
 
 	env := r.commonEnvVars(payments, database)
 
-	topicExists, err := TopicExists(ctx, r.Client, stack, "payments")
+	topicExists, err := TopicExists(ctx, ctx.GetClient(), stack, "payments")
 	if err != nil {
 		return err
 	}
 
 	if topicExists {
-		brokerEnvVars, err := GetBrokerEnvVars(ctx, r.Client, stack.Name, "payments")
+		brokerEnvVars, err := GetBrokerEnvVars(ctx, ctx.GetClient(), stack.Name, "payments")
 		if err != nil {
 			return err
 		}
@@ -144,11 +141,11 @@ func (r *PaymentsController) createWriteDeployment(ctx context.Context, stack *v
 		env = append(env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "payments")))
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-connectors",
 	},
-		WithController[*appsv1.Deployment](r.Scheme, payments),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
 		WithMatchingLabels("payments-connectors"),
 		WithContainers(corev1.Container{
 			Name:      "connectors",
@@ -164,11 +161,11 @@ func (r *PaymentsController) createWriteDeployment(ctx context.Context, stack *v
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*corev1.Service](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-connectors",
 	},
-		WithController[*corev1.Service](r.Scheme, payments),
+		WithController[*corev1.Service](ctx.GetScheme(), payments),
 		ConfigureK8SService("payments-connectors"),
 	)
 	if err != nil {
@@ -177,16 +174,16 @@ func (r *PaymentsController) createWriteDeployment(ctx context.Context, stack *v
 	return err
 }
 
-func (r *PaymentsController) createGateway(ctx context.Context, stack *v1beta1.Stack, payments *v1beta1.Payments) error {
+func (r *PaymentsController) createGateway(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, payments *v1beta1.Payments) error {
 
-	caddyfileConfigMap, err := CreateCaddyfileConfigMap(ctx, r.Client, stack, "payments", paymentsCaddyfile, map[string]any{
+	caddyfileConfigMap, err := CreateCaddyfileConfigMap(ctx, ctx.GetClient(), stack, "payments", paymentsCaddyfile, map[string]any{
 		"Debug": stack.Spec.Debug || payments.Spec.Debug,
-	}, WithController[*corev1.ConfigMap](r.Scheme, payments))
+	}, WithController[*corev1.ConfigMap](ctx.GetScheme(), payments))
 	if err != nil {
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "payments", payments.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, ctx.GetClient(), stack, "payments", payments.Spec)
 	if err != nil {
 		return err
 	}
@@ -196,11 +193,11 @@ func (r *PaymentsController) createGateway(ctx context.Context, stack *v1beta1.S
 
 	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
 	mutators = append(mutators,
-		WithController[*appsv1.Deployment](r.Scheme, payments),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
 		WithMatchingLabels("payments"),
 	)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "payments",
 	}, mutators...)
@@ -226,7 +223,8 @@ func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, databa
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *PaymentsController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *PaymentsController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Payments{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Payments).Spec.Stack}
@@ -237,9 +235,6 @@ func (r *PaymentsController) SetupWithManager(mgr ctrl.Manager) (*builder.Builde
 		For(&v1beta1.Payments{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
-func ForPayments(client client.Client, scheme *runtime.Scheme) *PaymentsController {
-	return &PaymentsController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForPayments() *PaymentsController {
+	return &PaymentsController{}
 }

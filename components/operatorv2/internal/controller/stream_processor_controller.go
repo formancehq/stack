@@ -17,11 +17,11 @@ limitations under the License.
 package controller
 
 import (
-	"context"
 	"embed"
 	"fmt"
 	benthosOperator "github.com/formancehq/operator/v2/internal/controller/benthos"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -34,29 +34,25 @@ import (
 	"strings"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // StreamProcessorController reconciles a StreamProcessor object
-type StreamProcessorController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type StreamProcessorController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=streamprocessors,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/finalizers,verbs=update
 
-func (r *StreamProcessorController) Reconcile(ctx context.Context, streamProcessor *v1beta1.StreamProcessor) error {
+func (r *StreamProcessorController) Reconcile(ctx reconcilers.ContextualManager, streamProcessor *v1beta1.StreamProcessor) error {
 
-	brokerConfiguration, err := RequireBrokerConfiguration(ctx, r.Client, streamProcessor.Spec.Stack)
+	brokerConfiguration, err := RequireBrokerConfiguration(ctx, ctx.GetClient(), streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchConfiguration, err := RequireElasticSearchConfiguration(ctx, r.Client, streamProcessor.Spec.Stack)
+	elasticSearchConfiguration, err := RequireElasticSearchConfiguration(ctx, ctx.GetClient(), streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
@@ -116,7 +112,7 @@ func (r *StreamProcessorController) Reconcile(ctx context.Context, streamProcess
 		"-r", "/resources/*.yaml",
 		"-t", "/templates/*.yaml",
 	}
-	isOpenTelemetryEnabled, err := IsOpenTelemetryEnabled(ctx, r.Client, streamProcessor.Spec.Stack)
+	isOpenTelemetryEnabled, err := IsOpenTelemetryEnabled(ctx, ctx.GetClient(), streamProcessor.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -163,7 +159,7 @@ func (r *StreamProcessorController) Reconcile(ctx context.Context, streamProcess
 
 		CopyDir(x.fs, x.name, x.name, &data)
 
-		_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, r.Client, types.NamespacedName{
+		_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, ctx.GetClient(), types.NamespacedName{
 			Namespace: streamProcessor.Spec.Stack,
 			Name:      "stream-processor-" + x.name,
 		}, func(t *corev1.ConfigMap) {
@@ -196,7 +192,7 @@ func (r *StreamProcessorController) Reconcile(ctx context.Context, streamProcess
 	//}
 
 	streamList := &v1beta1.StreamList{}
-	if err := r.Client.List(ctx, streamList, client.MatchingFields{
+	if err := ctx.GetClient().List(ctx, streamList, client.MatchingFields{
 		".spec.stack": streamProcessor.Spec.Stack,
 	}); err != nil {
 		return err
@@ -207,11 +203,11 @@ func (r *StreamProcessorController) Reconcile(ctx context.Context, streamProcess
 		return streams[i].Name < streams[j].Name
 	})
 
-	_, _, err = CreateOrUpdate(ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate(ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: streamProcessor.Spec.Stack,
 		Name:      "stream-processor",
 	},
-		WithController[*appsv1.Deployment](r.Scheme, streamProcessor),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), streamProcessor),
 		WithMatchingLabels("stream-processor"),
 		WithInitContainers(streamProcessor.Spec.InitContainers...),
 		WithContainers(corev1.Container{
@@ -250,7 +246,8 @@ func (r *StreamProcessorController) Reconcile(ctx context.Context, streamProcess
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *StreamProcessorController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *StreamProcessorController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	//TODO: Watch streams
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.StreamProcessor{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
@@ -258,9 +255,6 @@ func (r *StreamProcessorController) SetupWithManager(mgr ctrl.Manager) (*builder
 		Owns(&appsv1.Deployment{}), nil
 }
 
-func ForStreamProcessor(client client.Client, scheme *runtime.Scheme) *StreamProcessorController {
-	return &StreamProcessorController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForStreamProcessor() *StreamProcessorController {
+	return &StreamProcessorController{}
 }

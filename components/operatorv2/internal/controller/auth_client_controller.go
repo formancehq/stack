@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -31,23 +31,20 @@ import (
 )
 
 // AuthClientController reconciles a Auth object
-type AuthClientController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type AuthClientController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=authclients,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=authclients/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=authclients/finalizers,verbs=update
 
-func (r *AuthClientController) Reconcile(ctx context.Context, authClient *v1beta1.AuthClient) error {
+func (r *AuthClientController) Reconcile(ctx reconcilers.ContextualManager, authClient *v1beta1.AuthClient) error {
 
-	stack, err := GetStack(ctx, r.Client, authClient.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), authClient.Spec)
 	if err != nil {
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*corev1.Secret](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*corev1.Secret](ctx, ctx.GetClient(), types.NamespacedName{
 		Name:      fmt.Sprintf("auth-client-%s", authClient.Name),
 		Namespace: stack.Name,
 	},
@@ -57,13 +54,14 @@ func (r *AuthClientController) Reconcile(ctx context.Context, authClient *v1beta
 				"secret": authClient.Spec.Secret,
 			}
 		},
-		WithController[*corev1.Secret](r.Scheme, authClient),
+		WithController[*corev1.Secret](ctx.GetScheme(), authClient),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *AuthClientController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
+func (r *AuthClientController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.AuthClient{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.AuthClient).Spec.Stack}
@@ -76,9 +74,6 @@ func (r *AuthClientController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder
 		Owns(&corev1.Secret{}), nil
 }
 
-func ForAuthClient(client client.Client, scheme *runtime.Scheme) *AuthClientController {
-	return &AuthClientController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForAuthClient() *AuthClientController {
+	return &AuthClientController{}
 }

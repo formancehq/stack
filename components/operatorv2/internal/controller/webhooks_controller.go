@@ -17,8 +17,8 @@ limitations under the License.
 package controller
 
 import (
-	"context"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -27,28 +27,23 @@ import (
 	"strings"
 
 	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // WebhooksController reconciles a Webhooks object
-type WebhooksController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type WebhooksController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/finalizers,verbs=update
 
-func (r *WebhooksController) Reconcile(ctx context.Context, webhooks *v1beta1.Webhooks) error {
-	stack, err := GetStack(ctx, r.Client, webhooks.Spec)
+func (r *WebhooksController) Reconcile(ctx reconcilers.ContextualManager, webhooks *v1beta1.Webhooks) error {
+	stack, err := GetStack(ctx, ctx.GetClient(), webhooks.Spec)
 	if err != nil {
 		return err
 	}
 
-	database, err := CreateDatabase(ctx, r.Client, stack, "webhooks")
+	database, err := CreateDatabase(ctx, ctx.GetClient(), stack, "webhooks")
 	if err != nil {
 		return err
 	}
@@ -61,7 +56,7 @@ func (r *WebhooksController) Reconcile(ctx context.Context, webhooks *v1beta1.We
 		return err
 	}
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, webhooks, "webhooks"); err != nil {
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, webhooks, "webhooks"); err != nil {
 		return err
 	}
 
@@ -69,16 +64,16 @@ func (r *WebhooksController) Reconcile(ctx context.Context, webhooks *v1beta1.We
 }
 
 // TODO: Search a way to automatically list all services able to push events as this code is duplicated for orchestration
-func (r *WebhooksController) handleTopics(ctx context.Context, stack *v1beta1.Stack) error {
+func (r *WebhooksController) handleTopics(ctx reconcilers.ContextualManager, stack *v1beta1.Stack) error {
 	availableServices := make([]string, 0)
-	ledger, err := GetLedgerIfEnabled(ctx, r.Client, stack.Name)
+	ledger, err := GetLedgerIfEnabled(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
 	if ledger != nil {
 		availableServices = append(availableServices, "ledger")
 	}
-	payments, err := GetPaymentsIfEnabled(ctx, r.Client, stack.Name)
+	payments, err := GetPaymentsIfEnabled(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
@@ -87,7 +82,7 @@ func (r *WebhooksController) handleTopics(ctx context.Context, stack *v1beta1.St
 	}
 
 	for _, service := range availableServices {
-		if err := CreateTopicQuery(ctx, r.Client, stack, service, "webhooks"); err != nil {
+		if err := CreateTopicQuery(ctx, ctx.GetClient(), stack, service, "webhooks"); err != nil {
 			return err
 		}
 	}
@@ -95,10 +90,10 @@ func (r *WebhooksController) handleTopics(ctx context.Context, stack *v1beta1.St
 	return nil
 }
 
-func (r *WebhooksController) createDeployment(ctx context.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks,
+func (r *WebhooksController) createDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks,
 	database *v1beta1.Database) error {
 
-	brokerConfiguration, err := RequireBrokerConfiguration(ctx, r.Client, stack.Name)
+	brokerConfiguration, err := RequireBrokerConfiguration(ctx, ctx.GetClient(), stack.Name)
 	if err != nil {
 		return err
 	}
@@ -110,11 +105,11 @@ func (r *WebhooksController) createDeployment(ctx context.Context, stack *v1beta
 		GetObjectName(stack.Name, "ledger"),
 		GetObjectName(stack.Name, "payments"),
 	}, " ")))
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: webhooks.Spec.Stack,
 		Name:      "webhooks",
 	},
-		WithController[*appsv1.Deployment](r.Scheme, webhooks),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), webhooks),
 		WithMatchingLabels("webhooks"),
 		WithContainers(corev1.Container{
 			Name:      "api",
@@ -128,15 +123,13 @@ func (r *WebhooksController) createDeployment(ctx context.Context, stack *v1beta
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WebhooksController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
+func (r *WebhooksController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	return ctrl.NewControllerManagedBy(mgr).
 		//TODO: Watch services able to trigger events
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
-func ForWebhooks(client client.Client, scheme *runtime.Scheme) *WebhooksController {
-	return &WebhooksController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForWebhooks() *WebhooksController {
+	return &WebhooksController{}
 }

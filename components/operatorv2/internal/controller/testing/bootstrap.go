@@ -3,7 +3,6 @@ package testing
 import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/controller"
 	"github.com/formancehq/operator/v2/internal/controller/shared"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"os"
@@ -88,30 +87,10 @@ var _ = BeforeEach(func() {
 
 	SetDefaultEventuallyTimeout(5 * time.Second)
 
-	platform := shared.Platform{
+	Expect(reconcilers.Setup(mgr, shared.Platform{
 		Region:      "us-west-1",
 		Environment: "staging",
-	}
-
-	Expect(reconcilers.Setup(mgr,
-		reconcilers.New[*v1beta1.Stack](mgr.GetClient(), mgr.GetScheme(), controller.ForStack(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Topic](mgr.GetClient(), mgr.GetScheme(), controller.ForTopic(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.TopicQuery](mgr.GetClient(), mgr.GetScheme(), controller.ForTopicQuery(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Ledger](mgr.GetClient(), mgr.GetScheme(), controller.ForLedger(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.HTTPAPI](mgr.GetClient(), mgr.GetScheme(), controller.ForHTTPAPI(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Gateway](mgr.GetClient(), mgr.GetScheme(), controller.ForGateway(mgr.GetClient(), mgr.GetScheme(), platform)),
-		reconcilers.New[*v1beta1.Auth](mgr.GetClient(), mgr.GetScheme(), controller.ForAuth(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Database](mgr.GetClient(), mgr.GetScheme(), controller.ForDatabase(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.AuthClient](mgr.GetClient(), mgr.GetScheme(), controller.ForAuthClient(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Wallets](mgr.GetClient(), mgr.GetScheme(), controller.ForWallets(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Orchestration](mgr.GetClient(), mgr.GetScheme(), controller.ForOrchestration(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Payments](mgr.GetClient(), mgr.GetScheme(), controller.ForPayments(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Reconciliation](mgr.GetClient(), mgr.GetScheme(), controller.ForReconciliation(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Webhooks](mgr.GetClient(), mgr.GetScheme(), controller.ForWebhooks(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Search](mgr.GetClient(), mgr.GetScheme(), controller.ForSearch(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.StreamProcessor](mgr.GetClient(), mgr.GetScheme(), controller.ForStreamProcessor(mgr.GetClient(), mgr.GetScheme())),
-		reconcilers.New[*v1beta1.Stream](mgr.GetClient(), mgr.GetScheme(), controller.ForStream(mgr.GetClient(), mgr.GetScheme())),
-	)).To(Succeed())
+	})).To(Succeed())
 
 	err = ctrl.NewControllerManagedBy(mgr).
 		For(&appsv1.Deployment{}).

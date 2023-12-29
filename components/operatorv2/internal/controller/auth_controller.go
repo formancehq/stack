@@ -21,11 +21,11 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -37,29 +37,26 @@ import (
 )
 
 // AuthController reconciles a Auth object
-type AuthController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type AuthController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=auths,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=auths/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=auths/finalizers,verbs=update
 
-func (r *AuthController) Reconcile(ctx context.Context, auth *v1beta1.Auth) error {
+func (r *AuthController) Reconcile(ctx reconcilers.ContextualManager, auth *v1beta1.Auth) error {
 
-	stack, err := GetStack(ctx, r.Client, auth.Spec)
+	stack, err := GetStack(ctx, ctx.GetClient(), auth.Spec)
 	if err != nil {
 		return err
 	}
 
-	database, err := CreateDatabase(ctx, r.Client, stack, "auth")
+	database, err := CreateDatabase(ctx, ctx.GetClient(), stack, "auth")
 	if err != nil {
 		return err
 	}
 
 	authClientsList := &v1beta1.AuthClientList{}
-	if err := r.Client.List(ctx, authClientsList, client.MatchingFields{
+	if err := ctx.GetClient().List(ctx, authClientsList, client.MatchingFields{
 		".spec.stack": stack.Name,
 	}); err != nil {
 		return err
@@ -74,7 +71,7 @@ func (r *AuthController) Reconcile(ctx context.Context, auth *v1beta1.Auth) erro
 		return err
 	}
 
-	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, auth, "auth",
+	if err := CreateHTTPAPI(ctx, ctx.GetClient(), ctx.GetScheme(), stack, auth, "auth",
 		func(spec *v1beta1.HTTPAPISpec) {
 			spec.Secured = true
 		},
@@ -88,7 +85,7 @@ func (r *AuthController) Reconcile(ctx context.Context, auth *v1beta1.Auth) erro
 	return nil
 }
 
-func (r *AuthController) createConfiguration(ctx context.Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
+func (r *AuthController) createConfiguration(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
 
 	sort.Slice(items, func(i, j int) bool {
 		return items[i].Name < items[j].Name
@@ -105,7 +102,7 @@ func (r *AuthController) createConfiguration(ctx context.Context, stack *v1beta1
 		return nil, err
 	}
 
-	cm, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, r.Client, types.NamespacedName{
+	cm, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "auth-configuration",
 	}, func(t *corev1.ConfigMap) {
@@ -120,9 +117,9 @@ func (r *AuthController) createConfiguration(ctx context.Context, stack *v1beta1
 	return cm, nil
 }
 
-func (r *AuthController) createDeployment(ctx context.Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
+func (r *AuthController) createDeployment(ctx reconcilers.ContextualManager, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, r.Client, stack, "auth", auth.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, ctx.GetClient(), stack, "auth", auth.Spec)
 	if err != nil {
 		return err
 	}
@@ -162,7 +159,7 @@ func (r *AuthController) createDeployment(ctx context.Context, stack *v1beta1.St
 		env = append(env, Env("CAOS_OIDC_DEV", "1"))
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, r.Client,
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, ctx.GetClient(),
 		GetNamespacedResourceName(stack.Name, "auth"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
@@ -193,13 +190,14 @@ func (r *AuthController) createDeployment(ctx context.Context, stack *v1beta1.St
 			}}
 		},
 		WithMatchingLabels("auth"),
-		WithController[*appsv1.Deployment](r.Scheme, auth),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), auth),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *AuthController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
+func (r *AuthController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.Auth{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.Auth).Spec.Stack}
@@ -231,9 +229,6 @@ func (r *AuthController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, erro
 		), nil
 }
 
-func ForAuth(client client.Client, scheme *runtime.Scheme) *AuthController {
-	return &AuthController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForAuth() *AuthController {
+	return &AuthController{}
 }

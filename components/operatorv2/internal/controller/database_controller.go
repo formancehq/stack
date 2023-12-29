@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -31,7 +32,6 @@ import (
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -39,16 +39,13 @@ import (
 )
 
 // DatabaseController reconciles a Database object
-type DatabaseController struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type DatabaseController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=databases,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=databases/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=databases/finalizers,verbs=update
 
-func (r *DatabaseController) Reconcile(ctx context.Context, database *v1beta1.Database) error {
+func (r *DatabaseController) Reconcile(ctx reconcilers.ContextualManager, database *v1beta1.Database) error {
 
 	serviceSelectorRequirement, err := labels.NewRequirement("formance.com/service", selection.In, []string{"any", database.Spec.Service})
 	if err != nil {
@@ -63,7 +60,7 @@ func (r *DatabaseController) Reconcile(ctx context.Context, database *v1beta1.Da
 	selector := labels.NewSelector().Add(*serviceSelectorRequirement, *stackSelectorRequirement)
 
 	databaseConfigurationList := &v1beta1.DatabaseConfigurationList{}
-	if err := r.Client.List(ctx, databaseConfigurationList, &client.ListOptions{
+	if err := ctx.GetClient().List(ctx, databaseConfigurationList, &client.ListOptions{
 		LabelSelector: selector,
 	}); err != nil {
 		return err
@@ -101,10 +98,10 @@ func (r *DatabaseController) Reconcile(ctx context.Context, database *v1beta1.Da
 	return nil
 }
 
-func (r *DatabaseController) createJob(ctx context.Context, databaseConfiguration v1beta1.DatabaseConfiguration,
+func (r *DatabaseController) createJob(ctx reconcilers.ContextualManager, databaseConfiguration v1beta1.DatabaseConfiguration,
 	database *v1beta1.Database, dbName string) (*batchv1.Job, error) {
 
-	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, r.Client, types.NamespacedName{
+	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: database.Spec.Stack,
 		Name:      fmt.Sprintf("%s-create-database", database.Spec.Service),
 	},
@@ -128,13 +125,14 @@ func (r *DatabaseController) createJob(ctx context.Context, databaseConfiguratio
 				}},
 			}
 		},
-		WithController[*batchv1.Job](r.Scheme, database),
+		WithController[*batchv1.Job](ctx.GetScheme(), database),
 	)
 	return job, err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *DatabaseController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
+func (r *DatabaseController) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Database{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
@@ -153,9 +151,6 @@ func (r *DatabaseController) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, 
 		Owns(&batchv1.Job{}), nil
 }
 
-func ForDatabase(client client.Client, scheme *runtime.Scheme) *DatabaseController {
-	return &DatabaseController{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForDatabase() *DatabaseController {
+	return &DatabaseController{}
 }

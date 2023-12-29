@@ -20,9 +20,9 @@ import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/operator/v2/internal/reconcilers"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/pointer"
@@ -34,17 +34,14 @@ import (
 )
 
 // HTTPAPI reconciles a HTTPAPI object
-type HTTPAPI struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
+type HTTPAPI struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
 
-func (r *HTTPAPI) Reconcile(ctx context.Context, httpAPI *v1beta1.HTTPAPI) error {
-	_, operationResult, err := CreateOrUpdate[*corev1.Service](ctx, r.Client, types.NamespacedName{
+func (r *HTTPAPI) Reconcile(ctx reconcilers.ContextualManager, httpAPI *v1beta1.HTTPAPI) error {
+	_, operationResult, err := CreateOrUpdate[*corev1.Service](ctx, ctx.GetClient(), types.NamespacedName{
 		Namespace: httpAPI.Spec.Stack,
 		Name:      httpAPI.Spec.Name,
 	},
@@ -67,7 +64,7 @@ func (r *HTTPAPI) Reconcile(ctx context.Context, httpAPI *v1beta1.HTTPAPI) error
 				},
 			}
 		},
-		WithController[*corev1.Service](r.Scheme, httpAPI),
+		WithController[*corev1.Service](ctx.GetScheme(), httpAPI),
 	)
 	if err != nil {
 		httpAPI.Status.SetCondition(v1beta1.Condition{
@@ -104,7 +101,8 @@ func (r *HTTPAPI) Reconcile(ctx context.Context, httpAPI *v1beta1.HTTPAPI) error
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *HTTPAPI) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
+func (r *HTTPAPI) SetupWithManager(mgr reconcilers.Manager) (*builder.Builder, error) {
+
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.HTTPAPI{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.HTTPAPI).Spec.Stack}
@@ -117,9 +115,6 @@ func (r *HTTPAPI) SetupWithManager(mgr ctrl.Manager) (*ctrl.Builder, error) {
 		Owns(&corev1.Service{}), nil
 }
 
-func ForHTTPAPI(client client.Client, scheme *runtime.Scheme) *HTTPAPI {
-	return &HTTPAPI{
-		Client: client,
-		Scheme: scheme,
-	}
+func ForHTTPAPI() *HTTPAPI {
+	return &HTTPAPI{}
 }
