@@ -61,8 +61,6 @@ spec:
                 type: string
               version:
                 type: string
-            required:
-            - stack
             type: object
           status:
             description: LedgerStatus defines the observed state of Ledger

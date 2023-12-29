@@ -21,12 +21,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
+	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 )
 
 // SearchController reconciles a Search object
@@ -40,7 +38,28 @@ type SearchController struct {
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
 func (r *SearchController) Reconcile(ctx context.Context, search *v1beta1.Search) error {
-	_ = log.FromContext(ctx)
+
+	//stack, err := GetStack(ctx, r.Client, search.Spec)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//elasticSearchConfiguration, err := RequireElasticSearchConfiguration(ctx, r.Client, stack.Name)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//CreateOrUpdate[*v1beta1.StreamProcessor](ctx, r.Client, types.NamespacedName{
+	//	Name:      GetObjectName(stack.Name, "search"),
+	//},
+	//	WithController[*v1beta1.StreamProcessor](r.Scheme, search),
+	//	func(t *v1beta1.StreamProcessor) {
+	//		t.Spec.Stack = stack.Name
+	//		t.Spec.Batching = search.Spec.Batching
+	//		t.Spec.ResourceProperties = search.Spec.ResourceProperties
+	//		t.Spec.DevProperties = search.Spec.DevProperties
+	//	},
+	//)
 
 	return nil
 }

@@ -21,6 +21,7 @@ import (
 	_ "embed"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	pkgError "github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
@@ -69,6 +70,10 @@ func (r *LedgerController) Reconcile(ctx context.Context, ledger *v1beta1.Ledger
 	}
 
 	if err := CreateHTTPAPI(ctx, r.Client, r.Scheme, stack, ledger, "ledger"); err != nil {
+		return err
+	}
+
+	if err := LoadStreams(ctx, r.Client, benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0"); err != nil {
 		return err
 	}
 

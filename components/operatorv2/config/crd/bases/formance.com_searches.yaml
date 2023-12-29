@@ -34,10 +34,41 @@ spec:
           spec:
             description: SearchSpec defines the desired state of Search
             properties:
+              batching:
+                properties:
+                  count:
+                    type: integer
+                  period:
+                    type: string
+                required:
+                - count
+                - period
+                type: object
+              debug:
+                type: boolean
+              dev:
+                type: boolean
+              resourceProperties:
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                  request:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                type: object
               stack:
                 type: string
-            required:
-            - stack
+              version:
+                type: string
             type: object
           status:
             description: SearchStatus defines the observed state of Search

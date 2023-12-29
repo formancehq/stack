@@ -21,6 +21,7 @@ import (
 	_ "embed"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controller/internal"
+	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -115,6 +116,10 @@ func (r *PaymentsController) createReadDeployment(ctx context.Context, stack *v1
 		ConfigureK8SService("payments-read"),
 	)
 	if err != nil {
+		return err
+	}
+
+	if err := LoadStreams(ctx, r.Client, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0"); err != nil {
 		return err
 	}
 

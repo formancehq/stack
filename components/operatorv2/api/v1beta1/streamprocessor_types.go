@@ -20,22 +20,23 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+type Batching struct {
+	Count  int    `json:"count"`
+	Period string `json:"period"`
+}
 
 // StreamProcessorSpec defines the desired state of StreamProcessor
 type StreamProcessorSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of StreamProcessor. Edit streamprocessor_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	StackDependency `json:",inline"`
+	DevProperties   `json:",inline"`
+	//+optional
+	ResourceProperties *ResourceProperties `json:"resourceProperties,omitempty"`
+	//+optional
+	Batching *Batching `json:"batching,omitempty"`
 }
 
 // StreamProcessorStatus defines the observed state of StreamProcessor
 type StreamProcessorStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
 }
 
 //+kubebuilder:object:root=true

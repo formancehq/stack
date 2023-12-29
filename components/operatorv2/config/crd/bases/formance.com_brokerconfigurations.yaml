@@ -33,7 +33,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: BrokerConfigSpec defines the desired state of BrokerConfig
+            description: BrokerConfigurationSpec defines the desired state of BrokerConfig
             properties:
               kafka:
                 properties:

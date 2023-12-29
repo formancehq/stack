@@ -68,7 +68,6 @@ spec:
             - name
             - portName
             - secured
-            - stack
             type: object
           status:
             description: HTTPAPIStatus defines the observed state of HTTPAPI

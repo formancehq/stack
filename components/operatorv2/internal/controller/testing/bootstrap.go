@@ -109,6 +109,8 @@ var _ = BeforeEach(func() {
 		reconcilers.New[*v1beta1.Reconciliation](mgr.GetClient(), mgr.GetScheme(), controller.ForReconciliation(mgr.GetClient(), mgr.GetScheme())),
 		reconcilers.New[*v1beta1.Webhooks](mgr.GetClient(), mgr.GetScheme(), controller.ForWebhooks(mgr.GetClient(), mgr.GetScheme())),
 		reconcilers.New[*v1beta1.Search](mgr.GetClient(), mgr.GetScheme(), controller.ForSearch(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.StreamProcessor](mgr.GetClient(), mgr.GetScheme(), controller.ForStreamProcessor(mgr.GetClient(), mgr.GetScheme())),
+		reconcilers.New[*v1beta1.Stream](mgr.GetClient(), mgr.GetScheme(), controller.ForStream(mgr.GetClient(), mgr.GetScheme())),
 	)).To(Succeed())
 
 	err = ctrl.NewControllerManagedBy(mgr).

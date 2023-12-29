@@ -63,7 +63,6 @@ spec:
                 type: string
             required:
             - encryptionKey
-            - stack
             type: object
           status:
             description: PaymentsStatus defines the observed state of Payments

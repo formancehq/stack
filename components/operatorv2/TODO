@@ -5,3 +5,4 @@
 * react to broker configuration and trigger topic reco if in error
 * add finalizers
 * set image pull policy if latest
+* lock usage of version < 2.0-alpha

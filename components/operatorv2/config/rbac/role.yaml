@@ -254,6 +254,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - elasticsearchconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - elasticsearchconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - elasticsearchconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - gateways
   verbs:
   - create
@@ -481,6 +507,58 @@ rules:
   - formance.com
   resources:
   - stacks/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streamprocessors
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - streamprocessors/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streamprocessors/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streams
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - streams/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streams/status
   verbs:
   - get
   - patch

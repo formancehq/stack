@@ -58,7 +58,6 @@ spec:
                 type: string
             required:
             - id
-            - stack
             type: object
           status:
             description: AuthClientStatus defines the observed state of AuthClient

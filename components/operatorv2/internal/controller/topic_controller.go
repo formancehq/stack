@@ -103,13 +103,13 @@ func (r *TopicController) createJob(ctx context.Context,
 			args := []string{"nats", "stream", "add",
 				"--server", fmt.Sprintf("nats://%s", configuration.Spec.Nats.URL),
 				"--retention", "interest",
-				"--subjects", GetObjectName(topic.Spec.Stack, topic.Name),
+				"--subjects", topic.Name,
 				"--defaults",
 			}
 			if configuration.Spec.Nats.Replicas > 0 {
 				args = append(args, "--replicas", fmt.Sprint(configuration.Spec.Nats.Replicas))
 			}
-			args = append(args, GetObjectName(topic.Spec.Stack, topic.Name))
+			args = append(args, topic.Name)
 
 			t.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyOnFailure
 			t.Spec.Template.Spec.Containers = []corev1.Container{{

@@ -79,7 +79,6 @@ spec:
               version:
                 type: string
             required:
-            - stack
             - temporal
             type: object
           status:

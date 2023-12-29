@@ -74,6 +74,12 @@ func WithContainers(containers ...corev1.Container) func(r *appsv1.Deployment) {
 	}
 }
 
+func WithVolumes(volumes ...corev1.Volume) func(t *appsv1.Deployment) {
+	return func(t *appsv1.Deployment) {
+		t.Spec.Template.Spec.Volumes = volumes
+	}
+}
+
 func CreateOrUpdate[T client.Object](ctx context.Context, client client.Client,
 	key types.NamespacedName, mutators ...ObjectMutator[T]) (T, controllerutil.OperationResult, error) {
 

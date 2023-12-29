@@ -22,7 +22,10 @@ import (
 
 // SearchSpec defines the desired state of Search
 type SearchSpec struct {
-	StackDependency `json:",inline"`
+	StackDependency         `json:",inline"`
+	CommonServiceProperties `json:",inline"`
+	//+optional
+	Batching *Batching `json:"batching,omitempty"`
 }
 
 // SearchStatus defines the observed state of Search

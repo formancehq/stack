@@ -1,0 +1,27 @@
+# permissions for end users to view elasticsearchconfigurations.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: elasticsearchconfiguration-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: operatorv2
+    app.kubernetes.io/part-of: operatorv2
+    app.kubernetes.io/managed-by: kustomize
+  name: elasticsearchconfiguration-viewer-role
+rules:
+- apiGroups:
+  - formance.com
+  resources:
+  - elasticsearchconfigurations
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - elasticsearchconfigurations/status
+  verbs:
+  - get

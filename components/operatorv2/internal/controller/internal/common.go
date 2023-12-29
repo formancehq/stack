@@ -3,12 +3,15 @@ package internal
 import (
 	"context"
 	"crypto/sha256"
+	"embed"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"io/fs"
 	"k8s.io/apimachinery/pkg/types"
+	"path/filepath"
 	"strings"
 
 	"github.com/formancehq/operator/v2/api/v1beta1"
@@ -158,6 +161,43 @@ func GetBrokerConfiguration(ctx context.Context, _client client.Client, stackNam
 		return &brokerConfigurationList.Items[0], nil
 	default:
 		return nil, pkgError.New("found multiple broker config")
+	}
+}
+
+func RequireElasticSearchConfiguration(ctx context.Context, _client client.Client, stackName string) (*v1beta1.ElasticSearchConfiguration, error) {
+
+	elasticSearchConfiguration, err := GetElasticSearchConfiguration(ctx, _client, stackName)
+	if err != nil {
+		return nil, err
+	}
+	if elasticSearchConfiguration == nil {
+		return nil, ErrNoConfigurationFound
+	}
+
+	return elasticSearchConfiguration, nil
+}
+
+func GetElasticSearchConfiguration(ctx context.Context, _client client.Client, stackName string) (*v1beta1.ElasticSearchConfiguration, error) {
+
+	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})
+	if err != nil {
+		return nil, err
+	}
+
+	elasticSearchConfigurationList := &v1beta1.ElasticSearchConfigurationList{}
+	if err := _client.List(ctx, elasticSearchConfigurationList, &client.ListOptions{
+		LabelSelector: labels.NewSelector().Add(*stackSelectorRequirement),
+	}); err != nil {
+		return nil, err
+	}
+
+	switch len(elasticSearchConfigurationList.Items) {
+	case 0:
+		return nil, nil
+	case 1:
+		return &elasticSearchConfigurationList.Items[0], nil
+	default:
+		return nil, pkgError.New("found multiple elasticsearch config")
 	}
 }
 
@@ -529,4 +569,55 @@ func CreateTopicQuery(ctx context.Context, _client client.Client, stack *v1beta1
 		t.Spec.Service = service
 	})
 	return err
+}
+
+func CopyDir(f fs.FS, root, path string, ret *map[string]string) {
+	dirEntries, err := fs.ReadDir(f, path)
+	if err != nil {
+		panic(err)
+	}
+	for _, dirEntry := range dirEntries {
+		dirEntryPath := filepath.Join(path, dirEntry.Name())
+		if dirEntry.IsDir() {
+			CopyDir(f, root, dirEntryPath, ret)
+		} else {
+			fileContent, err := fs.ReadFile(f, dirEntryPath)
+			if err != nil {
+				panic(err)
+			}
+			sanitizedPath := strings.TrimPrefix(dirEntryPath, root)
+			sanitizedPath = strings.TrimPrefix(sanitizedPath, "/")
+			(*ret)[sanitizedPath] = string(fileContent)
+		}
+	}
+}
+
+func LoadStreams(ctx context.Context, client client.Client, fs embed.FS,
+	stackName string, streamDirectory string) error {
+	streamFiles, err := fs.ReadDir(streamDirectory)
+	if err != nil {
+		return err
+	}
+
+	// TODO: Only if search enabled
+	for _, file := range streamFiles {
+		streamContent, err := fs.ReadFile(streamDirectory + "/" + file.Name())
+		if err != nil {
+			return err
+		}
+
+		sanitizedName := strings.ReplaceAll(file.Name(), "_", "-")
+
+		_, _, err = CreateOrUpdate[*v1beta1.Stream](ctx, client, types.NamespacedName{
+			Name: fmt.Sprintf("%s-%s", stackName, sanitizedName),
+		}, func(t *v1beta1.Stream) {
+			t.Spec.Data = string(streamContent)
+			t.Spec.Stack = stackName
+		})
+		if err != nil {
+			return pkgError.Wrap(err, "creating stream")
+		}
+	}
+
+	return nil
 }

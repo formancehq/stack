@@ -53,6 +53,9 @@ const (
 // +kubebuilder:rbac:groups=formance.com,resources=brokerconfigurations,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=brokerconfigurations/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=brokerconfigurations/finalizers,verbs=update
+// +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations/finalizers,verbs=update
 
 // Reconciler reconciles a Stack object
 type StackController struct {
@@ -162,6 +165,7 @@ l:
 // SetupWithManager sets up the controller with the Manager.
 func (r *StackController) SetupWithManager(mgr ctrl.Manager) (*builder.Builder, error) {
 	indexer := mgr.GetFieldIndexer()
+	//TODO: opentelemetry configuration must retrievable using labels
 	if err := indexer.IndexField(context.Background(), &v1beta1.OpenTelemetryConfiguration{}, ".spec.stack", func(rawObj client.Object) []string {
 		return []string{rawObj.(*v1beta1.OpenTelemetryConfiguration).Spec.Stack}
 	}); err != nil {

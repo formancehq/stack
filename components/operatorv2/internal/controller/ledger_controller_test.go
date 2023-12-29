@@ -130,7 +130,7 @@ var _ = Describe("LedgerController", func() {
 							"formance.com/service": "any",
 						},
 					},
-					Spec: v1beta1.BrokerConfigSpec{
+					Spec: v1beta1.BrokerConfigurationSpec{
 						Nats: &v1beta1.NatsConfig{
 							URL: "nats://localhost:1234",
 						},
@@ -214,5 +214,6 @@ var _ = Describe("LedgerController", func() {
 				Expect(gateway).To(BeOwnedBy(ledger))
 			})
 		})
+
 	})
 })

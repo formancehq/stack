@@ -14,9 +14,9 @@ import (
 var _ = Describe("TopicController", func() {
 	Context("When creating a Topic", func() {
 		var (
-			stack        *v1beta1.Stack
-			topic        *v1beta1.Topic
-			brokerConfig *v1beta1.BrokerConfiguration
+			stack               *v1beta1.Stack
+			topic               *v1beta1.Topic
+			brokerConfiguration *v1beta1.BrokerConfiguration
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -26,16 +26,16 @@ var _ = Describe("TopicController", func() {
 				Spec: v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			brokerConfig = &v1beta1.BrokerConfiguration{
+			brokerConfiguration = &v1beta1.BrokerConfiguration{
 				ObjectMeta: v1.ObjectMeta{
 					Name: uuid.NewString(),
 					Labels: map[string]string{
 						"formance.com/stack": stack.Name,
 					},
 				},
-				Spec: v1beta1.BrokerConfigSpec{},
+				Spec: v1beta1.BrokerConfigurationSpec{},
 			}
-			Expect(Create(brokerConfig)).To(Succeed())
+			Expect(Create(brokerConfiguration)).To(Succeed())
 			topic = &v1beta1.Topic{
 				ObjectMeta: v1.ObjectMeta{
 					Name: uuid.NewString(),

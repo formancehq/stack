@@ -54,7 +54,6 @@ spec:
             required:
             - queries
             - service
-            - stack
             type: object
           status:
             description: TopicStatus defines the observed state of Topic

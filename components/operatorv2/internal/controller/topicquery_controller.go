@@ -36,7 +36,7 @@ import (
 )
 
 const (
-	gcTopicsFinalizer = "gc-topics"
+	gcFinalizer = "gc"
 )
 
 // TopicQueryController reconciles a TopicQuery object
@@ -68,7 +68,7 @@ func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta
 			}
 		}
 
-		if updated := controllerutil.RemoveFinalizer(topicQuery, gcTopicsFinalizer); updated {
+		if updated := controllerutil.RemoveFinalizer(topicQuery, gcFinalizer); updated {
 			if err := r.Client.Update(ctx, topicQuery); err != nil {
 				return err
 			}
@@ -76,7 +76,7 @@ func (r *TopicQueryController) Reconcile(ctx context.Context, topicQuery *v1beta
 		return nil
 	}
 
-	if updated := controllerutil.AddFinalizer(topicQuery, gcTopicsFinalizer); updated {
+	if updated := controllerutil.AddFinalizer(topicQuery, gcFinalizer); updated {
 		if err := r.Client.Update(ctx, topicQuery); err != nil {
 			return err
 		}

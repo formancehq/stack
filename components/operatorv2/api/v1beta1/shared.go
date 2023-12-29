@@ -111,7 +111,7 @@ func (c *Conditions) SetCondition(condition Condition) {
 }
 
 type StackDependency struct {
-	Stack string `json:"stack" yaml:"-"`
+	Stack string `json:"stack,omitempty" yaml:"-"`
 }
 
 func (d StackDependency) GetStack() string {

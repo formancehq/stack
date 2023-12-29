@@ -42,8 +42,8 @@ type NatsConfig struct {
 	Replicas int `json:"replicas"`
 }
 
-// BrokerConfigSpec defines the desired state of BrokerConfig
-type BrokerConfigSpec struct {
+// BrokerConfigurationSpec defines the desired state of BrokerConfig
+type BrokerConfigurationSpec struct {
 	// +optional
 	Kafka *KafkaConfig `json:"kafka,omitempty"`
 	// +optional
@@ -62,8 +62,8 @@ type BrokerConfiguration struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   BrokerConfigSpec   `json:"spec,omitempty"`
-	Status BrokerConfigStatus `json:"status,omitempty"`
+	Spec   BrokerConfigurationSpec `json:"spec,omitempty"`
+	Status BrokerConfigStatus      `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

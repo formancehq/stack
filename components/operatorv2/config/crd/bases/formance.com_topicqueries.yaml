@@ -48,7 +48,6 @@ spec:
             required:
             - queriedBy
             - service
-            - stack
             type: object
           status:
             description: TopicQueryStatus defines the observed state of TopicQuery

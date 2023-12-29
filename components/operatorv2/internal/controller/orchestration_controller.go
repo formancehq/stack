@@ -114,13 +114,6 @@ func (r *OrchestrationController) handleTopics(ctx context.Context, stack *forma
 	if payments != nil {
 		availableServices = append(availableServices, "payments")
 	}
-	wallets, err := GetWalletsIfEnabled(ctx, r.Client, stack.Name)
-	if err != nil {
-		return err
-	}
-	if wallets != nil {
-		availableServices = append(availableServices, "wallets")
-	}
 
 	for _, service := range availableServices {
 		if err := CreateTopicQuery(ctx, r.Client, stack, service, "orchestration"); err != nil {

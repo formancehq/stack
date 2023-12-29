@@ -31,7 +31,7 @@ var _ = Describe("TopicQueryController", func() {
 						"formance.com/stack": stack.Name,
 					},
 				},
-				Spec: v1beta1.BrokerConfigSpec{},
+				Spec: v1beta1.BrokerConfigurationSpec{},
 			}
 			Expect(Create(brokerConfig)).To(Succeed())
 			topicQuery = &v1beta1.TopicQuery{
