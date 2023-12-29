@@ -14,7 +14,7 @@ type defaultContext struct {
 	Manager
 }
 
-func NewDefaultContext(mgr Manager, ctx context.Context) *defaultContext {
+func NewContext(mgr Manager, ctx context.Context) *defaultContext {
 	return &defaultContext{
 		Context: ctx,
 		Manager: mgr,

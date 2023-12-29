@@ -231,7 +231,13 @@ func (r *PaymentsController) SetupWithManager(mgr core.Manager) (*builder.Builde
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.Database{},
-			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr, "ledger")),
+			handler.EnqueueRequestsFromMapFunc(
+				databases.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr, "payments")),
+		).
+		Watches(
+			&v1beta1.Topic{},
+			handler.EnqueueRequestsFromMapFunc(
+				topics.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr, "payments")),
 		).
 		For(&v1beta1.Payments{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

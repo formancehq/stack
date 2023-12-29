@@ -62,7 +62,7 @@ var (
 	ErrMultipleInstancesFound = errors.New("multiple resources found")
 )
 
-func GetStackDependencyObjects[LIST client.ObjectList, OBJECT client.Object](ctx core.Context, stackName string) ([]OBJECT, error) {
+func GetDependentObjects[LIST client.ObjectList, OBJECT client.Object](ctx core.Context, stackName string) ([]OBJECT, error) {
 	var list LIST
 	list = reflect.New(reflect.TypeOf(list).Elem()).Interface().(LIST)
 
@@ -89,7 +89,7 @@ func GetSingleStackDependencyObject[LIST client.ObjectList, OBJECT client.Object
 
 	var t OBJECT
 
-	items, err := GetStackDependencyObjects[LIST, OBJECT](ctx, stackName)
+	items, err := GetDependentObjects[LIST, OBJECT](ctx, stackName)
 	if err != nil {
 		return t, err
 	}

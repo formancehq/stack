@@ -16,7 +16,7 @@ func Watch[LIST client.ObjectList, OBJECT client.Object](mgr core.Manager, servi
 			return []reconcile.Request{}
 		}
 
-		list, err := stacks.GetStackDependencyObjects[LIST, OBJECT](core.NewDefaultContext(mgr, ctx), database.Spec.Stack)
+		list, err := stacks.GetDependentObjects[LIST, OBJECT](core.NewContext(mgr, ctx), database.Spec.Stack)
 		if err != nil {
 			return []reconcile.Request{}
 		}

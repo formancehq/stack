@@ -16,7 +16,7 @@ func WatchDependency[LIST client.ObjectList, OBJECT client.Object](mgr core.Mana
 		if err != nil {
 			return nil
 		}
-		objects, err := GetStackDependencyObjects[LIST, OBJECT](core.NewDefaultContext(mgr, ctx), stack)
+		objects, err := GetDependentObjects[LIST, OBJECT](core.NewContext(mgr, ctx), stack)
 		if err != nil {
 			return nil
 		}

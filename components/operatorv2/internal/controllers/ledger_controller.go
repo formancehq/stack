@@ -17,12 +17,11 @@ limitations under the License.
 package controllers
 
 import (
-	"context"
 	_ "embed"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
-	databases2 "github.com/formancehq/operator/v2/internal/resources/databases"
+	databases "github.com/formancehq/operator/v2/internal/resources/databases"
 	deployments2 "github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/ledgers"
@@ -31,17 +30,14 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/streams"
 	"github.com/formancehq/operator/v2/internal/resources/topics"
 	"github.com/formancehq/search/benthos"
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	pkgError "github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 // LedgerController reconciles a Ledger object
@@ -58,7 +54,7 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	database, err := databases2.Create(ctx, stack, "ledger")
+	database, err := databases.Create(ctx, stack, "ledger")
 	if err != nil {
 		if pkgError.Is(err, ErrPending) {
 			return nil
@@ -124,12 +120,12 @@ func (r *LedgerController) installLedgerV2SingleInstance(ctx Context, stack *v1b
 func (r *LedgerController) setInitContainer(database *v1beta1.Database, version string) func(t *appsv1.Deployment) {
 	return func(t *appsv1.Deployment) {
 		t.Spec.Template.Spec.InitContainers = []corev1.Container{
-			databases2.MigrateDatabaseContainer(
+			databases.MigrateDatabaseContainer(
 				"ledger",
 				database.Status.Configuration.DatabaseConfigurationSpec,
 				database.Status.Configuration.Database,
 				version,
-				func(m *databases2.MigrationConfiguration) {
+				func(m *databases.MigrationConfiguration) {
 					m.Command = []string{"buckets", "upgrade-all"}
 					m.AdditionalEnv = []corev1.EnvVar{
 						Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
@@ -248,7 +244,7 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 	container.Image = GetImage("ledger", version)
 	container.ImagePullPolicy = GetPullPolicy(container.Image)
 	container.Env = append(container.Env, env...)
-	container.Env = append(container.Env, databases2.PostgresEnvVars(
+	container.Env = append(container.Env, databases.PostgresEnvVars(
 		database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 	container.Env = append(container.Env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	container.Env = append(container.Env, Env("STORAGE_DRIVER", "postgres"))
@@ -329,27 +325,13 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		For(&v1beta1.Ledger{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.Topic{},
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-				topic := object.(*v1beta1.Topic)
-				if topic.Spec.Service != "ledger" {
-					return []reconcile.Request{}
-				}
-
-				ledgerList := &v1beta1.LedgerList{}
-				if err := mgr.GetClient().List(ctx, ledgerList, client.MatchingFields{
-					".spec.stack": topic.Spec.Stack,
-				}); err != nil {
-					return []reconcile.Request{}
-				}
-
-				return MapObjectToReconcileRequests(
-					Map(ledgerList.Items, ToPointer[v1beta1.Ledger])...,
-				)
-			}),
+			handler.EnqueueRequestsFromMapFunc(
+				topics.Watch[*v1beta1.LedgerList, *v1beta1.Ledger](mgr, "ledger")),
 		).
 		Watches(
 			&v1beta1.Database{},
-			handler.EnqueueRequestsFromMapFunc(databases2.Watch[*v1beta1.LedgerList, *v1beta1.Ledger](mgr, "ledger")),
+			handler.EnqueueRequestsFromMapFunc(
+				databases.Watch[*v1beta1.LedgerList, *v1beta1.Ledger](mgr, "ledger")),
 		).
 		Owns(&appsv1.Deployment{}).
 		Owns(&v1beta1.HTTPAPI{}).
