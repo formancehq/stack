@@ -56,11 +56,8 @@ var _ = Describe("HTTPAPI", func() {
 				}
 			})
 			It("should add annotations to the service", func() {
-				var (
-					service *corev1.Service
-				)
-				service = &corev1.Service{}
 				Eventually(func(g Gomega) bool {
+					service := &corev1.Service{}
 					g.Expect(LoadResource(stack.Name, "ledger", service)).To(Succeed())
 					g.Expect(service.Annotations).To(Equal(map[string]string{
 						"foo": "bar",

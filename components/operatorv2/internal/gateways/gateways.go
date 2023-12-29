@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
-	"github.com/pkg/errors"
+	"github.com/formancehq/operator/v2/internal/utils"
 	"k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 //go:embed Caddyfile.gotpl
@@ -36,19 +35,5 @@ func GetURLSAsEnvVarsIfEnabled(ctx reconcilers.Context, stackName string) ([]v1.
 }
 
 func GetIfEnabled(ctx reconcilers.Context, stackName string) (*v1beta1.Gateway, error) {
-	gatewayList := &v1beta1.GatewayList{}
-	if err := ctx.GetClient().List(ctx, gatewayList, client.MatchingFields{
-		".spec.stack": stackName,
-	}); err != nil {
-		return nil, err
-	}
-
-	switch len(gatewayList.Items) {
-	case 0:
-		return nil, nil
-	case 1:
-		return &gatewayList.Items[0], nil
-	default:
-		return nil, errors.New("found multiple gateway")
-	}
+	return utils.GetSingleStackDependencyObject[*v1beta1.GatewayList, *v1beta1.Gateway](ctx, stackName)
 }

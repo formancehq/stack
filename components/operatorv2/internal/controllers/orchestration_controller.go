@@ -154,7 +154,7 @@ func (r *OrchestrationController) createDeployment(ctx reconcilers.Context, stac
 	}
 
 	brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "orchestration")
-	if err != nil && !errors.Is(err, ErrNoConfigurationFound) {
+	if err != nil && !errors.Is(err, ErrNotFound) {
 		return err
 	}
 	env = append(env, brokerEnvVars...)

@@ -54,7 +54,7 @@ func GetEnvVars(ctx reconcilers.Context, stackName, serviceName string) ([]v1.En
 		return nil, err
 	}
 	if configuration == nil {
-		return nil, utils2.ErrNoConfigurationFound
+		return nil, utils2.ErrNotFound
 	}
 
 	return BrokerEnvVars(*configuration, serviceName), nil

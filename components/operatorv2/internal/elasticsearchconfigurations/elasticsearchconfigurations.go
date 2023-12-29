@@ -17,7 +17,7 @@ func Require(ctx reconcilers.Context, stackName string) (*v1beta1.ElasticSearchC
 		return nil, err
 	}
 	if elasticSearchConfiguration == nil {
-		return nil, utils.ErrNoConfigurationFound
+		return nil, utils.ErrNotFound
 	}
 
 	return elasticSearchConfiguration, nil

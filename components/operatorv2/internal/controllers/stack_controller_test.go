@@ -28,7 +28,7 @@ var _ = Describe("StackController", func() {
 		AfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 		})
-		FIt("Should create a new namespace", func() {
+		It("Should create a new namespace", func() {
 			Eventually(func() error {
 				return Get(common.GetResourceName(stack.Name), &corev1.Namespace{})
 			}).Should(Succeed())

@@ -27,7 +27,7 @@ func Register(newReconcilers ...reconciler) {
 	reconcilers = append(reconcilers, newReconcilers...)
 }
 
-type stackDependency interface {
+type stackDependent interface {
 	GetStack() string
 }
 
@@ -44,14 +44,15 @@ func Setup(mgr ctrl.Manager, platform Platform) error {
 			continue
 		}
 
-		if specField.Type.AssignableTo(reflect.TypeOf((*stackDependency)(nil)).Elem()) {
+		if specField.Type.AssignableTo(reflect.TypeOf((*stackDependent)(nil)).Elem()) {
 			mgr.GetLogger().Info("Detect stack dependency object, automatically index field", "type", rtype)
 			if err := mgr.GetFieldIndexer().
 				IndexField(context.Background(), reflect.New(rtype).Interface().(client.Object), ".spec.stack", func(object client.Object) []string {
 					return []string{
 						reflect.ValueOf(object).
+							Elem().
 							FieldByName("Spec").
-							Interface().(stackDependency).
+							Interface().(stackDependent).
 							GetStack(),
 					}
 				}); err != nil {
