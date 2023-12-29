@@ -18,7 +18,6 @@ package main
 
 import (
 	"flag"
-	"github.com/formancehq/operator/v2/internal/controller/shared"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"os"
 
@@ -35,6 +34,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
+	_ "github.com/formancehq/operator/v2/internal/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -95,7 +95,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	platform := shared.Platform{
+	platform := reconcilers.Platform{
 		Region:      region,
 		Environment: env,
 	}

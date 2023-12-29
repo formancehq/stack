@@ -1,0 +1,64 @@
+package utils
+
+import (
+	"github.com/formancehq/operator/v2/internal/reconcilers"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"reflect"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+)
+
+type ObjectMutator[T any] func(t T)
+
+func WithController[T client.Object](scheme *runtime.Scheme, owner client.Object) ObjectMutator[T] {
+	return func(t T) {
+		if !metav1.IsControlledBy(t, owner) {
+			if err := controllerutil.SetControllerReference(owner, t, scheme); err != nil {
+				panic(err)
+			}
+		}
+	}
+}
+
+func WithAnnotations[T client.Object](newAnnotations map[string]string) ObjectMutator[T] {
+	return func(t T) {
+		annotations := t.GetAnnotations()
+		if annotations == nil {
+			annotations = make(map[string]string)
+		}
+		for k, v := range newAnnotations {
+			annotations[k] = v
+		}
+		t.SetAnnotations(annotations)
+	}
+}
+
+func CreateOrUpdate[T client.Object](ctx reconcilers.Context,
+	key types.NamespacedName, mutators ...ObjectMutator[T]) (T, controllerutil.OperationResult, error) {
+
+	var ret T
+	ret = reflect.New(reflect.TypeOf(ret).Elem()).Interface().(T)
+	ret.SetNamespace(key.Namespace)
+	ret.SetName(key.Name)
+	operationResult, err := controllerutil.CreateOrUpdate(ctx, ctx.GetClient(), ret, func() error {
+		for _, mutate := range mutators {
+			mutate(ret)
+		}
+		return nil
+	})
+	return ret, operationResult, err
+}
+
+func DeleteIfExists[T client.Object](ctx reconcilers.Context, name types.NamespacedName) error {
+	var t T
+	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+	if err := ctx.GetClient().Get(ctx, name, t); err != nil {
+		if client.IgnoreNotFound(err) == nil {
+			return nil
+		}
+		return err
+	}
+	return ctx.GetClient().Delete(ctx, t)
+}
