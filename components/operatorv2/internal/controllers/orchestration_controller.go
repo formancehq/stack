@@ -26,6 +26,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/ledgers"
+	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/payments"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
@@ -182,6 +183,12 @@ func (r *OrchestrationController) SetupWithManager(mgr core.Manager) (*builder.B
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr, "ledger")),
+		).
+		Watches(
+			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(
+				opentelemetryconfigurations.Watch[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr),
+			),
 		).
 		// todo: Watch broker configuration
 		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

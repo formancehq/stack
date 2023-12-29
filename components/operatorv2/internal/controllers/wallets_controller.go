@@ -18,17 +18,18 @@ package controllers
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	common "github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
-	deployments2 "github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
-	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -39,14 +40,14 @@ type WalletsController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletsController) Reconcile(ctx common.Context, wallet *v1beta1.Wallets) error {
+func (r *WalletsController) Reconcile(ctx core.Context, wallet *v1beta1.Wallets) error {
 
 	stack, err := stacks.GetStack(ctx, wallet.Spec)
 	if err != nil {
 		return err
 	}
 
-	authClient, err := authclients.Create(ctx, stack, wallet, "wallets", func(spec *formancev1beta1.AuthClientSpec) {
+	authClient, err := authclients.Create(ctx, stack, wallet, "wallets", func(spec *v1beta1.AuthClientSpec) {
 		spec.Scopes = []string{"ledger:read", "ledger:write"}
 	})
 	if err != nil {
@@ -64,35 +65,41 @@ func (r *WalletsController) Reconcile(ctx common.Context, wallet *v1beta1.Wallet
 	return nil
 }
 
-func (r *WalletsController) createDeployment(ctx common.Context, stack *formancev1beta1.Stack, wallet *formancev1beta1.Wallets, authClient *formancev1beta1.AuthClient) error {
+func (r *WalletsController) createDeployment(ctx core.Context, stack *v1beta1.Stack, wallet *v1beta1.Wallets, authClient *v1beta1.AuthClient) error {
 	env, err := GetCommonServicesEnvVars(ctx, stack, "wallets", wallet.Spec)
 	if err != nil {
 		return err
 	}
 	env = append(env, authclients.GetEnvVars(authClient)...)
 
-	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx,
-		common.GetNamespacedResourceName(stack.Name, "wallets"),
+	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx,
+		core.GetNamespacedResourceName(stack.Name, "wallets"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:      "wallets",
 				Args:      []string{"serve"},
 				Env:       env,
-				Image:     common.GetImage("wallets", common.GetVersion(stack, wallet.Spec.Version)),
-				Resources: common.GetResourcesWithDefault(wallet.Spec.ResourceProperties, common.ResourceSizeSmall()),
-				Ports:     []corev1.ContainerPort{deployments2.StandardHTTPPort()},
+				Image:     core.GetImage("wallets", core.GetVersion(stack, wallet.Spec.Version)),
+				Resources: core.GetResourcesWithDefault(wallet.Spec.ResourceProperties, core.ResourceSizeSmall()),
+				Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			}}
 		},
-		deployments2.WithMatchingLabels("wallets"),
-		common.WithController[*appsv1.Deployment](ctx.GetScheme(), wallet),
+		deployments.WithMatchingLabels("wallets"),
+		core.WithController[*appsv1.Deployment](ctx.GetScheme(), wallet),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WalletsController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
+func (r *WalletsController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&formancev1beta1.Wallets{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
+		Watches(
+			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(
+				opentelemetryconfigurations.Watch[*v1beta1.WalletsList, *v1beta1.Wallets](mgr),
+			),
+		).
+		For(&v1beta1.Wallets{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
 func ForWallets() *WalletsController {

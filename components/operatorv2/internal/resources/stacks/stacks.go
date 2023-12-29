@@ -73,16 +73,7 @@ func GetDependentObjects[LIST client.ObjectList, OBJECT client.Object](ctx core.
 		return nil, err
 	}
 
-	items := reflect.ValueOf(list).
-		Elem().
-		FieldByName("Items")
-
-	ret := make([]OBJECT, 0)
-	for i := 0; i < items.Len(); i++ {
-		ret = append(ret, items.Index(i).Addr().Interface().(OBJECT))
-	}
-
-	return ret, nil
+	return core.ExtractItemsFromList[LIST, OBJECT](list), nil
 }
 
 func GetSingleStackDependencyObject[LIST client.ObjectList, OBJECT client.Object](ctx core.Context, stackName string) (OBJECT, error) {

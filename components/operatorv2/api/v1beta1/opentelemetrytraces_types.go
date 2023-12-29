@@ -47,7 +47,6 @@ type MetricsSpec struct {
 
 // OpenTelemetryConfigurationSpec defines the desired state of OpenTelemetryConfiguration
 type OpenTelemetryConfigurationSpec struct {
-	Stack string `json:"stack"`
 	// +optional
 	Traces *TracesSpec `json:"traces,omitempty"`
 	// +optional

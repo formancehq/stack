@@ -19,16 +19,18 @@ package controllers
 import (
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
-	common "github.com/formancehq/operator/v2/internal/core"
-	deployments2 "github.com/formancehq/operator/v2/internal/resources/deployments"
+	core "github.com/formancehq/operator/v2/internal/core"
+	deployments "github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/elasticsearchconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
@@ -39,7 +41,7 @@ type SearchController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=searches/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
-func (r *SearchController) Reconcile(ctx common.Context, search *v1beta1.Search) error {
+func (r *SearchController) Reconcile(ctx core.Context, search *v1beta1.Search) error {
 
 	stack, err := stacks.GetStack(ctx, search.Spec)
 	if err != nil {
@@ -52,29 +54,29 @@ func (r *SearchController) Reconcile(ctx common.Context, search *v1beta1.Search)
 	}
 
 	env := []corev1.EnvVar{
-		common.Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d", elasticSearchConfiguration.Spec.Host, elasticSearchConfiguration.Spec.Port)),
-		common.Env("OPEN_SEARCH_SCHEME", elasticSearchConfiguration.Spec.Scheme),
-		common.Env("ES_INDICES", "stacks"),
+		core.Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d", elasticSearchConfiguration.Spec.Host, elasticSearchConfiguration.Spec.Port)),
+		core.Env("OPEN_SEARCH_SCHEME", elasticSearchConfiguration.Spec.Scheme),
+		core.Env("ES_INDICES", "stacks"),
 	}
 	if elasticSearchConfiguration.Spec.BasicAuth != nil {
 		if elasticSearchConfiguration.Spec.BasicAuth.SecretName == "" {
 			env = append(env,
-				common.Env("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.Username),
-				common.Env("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.Password),
+				core.Env("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.Username),
+				core.Env("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.Password),
 			)
 		} else {
 			env = append(env,
-				common.EnvFromSecret("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "username"),
-				common.EnvFromSecret("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "password"),
+				core.EnvFromSecret("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "username"),
+				core.EnvFromSecret("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "password"),
 			)
 		}
 	}
 
-	image := common.GetImage("search", common.GetVersion(stack, search.Spec.Version))
-	_, _, err = common.CreateOrUpdate[*v1beta1.StreamProcessor](ctx, types.NamespacedName{
-		Name: common.GetObjectName(stack.Name, "stream-processor"),
+	image := core.GetImage("search", core.GetVersion(stack, search.Spec.Version))
+	_, _, err = core.CreateOrUpdate[*v1beta1.StreamProcessor](ctx, types.NamespacedName{
+		Name: core.GetObjectName(stack.Name, "stream-processor"),
 	},
-		common.WithController[*v1beta1.StreamProcessor](ctx.GetScheme(), search),
+		core.WithController[*v1beta1.StreamProcessor](ctx.GetScheme(), search),
 		func(t *v1beta1.StreamProcessor) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Batching = search.Spec.Batching
@@ -92,19 +94,19 @@ func (r *SearchController) Reconcile(ctx common.Context, search *v1beta1.Search)
 		return err
 	}
 
-	_, _, err = common.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "search",
 	},
-		common.WithController[*appsv1.Deployment](ctx.GetScheme(), search),
-		deployments2.WithMatchingLabels("search"),
-		deployments2.WithContainers(corev1.Container{
+		core.WithController[*appsv1.Deployment](ctx.GetScheme(), search),
+		deployments.WithMatchingLabels("search"),
+		deployments.WithContainers(corev1.Container{
 			Name:            "search",
-			Image:           common.GetImage("search", common.GetVersion(stack, search.Spec.Version)),
-			Ports:           []corev1.ContainerPort{deployments2.StandardHTTPPort()},
+			Image:           core.GetImage("search", core.GetVersion(stack, search.Spec.Version)),
+			Ports:           []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			Env:             env,
-			Resources:       common.GetResourcesWithDefault(search.Spec.ResourceProperties, common.ResourceSizeSmall()),
-			ImagePullPolicy: common.GetPullPolicy(image),
+			Resources:       core.GetResourcesWithDefault(search.Spec.ResourceProperties, core.ResourceSizeSmall()),
+			ImagePullPolicy: core.GetPullPolicy(image),
 		}),
 	)
 
@@ -116,9 +118,15 @@ func (r *SearchController) Reconcile(ctx common.Context, search *v1beta1.Search)
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *SearchController) SetupWithManager(mgr common.Manager) (*builder.Builder, error) {
+func (r *SearchController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Search{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Watches(
+			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(
+				opentelemetryconfigurations.Watch[*v1beta1.SearchList, *v1beta1.Search](mgr),
+			),
+		).
 		Owns(&v1beta1.StreamProcessor{}).
 		Owns(&v1beta1.HTTPAPI{}).
 		Owns(&appsv1.Deployment{}), nil

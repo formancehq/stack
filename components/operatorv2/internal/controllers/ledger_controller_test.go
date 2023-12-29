@@ -83,7 +83,6 @@ var _ = Describe("LedgerController", func() {
 				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.OpenTelemetryConfigurationSpec{
-						Stack: stack.Name,
 						Traces: &v1beta1.TracesSpec{
 							Otlp: &v1beta1.OtlpSpec{
 								Endpoint: "otel-collector",

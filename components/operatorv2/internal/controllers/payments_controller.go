@@ -24,6 +24,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/payments"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
@@ -238,6 +239,12 @@ func (r *PaymentsController) SetupWithManager(mgr core.Manager) (*builder.Builde
 			&v1beta1.Topic{},
 			handler.EnqueueRequestsFromMapFunc(
 				topics.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr, "payments")),
+		).
+		Watches(
+			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(
+				opentelemetryconfigurations.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr),
+			),
 		).
 		For(&v1beta1.Payments{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

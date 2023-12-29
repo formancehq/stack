@@ -56,8 +56,6 @@ spec:
                         type: string
                     type: object
                 type: object
-              stack:
-                type: string
               traces:
                 properties:
                   otlp:
@@ -78,8 +76,6 @@ spec:
                         type: string
                     type: object
                 type: object
-            required:
-            - stack
             type: object
           status:
             description: OpenTelemetryConfigurationStatus defines the observed state
