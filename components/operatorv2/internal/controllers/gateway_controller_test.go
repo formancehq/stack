@@ -40,10 +40,7 @@ var _ = Describe("GatewayController", func() {
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
-					Name:               "ledger",
-					PortName:           "http",
-					HasVersionEndpoint: true,
-					Liveness:           v1beta1.LivenessDefault,
+					Name: "ledger",
 					Annotations: map[string]string{
 						"foo": "bar",
 					},
@@ -123,10 +120,7 @@ var _ = Describe("GatewayController", func() {
 						StackDependency: v1beta1.StackDependency{
 							Stack: stack.Name,
 						},
-						Name:               "another",
-						PortName:           "http",
-						HasVersionEndpoint: true,
-						Liveness:           v1beta1.LivenessDefault,
+						Name: "another",
 					},
 				}
 				Expect(Create(anotherHttpService)).To(Succeed())

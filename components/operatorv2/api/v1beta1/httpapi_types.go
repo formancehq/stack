@@ -27,24 +27,6 @@ type Path struct {
 	Secured bool     `json:"secured"`
 }
 
-type Liveness int
-
-const (
-	LivenessDefault = iota
-	LivenessLegacy
-	LivenessDisable
-)
-
-func (l Liveness) String() string {
-	switch l {
-	case LivenessLegacy:
-		return "_health"
-	case LivenessDefault:
-		return "_healthcheck"
-	}
-	return ""
-}
-
 // HTTPAPISpec defines the desired state of HTTPAPI
 type HTTPAPISpec struct {
 	StackDependency `json:",inline"`
@@ -52,14 +34,8 @@ type HTTPAPISpec struct {
 	Name string `json:"name"`
 	// Secured indicate if the service is able to handle security
 	Secured bool `json:"secured"`
-	// HasVersionEndpoint indicates if the service has a /_info endpoint
-	HasVersionEndpoint bool `json:"hasVersionEndpoint"`
-	// Liveness indicates if the service has a /_health(check) endpoint
-	Liveness Liveness `json:"liveness"`
 	// +optional
 	Annotations map[string]string `json:"annotations,omitempty"`
-	// Port name of the container
-	PortName string `json:"portName"`
 }
 
 // HTTPAPIStatus defines the observed state of HTTPAPI

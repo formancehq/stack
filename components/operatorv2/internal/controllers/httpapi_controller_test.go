@@ -26,8 +26,7 @@ var _ = Describe("HTTPAPI", func() {
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
-					Name:     "ledger",
-					PortName: "http",
+					Name: "ledger",
 				},
 			}
 		})

@@ -43,14 +43,6 @@ spec:
                 additionalProperties:
                   type: string
                 type: object
-              hasVersionEndpoint:
-                description: HasVersionEndpoint indicates if the service has a /_info
-                  endpoint
-                type: boolean
-              liveness:
-                description: Liveness indicates if the service has a /_health(check)
-                  endpoint
-                type: integer
               name:
                 description: Name indicates prefix api
                 type: string
@@ -63,8 +55,6 @@ spec:
               stack:
                 type: string
             required:
-            - hasVersionEndpoint
-            - liveness
             - name
             - portName
             - secured

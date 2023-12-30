@@ -54,7 +54,7 @@ func (r *HTTPAPI) Reconcile(ctx Context, httpAPI *v1beta1.HTTPAPI) error {
 					Port:        8080,
 					Protocol:    "TCP",
 					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(httpAPI.Spec.PortName),
+					TargetPort:  intstr.FromString("http"),
 				}},
 				Selector: map[string]string{
 					"app.kubernetes.io/name": httpAPI.Spec.Name,

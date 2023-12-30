@@ -16,9 +16,7 @@ func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectN
 				StackDependency: v1beta1.StackDependency{
 					Stack: stack.Name,
 				},
-				PortName:           "http",
-				HasVersionEndpoint: true,
-				Name:               objectName,
+				Name: objectName,
 			}
 			for _, option := range options {
 				option(&t.Spec)
