@@ -108,6 +108,14 @@ func (r *ReconciliationController) createDeployment(ctx core.Context, stack *v1b
 func (r *ReconciliationController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
+			&v1beta1.Ledger{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.ReconciliationList, *v1beta1.Reconciliation](mgr)),
+		).
+		Watches(
+			&v1beta1.Payments{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.ReconciliationList, *v1beta1.Reconciliation](mgr)),
+		).
+		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
 				opentelemetryconfigurations.Watch[*v1beta1.ReconciliationList, *v1beta1.Reconciliation](mgr),

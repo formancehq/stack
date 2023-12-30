@@ -134,6 +134,16 @@ func (r *WebhooksController) createDeployment(ctx core.Context, stack *v1beta1.S
 // SetupWithManager sets up the controller with the Manager.
 func (r *WebhooksController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		Owns(&appsv1.Deployment{}).
+		Owns(&v1beta1.HTTPAPI{}).
+		Watches(
+			&v1beta1.Ledger{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr)),
+		).
+		Watches(
+			&v1beta1.Payments{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr)),
+		).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr, "ledger")),

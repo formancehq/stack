@@ -190,6 +190,18 @@ func (r *OrchestrationController) SetupWithManager(mgr core.Manager) (*builder.B
 				opentelemetryconfigurations.Watch[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr),
 			),
 		).
+		Watches(
+			&v1beta1.Ledger{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr)),
+		).
+		Watches(
+			&v1beta1.Payments{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr)),
+		).
+		Watches(
+			&v1beta1.Wallets{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr)),
+		).
 		// todo: Watch broker configuration
 		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
