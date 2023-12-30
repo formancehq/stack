@@ -3,6 +3,7 @@ package controllers_test
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -26,7 +27,8 @@ var _ = Describe("HTTPAPI", func() {
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
-					Name: "ledger",
+					Name:  "ledger",
+					Rules: []v1beta1.HTTPAPIRule{httpapis.RuleSecured()},
 				},
 			}
 		})

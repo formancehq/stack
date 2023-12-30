@@ -46,18 +46,27 @@ spec:
               name:
                 description: Name indicates prefix api
                 type: string
-              portName:
-                description: Port name of the container
-                type: string
-              secured:
-                description: Secured indicate if the service is able to handle security
-                type: boolean
+              rules:
+                description: Rules
+                items:
+                  properties:
+                    methods:
+                      items:
+                        type: string
+                      type: array
+                    path:
+                      type: string
+                    secured:
+                      type: boolean
+                  required:
+                  - path
+                  type: object
+                type: array
               stack:
                 type: string
             required:
             - name
-            - portName
-            - secured
+            - rules
             type: object
           status:
             description: HTTPAPIStatus defines the observed state of HTTPAPI

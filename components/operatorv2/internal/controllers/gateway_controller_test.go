@@ -3,6 +3,7 @@ package controllers_test
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -14,9 +15,9 @@ import (
 var _ = Describe("GatewayController", func() {
 	Context("When creating a Gateway", func() {
 		var (
-			stack       *v1beta1.Stack
-			gateway     *v1beta1.Gateway
-			httpService *v1beta1.HTTPAPI
+			stack   *v1beta1.Stack
+			gateway *v1beta1.Gateway
+			httpAPI *v1beta1.HTTPAPI
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -34,7 +35,7 @@ var _ = Describe("GatewayController", func() {
 					},
 				},
 			}
-			httpService = &v1beta1.HTTPAPI{
+			httpAPI = &v1beta1.HTTPAPI{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.HTTPAPISpec{
 					StackDependency: v1beta1.StackDependency{
@@ -44,17 +45,18 @@ var _ = Describe("GatewayController", func() {
 					Annotations: map[string]string{
 						"foo": "bar",
 					},
+					Rules: []v1beta1.HTTPAPIRule{httpapis.RuleSecured()},
 				},
 			}
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(BeNil())
-			Expect(Create(httpService)).To(Succeed())
+			Expect(Create(httpAPI)).To(Succeed())
 			Expect(Create(gateway)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(stack)).To(BeNil())
-			Expect(Delete(httpService)).To(Succeed())
+			Expect(Delete(httpAPI)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())
 		})
 		It("Should create a deployment", func() {
@@ -72,7 +74,7 @@ var _ = Describe("GatewayController", func() {
 				g.Expect(LoadResource("", gateway.Name, gateway))
 
 				return gateway.Status.SyncHTTPAPIs
-			}).Should(ContainElements(httpService.Spec.Name))
+			}).Should(ContainElements(httpAPI.Spec.Name))
 
 			cm := &corev1.ConfigMap{}
 			Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
@@ -121,6 +123,14 @@ var _ = Describe("GatewayController", func() {
 							Stack: stack.Name,
 						},
 						Name: "another",
+						Rules: []v1beta1.HTTPAPIRule{
+							{
+								Path:    "/webhooks",
+								Methods: []string{"POST"},
+								Secured: true,
+							},
+							httpapis.RuleSecured(),
+						},
 					},
 				}
 				Expect(Create(anotherHttpService)).To(Succeed())
@@ -130,7 +140,7 @@ var _ = Describe("GatewayController", func() {
 					g.Expect(LoadResource("", gateway.Name, gateway))
 
 					return gateway.Status.SyncHTTPAPIs
-				}).Should(ContainElements(httpService.Spec.Name, anotherHttpService.Spec.Name))
+				}).Should(ContainElements(httpAPI.Spec.Name, anotherHttpService.Spec.Name))
 
 				cm := &corev1.ConfigMap{}
 				Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())

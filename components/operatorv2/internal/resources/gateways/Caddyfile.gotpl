@@ -80,15 +80,19 @@
 	{{- end }}
 
 	{{- range $i, $service := .Services }}
-    handle /api/{{ $service.Name }}* {
-        uri strip_prefix /api/{{ $service.Name }}
-        reverse_proxy {{ $service.Name }}:8080
-
+	{{- range $j, $rule := $service.Rules }}
+	handle /api/{{ $service.Name }}{{ $rule.Path }}* {
+		{{- if $rule.Methods }}
+		method {{ join $rule.Methods " " }}
+		{{- end }}
+		uri strip_prefix /api/{{ $service.Name }}
         import cors
-        {{- if and (not $service.Secured) $values.Auth }}
+        {{- if and (not $rule.Secured) $values.Auth }}
         import auth {{ $service.Name }}
         {{- end }}
+		reverse_proxy {{ $service.Name }}:8080
     }
+	{{- end }}
 	{{- end }}
 
 	handle /versions {

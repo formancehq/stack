@@ -16,28 +16,28 @@
 	}
 
     handle /connectors* {
-        reverse_proxy payments-write:8080
+        reverse_proxy payments-connectors:8080
     }
     handle /connectors/webhooks* {
-        reverse_proxy payments-write:8080
+        reverse_proxy payments-connectors:8080
     }
     handle /configs* {
-        reverse_proxy payments-write:8080
+        reverse_proxy payments-connectors:8080
     }
-    @bank-accounts {
+
+    handle /bank-accounts* {
         method POST
-        path /bank-accounts*
+        reverse_proxy payments-connectors:8080
     }
-    handle @bank-accounts {
-        reverse_proxy payments-write:8080
-    }
+
     @transfer-initiations {
         path /transfer-initiations*
         method DELETE POST
     }
     handle @transfer-initiations {
-        reverse_proxy payments-write:8080
+        reverse_proxy payments-connectors:8080
     }
+
     handle /* {
         reverse_proxy payments-read:8080
     }

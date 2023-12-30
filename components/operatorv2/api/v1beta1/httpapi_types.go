@@ -20,11 +20,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type Path struct {
-	Path    string   `json:"path"`
+type HTTPAPIRule struct {
+	Path string `json:"path"`
+	//+optional
 	Methods []string `json:"methods"`
-	Name    string   `json:"name"`
-	Secured bool     `json:"secured"`
+	//+optional
+	Secured bool `json:"secured"`
 }
 
 // HTTPAPISpec defines the desired state of HTTPAPI
@@ -32,10 +33,10 @@ type HTTPAPISpec struct {
 	StackDependency `json:",inline"`
 	// Name indicates prefix api
 	Name string `json:"name"`
-	// Secured indicate if the service is able to handle security
-	Secured bool `json:"secured"`
-	// +optional
+	//+optional
 	Annotations map[string]string `json:"annotations,omitempty"`
+	// Rules
+	Rules []HTTPAPIRule `json:"rules"`
 }
 
 // HTTPAPIStatus defines the observed state of HTTPAPI

@@ -34,6 +34,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"net/http"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -71,7 +72,15 @@ func (r *PaymentsController) Reconcile(ctx core.Context, payments *v1beta1.Payme
 		return err
 	}
 
-	if err := httpapis.Create(ctx, stack, payments, "payments"); err != nil {
+	if err := httpapis.Create(ctx, stack, payments, "payments",
+		httpapis.WithRules(
+			v1beta1.HTTPAPIRule{
+				Path:    "/connectors/webhooks",
+				Methods: []string{http.MethodPost},
+				Secured: true,
+			},
+			httpapis.RuleSecured(),
+		)); err != nil {
 		return err
 	}
 

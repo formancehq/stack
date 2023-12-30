@@ -7,7 +7,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 )
 
-//go:embed Caddyfile.ledger.gotpl
+//go:embed Caddyfile.gotpl
 var Caddyfile string
 
 func GetIfEnabled(ctx core.Context, stackName string) (*v1beta1.Ledger, error) {

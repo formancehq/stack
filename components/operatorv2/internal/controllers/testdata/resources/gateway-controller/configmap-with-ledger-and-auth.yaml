@@ -28,12 +28,11 @@
 	log {
 		output stdout
 	}
-    handle /api/ledger* {
-        uri strip_prefix /api/ledger
-        reverse_proxy ledger:8080
-
+    handle /api/ledger/* {
+		uri strip_prefix /api/ledger
         import cors
         import auth ledger
+		reverse_proxy ledger:8080
     }
 
 	handle /versions {

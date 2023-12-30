@@ -20,17 +20,21 @@
 	log {
 		output stdout
 	}
-    handle /api/another* {
-        uri strip_prefix /api/another
-        reverse_proxy another:8080
-
+    handle /api/another/webhooks* {
+		method POST
+		uri strip_prefix /api/another
         import cors
+		reverse_proxy another:8080
     }
-    handle /api/ledger* {
-        uri strip_prefix /api/ledger
-        reverse_proxy ledger:8080
-
+    handle /api/another/* {
+		uri strip_prefix /api/another
         import cors
+		reverse_proxy another:8080
+    }
+    handle /api/ledger/* {
+		uri strip_prefix /api/ledger
+        import cors
+		reverse_proxy ledger:8080
     }
 
 	handle /versions {

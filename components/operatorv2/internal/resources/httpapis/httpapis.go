@@ -7,7 +7,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectName string, options ...func(spec *v1beta1.HTTPAPISpec)) error {
+type option func(spec *v1beta1.HTTPAPI)
+
+var defaultOptions = []option{
+	WithRules(RuleSecured()),
+}
+
+func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectName string, options ...option) error {
 	_, _, err := core.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
 		Name: core.GetObjectName(stack.Name, objectName),
 	},
@@ -18,8 +24,8 @@ func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectN
 				},
 				Name: objectName,
 			}
-			for _, option := range options {
-				option(&t.Spec)
+			for _, option := range append(defaultOptions, options...) {
+				option(t)
 			}
 		},
 		core.WithController[*v1beta1.HTTPAPI](ctx.GetScheme(), owner),
@@ -27,8 +33,21 @@ func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectN
 	return err
 }
 
-func Secured() func(httpapi *v1beta1.HTTPAPISpec) {
-	return func(httpapiSpec *v1beta1.HTTPAPISpec) {
-		httpapiSpec.Secured = true
+func WithRules(rules ...v1beta1.HTTPAPIRule) func(httpapi *v1beta1.HTTPAPI) {
+	return func(httpapi *v1beta1.HTTPAPI) {
+		httpapi.Spec.Rules = rules
+	}
+}
+
+func RuleSecured() v1beta1.HTTPAPIRule {
+	return v1beta1.HTTPAPIRule{
+		Path: "/",
+	}
+}
+
+func RuleUnsecured() v1beta1.HTTPAPIRule {
+	return v1beta1.HTTPAPIRule{
+		Path:    "/",
+		Secured: true,
 	}
 }
