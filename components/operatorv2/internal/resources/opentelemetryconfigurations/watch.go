@@ -4,17 +4,14 @@ import (
 	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
-	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func Watch[LIST client.ObjectList, OBJECT client.Object](mgr Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
+func Watch(mgr Manager, list client.ObjectList) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
 		openTelemetryConfiguration := object.(*v1beta1.OpenTelemetryConfiguration)
 
-		var list LIST
-		list = reflect.New(reflect.TypeOf(list).Elem()).Interface().(LIST)
 		opt := client.MatchingFields{}
 		if openTelemetryConfiguration.Labels["formance.com/stack"] != "any" {
 			opt[".spec.stack"] = openTelemetryConfiguration.Labels["formance.com/stack"]
@@ -25,7 +22,7 @@ func Watch[LIST client.ObjectList, OBJECT client.Object](mgr Manager) func(ctx c
 		}
 
 		return MapObjectToReconcileRequests(
-			ExtractItemsFromList[LIST, OBJECT](list)...,
+			ExtractItemsFromList(list)...,
 		)
 	}
 }

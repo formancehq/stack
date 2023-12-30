@@ -11,5 +11,13 @@ import (
 var Caddyfile string
 
 func GetIfEnabled(ctx core.Context, stackName string) (*v1beta1.Ledger, error) {
-	return stacks.GetSingleStackDependencyObject[*v1beta1.LedgerList, *v1beta1.Ledger](ctx, stackName)
+	ret, err := stacks.GetSingleStackDependencyObject(ctx, stackName, &v1beta1.LedgerList{})
+	if err != nil {
+		return nil, err
+	}
+	if ret == nil {
+		return nil, nil
+	}
+
+	return ret.(*v1beta1.Ledger), nil
 }

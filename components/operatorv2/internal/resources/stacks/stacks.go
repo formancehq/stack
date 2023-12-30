@@ -1,7 +1,6 @@
 package stacks
 
 import (
-	errors2 "errors"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/pkg/errors"
@@ -62,10 +61,7 @@ var (
 	ErrMultipleInstancesFound = errors.New("multiple resources found")
 )
 
-func GetDependentObjects[LIST client.ObjectList, OBJECT client.Object](ctx core.Context, stackName string) ([]OBJECT, error) {
-	var list LIST
-	list = reflect.New(reflect.TypeOf(list).Elem()).Interface().(LIST)
-
+func GetDependentObjects(ctx core.Context, stackName string, list client.ObjectList) ([]client.Object, error) {
 	err := ctx.GetClient().List(ctx, list, client.MatchingFields{
 		".spec.stack": stackName,
 	})
@@ -73,46 +69,43 @@ func GetDependentObjects[LIST client.ObjectList, OBJECT client.Object](ctx core.
 		return nil, err
 	}
 
-	return core.ExtractItemsFromList[LIST, OBJECT](list), nil
+	return core.ExtractItemsFromList(list), nil
 }
 
-func GetSingleStackDependencyObject[LIST client.ObjectList, OBJECT client.Object](ctx core.Context, stackName string) (OBJECT, error) {
+func GetSingleStackDependencyObject(ctx core.Context, stackName string, list client.ObjectList) (client.Object, error) {
 
-	var t OBJECT
-
-	items, err := GetDependentObjects[LIST, OBJECT](ctx, stackName)
+	items, err := GetDependentObjects(ctx, stackName, list)
 	if err != nil {
-		return t, err
+		return nil, err
 	}
 
 	switch len(items) {
 	case 0:
-		return t, nil
+		return nil, nil
 	case 1:
 		return items[0], nil
 	default:
-		return t, ErrMultipleInstancesFound
+		return nil, ErrMultipleInstancesFound
 	}
 }
 
-func HasSingleStackDependencyObject[LIST client.ObjectList, OBJECT client.Object](ctx core.Context, stackName string) (bool, error) {
-	ret, err := GetSingleStackDependencyObject[LIST, OBJECT](ctx, stackName)
-	if err != nil && !errors2.Is(err, ErrMultipleInstancesFound) {
+func HasSingleStackDependencyObject(ctx core.Context, stackName string, list client.ObjectList) (bool, error) {
+	ret, err := GetSingleStackDependencyObject(ctx, stackName, list)
+	if err != nil && !errors.Is(err, ErrMultipleInstancesFound) {
 		return false, err
 	}
-	if reflect.ValueOf(ret).IsZero() {
+	if ret == nil {
 		return false, nil
 	}
 	return true, nil
 }
 
-func RequireSingleStackDependencyObject[LIST client.ObjectList, OBJECT client.Object](ctx core.Context, stackName string) (OBJECT, error) {
-	var ret OBJECT
-	ret, err := GetSingleStackDependencyObject[LIST, OBJECT](ctx, stackName)
-	if err != nil && !errors2.Is(err, ErrMultipleInstancesFound) {
+func RequireSingleStackDependencyObject(ctx core.Context, stackName string, list client.ObjectList) (client.Object, error) {
+	ret, err := GetSingleStackDependencyObject(ctx, stackName, list)
+	if err != nil && !errors.Is(err, ErrMultipleInstancesFound) {
 		return ret, err
 	}
-	if reflect.ValueOf(ret).Elem().IsZero() {
+	if ret == nil {
 		return ret, ErrNotFound
 	}
 	return ret, nil

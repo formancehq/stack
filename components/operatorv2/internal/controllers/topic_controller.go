@@ -135,7 +135,7 @@ func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error
 		Watches(
 			&v1beta1.BrokerConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				brokerconfigurations.Watch[*v1beta1.TopicList, *v1beta1.Topic](mgr)),
+				brokerconfigurations.Watch(mgr, &v1beta1.TopicList{})),
 		).
 		Owns(&batchv1.Job{}), nil
 }

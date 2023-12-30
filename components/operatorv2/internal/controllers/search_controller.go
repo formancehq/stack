@@ -124,7 +124,13 @@ func (r *SearchController) SetupWithManager(mgr core.Manager) (*builder.Builder,
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.SearchList, *v1beta1.Search](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.SearchList{}),
+			),
+		).
+		Watches(
+			&v1beta1.ElasticSearchConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(
+				elasticsearchconfigurations.Watch(mgr, &v1beta1.SearchList{}),
 			),
 		).
 		Owns(&v1beta1.StreamProcessor{}).

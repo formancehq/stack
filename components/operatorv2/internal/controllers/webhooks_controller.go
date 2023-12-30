@@ -138,23 +138,25 @@ func (r *WebhooksController) SetupWithManager(mgr core.Manager) (*builder.Builde
 		Owns(&v1beta1.HTTPAPI{}).
 		Watches(
 			&v1beta1.Ledger{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.WebhooksList{})),
 		).
 		Watches(
 			&v1beta1.Payments{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.WebhooksList{})),
 		).
 		Watches(
 			&v1beta1.Database{},
-			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr, "ledger")),
+			handler.EnqueueRequestsFromMapFunc(
+				databases.Watch(mgr, "ledger", &v1beta1.WebhooksList{})),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.WebhooksList, *v1beta1.Webhooks](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.WebhooksList{}),
 			),
 		).
-		//TODO: Watch services able to trigger events
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

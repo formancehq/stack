@@ -1,4 +1,4 @@
-package brokerconfigurations
+package elasticsearchconfigurations
 
 import (
 	"context"
@@ -10,11 +10,11 @@ import (
 
 func Watch(mgr Manager, list client.ObjectList) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
-		brokerConfiguration := object.(*v1beta1.BrokerConfiguration)
+		elasticSearchConfiguration := object.(*v1beta1.ElasticSearchConfiguration)
 
 		opt := client.MatchingFields{}
-		if brokerConfiguration.Labels["formance.com/stack"] != "any" {
-			opt[".spec.stack"] = brokerConfiguration.Labels["formance.com/stack"]
+		if elasticSearchConfiguration.Labels["formance.com/stack"] != "any" {
+			opt[".spec.stack"] = elasticSearchConfiguration.Labels["formance.com/stack"]
 		}
 
 		if err := mgr.GetClient().List(ctx, list, opt); err != nil {

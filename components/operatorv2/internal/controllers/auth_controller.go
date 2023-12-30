@@ -204,16 +204,18 @@ func (r *AuthController) SetupWithManager(mgr core.Manager) (*builder.Builder, e
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.AuthList, *v1beta1.Auth](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.AuthList{}),
 			),
 		).
 		Watches(
 			&v1beta1.Database{},
-			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.AuthList, *v1beta1.Auth](mgr, "auth")),
+			handler.EnqueueRequestsFromMapFunc(
+				databases.Watch(mgr, "auth", &v1beta1.AuthList{})),
 		).
 		Watches(
 			&v1beta1.AuthClient{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.AuthList, *v1beta1.Auth](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.AuthList{})),
 		), nil
 }
 

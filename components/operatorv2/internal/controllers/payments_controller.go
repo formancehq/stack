@@ -233,17 +233,17 @@ func (r *PaymentsController) SetupWithManager(mgr core.Manager) (*builder.Builde
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr, "payments")),
+				databases.Watch(mgr, "payments", &v1beta1.PaymentsList{})),
 		).
 		Watches(
 			&v1beta1.Topic{},
 			handler.EnqueueRequestsFromMapFunc(
-				topics.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr, "payments")),
+				topics.Watch(mgr, "payments", &v1beta1.PaymentsList{})),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.PaymentsList, *v1beta1.Payments](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.PaymentsList{}),
 			),
 		).
 		For(&v1beta1.Payments{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

@@ -182,25 +182,29 @@ func (r *OrchestrationController) SetupWithManager(mgr core.Manager) (*builder.B
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.Database{},
-			handler.EnqueueRequestsFromMapFunc(databases.Watch[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr, "ledger")),
+			handler.EnqueueRequestsFromMapFunc(
+				databases.Watch(mgr, "ledger", &v1beta1.OrchestrationList{})),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.OrchestrationList{}),
 			),
 		).
 		Watches(
 			&v1beta1.Ledger{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.OrchestrationList{})),
 		).
 		Watches(
 			&v1beta1.Payments{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.OrchestrationList{})),
 		).
 		Watches(
 			&v1beta1.Wallets{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.OrchestrationList, *v1beta1.Orchestration](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.OrchestrationList{})),
 		).
 		// todo: Watch broker configuration
 		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

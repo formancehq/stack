@@ -7,9 +7,17 @@ import (
 )
 
 func GetIfEnabled(ctx core.Context, stackName string) (*v1beta1.Auth, error) {
-	return stacks.GetSingleStackDependencyObject[*v1beta1.AuthList, *v1beta1.Auth](ctx, stackName)
+	ret, err := stacks.GetSingleStackDependencyObject(ctx, stackName, &v1beta1.AuthList{})
+	if err != nil {
+		return nil, err
+	}
+	if ret == nil {
+		return nil, nil
+	}
+
+	return ret.(*v1beta1.Auth), nil
 }
 
 func IsEnabled(ctx core.Context, stackName string) (bool, error) {
-	return stacks.HasSingleStackDependencyObject[*v1beta1.AuthList, *v1beta1.Auth](ctx, stackName)
+	return stacks.HasSingleStackDependencyObject(ctx, stackName, &v1beta1.AuthList{})
 }

@@ -327,17 +327,17 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		Watches(
 			&v1beta1.Topic{},
 			handler.EnqueueRequestsFromMapFunc(
-				topics.Watch[*v1beta1.LedgerList, *v1beta1.Ledger](mgr, "ledger")),
+				topics.Watch(mgr, "ledger", &v1beta1.LedgerList{})),
 		).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch[*v1beta1.LedgerList, *v1beta1.Ledger](mgr, "ledger")),
+				databases.Watch(mgr, "ledger", &v1beta1.LedgerList{})),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.LedgerList, *v1beta1.Ledger](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.LedgerList{}),
 			),
 		).
 		Owns(&appsv1.Deployment{}).

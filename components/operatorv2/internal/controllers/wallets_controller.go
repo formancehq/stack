@@ -96,7 +96,7 @@ func (r *WalletsController) SetupWithManager(mgr core.Manager) (*builder.Builder
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.WalletsList, *v1beta1.Wallets](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.WalletsList{}),
 			),
 		).
 		For(&v1beta1.Wallets{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

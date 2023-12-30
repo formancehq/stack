@@ -284,17 +284,19 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch[*v1beta1.GatewayList, *v1beta1.Gateway](mgr),
+				opentelemetryconfigurations.Watch(mgr, &v1beta1.GatewayList{}),
 			),
 		).
 		Watches(
 			&v1beta1.HTTPAPI{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.GatewayList{})),
 		).
 		// Watch Auth object to enable authentication
 		Watches(
 			&v1beta1.Auth{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.GatewayList{})),
 		), nil
 }
 
