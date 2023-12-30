@@ -75,12 +75,13 @@ func (r *WalletsController) createDeployment(ctx core.Context, stack *v1beta1.St
 		core.GetNamespacedResourceName(stack.Name, "wallets"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
-				Name:      "wallets",
-				Args:      []string{"serve"},
-				Env:       env,
-				Image:     core.GetImage("wallets", core.GetVersion(stack, wallet.Spec.Version)),
-				Resources: core.GetResourcesWithDefault(wallet.Spec.ResourceProperties, core.ResourceSizeSmall()),
-				Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				Name:          "wallets",
+				Args:          []string{"serve"},
+				Env:           env,
+				Image:         core.GetImage("wallets", core.GetVersion(stack, wallet.Spec.Version)),
+				Resources:     core.GetResourcesWithDefault(wallet.Spec.ResourceProperties, core.ResourceSizeSmall()),
+				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}
 		},
 		deployments.WithMatchingLabels("wallets"),

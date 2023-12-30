@@ -18,7 +18,7 @@ package controllers
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/core"
+	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
 	"github.com/formancehq/operator/v2/internal/resources/auths"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
@@ -48,7 +48,7 @@ type OrchestrationController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/finalizers,verbs=update
 
-func (r *OrchestrationController) Reconcile(ctx core.Context, orchestration *v1beta1.Orchestration) error {
+func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.Orchestration) error {
 
 	stack, err := stacks.GetStack(ctx, orchestration.Spec)
 	if err != nil {
@@ -80,7 +80,7 @@ func (r *OrchestrationController) Reconcile(ctx core.Context, orchestration *v1b
 	return nil
 }
 
-func (r *OrchestrationController) handleAuthClient(ctx core.Context, stack *formancev1beta1.Stack, orchestration *formancev1beta1.Orchestration) (*formancev1beta1.AuthClient, error) {
+func (r *OrchestrationController) handleAuthClient(ctx Context, stack *formancev1beta1.Stack, orchestration *formancev1beta1.Orchestration) (*formancev1beta1.AuthClient, error) {
 
 	auth, err := auths.GetIfEnabled(ctx, stack.Name)
 	if err != nil {
@@ -103,7 +103,7 @@ func (r *OrchestrationController) handleAuthClient(ctx core.Context, stack *form
 		})
 }
 
-func (r *OrchestrationController) handleTopics(ctx core.Context, stack *formancev1beta1.Stack, orchestration *v1beta1.Orchestration) error {
+func (r *OrchestrationController) handleTopics(ctx Context, stack *formancev1beta1.Stack, orchestration *v1beta1.Orchestration) error {
 	availableServices := make([]string, 0)
 	ledger, err := ledgers.GetIfEnabled(ctx, stack.Name)
 	if err != nil {
@@ -129,27 +129,27 @@ func (r *OrchestrationController) handleTopics(ctx core.Context, stack *formance
 	return nil
 }
 
-func (r *OrchestrationController) createDeployment(ctx core.Context, stack *v1beta1.Stack,
+func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *formancev1beta1.AuthClient) error {
 	env := databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
 	env = append(env,
-		core.Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
-		core.Env("TEMPORAL_TASK_QUEUE", stack.Name),
-		core.Env("TEMPORAL_ADDRESS", orchestration.Spec.Temporal.Address),
-		core.Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
+		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
+		Env("TEMPORAL_TASK_QUEUE", stack.Name),
+		Env("TEMPORAL_ADDRESS", orchestration.Spec.Temporal.Address),
+		Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
 	)
 
 	env = append(env, authclients.GetEnvVars(client)...)
 
 	if orchestration.Spec.Temporal.TLS.SecretName == "" {
 		env = append(env,
-			core.Env("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.Key),
-			core.Env("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.CRT),
+			Env("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.Key),
+			Env("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.CRT),
 		)
 	} else {
 		env = append(env,
-			core.EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.SecretName, "tls.key"),
-			core.EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.SecretName, "tls.crt"),
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.SecretName, "tls.key"),
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.SecretName, "tls.crt"),
 		)
 	}
 
@@ -160,25 +160,26 @@ func (r *OrchestrationController) createDeployment(ctx core.Context, stack *v1be
 	}
 	env = append(env, brokerEnvVars...)
 
-	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: orchestration.Spec.Stack,
 		Name:      "orchestration",
 	},
-		core.WithController[*appsv1.Deployment](ctx.GetScheme(), orchestration),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), orchestration),
 		deployments.WithMatchingLabels("orchestration"),
 		deployments.WithContainers(corev1.Container{
-			Name:      "api",
-			Env:       env,
-			Image:     core.GetImage("orchestration", core.GetVersion(stack, orchestration.Spec.Version)),
-			Resources: core.GetResourcesWithDefault(orchestration.Spec.ResourceProperties, core.ResourceSizeSmall()),
-			Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			Name:          "api",
+			Env:           env,
+			Image:         GetImage("orchestration", GetVersion(stack, orchestration.Spec.Version)),
+			Resources:     GetResourcesWithDefault(orchestration.Spec.ResourceProperties, ResourceSizeSmall()),
+			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *OrchestrationController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
+func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.Database{},
@@ -188,7 +189,7 @@ func (r *OrchestrationController) SetupWithManager(mgr core.Manager) (*builder.B
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				core.Watch(mgr, &v1beta1.OrchestrationList{}),
+				Watch(mgr, &v1beta1.OrchestrationList{}),
 			),
 		).
 		Watches(

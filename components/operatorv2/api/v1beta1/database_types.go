@@ -42,7 +42,7 @@ type DatabaseStatus struct {
 	//+optional
 	BoundTo string `json:"boundTo,omitempty"`
 	//+optional
-	OutOfSync bool `json:"outOfSync,omitempty"`
+	OutOfSync bool `json:"outOfSync"`
 }
 
 //+kubebuilder:object:root=true
@@ -50,7 +50,7 @@ type DatabaseStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 //+kubebuilder:printcolumn:name="Bound to",type=string,JSONPath=".status.boundTo",description="Bound to database configuration"
-//+kubebuilder:printcolumn:name="Out of sync",type=string,JSONPath=".status.boundTo",description="Is the databse configuration out of sync"
+//+kubebuilder:printcolumn:name="Out of sync",type=string,JSONPath=".status.outOfSync",description="Is the databse configuration out of sync"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Database is the Schema for the databases API

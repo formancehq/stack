@@ -174,7 +174,8 @@ func (r *AuthController) createDeployment(ctx core.Context, stack *v1beta1.Stack
 					ReadOnly:  true,
 					MountPath: "/config",
 				}},
-				Ports: []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}
 			t.Spec.Template.Spec.Volumes = []corev1.Volume{{
 				Name: "config",

@@ -31,7 +31,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/streams"
 	"github.com/formancehq/operator/v2/internal/resources/topics"
 	"github.com/formancehq/search/benthos"
-	pkgError "github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -57,9 +56,6 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 
 	database, err := databases.Create(ctx, ledger)
 	if err != nil {
-		if pkgError.Is(err, ErrPending) {
-			return nil
-		}
 		return err
 	}
 
@@ -250,6 +246,7 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 	container.Env = append(container.Env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	container.Env = append(container.Env, Env("STORAGE_DRIVER", "postgres"))
 	container.Ports = []corev1.ContainerPort{deployments.StandardHTTPPort()}
+	container.LivenessProbe = deployments.DefaultLiveness("http")
 
 	return nil
 }

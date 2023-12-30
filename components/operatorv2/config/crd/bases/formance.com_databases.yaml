@@ -24,7 +24,7 @@ spec:
       name: Bound to
       type: string
     - description: Is the databse configuration out of sync
-      jsonPath: .status.boundTo
+      jsonPath: .status.outOfSync
       name: Out of sync
       type: string
     - description: Error

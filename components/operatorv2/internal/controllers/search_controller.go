@@ -106,6 +106,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 			Env:             env,
 			Resources:       GetResourcesWithDefault(search.Spec.ResourceProperties, ResourceSizeSmall()),
 			ImagePullPolicy: GetPullPolicy(image),
+			LivenessProbe:   deployments.DefaultLiveness("http"),
 		}),
 	)
 

@@ -20,7 +20,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/core"
+	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
@@ -48,7 +48,7 @@ type PaymentsController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=payments/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=payments/finalizers,verbs=update
 
-func (r *PaymentsController) Reconcile(ctx core.Context, payments *v1beta1.Payments) error {
+func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) error {
 
 	stack, err := stacks.GetStack(ctx, payments.Spec)
 	if err != nil {
@@ -90,40 +90,41 @@ func (r *PaymentsController) Reconcile(ctx core.Context, payments *v1beta1.Payme
 func (r *PaymentsController) commonEnvVars(payments *v1beta1.Payments, database *v1beta1.Database) []corev1.EnvVar {
 	env := databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
 	env = append(env,
-		core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
-		core.Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
+		Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
+		Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
 	)
 	return env
 }
 
-func (r *PaymentsController) createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
 
 	env := r.commonEnvVars(payments, database)
 
-	_, _, err := core.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-read",
 	},
-		core.WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
 		deployments.WithMatchingLabels("payments-read"),
 		deployments.WithContainers(corev1.Container{
-			Name:      "api",
-			Args:      []string{"api", "serve"},
-			Env:       env,
-			Image:     core.GetImage("payments", core.GetVersion(stack, payments.Spec.Version)),
-			Resources: core.GetResourcesWithDefault(payments.Spec.ResourceProperties, core.ResourceSizeSmall()),
-			Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			Name:          "api",
+			Args:          []string{"api", "serve"},
+			Env:           env,
+			Image:         GetImage("payments", GetVersion(stack, payments.Spec.Version)),
+			Resources:     GetResourcesWithDefault(payments.Spec.ResourceProperties, ResourceSizeSmall()),
+			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
+			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 		}),
 	)
 	if err != nil {
 		return err
 	}
 
-	_, _, err = core.CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-read",
 	},
-		core.WithController[*corev1.Service](ctx.GetScheme(), payments),
+		WithController[*corev1.Service](ctx.GetScheme(), payments),
 		services.ConfigureK8SService("payments-read"),
 	)
 	if err != nil {
@@ -137,7 +138,7 @@ func (r *PaymentsController) createReadDeployment(ctx core.Context, stack *v1bet
 	return nil
 }
 
-func (r *PaymentsController) createWriteDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func (r *PaymentsController) createWriteDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
 
 	env := r.commonEnvVars(payments, database)
 
@@ -152,34 +153,36 @@ func (r *PaymentsController) createWriteDeployment(ctx core.Context, stack *v1be
 		}
 
 		env = append(env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, "payments")...)
-		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
+		env = append(env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "payments")))
 	}
 
-	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-connectors",
 	},
-		core.WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
 		deployments.WithMatchingLabels("payments-connectors"),
 		deployments.WithContainers(corev1.Container{
 			Name:      "connectors",
 			Args:      []string{"connectors", "serve"},
 			Env:       env,
-			Image:     core.GetImage("payments", core.GetVersion(stack, payments.Spec.Version)),
-			Resources: core.GetResourcesWithDefault(payments.Spec.ResourceProperties, core.ResourceSizeSmall()),
+			Image:     GetImage("payments", GetVersion(stack, payments.Spec.Version)),
+			Resources: GetResourcesWithDefault(payments.Spec.ResourceProperties, ResourceSizeSmall()),
 			Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			LivenessProbe: deployments.DefaultLiveness("http",
+				deployments.WithProbePath("/_health")),
 		}),
-		r.setInitContainer(payments, database, core.GetVersion(stack, payments.Spec.Version)),
+		r.setInitContainer(payments, database, GetVersion(stack, payments.Spec.Version)),
 	)
 	if err != nil {
 		return err
 	}
 
-	_, _, err = core.CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-connectors",
 	},
-		core.WithController[*corev1.Service](ctx.GetScheme(), payments),
+		WithController[*corev1.Service](ctx.GetScheme(), payments),
 		services.ConfigureK8SService("payments-connectors"),
 	)
 	if err != nil {
@@ -188,11 +191,11 @@ func (r *PaymentsController) createWriteDeployment(ctx core.Context, stack *v1be
 	return err
 }
 
-func (r *PaymentsController) createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) error {
+func (r *PaymentsController) createGateway(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments) error {
 
 	caddyfileConfigMap, err := CreateCaddyfileConfigMap(ctx, stack, "payments", payments.Caddyfile, map[string]any{
 		"Debug": stack.Spec.Debug || p.Spec.Debug,
-	}, core.WithController[*corev1.ConfigMap](ctx.GetScheme(), p))
+	}, WithController[*corev1.ConfigMap](ctx.GetScheme(), p))
 	if err != nil {
 		return err
 	}
@@ -205,13 +208,13 @@ func (r *PaymentsController) createGateway(ctx core.Context, stack *v1beta1.Stac
 	containerEnv := make([]corev1.EnvVar, 0)
 	containerEnv = append(containerEnv, env...)
 
-	mutators := core.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
+	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
 	mutators = append(mutators,
-		core.WithController[*appsv1.Deployment](ctx.GetScheme(), p),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), p),
 		deployments.WithMatchingLabels("payments"),
 	)
 
-	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "payments",
 	}, mutators...)
@@ -228,7 +231,7 @@ func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, databa
 				version,
 				func(m *databases.MigrationConfiguration) {
 					m.AdditionalEnv = []corev1.EnvVar{
-						core.Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
+						Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
 					}
 				},
 			),
@@ -237,7 +240,7 @@ func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, databa
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *PaymentsController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
+func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.Database{},
@@ -252,7 +255,7 @@ func (r *PaymentsController) SetupWithManager(mgr core.Manager) (*builder.Builde
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				core.Watch(mgr, &v1beta1.PaymentsList{}),
+				Watch(mgr, &v1beta1.PaymentsList{}),
 			),
 		).
 		Owns(&appsv1.Deployment{}).

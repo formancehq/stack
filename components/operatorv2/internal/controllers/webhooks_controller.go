@@ -120,11 +120,12 @@ func (r *WebhooksController) createDeployment(ctx core.Context, stack *v1beta1.S
 		core.WithController[*appsv1.Deployment](ctx.GetScheme(), webhooks),
 		deployments.WithMatchingLabels("webhooks"),
 		deployments.WithContainers(corev1.Container{
-			Name:      "api",
-			Env:       env,
-			Image:     core.GetImage("webhooks", core.GetVersion(stack, webhooks.Spec.Version)),
-			Resources: core.GetResourcesWithDefault(webhooks.Spec.ResourceProperties, core.ResourceSizeSmall()),
-			Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			Name:          "api",
+			Env:           env,
+			Image:         core.GetImage("webhooks", core.GetVersion(stack, webhooks.Spec.Version)),
+			Resources:     core.GetResourcesWithDefault(webhooks.Spec.ResourceProperties, core.ResourceSizeSmall()),
+			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),
 	)
 	return err

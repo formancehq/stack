@@ -28,6 +28,7 @@ type WalletsSpec struct {
 
 // WalletsStatus defines the observed state of Wallets
 type WalletsStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -41,6 +42,10 @@ type Wallets struct {
 
 	Spec   WalletsSpec   `json:"spec,omitempty"`
 	Status WalletsStatus `json:"status,omitempty"`
+}
+
+func (c *Wallets) SetStatus(status bool, error string) {
+	c.Status.SetStatus(status, error)
 }
 
 //+kubebuilder:object:root=true

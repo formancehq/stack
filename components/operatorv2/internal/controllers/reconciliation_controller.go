@@ -17,7 +17,7 @@ limitations under the License.
 package controllers
 
 import (
-	"github.com/formancehq/operator/v2/internal/core"
+	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
@@ -40,7 +40,7 @@ type ReconciliationController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
-func (r *ReconciliationController) Reconcile(ctx core.Context, reconciliation *v1beta1.Reconciliation) error {
+func (r *ReconciliationController) Reconcile(ctx Context, reconciliation *v1beta1.Reconciliation) error {
 	stack, err := stacks.GetStack(ctx, reconciliation.Spec)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (r *ReconciliationController) Reconcile(ctx core.Context, reconciliation *v
 	return nil
 }
 
-func (r *ReconciliationController) createDeployment(ctx core.Context, stack *v1beta1.Stack,
+func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	reconciliation *v1beta1.Reconciliation, database *v1beta1.Database, authClient *v1beta1.AuthClient) error {
 	env, err := GetCommonServicesEnvVars(ctx, stack, "reconciliation", reconciliation.Spec)
 	if err != nil {
@@ -78,33 +78,34 @@ func (r *ReconciliationController) createDeployment(ctx core.Context, stack *v1b
 	env = append(env,
 		databases.PostgresEnvVars(
 			database.Status.Configuration.DatabaseConfigurationSpec,
-			core.GetObjectName(stack.Name, "reconciliation"),
+			GetObjectName(stack.Name, "reconciliation"),
 		)...,
 	)
 	env = append(env,
-		core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
+		Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
 	)
 	env = append(env, authclients.GetEnvVars(authClient)...)
 
-	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx,
-		core.GetNamespacedResourceName(stack.Name, "reconciliation"),
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
+		GetNamespacedResourceName(stack.Name, "reconciliation"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
-				Name:      "reconciliation",
-				Env:       env,
-				Image:     core.GetImage("reconciliation", core.GetVersion(stack, reconciliation.Spec.Version)),
-				Resources: core.GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, core.ResourceSizeSmall()),
-				Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				Name:          "reconciliation",
+				Env:           env,
+				Image:         GetImage("reconciliation", GetVersion(stack, reconciliation.Spec.Version)),
+				Resources:     GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, ResourceSizeSmall()),
+				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}
 		},
 		deployments.WithMatchingLabels("reconciliation"),
-		core.WithController[*appsv1.Deployment](ctx.GetScheme(), reconciliation),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), reconciliation),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *ReconciliationController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
+func (r *ReconciliationController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.Ledger{},
@@ -117,7 +118,7 @@ func (r *ReconciliationController) SetupWithManager(mgr core.Manager) (*builder.
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				core.Watch(mgr, &v1beta1.ReconciliationList{}),
+				Watch(mgr, &v1beta1.ReconciliationList{}),
 			),
 		).
 		Owns(&v1beta1.Database{}).

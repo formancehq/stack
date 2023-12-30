@@ -1,8 +1,6 @@
-* add readiness/liveness probes
 * add conditions
 * add registries
-* webhooks on payments / gateway authent
 * react to broker configuration and trigger topic reco if in error
 * add finalizers
-* set image pull policy if latest
 * lock usage of version < 2.0-alpha
+* add version to stack namespace
