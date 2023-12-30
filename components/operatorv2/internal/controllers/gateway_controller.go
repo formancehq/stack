@@ -24,10 +24,9 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/gateways"
-	gateways2 "github.com/formancehq/operator/v2/internal/resources/gateways"
 	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/services"
-	stacks2 "github.com/formancehq/operator/v2/internal/resources/stacks"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
@@ -56,7 +55,7 @@ type GatewayController struct{}
 
 func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) error {
 
-	stack, err := stacks2.GetStack(ctx, gateway.Spec)
+	stack, err := stacks.GetStack(ctx, gateway.Spec)
 	if err != nil {
 		return err
 	}
@@ -124,7 +123,7 @@ func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap) error {
 
-	env, err := gateways2.GetURLSAsEnvVarsIfEnabled(ctx, stack.Name)
+	env, err := gateways.GetURLSAsEnvVarsIfEnabled(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -290,12 +289,12 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		).
 		Watches(
 			&v1beta1.HTTPAPI{},
-			handler.EnqueueRequestsFromMapFunc(stacks2.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
 		).
 		// Watch Auth object to enable authentication
 		Watches(
 			&v1beta1.Auth{},
-			handler.EnqueueRequestsFromMapFunc(stacks2.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependency[*v1beta1.GatewayList, *v1beta1.Gateway](mgr)),
 		), nil
 }
 

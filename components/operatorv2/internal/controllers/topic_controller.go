@@ -19,18 +19,19 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	types "k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
-
-	"github.com/formancehq/operator/v2/api/v1beta1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
+	types "k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 // TopicController reconciles a Topic object
@@ -131,6 +132,11 @@ func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Watches(
+			&v1beta1.BrokerConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(
+				brokerconfigurations.Watch[*v1beta1.TopicList, *v1beta1.Topic](mgr)),
+		).
 		Owns(&batchv1.Job{}), nil
 }
 

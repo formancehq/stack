@@ -17,10 +17,10 @@ limitations under the License.
 package controllers
 
 import (
-	core "github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
-	databases2 "github.com/formancehq/operator/v2/internal/resources/databases"
-	deployments "github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/databases"
+	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
@@ -47,7 +47,7 @@ func (r *ReconciliationController) Reconcile(ctx core.Context, reconciliation *v
 		return err
 	}
 
-	database, err := databases2.Create(ctx, stack, "reconciliation")
+	database, err := databases.Create(ctx, stack, "reconciliation")
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (r *ReconciliationController) createDeployment(ctx core.Context, stack *v1b
 	}
 
 	env = append(env,
-		databases2.PostgresEnvVars(
+		databases.PostgresEnvVars(
 			database.Status.Configuration.DatabaseConfigurationSpec,
 			core.GetObjectName(stack.Name, "reconciliation"),
 		)...,

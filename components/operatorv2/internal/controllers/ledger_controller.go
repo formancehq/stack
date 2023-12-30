@@ -21,8 +21,8 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
-	databases "github.com/formancehq/operator/v2/internal/resources/databases"
-	deployments2 "github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/databases"
+	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/ledgers"
 	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
@@ -109,7 +109,7 @@ func (r *LedgerController) installLedgerV2SingleInstance(ctx Context, stack *v1b
 	}
 
 	if err := r.createDeployment(ctx, stack, ledger, "ledger", *container,
-		deployments2.WithReplicas(1),
+		deployments.WithReplicas(1),
 		r.setInitContainer(database, version),
 	); err != nil {
 		return err
@@ -162,7 +162,7 @@ func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, 
 		return err
 	}
 	if err := createDeployment("ledger-write", *container,
-		deployments2.WithReplicas(1),
+		deployments.WithReplicas(1),
 		r.setInitContainer(database, version),
 	); err != nil {
 		return err
@@ -222,8 +222,8 @@ func (r *LedgerController) createK8SService(ctx Context, stack *v1beta1.Stack, o
 func (r *LedgerController) createDeployment(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
 	name string, container corev1.Container, mutators ...ObjectMutator[*appsv1.Deployment]) error {
 	mutators = append([]ObjectMutator[*appsv1.Deployment]{
-		deployments2.WithContainers(container),
-		deployments2.WithMatchingLabels(name),
+		deployments.WithContainers(container),
+		deployments.WithMatchingLabels(name),
 		WithController[*appsv1.Deployment](ctx.GetScheme(), ledger),
 	}, mutators...)
 	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx,
@@ -249,7 +249,7 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 		database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 	container.Env = append(container.Env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	container.Env = append(container.Env, Env("STORAGE_DRIVER", "postgres"))
-	container.Ports = []corev1.ContainerPort{deployments2.StandardHTTPPort()}
+	container.Ports = []corev1.ContainerPort{deployments.StandardHTTPPort()}
 
 	return nil
 }
@@ -310,7 +310,7 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
 	mutators = append(mutators,
 		WithController[*appsv1.Deployment](ctx.GetScheme(), ledger),
-		deployments2.WithMatchingLabels("ledger"),
+		deployments.WithMatchingLabels("ledger"),
 	)
 
 	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
