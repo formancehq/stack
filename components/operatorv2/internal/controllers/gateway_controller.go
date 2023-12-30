@@ -127,12 +127,13 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 	if gateway.Spec.EnableAudit {
+		// TODO: need to create a topic for the audit feature
 		brokerConfiguration, err := brokerconfigurations.Get(ctx, stack.Name)
 		if err != nil {
 			return err
 		}
 		env = append(env,
-			brokerconfigurations.BrokerEnvVars(*brokerConfiguration, "gateway")...,
+			brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "gateway")...,
 		)
 	}
 

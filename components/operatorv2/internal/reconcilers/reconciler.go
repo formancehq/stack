@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/formancehq/operator/v2/internal/core"
+	pkgError "github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -20,15 +21,15 @@ type Reconciler[T client.Object] struct {
 }
 
 func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
-	var t T
+	var object T
 
-	log := log.FromContext(ctx, fmt.Sprintf("%T", t), req.NamespacedName)
+	log := log.FromContext(ctx, fmt.Sprintf("%T", object), req.NamespacedName)
 	log.Info("Starting reconciliation")
 
-	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+	object = reflect.New(reflect.TypeOf(object).Elem()).Interface().(T)
 	if err := r.Manager.GetClient().Get(ctx, types.NamespacedName{
 		Name: req.Name,
-	}, t); err != nil {
+	}, object); err != nil {
 		if errors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
@@ -36,7 +37,7 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	}
 
 	setStatus := func(err error) {
-		if s, ok := reflect.ValueOf(t).
+		if s, ok := reflect.ValueOf(object).
 			Elem().
 			FieldByName("Status").
 			Addr().
@@ -51,26 +52,30 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 		}
 	}
 
-	cp := t.DeepCopyObject().(T)
-	if err := r.Controller.Reconcile(struct {
+	cp := object.DeepCopyObject().(T)
+	reconciliationError := r.Controller.Reconcile(struct {
 		context.Context
 		core.Manager
 	}{
 		Context: ctx,
 		Manager: r.Manager,
-	}, t); err != nil {
-		setStatus(err)
-
-		return ctrl.Result{}, err
+	}, object)
+	if reconciliationError != nil {
+		setStatus(reconciliationError)
 	} else {
 		setStatus(nil)
 	}
 
-	if !equality.Semantic.DeepEqual(cp, t) {
+	if !equality.Semantic.DeepEqual(cp, object) {
 		patch := client.MergeFrom(cp)
-		if err := r.Manager.GetClient().Status().Patch(ctx, t, patch); err != nil {
+		if err := r.Manager.GetClient().Status().Patch(ctx, object, patch); err != nil {
 			return ctrl.Result{}, err
 		}
+	}
+
+	if !pkgError.Is(reconciliationError, core.ErrPending) &&
+		!pkgError.Is(reconciliationError, core.ErrDeleted) {
+		return ctrl.Result{}, reconciliationError
 	}
 
 	return ctrl.Result{}, nil

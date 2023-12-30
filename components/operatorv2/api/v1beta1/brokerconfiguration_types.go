@@ -50,8 +50,8 @@ type BrokerConfigurationSpec struct {
 	Nats *NatsConfig `json:"nats,omitempty"`
 }
 
-// BrokerConfigStatus defines the observed state of BrokerConfig
-type BrokerConfigStatus struct{}
+// BrokerConfigurationStatus defines the observed state of BrokerConfig
+type BrokerConfigurationStatus struct{}
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
@@ -62,8 +62,8 @@ type BrokerConfiguration struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   BrokerConfigurationSpec `json:"spec,omitempty"`
-	Status BrokerConfigStatus      `json:"status,omitempty"`
+	Spec   BrokerConfigurationSpec   `json:"spec,omitempty"`
+	Status BrokerConfigurationStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

@@ -56,28 +56,28 @@ func GetEnvVars(ctx core.Context, stackName, serviceName string) ([]v1.EnvVar, e
 		return nil, stacks.ErrNotFound
 	}
 
-	return BrokerEnvVars(*configuration, serviceName), nil
+	return BrokerEnvVars(configuration.Spec, serviceName), nil
 }
 
-func BrokerEnvVars(broker v1beta1.BrokerConfiguration, serviceName string) []v1.EnvVar {
+func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, serviceName string) []v1.EnvVar {
 	ret := make([]v1.EnvVar, 0)
 
-	if broker.Spec.Kafka != nil {
+	if broker.Kafka != nil {
 		ret = append(ret,
 			core.Env("BROKER", "kafka"),
 			core.Env("PUBLISHER_KAFKA_ENABLED", "true"),
-			core.Env("PUBLISHER_KAFKA_BROKER", strings.Join(broker.Spec.Kafka.Brokers, " ")),
+			core.Env("PUBLISHER_KAFKA_BROKER", strings.Join(broker.Kafka.Brokers, " ")),
 		)
-		if broker.Spec.Kafka.SASL != nil {
+		if broker.Kafka.SASL != nil {
 			ret = append(ret,
 				core.Env("PUBLISHER_KAFKA_SASL_ENABLED", "true"),
-				core.Env("PUBLISHER_KAFKA_SASL_USERNAME", broker.Spec.Kafka.SASL.Username),
-				core.Env("PUBLISHER_KAFKA_SASL_PASSWORD", broker.Spec.Kafka.SASL.Password),
-				core.Env("PUBLISHER_KAFKA_SASL_MECHANISM", broker.Spec.Kafka.SASL.Mechanism),
-				core.Env("PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE", broker.Spec.Kafka.SASL.ScramSHASize),
+				core.Env("PUBLISHER_KAFKA_SASL_USERNAME", broker.Kafka.SASL.Username),
+				core.Env("PUBLISHER_KAFKA_SASL_PASSWORD", broker.Kafka.SASL.Password),
+				core.Env("PUBLISHER_KAFKA_SASL_MECHANISM", broker.Kafka.SASL.Mechanism),
+				core.Env("PUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE", broker.Kafka.SASL.ScramSHASize),
 			)
 		}
-		if broker.Spec.Kafka.TLS {
+		if broker.Kafka.TLS {
 			ret = append(ret,
 				core.Env("PUBLISHER_KAFKA_TLS_ENABLED", "true"),
 			)
@@ -86,7 +86,7 @@ func BrokerEnvVars(broker v1beta1.BrokerConfiguration, serviceName string) []v1.
 		ret = append(ret,
 			core.Env("BROKER", "nats"),
 			core.Env("PUBLISHER_NATS_ENABLED", "true"),
-			core.Env("PUBLISHER_NATS_URL", broker.Spec.Nats.URL),
+			core.Env("PUBLISHER_NATS_URL", broker.Nats.URL),
 			core.Env("PUBLISHER_NATS_CLIENT_ID", serviceName),
 		)
 	}

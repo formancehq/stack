@@ -72,7 +72,7 @@ spec:
                 type: object
             type: object
           status:
-            description: BrokerConfigStatus defines the observed state of BrokerConfig
+            description: BrokerConfigurationStatus defines the observed state of BrokerConfig
             type: object
         type: object
     served: true

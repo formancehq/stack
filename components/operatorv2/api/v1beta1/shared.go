@@ -98,7 +98,8 @@ type CommonStatus struct {
 }
 
 func (c *CommonStatus) SetStatus(status bool, error string) {
-	c.Ready = true
+	c.Ready = status
+	c.Error = error
 }
 
 func (c *CommonStatus) DeleteCondition(t string) {

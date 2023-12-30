@@ -6,7 +6,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func FindTopic(ctx core.Context, stack *v1beta1.Stack, name string) (*v1beta1.Topic, error) {
+func Find(ctx core.Context, stack *v1beta1.Stack, name string) (*v1beta1.Topic, error) {
 	topicList := &v1beta1.TopicList{}
 	if err := ctx.GetClient().List(ctx, topicList, client.MatchingFields{
 		".spec.service": name,

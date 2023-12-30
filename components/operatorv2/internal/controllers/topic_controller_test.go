@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 var _ = Describe("TopicController", func() {
@@ -58,13 +58,14 @@ var _ = Describe("TopicController", func() {
 		})
 		Context("Then updating removing all queries", func() {
 			BeforeEach(func() {
+				patch := client.MergeFrom(topic.DeepCopy())
 				topic.Spec.Queries = []string{}
-				Expect(Update(topic))
+				Expect(Patch(topic, patch)).To(Succeed())
 			})
-			It("Should trigger the removal of the topic object", func() {
-				Eventually(func(g Gomega) bool {
-					return errors.IsNotFound(Get(core.GetResourceName(topic.Name), topic))
-				}).Should(BeTrue())
+			It("Should trigger the deletion of the topic object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", topic.Name, topic)
+				}).Should(BeNotFound())
 			})
 		})
 	})

@@ -18,6 +18,7 @@ package controllers
 
 import (
 	_ "embed"
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
@@ -131,19 +132,17 @@ func (r *PaymentsController) createWriteDeployment(ctx core.Context, stack *v1be
 
 	env := r.commonEnvVars(payments, database)
 
-	topic, err := topics.FindTopic(ctx, stack, "payments")
+	topic, err := topics.Find(ctx, stack, "payments")
 	if err != nil {
 		return err
 	}
 
 	if topic != nil {
-		// TODO: Get configuration from topic status
-		brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "payments")
-		if err != nil {
-			return err
+		if !topic.Status.Ready {
+			return fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, brokerEnvVars...)
+		env = append(env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, "payments")...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 

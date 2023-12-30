@@ -21,10 +21,9 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/selection"
 	types "k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -40,50 +39,33 @@ type TopicController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=topics/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topics/finalizers,verbs=update
 
+// todo: add finalizer to remove topic from nats/kafka ?
 func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 
 	if len(topic.Spec.Queries) == 0 {
 		if err := ctx.GetClient().Delete(ctx, topic); err != nil {
 			return nil
 		}
+		return ErrDeleted
 	}
 
-	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", topic.Spec.Stack})
+	brokerConfiguration, err := brokerconfigurations.Require(ctx, topic.Spec.Stack)
 	if err != nil {
 		return err
 	}
 
-	brokerConfigList := &v1beta1.BrokerConfigurationList{}
-	if err := ctx.GetClient().List(ctx, brokerConfigList, &client.ListOptions{
-		LabelSelector: labels.NewSelector().Add(*stackSelectorRequirement),
-	}); err != nil {
-		return err
+	switch {
+	case brokerConfiguration.Spec.Nats != nil:
+		job, err := r.createJob(ctx, topic, *brokerConfiguration)
+		if err != nil {
+			return err
+		}
+		if job.Status.Succeeded == 0 {
+			return ErrPending
+		}
 	}
 
-	switch len(brokerConfigList.Items) {
-	case 0:
-		topic.Status.Error = "unable to find a broker configuration"
-		topic.Status.Ready = false
-	case 1:
-		configuration := brokerConfigList.Items[0]
-		switch {
-		case configuration.Spec.Nats != nil:
-			job, err := r.createJob(ctx, topic, configuration)
-			if err != nil {
-				topic.Status.Error = err.Error()
-				topic.Status.Ready = false
-			} else {
-				topic.Status.Error = ""
-				topic.Status.Ready = job.Status.Succeeded > 0
-			}
-		default:
-			topic.Status.Error = ""
-			topic.Status.Ready = true
-		}
-	default:
-		topic.Status.Error = "multiple broker configuration object found"
-		topic.Status.Ready = false
-	}
+	topic.Status.Configuration = &brokerConfiguration.Spec
 
 	return nil
 }

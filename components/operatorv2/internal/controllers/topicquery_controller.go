@@ -108,11 +108,8 @@ func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQ
 		}
 	}
 
-	if topicQuery.Status.Ready != topic.Status.Ready {
-		topicQuery.Status.Ready = topic.Status.Ready
-		if err := ctx.GetClient().Status().Update(ctx, topicQuery); err != nil {
-			return err
-		}
+	if !topic.Status.Ready {
+		return ErrPending
 	}
 
 	return nil

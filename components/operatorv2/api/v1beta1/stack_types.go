@@ -29,6 +29,7 @@ type StackSpec struct {
 
 // StackStatus defines the observed state of Stack
 type StackStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true

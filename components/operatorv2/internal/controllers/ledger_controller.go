@@ -265,7 +265,7 @@ func (r *LedgerController) createBaseLedgerContainerV2() *corev1.Container {
 
 func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
 	container := r.createBaseLedgerContainerV2()
-	topic, err := topics.FindTopic(ctx, stack, "ledger")
+	topic, err := topics.Find(ctx, stack, "ledger")
 	if err != nil {
 		return nil, err
 	}
@@ -274,11 +274,8 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1bet
 		if !topic.Status.Ready {
 			return nil, fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
-		brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "ledger")
-		if err != nil {
-			return nil, err
-		}
-		container.Env = append(container.Env, brokerEnvVars...)
+
+		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, "ledger")...)
 		container.Env = append(container.Env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "ledger")))
 	}
 

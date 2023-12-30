@@ -29,10 +29,9 @@ type TopicSpec struct {
 
 // TopicStatus defines the observed state of Topic
 type TopicStatus struct {
+	CommonStatus `json:",inline"`
 	//+optional
-	Ready bool `json:"ready,omitempty"`
-	//+optional
-	Error string `json:"error,omitempty"`
+	Configuration *BrokerConfigurationSpec `json:"configuration,omitempty"`
 }
 
 //+kubebuilder:object:root=true

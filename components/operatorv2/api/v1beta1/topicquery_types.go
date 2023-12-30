@@ -29,14 +29,14 @@ type TopicQuerySpec struct {
 
 // TopicQueryStatus defines the observed state of TopicQuery
 type TopicQueryStatus struct {
-	//+optional
-	Ready bool `json:"ready,omitempty"`
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // TopicQuery is the Schema for the topicqueries API
 type TopicQuery struct {
