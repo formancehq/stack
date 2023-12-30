@@ -56,7 +56,7 @@ func (r *WebhooksController) Reconcile(ctx core.Context, webhooks *v1beta1.Webho
 		return err
 	}
 
-	if err := r.handleTopics(ctx, stack); err != nil {
+	if err := r.handleTopics(ctx, stack, webhooks); err != nil {
 		return err
 	}
 
@@ -72,7 +72,7 @@ func (r *WebhooksController) Reconcile(ctx core.Context, webhooks *v1beta1.Webho
 }
 
 // TODO: Search a way to automatically list all services able to push events as this code is duplicated for orchestration
-func (r *WebhooksController) handleTopics(ctx core.Context, stack *v1beta1.Stack) error {
+func (r *WebhooksController) handleTopics(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks) error {
 	availableServices := make([]string, 0)
 	ledger, err := ledgers.GetIfEnabled(ctx, stack.Name)
 	if err != nil {
@@ -90,7 +90,7 @@ func (r *WebhooksController) handleTopics(ctx core.Context, stack *v1beta1.Stack
 	}
 
 	for _, service := range availableServices {
-		if err := topicqueries.Create(ctx, stack, service, "webhooks"); err != nil {
+		if err := topicqueries.Create(ctx, stack, service, webhooks); err != nil {
 			return err
 		}
 	}

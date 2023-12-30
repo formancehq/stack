@@ -65,7 +65,7 @@ func (r *OrchestrationController) Reconcile(ctx core.Context, orchestration *v1b
 		return err
 	}
 
-	if err := r.handleTopics(ctx, stack); err != nil {
+	if err := r.handleTopics(ctx, stack, orchestration); err != nil {
 		return err
 	}
 
@@ -103,7 +103,7 @@ func (r *OrchestrationController) handleAuthClient(ctx core.Context, stack *form
 		})
 }
 
-func (r *OrchestrationController) handleTopics(ctx core.Context, stack *formancev1beta1.Stack) error {
+func (r *OrchestrationController) handleTopics(ctx core.Context, stack *formancev1beta1.Stack, orchestration *v1beta1.Orchestration) error {
 	availableServices := make([]string, 0)
 	ledger, err := ledgers.GetIfEnabled(ctx, stack.Name)
 	if err != nil {
@@ -121,7 +121,7 @@ func (r *OrchestrationController) handleTopics(ctx core.Context, stack *formance
 	}
 
 	for _, service := range availableServices {
-		if err := topicqueries.Create(ctx, stack, service, "orchestration"); err != nil {
+		if err := topicqueries.Create(ctx, stack, service, orchestration); err != nil {
 			return err
 		}
 	}
