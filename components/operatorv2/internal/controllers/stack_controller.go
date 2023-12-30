@@ -162,6 +162,7 @@ func (r *StackController) SetupWithManager(mgr Manager) (*builder.Builder, error
 	//TODO: need to update opentelemetry configuration to retrieve by label
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Owns(&corev1.Secret{}).
 		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

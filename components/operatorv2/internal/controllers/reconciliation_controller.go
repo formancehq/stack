@@ -22,7 +22,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
-	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -118,9 +117,13 @@ func (r *ReconciliationController) SetupWithManager(mgr core.Manager) (*builder.
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch(mgr, &v1beta1.ReconciliationList{}),
+				core.Watch(mgr, &v1beta1.ReconciliationList{}),
 			),
 		).
+		Owns(&v1beta1.Database{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&v1beta1.AuthClient{}).
+		Owns(&v1beta1.HTTPAPI{}).
 		For(&v1beta1.Reconciliation{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

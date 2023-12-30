@@ -26,7 +26,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/ledgers"
-	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/payments"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
@@ -183,12 +182,12 @@ func (r *OrchestrationController) SetupWithManager(mgr core.Manager) (*builder.B
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch(mgr, "ledger", &v1beta1.OrchestrationList{})),
+				databases.Watch(mgr, "orchestration", &v1beta1.OrchestrationList{})),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch(mgr, &v1beta1.OrchestrationList{}),
+				core.Watch(mgr, &v1beta1.OrchestrationList{}),
 			),
 		).
 		Watches(
@@ -206,7 +205,8 @@ func (r *OrchestrationController) SetupWithManager(mgr core.Manager) (*builder.B
 			handler.EnqueueRequestsFromMapFunc(
 				stacks.WatchDependents(mgr, &v1beta1.OrchestrationList{})),
 		).
-		// todo: Watch broker configuration
+		Owns(&v1beta1.TopicQuery{}).
+		Owns(&v1beta1.AuthClient{}).
 		For(&formancev1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

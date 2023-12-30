@@ -57,6 +57,7 @@ func (r *StreamController) Reconcile(ctx Context, stream *v1beta1.Stream) error 
 // SetupWithManager sets up the controller with the Manager.
 func (r *StreamController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		Owns(&corev1.ConfigMap{}).
 		For(&v1beta1.Stream{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

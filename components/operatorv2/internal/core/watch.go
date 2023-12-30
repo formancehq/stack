@@ -1,20 +1,16 @@
-package brokerconfigurations
+package core
 
 import (
 	"context"
-	"github.com/formancehq/operator/v2/api/v1beta1"
-	. "github.com/formancehq/operator/v2/internal/core"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 func Watch(mgr Manager, list client.ObjectList) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
-		brokerConfiguration := object.(*v1beta1.BrokerConfiguration)
-
 		opt := client.MatchingFields{}
-		if brokerConfiguration.Labels["formance.com/stack"] != "any" {
-			opt[".spec.stack"] = brokerConfiguration.Labels["formance.com/stack"]
+		if object.GetLabels()["formance.com/stack"] != "any" {
+			opt[".spec.stack"] = object.GetLabels()["formance.com/stack"]
 		}
 
 		if err := mgr.GetClient().List(ctx, list, opt); err != nil {

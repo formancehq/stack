@@ -24,7 +24,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/gateways"
-	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -284,7 +283,7 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch(mgr, &v1beta1.GatewayList{}),
+				Watch(mgr, &v1beta1.GatewayList{}),
 			),
 		).
 		Watches(

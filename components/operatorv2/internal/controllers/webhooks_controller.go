@@ -23,7 +23,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/ledgers"
-	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/payments"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
@@ -149,12 +148,12 @@ func (r *WebhooksController) SetupWithManager(mgr core.Manager) (*builder.Builde
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch(mgr, "ledger", &v1beta1.WebhooksList{})),
+				databases.Watch(mgr, "webhooks", &v1beta1.WebhooksList{})),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch(mgr, &v1beta1.WebhooksList{}),
+				core.Watch(mgr, &v1beta1.WebhooksList{}),
 			),
 		).
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

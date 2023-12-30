@@ -25,7 +25,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/ledgers"
-	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/streams"
@@ -337,10 +336,11 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch(mgr, &v1beta1.LedgerList{}),
+				Watch(mgr, &v1beta1.LedgerList{}),
 			),
 		).
 		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
 		Owns(&v1beta1.HTTPAPI{}).
 		Owns(&v1beta1.Database{}), nil
 }

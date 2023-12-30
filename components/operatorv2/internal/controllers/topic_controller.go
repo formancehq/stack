@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -134,8 +133,7 @@ func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error
 		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.BrokerConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				brokerconfigurations.Watch(mgr, &v1beta1.TopicList{})),
+			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.TopicList{})),
 		).
 		Owns(&batchv1.Job{}), nil
 }

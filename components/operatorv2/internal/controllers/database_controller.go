@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	. "github.com/formancehq/operator/v2/internal/core"
-	. "github.com/formancehq/operator/v2/internal/resources/databases"
+	"github.com/formancehq/operator/v2/internal/resources/databases"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -118,7 +118,7 @@ func (r *DatabaseController) createJob(ctx Context, databaseConfiguration v1beta
 					Name:  "create-database",
 					Image: "postgres:15-alpine",
 					Args:  []string{"sh", "-c", createDBCommand},
-					Env: append(PostgresEnvVars(databaseConfiguration.Spec, dbName),
+					Env: append(databases.PostgresEnvVars(databaseConfiguration.Spec, dbName),
 						// psql use PGPASSWORD env var
 						Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
 					),
@@ -136,6 +136,7 @@ func (r *DatabaseController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		For(&v1beta1.Database{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.DatabaseConfiguration{},
+			// TODO: Use watcher with labels
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
 				list := &v1beta1.DatabaseList{}
 				if err := mgr.GetClient().List(ctx, list); err != nil {

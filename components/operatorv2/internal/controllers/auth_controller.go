@@ -23,7 +23,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
-	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"gopkg.in/yaml.v3"
@@ -204,7 +203,7 @@ func (r *AuthController) SetupWithManager(mgr core.Manager) (*builder.Builder, e
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(
-				opentelemetryconfigurations.Watch(mgr, &v1beta1.AuthList{}),
+				core.Watch(mgr, &v1beta1.AuthList{}),
 			),
 		).
 		Watches(

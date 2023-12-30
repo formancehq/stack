@@ -25,6 +25,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/elasticsearchconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	benthosOperator "github.com/formancehq/operator/v2/internal/resources/searches/benthos"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -32,6 +33,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
 	"strings"
@@ -253,6 +255,23 @@ func (r *StreamProcessorController) SetupWithManager(mgr Manager) (*builder.Buil
 	//TODO: Watch streams
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.StreamProcessor{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Watches(
+			&v1beta1.BrokerConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.StreamProcessorList{})),
+		).
+		Watches(
+			&v1beta1.ElasticSearchConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.StreamProcessorList{})),
+		).
+		Watches(
+			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.StreamProcessorList{})),
+		).
+		Watches(
+			&v1beta1.Stream{},
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents(mgr, &v1beta1.StreamProcessorList{})),
+		).
 		Owns(&corev1.ConfigMap{}).
 		Owns(&appsv1.Deployment{}), nil
 }
