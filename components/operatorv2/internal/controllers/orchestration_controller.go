@@ -55,7 +55,7 @@ func (r *OrchestrationController) Reconcile(ctx core.Context, orchestration *v1b
 		return err
 	}
 
-	database, err := databases.Create(ctx, stack, "orchestration")
+	database, err := databases.Create(ctx, orchestration)
 	if err != nil {
 		return err
 	}

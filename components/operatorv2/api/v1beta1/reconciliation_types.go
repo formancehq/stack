@@ -28,11 +28,14 @@ type ReconciliationSpec struct {
 
 // ReconciliationStatus defines the observed state of Reconciliation
 type ReconciliationStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Reconciliation is the Schema for the reconciliations API
 type Reconciliation struct {
@@ -41,6 +44,14 @@ type Reconciliation struct {
 
 	Spec   ReconciliationSpec   `json:"spec,omitempty"`
 	Status ReconciliationStatus `json:"status,omitempty"`
+}
+
+func (a Reconciliation) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *Reconciliation) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

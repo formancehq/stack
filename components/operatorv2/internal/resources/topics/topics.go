@@ -6,13 +6,18 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func TopicExists(ctx core.Context, stack *v1beta1.Stack, name string) (bool, error) {
+func FindTopic(ctx core.Context, stack *v1beta1.Stack, name string) (*v1beta1.Topic, error) {
 	topicList := &v1beta1.TopicList{}
 	if err := ctx.GetClient().List(ctx, topicList, client.MatchingFields{
 		".spec.service": name,
 		".spec.stack":   stack.Name,
 	}); err != nil {
-		return false, err
+		return nil, err
 	}
-	return len(topicList.Items) > 0, nil
+
+	if len(topicList.Items) == 0 {
+		return nil, nil
+	}
+
+	return &topicList.Items[0], nil
 }

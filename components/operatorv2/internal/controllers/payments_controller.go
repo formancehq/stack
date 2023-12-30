@@ -53,7 +53,7 @@ func (r *PaymentsController) Reconcile(ctx core.Context, payments *v1beta1.Payme
 		return err
 	}
 
-	database, err := databases.Create(ctx, stack, "payments")
+	database, err := databases.Create(ctx, payments)
 	if err != nil {
 		return err
 	}
@@ -131,16 +131,18 @@ func (r *PaymentsController) createWriteDeployment(ctx core.Context, stack *v1be
 
 	env := r.commonEnvVars(payments, database)
 
-	topicExists, err := topics.TopicExists(ctx, stack, "payments")
+	topic, err := topics.FindTopic(ctx, stack, "payments")
 	if err != nil {
 		return err
 	}
 
-	if topicExists {
+	if topic != nil {
+		// TODO: Get configuration from topic status
 		brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "payments")
 		if err != nil {
 			return err
 		}
+
 		env = append(env, brokerEnvVars...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}

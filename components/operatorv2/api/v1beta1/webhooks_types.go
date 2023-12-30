@@ -28,11 +28,14 @@ type WebhooksSpec struct {
 
 // WebhooksStatus defines the observed state of Webhooks
 type WebhooksStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Webhooks is the Schema for the webhooks API
 type Webhooks struct {
@@ -41,6 +44,14 @@ type Webhooks struct {
 
 	Spec   WebhooksSpec   `json:"spec,omitempty"`
 	Status WebhooksStatus `json:"status,omitempty"`
+}
+
+func (a Webhooks) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *Webhooks) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

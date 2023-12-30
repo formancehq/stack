@@ -3,7 +3,7 @@ kind: Orchestration
 metadata:
   labels:
     app.kubernetes.io/name: orchestration
-    app.kubernetes.io/instance: orchestration-sample
+    app.kubernetes.io/instance: orchestration0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2

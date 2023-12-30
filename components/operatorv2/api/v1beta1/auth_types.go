@@ -41,6 +41,7 @@ type AuthSpec struct {
 
 // AuthStatus defines the observed state of Auth
 type AuthStatus struct {
+	CommonStatus `json:",inline"`
 	//+optional
 	Clients []string `json:"clients"`
 }
@@ -49,6 +50,8 @@ type AuthStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Clients",type=string,JSONPath=".status.clients",description="Synchronized auth clients"
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Auth is the Schema for the auths API
 type Auth struct {
@@ -57,6 +60,18 @@ type Auth struct {
 
 	Spec   AuthSpec   `json:"spec,omitempty"`
 	Status AuthStatus `json:"status,omitempty"`
+}
+
+func (a Auth) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *Auth) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
+}
+
+func (a *Auth) SetStatus(ready bool, error string) {
+	a.Status.SetStatus(ready, error)
 }
 
 //+kubebuilder:object:root=true

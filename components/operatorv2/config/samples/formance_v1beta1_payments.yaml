@@ -3,11 +3,11 @@ kind: Payments
 metadata:
   labels:
     app.kubernetes.io/name: payments
-    app.kubernetes.io/instance: payments-sample
+    app.kubernetes.io/instance: payments0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
-  name: payments-sample
+  name: payments0
 spec:
   stack: stack0
   encryptionKey: ClaptonIsGod

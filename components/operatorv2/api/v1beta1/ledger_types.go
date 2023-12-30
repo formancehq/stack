@@ -37,11 +37,14 @@ type LedgerSpec struct {
 
 // LedgerStatus defines the observed state of Ledger
 type LedgerStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Ledger is the Schema for the ledgers API
 type Ledger struct {
@@ -50,6 +53,14 @@ type Ledger struct {
 
 	Spec   LedgerSpec   `json:"spec,omitempty"`
 	Status LedgerStatus `json:"status,omitempty"`
+}
+
+func (a Ledger) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *Ledger) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

@@ -46,7 +46,7 @@ func (r *ReconciliationController) Reconcile(ctx core.Context, reconciliation *v
 		return err
 	}
 
-	database, err := databases.Create(ctx, stack, "reconciliation")
+	database, err := databases.Create(ctx, reconciliation)
 	if err != nil {
 		return err
 	}

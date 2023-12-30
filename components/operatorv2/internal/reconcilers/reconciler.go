@@ -35,6 +35,22 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 		return ctrl.Result{}, err
 	}
 
+	setStatus := func(err error) {
+		if s, ok := reflect.ValueOf(t).
+			Elem().
+			FieldByName("Status").
+			Addr().
+			Interface().(interface {
+			SetStatus(status bool, error string)
+		}); ok {
+			if err == nil {
+				s.SetStatus(true, "")
+			} else {
+				s.SetStatus(false, err.Error())
+			}
+		}
+	}
+
 	cp := t.DeepCopyObject().(T)
 	if err := r.Controller.Reconcile(struct {
 		context.Context
@@ -43,7 +59,11 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 		Context: ctx,
 		Manager: r.Manager,
 	}, t); err != nil {
+		setStatus(err)
+
 		return ctrl.Result{}, err
+	} else {
+		setStatus(nil)
 	}
 
 	if !equality.Semantic.DeepEqual(cp, t) {

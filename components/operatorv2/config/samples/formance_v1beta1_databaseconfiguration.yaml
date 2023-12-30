@@ -3,7 +3,7 @@ kind: DatabaseConfiguration
 metadata:
   labels:
     app.kubernetes.io/name: databaseconfiguration
-    app.kubernetes.io/instance: databaseconfiguration-sample
+    app.kubernetes.io/instance: databaseconfiguration0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2

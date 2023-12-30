@@ -30,11 +30,14 @@ type SearchSpec struct {
 
 // SearchStatus defines the observed state of Search
 type SearchStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Search is the Schema for the searches API
 type Search struct {
@@ -43,6 +46,14 @@ type Search struct {
 
 	Spec   SearchSpec   `json:"spec,omitempty"`
 	Status SearchStatus `json:"status,omitempty"`
+}
+
+func (a Search) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *Search) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

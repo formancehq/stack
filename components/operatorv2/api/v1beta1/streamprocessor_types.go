@@ -40,11 +40,14 @@ type StreamProcessorSpec struct {
 
 // StreamProcessorStatus defines the observed state of StreamProcessor
 type StreamProcessorStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // StreamProcessor is the Schema for the streamprocessors API
 type StreamProcessor struct {
@@ -53,6 +56,14 @@ type StreamProcessor struct {
 
 	Spec   StreamProcessorSpec   `json:"spec,omitempty"`
 	Status StreamProcessorStatus `json:"status,omitempty"`
+}
+
+func (a StreamProcessor) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *StreamProcessor) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

@@ -48,7 +48,7 @@ type CommonServiceProperties struct {
 //	    // +patchStrategy=merge
 //	    // +listType=map
 //	    // +listMapKey=type
-//	    Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,rep,name=conditions"`
+//	    CommonStatus []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,rep,name=conditions"`
 //
 //	    // other fields
 //	}
@@ -88,11 +88,20 @@ type Condition struct {
 	Message string `json:"message" protobuf:"bytes,6,opt,name=message"`
 }
 
-type Conditions struct {
-	Conditions []Condition `json:"conditions"`
+type CommonStatus struct {
+	//+optional
+	Conditions []Condition `json:"conditions,omitempty"`
+	//+optional
+	Ready bool `json:"ready"`
+	//+optional
+	Error string `json:"error,omitempty"`
 }
 
-func (c *Conditions) DeleteCondition(t string) {
+func (c *CommonStatus) SetStatus(status bool, error string) {
+	c.Ready = true
+}
+
+func (c *CommonStatus) DeleteCondition(t string) {
 	for i, existingCondition := range c.Conditions {
 		if existingCondition.Type == t {
 			if i < len(c.Conditions)-1 {
@@ -105,7 +114,7 @@ func (c *Conditions) DeleteCondition(t string) {
 	}
 }
 
-func (c *Conditions) SetCondition(condition Condition) {
+func (c *CommonStatus) SetCondition(condition Condition) {
 	c.DeleteCondition(condition.Type)
 	c.Conditions = append(c.Conditions, condition)
 }

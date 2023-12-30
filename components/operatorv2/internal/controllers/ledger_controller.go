@@ -18,6 +18,7 @@ package controllers
 
 import (
 	_ "embed"
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
@@ -54,7 +55,7 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	database, err := databases.Create(ctx, stack, "ledger")
+	database, err := databases.Create(ctx, ledger)
 	if err != nil {
 		if pkgError.Is(err, ErrPending) {
 			return nil
@@ -264,11 +265,15 @@ func (r *LedgerController) createBaseLedgerContainerV2() *corev1.Container {
 
 func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
 	container := r.createBaseLedgerContainerV2()
-	needPublisher, err := topics.TopicExists(ctx, stack, "ledger")
+	topic, err := topics.FindTopic(ctx, stack, "ledger")
 	if err != nil {
 		return nil, err
 	}
-	if needPublisher {
+
+	if topic != nil {
+		if !topic.Status.Ready {
+			return nil, fmt.Errorf("topic %s is not yet ready", topic.Name)
+		}
 		brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "ledger")
 		if err != nil {
 			return nil, err
@@ -276,6 +281,7 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1bet
 		container.Env = append(container.Env, brokerEnvVars...)
 		container.Env = append(container.Env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "ledger")))
 	}
+
 	return container, nil
 }
 

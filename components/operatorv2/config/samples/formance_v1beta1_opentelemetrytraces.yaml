@@ -3,10 +3,10 @@ kind: OpenTelemetryConfiguration
 metadata:
   labels:
     app.kubernetes.io/name: opentelemetryconfigurations
-    app.kubernetes.io/instance: opentelemetryconfigurations-sample
+    app.kubernetes.io/instance: opentelemetryconfigurations0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
-  name: opentelemetryconfigurations-sample
+  name: opentelemetryconfigurations0
 spec:
   # TODO(user): Add fields here

@@ -3,7 +3,7 @@ kind: Stack
 metadata:
   labels:
     app.kubernetes.io/name: stack
-    app.kubernetes.io/instance: stack-sample
+    app.kubernetes.io/instance: stack0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2

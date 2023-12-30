@@ -51,7 +51,7 @@ func (r *AuthController) Reconcile(ctx core.Context, auth *v1beta1.Auth) error {
 		return err
 	}
 
-	database, err := databases.Create(ctx, stack, "auth")
+	database, err := databases.Create(ctx, auth)
 	if err != nil {
 		return err
 	}

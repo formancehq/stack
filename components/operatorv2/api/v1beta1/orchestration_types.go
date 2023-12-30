@@ -44,11 +44,14 @@ type OrchestrationSpec struct {
 
 // OrchestrationStatus defines the observed state of Orchestration
 type OrchestrationStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Orchestration is the Schema for the orchestrations API
 type Orchestration struct {
@@ -57,6 +60,14 @@ type Orchestration struct {
 
 	Spec   OrchestrationSpec   `json:"spec,omitempty"`
 	Status OrchestrationStatus `json:"status,omitempty"`
+}
+
+func (a Orchestration) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *Orchestration) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

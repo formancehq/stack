@@ -51,7 +51,7 @@ func (r *WebhooksController) Reconcile(ctx core.Context, webhooks *v1beta1.Webho
 		return err
 	}
 
-	database, err := databases.Create(ctx, stack, "webhooks")
+	database, err := databases.Create(ctx, webhooks)
 	if err != nil {
 		return err
 	}

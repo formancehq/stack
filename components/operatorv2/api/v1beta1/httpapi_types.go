@@ -64,7 +64,7 @@ type HTTPAPISpec struct {
 
 // HTTPAPIStatus defines the observed state of HTTPAPI
 type HTTPAPIStatus struct {
-	Conditions `json:",inline"`
+	CommonStatus `json:",inline"`
 	//+optional
 	Ready bool `json:"ready,omitempty"`
 }

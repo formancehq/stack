@@ -45,6 +45,7 @@ type GatewaySpec struct {
 
 // GatewayStatus defines the observed state of Gateway
 type GatewayStatus struct {
+	CommonStatus `json:",inline"`
 	//+optional
 	SyncHTTPAPIs []string `json:"syncHTTPAPIs"`
 	// +kubebuilder:default:=false
@@ -56,6 +57,8 @@ type GatewayStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="HTTP APIs",type=string,JSONPath=".status.syncHTTPAPIs",description="Synchronized http apis"
 //+kubebuilder:printcolumn:name="Auth enabled",type=string,JSONPath=".status.authEnabled",description="Is authentication enabled"
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
 // Gateway is the Schema for the gateways API
 type Gateway struct {
@@ -64,6 +67,14 @@ type Gateway struct {
 
 	Spec   GatewaySpec   `json:"spec,omitempty"`
 	Status GatewayStatus `json:"status,omitempty"`
+}
+
+func (a Gateway) GetStack() string {
+	return a.Spec.Stack
+}
+
+func (a *Gateway) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

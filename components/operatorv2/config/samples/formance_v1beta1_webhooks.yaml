@@ -3,10 +3,10 @@ kind: Webhooks
 metadata:
   labels:
     app.kubernetes.io/name: webhooks
-    app.kubernetes.io/instance: webhooks-sample
+    app.kubernetes.io/instance: webhooks0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
-  name: webhooks-sample
+  name: webhooks0
 spec:
   stack: stack0

@@ -3,7 +3,7 @@ kind: Reconciliation
 metadata:
   labels:
     app.kubernetes.io/name: reconciliation
-    app.kubernetes.io/instance: reconciliation-sample
+    app.kubernetes.io/instance: reconciliation0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2

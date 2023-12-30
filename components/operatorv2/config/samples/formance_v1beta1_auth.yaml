@@ -3,7 +3,7 @@ kind: Auth
 metadata:
   labels:
     app.kubernetes.io/name: auth
-    app.kubernetes.io/instance: auth-sample
+    app.kubernetes.io/instance: auth0
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
