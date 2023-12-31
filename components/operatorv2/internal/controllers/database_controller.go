@@ -22,6 +22,7 @@ import (
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -109,18 +110,18 @@ func (r *DatabaseController) createJob(ctx Context, databaseConfiguration v1beta
 				createDBCommand += ` "sslmode=disable"`
 			}
 
-			t.Spec.Template.Spec = corev1.PodSpec{
-				RestartPolicy: corev1.RestartPolicyOnFailure,
-				Containers: []corev1.Container{{
-					Name:  "create-database",
-					Image: "postgres:15-alpine",
-					Args:  []string{"sh", "-c", createDBCommand},
-					Env: append(databases.PostgresEnvVars(databaseConfiguration.Spec, dbName),
-						// psql use PGPASSWORD env var
-						Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
-					),
-				}},
-			}
+			t.Spec.BackoffLimit = pointer.For(int32(10000))
+			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
+			t.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyOnFailure
+			t.Spec.Template.Spec.Containers = []corev1.Container{{
+				Name:  "create-database",
+				Image: "postgres:15-alpine",
+				Args:  []string{"sh", "-c", createDBCommand},
+				Env: append(databases.PostgresEnvVars(databaseConfiguration.Spec, dbName),
+					// psql use PGPASSWORD env var
+					Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
+				),
+			}}
 		},
 		WithController[*batchv1.Job](ctx.GetScheme(), database),
 	)

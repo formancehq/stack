@@ -22,6 +22,7 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	types "k8s.io/apimachinery/pkg/types"
@@ -46,6 +47,10 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 			return nil
 		}
 		return ErrDeleted
+	}
+
+	if topic.Status.Ready {
+		return nil
 	}
 
 	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
@@ -88,6 +93,8 @@ func (r *TopicController) createJob(ctx Context,
 			}
 			args = append(args, topic.Name)
 
+			t.Spec.BackoffLimit = pointer.For(int32(10000))
+			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
 			t.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyOnFailure
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Image: "natsio/nats-box:0.14.1",
