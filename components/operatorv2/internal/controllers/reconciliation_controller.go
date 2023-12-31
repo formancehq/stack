@@ -22,6 +22,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -86,13 +87,18 @@ func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.
 	)
 	env = append(env, authclients.GetEnvVars(authClient)...)
 
+	image, err := GetImage(ctx, stack, "reconciliation", reconciliation.Spec.Version)
+	if err != nil {
+		return err
+	}
+
 	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
 		GetNamespacedResourceName(stack.Name, "reconciliation"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:          "reconciliation",
 				Env:           env,
-				Image:         GetImage("reconciliation", GetVersion(stack, reconciliation.Spec.Version)),
+				Image:         image,
 				Resources:     GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, ResourceSizeSmall()),
 				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 				LivenessProbe: deployments.DefaultLiveness("http"),
@@ -117,6 +123,10 @@ func (r *ReconciliationController) SetupWithManager(mgr Manager) (*builder.Build
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
+		).
+		Watches(
+			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
 		).
 		Owns(&v1beta1.Database{}).

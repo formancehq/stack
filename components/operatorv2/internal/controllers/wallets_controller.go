@@ -18,10 +18,11 @@ package controllers
 
 import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
-	"github.com/formancehq/operator/v2/internal/core"
+	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -39,7 +40,7 @@ type WalletsController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletsController) Reconcile(ctx core.Context, wallet *v1beta1.Wallets) error {
+func (r *WalletsController) Reconcile(ctx Context, wallet *v1beta1.Wallets) error {
 
 	stack, err := stacks.GetStack(ctx, wallet.Spec)
 	if err != nil {
@@ -64,37 +65,46 @@ func (r *WalletsController) Reconcile(ctx core.Context, wallet *v1beta1.Wallets)
 	return nil
 }
 
-func (r *WalletsController) createDeployment(ctx core.Context, stack *v1beta1.Stack, wallet *v1beta1.Wallets, authClient *v1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, stack, "wallets", wallet.Spec)
+func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, authClient *v1beta1.AuthClient) error {
+	env, err := GetCommonServicesEnvVars(ctx, stack, "wallets", wallets.Spec)
 	if err != nil {
 		return err
 	}
 	env = append(env, authclients.GetEnvVars(authClient)...)
 
-	_, _, err = core.CreateOrUpdate[*appsv1.Deployment](ctx,
-		core.GetNamespacedResourceName(stack.Name, "wallets"),
+	image, err := registries.GetImage(ctx, stack, "wallets", wallets.Spec.Version)
+	if err != nil {
+		return err
+	}
+
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
+		GetNamespacedResourceName(stack.Name, "wallets"),
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:          "wallets",
 				Args:          []string{"serve"},
 				Env:           env,
-				Image:         core.GetImage("wallets", core.GetVersion(stack, wallet.Spec.Version)),
-				Resources:     core.GetResourcesWithDefault(wallet.Spec.ResourceProperties, core.ResourceSizeSmall()),
+				Image:         image,
+				Resources:     GetResourcesWithDefault(wallets.Spec.ResourceProperties, ResourceSizeSmall()),
 				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}
 		},
 		deployments.WithMatchingLabels("wallets"),
-		core.WithController[*appsv1.Deployment](ctx.GetScheme(), wallet),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), wallets),
 	)
 	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *WalletsController) SetupWithManager(mgr core.Manager) (*builder.Builder, error) {
+func (r *WalletsController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
+		).
+		Watches(
+			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
 		).
 		Owns(&v1beta1.AuthClient{}).

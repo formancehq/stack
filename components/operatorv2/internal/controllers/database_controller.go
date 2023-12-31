@@ -21,6 +21,7 @@ import (
 	"fmt"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -147,6 +148,10 @@ func (r *DatabaseController) SetupWithManager(mgr Manager) (*builder.Builder, er
 					Map(list.Items, ToPointer[v1beta1.Database])...,
 				)
 			}),
+		).
+		Watches(
+			&v1beta1.Registries{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Database](mgr)),
 		).
 		Owns(&batchv1.Job{}), nil
 }

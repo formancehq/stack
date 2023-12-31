@@ -22,6 +22,7 @@ import (
 	. "github.com/formancehq/operator/v2/internal/core"
 	deployments "github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -70,7 +71,11 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		}
 	}
 
-	image := GetImage("search", GetVersion(stack, search.Spec.Version))
+	image, err := GetImage(ctx, stack, "search", search.Spec.Version)
+	if err != nil {
+		return err
+	}
+
 	_, _, err = CreateOrUpdate[*v1beta1.StreamProcessor](ctx, types.NamespacedName{
 		Name: GetObjectName(stack.Name, "stream-processor"),
 	},
@@ -100,7 +105,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
 			Name:            "search",
-			Image:           GetImage("search", GetVersion(stack, search.Spec.Version)),
+			Image:           image,
 			Ports:           []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			Env:             env,
 			Resources:       GetResourcesWithDefault(search.Spec.ResourceProperties, ResourceSizeSmall()),
@@ -126,6 +131,10 @@ func (r *SearchController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		).
 		Watches(
 			&v1beta1.ElasticSearchConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
+		).
+		Watches(
+			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Owns(&v1beta1.StreamProcessor{}).

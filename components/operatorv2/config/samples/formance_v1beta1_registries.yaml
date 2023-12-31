@@ -1,0 +1,15 @@
+apiVersion: formance.com/v1beta1
+kind: Registries
+metadata:
+  labels:
+    app.kubernetes.io/name: registries
+    app.kubernetes.io/instance: registries-sample
+    app.kubernetes.io/part-of: operatorv2
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operatorv2
+    formance.com/stack: any
+  name: registries0
+spec:
+  #registries:
+  #  ghcr.io:
+  #    endpoint: localhost:5000

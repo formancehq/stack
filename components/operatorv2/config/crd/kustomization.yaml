@@ -23,6 +23,7 @@ resources:
 - bases/formance.com_streams.yaml
 - bases/formance.com_streamprocessors.yaml
 - bases/formance.com_elasticsearchconfigurations.yaml
+- bases/formance.com_registries.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patches:
@@ -49,6 +50,7 @@ patches:
 #- path: patches/webhook_in_streams.yaml
 #- path: patches/webhook_in_streamprocessors.yaml
 #- path: patches/webhook_in_elasticsearchconfigurations.yaml
+#- path: patches/webhook_in_registries.yaml
 #+kubebuilder:scaffold:crdkustomizewebhookpatch
 
 # [CERTMANAGER] To enable cert-manager, uncomment all the sections with [CERTMANAGER] prefix.
@@ -74,6 +76,7 @@ patches:
 #- path: patches/cainjection_in_streams.yaml
 #- path: patches/cainjection_in_streamprocessors.yaml
 #- path: patches/cainjection_in_elasticsearchconfigurations.yaml
+#- path: patches/cainjection_in_registries.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
 # [WEBHOOK] To enable webhook, uncomment the following section

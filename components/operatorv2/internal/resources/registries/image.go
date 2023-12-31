@@ -1,7 +1,9 @@
-package core
+package registries
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/internal/core"
 	"strings"
 
 	"golang.org/x/mod/semver"
@@ -15,8 +17,9 @@ func NormalizeVersion(version string) string {
 	return version
 }
 
-func GetImage(component, version string) string {
-	return fmt.Sprintf("ghcr.io/formancehq/%s:%s", component, NormalizeVersion(version))
+func GetImage(ctx core.Context, stack *v1beta1.Stack, component, version string) (string, error) {
+	return TranslateImage(ctx, stack.Name,
+		fmt.Sprintf("ghcr.io/formancehq/%s:%s", component, NormalizeVersion(core.GetVersion(stack, version))))
 }
 
 func GetPullPolicy(imageName string) corev1.PullPolicy {

@@ -23,6 +23,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
 	appsv1 "k8s.io/api/apps/v1"
@@ -84,6 +85,11 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
+	image, err := GetImage(ctx, stack, "webhooks", webhooks.Spec.Version)
+	if err != nil {
+		return err
+	}
+
 	env := databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
 	env = append(env, brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "webhooks")...)
 	env = append(env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
@@ -100,7 +106,7 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",
 			Env:           env,
-			Image:         GetImage("webhooks", GetVersion(stack, webhooks.Spec.Version)),
+			Image:         image,
 			Resources:     GetResourcesWithDefault(webhooks.Spec.ResourceProperties, ResourceSizeSmall()),
 			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),
@@ -131,6 +137,10 @@ func (r *WebhooksController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Webhooks](mgr)),
+		).
+		Watches(
+			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Webhooks](mgr)),
 		).
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

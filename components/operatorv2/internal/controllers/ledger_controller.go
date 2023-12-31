@@ -19,7 +19,6 @@ package controllers
 import (
 	_ "embed"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
@@ -27,6 +26,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/ledgers"
+	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/streams"
@@ -60,7 +60,12 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	err = r.installLedger(ctx, stack, ledger, database, GetVersion(stack, ledger.Spec.Version))
+	image, err := GetImage(ctx, stack, "ledger", ledger.Spec.Version)
+	if err != nil {
+		return err
+	}
+
+	err = r.installLedger(ctx, stack, ledger, database, image)
 	if err != nil {
 		return err
 	}
@@ -77,19 +82,19 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 }
 
 func (r *LedgerController) installLedger(ctx Context, stack *v1beta1.Stack,
-	ledger *v1beta1.Ledger, database *v1beta1.Database, version string) error {
+	ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
 
 	switch ledger.Spec.DeploymentStrategy {
 	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
 		if err := DeleteIfExists[*appsv1.Deployment](ctx, GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
 			return err
 		}
-		return r.installLedgerV2MonoWriterMultipleReader(ctx, stack, ledger, database, version)
+		return r.installLedgerV2MonoWriterMultipleReader(ctx, stack, ledger, database, image)
 	default:
 		if err := r.uninstallLedgerV2MonoWriterMultipleReader(ctx, stack); err != nil {
 			return err
 		}
-		return r.installLedgerV2SingleInstance(ctx, stack, ledger, database, version)
+		return r.installLedgerV2SingleInstance(ctx, stack, ledger, database, image)
 	}
 }
 
@@ -115,14 +120,13 @@ func (r *LedgerController) installLedgerV2SingleInstance(ctx Context, stack *v1b
 	return nil
 }
 
-func (r *LedgerController) setInitContainer(database *v1beta1.Database, version string) func(t *appsv1.Deployment) {
+func (r *LedgerController) setInitContainer(database *v1beta1.Database, image string) func(t *appsv1.Deployment) {
 	return func(t *appsv1.Deployment) {
 		t.Spec.Template.Spec.InitContainers = []corev1.Container{
 			databases.MigrateDatabaseContainer(
-				"ledger",
+				image,
 				database.Status.Configuration.DatabaseConfigurationSpec,
 				database.Status.Configuration.Database,
-				version,
 				func(m *databases.MigrationConfiguration) {
 					m.Command = []string{"buckets", "upgrade-all"}
 					m.AdditionalEnv = []corev1.EnvVar{
@@ -135,10 +139,10 @@ func (r *LedgerController) setInitContainer(database *v1beta1.Database, version 
 }
 
 func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, stack *v1beta1.Stack,
-	ledger *v1beta1.Ledger, database *v1beta1.Database, version string) error {
+	ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
 
 	createDeployment := func(name string, container corev1.Container, mutators ...ObjectMutator[*appsv1.Deployment]) error {
-		err := r.setCommonContainerConfiguration(ctx, stack, ledger, version, database, &container)
+		err := r.setCommonContainerConfiguration(ctx, stack, ledger, image, database, &container)
 		if err != nil {
 			return err
 		}
@@ -160,7 +164,7 @@ func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, 
 	}
 	if err := createDeployment("ledger-write", *container,
 		deployments.WithReplicas(1),
-		r.setInitContainer(database, version),
+		r.setInitContainer(database, image),
 	); err != nil {
 		return err
 	}
@@ -231,7 +235,7 @@ func (r *LedgerController) createDeployment(ctx Context, stack *v1beta1.Stack, l
 }
 
 func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
-	version string, database *v1beta1.Database, container *corev1.Container) error {
+	image string, database *v1beta1.Database, container *corev1.Container) error {
 
 	env, err := GetCommonServicesEnvVars(ctx, stack, "ledger", ledger.Spec)
 	if err != nil {
@@ -239,7 +243,7 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 	}
 
 	container.Resources = GetResourcesWithDefault(ledger.Spec.ResourceProperties, ResourceSizeSmall())
-	container.Image = GetImage("ledger", version)
+	container.Image = image
 	container.ImagePullPolicy = GetPullPolicy(container.Image)
 	container.Env = append(container.Env, env...)
 	container.Env = append(container.Env, databases.PostgresEnvVars(
@@ -272,7 +276,6 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1bet
 		if !topic.Status.Ready {
 			return nil, fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
-		spew.Dump(topic)
 
 		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, "ledger")...)
 		container.Env = append(container.Env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "ledger")))
@@ -337,6 +340,10 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
+		).
+		Watches(
+			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).

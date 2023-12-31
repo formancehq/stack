@@ -268,6 +268,10 @@ func (r *StreamProcessorController) SetupWithManager(mgr Manager) (*builder.Buil
 			handler.EnqueueRequestsFromMapFunc(
 				stacks.WatchDependents[*v1beta1.StreamProcessor](mgr)),
 		).
+		Watches(
+			&v1beta1.Registries{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
+		).
 		Owns(&corev1.ConfigMap{}).
 		Owns(&appsv1.Deployment{}), nil
 }

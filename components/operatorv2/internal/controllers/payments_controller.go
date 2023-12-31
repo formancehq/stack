@@ -26,6 +26,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/payments"
+	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/streams"
@@ -100,7 +101,12 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 
 	env := r.commonEnvVars(payments, database)
 
-	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
+	image, err := GetImage(ctx, stack, "payments", payments.Spec.Version)
+	if err != nil {
+		return err
+	}
+
+	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-read",
 	},
@@ -110,7 +116,7 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 			Name:          "api",
 			Args:          []string{"api", "serve"},
 			Env:           env,
-			Image:         GetImage("payments", GetVersion(stack, payments.Spec.Version)),
+			Image:         image,
 			Resources:     GetResourcesWithDefault(payments.Spec.ResourceProperties, ResourceSizeSmall()),
 			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
 			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
@@ -156,6 +162,11 @@ func (r *PaymentsController) createWriteDeployment(ctx Context, stack *v1beta1.S
 		env = append(env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "payments")))
 	}
 
+	image, err := GetImage(ctx, stack, "payments", payments.Spec.Version)
+	if err != nil {
+		return err
+	}
+
 	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: payments.Spec.Stack,
 		Name:      "payments-connectors",
@@ -166,13 +177,13 @@ func (r *PaymentsController) createWriteDeployment(ctx Context, stack *v1beta1.S
 			Name:      "connectors",
 			Args:      []string{"connectors", "serve"},
 			Env:       env,
-			Image:     GetImage("payments", GetVersion(stack, payments.Spec.Version)),
+			Image:     image,
 			Resources: GetResourcesWithDefault(payments.Spec.ResourceProperties, ResourceSizeSmall()),
 			Ports:     []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http",
 				deployments.WithProbePath("/_health")),
 		}),
-		r.setInitContainer(payments, database, GetVersion(stack, payments.Spec.Version)),
+		r.setInitContainer(payments, database, image),
 	)
 	if err != nil {
 		return err
@@ -221,14 +232,13 @@ func (r *PaymentsController) createGateway(ctx Context, stack *v1beta1.Stack, p 
 	return err
 }
 
-func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, version string) func(t *appsv1.Deployment) {
+func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, image string) func(t *appsv1.Deployment) {
 	return func(t *appsv1.Deployment) {
 		t.Spec.Template.Spec.InitContainers = []corev1.Container{
 			databases.MigrateDatabaseContainer(
-				"payments",
+				image,
 				database.Status.Configuration.DatabaseConfigurationSpec,
 				database.Status.Configuration.Database,
-				version,
 				func(m *databases.MigrationConfiguration) {
 					m.AdditionalEnv = []corev1.EnvVar{
 						Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
@@ -254,6 +264,10 @@ func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Payments](mgr)),
+		).
+		Watches(
+			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Payments](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).

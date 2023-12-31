@@ -121,9 +121,11 @@ func IsEnabledByLabel[T client.Object](ctx core.Context, stackName string) (bool
 
 func WatchUsingLabels[T client.Object](mgr core.Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
-		opt := client.MatchingFields{}
+		options := make([]client.ListOption, 0)
 		if object.GetLabels()["formance.com/stack"] != "any" {
-			opt["stack"] = object.GetLabels()["formance.com/stack"]
+			options = append(options, client.MatchingFields{
+				"stack": object.GetLabels()["formance.com/stack"],
+			})
 		}
 
 		var t T
@@ -135,7 +137,7 @@ func WatchUsingLabels[T client.Object](mgr core.Manager) func(ctx context.Contex
 
 		us := &unstructured.UnstructuredList{}
 		us.SetGroupVersionKind(kinds[0])
-		if err := mgr.GetClient().List(ctx, us, opt); err != nil {
+		if err := mgr.GetClient().List(ctx, us, options...); err != nil {
 			return []reconcile.Request{}
 		}
 

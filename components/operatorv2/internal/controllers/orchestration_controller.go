@@ -24,6 +24,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
 	"github.com/pkg/errors"
@@ -139,6 +140,11 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 	}
 	env = append(env, brokerEnvVars...)
 
+	image, err := GetImage(ctx, stack, "orchestration", orchestration.Spec.Version)
+	if err != nil {
+		return err
+	}
+
 	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: orchestration.Spec.Stack,
 		Name:      "orchestration",
@@ -148,7 +154,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",
 			Env:           env,
-			Image:         GetImage("orchestration", GetVersion(stack, orchestration.Spec.Version)),
+			Image:         image,
 			Resources:     GetResourcesWithDefault(orchestration.Spec.ResourceProperties, ResourceSizeSmall()),
 			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),
@@ -183,6 +189,10 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 			&v1beta1.Wallets{},
 			handler.EnqueueRequestsFromMapFunc(
 				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
+		).
+		Watches(
+			&v1beta1.Registries{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
 		Owns(&v1beta1.TopicQuery{}).
 		Owns(&v1beta1.AuthClient{}).

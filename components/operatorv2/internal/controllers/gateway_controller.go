@@ -23,6 +23,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/gateways"
+	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -136,7 +137,12 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		)
 	}
 
-	mutators := ConfigureCaddy(caddyfileConfigMap, GetImage("gateway", GetVersion(stack, gateway.Spec.Version)), env, gateway.Spec.ResourceProperties)
+	image, err := GetImage(ctx, stack, "gateway", gateway.Spec.Version)
+	if err != nil {
+		return err
+	}
+
+	mutators := ConfigureCaddy(caddyfileConfigMap, image, env, gateway.Spec.ResourceProperties)
 	mutators = append(mutators,
 		WithController[*appsv1.Deployment](ctx.GetScheme(), gateway),
 		deployments.WithMatchingLabels("gateway"),
@@ -280,6 +286,10 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&networkingv1.Ingress{}).
+		Watches(
+			&v1beta1.Registries{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Gateway](mgr)),
+		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Gateway](mgr)),

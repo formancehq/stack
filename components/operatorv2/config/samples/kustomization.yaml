@@ -21,4 +21,5 @@ resources:
 - formance_v1beta1_stream.yaml
 - formance_v1beta1_streamprocessor.yaml
 - formance_v1beta1_elasticsearchconfiguration.yaml
+- formance_v1beta1_registries.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

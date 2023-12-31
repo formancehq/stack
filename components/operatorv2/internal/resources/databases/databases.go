@@ -55,7 +55,7 @@ type MigrationConfiguration struct {
 	AdditionalEnv []v1.EnvVar
 }
 
-func MigrateDatabaseContainer(serviceName string, database v1beta1.DatabaseConfigurationSpec, databaseName, version string, options ...func(m *MigrationConfiguration)) v1.Container {
+func MigrateDatabaseContainer(image string, database v1beta1.DatabaseConfigurationSpec, databaseName string, options ...func(m *MigrationConfiguration)) v1.Container {
 	m := &MigrationConfiguration{}
 	for _, option := range options {
 		option(m)
@@ -68,9 +68,10 @@ func MigrateDatabaseContainer(serviceName string, database v1beta1.DatabaseConfi
 	if m.AdditionalEnv != nil {
 		env = append(env, m.AdditionalEnv...)
 	}
+
 	return v1.Container{
 		Name:  "migrate",
-		Image: core.GetImage(serviceName, version),
+		Image: image,
 		Args:  args,
 		Env:   env,
 	}
