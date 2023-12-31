@@ -159,7 +159,6 @@ l:
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *StackController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
-	//TODO: need to update opentelemetry configuration to retrieve by label
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Owns(&corev1.Secret{}).

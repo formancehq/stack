@@ -47,6 +47,8 @@ type Payments struct {
 	Status PaymentsStatus `json:"status,omitempty"`
 }
 
+func (a Payments) isEventPublisher() {}
+
 func (a Payments) GetStack() string {
 	return a.Spec.Stack
 }

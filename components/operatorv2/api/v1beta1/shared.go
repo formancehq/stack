@@ -129,3 +129,8 @@ type StackDependency struct {
 func (d StackDependency) GetStack() string {
 	return d.Stack
 }
+
+// +kubebuilder:object:generate=false
+type EventPublisher interface {
+	isEventPublisher()
+}

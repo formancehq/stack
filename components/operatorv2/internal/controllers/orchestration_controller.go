@@ -25,8 +25,6 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
-	"github.com/formancehq/operator/v2/internal/resources/ledgers"
-	"github.com/formancehq/operator/v2/internal/resources/payments"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
 	"github.com/pkg/errors"
@@ -34,8 +32,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"strings"
 
 	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -104,29 +104,9 @@ func (r *OrchestrationController) handleAuthClient(ctx Context, stack *formancev
 }
 
 func (r *OrchestrationController) handleTopics(ctx Context, stack *formancev1beta1.Stack, orchestration *v1beta1.Orchestration) error {
-	availableServices := make([]string, 0)
-	ledger, err := ledgers.GetIfEnabled(ctx, stack.Name)
-	if err != nil {
-		return err
-	}
-	if ledger != nil {
-		availableServices = append(availableServices, "ledger")
-	}
-	payments, err := payments.GetIfEnabled(ctx, stack.Name)
-	if err != nil {
-		return err
-	}
-	if payments != nil {
-		availableServices = append(availableServices, "payments")
-	}
-
-	for _, service := range availableServices {
-		if err := topicqueries.Create(ctx, stack, service, orchestration); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return ForEachEventPublisher(ctx, stack.Name, func(object client.Object) error {
+		return topicqueries.Create(ctx, stack, strings.ToLower(object.GetObjectKind().GroupVersionKind().Kind), orchestration)
+	})
 }
 
 func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.Stack,

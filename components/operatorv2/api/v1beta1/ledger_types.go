@@ -55,6 +55,8 @@ type Ledger struct {
 	Status LedgerStatus `json:"status,omitempty"`
 }
 
+func (a Ledger) isEventPublisher() {}
+
 func (a Ledger) GetStack() string {
 	return a.Spec.Stack
 }

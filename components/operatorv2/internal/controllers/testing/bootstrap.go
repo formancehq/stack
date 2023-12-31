@@ -61,7 +61,9 @@ var _ = BeforeSuite(func() {
 
 	Expect(v1beta1.AddToScheme(scheme.Scheme)).To(Succeed())
 
-	k8sClient, err = client.New(restConfig, client.Options{Scheme: scheme.Scheme})
+	k8sClient, err = client.New(restConfig, client.Options{
+		Scheme: scheme.Scheme,
+	})
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sClient).NotTo(BeNil())
 
@@ -70,6 +72,11 @@ var _ = BeforeSuite(func() {
 		Scheme: GetScheme(),
 		Metrics: server.Options{
 			BindAddress: "0",
+		},
+		Client: client.Options{
+			Cache: &client.CacheOptions{
+				Unstructured: true,
+			},
 		},
 	})
 	Expect(err).ToNot(HaveOccurred())

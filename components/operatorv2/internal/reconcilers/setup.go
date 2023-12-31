@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -26,6 +27,7 @@ func Setup(mgr ctrl.Manager, platform core.Platform) error {
 			return err
 		}
 	}
+
 	for _, rtype := range mgr.GetScheme().AllKnownTypes() {
 
 		object, ok := reflect.New(rtype).Interface().(client.Object)
@@ -49,6 +51,22 @@ func Setup(mgr ctrl.Manager, platform core.Platform) error {
 					return []string{stackForDependent}
 				}); err != nil {
 				mgr.GetLogger().Error(err, "indexing .spec.stack field", "type", rtype)
+				return err
+			}
+
+			kinds, _, err := mgr.GetScheme().ObjectKinds(object)
+			if err != nil {
+				return err
+			}
+			us := &unstructured.Unstructured{}
+			us.SetGroupVersionKind(kinds[0])
+			if err := mgr.GetFieldIndexer().
+				IndexField(context.Background(), us, ".spec.stack", func(object client.Object) []string {
+					return []string{
+						object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"].(string),
+					}
+				}); err != nil {
+				mgr.GetLogger().Error(err, "indexing .spec.stack field", "type", &unstructured.Unstructured{})
 				return err
 			}
 		}
