@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	types "k8s.io/apimachinery/pkg/types"
@@ -39,7 +39,6 @@ type TopicController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=topics/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topics/finalizers,verbs=update
 
-// todo: add finalizer to remove topic from nats/kafka ?
 func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 
 	if len(topic.Spec.Queries) == 0 {
@@ -49,7 +48,7 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 		return ErrDeleted
 	}
 
-	brokerConfiguration, err := brokerconfigurations.Require(ctx, topic.Spec.Stack)
+	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -115,7 +114,7 @@ func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error
 		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.BrokerConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.TopicList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Topic](mgr)),
 		).
 		Owns(&batchv1.Job{}), nil
 }

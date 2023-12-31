@@ -9,15 +9,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func Watch(mgr core.Manager, service string, list client.ObjectList) func(ctx context.Context, object client.Object) []reconcile.Request {
+func Watch[T client.Object](mgr core.Manager, service string) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
 		database := object.(*v1beta1.Database)
 		if database.Spec.Service != service {
 			return []reconcile.Request{}
 		}
 
-		list = list.DeepCopyObject().(client.ObjectList)
-		list, err := stacks.GetDependentObjects(core.NewContext(mgr, ctx), database.Spec.Stack, list)
+		list, err := stacks.GetAllDependents[T](core.NewContext(mgr, ctx), database.Spec.Stack)
 		if err != nil {
 			return []reconcile.Request{}
 		}

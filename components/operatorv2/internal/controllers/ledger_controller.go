@@ -19,6 +19,7 @@ package controllers
 import (
 	_ "embed"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
@@ -271,6 +272,7 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1bet
 		if !topic.Status.Ready {
 			return nil, fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
+		spew.Dump(topic)
 
 		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, "ledger")...)
 		container.Env = append(container.Env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "ledger")))
@@ -326,18 +328,16 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		Watches(
 			&v1beta1.Topic{},
 			handler.EnqueueRequestsFromMapFunc(
-				topics.Watch(mgr, "ledger", &v1beta1.LedgerList{})),
+				topics.Watch[*v1beta1.Ledger](mgr, "ledger")),
 		).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch(mgr, "ledger", &v1beta1.LedgerList{})),
+				databases.Watch[*v1beta1.Ledger](mgr, "ledger")),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				Watch(mgr, &v1beta1.LedgerList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

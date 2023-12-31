@@ -1,17 +1,22 @@
 package stacks
 
 import (
+	"context"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
 	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func GetStack(ctx core.Context, spec interface {
-	GetStack() string
-}) (*v1beta1.Stack, error) {
+func GetStack(ctx core.Context, spec Dependent) (*v1beta1.Stack, error) {
 	stack := &v1beta1.Stack{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: spec.GetStack(),
@@ -22,38 +27,8 @@ func GetStack(ctx core.Context, spec interface {
 	return stack, nil
 }
 
-type stackDependent interface {
+type Dependent interface {
 	GetStack() string
-}
-
-func IsStackDependent(object client.Object) (bool, error) {
-	specField, ok := reflect.TypeOf(object).Elem().FieldByName("Spec")
-	if !ok {
-		return false, nil
-	}
-
-	if specField.Type.AssignableTo(reflect.TypeOf((*stackDependent)(nil)).Elem()) {
-		return true, nil
-	}
-
-	return false, nil
-}
-
-func StackForDependent(object client.Object) (string, error) {
-	specField, ok := reflect.TypeOf(object).Elem().FieldByName("Spec")
-	if !ok {
-		return "", errors.New("field Spec not found")
-	}
-
-	if specField.Type.AssignableTo(reflect.TypeOf((*stackDependent)(nil)).Elem()) {
-		return reflect.ValueOf(object).
-			Elem().
-			FieldByName("Spec").
-			Interface().(stackDependent).
-			GetStack(), nil
-	}
-
-	return "", errors.New("not a stack dependent object")
 }
 
 var (
@@ -61,52 +36,162 @@ var (
 	ErrMultipleInstancesFound = errors.New("multiple resources found")
 )
 
-func GetDependentObjects(ctx core.Context, stackName string, list client.ObjectList) ([]client.Object, error) {
-	err := ctx.GetClient().List(ctx, list, client.MatchingFields{
-		".spec.stack": stackName,
+func GetAllDependents[T client.Object](ctx core.Context, stackName string) ([]T, error) {
+	var t T
+	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+
+	kinds, _, err := ctx.GetScheme().ObjectKinds(t)
+	if err != nil {
+		return nil, err
+	}
+
+	list := &unstructured.UnstructuredList{}
+	list.SetGroupVersionKind(kinds[0])
+
+	err = ctx.GetClient().List(ctx, list, client.MatchingFields{
+		"stack": stackName,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return core.ExtractItemsFromList(list), nil
+	return collectionutils.Map(list.Items, func(from unstructured.Unstructured) T {
+		var t T
+		t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+		if err := runtime.DefaultUnstructuredConverter.FromUnstructured(from.Object, t); err != nil {
+			panic(err)
+		}
+		return t
+	}), nil
 }
 
-func GetSingleStackDependencyObject(ctx core.Context, stackName string, list client.ObjectList) (client.Object, error) {
+func GetSingleDependency[T client.Object](ctx core.Context, stackName string) (T, error) {
+	var zeroValue T
 
-	items, err := GetDependentObjects(ctx, stackName, list)
+	items, err := GetAllDependents[T](ctx, stackName)
 	if err != nil {
-		return nil, err
+		return zeroValue, err
 	}
 
 	switch len(items) {
 	case 0:
-		return nil, nil
+		return zeroValue, nil
 	case 1:
 		return items[0], nil
 	default:
-		return nil, ErrMultipleInstancesFound
+		return zeroValue, ErrMultipleInstancesFound
 	}
 }
 
-func HasSingleStackDependencyObject(ctx core.Context, stackName string, list client.ObjectList) (bool, error) {
-	ret, err := GetSingleStackDependencyObject(ctx, stackName, list)
+func HasDependency[T client.Object](ctx core.Context, stackName string) (bool, error) {
+	ret, err := GetSingleDependency[T](ctx, stackName)
 	if err != nil && !errors.Is(err, ErrMultipleInstancesFound) {
 		return false, err
 	}
-	if ret == nil {
+	if reflect.ValueOf(ret).IsZero() {
 		return false, nil
 	}
 	return true, nil
 }
 
-func RequireSingleStackDependencyObject(ctx core.Context, stackName string, list client.ObjectList) (client.Object, error) {
-	ret, err := GetSingleStackDependencyObject(ctx, stackName, list)
-	if err != nil && !errors.Is(err, ErrMultipleInstancesFound) {
-		return ret, err
+func GetIfEnabled[T client.Object](ctx core.Context, stackName string) (T, error) {
+	var t T
+	ret, err := GetSingleDependency[T](ctx, stackName)
+	if err != nil {
+		return t, err
 	}
-	if ret == nil {
-		return ret, ErrNotFound
+	if reflect.ValueOf(ret).IsZero() {
+		return t, nil
 	}
+
 	return ret, nil
+}
+
+func IsEnabledByLabel[T client.Object](ctx core.Context, stackName string) (bool, error) {
+	ret, err := GetByLabel[T](ctx, stackName)
+	if err != nil {
+		return false, err
+	}
+	if reflect.ValueOf(ret).IsZero() {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func WatchUsingLabels[T client.Object](mgr core.Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
+	return func(ctx context.Context, object client.Object) []reconcile.Request {
+		opt := client.MatchingFields{}
+		if object.GetLabels()["formance.com/stack"] != "any" {
+			opt["stack"] = object.GetLabels()["formance.com/stack"]
+		}
+
+		var t T
+		t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+		kinds, _, err := mgr.GetScheme().ObjectKinds(t)
+		if err != nil {
+			return []reconcile.Request{}
+		}
+
+		us := &unstructured.UnstructuredList{}
+		us.SetGroupVersionKind(kinds[0])
+		if err := mgr.GetClient().List(ctx, us, opt); err != nil {
+			return []reconcile.Request{}
+		}
+
+		return core.MapObjectToReconcileRequests(
+			collectionutils.Map(us.Items, collectionutils.ToPointer[unstructured.Unstructured])...,
+		)
+	}
+}
+
+func GetByLabel[T client.Object](ctx core.Context, stackName string) (T, error) {
+
+	var (
+		zeroValue T
+	)
+	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})
+	if err != nil {
+		return zeroValue, err
+	}
+
+	var t T
+	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+	kinds, _, err := ctx.GetScheme().ObjectKinds(t)
+	if err != nil {
+		return zeroValue, err
+	}
+
+	list := &unstructured.UnstructuredList{}
+	list.SetGroupVersionKind(kinds[0])
+
+	if err := ctx.GetClient().List(ctx, list, &client.ListOptions{
+		LabelSelector: labels.NewSelector().Add(*stackSelectorRequirement),
+	}); err != nil {
+		return zeroValue, err
+	}
+
+	switch len(list.Items) {
+	case 0:
+		return zeroValue, nil
+	case 1:
+		if err := runtime.DefaultUnstructuredConverter.
+			FromUnstructured(list.Items[0].UnstructuredContent(), t); err != nil {
+			return zeroValue, err
+		}
+		return t, nil
+	default:
+		return zeroValue, errors.New("found multiple broker config")
+	}
+}
+
+func Require[T client.Object](ctx core.Context, stackName string) (T, error) {
+	t, err := GetByLabel[T](ctx, stackName)
+	if err != nil {
+		return t, err
+	}
+	if reflect.ValueOf(t).IsZero() {
+		return t, errors.New("not found")
+	}
+	return t, nil
 }

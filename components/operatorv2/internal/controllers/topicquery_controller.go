@@ -129,12 +129,12 @@ func (r *TopicQueryController) SetupWithManager(mgr Manager) (*builder.Builder, 
 		For(&v1beta1.TopicQuery{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.Topic{},
-			// Watch update of Topic to be able to set Ready flag on TopicQuery
+			// WatchUsingLabels update of Topic to be able to set Ready flag on TopicQuery
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
 				list := v1beta1.TopicQueryList{}
 				if err := mgr.GetClient().List(ctx, &list, client.MatchingFields{
 					".spec.service": object.(*v1beta1.Topic).Spec.Service,
-					".spec.stack":   object.(*v1beta1.Topic).Spec.Stack,
+					"stack":         object.(*v1beta1.Topic).Spec.Stack,
 				}); err != nil {
 					log.FromContext(ctx).Error(err, "listing topic queries")
 					return []reconcile.Request{}

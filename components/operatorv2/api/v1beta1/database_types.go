@@ -62,6 +62,10 @@ type Database struct {
 	Status DatabaseStatus `json:"status,omitempty"`
 }
 
+func (a Database) GetStack() string {
+	return a.Spec.Stack
+}
+
 //+kubebuilder:object:root=true
 
 // DatabaseList contains a list of Database

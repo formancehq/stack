@@ -10,7 +10,7 @@ func Find(ctx core.Context, stack *v1beta1.Stack, name string) (*v1beta1.Topic, 
 	topicList := &v1beta1.TopicList{}
 	if err := ctx.GetClient().List(ctx, topicList, client.MatchingFields{
 		".spec.service": name,
-		".spec.stack":   stack.Name,
+		"stack":         stack.Name,
 	}); err != nil {
 		return nil, err
 	}

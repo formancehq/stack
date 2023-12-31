@@ -7,14 +7,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func WatchDependents(mgr core.Manager, list client.ObjectList) func(ctx context.Context, object client.Object) []reconcile.Request {
+func WatchDependents[T client.Object](mgr core.Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
 
-		stack, err := StackForDependent(object)
-		if err != nil {
-			return nil
-		}
-		objects, err := GetDependentObjects(core.NewContext(mgr, ctx), stack, list)
+		objects, err := GetAllDependents[T](core.NewContext(mgr, ctx), object.(Dependent).GetStack())
 		if err != nil {
 			return nil
 		}

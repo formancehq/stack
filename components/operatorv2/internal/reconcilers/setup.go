@@ -35,40 +35,34 @@ func Setup(mgr ctrl.Manager, platform core.Platform) error {
 			continue
 		}
 
-		isStackDependent, err := stacks.IsStackDependent(object)
-		if err != nil {
+		_, ok = object.(stacks.Dependent)
+		if !ok {
+			continue
+		}
+
+		mgr.GetLogger().Info("Detect stack dependency object, automatically index field", "type", rtype)
+		if err := mgr.GetFieldIndexer().
+			IndexField(context.Background(), object, "stack", func(object client.Object) []string {
+				return []string{object.(stacks.Dependent).GetStack()}
+			}); err != nil {
+			mgr.GetLogger().Error(err, "indexing stack field", "type", rtype)
 			return err
 		}
 
-		if isStackDependent {
-			mgr.GetLogger().Info("Detect stack dependency object, automatically index field", "type", rtype)
-			if err := mgr.GetFieldIndexer().
-				IndexField(context.Background(), reflect.New(rtype).Interface().(client.Object), ".spec.stack", func(object client.Object) []string {
-					stackForDependent, err := stacks.StackForDependent(object)
-					if err != nil {
-						return nil
-					}
-					return []string{stackForDependent}
-				}); err != nil {
-				mgr.GetLogger().Error(err, "indexing .spec.stack field", "type", rtype)
-				return err
-			}
-
-			kinds, _, err := mgr.GetScheme().ObjectKinds(object)
-			if err != nil {
-				return err
-			}
-			us := &unstructured.Unstructured{}
-			us.SetGroupVersionKind(kinds[0])
-			if err := mgr.GetFieldIndexer().
-				IndexField(context.Background(), us, ".spec.stack", func(object client.Object) []string {
-					return []string{
-						object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"].(string),
-					}
-				}); err != nil {
-				mgr.GetLogger().Error(err, "indexing .spec.stack field", "type", &unstructured.Unstructured{})
-				return err
-			}
+		kinds, _, err := mgr.GetScheme().ObjectKinds(object)
+		if err != nil {
+			return err
+		}
+		us := &unstructured.Unstructured{}
+		us.SetGroupVersionKind(kinds[0])
+		if err := mgr.GetFieldIndexer().
+			IndexField(context.Background(), us, "stack", func(object client.Object) []string {
+				return []string{
+					object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"].(string),
+				}
+			}); err != nil {
+			mgr.GetLogger().Error(err, "indexing stack field", "type", &unstructured.Unstructured{})
+			return err
 		}
 	}
 	return nil

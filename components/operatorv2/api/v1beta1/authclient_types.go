@@ -74,6 +74,10 @@ type AuthClient struct {
 	Status AuthClientStatus `json:"status,omitempty"`
 }
 
+func (a AuthClient) GetStack() string {
+	return a.Spec.Stack
+}
+
 //+kubebuilder:object:root=true
 
 // AuthClientList contains a list of AuthClient

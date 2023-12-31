@@ -4,47 +4,8 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
-
-	"github.com/pkg/errors"
 	"k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/selection"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
-
-func GetOpenTelemetryConfiguration(ctx core.Context, stackName string) (*v1beta1.OpenTelemetryConfiguration, error) {
-	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})
-	if err != nil {
-		return nil, err
-	}
-
-	openTelemetryTracesList := &v1beta1.OpenTelemetryConfigurationList{}
-	if err := ctx.GetClient().List(ctx, openTelemetryTracesList, &client.ListOptions{
-		LabelSelector: labels.NewSelector().Add(*stackSelectorRequirement),
-	}); err != nil {
-		return nil, err
-	}
-
-	switch len(openTelemetryTracesList.Items) {
-	case 0:
-		return nil, nil
-	case 1:
-		return &openTelemetryTracesList.Items[0], nil
-	default:
-		return nil, errors.New("found multiple opentelemetry config")
-	}
-}
-
-func IsOpenTelemetryEnabled(ctx core.Context, stackName string) (bool, error) {
-	configuration, err := GetOpenTelemetryConfiguration(ctx, stackName)
-	if err == nil {
-		return false, err
-	}
-	if configuration == nil {
-		return false, nil
-	}
-	return true, nil
-}
 
 type MonitoringType string
 

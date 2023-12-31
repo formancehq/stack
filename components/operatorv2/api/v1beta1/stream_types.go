@@ -43,6 +43,10 @@ type Stream struct {
 	Status StreamStatus `json:"status,omitempty"`
 }
 
+func (a Stream) GetStack() string {
+	return a.Spec.Stack
+}
+
 //+kubebuilder:object:root=true
 
 // StreamList contains a list of Stream

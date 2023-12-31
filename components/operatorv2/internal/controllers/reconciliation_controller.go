@@ -109,17 +109,15 @@ func (r *ReconciliationController) SetupWithManager(mgr Manager) (*builder.Build
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.Ledger{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents(mgr, &v1beta1.ReconciliationList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Reconciliation](mgr)),
 		).
 		Watches(
 			&v1beta1.Payments{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents(mgr, &v1beta1.ReconciliationList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Reconciliation](mgr)),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				Watch(mgr, &v1beta1.ReconciliationList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
 		).
 		Owns(&v1beta1.Database{}).
 		Owns(&appsv1.Deployment{}).

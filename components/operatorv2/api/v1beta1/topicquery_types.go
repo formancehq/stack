@@ -47,6 +47,10 @@ type TopicQuery struct {
 	Status TopicQueryStatus `json:"status,omitempty"`
 }
 
+func (a TopicQuery) GetStack() string {
+	return a.Spec.Stack
+}
+
 //+kubebuilder:object:root=true
 
 // TopicQueryList contains a list of TopicQuery

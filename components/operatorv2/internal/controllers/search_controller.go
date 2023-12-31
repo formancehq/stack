@@ -21,7 +21,6 @@ import (
 	v1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	deployments "github.com/formancehq/operator/v2/internal/resources/deployments"
-	"github.com/formancehq/operator/v2/internal/resources/elasticsearchconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
@@ -47,7 +46,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		return err
 	}
 
-	elasticSearchConfiguration, err := elasticsearchconfigurations.Require(ctx, stack.Name)
+	elasticSearchConfiguration, err := stacks.Require[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -123,11 +122,11 @@ func (r *SearchController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		For(&v1beta1.Search{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.SearchList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Watches(
 			&v1beta1.ElasticSearchConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.SearchList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Owns(&v1beta1.StreamProcessor{}).
 		Owns(&v1beta1.HTTPAPI{}).

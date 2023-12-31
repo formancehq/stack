@@ -48,6 +48,10 @@ func (c *Wallets) SetStatus(status bool, error string) {
 	c.Status.SetStatus(status, error)
 }
 
+func (a Wallets) GetStack() string {
+	return a.Spec.Stack
+}
+
 //+kubebuilder:object:root=true
 
 // WalletsList contains a list of Wallets

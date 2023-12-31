@@ -95,9 +95,7 @@ func (r *WalletsController) SetupWithManager(mgr core.Manager) (*builder.Builder
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				core.Watch(mgr, &v1beta1.WalletsList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
 		).
 		Owns(&v1beta1.AuthClient{}).
 		Owns(&appsv1.Deployment{}).

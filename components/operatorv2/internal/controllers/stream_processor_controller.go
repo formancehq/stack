@@ -20,10 +20,7 @@ import (
 	"embed"
 	"fmt"
 	. "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
-	"github.com/formancehq/operator/v2/internal/resources/elasticsearchconfigurations"
-	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	benthosOperator "github.com/formancehq/operator/v2/internal/resources/searches/benthos"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/search/benthos"
@@ -52,12 +49,12 @@ type StreamProcessorController struct{}
 
 func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1beta1.StreamProcessor) error {
 
-	brokerConfiguration, err := brokerconfigurations.Require(ctx, streamProcessor.Spec.Stack)
+	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchConfiguration, err := elasticsearchconfigurations.Require(ctx, streamProcessor.Spec.Stack)
+	elasticSearchConfiguration, err := stacks.Require[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
@@ -117,7 +114,7 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		"-r", "/resources/*.yaml",
 		"-t", "/templates/*.yaml",
 	}
-	isOpenTelemetryEnabled, err := opentelemetryconfigurations.IsOpenTelemetryEnabled(ctx, streamProcessor.Spec.Stack)
+	isOpenTelemetryEnabled, err := stacks.IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -198,7 +195,7 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 
 	streamList := &v1beta1.StreamList{}
 	if err := ctx.GetClient().List(ctx, streamList, client.MatchingFields{
-		".spec.stack": streamProcessor.Spec.Stack,
+		"stack": streamProcessor.Spec.Stack,
 	}); err != nil {
 		return err
 	}
@@ -256,20 +253,20 @@ func (r *StreamProcessorController) SetupWithManager(mgr Manager) (*builder.Buil
 		For(&v1beta1.StreamProcessor{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.BrokerConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.StreamProcessorList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.ElasticSearchConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.StreamProcessorList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(Watch(mgr, &v1beta1.StreamProcessorList{})),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.Stream{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.StreamProcessorList{})),
+				stacks.WatchDependents[*v1beta1.StreamProcessor](mgr)),
 		).
 		Owns(&corev1.ConfigMap{}).
 		Owns(&appsv1.Deployment{}), nil

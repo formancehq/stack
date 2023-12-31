@@ -19,7 +19,7 @@ func ForEachEventPublisher(ctx Context, stackName string, fn func(object client.
 			us.SetGroupVersionKind(gvk)
 
 			if err := ctx.GetClient().List(ctx, us, client.MatchingFields{
-				".spec.stack": stackName,
+				"stack": stackName,
 			}); err != nil {
 				return err
 			}

@@ -1,6 +1,18 @@
-* add conditions
-* add registries
-* react to broker configuration and trigger topic reco if in error
-* add finalizers
-* lock usage of version < 2.0-alpha
-* add version to stack namespace
+# TODO
+
+## Add finalizers
+
+* Topic
+* Database
+
+## Conditions
+
+## Registries
+
+Add capability to configure custom registries
+
+## Audit
+
+## Migration system
+
+## Stargate

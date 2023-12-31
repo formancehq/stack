@@ -214,6 +214,5 @@ var _ = Describe("LedgerController", func() {
 				Expect(gateway).To(BeOwnedBy(ledger))
 			})
 		})
-
 	})
 })

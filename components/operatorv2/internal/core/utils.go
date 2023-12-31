@@ -98,17 +98,3 @@ func DeleteIfExists[T client.Object](ctx Context, name types.NamespacedName) err
 	}
 	return ctx.GetClient().Delete(ctx, t)
 }
-
-func ExtractItemsFromList(list client.ObjectList) []client.Object {
-
-	items := reflect.ValueOf(list).
-		Elem().
-		FieldByName("Items")
-
-	ret := make([]client.Object, 0)
-	for i := 0; i < items.Len(); i++ {
-		ret = append(ret, items.Index(i).Addr().Interface().(client.Object))
-	}
-
-	return ret
-}

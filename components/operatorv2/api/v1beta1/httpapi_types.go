@@ -60,6 +60,10 @@ type HTTPAPI struct {
 	Status HTTPAPIStatus `json:"status,omitempty"`
 }
 
+func (a HTTPAPI) GetStack() string {
+	return a.Spec.Stack
+}
+
 //+kubebuilder:object:root=true
 
 // HTTPAPIList contains a list of HTTPAPI

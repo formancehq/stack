@@ -49,6 +49,10 @@ type Topic struct {
 	Status TopicStatus `json:"status,omitempty"`
 }
 
+func (a Topic) GetStack() string {
+	return a.Spec.Stack
+}
+
 //+kubebuilder:object:root=true
 
 // TopicList contains a list of Topic

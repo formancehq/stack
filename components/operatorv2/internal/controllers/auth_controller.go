@@ -58,7 +58,7 @@ func (r *AuthController) Reconcile(ctx core.Context, auth *v1beta1.Auth) error {
 
 	authClientsList := &v1beta1.AuthClientList{}
 	if err := ctx.GetClient().List(ctx, authClientsList, client.MatchingFields{
-		".spec.stack": stack.Name,
+		"stack": stack.Name,
 	}); err != nil {
 		return err
 	}
@@ -204,19 +204,17 @@ func (r *AuthController) SetupWithManager(mgr core.Manager) (*builder.Builder, e
 		Owns(&corev1.ConfigMap{}).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				core.Watch(mgr, &v1beta1.AuthList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Auth](mgr)),
 		).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch(mgr, "auth", &v1beta1.AuthList{})),
+				databases.Watch[*v1beta1.Auth](mgr, "auth")),
 		).
 		Watches(
 			&v1beta1.AuthClient{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.AuthList{})),
+				stacks.WatchDependents[*v1beta1.Auth](mgr)),
 		), nil
 }
 

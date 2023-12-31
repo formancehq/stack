@@ -245,18 +245,16 @@ func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch(mgr, "payments", &v1beta1.PaymentsList{})),
+				databases.Watch[*v1beta1.Payments](mgr, "payments")),
 		).
 		Watches(
 			&v1beta1.Topic{},
 			handler.EnqueueRequestsFromMapFunc(
-				topics.Watch(mgr, "payments", &v1beta1.PaymentsList{})),
+				topics.Watch[*v1beta1.Payments](mgr, "payments")),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				Watch(mgr, &v1beta1.PaymentsList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Payments](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

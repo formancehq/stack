@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"fmt"
 	. "github.com/formancehq/operator/v2/internal/core"
-	"github.com/formancehq/operator/v2/internal/resources/auths"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/gateways"
@@ -61,12 +60,12 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 
 	httpAPIList := &v1beta1.HTTPAPIList{}
 	if err := ctx.GetClient().List(ctx, httpAPIList, client.MatchingFields{
-		".spec.stack": stack.Name,
+		"stack": stack.Name,
 	}); err != nil {
 		return err
 	}
 
-	authEnabled, err := auths.IsEnabled(ctx, stack.Name)
+	authEnabled, err := stacks.HasDependency[*v1beta1.Auth](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -128,7 +127,7 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	}
 	if gateway.Spec.EnableAudit {
 		// TODO: need to create a topic for the audit feature
-		brokerConfiguration, err := brokerconfigurations.Get(ctx, stack.Name)
+		brokerConfiguration, err := stacks.GetByLabel[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 		if err != nil {
 			return err
 		}
@@ -245,7 +244,7 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 	}
 
 	if gateway.Spec.EnableAudit {
-		brokerConfiguration, err := brokerconfigurations.Get(ctx, stack.Name)
+		brokerConfiguration, err := stacks.GetByLabel[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 		if err != nil {
 			return "", err
 		}
@@ -283,20 +282,18 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Owns(&networkingv1.Ingress{}).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				Watch(mgr, &v1beta1.GatewayList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Gateway](mgr)),
 		).
 		Watches(
 			&v1beta1.HTTPAPI{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.GatewayList{})),
+				stacks.WatchDependents[*v1beta1.Gateway](mgr)),
 		).
-		// Watch Auth object to enable authentication
+		// WatchUsingLabels Auth object to enable authentication
 		Watches(
 			&v1beta1.Auth{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.GatewayList{})),
+				stacks.WatchDependents[*v1beta1.Gateway](mgr)),
 		), nil
 }
 

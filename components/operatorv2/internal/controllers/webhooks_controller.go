@@ -79,7 +79,7 @@ func (r *WebhooksController) handleTopics(ctx Context, stack *v1beta1.Stack, web
 func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks,
 	database *v1beta1.Database) error {
 
-	brokerConfiguration, err := brokerconfigurations.Require(ctx, stack.Name)
+	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -117,23 +117,21 @@ func (r *WebhooksController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		Watches(
 			&v1beta1.Ledger{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.WebhooksList{})),
+				stacks.WatchDependents[*v1beta1.Webhooks](mgr)),
 		).
 		Watches(
 			&v1beta1.Payments{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.WebhooksList{})),
+				stacks.WatchDependents[*v1beta1.Webhooks](mgr)),
 		).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch(mgr, "webhooks", &v1beta1.WebhooksList{})),
+				databases.Watch[*v1beta1.Webhooks](mgr, "webhooks")),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				Watch(mgr, &v1beta1.WebhooksList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Webhooks](mgr)),
 		).
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

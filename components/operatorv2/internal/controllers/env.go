@@ -6,6 +6,7 @@ import (
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/gateways"
 	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
+	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -28,7 +29,7 @@ func GetCommonServicesEnvVars(ctx Context, stack *v1beta1.Stack, serviceName str
 	IsDev() bool
 }) ([]v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
-	configuration, err := opentelemetryconfigurations.GetOpenTelemetryConfiguration(ctx, stack.Name)
+	configuration, err := stacks.GetByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +51,7 @@ func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additional
 	tpl := template.Must(template.New("main").Parse(_tpl))
 	buf := bytes.NewBufferString("")
 
-	openTelemetryEnabled, err := opentelemetryconfigurations.IsOpenTelemetryEnabled(ctx, stack.Name)
+	openTelemetryEnabled, err := stacks.IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, stack.Name)
 	if err != nil {
 		return "", err
 	}

@@ -13,7 +13,7 @@ import (
 var Caddyfile string
 
 func GetURLSAsEnvVarsIfEnabled(ctx core.Context, stackName string) ([]v1.EnvVar, error) {
-	gateway, err := GetIfEnabled(ctx, stackName)
+	gateway, err := stacks.GetIfEnabled[*v1beta1.Gateway](ctx, stackName)
 	if err != nil {
 		return nil, err
 	}
@@ -32,16 +32,4 @@ func GetURLSAsEnvVarsIfEnabled(ctx core.Context, stackName string) ([]v1.EnvVar,
 	}
 
 	return ret, nil
-}
-
-func GetIfEnabled(ctx core.Context, stackName string) (*v1beta1.Gateway, error) {
-	ret, err := stacks.GetSingleStackDependencyObject(ctx, stackName, &v1beta1.GatewayList{})
-	if err != nil {
-		return nil, err
-	}
-	if ret == nil {
-		return nil, nil
-	}
-
-	return ret.(*v1beta1.Gateway), nil
 }

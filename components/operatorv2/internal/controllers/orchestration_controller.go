@@ -20,7 +20,6 @@ import (
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
-	"github.com/formancehq/operator/v2/internal/resources/auths"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
@@ -82,7 +81,7 @@ func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.
 
 func (r *OrchestrationController) handleAuthClient(ctx Context, stack *formancev1beta1.Stack, orchestration *formancev1beta1.Orchestration) (*formancev1beta1.AuthClient, error) {
 
-	auth, err := auths.GetIfEnabled(ctx, stack.Name)
+	auth, err := stacks.GetIfEnabled[*v1beta1.Auth](ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -164,28 +163,26 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
-				databases.Watch(mgr, "orchestration", &v1beta1.OrchestrationList{})),
+				databases.Watch[*v1beta1.Orchestration](mgr, "orchestration")),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(
-				Watch(mgr, &v1beta1.OrchestrationList{}),
-			),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.Ledger{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.OrchestrationList{})),
+				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.Payments{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.OrchestrationList{})),
+				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.Wallets{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents(mgr, &v1beta1.OrchestrationList{})),
+				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Owns(&v1beta1.TopicQuery{}).
 		Owns(&v1beta1.AuthClient{}).
