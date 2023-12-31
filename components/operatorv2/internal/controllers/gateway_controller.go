@@ -42,7 +42,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // GatewayController reconciles a Gateway object
@@ -59,10 +58,8 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 		return err
 	}
 
-	httpAPIList := &v1beta1.HTTPAPIList{}
-	if err := ctx.GetClient().List(ctx, httpAPIList, client.MatchingFields{
-		"stack": stack.Name,
-	}); err != nil {
+	httpAPIs, err := stacks.GetAllDependents[*v1beta1.HTTPAPI](ctx, gateway.Spec.Stack)
+	if err != nil {
 		return err
 	}
 
@@ -71,7 +68,7 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 		return err
 	}
 
-	configMap, err := r.createConfigMap(ctx, stack, gateway, httpAPIList, authEnabled)
+	configMap, err := r.createConfigMap(ctx, stack, gateway, httpAPIs, authEnabled)
 	if err != nil {
 		return err
 	}
@@ -88,7 +85,7 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 		return err
 	}
 
-	gateway.Status.SyncHTTPAPIs = Map(httpAPIList.Items, func(from v1beta1.HTTPAPI) string {
+	gateway.Status.SyncHTTPAPIs = Map(httpAPIs, func(from *v1beta1.HTTPAPI) string {
 		return from.Spec.Name
 	})
 	gateway.Status.AuthEnabled = authEnabled
@@ -97,9 +94,9 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 }
 
 func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs *v1beta1.HTTPAPIList, authEnabled bool) (*corev1.ConfigMap, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool) (*corev1.ConfigMap, error) {
 
-	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs.Items, authEnabled)
+	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs, authEnabled)
 	if err != nil {
 		return nil, err
 	}
@@ -122,10 +119,11 @@ func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap) error {
 
-	env, err := gateways.GetURLSAsEnvVarsIfEnabled(ctx, stack.Name)
+	env, err := GetCommonServicesEnvVars(ctx, stack, "gateway", gateway.Spec)
 	if err != nil {
 		return err
 	}
+
 	if gateway.Spec.EnableAudit {
 		// TODO: need to create a topic for the audit feature
 		brokerConfiguration, err := stacks.GetByLabel[*v1beta1.BrokerConfiguration](ctx, stack.Name)
@@ -222,7 +220,7 @@ func (r *GatewayController) handleIngress(ctx Context, stack *v1beta1.Stack,
 }
 
 func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []v1beta1.HTTPAPI, authEnabled bool) (string, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
 		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
@@ -230,7 +228,7 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 
 	buf := bytes.NewBufferString("")
 	data := map[string]any{
-		"Services": Map(httpAPIs, func(from v1beta1.HTTPAPI) v1beta1.HTTPAPISpec {
+		"Services": Map(httpAPIs, func(from *v1beta1.HTTPAPI) v1beta1.HTTPAPISpec {
 			return from.Spec
 		}),
 		"Platform": ctx.GetPlatform(),

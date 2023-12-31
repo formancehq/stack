@@ -52,11 +52,16 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		return err
 	}
 
-	env := []corev1.EnvVar{
+	env, err := GetCommonServicesEnvVars(ctx, stack, "search", search.Spec)
+	if err != nil {
+		return err
+	}
+
+	env = append(env,
 		Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d", elasticSearchConfiguration.Spec.Host, elasticSearchConfiguration.Spec.Port)),
 		Env("OPEN_SEARCH_SCHEME", elasticSearchConfiguration.Spec.Scheme),
 		Env("ES_INDICES", "stacks"),
-	}
+	)
 	if elasticSearchConfiguration.Spec.BasicAuth != nil {
 		if elasticSearchConfiguration.Spec.BasicAuth.SecretName == "" {
 			env = append(env,

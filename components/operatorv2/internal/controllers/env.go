@@ -29,15 +29,13 @@ func GetCommonServicesEnvVars(ctx Context, stack *v1beta1.Stack, serviceName str
 	IsDev() bool
 }) ([]v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
-	configuration, err := stacks.GetByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, stack.Name)
+	env, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, serviceName)
 	if err != nil {
 		return nil, err
 	}
-	if configuration != nil {
-		ret = append(ret, opentelemetryconfigurations.MonitoringEnvVars(configuration, serviceName)...)
-	}
+	ret = append(ret, env...)
 
-	env, err := gateways.GetURLSAsEnvVarsIfEnabled(ctx, stack.Name)
+	env, err = gateways.EnvVarsIfEnabled(ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}

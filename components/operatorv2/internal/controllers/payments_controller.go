@@ -65,7 +65,7 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 		return err
 	}
 
-	if err := r.createWriteDeployment(ctx, stack, payments, database); err != nil {
+	if err := r.createConnectorsDeployment(ctx, stack, payments, database); err != nil {
 		return err
 	}
 
@@ -88,18 +88,23 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 	return nil
 }
 
-func (r *PaymentsController) commonEnvVars(payments *v1beta1.Payments, database *v1beta1.Database) []corev1.EnvVar {
-	env := databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
+func (r *PaymentsController) commonEnvVars(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]corev1.EnvVar, error) {
+	env, err := GetCommonServicesEnvVars(ctx, stack, "payments", payments.Spec)
+	if err != nil {
+		return nil, err
+	}
+	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 	env = append(env,
 		Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
 		Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
 	)
-	return env
+
+	return env, nil
 }
 
 func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
 
-	env := r.commonEnvVars(payments, database)
+	env, _ := r.commonEnvVars(ctx, stack, payments, database)
 
 	image, err := GetImage(ctx, stack, "payments", payments.Spec.Version)
 	if err != nil {
@@ -144,9 +149,9 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 	return nil
 }
 
-func (r *PaymentsController) createWriteDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func (r *PaymentsController) createConnectorsDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
 
-	env := r.commonEnvVars(payments, database)
+	env, _ := r.commonEnvVars(ctx, stack, payments, database)
 
 	topic, err := topics.Find(ctx, stack, "payments")
 	if err != nil {

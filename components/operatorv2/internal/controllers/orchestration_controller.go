@@ -111,7 +111,11 @@ func (r *OrchestrationController) handleTopics(ctx Context, stack *formancev1bet
 
 func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *formancev1beta1.AuthClient) error {
-	env := databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
+	env, err := GetCommonServicesEnvVars(ctx, stack, "orchestration", orchestration.Spec)
+	if err != nil {
+		return err
+	}
+	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 	env = append(env,
 		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		Env("TEMPORAL_TASK_QUEUE", stack.Name),

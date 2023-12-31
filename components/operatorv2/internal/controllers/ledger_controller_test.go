@@ -81,7 +81,12 @@ var _ = Describe("LedgerController", func() {
 			)
 			BeforeEach(func() {
 				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
-					ObjectMeta: RandObjectMeta(),
+					ObjectMeta: metav1.ObjectMeta{
+						Name: uuid.NewString(),
+						Labels: map[string]string{
+							"formance.com/stack": stack.Name,
+						},
+					},
 					Spec: v1beta1.OpenTelemetryConfigurationSpec{
 						Traces: &v1beta1.TracesSpec{
 							Otlp: &v1beta1.OtlpSpec{
@@ -101,7 +106,7 @@ var _ = Describe("LedgerController", func() {
 					return deployment.Spec.Template.Spec.Containers[0].Env
 				}).Should(ContainElements(
 					collectionutils.Map(
-						opentelemetryconfigurations.MonitoringEnvVars(openTelemetryConfiguration, "ledger"),
+						opentelemetryconfigurations.GetEnvVars(openTelemetryConfiguration, "ledger"),
 						collectionutils.ToAny[corev1.EnvVar],
 					)...,
 				))

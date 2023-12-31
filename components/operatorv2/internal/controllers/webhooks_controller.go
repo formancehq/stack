@@ -70,7 +70,6 @@ func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) 
 	return nil
 }
 
-// TODO: Search a way to automatically list all services able to push events as this code is duplicated for orchestration
 func (r *WebhooksController) handleTopics(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks) error {
 	return ForEachEventPublisher(ctx, stack.Name, func(object client.Object) error {
 		return topicqueries.Create(ctx, stack, strings.ToLower(object.GetObjectKind().GroupVersionKind().Kind), webhooks)
@@ -90,7 +89,12 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	env := databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)
+	env, err := GetCommonServicesEnvVars(ctx, stack, "webhooks", webhooks.Spec)
+	if err != nil {
+		return err
+	}
+
+	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 	env = append(env, brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "webhooks")...)
 	env = append(env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	env = append(env, Env("KAFKA_TOPICS", strings.Join([]string{

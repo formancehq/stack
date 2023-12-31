@@ -12,7 +12,7 @@ import (
 //go:embed Caddyfile.gotpl
 var Caddyfile string
 
-func GetURLSAsEnvVarsIfEnabled(ctx core.Context, stackName string) ([]v1.EnvVar, error) {
+func EnvVarsIfEnabled(ctx core.Context, stackName string) ([]v1.EnvVar, error) {
 	gateway, err := stacks.GetIfEnabled[*v1beta1.Gateway](ctx, stackName)
 	if err != nil {
 		return nil, err

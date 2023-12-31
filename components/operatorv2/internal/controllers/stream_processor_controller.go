@@ -21,6 +21,7 @@ import (
 	"fmt"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	benthosOperator "github.com/formancehq/operator/v2/internal/resources/searches/benthos"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/search/benthos"
@@ -69,6 +70,13 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 			Env("OPENSEARCH_BATCHING_COUNT", fmt.Sprint(streamProcessor.Spec.Batching.Count)),
 			Env("OPENSEARCH_BATCHING_PERIOD", streamProcessor.Spec.Batching.Period),
 		)
+	}
+	configuration, err := stacks.GetByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
+	if err != nil {
+		return err
+	}
+	if configuration != nil {
+		env = append(env, opentelemetryconfigurations.GetEnvVars(configuration, "gateway")...)
 	}
 	if brokerConfiguration.Spec.Kafka != nil {
 		env = append(env, Env("KAFKA_ADDRESS", strings.Join(brokerConfiguration.Spec.Kafka.Brokers, ",")))

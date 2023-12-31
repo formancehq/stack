@@ -32,7 +32,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
@@ -57,14 +56,12 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 		return err
 	}
 
-	authClientsList := &v1beta1.AuthClientList{}
-	if err := ctx.GetClient().List(ctx, authClientsList, client.MatchingFields{
-		"stack": stack.Name,
-	}); err != nil {
+	authClientsList, err := stacks.GetAllDependents[*v1beta1.AuthClient](ctx, auth.Spec.Stack)
+	if err != nil {
 		return err
 	}
 
-	configMap, err := r.createConfiguration(ctx, stack, authClientsList.Items)
+	configMap, err := r.createConfiguration(ctx, stack, authClientsList)
 	if err != nil {
 		return err
 	}
@@ -78,13 +75,11 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 		return err
 	}
 
-	auth.Status.Clients = Map(authClientsList.Items, func(from v1beta1.AuthClient) string {
-		return from.Name
-	})
+	auth.Status.Clients = Map(authClientsList, (*v1beta1.AuthClient).GetName)
 	return nil
 }
 
-func (r *AuthController) createConfiguration(ctx Context, stack *v1beta1.Stack, items []v1beta1.AuthClient) (*corev1.ConfigMap, error) {
+func (r *AuthController) createConfiguration(ctx Context, stack *v1beta1.Stack, items []*v1beta1.AuthClient) (*corev1.ConfigMap, error) {
 
 	sort.Slice(items, func(i, j int) bool {
 		return items[i].Name < items[j].Name
@@ -93,7 +88,7 @@ func (r *AuthController) createConfiguration(ctx Context, stack *v1beta1.Stack, 
 	yamlData, err := yaml.Marshal(struct {
 		Clients any `yaml:"clients"`
 	}{
-		Clients: Map(items, func(from v1beta1.AuthClient) any {
+		Clients: Map(items, func(from *v1beta1.AuthClient) any {
 			return from.Spec
 		}),
 	})

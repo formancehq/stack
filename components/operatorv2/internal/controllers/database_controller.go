@@ -17,26 +17,22 @@ limitations under the License.
 package controllers
 
 import (
-	"context"
 	"fmt"
+	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"reflect"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	"github.com/formancehq/operator/v2/api/v1beta1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
+	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 // DatabaseController reconciles a Database object
@@ -137,17 +133,7 @@ func (r *DatabaseController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		For(&v1beta1.Database{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.DatabaseConfiguration{},
-			// TODO: Use watcher with labels
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-				list := &v1beta1.DatabaseList{}
-				if err := mgr.GetClient().List(ctx, list); err != nil {
-					return []reconcile.Request{}
-				}
-
-				return MapObjectToReconcileRequests(
-					Map(list.Items, ToPointer[v1beta1.Database])...,
-				)
-			}),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Database](mgr)),
 		).
 		Watches(
 			&v1beta1.Registries{},
