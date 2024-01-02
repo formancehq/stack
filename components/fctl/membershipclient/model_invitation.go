@@ -26,6 +26,9 @@ type Invitation struct {
 	Status string `json:"status"`
 	CreationDate time.Time `json:"creationDate"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	// User roles
+	// Deprecated
+	Roles []string `json:"roles,omitempty"`
 	StackClaims []StackClaimsInner `json:"stackClaims,omitempty"`
 }
 
@@ -203,6 +206,41 @@ func (o *Invitation) SetUpdatedAt(v time.Time) {
 	o.UpdatedAt = &v
 }
 
+// GetRoles returns the Roles field value if set, zero value otherwise.
+// Deprecated
+func (o *Invitation) GetRoles() []string {
+	if o == nil || IsNil(o.Roles) {
+		var ret []string
+		return ret
+	}
+	return o.Roles
+}
+
+// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// Deprecated
+func (o *Invitation) GetRolesOk() ([]string, bool) {
+	if o == nil || IsNil(o.Roles) {
+		return nil, false
+	}
+	return o.Roles, true
+}
+
+// HasRoles returns a boolean if a field has been set.
+func (o *Invitation) HasRoles() bool {
+	if o != nil && !IsNil(o.Roles) {
+		return true
+	}
+
+	return false
+}
+
+// SetRoles gets a reference to the given []string and assigns it to the Roles field.
+// Deprecated
+func (o *Invitation) SetRoles(v []string) {
+	o.Roles = v
+}
+
 // GetStackClaims returns the StackClaims field value if set, zero value otherwise.
 func (o *Invitation) GetStackClaims() []StackClaimsInner {
 	if o == nil || IsNil(o.StackClaims) {
@@ -252,6 +290,9 @@ func (o Invitation) ToMap() (map[string]interface{}, error) {
 	toSerialize["creationDate"] = o.CreationDate
 	if !IsNil(o.UpdatedAt) {
 		toSerialize["updatedAt"] = o.UpdatedAt
+	}
+	if !IsNil(o.Roles) {
+		toSerialize["roles"] = o.Roles
 	}
 	if !IsNil(o.StackClaims) {
 		toSerialize["stackClaims"] = o.StackClaims

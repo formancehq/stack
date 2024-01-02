@@ -150,7 +150,7 @@ type ApiCreateInvitationRequest struct {
 	ApiService *DefaultApiService
 	organizationId string
 	email *string
-	stackClaimsInner *[]StackClaimsInner
+	invitationClaim *InvitationClaim
 }
 
 func (r ApiCreateInvitationRequest) Email(email string) ApiCreateInvitationRequest {
@@ -158,8 +158,8 @@ func (r ApiCreateInvitationRequest) Email(email string) ApiCreateInvitationReque
 	return r
 }
 
-func (r ApiCreateInvitationRequest) StackClaimsInner(stackClaimsInner []StackClaimsInner) ApiCreateInvitationRequest {
-	r.stackClaimsInner = &stackClaimsInner
+func (r ApiCreateInvitationRequest) InvitationClaim(invitationClaim InvitationClaim) ApiCreateInvitationRequest {
+	r.invitationClaim = &invitationClaim
 	return r
 }
 
@@ -226,7 +226,7 @@ func (a *DefaultApiService) CreateInvitationExecute(r ApiCreateInvitationRequest
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.stackClaimsInner
+	localVarPostBody = r.invitationClaim
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

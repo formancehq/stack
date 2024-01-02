@@ -110,7 +110,7 @@ Name | Type | Description  | Notes
 
 ## CreateInvitation
 
-> CreateInvitationResponse CreateInvitation(ctx, organizationId).Email(email).StackClaimsInner(stackClaimsInner).Execute()
+> CreateInvitationResponse CreateInvitation(ctx, organizationId).Email(email).InvitationClaim(invitationClaim).Execute()
 
 Create invitation
 
@@ -129,11 +129,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     email := "email_example" // string | 
-    stackClaimsInner := []openapiclient.StackClaimsInner{*openapiclient.NewStackClaimsInner("StackId_example", []string{"Roles_example"})} // []StackClaimsInner |  (optional)
+    invitationClaim := *openapiclient.NewInvitationClaim([]string{"Roles_example"}, []openapiclient.StackClaimsInner{*openapiclient.NewStackClaimsInner("Id_example", []string{"Roles_example"})}) // InvitationClaim |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.CreateInvitation(context.Background(), organizationId).Email(email).StackClaimsInner(stackClaimsInner).Execute()
+    resp, r, err := apiClient.DefaultApi.CreateInvitation(context.Background(), organizationId).Email(email).InvitationClaim(invitationClaim).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.CreateInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -160,7 +160,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **email** | **string** |  | 
- **stackClaimsInner** | [**[]StackClaimsInner**](StackClaimsInner.md) |  | 
+ **invitationClaim** | [**InvitationClaim**](InvitationClaim.md) |  | 
 
 ### Return type
 

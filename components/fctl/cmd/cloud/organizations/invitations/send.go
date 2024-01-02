@@ -12,6 +12,7 @@ import (
 type InvitationSend struct {
 	Email       string                              `json:"email"`
 	StackClaims []membershipclient.StackClaimsInner `json:"stackClaims"`
+	OrgClaim    string                              `json:"orgClaim"`
 }
 
 type SendStore struct {
@@ -40,6 +41,7 @@ func NewSendCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithShortDescription("Invite a user by email"),
 		fctl.WithAliases("s"),
+		fctl.WithStringFlag("org-claim", "", "Pre assign organization role e.g. 'ADMIN'"),
 		fctl.WithStringFlag("stack-claims", "", "Pre assign stack roles e.g. '[{stackId: <stackId>, roles:[]},...]'"),
 		fctl.WithConfirmFlag(),
 		fctl.WithController[*SendStore](NewSendController()),
@@ -70,9 +72,11 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fctl.ErrMissingApproval
 	}
 
-	req := apiClient.DefaultApi.
-		CreateInvitation(cmd.Context(), organizationID).
-		Email(args[0])
+	invitationClaim := membershipclient.InvitationClaim{}
+	orgClaimString := fctl.GetString(cmd, "org-claim")
+	if orgClaimString != "" {
+		invitationClaim.Roles = []string{orgClaimString}
+	}
 
 	stackClaimsStrings := fctl.GetString(cmd, "stack-claims")
 	if stackClaimsStrings != "" {
@@ -81,16 +85,24 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		if err != nil {
 			return nil, err
 		}
-		req = req.StackClaimsInner(stackClaims)
+		invitationClaim.StackClaims = stackClaims
 	}
 
-	invitations, _, err := req.Execute()
+	invitations, _, err := apiClient.DefaultApi.
+		CreateInvitation(cmd.Context(), organizationID).
+		Email(args[0]).InvitationClaim(invitationClaim).Execute()
 	if err != nil {
 		return nil, err
 	}
 
 	c.store.Invitation.Email = invitations.Data.UserEmail
 	c.store.Invitation.StackClaims = invitations.Data.StackClaims
+	c.store.Invitation.OrgClaim = func() string {
+		if len(invitations.Data.Roles) != 0 {
+			return ""
+		}
+		return invitations.Data.Roles[0]
+	}()
 
 	return c, nil
 }

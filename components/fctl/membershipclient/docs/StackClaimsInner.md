@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**StackId** | **string** |  | 
+**Id** | **string** |  | 
 **Roles** | **[]string** | User roles | 
 
 ## Methods
 
 ### NewStackClaimsInner
 
-`func NewStackClaimsInner(stackId string, roles []string, ) *StackClaimsInner`
+`func NewStackClaimsInner(id string, roles []string, ) *StackClaimsInner`
 
 NewStackClaimsInner instantiates a new StackClaimsInner object
 This constructor will assign default values to properties that have it defined,
@@ -26,24 +26,24 @@ NewStackClaimsInnerWithDefaults instantiates a new StackClaimsInner object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetStackId
+### GetId
 
-`func (o *StackClaimsInner) GetStackId() string`
+`func (o *StackClaimsInner) GetId() string`
 
-GetStackId returns the StackId field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetStackIdOk
+### GetIdOk
 
-`func (o *StackClaimsInner) GetStackIdOk() (*string, bool)`
+`func (o *StackClaimsInner) GetIdOk() (*string, bool)`
 
-GetStackIdOk returns a tuple with the StackId field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetStackId
+### SetId
 
-`func (o *StackClaimsInner) SetStackId(v string)`
+`func (o *StackClaimsInner) SetId(v string)`
 
-SetStackId sets StackId field to given value.
+SetId sets Id field to given value.
 
 
 ### GetRoles

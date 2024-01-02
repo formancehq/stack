@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **Status** | **string** |  | 
 **CreationDate** | **time.Time** |  | 
 **UpdatedAt** | Pointer to **time.Time** |  | [optional] 
+**Roles** | Pointer to **[]string** | User roles | [optional] 
 **StackClaims** | Pointer to [**[]StackClaimsInner**](StackClaimsInner.md) |  | [optional] 
 
 ## Methods
@@ -155,6 +156,31 @@ SetUpdatedAt sets UpdatedAt field to given value.
 `func (o *Invitation) HasUpdatedAt() bool`
 
 HasUpdatedAt returns a boolean if a field has been set.
+
+### GetRoles
+
+`func (o *Invitation) GetRoles() []string`
+
+GetRoles returns the Roles field if non-nil, zero value otherwise.
+
+### GetRolesOk
+
+`func (o *Invitation) GetRolesOk() (*[]string, bool)`
+
+GetRolesOk returns a tuple with the Roles field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRoles
+
+`func (o *Invitation) SetRoles(v []string)`
+
+SetRoles sets Roles field to given value.
+
+### HasRoles
+
+`func (o *Invitation) HasRoles() bool`
+
+HasRoles returns a boolean if a field has been set.
 
 ### GetStackClaims
 

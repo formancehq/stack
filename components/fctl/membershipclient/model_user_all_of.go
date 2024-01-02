@@ -20,6 +20,7 @@ var _ MappedNullable = &UserAllOf{}
 // UserAllOf struct for UserAllOf
 type UserAllOf struct {
 	// User roles
+	// Deprecated
 	Roles []string `json:"roles,omitempty"`
 }
 
@@ -41,6 +42,7 @@ func NewUserAllOfWithDefaults() *UserAllOf {
 }
 
 // GetRoles returns the Roles field value if set, zero value otherwise.
+// Deprecated
 func (o *UserAllOf) GetRoles() []string {
 	if o == nil || IsNil(o.Roles) {
 		var ret []string
@@ -51,6 +53,7 @@ func (o *UserAllOf) GetRoles() []string {
 
 // GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *UserAllOf) GetRolesOk() ([]string, bool) {
 	if o == nil || IsNil(o.Roles) {
 		return nil, false
@@ -68,6 +71,7 @@ func (o *UserAllOf) HasRoles() bool {
 }
 
 // SetRoles gets a reference to the given []string and assigns it to the Roles field.
+// Deprecated
 func (o *UserAllOf) SetRoles(v []string) {
 	o.Roles = v
 }

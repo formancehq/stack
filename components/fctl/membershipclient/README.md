@@ -130,6 +130,7 @@ Class | Method | HTTP request | Description
  - [GetRegionResponse](docs/GetRegionResponse.md)
  - [GetRegionVersionsResponse](docs/GetRegionVersionsResponse.md)
  - [Invitation](docs/Invitation.md)
+ - [InvitationClaim](docs/InvitationClaim.md)
  - [ListInvitationsResponse](docs/ListInvitationsResponse.md)
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
  - [ListOrganizationExpandedResponseDataInner](docs/ListOrganizationExpandedResponseDataInner.md)

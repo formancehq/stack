@@ -19,8 +19,9 @@ var _ MappedNullable = &StackClaimsInner{}
 
 // StackClaimsInner struct for StackClaimsInner
 type StackClaimsInner struct {
-	StackId string `json:"stackId"`
+	Id string `json:"id"`
 	// User roles
+	// Deprecated
 	Roles []string `json:"roles"`
 }
 
@@ -28,9 +29,9 @@ type StackClaimsInner struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackClaimsInner(stackId string, roles []string) *StackClaimsInner {
+func NewStackClaimsInner(id string, roles []string) *StackClaimsInner {
 	this := StackClaimsInner{}
-	this.StackId = stackId
+	this.Id = id
 	this.Roles = roles
 	return &this
 }
@@ -43,31 +44,32 @@ func NewStackClaimsInnerWithDefaults() *StackClaimsInner {
 	return &this
 }
 
-// GetStackId returns the StackId field value
-func (o *StackClaimsInner) GetStackId() string {
+// GetId returns the Id field value
+func (o *StackClaimsInner) GetId() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.StackId
+	return o.Id
 }
 
-// GetStackIdOk returns a tuple with the StackId field value
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *StackClaimsInner) GetStackIdOk() (*string, bool) {
+func (o *StackClaimsInner) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.StackId, true
+	return &o.Id, true
 }
 
-// SetStackId sets field value
-func (o *StackClaimsInner) SetStackId(v string) {
-	o.StackId = v
+// SetId sets field value
+func (o *StackClaimsInner) SetId(v string) {
+	o.Id = v
 }
 
 // GetRoles returns the Roles field value
+// Deprecated
 func (o *StackClaimsInner) GetRoles() []string {
 	if o == nil {
 		var ret []string
@@ -79,6 +81,7 @@ func (o *StackClaimsInner) GetRoles() []string {
 
 // GetRolesOk returns a tuple with the Roles field value
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *StackClaimsInner) GetRolesOk() ([]string, bool) {
 	if o == nil {
 		return nil, false
@@ -87,6 +90,7 @@ func (o *StackClaimsInner) GetRolesOk() ([]string, bool) {
 }
 
 // SetRoles sets field value
+// Deprecated
 func (o *StackClaimsInner) SetRoles(v []string) {
 	o.Roles = v
 }
@@ -101,7 +105,7 @@ func (o StackClaimsInner) MarshalJSON() ([]byte, error) {
 
 func (o StackClaimsInner) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["stackId"] = o.StackId
+	toSerialize["id"] = o.Id
 	toSerialize["roles"] = o.Roles
 	return toSerialize, nil
 }
