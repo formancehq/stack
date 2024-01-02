@@ -19,6 +19,7 @@ var _ MappedNullable = &StackUserAccessAllOf{}
 
 // StackUserAccessAllOf struct for StackUserAccessAllOf
 type StackUserAccessAllOf struct {
+	// Deprecated
 	Roles []string `json:"roles,omitempty"`
 }
 
@@ -40,6 +41,7 @@ func NewStackUserAccessAllOfWithDefaults() *StackUserAccessAllOf {
 }
 
 // GetRoles returns the Roles field value if set, zero value otherwise.
+// Deprecated
 func (o *StackUserAccessAllOf) GetRoles() []string {
 	if o == nil || IsNil(o.Roles) {
 		var ret []string
@@ -50,6 +52,7 @@ func (o *StackUserAccessAllOf) GetRoles() []string {
 
 // GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *StackUserAccessAllOf) GetRolesOk() ([]string, bool) {
 	if o == nil || IsNil(o.Roles) {
 		return nil, false
@@ -67,6 +70,7 @@ func (o *StackUserAccessAllOf) HasRoles() bool {
 }
 
 // SetRoles gets a reference to the given []string and assigns it to the Roles field.
+// Deprecated
 func (o *StackUserAccessAllOf) SetRoles(v []string) {
 	o.Roles = v
 }

@@ -21,6 +21,7 @@ var _ MappedNullable = &User{}
 type User struct {
 	Email string `json:"email"`
 	// User roles
+	// Deprecated
 	Roles []string `json:"roles,omitempty"`
 	// User ID
 	Id string `json:"id"`
@@ -70,6 +71,7 @@ func (o *User) SetEmail(v string) {
 }
 
 // GetRoles returns the Roles field value if set, zero value otherwise.
+// Deprecated
 func (o *User) GetRoles() []string {
 	if o == nil || IsNil(o.Roles) {
 		var ret []string
@@ -80,6 +82,7 @@ func (o *User) GetRoles() []string {
 
 // GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *User) GetRolesOk() ([]string, bool) {
 	if o == nil || IsNil(o.Roles) {
 		return nil, false
@@ -97,6 +100,7 @@ func (o *User) HasRoles() bool {
 }
 
 // SetRoles gets a reference to the given []string and assigns it to the Roles field.
+// Deprecated
 func (o *User) SetRoles(v []string) {
 	o.Roles = v
 }

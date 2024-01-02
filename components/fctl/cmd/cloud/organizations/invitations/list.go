@@ -1,6 +1,8 @@
 package invitations
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
@@ -10,10 +12,12 @@ import (
 )
 
 type Invitations struct {
-	Id           string    `json:"id"`
-	UserEmail    string    `json:"userEmail"`
-	Status       string    `json:"status"`
-	CreationDate time.Time `json:"creationDate"`
+	Id           string                              `json:"id"`
+	UserEmail    string                              `json:"userEmail"`
+	Status       string                              `json:"status"`
+	CreationDate time.Time                           `json:"creationDate"`
+	OrgClaim     []string                            `json:"orgClaim"`
+	StackClaims  []membershipclient.StackClaimsInner `json:"stackClaims"`
 }
 
 type ListStore struct {
@@ -83,6 +87,8 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 			UserEmail:    i.UserEmail,
 			Status:       i.Status,
 			CreationDate: i.CreationDate,
+			OrgClaim:     i.Roles,
+			StackClaims:  i.StackClaims,
 		}
 	})
 
@@ -96,10 +102,23 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			i.UserEmail,
 			i.Status,
 			i.CreationDate.Format(time.RFC3339),
+			func() string {
+				if len(i.OrgClaim) == 0 {
+					return ""
+				}
+				return strings.Join(i.OrgClaim, ",")
+			}(),
+			func() string {
+				stackClaims := make([]string, 0)
+				for _, stackClaim := range i.StackClaims {
+					stackClaims = append(stackClaims, fmt.Sprintf("%s: %s", stackClaim.Id, strings.Join(stackClaim.Roles, ",")))
+				}
+				return strings.Join(stackClaims, ";")
+			}(),
 		}
 	})
 
-	tableData = fctl.Prepend(tableData, []string{"ID", "Email", "Status", "Creation date"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Email", "Status", "Creation date", "Org claims", "Stack claims"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

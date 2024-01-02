@@ -792,6 +792,11 @@ paths:
           schema:
             type: string
           required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationClaim'
       responses:
         201:
           description: Invitation created
@@ -1239,12 +1244,14 @@ components:
           required:
             - email
     UpdatableUserRole:
+      deprecated: true
       type: array
       items:
         allOf:
           - type: string
             enum: [ADMIN, GUEST]
     UpdatableStackUserRole:
+      deprecated: true
       type: array
       items:
         allOf:
@@ -1252,6 +1259,7 @@ components:
             enum: [ADMIN, GUEST]
     Roles:
       type: array
+      deprecated: true
       description: User roles
       items:
         allOf:
@@ -1399,12 +1407,41 @@ components:
         updatedAt:
           type: string
           format: date-time
+        roles:
+          $ref: '#/components/schemas/Roles'
+        stackClaims:
+          $ref: '#/components/schemas/StackClaims'
       required:
         - creationDate
         - status
         - userEmail
         - organizationId
         - id
+    InvitationClaim:
+      type: object
+      properties:
+        roles:
+          $ref: '#/components/schemas/Roles'
+        stackClaims:
+          $ref: '#/components/schemas/StackClaims'
+      required:
+        - roles
+        - stackClaims
+    StackClaims:
+      type: array
+      items:
+        allOf:
+          - $ref: '#/components/schemas/StackClaim'
+    StackClaim:
+      type: object
+      required:
+        - id
+        - roles
+      properties:
+        id:
+          type: string
+        roles:
+          $ref: '#/components/schemas/Roles'
     Region:
       type: object
       required:

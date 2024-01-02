@@ -201,6 +201,14 @@ func WithStringSliceFlag(name string, defaultValue []string, help string) Comman
 	}
 }
 
+func WithStringArrayFlag(name string, defaultValue []string, help string) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.Flags().StringArray(name, defaultValue, help)
+	}
+}
+
+
+
 func WithHiddenFlag(name string) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		_ = cmd.Flags().MarkHidden(name)

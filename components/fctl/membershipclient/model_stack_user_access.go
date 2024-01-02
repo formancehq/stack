@@ -19,6 +19,7 @@ var _ MappedNullable = &StackUserAccess{}
 
 // StackUserAccess struct for StackUserAccess
 type StackUserAccess struct {
+	// Deprecated
 	Roles []string `json:"roles,omitempty"`
 	// Stack ID
 	StackId string `json:"stackId"`
@@ -46,6 +47,7 @@ func NewStackUserAccessWithDefaults() *StackUserAccess {
 }
 
 // GetRoles returns the Roles field value if set, zero value otherwise.
+// Deprecated
 func (o *StackUserAccess) GetRoles() []string {
 	if o == nil || IsNil(o.Roles) {
 		var ret []string
@@ -56,6 +58,7 @@ func (o *StackUserAccess) GetRoles() []string {
 
 // GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *StackUserAccess) GetRolesOk() ([]string, bool) {
 	if o == nil || IsNil(o.Roles) {
 		return nil, false
@@ -73,6 +76,7 @@ func (o *StackUserAccess) HasRoles() bool {
 }
 
 // SetRoles gets a reference to the given []string and assigns it to the Roles field.
+// Deprecated
 func (o *StackUserAccess) SetRoles(v []string) {
 	o.Roles = v
 }

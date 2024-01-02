@@ -20,6 +20,7 @@ docs/Error.md
 docs/GetRegionResponse.md
 docs/GetRegionVersionsResponse.md
 docs/Invitation.md
+docs/InvitationClaim.md
 docs/ListInvitationsResponse.md
 docs/ListOrganizationExpandedResponse.md
 docs/ListOrganizationExpandedResponseDataInner.md
@@ -41,6 +42,8 @@ docs/Region.md
 docs/ServerInfo.md
 docs/Stack.md
 docs/StackAllOf.md
+docs/StackClaim.md
+docs/StackClaimsInner.md
 docs/StackData.md
 docs/StackLifeCycle.md
 docs/StackUserAccess.md
@@ -69,6 +72,7 @@ model_error.go
 model_get_region_response.go
 model_get_region_versions_response.go
 model_invitation.go
+model_invitation_claim.go
 model_list_invitations_response.go
 model_list_organization_expanded_response.go
 model_list_organization_expanded_response_data_inner.go
@@ -90,6 +94,8 @@ model_region.go
 model_server_info.go
 model_stack.go
 model_stack_all_of.go
+model_stack_claim.go
+model_stack_claims_inner.go
 model_stack_data.go
 model_stack_life_cycle.go
 model_stack_user_access.go

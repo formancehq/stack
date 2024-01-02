@@ -899,6 +899,11 @@ paths:
         schema:
           type: string
         style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationClaim'
       responses:
         "201":
           content:
@@ -1284,6 +1289,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/UserData_allOf'
     UpdatableUserRole:
+      deprecated: true
       items:
         allOf:
         - enum:
@@ -1292,6 +1298,7 @@ components:
           type: string
       type: array
     UpdatableStackUserRole:
+      deprecated: true
       items:
         allOf:
         - enum:
@@ -1300,6 +1307,7 @@ components:
           type: string
       type: array
     Roles:
+      deprecated: true
       description: User roles
       items:
         allOf:
@@ -1412,13 +1420,25 @@ components:
       example:
         data:
         - organizationId: organizationId
+          roles:
+          - ""
+          - ""
           userEmail: userEmail
+          stackClaims:
+          - null
+          - null
           id: id
           creationDate: 2000-01-23T04:56:07.000+00:00
           status: pending
           updatedAt: 2000-01-23T04:56:07.000+00:00
         - organizationId: organizationId
+          roles:
+          - ""
+          - ""
           userEmail: userEmail
+          stackClaims:
+          - null
+          - null
           id: id
           creationDate: 2000-01-23T04:56:07.000+00:00
           status: pending
@@ -1433,7 +1453,13 @@ components:
       example:
         data:
           organizationId: organizationId
+          roles:
+          - ""
+          - ""
           userEmail: userEmail
+          stackClaims:
+          - null
+          - null
           id: id
           creationDate: 2000-01-23T04:56:07.000+00:00
           status: pending
@@ -1454,7 +1480,13 @@ components:
     Invitation:
       example:
         organizationId: organizationId
+        roles:
+        - ""
+        - ""
         userEmail: userEmail
+        stackClaims:
+        - null
+        - null
         id: id
         creationDate: 2000-01-23T04:56:07.000+00:00
         status: pending
@@ -1478,12 +1510,75 @@ components:
         updatedAt:
           format: date-time
           type: string
+        roles:
+          deprecated: true
+          description: User roles
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
+        stackClaims:
+          items:
+            $ref: '#/components/schemas/StackClaims_inner'
+          type: array
       required:
       - creationDate
       - id
       - organizationId
       - status
       - userEmail
+      type: object
+    InvitationClaim:
+      example:
+        roles:
+        - ""
+        - ""
+        stackClaims:
+        - null
+        - null
+      properties:
+        roles:
+          deprecated: true
+          description: User roles
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
+        stackClaims:
+          items:
+            $ref: '#/components/schemas/StackClaims_inner'
+          type: array
+      required:
+      - roles
+      - stackClaims
+      type: object
+    StackClaims:
+      items:
+        $ref: '#/components/schemas/StackClaims_inner'
+      type: array
+    StackClaim:
+      properties:
+        id:
+          type: string
+        roles:
+          deprecated: true
+          description: User roles
+          items:
+            allOf:
+            - enum:
+              - ADMIN
+              - GUEST
+              type: string
+          type: array
+      required:
+      - id
+      - roles
       type: object
     Region:
       properties:
@@ -1711,6 +1806,7 @@ components:
     User_allOf:
       properties:
         roles:
+          deprecated: true
           description: User roles
           items:
             allOf:
@@ -1733,6 +1829,7 @@ components:
     StackUserAccess_allOf:
       properties:
         roles:
+          deprecated: true
           items:
             allOf:
             - enum:
@@ -1763,6 +1860,9 @@ components:
       - regionID
       type: object
       example: null
+    StackClaims_inner:
+      allOf:
+      - $ref: '#/components/schemas/StackClaim'
     ListOrganizationExpandedResponse_data_inner_allOf:
       properties:
         totalStacks:
