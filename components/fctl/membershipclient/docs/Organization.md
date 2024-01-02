@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **Name** | **string** | Organization name | 
 **DefaultOrganizationAccess** | Pointer to **[]string** |  | [optional] 
 **DefaultStackAccess** | Pointer to **[]string** |  | [optional] 
+**Domain** | Pointer to **string** | Organization domain | [optional] 
 **Id** | **string** | Organization ID | 
 **OwnerId** | **string** | Owner ID | 
 **AvailableStacks** | Pointer to **int32** | Number of available stacks | [optional] 
@@ -100,6 +101,31 @@ SetDefaultStackAccess sets DefaultStackAccess field to given value.
 `func (o *Organization) HasDefaultStackAccess() bool`
 
 HasDefaultStackAccess returns a boolean if a field has been set.
+
+### GetDomain
+
+`func (o *Organization) GetDomain() string`
+
+GetDomain returns the Domain field if non-nil, zero value otherwise.
+
+### GetDomainOk
+
+`func (o *Organization) GetDomainOk() (*string, bool)`
+
+GetDomainOk returns a tuple with the Domain field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDomain
+
+`func (o *Organization) SetDomain(v string)`
+
+SetDomain sets Domain field to given value.
+
+### HasDomain
+
+`func (o *Organization) HasDomain() bool`
+
+HasDomain returns a boolean if a field has been set.
 
 ### GetId
 
