@@ -2,12 +2,10 @@ package adyen
 
 import (
 	"context"
-	"errors"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
@@ -96,30 +94,6 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	}
 
 	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
-}
-
-func (c *Connector) HandleWebhook(ctx task.ConnectorContext, webhook *models.Webhook) error {
-	// Detach the context since we're launching an async task and we're mostly
-	// coming from a HTTP request.
-	detachedCtx, _ := contextutil.Detached(ctx.Context())
-	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-		Name:      "handle webhook",
-		Key:       taskNameHandleWebhook,
-		WebhookID: webhook.ID,
-	})
-	if err != nil {
-		return err
-	}
-
-	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_NOW,
-		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-	})
-	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-		return err
-	}
-
-	return nil
 }
 
 var _ connectors.Connector = &Connector{}

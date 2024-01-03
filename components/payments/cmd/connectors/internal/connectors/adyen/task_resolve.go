@@ -46,7 +46,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameFetchAccounts:
 			return taskFetchAccounts(adyenClient)
 		case taskNameHandleWebhook:
-			return taskHandleWebhook(adyenClient, taskDescriptor.WebhookID)
+			return taskHandleStandardWebhooks(adyenClient, taskDescriptor.WebhookID)
 		}
 
 		// This should never happen.

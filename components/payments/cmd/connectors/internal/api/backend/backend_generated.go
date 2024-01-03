@@ -177,18 +177,19 @@ func (mr *MockManagerMockRecorder[ConnectorConfig]) Connectors() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connectors", reflect.TypeOf((*MockManager[ConnectorConfig])(nil).Connectors))
 }
 
-// HandleWebhook mocks base method.
-func (m *MockManager[ConnectorConfig]) HandleWebhook(ctx context.Context, webhook *models.Webhook) error {
+// CreateWebhookAndContext mocks base method.
+func (m *MockManager[ConnectorConfig]) CreateWebhookAndContext(ctx context.Context, webhook *models.Webhook) (context.Context, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "HandleWebhook", ctx, webhook)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "CreateWebhookAndContext", ctx, webhook)
+	ret0, _ := ret[0].(context.Context)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// HandleWebhook indicates an expected call of HandleWebhook.
-func (mr *MockManagerMockRecorder[ConnectorConfig]) HandleWebhook(ctx, webhook interface{}) *gomock.Call {
+// CreateWebhookAndContext indicates an expected call of CreateWebhookAndContext.
+func (mr *MockManagerMockRecorder[ConnectorConfig]) CreateWebhookAndContext(ctx, webhook interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HandleWebhook", reflect.TypeOf((*MockManager[ConnectorConfig])(nil).HandleWebhook), ctx, webhook)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWebhookAndContext", reflect.TypeOf((*MockManager[ConnectorConfig])(nil).CreateWebhookAndContext), ctx, webhook)
 }
 
 // Install mocks base method.

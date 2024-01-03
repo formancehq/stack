@@ -75,7 +75,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 		) connectorHandler {
 			return connectorHandler{
 				Handler:                   connectorRouter(loader.Name(), b),
-				WebhookHandler:            webhookConnectorRouter(loader.Name(), b),
+				WebhookHandler:            webhookConnectorRouter(loader.Name(), loader.Router(), b),
 				Provider:                  loader.Name(),
 				initiatePayment:           cm.InitiatePayment,
 				createExternalBankAccount: cm.CreateExternalBankAccount,

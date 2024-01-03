@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/gorilla/mux"
 )
 
 type Loader[ConnectorConfig models.ConnectorConfigObject] interface {
@@ -12,6 +13,9 @@ type Loader[ConnectorConfig models.ConnectorConfigObject] interface {
 
 	// ApplyDefaults is used to fill default values of the provided configuration object
 	ApplyDefaults(t ConnectorConfig) ConnectorConfig
+
+	// Extra routes to be added to the connectors manager API
+	Router() *mux.Router
 
 	// AllowTasks define how many task the connector can run
 	// If too many tasks are scheduled by the connector,
@@ -93,6 +97,10 @@ func (b *BuiltLoader[ConnectorConfig]) ApplyDefaults(t ConnectorConfig) Connecto
 	}
 
 	return t
+}
+
+func (b *BuiltLoader[ConnectorConfig]) Router() *mux.Router {
+	return nil
 }
 
 var _ Loader[models.EmptyConnectorConfig] = &BuiltLoader[models.EmptyConnectorConfig]{}

@@ -64,11 +64,13 @@ func httpRouter(
 		connectorGroup.PathPrefix("/" + h.Provider.StringLower()).Handler(
 			http.StripPrefix("/connectors", h.Handler))
 
-		connectorGroup.PathPrefix("/webhooks/" + h.Provider.String()).Handler(
-			http.StripPrefix("/connectors", h.WebhookHandler))
+		if h.WebhookHandler != nil {
+			connectorGroup.PathPrefix("/webhooks/" + h.Provider.String()).Handler(
+				http.StripPrefix("/connectors", h.WebhookHandler))
 
-		connectorGroup.PathPrefix("/webhooks/" + h.Provider.StringLower()).Handler(
-			http.StripPrefix("/connectors", h.WebhookHandler))
+			connectorGroup.PathPrefix("/webhooks/" + h.Provider.StringLower()).Handler(
+				http.StripPrefix("/connectors", h.WebhookHandler))
+		}
 	}
 
 	return rootMux
@@ -100,11 +102,22 @@ func connectorRouter[Config models.ConnectorConfigObject](
 
 func webhookConnectorRouter[Config models.ConnectorConfigObject](
 	provider models.ConnectorProvider,
+	connectorRouter *mux.Router,
 	b backend.ManagerBackend[Config],
 ) *mux.Router {
+	if connectorRouter == nil {
+		return nil
+	}
+
 	r := mux.NewRouter()
 
-	addWebhookRoute(r, provider, "/{connectorID}", http.MethodPost, webhooks(b, V1))
+	group := r.PathPrefix("/webhooks/" + provider.String() + "/{connectorID}").Subrouter()
+	group.Use(webhooksMiddleware(b, V1))
+	addWebhookRoute(group, connectorRouter)
+
+	groupLower := r.PathPrefix("/webhooks/" + provider.StringLower() + "/{connectorID}").Subrouter()
+	groupLower.Use(webhooksMiddleware(b, V1))
+	addWebhookRoute(groupLower, connectorRouter)
 
 	return r
 }
@@ -114,7 +127,22 @@ func addRoute(r *mux.Router, provider models.ConnectorProvider, path, method str
 	r.Path("/" + provider.StringLower() + path).Methods(method).Handler(handler)
 }
 
-func addWebhookRoute(r *mux.Router, provider models.ConnectorProvider, path, method string, handler http.Handler) {
-	r.Path("/webhooks/" + provider.String() + path).Methods(method).Handler(handler)
-	r.Path("/webhooks/" + provider.StringLower() + path).Methods(method).Handler(handler)
+func addWebhookRoute(r *mux.Router, subRouter *mux.Router) {
+	subRouter.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+		pathTemplate, err := route.GetPathTemplate()
+		if err != nil {
+			return err
+		}
+
+		methods, err := route.GetMethods()
+		if err != nil {
+			return err
+		}
+
+		for _, method := range methods {
+			r.Path(pathTemplate).Methods(method).Handler(route.GetHandler())
+		}
+
+		return nil
+	})
 }

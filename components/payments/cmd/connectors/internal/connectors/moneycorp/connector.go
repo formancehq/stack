@@ -133,8 +133,4 @@ func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAcc
 	return connectors.ErrNotImplemented
 }
 
-func (c *Connector) HandleWebhook(ctx task.ConnectorContext, webhook *models.Webhook) error {
-	return connectors.ErrNotImplemented
-}
-
 var _ connectors.Connector = &Connector{}
