@@ -148,7 +148,7 @@ func determinePaymentStatus(item *atlar_models.Transaction) models.PaymentStatus
 	if item.Reconciliation.Status == atlar_models.ReconciliationDetailsStatusBOOKED {
 		// A payment comissioned with the bank, which was not yet reconciled with a
 		// payment from the statement
-		return models.PaymentStatusPending
+		return models.PaymentStatusSucceeded
 	}
 	if item.Reconciliation.Status == atlar_models.ReconciliationDetailsStatusRECONCILED {
 		return models.PaymentStatusSucceeded
