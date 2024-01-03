@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/gorilla/mux"
 )
 
 type Loader struct{}
@@ -41,6 +42,11 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 // Load returns the connector.
 func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector {
 	return newConnector(logger, config, newFS())
+}
+
+// Router returns the router.
+func (l *Loader) Router() *mux.Router {
+	return nil
 }
 
 // NewLoader creates a new loader.

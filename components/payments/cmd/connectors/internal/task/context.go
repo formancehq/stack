@@ -28,3 +28,15 @@ func NewConnectorContext(ctx context.Context, scheduler Scheduler) *ConnectorCtx
 		scheduler: scheduler,
 	}
 }
+
+type taskContextKey struct{}
+
+var _taskContextKey = taskContextKey{}
+
+func ContextWithConnectorContext(ctx context.Context, task ConnectorContext) context.Context {
+	return context.WithValue(ctx, _taskContextKey, task)
+}
+
+func ConnectorContextFromContext(ctx context.Context) ConnectorContext {
+	return ctx.Value(_taskContextKey).(ConnectorContext)
+}

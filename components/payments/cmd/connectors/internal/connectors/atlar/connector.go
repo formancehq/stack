@@ -139,10 +139,6 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return nil
 }
 
-func (c *Connector) HandleWebhook(ctx task.ConnectorContext, webhook *models.Webhook) error {
-	return connectors.ErrNotImplemented
-}
-
 var _ connectors.Connector = &Connector{}
 
 func newConnector(logger logging.Logger, cfg Config) *Connector {

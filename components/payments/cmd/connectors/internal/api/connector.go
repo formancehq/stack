@@ -159,39 +159,40 @@ func listTasks[Config models.ConnectorConfigObject](
 	}
 }
 
-func webhooks[Config models.ConnectorConfigObject](
+func webhooksMiddleware[Config models.ConnectorConfigObject](
 	b backend.ManagerBackend[Config],
 	apiVersion APIVersion,
-) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		connectorID, err := getConnectorID(b, r, apiVersion)
-		if err != nil {
-			api.BadRequest(w, ErrInvalidID, err)
-			return
-		}
+) func(handler http.Handler) http.Handler {
+	return func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			connectorID, err := getConnectorID(b, r, apiVersion)
+			if err != nil {
+				api.BadRequest(w, ErrInvalidID, err)
+				return
+			}
 
-		if connectorNotInstalled(b, connectorID, w, r) {
-			return
-		}
+			if connectorNotInstalled(b, connectorID, w, r) {
+				return
+			}
 
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			api.BadRequest(w, ErrMissingOrInvalidBody, err)
-		}
-		defer r.Body.Close()
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				api.BadRequest(w, ErrMissingOrInvalidBody, err)
+			}
+			defer r.Body.Close()
 
-		err = b.GetManager().HandleWebhook(r.Context(), &models.Webhook{
-			ID:          uuid.New(),
-			ConnectorID: connectorID,
-			RequestBody: body,
+			ctx, err := b.GetManager().CreateWebhookAndContext(r.Context(), &models.Webhook{
+				ID:          uuid.New(),
+				ConnectorID: connectorID,
+				RequestBody: body,
+			})
+			if err != nil {
+				handleConnectorsManagerErrors(w, r, err)
+				return
+			}
+
+			handler.ServeHTTP(w, r.WithContext(ctx))
 		})
-		if err != nil {
-			handleConnectorsManagerErrors(w, r, err)
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("[accepted]"))
 	}
 }
 

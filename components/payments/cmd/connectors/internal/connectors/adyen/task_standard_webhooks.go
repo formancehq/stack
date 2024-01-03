@@ -3,22 +3,59 @@ package adyen
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"math/big"
+	"net/http"
 	"strings"
 
 	"github.com/adyen/adyen-go-api-library/v7/src/hmacvalidator"
 	"github.com/adyen/adyen-go-api-library/v7/src/webhook"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/adyen/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 )
 
-func taskHandleWebhook(client *client.Client, webhookID uuid.UUID) task.Task {
+func handleStandardWebhooks() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		connectorContext := task.ConnectorContextFromContext(r.Context())
+		webhookID := connectors.WebhookIDFromContext(r.Context())
+
+		// Detach the context since we're launching an async task and we're mostly
+		// coming from a HTTP request.
+		detachedCtx, _ := contextutil.Detached(r.Context())
+		taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name:      "handle webhook",
+			Key:       taskNameHandleWebhook,
+			WebhookID: webhookID,
+		})
+		if err != nil {
+			api.InternalServerError(w, r, err)
+			return
+		}
+
+		err = connectorContext.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+		})
+		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			api.InternalServerError(w, r, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("[accepted]"))
+	}
+}
+
+func taskHandleStandardWebhooks(client *client.Client, webhookID uuid.UUID) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
