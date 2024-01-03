@@ -30,6 +30,14 @@ type ConfigUser struct {
 	EventTypes []string `json:"eventTypes" bun:"event_types,array"`
 }
 
+type ConfigStore interface {
+	FindManyConfigs(ctx context.Context, filter map[string]any) ([]Config, error)
+	InsertOneConfig(ctx context.Context, cfg ConfigUser) (Config, error)
+	DeleteOneConfig(ctx context.Context, id string) error
+	UpdateOneConfigActivation(ctx context.Context, id string, active bool) (Config, error)
+	UpdateOneConfigSecret(ctx context.Context, id, secret string) (Config, error)
+}
+
 var _ bun.AfterCreateTableHook = (*Config)(nil)
 
 func (*Config) AfterCreateTable(ctx context.Context, q *bun.CreateTableQuery) error {

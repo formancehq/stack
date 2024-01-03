@@ -35,6 +35,14 @@ type Attempt struct {
 	NextRetryAfter time.Time `json:"nextRetryAfter,omitempty" bun:"next_retry_after,nullzero"`
 }
 
+type AttemptStore interface {
+	FindAttemptsToRetryByWebhookID(ctx context.Context, webhookID string) ([]Attempt, error)
+	FindWebhookIDsToRetry(ctx context.Context) (webhookIDs []string, err error)
+	UpdateAttemptsStatus(ctx context.Context, webhookID string, status string) ([]Attempt, error)
+	InsertOneAttempt(ctx context.Context, att Attempt) error
+	Close(ctx context.Context) error
+}
+
 var _ bun.AfterCreateTableHook = (*Attempt)(nil)
 
 func (*Attempt) AfterCreateTable(ctx context.Context, q *bun.CreateTableQuery) error {
@@ -85,7 +93,7 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, retryPolicy Backo
 	if err != nil {
 		return Attempt{}, errors.Wrap(err, "io.ReadAll")
 	}
-	logging.FromContext(ctx).Debugf("webhooks.MakeAttempt: server response body: %s", string(body))
+	logging.FromContext(ctx).Debugf("MakeAttempt: server response body: %s", string(body))
 
 	attempt := Attempt{
 		ID:           id,
