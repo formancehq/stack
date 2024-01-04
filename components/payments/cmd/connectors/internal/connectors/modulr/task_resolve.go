@@ -43,15 +43,15 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameMain:
 			return taskMain(logger)
 		case taskNameFetchAccounts:
-			return taskFetchAccounts(logger, modulrClient)
+			return taskFetchAccounts(logger, config, modulrClient)
 		case taskNameFetchBeneficiaries:
-			return taskFetchBeneficiaries(logger, modulrClient)
+			return taskFetchBeneficiaries(logger, config, modulrClient)
 		case taskNameInitiatePayment:
 			return taskInitiatePayment(logger, modulrClient, taskDefinition.TransferID)
 		case taskNameUpdatePaymentStatus:
 			return taskUpdatePaymentStatus(logger, modulrClient, taskDefinition.TransferID, taskDefinition.PaymentID, taskDefinition.Attempt)
 		case taskNameFetchTransactions:
-			return taskFetchTransactions(logger, modulrClient, taskDefinition.AccountID)
+			return taskFetchTransactions(logger, config, modulrClient, taskDefinition.AccountID)
 		}
 
 		// This should never happen.

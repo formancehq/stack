@@ -16,7 +16,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
+func taskFetchTransactions(logger logging.Logger, config Config, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
@@ -26,7 +26,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 		logger.Info("Fetching transactions for account", accountID)
 
 		for page := 0; ; page++ {
-			pagedTransactions, err := client.GetTransactions(ctx, accountID, page, pageSize)
+			pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize)
 			if err != nil {
 				return err
 			}
@@ -44,7 +44,7 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 				return err
 			}
 
-			if len(pagedTransactions.Content) < pageSize {
+			if len(pagedTransactions.Content) < config.PageSize {
 				break
 			}
 

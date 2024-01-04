@@ -19,7 +19,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
+func taskFetchAccounts(logger logging.Logger, config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
@@ -29,7 +29,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 		logger.Info(taskNameFetchAccounts)
 
 		for page := 0; ; page++ {
-			pagedAccounts, err := client.GetAccounts(ctx, page, pageSize)
+			pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize)
 			if err != nil {
 				return err
 			}
@@ -63,7 +63,7 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 				}
 			}
 
-			if len(pagedAccounts.Content) < pageSize {
+			if len(pagedAccounts.Content) < config.PageSize {
 				break
 			}
 

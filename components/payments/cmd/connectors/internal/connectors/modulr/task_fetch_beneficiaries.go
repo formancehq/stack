@@ -14,7 +14,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.Task {
+func taskFetchBeneficiaries(logger logging.Logger, config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
@@ -24,7 +24,7 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 		logger.Info(taskNameFetchBeneficiaries)
 
 		for page := 0; ; page++ {
-			pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, pageSize)
+			pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize)
 			if err != nil {
 				return err
 			}
@@ -37,7 +37,7 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 				return err
 			}
 
-			if len(pagedBeneficiaries.Content) < pageSize {
+			if len(pagedBeneficiaries.Content) < config.PageSize {
 				break
 			}
 

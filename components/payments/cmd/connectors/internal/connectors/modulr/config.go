@@ -14,6 +14,7 @@ type Config struct {
 	APISecret     string              `json:"apiSecret" bson:"apiSecret"`
 	Endpoint      string              `json:"endpoint" bson:"endpoint"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
+	PageSize      int                 `json:"pageSize" yaml:"pageSize" bson:"pageSize"`
 }
 
 // String obfuscates sensitive fields and returns a string representation of the config.
@@ -54,6 +55,7 @@ func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg.AddParameter("apiSecret", configtemplate.TypeString, true)
 	cfg.AddParameter("endpoint", configtemplate.TypeString, false)
 	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
+	cfg.AddParameter("pageSize", configtemplate.TypeDurationUnsignedInteger, false)
 
 	return Name.String(), cfg
 }

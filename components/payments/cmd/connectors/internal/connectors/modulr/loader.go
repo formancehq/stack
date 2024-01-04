@@ -34,6 +34,10 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 		cfg.Name = Name.String()
 	}
 
+	if cfg.PageSize == 0 {
+		cfg.PageSize = 100
+	}
+
 	return cfg
 }
 
