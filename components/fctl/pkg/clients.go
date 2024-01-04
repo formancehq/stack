@@ -1,6 +1,7 @@
 package fctl
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/formancehq/fctl/membershipclient"
@@ -32,6 +33,18 @@ func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*membershipclient.API
 	configuration.Servers[0].URL = profile.GetMembershipURI()
 	return membershipclient.NewAPIClient(configuration), nil
 }
+
+func MembershipServerInfo(ctx context.Context, client *membershipclient.APIClient) string {
+	serverInfo, response, err := client.DefaultApi.GetServerInfo(ctx).Execute()
+	if err != nil {
+		return fmt.Sprintf("Error: %s", err)
+	}
+	if response.StatusCode != 200 {
+		return fmt.Sprintf("Error: %s", response.Status)
+	}
+	return serverInfo.Version
+} 
+
 
 func NewStackClient(cmd *cobra.Command, cfg *Config, stack *membershipclient.Stack) (*formance.Formance, error) {
 	profile := GetCurrentProfile(cmd, cfg)
