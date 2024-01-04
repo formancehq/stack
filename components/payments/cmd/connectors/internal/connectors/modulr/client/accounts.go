@@ -3,7 +3,9 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -26,12 +28,22 @@ type Account struct {
 	CreatedDate string `json:"createdDate"`
 }
 
-func (m *Client) GetAccounts(ctx context.Context) ([]*Account, error) {
+func (m *Client) GetAccounts(ctx context.Context, page, pageSize int) (*responseWrapper[[]*Account], error) {
 	f := connectors.ClientMetrics(ctx, "modulr", "list_accounts")
 	now := time.Now()
 	defer f(ctx, now)
 
-	resp, err := m.httpClient.Get(m.buildEndpoint("accounts"))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, m.buildEndpoint("accounts"), http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create accounts request: %w", err)
+	}
+
+	q := req.URL.Query()
+	q.Add("page", strconv.Itoa(page))
+	q.Add("size", strconv.Itoa(pageSize))
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := m.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -46,5 +58,5 @@ func (m *Client) GetAccounts(ctx context.Context) ([]*Account, error) {
 		return nil, err
 	}
 
-	return res.Content, nil
+	return &res, nil
 }

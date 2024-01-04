@@ -12,7 +12,11 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-const Name = models.ConnectorProviderModulr
+const (
+	Name = models.ConnectorProviderModulr
+
+	pageSize = 50
+)
 
 var (
 	mainTaskDescriptor = TaskDescriptor{

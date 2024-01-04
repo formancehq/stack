@@ -23,13 +23,29 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 	) error {
 		logger.Info(taskNameFetchBeneficiaries)
 
-		beneficiaries, err := client.GetBeneficiaries(ctx)
-		if err != nil {
-			return err
-		}
+		for page := 0; ; page++ {
+			pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, pageSize)
+			if err != nil {
+				return err
+			}
 
-		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, beneficiaries); err != nil {
-			return err
+			if len(pagedBeneficiaries.Content) == 0 {
+				break
+			}
+
+			if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries.Content); err != nil {
+				return err
+			}
+
+			if len(pagedBeneficiaries.Content) < pageSize {
+				break
+			}
+
+			if page+1 >= pagedBeneficiaries.TotalPages {
+				// Modulr paging starts at 0, so if we are at the last page - 1,
+				// we are at the last page.
+				break
+			}
 		}
 
 		return nil

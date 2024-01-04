@@ -3,7 +3,9 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -23,12 +25,22 @@ type Transaction struct {
 	AdditionalInfo  interface{} `json:"additionalInfo"`
 }
 
-func (m *Client) GetTransactions(ctx context.Context, accountID string) ([]Transaction, error) {
+func (m *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int) (*responseWrapper[[]*Transaction], error) {
 	f := connectors.ClientMetrics(ctx, "modulr", "list_transactions")
 	now := time.Now()
 	defer f(ctx, now)
 
-	resp, err := m.httpClient.Get(m.buildEndpoint("accounts/%s/transactions", accountID))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, m.buildEndpoint("accounts/%s/transactions", accountID), http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create accounts request: %w", err)
+	}
+
+	q := req.URL.Query()
+	q.Add("page", strconv.Itoa(page))
+	q.Add("size", strconv.Itoa(pageSize))
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := m.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -39,10 +51,10 @@ func (m *Client) GetTransactions(ctx context.Context, accountID string) ([]Trans
 		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
-	var res responseWrapper[[]Transaction]
+	var res responseWrapper[[]*Transaction]
 	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return nil, err
 	}
 
-	return res.Content, nil
+	return &res, nil
 }
