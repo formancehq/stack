@@ -14,7 +14,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.Task {
+func taskFetchBeneficiaries(logger logging.Logger, config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
@@ -23,13 +23,28 @@ func taskFetchBeneficiaries(logger logging.Logger, client *client.Client) task.T
 	) error {
 		logger.Info(taskNameFetchBeneficiaries)
 
-		beneficiaries, err := client.GetBeneficiaries(ctx)
-		if err != nil {
-			return err
-		}
+		for page := 0; ; page++ {
+			pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize)
+			if err != nil {
+				return err
+			}
 
-		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, beneficiaries); err != nil {
-			return err
+			if len(pagedBeneficiaries.Content) == 0 {
+				break
+			}
+
+			if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries.Content); err != nil {
+				return err
+			}
+
+			if len(pagedBeneficiaries.Content) < config.PageSize {
+				break
+			}
+
+			if page+1 >= pagedBeneficiaries.TotalPages {
+				// Modulr paging starts at 0, so the last page is TotalPages - 1.
+				break
+			}
 		}
 
 		return nil

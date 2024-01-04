@@ -19,7 +19,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
+func taskFetchAccounts(logger logging.Logger, config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
@@ -28,33 +28,48 @@ func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {
 	) error {
 		logger.Info(taskNameFetchAccounts)
 
-		accounts, err := client.GetAccounts(ctx)
-		if err != nil {
-			return err
-		}
-
-		if err := ingestAccountsBatch(ctx, connectorID, ingester, accounts); err != nil {
-			return err
-		}
-
-		for _, account := range accounts {
-			logger.Infof("scheduling fetch-transactions: %s", account.ID)
-
-			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
-				Name:      "Fetch transactions from client by account",
-				Key:       taskNameFetchTransactions,
-				AccountID: account.ID,
-			})
+		for page := 0; ; page++ {
+			pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize)
 			if err != nil {
 				return err
 			}
 
-			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
-				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-			})
-			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			if len(pagedAccounts.Content) == 0 {
+				break
+			}
+
+			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts.Content); err != nil {
 				return err
+			}
+
+			for _, account := range pagedAccounts.Content {
+				logger.Infof("scheduling fetch-transactions: %s", account.ID)
+
+				transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+					Name:      "Fetch transactions from client by account",
+					Key:       taskNameFetchTransactions,
+					AccountID: account.ID,
+				})
+				if err != nil {
+					return err
+				}
+
+				err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
+					ScheduleOption: models.OPTIONS_RUN_NOW,
+					RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+				})
+				if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+					return err
+				}
+			}
+
+			if len(pagedAccounts.Content) < config.PageSize {
+				break
+			}
+
+			if page+1 >= pagedAccounts.TotalPages {
+				// Modulr paging starts at 0, so the last page is TotalPages - 1.
+				break
 			}
 		}
 

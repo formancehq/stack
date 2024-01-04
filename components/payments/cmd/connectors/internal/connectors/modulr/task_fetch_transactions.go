@@ -16,7 +16,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
+func taskFetchTransactions(logger logging.Logger, config Config, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
@@ -25,93 +25,122 @@ func taskFetchTransactions(logger logging.Logger, client *client.Client, account
 	) error {
 		logger.Info("Fetching transactions for account", accountID)
 
-		transactions, err := client.GetTransactions(ctx, accountID)
-		if err != nil {
-			return err
-		}
-
-		batch := ingestion.PaymentBatch{}
-
-		for _, transaction := range transactions {
-			logger.Info(transaction)
-
-			rawData, err := json.Marshal(transaction)
+		for page := 0; ; page++ {
+			pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize)
 			if err != nil {
-				return fmt.Errorf("failed to marshal transaction: %w", err)
+				return err
 			}
 
-			paymentType := matchTransactionType(transaction.Type)
-
-			precision, ok := supportedCurrenciesWithDecimal[transaction.Account.Currency]
-			if !ok {
-				logger.Errorf("currency %s is not supported", transaction.Account.Currency)
-				continue
+			if len(pagedTransactions.Content) == 0 {
+				break
 			}
 
-			var amount big.Float
-			_, ok = amount.SetString(transaction.Amount.String())
-			if !ok {
-				return fmt.Errorf("failed to parse amount %s", transaction.Amount.String())
+			batch, err := toBatch(logger, connectorID, accountID, pagedTransactions.Content)
+			if err != nil {
+				return err
 			}
 
-			var amountInt big.Int
-			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
-
-			batchElement := ingestion.PaymentBatchElement{
-				Payment: &models.Payment{
-					ID: models.PaymentID{
-						PaymentReference: models.PaymentReference{
-							Reference: transaction.ID,
-							Type:      paymentType,
-						},
-						ConnectorID: connectorID,
-					},
-					Reference:     transaction.ID,
-					ConnectorID:   connectorID,
-					Type:          paymentType,
-					Status:        models.PaymentStatusSucceeded,
-					Scheme:        models.PaymentSchemeOther,
-					Amount:        &amountInt,
-					InitialAmount: &amountInt,
-					Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Account.Currency),
-					RawData:       rawData,
-				},
+			if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
+				return err
 			}
 
-			switch paymentType {
-			case models.PaymentTypePayIn:
-				batchElement.Payment.DestinationAccountID = &models.AccountID{
-					Reference:   accountID,
-					ConnectorID: connectorID,
-				}
-			case models.PaymentTypePayOut:
-				batchElement.Payment.SourceAccountID = &models.AccountID{
-					Reference:   accountID,
-					ConnectorID: connectorID,
-				}
-			default:
-				if transaction.Credit {
-					batchElement.Payment.DestinationAccountID = &models.AccountID{
-						Reference:   accountID,
-						ConnectorID: connectorID,
-					}
-				} else {
-					batchElement.Payment.SourceAccountID = &models.AccountID{
-						Reference:   accountID,
-						ConnectorID: connectorID,
-					}
-				}
+			if len(pagedTransactions.Content) < config.PageSize {
+				break
 			}
 
-			batch = append(batch, batchElement)
-		}
-
-		if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
-			return err
+			if page+1 >= pagedTransactions.TotalPages {
+				// Modulr paging starts at 0, so the last page is TotalPages - 1.
+				break
+			}
 		}
 
 		return nil
 	}
+}
+
+func toBatch(
+	logger logging.Logger,
+	connectorID models.ConnectorID,
+	accountID string,
+	transactions []*client.Transaction,
+) (ingestion.PaymentBatch, error) {
+	batch := ingestion.PaymentBatch{}
+
+	for _, transaction := range transactions {
+		logger.Info(transaction)
+
+		rawData, err := json.Marshal(transaction)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal transaction: %w", err)
+		}
+
+		paymentType := matchTransactionType(transaction.Type)
+
+		precision, ok := supportedCurrenciesWithDecimal[transaction.Account.Currency]
+		if !ok {
+			logger.Errorf("currency %s is not supported", transaction.Account.Currency)
+			continue
+		}
+
+		var amount big.Float
+		_, ok = amount.SetString(transaction.Amount.String())
+		if !ok {
+			return nil, fmt.Errorf("failed to parse amount %s", transaction.Amount.String())
+		}
+
+		var amountInt big.Int
+		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
+
+		batchElement := ingestion.PaymentBatchElement{
+			Payment: &models.Payment{
+				ID: models.PaymentID{
+					PaymentReference: models.PaymentReference{
+						Reference: transaction.ID,
+						Type:      paymentType,
+					},
+					ConnectorID: connectorID,
+				},
+				Reference:     transaction.ID,
+				ConnectorID:   connectorID,
+				Type:          paymentType,
+				Status:        models.PaymentStatusSucceeded,
+				Scheme:        models.PaymentSchemeOther,
+				Amount:        &amountInt,
+				InitialAmount: &amountInt,
+				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Account.Currency),
+				RawData:       rawData,
+			},
+		}
+
+		switch paymentType {
+		case models.PaymentTypePayIn:
+			batchElement.Payment.DestinationAccountID = &models.AccountID{
+				Reference:   accountID,
+				ConnectorID: connectorID,
+			}
+		case models.PaymentTypePayOut:
+			batchElement.Payment.SourceAccountID = &models.AccountID{
+				Reference:   accountID,
+				ConnectorID: connectorID,
+			}
+		default:
+			if transaction.Credit {
+				batchElement.Payment.DestinationAccountID = &models.AccountID{
+					Reference:   accountID,
+					ConnectorID: connectorID,
+				}
+			} else {
+				batchElement.Payment.SourceAccountID = &models.AccountID{
+					Reference:   accountID,
+					ConnectorID: connectorID,
+				}
+			}
+		}
+
+		batch = append(batch, batchElement)
+	}
+
+	return batch, nil
 }
 
 func matchTransactionType(transactionType string) models.PaymentType {
