@@ -207,8 +207,6 @@ func WithStringArrayFlag(name string, defaultValue []string, help string) Comman
 	}
 }
 
-
-
 func WithHiddenFlag(name string) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		_ = cmd.Flags().MarkHidden(name)
@@ -248,6 +246,18 @@ func WithDeprecated(message string) CommandOptionFn {
 func WithController[T any](c Controller[T]) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
+			// Run all parent commands
+			parent := cmd.Parent()
+			for parent != nil {
+				if parent.RunE != nil {
+					err := parent.RunE(parent, args)
+					if err != nil {
+						return err
+					}
+				}
+				parent = parent.Parent()
+			}
+
 			renderable, err := c.Run(cmd, args)
 
 			// If the controller return an argument error, we want to print the usage
