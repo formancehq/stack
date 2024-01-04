@@ -42,8 +42,7 @@ func taskFetchBeneficiaries(logger logging.Logger, config Config, client *client
 			}
 
 			if page+1 >= pagedBeneficiaries.TotalPages {
-				// Modulr paging starts at 0, so if we are at the last page - 1,
-				// we are at the last page.
+				// Modulr paging starts at 0, so the last page is TotalPages - 1.
 				break
 			}
 		}
