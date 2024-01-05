@@ -54,7 +54,7 @@ func ConnectorIDFromString(value string) (ConnectorID, error) {
 	if err != nil {
 		return ConnectorID{}, err
 	}
-	fmt.Println("test", data)
+	fmt.Println("test", string(data))
 	ret := ConnectorID{}
 	err = canonicaljson.Unmarshal(data, &ret)
 	if err != nil {
