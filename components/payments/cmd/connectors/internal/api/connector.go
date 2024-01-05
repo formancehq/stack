@@ -358,6 +358,7 @@ func getConnectorID[Config models.ConnectorConfigObject](
 ) (models.ConnectorID, error) {
 	switch apiVersion {
 	case V0:
+		fmt.Println("V0")
 		connectors := b.GetManager().Connectors()
 		if len(connectors) == 0 {
 			return models.ConnectorID{}, fmt.Errorf("no connectors installed")
@@ -372,6 +373,7 @@ func getConnectorID[Config models.ConnectorConfigObject](
 		}
 
 	case V1:
+		fmt.Println("V1", mux.Vars(r)["connectorID"])
 		connectorID, err := models.ConnectorIDFromString(mux.Vars(r)["connectorID"])
 		if err != nil {
 			return models.ConnectorID{}, err
