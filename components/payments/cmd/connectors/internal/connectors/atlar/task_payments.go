@@ -141,9 +141,6 @@ func ValidateTransferInitiation(transfer *models.TransferInitiation) error {
 	if transfer == nil {
 		return errors.New("transfer cannot be nil")
 	}
-	if transfer.Description == "" {
-		return errors.New("description of transfer initiation can not be empty")
-	}
 	if transfer.Type.String() != "PAYOUT" {
 		return errors.New("this connector only supports type PAYOUT")
 	}
