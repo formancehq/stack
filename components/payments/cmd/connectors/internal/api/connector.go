@@ -165,18 +165,22 @@ func webhooksMiddleware[Config models.ConnectorConfigObject](
 ) func(handler http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println("TOTO")
 			connectorID, err := getConnectorID(b, r, apiVersion)
 			if err != nil {
+				fmt.Println("TOTO1", connectorID, err)
 				api.BadRequest(w, ErrInvalidID, err)
 				return
 			}
 
 			if connectorNotInstalled(b, connectorID, w, r) {
+				fmt.Println("TOTO2", connectorID, err)
 				return
 			}
 
 			body, err := io.ReadAll(r.Body)
 			if err != nil {
+				fmt.Println("TOTO3", err)
 				api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			}
 			defer r.Body.Close()
@@ -187,10 +191,12 @@ func webhooksMiddleware[Config models.ConnectorConfigObject](
 				RequestBody: body,
 			})
 			if err != nil {
+				fmt.Println("TOTO4", connectorID, err)
 				handleConnectorsManagerErrors(w, r, err)
 				return
 			}
 
+			fmt.Println("TOTO5", connectorID)
 			handler.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
