@@ -31,6 +31,7 @@ type OtlpSpec struct {
 	// +kubebuilder:validation:default:=grpc
 	// +optional
 	Mode string `json:"mode,omitempty"`
+	// todo: set a map ?
 	// +optional
 	ResourceAttributes string `json:"resourceAttributes,omitempty"`
 }

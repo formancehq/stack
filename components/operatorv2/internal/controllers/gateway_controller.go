@@ -17,8 +17,9 @@ limitations under the License.
 package controllers
 
 import (
-	"bytes"
+	_ "embed"
 	"fmt"
+	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
@@ -27,20 +28,15 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topics"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"sort"
-	"strings"
-	"text/template"
-
-	_ "embed"
-	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sort"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -241,7 +237,6 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
 	})
 
-	buf := bytes.NewBufferString("")
 	data := map[string]any{
 		"Services": Map(httpAPIs, func(from *v1beta1.HTTPAPI) v1beta1.HTTPAPISpec {
 			return from.Spec
@@ -275,15 +270,7 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 		}()
 	}
 
-	if err := template.Must(template.New("caddyfile").
-		Funcs(map[string]any{
-			"join": strings.Join,
-		}).
-		Parse(gateways.Caddyfile)).
-		Execute(buf, data); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
+	return ComputeCaddyfile(ctx, stack, gateways.Caddyfile, data)
 }
 
 // SetupWithManager sets up the controller with the Manager.

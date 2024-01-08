@@ -25,7 +25,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"time"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -81,7 +80,7 @@ var _ = BeforeSuite(func() {
 	})
 	Expect(err).ToNot(HaveOccurred())
 
-	SetDefaultEventuallyTimeout(5 * time.Second)
+	//SetDefaultEventuallyTimeout(5 * time.Second)
 
 	Expect(reconcilers.Setup(mgr, core.Platform{
 		Region:      "us-west-1",

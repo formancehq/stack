@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"strings"
 	"text/template"
 )
 
@@ -46,7 +47,9 @@ func GetCommonServicesEnvVars(ctx Context, stack *v1beta1.Stack, serviceName str
 }
 
 func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additionalData map[string]any) (string, error) {
-	tpl := template.Must(template.New("main").Parse(_tpl))
+	tpl := template.Must(template.New("main").Funcs(map[string]any{
+		"join": strings.Join,
+	}).Parse(_tpl))
 	buf := bytes.NewBufferString("")
 
 	openTelemetryEnabled, err := stacks.IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, stack.Name)

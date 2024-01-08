@@ -6,6 +6,7 @@ import (
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -222,6 +223,52 @@ var _ = Describe("GatewayController", func() {
 					return d.Spec.Template.Spec.Containers[0].Env
 				}).Should(ContainElements(
 					brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "gateway"),
+				))
+			})
+		})
+		Context("With otlp enabled", func() {
+			var openTelemetryConfiguration *v1beta1.OpenTelemetryConfiguration
+			BeforeEach(func() {
+				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: uuid.NewString(),
+						Labels: map[string]string{
+							"formance.com/stack": stack.Name,
+						},
+					},
+					Spec: v1beta1.OpenTelemetryConfigurationSpec{
+						Traces: &v1beta1.TracesSpec{
+							Otlp: &v1beta1.OtlpSpec{
+								Endpoint: "otlp",
+								Port:     4317,
+								Insecure: false,
+								Mode:     "grpc",
+							},
+						},
+					},
+				}
+			})
+			JustBeforeEach(func() {
+				Expect(Create(openTelemetryConfiguration)).To(Succeed())
+			})
+			JustAfterEach(func() {
+				Expect(Delete(openTelemetryConfiguration)).To(Succeed())
+			})
+			It("Should adapt the Caddyfile", func() {
+				cm := &corev1.ConfigMap{}
+				Eventually(func(g Gomega) error {
+					return LoadResource(stack.Name, "gateway", cm)
+				}).Should(Succeed())
+				Expect(cm.Data["Caddyfile"]).To(
+					MatchGoldenFile("gateway-controller", "configmap-with-opentelemetry.yaml"))
+			})
+			It("Should add env vars to the deployment", func() {
+				Eventually(func(g Gomega) []corev1.EnvVar {
+					d := &appsv1.Deployment{}
+					g.Expect(LoadResource(stack.Name, "gateway", d)).To(Succeed())
+					return d.Spec.Template.Spec.Containers[0].Env
+				}).Should(ContainElements(
+					opentelemetryconfigurations.GetEnvVars(openTelemetryConfiguration, "gateway"),
 				))
 			})
 		})

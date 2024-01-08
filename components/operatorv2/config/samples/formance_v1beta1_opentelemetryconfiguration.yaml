@@ -16,4 +16,4 @@ spec:
       insecure: true
       mode: grpc
       port: 4317
-      resourceAttributes: "foo=bar"
+      # resourceAttributes: "foo=bar"
