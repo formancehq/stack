@@ -15,18 +15,18 @@ import (
 	"strings"
 )
 
-type ledger struct {
+type Ledger struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newLedger(sdkConfig sdkConfiguration) *ledger {
-	return &ledger{
+func newLedger(sdkConfig sdkConfiguration) *Ledger {
+	return &Ledger{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // CreateTransactions - Create a new batch of transactions to a ledger
-func (s *ledger) CreateTransactions(ctx context.Context, request operations.CreateTransactionsRequest) (*operations.CreateTransactionsResponse, error) {
+func (s *Ledger) CreateTransactions(ctx context.Context, request operations.CreateTransactionsRequest) (*operations.CreateTransactionsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/batch", request, nil)
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *ledger) CreateTransactions(ctx context.Context, request operations.Crea
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -94,7 +94,7 @@ func (s *ledger) CreateTransactions(ctx context.Context, request operations.Crea
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -109,7 +109,7 @@ func (s *ledger) CreateTransactions(ctx context.Context, request operations.Crea
 }
 
 // AddMetadataOnTransaction - Set the metadata of a transaction by its ID
-func (s *ledger) AddMetadataOnTransaction(ctx context.Context, request operations.AddMetadataOnTransactionRequest) (*operations.AddMetadataOnTransactionResponse, error) {
+func (s *Ledger) AddMetadataOnTransaction(ctx context.Context, request operations.AddMetadataOnTransactionRequest) (*operations.AddMetadataOnTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/{txid}/metadata", request, nil)
 	if err != nil {
@@ -130,7 +130,7 @@ func (s *ledger) AddMetadataOnTransaction(ctx context.Context, request operation
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -163,7 +163,7 @@ func (s *ledger) AddMetadataOnTransaction(ctx context.Context, request operation
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -178,7 +178,7 @@ func (s *ledger) AddMetadataOnTransaction(ctx context.Context, request operation
 }
 
 // AddMetadataToAccount - Add metadata to an account
-func (s *ledger) AddMetadataToAccount(ctx context.Context, request operations.AddMetadataToAccountRequest) (*operations.AddMetadataToAccountResponse, error) {
+func (s *Ledger) AddMetadataToAccount(ctx context.Context, request operations.AddMetadataToAccountRequest) (*operations.AddMetadataToAccountResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/accounts/{address}/metadata", request, nil)
 	if err != nil {
@@ -202,7 +202,7 @@ func (s *ledger) AddMetadataToAccount(ctx context.Context, request operations.Ad
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -248,7 +248,7 @@ func (s *ledger) AddMetadataToAccount(ctx context.Context, request operations.Ad
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -263,7 +263,7 @@ func (s *ledger) AddMetadataToAccount(ctx context.Context, request operations.Ad
 }
 
 // CountAccounts - Count the accounts from a ledger
-func (s *ledger) CountAccounts(ctx context.Context, request operations.CountAccountsRequest) (*operations.CountAccountsResponse, error) {
+func (s *Ledger) CountAccounts(ctx context.Context, request operations.CountAccountsRequest) (*operations.CountAccountsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/accounts", request, nil)
 	if err != nil {
@@ -281,7 +281,7 @@ func (s *ledger) CountAccounts(ctx context.Context, request operations.CountAcco
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -316,7 +316,7 @@ func (s *ledger) CountAccounts(ctx context.Context, request operations.CountAcco
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -331,7 +331,7 @@ func (s *ledger) CountAccounts(ctx context.Context, request operations.CountAcco
 }
 
 // CountTransactions - Count the transactions from a ledger
-func (s *ledger) CountTransactions(ctx context.Context, request operations.CountTransactionsRequest) (*operations.CountTransactionsResponse, error) {
+func (s *Ledger) CountTransactions(ctx context.Context, request operations.CountTransactionsRequest) (*operations.CountTransactionsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions", request, nil)
 	if err != nil {
@@ -349,7 +349,7 @@ func (s *ledger) CountTransactions(ctx context.Context, request operations.Count
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -384,7 +384,7 @@ func (s *ledger) CountTransactions(ctx context.Context, request operations.Count
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -399,7 +399,7 @@ func (s *ledger) CountTransactions(ctx context.Context, request operations.Count
 }
 
 // CreateTransaction - Create a new transaction to a ledger
-func (s *ledger) CreateTransaction(ctx context.Context, request operations.CreateTransactionRequest) (*operations.CreateTransactionResponse, error) {
+func (s *Ledger) CreateTransaction(ctx context.Context, request operations.CreateTransactionRequest) (*operations.CreateTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions", request, nil)
 	if err != nil {
@@ -427,7 +427,7 @@ func (s *ledger) CreateTransaction(ctx context.Context, request operations.Creat
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -482,7 +482,7 @@ func (s *ledger) CreateTransaction(ctx context.Context, request operations.Creat
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -497,7 +497,7 @@ func (s *ledger) CreateTransaction(ctx context.Context, request operations.Creat
 }
 
 // GetAccount - Get account by its address
-func (s *ledger) GetAccount(ctx context.Context, request operations.GetAccountRequest) (*operations.GetAccountResponse, error) {
+func (s *Ledger) GetAccount(ctx context.Context, request operations.GetAccountRequest) (*operations.GetAccountResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/accounts/{address}", request, nil)
 	if err != nil {
@@ -511,7 +511,7 @@ func (s *ledger) GetAccount(ctx context.Context, request operations.GetAccountRe
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -555,7 +555,7 @@ func (s *ledger) GetAccount(ctx context.Context, request operations.GetAccountRe
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -570,7 +570,7 @@ func (s *ledger) GetAccount(ctx context.Context, request operations.GetAccountRe
 }
 
 // GetBalances - Get the balances from a ledger's account
-func (s *ledger) GetBalances(ctx context.Context, request operations.GetBalancesRequest) (*operations.GetBalancesResponse, error) {
+func (s *Ledger) GetBalances(ctx context.Context, request operations.GetBalancesRequest) (*operations.GetBalancesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/balances", request, nil)
 	if err != nil {
@@ -588,7 +588,7 @@ func (s *ledger) GetBalances(ctx context.Context, request operations.GetBalances
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -632,7 +632,7 @@ func (s *ledger) GetBalances(ctx context.Context, request operations.GetBalances
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -647,7 +647,7 @@ func (s *ledger) GetBalances(ctx context.Context, request operations.GetBalances
 }
 
 // GetBalancesAggregated - Get the aggregated balances from selected accounts
-func (s *ledger) GetBalancesAggregated(ctx context.Context, request operations.GetBalancesAggregatedRequest) (*operations.GetBalancesAggregatedResponse, error) {
+func (s *Ledger) GetBalancesAggregated(ctx context.Context, request operations.GetBalancesAggregatedRequest) (*operations.GetBalancesAggregatedResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/aggregate/balances", request, nil)
 	if err != nil {
@@ -665,7 +665,7 @@ func (s *ledger) GetBalancesAggregated(ctx context.Context, request operations.G
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -709,7 +709,7 @@ func (s *ledger) GetBalancesAggregated(ctx context.Context, request operations.G
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -724,7 +724,7 @@ func (s *ledger) GetBalancesAggregated(ctx context.Context, request operations.G
 }
 
 // GetInfo - Show server information
-func (s *ledger) GetInfo(ctx context.Context) (*operations.GetInfoResponse, error) {
+func (s *Ledger) GetInfo(ctx context.Context) (*operations.GetInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/ledger/_info"
 
@@ -735,7 +735,7 @@ func (s *ledger) GetInfo(ctx context.Context) (*operations.GetInfoResponse, erro
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -779,7 +779,7 @@ func (s *ledger) GetInfo(ctx context.Context) (*operations.GetInfoResponse, erro
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -794,7 +794,7 @@ func (s *ledger) GetInfo(ctx context.Context) (*operations.GetInfoResponse, erro
 }
 
 // GetLedgerInfo - Get information about a ledger
-func (s *ledger) GetLedgerInfo(ctx context.Context, request operations.GetLedgerInfoRequest) (*operations.GetLedgerInfoResponse, error) {
+func (s *Ledger) GetLedgerInfo(ctx context.Context, request operations.GetLedgerInfoRequest) (*operations.GetLedgerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/_info", request, nil)
 	if err != nil {
@@ -808,7 +808,7 @@ func (s *ledger) GetLedgerInfo(ctx context.Context, request operations.GetLedger
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -852,7 +852,7 @@ func (s *ledger) GetLedgerInfo(ctx context.Context, request operations.GetLedger
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -867,7 +867,7 @@ func (s *ledger) GetLedgerInfo(ctx context.Context, request operations.GetLedger
 }
 
 // GetMapping - Get the mapping of a ledger
-func (s *ledger) GetMapping(ctx context.Context, request operations.GetMappingRequest) (*operations.GetMappingResponse, error) {
+func (s *Ledger) GetMapping(ctx context.Context, request operations.GetMappingRequest) (*operations.GetMappingResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/mapping", request, nil)
 	if err != nil {
@@ -881,7 +881,7 @@ func (s *ledger) GetMapping(ctx context.Context, request operations.GetMappingRe
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -925,7 +925,7 @@ func (s *ledger) GetMapping(ctx context.Context, request operations.GetMappingRe
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -940,7 +940,7 @@ func (s *ledger) GetMapping(ctx context.Context, request operations.GetMappingRe
 }
 
 // GetTransaction - Get transaction from a ledger by its ID
-func (s *ledger) GetTransaction(ctx context.Context, request operations.GetTransactionRequest) (*operations.GetTransactionResponse, error) {
+func (s *Ledger) GetTransaction(ctx context.Context, request operations.GetTransactionRequest) (*operations.GetTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/{txid}", request, nil)
 	if err != nil {
@@ -954,7 +954,7 @@ func (s *ledger) GetTransaction(ctx context.Context, request operations.GetTrans
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -998,7 +998,7 @@ func (s *ledger) GetTransaction(ctx context.Context, request operations.GetTrans
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1014,7 +1014,7 @@ func (s *ledger) GetTransaction(ctx context.Context, request operations.GetTrans
 
 // ListAccounts - List accounts from a ledger
 // List accounts from a ledger, sorted by address in descending order.
-func (s *ledger) ListAccounts(ctx context.Context, request operations.ListAccountsRequest) (*operations.ListAccountsResponse, error) {
+func (s *Ledger) ListAccounts(ctx context.Context, request operations.ListAccountsRequest) (*operations.ListAccountsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/accounts", request, nil)
 	if err != nil {
@@ -1032,7 +1032,7 @@ func (s *ledger) ListAccounts(ctx context.Context, request operations.ListAccoun
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1076,7 +1076,7 @@ func (s *ledger) ListAccounts(ctx context.Context, request operations.ListAccoun
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1092,7 +1092,7 @@ func (s *ledger) ListAccounts(ctx context.Context, request operations.ListAccoun
 
 // ListLogs - List the logs from a ledger
 // List the logs from a ledger, sorted by ID in descending order.
-func (s *ledger) ListLogs(ctx context.Context, request operations.ListLogsRequest) (*operations.ListLogsResponse, error) {
+func (s *Ledger) ListLogs(ctx context.Context, request operations.ListLogsRequest) (*operations.ListLogsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/logs", request, nil)
 	if err != nil {
@@ -1110,7 +1110,7 @@ func (s *ledger) ListLogs(ctx context.Context, request operations.ListLogsReques
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1154,7 +1154,7 @@ func (s *ledger) ListLogs(ctx context.Context, request operations.ListLogsReques
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1170,7 +1170,7 @@ func (s *ledger) ListLogs(ctx context.Context, request operations.ListLogsReques
 
 // ListTransactions - List transactions from a ledger
 // List transactions from a ledger, sorted by txid in descending order.
-func (s *ledger) ListTransactions(ctx context.Context, request operations.ListTransactionsRequest) (*operations.ListTransactionsResponse, error) {
+func (s *Ledger) ListTransactions(ctx context.Context, request operations.ListTransactionsRequest) (*operations.ListTransactionsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions", request, nil)
 	if err != nil {
@@ -1188,7 +1188,7 @@ func (s *ledger) ListTransactions(ctx context.Context, request operations.ListTr
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1232,7 +1232,7 @@ func (s *ledger) ListTransactions(ctx context.Context, request operations.ListTr
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1248,7 +1248,7 @@ func (s *ledger) ListTransactions(ctx context.Context, request operations.ListTr
 
 // ReadStats - Get statistics from a ledger
 // Get statistics from a ledger. (aggregate metrics on accounts and transactions)
-func (s *ledger) ReadStats(ctx context.Context, request operations.ReadStatsRequest) (*operations.ReadStatsResponse, error) {
+func (s *Ledger) ReadStats(ctx context.Context, request operations.ReadStatsRequest) (*operations.ReadStatsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/stats", request, nil)
 	if err != nil {
@@ -1262,7 +1262,7 @@ func (s *ledger) ReadStats(ctx context.Context, request operations.ReadStatsRequ
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1306,7 +1306,7 @@ func (s *ledger) ReadStats(ctx context.Context, request operations.ReadStatsRequ
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1321,7 +1321,7 @@ func (s *ledger) ReadStats(ctx context.Context, request operations.ReadStatsRequ
 }
 
 // RevertTransaction - Revert a ledger transaction by its ID
-func (s *ledger) RevertTransaction(ctx context.Context, request operations.RevertTransactionRequest) (*operations.RevertTransactionResponse, error) {
+func (s *Ledger) RevertTransaction(ctx context.Context, request operations.RevertTransactionRequest) (*operations.RevertTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/transactions/{txid}/revert", request, nil)
 	if err != nil {
@@ -1339,7 +1339,7 @@ func (s *ledger) RevertTransaction(ctx context.Context, request operations.Rever
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1383,7 +1383,7 @@ func (s *ledger) RevertTransaction(ctx context.Context, request operations.Rever
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1401,7 +1401,7 @@ func (s *ledger) RevertTransaction(ctx context.Context, request operations.Rever
 // This route is deprecated, and has been merged into `POST /{ledger}/transactions`.
 //
 // Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
-func (s *ledger) RunScript(ctx context.Context, request operations.RunScriptRequest) (*operations.RunScriptResponse, error) {
+func (s *Ledger) RunScript(ctx context.Context, request operations.RunScriptRequest) (*operations.RunScriptResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/script", request, nil)
 	if err != nil {
@@ -1429,7 +1429,7 @@ func (s *ledger) RunScript(ctx context.Context, request operations.RunScriptRequ
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1476,7 +1476,7 @@ func (s *ledger) RunScript(ctx context.Context, request operations.RunScriptRequ
 }
 
 // UpdateMapping - Update the mapping of a ledger
-func (s *ledger) UpdateMapping(ctx context.Context, request operations.UpdateMappingRequest) (*operations.UpdateMappingResponse, error) {
+func (s *Ledger) UpdateMapping(ctx context.Context, request operations.UpdateMappingRequest) (*operations.UpdateMappingResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/{ledger}/mapping", request, nil)
 	if err != nil {
@@ -1500,7 +1500,7 @@ func (s *ledger) UpdateMapping(ctx context.Context, request operations.UpdateMap
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1544,7 +1544,7 @@ func (s *ledger) UpdateMapping(ctx context.Context, request operations.UpdateMap
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.ErrorResponse
+			var out sdkerrors.ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1559,7 +1559,7 @@ func (s *ledger) UpdateMapping(ctx context.Context, request operations.UpdateMap
 }
 
 // V2AddMetadataOnTransaction - Set the metadata of a transaction by its ID
-func (s *ledger) V2AddMetadataOnTransaction(ctx context.Context, request operations.V2AddMetadataOnTransactionRequest) (*operations.V2AddMetadataOnTransactionResponse, error) {
+func (s *Ledger) V2AddMetadataOnTransaction(ctx context.Context, request operations.V2AddMetadataOnTransactionRequest) (*operations.V2AddMetadataOnTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/transactions/{id}/metadata", request, nil)
 	if err != nil {
@@ -1586,7 +1586,7 @@ func (s *ledger) V2AddMetadataOnTransaction(ctx context.Context, request operati
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1632,7 +1632,7 @@ func (s *ledger) V2AddMetadataOnTransaction(ctx context.Context, request operati
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1647,7 +1647,7 @@ func (s *ledger) V2AddMetadataOnTransaction(ctx context.Context, request operati
 }
 
 // V2AddMetadataToAccount - Add metadata to an account
-func (s *ledger) V2AddMetadataToAccount(ctx context.Context, request operations.V2AddMetadataToAccountRequest) (*operations.V2AddMetadataToAccountResponse, error) {
+func (s *Ledger) V2AddMetadataToAccount(ctx context.Context, request operations.V2AddMetadataToAccountRequest) (*operations.V2AddMetadataToAccountResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/accounts/{address}/metadata", request, nil)
 	if err != nil {
@@ -1677,7 +1677,7 @@ func (s *ledger) V2AddMetadataToAccount(ctx context.Context, request operations.
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1723,7 +1723,7 @@ func (s *ledger) V2AddMetadataToAccount(ctx context.Context, request operations.
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1738,7 +1738,7 @@ func (s *ledger) V2AddMetadataToAccount(ctx context.Context, request operations.
 }
 
 // V2CountAccounts - Count the accounts from a ledger
-func (s *ledger) V2CountAccounts(ctx context.Context, request operations.V2CountAccountsRequest) (*operations.V2CountAccountsResponse, error) {
+func (s *Ledger) V2CountAccounts(ctx context.Context, request operations.V2CountAccountsRequest) (*operations.V2CountAccountsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/accounts", request, nil)
 	if err != nil {
@@ -1763,7 +1763,7 @@ func (s *ledger) V2CountAccounts(ctx context.Context, request operations.V2Count
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1798,7 +1798,7 @@ func (s *ledger) V2CountAccounts(ctx context.Context, request operations.V2Count
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1813,7 +1813,7 @@ func (s *ledger) V2CountAccounts(ctx context.Context, request operations.V2Count
 }
 
 // V2CountTransactions - Count the transactions from a ledger
-func (s *ledger) V2CountTransactions(ctx context.Context, request operations.V2CountTransactionsRequest) (*operations.V2CountTransactionsResponse, error) {
+func (s *Ledger) V2CountTransactions(ctx context.Context, request operations.V2CountTransactionsRequest) (*operations.V2CountTransactionsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/transactions", request, nil)
 	if err != nil {
@@ -1838,7 +1838,7 @@ func (s *ledger) V2CountTransactions(ctx context.Context, request operations.V2C
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1873,7 +1873,7 @@ func (s *ledger) V2CountTransactions(ctx context.Context, request operations.V2C
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1888,7 +1888,7 @@ func (s *ledger) V2CountTransactions(ctx context.Context, request operations.V2C
 }
 
 // V2CreateBulk - Bulk request
-func (s *ledger) V2CreateBulk(ctx context.Context, request operations.V2CreateBulkRequest) (*operations.V2CreateBulkResponse, error) {
+func (s *Ledger) V2CreateBulk(ctx context.Context, request operations.V2CreateBulkRequest) (*operations.V2CreateBulkResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/_bulk", request, nil)
 	if err != nil {
@@ -1909,7 +1909,7 @@ func (s *ledger) V2CreateBulk(ctx context.Context, request operations.V2CreateBu
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1953,7 +1953,7 @@ func (s *ledger) V2CreateBulk(ctx context.Context, request operations.V2CreateBu
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1968,7 +1968,7 @@ func (s *ledger) V2CreateBulk(ctx context.Context, request operations.V2CreateBu
 }
 
 // V2CreateLedger - Create a ledger
-func (s *ledger) V2CreateLedger(ctx context.Context, request operations.V2CreateLedgerRequest) (*operations.V2CreateLedgerResponse, error) {
+func (s *Ledger) V2CreateLedger(ctx context.Context, request operations.V2CreateLedgerRequest) (*operations.V2CreateLedgerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}", request, nil)
 	if err != nil {
@@ -1989,7 +1989,7 @@ func (s *ledger) V2CreateLedger(ctx context.Context, request operations.V2Create
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2033,7 +2033,7 @@ func (s *ledger) V2CreateLedger(ctx context.Context, request operations.V2Create
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2048,7 +2048,7 @@ func (s *ledger) V2CreateLedger(ctx context.Context, request operations.V2Create
 }
 
 // V2CreateTransaction - Create a new transaction to a ledger
-func (s *ledger) V2CreateTransaction(ctx context.Context, request operations.V2CreateTransactionRequest) (*operations.V2CreateTransactionResponse, error) {
+func (s *Ledger) V2CreateTransaction(ctx context.Context, request operations.V2CreateTransactionRequest) (*operations.V2CreateTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/transactions", request, nil)
 	if err != nil {
@@ -2078,7 +2078,7 @@ func (s *ledger) V2CreateTransaction(ctx context.Context, request operations.V2C
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2133,7 +2133,7 @@ func (s *ledger) V2CreateTransaction(ctx context.Context, request operations.V2C
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2149,7 +2149,7 @@ func (s *ledger) V2CreateTransaction(ctx context.Context, request operations.V2C
 
 // V2DeleteAccountMetadata - Delete metadata by key
 // Delete metadata by key
-func (s *ledger) V2DeleteAccountMetadata(ctx context.Context, request operations.V2DeleteAccountMetadataRequest) (*operations.V2DeleteAccountMetadataResponse, error) {
+func (s *Ledger) V2DeleteAccountMetadata(ctx context.Context, request operations.V2DeleteAccountMetadataRequest) (*operations.V2DeleteAccountMetadataResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/accounts/{address}/metadata/{key}", request, nil)
 	if err != nil {
@@ -2163,7 +2163,7 @@ func (s *ledger) V2DeleteAccountMetadata(ctx context.Context, request operations
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2200,7 +2200,7 @@ func (s *ledger) V2DeleteAccountMetadata(ctx context.Context, request operations
 
 // V2DeleteTransactionMetadata - Delete metadata by key
 // Delete metadata by key
-func (s *ledger) V2DeleteTransactionMetadata(ctx context.Context, request operations.V2DeleteTransactionMetadataRequest) (*operations.V2DeleteTransactionMetadataResponse, error) {
+func (s *Ledger) V2DeleteTransactionMetadata(ctx context.Context, request operations.V2DeleteTransactionMetadataRequest) (*operations.V2DeleteTransactionMetadataResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/transactions/{id}/metadata/{key}", request, nil)
 	if err != nil {
@@ -2214,7 +2214,7 @@ func (s *ledger) V2DeleteTransactionMetadata(ctx context.Context, request operat
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2258,7 +2258,7 @@ func (s *ledger) V2DeleteTransactionMetadata(ctx context.Context, request operat
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2273,7 +2273,7 @@ func (s *ledger) V2DeleteTransactionMetadata(ctx context.Context, request operat
 }
 
 // V2GetAccount - Get account by its address
-func (s *ledger) V2GetAccount(ctx context.Context, request operations.V2GetAccountRequest) (*operations.V2GetAccountResponse, error) {
+func (s *Ledger) V2GetAccount(ctx context.Context, request operations.V2GetAccountRequest) (*operations.V2GetAccountResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/accounts/{address}", request, nil)
 	if err != nil {
@@ -2291,7 +2291,7 @@ func (s *ledger) V2GetAccount(ctx context.Context, request operations.V2GetAccou
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2335,7 +2335,7 @@ func (s *ledger) V2GetAccount(ctx context.Context, request operations.V2GetAccou
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2350,7 +2350,7 @@ func (s *ledger) V2GetAccount(ctx context.Context, request operations.V2GetAccou
 }
 
 // V2GetBalancesAggregated - Get the aggregated balances from selected accounts
-func (s *ledger) V2GetBalancesAggregated(ctx context.Context, request operations.V2GetBalancesAggregatedRequest) (*operations.V2GetBalancesAggregatedResponse, error) {
+func (s *Ledger) V2GetBalancesAggregated(ctx context.Context, request operations.V2GetBalancesAggregatedRequest) (*operations.V2GetBalancesAggregatedResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/aggregate/balances", request, nil)
 	if err != nil {
@@ -2375,7 +2375,7 @@ func (s *ledger) V2GetBalancesAggregated(ctx context.Context, request operations
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2419,7 +2419,7 @@ func (s *ledger) V2GetBalancesAggregated(ctx context.Context, request operations
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2434,7 +2434,7 @@ func (s *ledger) V2GetBalancesAggregated(ctx context.Context, request operations
 }
 
 // V2GetInfo - Show server information
-func (s *ledger) V2GetInfo(ctx context.Context) (*operations.V2GetInfoResponse, error) {
+func (s *Ledger) V2GetInfo(ctx context.Context) (*operations.V2GetInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/ledger/v2/_info"
 
@@ -2445,7 +2445,7 @@ func (s *ledger) V2GetInfo(ctx context.Context) (*operations.V2GetInfoResponse, 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2489,7 +2489,7 @@ func (s *ledger) V2GetInfo(ctx context.Context) (*operations.V2GetInfoResponse, 
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2504,7 +2504,7 @@ func (s *ledger) V2GetInfo(ctx context.Context) (*operations.V2GetInfoResponse, 
 }
 
 // V2GetLedger - Get a ledger
-func (s *ledger) V2GetLedger(ctx context.Context, request operations.V2GetLedgerRequest) (*operations.V2GetLedgerResponse, error) {
+func (s *Ledger) V2GetLedger(ctx context.Context, request operations.V2GetLedgerRequest) (*operations.V2GetLedgerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}", request, nil)
 	if err != nil {
@@ -2518,7 +2518,7 @@ func (s *ledger) V2GetLedger(ctx context.Context, request operations.V2GetLedger
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2562,7 +2562,7 @@ func (s *ledger) V2GetLedger(ctx context.Context, request operations.V2GetLedger
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2577,7 +2577,7 @@ func (s *ledger) V2GetLedger(ctx context.Context, request operations.V2GetLedger
 }
 
 // V2GetLedgerInfo - Get information about a ledger
-func (s *ledger) V2GetLedgerInfo(ctx context.Context, request operations.V2GetLedgerInfoRequest) (*operations.V2GetLedgerInfoResponse, error) {
+func (s *Ledger) V2GetLedgerInfo(ctx context.Context, request operations.V2GetLedgerInfoRequest) (*operations.V2GetLedgerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/_info", request, nil)
 	if err != nil {
@@ -2591,7 +2591,7 @@ func (s *ledger) V2GetLedgerInfo(ctx context.Context, request operations.V2GetLe
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2635,7 +2635,7 @@ func (s *ledger) V2GetLedgerInfo(ctx context.Context, request operations.V2GetLe
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2650,7 +2650,7 @@ func (s *ledger) V2GetLedgerInfo(ctx context.Context, request operations.V2GetLe
 }
 
 // V2GetTransaction - Get transaction from a ledger by its ID
-func (s *ledger) V2GetTransaction(ctx context.Context, request operations.V2GetTransactionRequest) (*operations.V2GetTransactionResponse, error) {
+func (s *Ledger) V2GetTransaction(ctx context.Context, request operations.V2GetTransactionRequest) (*operations.V2GetTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/transactions/{id}", request, nil)
 	if err != nil {
@@ -2668,7 +2668,7 @@ func (s *ledger) V2GetTransaction(ctx context.Context, request operations.V2GetT
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2723,7 +2723,7 @@ func (s *ledger) V2GetTransaction(ctx context.Context, request operations.V2GetT
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2739,7 +2739,7 @@ func (s *ledger) V2GetTransaction(ctx context.Context, request operations.V2GetT
 
 // V2ListAccounts - List accounts from a ledger
 // List accounts from a ledger, sorted by address in descending order.
-func (s *ledger) V2ListAccounts(ctx context.Context, request operations.V2ListAccountsRequest) (*operations.V2ListAccountsResponse, error) {
+func (s *Ledger) V2ListAccounts(ctx context.Context, request operations.V2ListAccountsRequest) (*operations.V2ListAccountsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/accounts", request, nil)
 	if err != nil {
@@ -2764,7 +2764,7 @@ func (s *ledger) V2ListAccounts(ctx context.Context, request operations.V2ListAc
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2819,7 +2819,7 @@ func (s *ledger) V2ListAccounts(ctx context.Context, request operations.V2ListAc
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2834,7 +2834,7 @@ func (s *ledger) V2ListAccounts(ctx context.Context, request operations.V2ListAc
 }
 
 // V2ListLedgers - List ledgers
-func (s *ledger) V2ListLedgers(ctx context.Context, request operations.V2ListLedgersRequest) (*operations.V2ListLedgersResponse, error) {
+func (s *Ledger) V2ListLedgers(ctx context.Context, request operations.V2ListLedgersRequest) (*operations.V2ListLedgersResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/ledger/v2"
 
@@ -2849,7 +2849,7 @@ func (s *ledger) V2ListLedgers(ctx context.Context, request operations.V2ListLed
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2893,7 +2893,7 @@ func (s *ledger) V2ListLedgers(ctx context.Context, request operations.V2ListLed
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2909,7 +2909,7 @@ func (s *ledger) V2ListLedgers(ctx context.Context, request operations.V2ListLed
 
 // V2ListLogs - List the logs from a ledger
 // List the logs from a ledger, sorted by ID in descending order.
-func (s *ledger) V2ListLogs(ctx context.Context, request operations.V2ListLogsRequest) (*operations.V2ListLogsResponse, error) {
+func (s *Ledger) V2ListLogs(ctx context.Context, request operations.V2ListLogsRequest) (*operations.V2ListLogsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/logs", request, nil)
 	if err != nil {
@@ -2934,7 +2934,7 @@ func (s *ledger) V2ListLogs(ctx context.Context, request operations.V2ListLogsRe
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2978,7 +2978,7 @@ func (s *ledger) V2ListLogs(ctx context.Context, request operations.V2ListLogsRe
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2994,7 +2994,7 @@ func (s *ledger) V2ListLogs(ctx context.Context, request operations.V2ListLogsRe
 
 // V2ListTransactions - List transactions from a ledger
 // List transactions from a ledger, sorted by id in descending order.
-func (s *ledger) V2ListTransactions(ctx context.Context, request operations.V2ListTransactionsRequest) (*operations.V2ListTransactionsResponse, error) {
+func (s *Ledger) V2ListTransactions(ctx context.Context, request operations.V2ListTransactionsRequest) (*operations.V2ListTransactionsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/transactions", request, nil)
 	if err != nil {
@@ -3019,7 +3019,7 @@ func (s *ledger) V2ListTransactions(ctx context.Context, request operations.V2Li
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -3076,7 +3076,7 @@ func (s *ledger) V2ListTransactions(ctx context.Context, request operations.V2Li
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -3092,7 +3092,7 @@ func (s *ledger) V2ListTransactions(ctx context.Context, request operations.V2Li
 
 // V2ReadStats - Get statistics from a ledger
 // Get statistics from a ledger. (aggregate metrics on accounts and transactions)
-func (s *ledger) V2ReadStats(ctx context.Context, request operations.V2ReadStatsRequest) (*operations.V2ReadStatsResponse, error) {
+func (s *Ledger) V2ReadStats(ctx context.Context, request operations.V2ReadStatsRequest) (*operations.V2ReadStatsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/stats", request, nil)
 	if err != nil {
@@ -3106,7 +3106,7 @@ func (s *ledger) V2ReadStats(ctx context.Context, request operations.V2ReadStats
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -3150,7 +3150,7 @@ func (s *ledger) V2ReadStats(ctx context.Context, request operations.V2ReadStats
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -3165,7 +3165,7 @@ func (s *ledger) V2ReadStats(ctx context.Context, request operations.V2ReadStats
 }
 
 // V2RevertTransaction - Revert a ledger transaction by its ID
-func (s *ledger) V2RevertTransaction(ctx context.Context, request operations.V2RevertTransactionRequest) (*operations.V2RevertTransactionResponse, error) {
+func (s *Ledger) V2RevertTransaction(ctx context.Context, request operations.V2RevertTransactionRequest) (*operations.V2RevertTransactionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/ledger/v2/{ledger}/transactions/{id}/revert", request, nil)
 	if err != nil {
@@ -3183,7 +3183,7 @@ func (s *ledger) V2RevertTransaction(ctx context.Context, request operations.V2R
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -3238,7 +3238,7 @@ func (s *ledger) V2RevertTransaction(ctx context.Context, request operations.V2R
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2ErrorResponse
+			var out sdkerrors.V2ErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}

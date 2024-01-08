@@ -3,7 +3,7 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
 	"time"
@@ -57,7 +57,7 @@ type V2CountTransactionsResponse struct {
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
 	// Error
-	V2ErrorResponse *shared.V2ErrorResponse
+	V2ErrorResponse *sdkerrors.V2ErrorResponse
 }
 
 func (o *V2CountTransactionsResponse) GetContentType() string {
@@ -69,7 +69,7 @@ func (o *V2CountTransactionsResponse) GetContentType() string {
 
 func (o *V2CountTransactionsResponse) GetHeaders() map[string][]string {
 	if o == nil {
-		return nil
+		return map[string][]string{}
 	}
 	return o.Headers
 }
@@ -88,7 +88,7 @@ func (o *V2CountTransactionsResponse) GetRawResponse() *http.Response {
 	return o.RawResponse
 }
 
-func (o *V2CountTransactionsResponse) GetV2ErrorResponse() *shared.V2ErrorResponse {
+func (o *V2CountTransactionsResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
 	if o == nil {
 		return nil
 	}

@@ -3,14 +3,14 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
 	"time"
 )
 
-// CountTransactionsMetadata - Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-type CountTransactionsMetadata struct {
+// Metadata - Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+type Metadata struct {
 }
 
 type CountTransactionsRequest struct {
@@ -25,7 +25,7 @@ type CountTransactionsRequest struct {
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-	Metadata *CountTransactionsMetadata `queryParam:"style=deepObject,explode=true,name=metadata"`
+	Metadata *Metadata `queryParam:"style=deepObject,explode=true,name=metadata"`
 	// Filter transactions by reference field.
 	Reference *string `queryParam:"style=form,explode=true,name=reference"`
 	// Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
@@ -75,7 +75,7 @@ func (o *CountTransactionsRequest) GetLedger() string {
 	return o.Ledger
 }
 
-func (o *CountTransactionsRequest) GetMetadata() *CountTransactionsMetadata {
+func (o *CountTransactionsRequest) GetMetadata() *Metadata {
 	if o == nil {
 		return nil
 	}
@@ -107,7 +107,7 @@ type CountTransactionsResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// Error
-	ErrorResponse *shared.ErrorResponse
+	ErrorResponse *sdkerrors.ErrorResponse
 	Headers       map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
@@ -122,7 +122,7 @@ func (o *CountTransactionsResponse) GetContentType() string {
 	return o.ContentType
 }
 
-func (o *CountTransactionsResponse) GetErrorResponse() *shared.ErrorResponse {
+func (o *CountTransactionsResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
 	if o == nil {
 		return nil
 	}
@@ -131,7 +131,7 @@ func (o *CountTransactionsResponse) GetErrorResponse() *shared.ErrorResponse {
 
 func (o *CountTransactionsResponse) GetHeaders() map[string][]string {
 	if o == nil {
-		return nil
+		return map[string][]string{}
 	}
 	return o.Headers
 }

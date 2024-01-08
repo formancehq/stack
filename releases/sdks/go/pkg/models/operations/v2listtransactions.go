@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
@@ -87,7 +88,7 @@ type V2ListTransactionsResponse struct {
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
 	// Error
-	V2ErrorResponse *shared.V2ErrorResponse
+	V2ErrorResponse *sdkerrors.V2ErrorResponse
 	// OK
 	V2TransactionsCursorResponse *shared.V2TransactionsCursorResponse
 }
@@ -113,7 +114,7 @@ func (o *V2ListTransactionsResponse) GetRawResponse() *http.Response {
 	return o.RawResponse
 }
 
-func (o *V2ListTransactionsResponse) GetV2ErrorResponse() *shared.V2ErrorResponse {
+func (o *V2ListTransactionsResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
 	if o == nil {
 		return nil
 	}

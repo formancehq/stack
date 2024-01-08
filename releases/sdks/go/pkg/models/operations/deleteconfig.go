@@ -3,7 +3,7 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"net/http"
 )
 
@@ -27,7 +27,7 @@ type DeleteConfigResponse struct {
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
 	// Error
-	WebhooksErrorResponse *shared.WebhooksErrorResponse
+	WebhooksErrorResponse *sdkerrors.WebhooksErrorResponse
 }
 
 func (o *DeleteConfigResponse) GetContentType() string {
@@ -51,7 +51,7 @@ func (o *DeleteConfigResponse) GetRawResponse() *http.Response {
 	return o.RawResponse
 }
 
-func (o *DeleteConfigResponse) GetWebhooksErrorResponse() *shared.WebhooksErrorResponse {
+func (o *DeleteConfigResponse) GetWebhooksErrorResponse() *sdkerrors.WebhooksErrorResponse {
 	if o == nil {
 		return nil
 	}

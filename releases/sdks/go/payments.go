@@ -15,19 +15,19 @@ import (
 	"strings"
 )
 
-type payments struct {
+type Payments struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newPayments(sdkConfig sdkConfiguration) *payments {
-	return &payments{
+func newPayments(sdkConfig sdkConfiguration) *Payments {
+	return &Payments{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // AddAccountToPool - Add an account to a pool
 // Add an account to a pool
-func (s *payments) AddAccountToPool(ctx context.Context, request operations.AddAccountToPoolRequest) (*operations.AddAccountToPoolResponse, error) {
+func (s *Payments) AddAccountToPool(ctx context.Context, request operations.AddAccountToPoolRequest) (*operations.AddAccountToPoolResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/pools/{poolId}/accounts", request, nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func (s *payments) AddAccountToPool(ctx context.Context, request operations.AddA
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -88,7 +88,7 @@ func (s *payments) AddAccountToPool(ctx context.Context, request operations.AddA
 
 // ConnectorsTransfer - Transfer funds between Connector accounts
 // Execute a transfer between two accounts.
-func (s *payments) ConnectorsTransfer(ctx context.Context, request operations.ConnectorsTransferRequest) (*operations.ConnectorsTransferResponse, error) {
+func (s *Payments) ConnectorsTransfer(ctx context.Context, request operations.ConnectorsTransferRequest) (*operations.ConnectorsTransferResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/transfers", request, nil)
 	if err != nil {
@@ -112,7 +112,7 @@ func (s *payments) ConnectorsTransfer(ctx context.Context, request operations.Co
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -160,7 +160,7 @@ func (s *payments) ConnectorsTransfer(ctx context.Context, request operations.Co
 
 // CreateBankAccount - Create a BankAccount in Payments and on the PSP
 // Create a bank account in Payments and on the PSP.
-func (s *payments) CreateBankAccount(ctx context.Context, request shared.BankAccountRequest) (*operations.CreateBankAccountResponse, error) {
+func (s *Payments) CreateBankAccount(ctx context.Context, request shared.BankAccountRequest) (*operations.CreateBankAccountResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/bank-accounts"
 
@@ -181,7 +181,7 @@ func (s *payments) CreateBankAccount(ctx context.Context, request shared.BankAcc
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -229,7 +229,7 @@ func (s *payments) CreateBankAccount(ctx context.Context, request shared.BankAcc
 
 // CreatePayment - Create a payment
 // Create a payment
-func (s *payments) CreatePayment(ctx context.Context, request shared.PaymentRequest) (*operations.CreatePaymentResponse, error) {
+func (s *Payments) CreatePayment(ctx context.Context, request shared.PaymentRequest) (*operations.CreatePaymentResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/payments"
 
@@ -250,7 +250,7 @@ func (s *payments) CreatePayment(ctx context.Context, request shared.PaymentRequ
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -298,7 +298,7 @@ func (s *payments) CreatePayment(ctx context.Context, request shared.PaymentRequ
 
 // CreatePool - Create a Pool
 // Create a Pool
-func (s *payments) CreatePool(ctx context.Context, request shared.PoolRequest) (*operations.CreatePoolResponse, error) {
+func (s *Payments) CreatePool(ctx context.Context, request shared.PoolRequest) (*operations.CreatePoolResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/pools"
 
@@ -319,7 +319,7 @@ func (s *payments) CreatePool(ctx context.Context, request shared.PoolRequest) (
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -367,7 +367,7 @@ func (s *payments) CreatePool(ctx context.Context, request shared.PoolRequest) (
 
 // CreateTransferInitiation - Create a TransferInitiation
 // Create a transfer initiation
-func (s *payments) CreateTransferInitiation(ctx context.Context, request shared.TransferInitiationRequest) (*operations.CreateTransferInitiationResponse, error) {
+func (s *Payments) CreateTransferInitiation(ctx context.Context, request shared.TransferInitiationRequest) (*operations.CreateTransferInitiationResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/transfer-initiations"
 
@@ -388,7 +388,7 @@ func (s *payments) CreateTransferInitiation(ctx context.Context, request shared.
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -436,7 +436,7 @@ func (s *payments) CreateTransferInitiation(ctx context.Context, request shared.
 
 // DeletePool - Delete a Pool
 // Delete a pool by its id.
-func (s *payments) DeletePool(ctx context.Context, request operations.DeletePoolRequest) (*operations.DeletePoolResponse, error) {
+func (s *Payments) DeletePool(ctx context.Context, request operations.DeletePoolRequest) (*operations.DeletePoolResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/pools/{poolId}", request, nil)
 	if err != nil {
@@ -450,7 +450,7 @@ func (s *payments) DeletePool(ctx context.Context, request operations.DeletePool
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -487,7 +487,7 @@ func (s *payments) DeletePool(ctx context.Context, request operations.DeletePool
 
 // DeleteTransferInitiation - Delete a transfer initiation
 // Delete a transfer initiation by its id.
-func (s *payments) DeleteTransferInitiation(ctx context.Context, request operations.DeleteTransferInitiationRequest) (*operations.DeleteTransferInitiationResponse, error) {
+func (s *Payments) DeleteTransferInitiation(ctx context.Context, request operations.DeleteTransferInitiationRequest) (*operations.DeleteTransferInitiationResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/transfer-initiations/{transferId}", request, nil)
 	if err != nil {
@@ -501,7 +501,7 @@ func (s *payments) DeleteTransferInitiation(ctx context.Context, request operati
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -537,7 +537,7 @@ func (s *payments) DeleteTransferInitiation(ctx context.Context, request operati
 }
 
 // GetAccountBalances - Get account balances
-func (s *payments) GetAccountBalances(ctx context.Context, request operations.GetAccountBalancesRequest) (*operations.GetAccountBalancesResponse, error) {
+func (s *Payments) GetAccountBalances(ctx context.Context, request operations.GetAccountBalancesRequest) (*operations.GetAccountBalancesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/accounts/{accountId}/balances", request, nil)
 	if err != nil {
@@ -555,7 +555,7 @@ func (s *payments) GetAccountBalances(ctx context.Context, request operations.Ge
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -602,7 +602,7 @@ func (s *payments) GetAccountBalances(ctx context.Context, request operations.Ge
 }
 
 // GetBankAccount - Get a bank account created by user on Formance
-func (s *payments) GetBankAccount(ctx context.Context, request operations.GetBankAccountRequest) (*operations.GetBankAccountResponse, error) {
+func (s *Payments) GetBankAccount(ctx context.Context, request operations.GetBankAccountRequest) (*operations.GetBankAccountResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/bank-accounts/{bankAccountId}", request, nil)
 	if err != nil {
@@ -616,7 +616,7 @@ func (s *payments) GetBankAccount(ctx context.Context, request operations.GetBan
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -666,7 +666,7 @@ func (s *payments) GetBankAccount(ctx context.Context, request operations.GetBan
 // Get a specific task associated to the connector.
 //
 // Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
-func (s *payments) GetConnectorTask(ctx context.Context, request operations.GetConnectorTaskRequest) (*operations.GetConnectorTaskResponse, error) {
+func (s *Payments) GetConnectorTask(ctx context.Context, request operations.GetConnectorTaskRequest) (*operations.GetConnectorTaskResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/tasks/{taskId}", request, nil)
 	if err != nil {
@@ -680,7 +680,7 @@ func (s *payments) GetConnectorTask(ctx context.Context, request operations.GetC
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -728,7 +728,7 @@ func (s *payments) GetConnectorTask(ctx context.Context, request operations.GetC
 
 // GetConnectorTaskV1 - Read a specific task of the connector
 // Get a specific task associated to the connector.
-func (s *payments) GetConnectorTaskV1(ctx context.Context, request operations.GetConnectorTaskV1Request) (*operations.GetConnectorTaskV1Response, error) {
+func (s *Payments) GetConnectorTaskV1(ctx context.Context, request operations.GetConnectorTaskV1Request) (*operations.GetConnectorTaskV1Response, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/tasks/{taskId}", request, nil)
 	if err != nil {
@@ -742,7 +742,7 @@ func (s *payments) GetConnectorTaskV1(ctx context.Context, request operations.Ge
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -789,7 +789,7 @@ func (s *payments) GetConnectorTaskV1(ctx context.Context, request operations.Ge
 }
 
 // GetPayment - Get a payment
-func (s *payments) GetPayment(ctx context.Context, request operations.GetPaymentRequest) (*operations.GetPaymentResponse, error) {
+func (s *Payments) GetPayment(ctx context.Context, request operations.GetPaymentRequest) (*operations.GetPaymentResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/payments/{paymentId}", request, nil)
 	if err != nil {
@@ -803,7 +803,7 @@ func (s *payments) GetPayment(ctx context.Context, request operations.GetPayment
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -850,7 +850,7 @@ func (s *payments) GetPayment(ctx context.Context, request operations.GetPayment
 }
 
 // GetPool - Get a Pool
-func (s *payments) GetPool(ctx context.Context, request operations.GetPoolRequest) (*operations.GetPoolResponse, error) {
+func (s *Payments) GetPool(ctx context.Context, request operations.GetPoolRequest) (*operations.GetPoolResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/pools/{poolId}", request, nil)
 	if err != nil {
@@ -864,7 +864,7 @@ func (s *payments) GetPool(ctx context.Context, request operations.GetPoolReques
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -911,7 +911,7 @@ func (s *payments) GetPool(ctx context.Context, request operations.GetPoolReques
 }
 
 // GetPoolBalances - Get pool balances
-func (s *payments) GetPoolBalances(ctx context.Context, request operations.GetPoolBalancesRequest) (*operations.GetPoolBalancesResponse, error) {
+func (s *Payments) GetPoolBalances(ctx context.Context, request operations.GetPoolBalancesRequest) (*operations.GetPoolBalancesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/pools/{poolId}/balances", request, nil)
 	if err != nil {
@@ -929,7 +929,7 @@ func (s *payments) GetPoolBalances(ctx context.Context, request operations.GetPo
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -976,7 +976,7 @@ func (s *payments) GetPoolBalances(ctx context.Context, request operations.GetPo
 }
 
 // GetTransferInitiation - Get a transfer initiation
-func (s *payments) GetTransferInitiation(ctx context.Context, request operations.GetTransferInitiationRequest) (*operations.GetTransferInitiationResponse, error) {
+func (s *Payments) GetTransferInitiation(ctx context.Context, request operations.GetTransferInitiationRequest) (*operations.GetTransferInitiationResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/transfer-initiations/{transferId}", request, nil)
 	if err != nil {
@@ -990,7 +990,7 @@ func (s *payments) GetTransferInitiation(ctx context.Context, request operations
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1038,7 +1038,7 @@ func (s *payments) GetTransferInitiation(ctx context.Context, request operations
 
 // InstallConnector - Install a connector
 // Install a connector by its name and config.
-func (s *payments) InstallConnector(ctx context.Context, request operations.InstallConnectorRequest) (*operations.InstallConnectorResponse, error) {
+func (s *Payments) InstallConnector(ctx context.Context, request operations.InstallConnectorRequest) (*operations.InstallConnectorResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}", request, nil)
 	if err != nil {
@@ -1062,7 +1062,7 @@ func (s *payments) InstallConnector(ctx context.Context, request operations.Inst
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1110,7 +1110,7 @@ func (s *payments) InstallConnector(ctx context.Context, request operations.Inst
 
 // ListAllConnectors - List all installed connectors
 // List all installed connectors.
-func (s *payments) ListAllConnectors(ctx context.Context) (*operations.ListAllConnectorsResponse, error) {
+func (s *Payments) ListAllConnectors(ctx context.Context) (*operations.ListAllConnectorsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/connectors"
 
@@ -1121,7 +1121,7 @@ func (s *payments) ListAllConnectors(ctx context.Context) (*operations.ListAllCo
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1169,7 +1169,7 @@ func (s *payments) ListAllConnectors(ctx context.Context) (*operations.ListAllCo
 
 // ListBankAccounts - List bank accounts created by user on Formance
 // List all bank accounts created by user on Formance.
-func (s *payments) ListBankAccounts(ctx context.Context, request operations.ListBankAccountsRequest) (*operations.ListBankAccountsResponse, error) {
+func (s *Payments) ListBankAccounts(ctx context.Context, request operations.ListBankAccountsRequest) (*operations.ListBankAccountsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/bank-accounts"
 
@@ -1184,7 +1184,7 @@ func (s *payments) ListBankAccounts(ctx context.Context, request operations.List
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1232,7 +1232,7 @@ func (s *payments) ListBankAccounts(ctx context.Context, request operations.List
 
 // ListConfigsAvailableConnectors - List the configs of each available connector
 // List the configs of each available connector.
-func (s *payments) ListConfigsAvailableConnectors(ctx context.Context) (*operations.ListConfigsAvailableConnectorsResponse, error) {
+func (s *Payments) ListConfigsAvailableConnectors(ctx context.Context) (*operations.ListConfigsAvailableConnectorsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/connectors/configs"
 
@@ -1243,7 +1243,7 @@ func (s *payments) ListConfigsAvailableConnectors(ctx context.Context) (*operati
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1293,7 +1293,7 @@ func (s *payments) ListConfigsAvailableConnectors(ctx context.Context) (*operati
 // List all tasks associated with this connector.
 //
 // Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
-func (s *payments) ListConnectorTasks(ctx context.Context, request operations.ListConnectorTasksRequest) (*operations.ListConnectorTasksResponse, error) {
+func (s *Payments) ListConnectorTasks(ctx context.Context, request operations.ListConnectorTasksRequest) (*operations.ListConnectorTasksResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/tasks", request, nil)
 	if err != nil {
@@ -1311,7 +1311,7 @@ func (s *payments) ListConnectorTasks(ctx context.Context, request operations.Li
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1359,7 +1359,7 @@ func (s *payments) ListConnectorTasks(ctx context.Context, request operations.Li
 
 // ListConnectorTasksV1 - List tasks from a connector
 // List all tasks associated with this connector.
-func (s *payments) ListConnectorTasksV1(ctx context.Context, request operations.ListConnectorTasksV1Request) (*operations.ListConnectorTasksV1Response, error) {
+func (s *Payments) ListConnectorTasksV1(ctx context.Context, request operations.ListConnectorTasksV1Request) (*operations.ListConnectorTasksV1Response, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/tasks", request, nil)
 	if err != nil {
@@ -1377,7 +1377,7 @@ func (s *payments) ListConnectorTasksV1(ctx context.Context, request operations.
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1424,7 +1424,7 @@ func (s *payments) ListConnectorTasksV1(ctx context.Context, request operations.
 }
 
 // ListPayments - List payments
-func (s *payments) ListPayments(ctx context.Context, request operations.ListPaymentsRequest) (*operations.ListPaymentsResponse, error) {
+func (s *Payments) ListPayments(ctx context.Context, request operations.ListPaymentsRequest) (*operations.ListPaymentsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/payments"
 
@@ -1439,7 +1439,7 @@ func (s *payments) ListPayments(ctx context.Context, request operations.ListPaym
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1486,7 +1486,7 @@ func (s *payments) ListPayments(ctx context.Context, request operations.ListPaym
 }
 
 // ListPools - List Pools
-func (s *payments) ListPools(ctx context.Context, request operations.ListPoolsRequest) (*operations.ListPoolsResponse, error) {
+func (s *Payments) ListPools(ctx context.Context, request operations.ListPoolsRequest) (*operations.ListPoolsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/pools"
 
@@ -1501,7 +1501,7 @@ func (s *payments) ListPools(ctx context.Context, request operations.ListPoolsRe
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1548,7 +1548,7 @@ func (s *payments) ListPools(ctx context.Context, request operations.ListPoolsRe
 }
 
 // ListTransferInitiations - List Transfer Initiations
-func (s *payments) ListTransferInitiations(ctx context.Context, request operations.ListTransferInitiationsRequest) (*operations.ListTransferInitiationsResponse, error) {
+func (s *Payments) ListTransferInitiations(ctx context.Context, request operations.ListTransferInitiationsRequest) (*operations.ListTransferInitiationsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/transfer-initiations"
 
@@ -1563,7 +1563,7 @@ func (s *payments) ListTransferInitiations(ctx context.Context, request operatio
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1610,7 +1610,7 @@ func (s *payments) ListTransferInitiations(ctx context.Context, request operatio
 }
 
 // PaymentsgetAccount - Get an account
-func (s *payments) PaymentsgetAccount(ctx context.Context, request operations.PaymentsgetAccountRequest) (*operations.PaymentsgetAccountResponse, error) {
+func (s *Payments) PaymentsgetAccount(ctx context.Context, request operations.PaymentsgetAccountRequest) (*operations.PaymentsgetAccountResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/accounts/{accountId}", request, nil)
 	if err != nil {
@@ -1624,7 +1624,7 @@ func (s *payments) PaymentsgetAccount(ctx context.Context, request operations.Pa
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1671,7 +1671,7 @@ func (s *payments) PaymentsgetAccount(ctx context.Context, request operations.Pa
 }
 
 // PaymentsgetServerInfo - Get server info
-func (s *payments) PaymentsgetServerInfo(ctx context.Context) (*operations.PaymentsgetServerInfoResponse, error) {
+func (s *Payments) PaymentsgetServerInfo(ctx context.Context) (*operations.PaymentsgetServerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/_info"
 
@@ -1682,7 +1682,7 @@ func (s *payments) PaymentsgetServerInfo(ctx context.Context) (*operations.Payme
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1729,7 +1729,7 @@ func (s *payments) PaymentsgetServerInfo(ctx context.Context) (*operations.Payme
 }
 
 // PaymentslistAccounts - List accounts
-func (s *payments) PaymentslistAccounts(ctx context.Context, request operations.PaymentslistAccountsRequest) (*operations.PaymentslistAccountsResponse, error) {
+func (s *Payments) PaymentslistAccounts(ctx context.Context, request operations.PaymentslistAccountsRequest) (*operations.PaymentslistAccountsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/payments/accounts"
 
@@ -1744,7 +1744,7 @@ func (s *payments) PaymentslistAccounts(ctx context.Context, request operations.
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1794,7 +1794,7 @@ func (s *payments) PaymentslistAccounts(ctx context.Context, request operations.
 // Read connector config
 //
 // Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
-func (s *payments) ReadConnectorConfig(ctx context.Context, request operations.ReadConnectorConfigRequest) (*operations.ReadConnectorConfigResponse, error) {
+func (s *Payments) ReadConnectorConfig(ctx context.Context, request operations.ReadConnectorConfigRequest) (*operations.ReadConnectorConfigResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/config", request, nil)
 	if err != nil {
@@ -1808,7 +1808,7 @@ func (s *payments) ReadConnectorConfig(ctx context.Context, request operations.R
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1856,7 +1856,7 @@ func (s *payments) ReadConnectorConfig(ctx context.Context, request operations.R
 
 // ReadConnectorConfigV1 - Read the config of a connector
 // Read connector config
-func (s *payments) ReadConnectorConfigV1(ctx context.Context, request operations.ReadConnectorConfigV1Request) (*operations.ReadConnectorConfigV1Response, error) {
+func (s *Payments) ReadConnectorConfigV1(ctx context.Context, request operations.ReadConnectorConfigV1Request) (*operations.ReadConnectorConfigV1Response, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/config", request, nil)
 	if err != nil {
@@ -1870,7 +1870,7 @@ func (s *payments) ReadConnectorConfigV1(ctx context.Context, request operations
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1918,7 +1918,7 @@ func (s *payments) ReadConnectorConfigV1(ctx context.Context, request operations
 
 // RemoveAccountFromPool - Remove an account from a pool
 // Remove an account from a pool by its id.
-func (s *payments) RemoveAccountFromPool(ctx context.Context, request operations.RemoveAccountFromPoolRequest) (*operations.RemoveAccountFromPoolResponse, error) {
+func (s *Payments) RemoveAccountFromPool(ctx context.Context, request operations.RemoveAccountFromPoolRequest) (*operations.RemoveAccountFromPoolResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/pools/{poolId}/accounts/{accountId}", request, nil)
 	if err != nil {
@@ -1932,7 +1932,7 @@ func (s *payments) RemoveAccountFromPool(ctx context.Context, request operations
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1972,7 +1972,7 @@ func (s *payments) RemoveAccountFromPool(ctx context.Context, request operations
 // It will remove the connector and ALL PAYMENTS generated with it.
 //
 // Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
-func (s *payments) ResetConnector(ctx context.Context, request operations.ResetConnectorRequest) (*operations.ResetConnectorResponse, error) {
+func (s *Payments) ResetConnector(ctx context.Context, request operations.ResetConnectorRequest) (*operations.ResetConnectorResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/reset", request, nil)
 	if err != nil {
@@ -1986,7 +1986,7 @@ func (s *payments) ResetConnector(ctx context.Context, request operations.ResetC
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2024,7 +2024,7 @@ func (s *payments) ResetConnector(ctx context.Context, request operations.ResetC
 // ResetConnectorV1 - Reset a connector
 // Reset a connector by its name.
 // It will remove the connector and ALL PAYMENTS generated with it.
-func (s *payments) ResetConnectorV1(ctx context.Context, request operations.ResetConnectorV1Request) (*operations.ResetConnectorV1Response, error) {
+func (s *Payments) ResetConnectorV1(ctx context.Context, request operations.ResetConnectorV1Request) (*operations.ResetConnectorV1Response, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/reset", request, nil)
 	if err != nil {
@@ -2038,7 +2038,7 @@ func (s *payments) ResetConnectorV1(ctx context.Context, request operations.Rese
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2075,7 +2075,7 @@ func (s *payments) ResetConnectorV1(ctx context.Context, request operations.Rese
 
 // RetryTransferInitiation - Retry a failed transfer initiation
 // Retry a failed transfer initiation
-func (s *payments) RetryTransferInitiation(ctx context.Context, request operations.RetryTransferInitiationRequest) (*operations.RetryTransferInitiationResponse, error) {
+func (s *Payments) RetryTransferInitiation(ctx context.Context, request operations.RetryTransferInitiationRequest) (*operations.RetryTransferInitiationResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/transfer-initiations/{transferId}/retry", request, nil)
 	if err != nil {
@@ -2089,7 +2089,7 @@ func (s *payments) RetryTransferInitiation(ctx context.Context, request operatio
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2126,7 +2126,7 @@ func (s *payments) RetryTransferInitiation(ctx context.Context, request operatio
 
 // UdpateTransferInitiationStatus - Update the status of a transfer initiation
 // Update a transfer initiation status
-func (s *payments) UdpateTransferInitiationStatus(ctx context.Context, request operations.UdpateTransferInitiationStatusRequest) (*operations.UdpateTransferInitiationStatusResponse, error) {
+func (s *Payments) UdpateTransferInitiationStatus(ctx context.Context, request operations.UdpateTransferInitiationStatusRequest) (*operations.UdpateTransferInitiationStatusResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/transfer-initiations/{transferId}/status", request, nil)
 	if err != nil {
@@ -2150,7 +2150,7 @@ func (s *payments) UdpateTransferInitiationStatus(ctx context.Context, request o
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2189,7 +2189,7 @@ func (s *payments) UdpateTransferInitiationStatus(ctx context.Context, request o
 // Uninstall a connector by its name.
 //
 // Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
-func (s *payments) UninstallConnector(ctx context.Context, request operations.UninstallConnectorRequest) (*operations.UninstallConnectorResponse, error) {
+func (s *Payments) UninstallConnector(ctx context.Context, request operations.UninstallConnectorRequest) (*operations.UninstallConnectorResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}", request, nil)
 	if err != nil {
@@ -2203,7 +2203,7 @@ func (s *payments) UninstallConnector(ctx context.Context, request operations.Un
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2240,7 +2240,7 @@ func (s *payments) UninstallConnector(ctx context.Context, request operations.Un
 
 // UninstallConnectorV1 - Uninstall a connector
 // Uninstall a connector by its name.
-func (s *payments) UninstallConnectorV1(ctx context.Context, request operations.UninstallConnectorV1Request) (*operations.UninstallConnectorV1Response, error) {
+func (s *Payments) UninstallConnectorV1(ctx context.Context, request operations.UninstallConnectorV1Request) (*operations.UninstallConnectorV1Response, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}", request, nil)
 	if err != nil {
@@ -2254,7 +2254,7 @@ func (s *payments) UninstallConnectorV1(ctx context.Context, request operations.
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2291,7 +2291,7 @@ func (s *payments) UninstallConnectorV1(ctx context.Context, request operations.
 
 // UpdateConnectorConfigV1 - Update the config of a connector
 // Update connector config
-func (s *payments) UpdateConnectorConfigV1(ctx context.Context, request operations.UpdateConnectorConfigV1Request) (*operations.UpdateConnectorConfigV1Response, error) {
+func (s *Payments) UpdateConnectorConfigV1(ctx context.Context, request operations.UpdateConnectorConfigV1Request) (*operations.UpdateConnectorConfigV1Response, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/connectors/{connector}/{connectorId}/config", request, nil)
 	if err != nil {
@@ -2315,7 +2315,7 @@ func (s *payments) UpdateConnectorConfigV1(ctx context.Context, request operatio
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2351,7 +2351,7 @@ func (s *payments) UpdateConnectorConfigV1(ctx context.Context, request operatio
 }
 
 // UpdateMetadata - Update metadata
-func (s *payments) UpdateMetadata(ctx context.Context, request operations.UpdateMetadataRequest) (*operations.UpdateMetadataResponse, error) {
+func (s *Payments) UpdateMetadata(ctx context.Context, request operations.UpdateMetadataRequest) (*operations.UpdateMetadataResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/payments/{paymentId}/metadata", request, nil)
 	if err != nil {
@@ -2375,7 +2375,7 @@ func (s *payments) UpdateMetadata(ctx context.Context, request operations.Update
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

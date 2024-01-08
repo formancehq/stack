@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"net/http"
 )
@@ -17,7 +18,7 @@ type V2CreateWorkflowResponse struct {
 	// Created workflow
 	V2CreateWorkflowResponse *shared.V2CreateWorkflowResponse
 	// General error
-	V2Error *shared.V2Error
+	V2Error *sdkerrors.V2Error
 }
 
 func (o *V2CreateWorkflowResponse) GetContentType() string {
@@ -48,7 +49,7 @@ func (o *V2CreateWorkflowResponse) GetV2CreateWorkflowResponse() *shared.V2Creat
 	return o.V2CreateWorkflowResponse
 }
 
-func (o *V2CreateWorkflowResponse) GetV2Error() *shared.V2Error {
+func (o *V2CreateWorkflowResponse) GetV2Error() *sdkerrors.V2Error {
 	if o == nil {
 		return nil
 	}

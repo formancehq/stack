@@ -15,19 +15,19 @@ import (
 	"strings"
 )
 
-type webhooks struct {
+type Webhooks struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newWebhooks(sdkConfig sdkConfiguration) *webhooks {
-	return &webhooks{
+func newWebhooks(sdkConfig sdkConfiguration) *Webhooks {
+	return &Webhooks{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // ActivateConfig - Activate one config
 // Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
-func (s *webhooks) ActivateConfig(ctx context.Context, request operations.ActivateConfigRequest) (*operations.ActivateConfigResponse, error) {
+func (s *Webhooks) ActivateConfig(ctx context.Context, request operations.ActivateConfigRequest) (*operations.ActivateConfigResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/webhooks/configs/{id}/activate", request, nil)
 	if err != nil {
@@ -41,7 +41,7 @@ func (s *webhooks) ActivateConfig(ctx context.Context, request operations.Activa
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -85,7 +85,7 @@ func (s *webhooks) ActivateConfig(ctx context.Context, request operations.Activa
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.WebhooksErrorResponse
+			var out sdkerrors.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -104,7 +104,7 @@ func (s *webhooks) ActivateConfig(ctx context.Context, request operations.Activa
 //
 // If not passed or empty, a secret is automatically generated.
 // The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
-func (s *webhooks) ChangeConfigSecret(ctx context.Context, request operations.ChangeConfigSecretRequest) (*operations.ChangeConfigSecretResponse, error) {
+func (s *Webhooks) ChangeConfigSecret(ctx context.Context, request operations.ChangeConfigSecretRequest) (*operations.ChangeConfigSecretResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/webhooks/configs/{id}/secret/change", request, nil)
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *webhooks) ChangeConfigSecret(ctx context.Context, request operations.Ch
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -180,7 +180,7 @@ func (s *webhooks) ChangeConfigSecret(ctx context.Context, request operations.Ch
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.WebhooksErrorResponse
+			var out sdkerrors.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -196,7 +196,7 @@ func (s *webhooks) ChangeConfigSecret(ctx context.Context, request operations.Ch
 
 // DeactivateConfig - Deactivate one config
 // Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
-func (s *webhooks) DeactivateConfig(ctx context.Context, request operations.DeactivateConfigRequest) (*operations.DeactivateConfigResponse, error) {
+func (s *Webhooks) DeactivateConfig(ctx context.Context, request operations.DeactivateConfigRequest) (*operations.DeactivateConfigResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/webhooks/configs/{id}/deactivate", request, nil)
 	if err != nil {
@@ -210,7 +210,7 @@ func (s *webhooks) DeactivateConfig(ctx context.Context, request operations.Deac
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -265,7 +265,7 @@ func (s *webhooks) DeactivateConfig(ctx context.Context, request operations.Deac
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.WebhooksErrorResponse
+			var out sdkerrors.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -281,7 +281,7 @@ func (s *webhooks) DeactivateConfig(ctx context.Context, request operations.Deac
 
 // DeleteConfig - Delete one config
 // Delete a webhooks config by ID.
-func (s *webhooks) DeleteConfig(ctx context.Context, request operations.DeleteConfigRequest) (*operations.DeleteConfigResponse, error) {
+func (s *Webhooks) DeleteConfig(ctx context.Context, request operations.DeleteConfigRequest) (*operations.DeleteConfigResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/webhooks/configs/{id}", request, nil)
 	if err != nil {
@@ -295,7 +295,7 @@ func (s *webhooks) DeleteConfig(ctx context.Context, request operations.DeleteCo
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -341,7 +341,7 @@ func (s *webhooks) DeleteConfig(ctx context.Context, request operations.DeleteCo
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.WebhooksErrorResponse
+			var out sdkerrors.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -357,7 +357,7 @@ func (s *webhooks) DeleteConfig(ctx context.Context, request operations.DeleteCo
 
 // GetManyConfigs - Get many configs
 // Sorted by updated date descending
-func (s *webhooks) GetManyConfigs(ctx context.Context, request operations.GetManyConfigsRequest) (*operations.GetManyConfigsResponse, error) {
+func (s *Webhooks) GetManyConfigs(ctx context.Context, request operations.GetManyConfigsRequest) (*operations.GetManyConfigsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/webhooks/configs"
 
@@ -372,7 +372,7 @@ func (s *webhooks) GetManyConfigs(ctx context.Context, request operations.GetMan
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -416,7 +416,7 @@ func (s *webhooks) GetManyConfigs(ctx context.Context, request operations.GetMan
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.WebhooksErrorResponse
+			var out sdkerrors.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -440,7 +440,7 @@ func (s *webhooks) GetManyConfigs(ctx context.Context, request operations.GetMan
 // The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
 //
 // All eventTypes are converted to lower-case when inserted.
-func (s *webhooks) InsertConfig(ctx context.Context, request shared.ConfigUser) (*operations.InsertConfigResponse, error) {
+func (s *Webhooks) InsertConfig(ctx context.Context, request shared.ConfigUser) (*operations.InsertConfigResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/webhooks/configs"
 
@@ -461,7 +461,7 @@ func (s *webhooks) InsertConfig(ctx context.Context, request shared.ConfigUser) 
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -516,7 +516,7 @@ func (s *webhooks) InsertConfig(ctx context.Context, request shared.ConfigUser) 
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.WebhooksErrorResponse
+			var out sdkerrors.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -532,7 +532,7 @@ func (s *webhooks) InsertConfig(ctx context.Context, request shared.ConfigUser) 
 
 // TestConfig - Test one config
 // Test a config by sending a webhook to its endpoint.
-func (s *webhooks) TestConfig(ctx context.Context, request operations.TestConfigRequest) (*operations.TestConfigResponse, error) {
+func (s *Webhooks) TestConfig(ctx context.Context, request operations.TestConfigRequest) (*operations.TestConfigResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/webhooks/configs/{id}/test", request, nil)
 	if err != nil {
@@ -546,7 +546,7 @@ func (s *webhooks) TestConfig(ctx context.Context, request operations.TestConfig
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -603,7 +603,7 @@ func (s *webhooks) TestConfig(ctx context.Context, request operations.TestConfig
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.WebhooksErrorResponse
+			var out sdkerrors.WebhooksErrorResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}

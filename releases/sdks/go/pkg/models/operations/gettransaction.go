@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"math/big"
@@ -45,7 +46,7 @@ type GetTransactionResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// Error
-	ErrorResponse *shared.ErrorResponse
+	ErrorResponse *sdkerrors.ErrorResponse
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -61,7 +62,7 @@ func (o *GetTransactionResponse) GetContentType() string {
 	return o.ContentType
 }
 
-func (o *GetTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
+func (o *GetTransactionResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
 	if o == nil {
 		return nil
 	}

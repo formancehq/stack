@@ -81,7 +81,6 @@ func parseStructTag(tagKey string, field reflect.StructField) map[string]string 
 			parts = append(parts, "true")
 		case 2:
 			// key=value option
-			break
 		default:
 			// invalid option
 			continue

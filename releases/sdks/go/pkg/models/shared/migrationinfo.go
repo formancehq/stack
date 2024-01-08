@@ -9,18 +9,18 @@ import (
 	"time"
 )
 
-type MigrationInfoState string
+type State string
 
 const (
-	MigrationInfoStateToDo MigrationInfoState = "to do"
-	MigrationInfoStateDone MigrationInfoState = "done"
+	StateToDo State = "to do"
+	StateDone State = "done"
 )
 
-func (e MigrationInfoState) ToPointer() *MigrationInfoState {
+func (e State) ToPointer() *State {
 	return &e
 }
 
-func (e *MigrationInfoState) UnmarshalJSON(data []byte) error {
+func (e *State) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -29,18 +29,18 @@ func (e *MigrationInfoState) UnmarshalJSON(data []byte) error {
 	case "to do":
 		fallthrough
 	case "done":
-		*e = MigrationInfoState(v)
+		*e = State(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for MigrationInfoState: %v", v)
+		return fmt.Errorf("invalid value for State: %v", v)
 	}
 }
 
 type MigrationInfo struct {
-	Date    *time.Time          `json:"date,omitempty"`
-	Name    *string             `json:"name,omitempty"`
-	State   *MigrationInfoState `json:"state,omitempty"`
-	Version *int64              `json:"version,omitempty"`
+	Date    *time.Time `json:"date,omitempty"`
+	Name    *string    `json:"name,omitempty"`
+	State   *State     `json:"state,omitempty"`
+	Version *int64     `json:"version,omitempty"`
 }
 
 func (m MigrationInfo) MarshalJSON() ([]byte, error) {
@@ -68,7 +68,7 @@ func (o *MigrationInfo) GetName() *string {
 	return o.Name
 }
 
-func (o *MigrationInfo) GetState() *MigrationInfoState {
+func (o *MigrationInfo) GetState() *State {
 	if o == nil {
 		return nil
 	}

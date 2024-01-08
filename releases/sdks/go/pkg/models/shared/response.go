@@ -2,19 +2,19 @@
 
 package shared
 
-type ResponseCursorTotal struct {
+type Total struct {
 	Relation *string `json:"relation,omitempty"`
 	Value    *int64  `json:"value,omitempty"`
 }
 
-func (o *ResponseCursorTotal) GetRelation() *string {
+func (o *Total) GetRelation() *string {
 	if o == nil {
 		return nil
 	}
 	return o.Relation
 }
 
-func (o *ResponseCursorTotal) GetValue() *int64 {
+func (o *Total) GetValue() *int64 {
 	if o == nil {
 		return nil
 	}
@@ -27,7 +27,7 @@ type ResponseCursor struct {
 	Next     *string                  `json:"next,omitempty"`
 	PageSize *int64                   `json:"pageSize,omitempty"`
 	Previous *string                  `json:"previous,omitempty"`
-	Total    *ResponseCursorTotal     `json:"total,omitempty"`
+	Total    *Total                   `json:"total,omitempty"`
 }
 
 func (o *ResponseCursor) GetData() []map[string]interface{} {
@@ -65,7 +65,7 @@ func (o *ResponseCursor) GetPrevious() *string {
 	return o.Previous
 }
 
-func (o *ResponseCursor) GetTotal() *ResponseCursorTotal {
+func (o *ResponseCursor) GetTotal() *Total {
 	if o == nil {
 		return nil
 	}

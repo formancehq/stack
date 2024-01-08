@@ -21,14 +21,19 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Webhooks.ActivateConfig(ctx, operations.ActivateConfigRequest{
@@ -46,16 +51,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
-| `request`                                                                            | [operations.ActivateConfigRequest](../../models/operations/activateconfigrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
+| `request`                                                                                | [operations.ActivateConfigRequest](../../pkg/models/operations/activateconfigrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
 
 
 ### Response
 
-**[*operations.ActivateConfigResponse](../../models/operations/activateconfigresponse.md), error**
-
+**[*operations.ActivateConfigResponse](../../pkg/models/operations/activateconfigresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ChangeConfigSecret
 
@@ -71,15 +78,19 @@ The format is a random string of bytes of size 24, base64 encoded. (larger size 
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Webhooks.ChangeConfigSecret(ctx, operations.ChangeConfigSecretRequest{
@@ -100,16 +111,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
-| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
-| `request`                                                                                    | [operations.ChangeConfigSecretRequest](../../models/operations/changeconfigsecretrequest.md) | :heavy_check_mark:                                                                           | The request object to use for the request.                                                   |
+| Parameter                                                                                        | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                            | [context.Context](https://pkg.go.dev/context#Context)                                            | :heavy_check_mark:                                                                               | The context to use for the request.                                                              |
+| `request`                                                                                        | [operations.ChangeConfigSecretRequest](../../pkg/models/operations/changeconfigsecretrequest.md) | :heavy_check_mark:                                                                               | The request object to use for the request.                                                       |
 
 
 ### Response
 
-**[*operations.ChangeConfigSecretResponse](../../models/operations/changeconfigsecretresponse.md), error**
-
+**[*operations.ChangeConfigSecretResponse](../../pkg/models/operations/changeconfigsecretresponse.md), error**
+| Error Object                    | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| sdkerrors.WebhooksErrorResponse | 400                             | application/json                |
+| sdkerrors.SDKError              | 400-600                         | */*                             |
 
 ## DeactivateConfig
 
@@ -121,14 +135,19 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Webhooks.DeactivateConfig(ctx, operations.DeactivateConfigRequest{
@@ -146,16 +165,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
-| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
-| `request`                                                                                | [operations.DeactivateConfigRequest](../../models/operations/deactivateconfigrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
+| `request`                                                                                    | [operations.DeactivateConfigRequest](../../pkg/models/operations/deactivateconfigrequest.md) | :heavy_check_mark:                                                                           | The request object to use for the request.                                                   |
 
 
 ### Response
 
-**[*operations.DeactivateConfigResponse](../../models/operations/deactivateconfigresponse.md), error**
-
+**[*operations.DeactivateConfigResponse](../../pkg/models/operations/deactivateconfigresponse.md), error**
+| Error Object                    | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| sdkerrors.WebhooksErrorResponse | 404                             | application/json                |
+| sdkerrors.SDKError              | 400-600                         | */*                             |
 
 ## DeleteConfig
 
@@ -167,14 +189,20 @@ Delete a webhooks config by ID.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Webhooks.DeleteConfig(ctx, operations.DeleteConfigRequest{
@@ -192,16 +220,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.DeleteConfigRequest](../../models/operations/deleteconfigrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.DeleteConfigRequest](../../pkg/models/operations/deleteconfigrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
 
 
 ### Response
 
-**[*operations.DeleteConfigResponse](../../models/operations/deleteconfigresponse.md), error**
-
+**[*operations.DeleteConfigResponse](../../pkg/models/operations/deleteconfigresponse.md), error**
+| Error Object                    | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| sdkerrors.WebhooksErrorResponse | 400,404                         | application/json                |
+| sdkerrors.SDKError              | 400-600                         | */*                             |
 
 ## GetManyConfigs
 
@@ -213,14 +244,19 @@ Sorted by updated date descending
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Webhooks.GetManyConfigs(ctx, operations.GetManyConfigsRequest{
@@ -239,16 +275,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
-| `request`                                                                            | [operations.GetManyConfigsRequest](../../models/operations/getmanyconfigsrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
+| `request`                                                                                | [operations.GetManyConfigsRequest](../../pkg/models/operations/getmanyconfigsrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
 
 
 ### Response
 
-**[*operations.GetManyConfigsResponse](../../models/operations/getmanyconfigsresponse.md), error**
-
+**[*operations.GetManyConfigsResponse](../../pkg/models/operations/getmanyconfigsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## InsertConfig
 
@@ -269,14 +307,18 @@ All eventTypes are converted to lower-case when inserted.
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Webhooks.InsertConfig(ctx, shared.ConfigUser{
@@ -299,16 +341,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                              | Type                                                   | Required                                               | Description                                            |
-| ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ |
-| `ctx`                                                  | [context.Context](https://pkg.go.dev/context#Context)  | :heavy_check_mark:                                     | The context to use for the request.                    |
-| `request`                                              | [shared.ConfigUser](../../models/shared/configuser.md) | :heavy_check_mark:                                     | The request object to use for the request.             |
+| Parameter                                                  | Type                                                       | Required                                                   | Description                                                |
+| ---------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
+| `ctx`                                                      | [context.Context](https://pkg.go.dev/context#Context)      | :heavy_check_mark:                                         | The context to use for the request.                        |
+| `request`                                                  | [shared.ConfigUser](../../pkg/models/shared/configuser.md) | :heavy_check_mark:                                         | The request object to use for the request.                 |
 
 
 ### Response
 
-**[*operations.InsertConfigResponse](../../models/operations/insertconfigresponse.md), error**
-
+**[*operations.InsertConfigResponse](../../pkg/models/operations/insertconfigresponse.md), error**
+| Error Object                    | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| sdkerrors.WebhooksErrorResponse | 400                             | application/json                |
+| sdkerrors.SDKError              | 400-600                         | */*                             |
 
 ## TestConfig
 
@@ -320,14 +365,19 @@ Test a config by sending a webhook to its endpoint.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Webhooks.TestConfig(ctx, operations.TestConfigRequest{
@@ -345,13 +395,16 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
-| `request`                                                                    | [operations.TestConfigRequest](../../models/operations/testconfigrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
+| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
+| `request`                                                                        | [operations.TestConfigRequest](../../pkg/models/operations/testconfigrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
 
 
 ### Response
 
-**[*operations.TestConfigResponse](../../models/operations/testconfigresponse.md), error**
-
+**[*operations.TestConfigResponse](../../pkg/models/operations/testconfigresponse.md), error**
+| Error Object                    | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| sdkerrors.WebhooksErrorResponse | 400,404                         | application/json                |
+| sdkerrors.SDKError              | 400-600                         | */*                             |

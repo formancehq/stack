@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type PaymentRaw struct {
+type Raw struct {
 }
 
 type Payment struct {
@@ -22,7 +22,7 @@ type Payment struct {
 	InitialAmount        *big.Int            `json:"initialAmount"`
 	Metadata             map[string]string   `json:"metadata"`
 	Provider             *Connector          `json:"provider,omitempty"`
-	Raw                  *PaymentRaw         `json:"raw"`
+	Raw                  *Raw                `json:"raw"`
 	Reference            string              `json:"reference"`
 	Scheme               PaymentScheme       `json:"scheme"`
 	SourceAccountID      string              `json:"sourceAccountID"`
@@ -111,7 +111,7 @@ func (o *Payment) GetProvider() *Connector {
 	return o.Provider
 }
 
-func (o *Payment) GetRaw() *PaymentRaw {
+func (o *Payment) GetRaw() *Raw {
 	if o == nil {
 		return nil
 	}

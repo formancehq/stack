@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"net/http"
 )
@@ -23,7 +24,7 @@ type GetMappingResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// Error
-	ErrorResponse *shared.ErrorResponse
+	ErrorResponse *sdkerrors.ErrorResponse
 	// OK
 	MappingResponse *shared.MappingResponse
 	// HTTP response status code for this operation
@@ -39,7 +40,7 @@ func (o *GetMappingResponse) GetContentType() string {
 	return o.ContentType
 }
 
-func (o *GetMappingResponse) GetErrorResponse() *shared.ErrorResponse {
+func (o *GetMappingResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
 	if o == nil {
 		return nil
 	}

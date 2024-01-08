@@ -2,11 +2,11 @@
 
 package shared
 
-type LedgerInfoStorage struct {
+type Storage struct {
 	Migrations []MigrationInfo `json:"migrations,omitempty"`
 }
 
-func (o *LedgerInfoStorage) GetMigrations() []MigrationInfo {
+func (o *Storage) GetMigrations() []MigrationInfo {
 	if o == nil {
 		return nil
 	}
@@ -14,8 +14,8 @@ func (o *LedgerInfoStorage) GetMigrations() []MigrationInfo {
 }
 
 type LedgerInfo struct {
-	Name    *string            `json:"name,omitempty"`
-	Storage *LedgerInfoStorage `json:"storage,omitempty"`
+	Name    *string  `json:"name,omitempty"`
+	Storage *Storage `json:"storage,omitempty"`
 }
 
 func (o *LedgerInfo) GetName() *string {
@@ -25,7 +25,7 @@ func (o *LedgerInfo) GetName() *string {
 	return o.Name
 }
 
-func (o *LedgerInfo) GetStorage() *LedgerInfoStorage {
+func (o *LedgerInfo) GetStorage() *Storage {
 	if o == nil {
 		return nil
 	}

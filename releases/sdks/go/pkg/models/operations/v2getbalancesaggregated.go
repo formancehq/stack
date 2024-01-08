@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
@@ -58,7 +59,7 @@ type V2GetBalancesAggregatedResponse struct {
 	// OK
 	V2AggregateBalancesResponse *shared.V2AggregateBalancesResponse
 	// Error
-	V2ErrorResponse *shared.V2ErrorResponse
+	V2ErrorResponse *sdkerrors.V2ErrorResponse
 }
 
 func (o *V2GetBalancesAggregatedResponse) GetContentType() string {
@@ -89,7 +90,7 @@ func (o *V2GetBalancesAggregatedResponse) GetV2AggregateBalancesResponse() *shar
 	return o.V2AggregateBalancesResponse
 }
 
-func (o *V2GetBalancesAggregatedResponse) GetV2ErrorResponse() *shared.V2ErrorResponse {
+func (o *V2GetBalancesAggregatedResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
 	if o == nil {
 		return nil
 	}

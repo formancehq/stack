@@ -2,7 +2,7 @@
 
 package shared
 
-type AccountsCursorCursor struct {
+type Cursor struct {
 	Data     []PaymentsAccount `json:"data"`
 	HasMore  bool              `json:"hasMore"`
 	Next     *string           `json:"next,omitempty"`
@@ -10,35 +10,35 @@ type AccountsCursorCursor struct {
 	Previous *string           `json:"previous,omitempty"`
 }
 
-func (o *AccountsCursorCursor) GetData() []PaymentsAccount {
+func (o *Cursor) GetData() []PaymentsAccount {
 	if o == nil {
 		return []PaymentsAccount{}
 	}
 	return o.Data
 }
 
-func (o *AccountsCursorCursor) GetHasMore() bool {
+func (o *Cursor) GetHasMore() bool {
 	if o == nil {
 		return false
 	}
 	return o.HasMore
 }
 
-func (o *AccountsCursorCursor) GetNext() *string {
+func (o *Cursor) GetNext() *string {
 	if o == nil {
 		return nil
 	}
 	return o.Next
 }
 
-func (o *AccountsCursorCursor) GetPageSize() int64 {
+func (o *Cursor) GetPageSize() int64 {
 	if o == nil {
 		return 0
 	}
 	return o.PageSize
 }
 
-func (o *AccountsCursorCursor) GetPrevious() *string {
+func (o *Cursor) GetPrevious() *string {
 	if o == nil {
 		return nil
 	}
@@ -46,12 +46,12 @@ func (o *AccountsCursorCursor) GetPrevious() *string {
 }
 
 type AccountsCursor struct {
-	Cursor AccountsCursorCursor `json:"cursor"`
+	Cursor Cursor `json:"cursor"`
 }
 
-func (o *AccountsCursor) GetCursor() AccountsCursorCursor {
+func (o *AccountsCursor) GetCursor() Cursor {
 	if o == nil {
-		return AccountsCursorCursor{}
+		return Cursor{}
 	}
 	return o.Cursor
 }

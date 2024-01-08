@@ -7,22 +7,22 @@ import (
 	"fmt"
 )
 
-type UpdateTransferInitiationStatusRequestStatus string
+type Status string
 
 const (
-	UpdateTransferInitiationStatusRequestStatusWaitingForValidation UpdateTransferInitiationStatusRequestStatus = "WAITING_FOR_VALIDATION"
-	UpdateTransferInitiationStatusRequestStatusProcessing           UpdateTransferInitiationStatusRequestStatus = "PROCESSING"
-	UpdateTransferInitiationStatusRequestStatusProcessed            UpdateTransferInitiationStatusRequestStatus = "PROCESSED"
-	UpdateTransferInitiationStatusRequestStatusFailed               UpdateTransferInitiationStatusRequestStatus = "FAILED"
-	UpdateTransferInitiationStatusRequestStatusRejected             UpdateTransferInitiationStatusRequestStatus = "REJECTED"
-	UpdateTransferInitiationStatusRequestStatusValidated            UpdateTransferInitiationStatusRequestStatus = "VALIDATED"
+	StatusWaitingForValidation Status = "WAITING_FOR_VALIDATION"
+	StatusProcessing           Status = "PROCESSING"
+	StatusProcessed            Status = "PROCESSED"
+	StatusFailed               Status = "FAILED"
+	StatusRejected             Status = "REJECTED"
+	StatusValidated            Status = "VALIDATED"
 )
 
-func (e UpdateTransferInitiationStatusRequestStatus) ToPointer() *UpdateTransferInitiationStatusRequestStatus {
+func (e Status) ToPointer() *Status {
 	return &e
 }
 
-func (e *UpdateTransferInitiationStatusRequestStatus) UnmarshalJSON(data []byte) error {
+func (e *Status) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -39,20 +39,20 @@ func (e *UpdateTransferInitiationStatusRequestStatus) UnmarshalJSON(data []byte)
 	case "REJECTED":
 		fallthrough
 	case "VALIDATED":
-		*e = UpdateTransferInitiationStatusRequestStatus(v)
+		*e = Status(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for UpdateTransferInitiationStatusRequestStatus: %v", v)
+		return fmt.Errorf("invalid value for Status: %v", v)
 	}
 }
 
 type UpdateTransferInitiationStatusRequest struct {
-	Status UpdateTransferInitiationStatusRequestStatus `json:"status"`
+	Status Status `json:"status"`
 }
 
-func (o *UpdateTransferInitiationStatusRequest) GetStatus() UpdateTransferInitiationStatusRequestStatus {
+func (o *UpdateTransferInitiationStatusRequest) GetStatus() Status {
 	if o == nil {
-		return UpdateTransferInitiationStatusRequestStatus("")
+		return Status("")
 	}
 	return o.Status
 }

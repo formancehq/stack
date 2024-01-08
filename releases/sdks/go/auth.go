@@ -15,18 +15,18 @@ import (
 	"strings"
 )
 
-type auth struct {
+type Auth struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newAuth(sdkConfig sdkConfiguration) *auth {
-	return &auth{
+func newAuth(sdkConfig sdkConfiguration) *Auth {
+	return &Auth{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // CreateClient - Create client
-func (s *auth) CreateClient(ctx context.Context, request *shared.CreateClientRequest) (*operations.CreateClientResponse, error) {
+func (s *Auth) CreateClient(ctx context.Context, request *shared.CreateClientRequest) (*operations.CreateClientResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/auth/clients"
 
@@ -44,7 +44,7 @@ func (s *auth) CreateClient(ctx context.Context, request *shared.CreateClientReq
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -91,7 +91,7 @@ func (s *auth) CreateClient(ctx context.Context, request *shared.CreateClientReq
 }
 
 // CreateSecret - Add a secret to a client
-func (s *auth) CreateSecret(ctx context.Context, request operations.CreateSecretRequest) (*operations.CreateSecretResponse, error) {
+func (s *Auth) CreateSecret(ctx context.Context, request operations.CreateSecretRequest) (*operations.CreateSecretResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/auth/clients/{clientId}/secrets", request, nil)
 	if err != nil {
@@ -112,7 +112,7 @@ func (s *auth) CreateSecret(ctx context.Context, request operations.CreateSecret
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -159,7 +159,7 @@ func (s *auth) CreateSecret(ctx context.Context, request operations.CreateSecret
 }
 
 // DeleteClient - Delete client
-func (s *auth) DeleteClient(ctx context.Context, request operations.DeleteClientRequest) (*operations.DeleteClientResponse, error) {
+func (s *Auth) DeleteClient(ctx context.Context, request operations.DeleteClientRequest) (*operations.DeleteClientResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/auth/clients/{clientId}", request, nil)
 	if err != nil {
@@ -173,7 +173,7 @@ func (s *auth) DeleteClient(ctx context.Context, request operations.DeleteClient
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -209,7 +209,7 @@ func (s *auth) DeleteClient(ctx context.Context, request operations.DeleteClient
 }
 
 // DeleteSecret - Delete a secret from a client
-func (s *auth) DeleteSecret(ctx context.Context, request operations.DeleteSecretRequest) (*operations.DeleteSecretResponse, error) {
+func (s *Auth) DeleteSecret(ctx context.Context, request operations.DeleteSecretRequest) (*operations.DeleteSecretResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/auth/clients/{clientId}/secrets/{secretId}", request, nil)
 	if err != nil {
@@ -223,7 +223,7 @@ func (s *auth) DeleteSecret(ctx context.Context, request operations.DeleteSecret
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -259,7 +259,7 @@ func (s *auth) DeleteSecret(ctx context.Context, request operations.DeleteSecret
 }
 
 // GetServerInfo - Get server info
-func (s *auth) GetServerInfo(ctx context.Context) (*operations.GetServerInfoResponse, error) {
+func (s *Auth) GetServerInfo(ctx context.Context) (*operations.GetServerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/auth/_info"
 
@@ -270,7 +270,7 @@ func (s *auth) GetServerInfo(ctx context.Context) (*operations.GetServerInfoResp
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -317,7 +317,7 @@ func (s *auth) GetServerInfo(ctx context.Context) (*operations.GetServerInfoResp
 }
 
 // ListClients - List clients
-func (s *auth) ListClients(ctx context.Context) (*operations.ListClientsResponse, error) {
+func (s *Auth) ListClients(ctx context.Context) (*operations.ListClientsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/auth/clients"
 
@@ -328,7 +328,7 @@ func (s *auth) ListClients(ctx context.Context) (*operations.ListClientsResponse
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -376,7 +376,7 @@ func (s *auth) ListClients(ctx context.Context) (*operations.ListClientsResponse
 
 // ListUsers - List users
 // List users
-func (s *auth) ListUsers(ctx context.Context) (*operations.ListUsersResponse, error) {
+func (s *Auth) ListUsers(ctx context.Context) (*operations.ListUsersResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/auth/users"
 
@@ -387,7 +387,7 @@ func (s *auth) ListUsers(ctx context.Context) (*operations.ListUsersResponse, er
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -434,7 +434,7 @@ func (s *auth) ListUsers(ctx context.Context) (*operations.ListUsersResponse, er
 }
 
 // ReadClient - Read client
-func (s *auth) ReadClient(ctx context.Context, request operations.ReadClientRequest) (*operations.ReadClientResponse, error) {
+func (s *Auth) ReadClient(ctx context.Context, request operations.ReadClientRequest) (*operations.ReadClientResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/auth/clients/{clientId}", request, nil)
 	if err != nil {
@@ -448,7 +448,7 @@ func (s *auth) ReadClient(ctx context.Context, request operations.ReadClientRequ
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -496,7 +496,7 @@ func (s *auth) ReadClient(ctx context.Context, request operations.ReadClientRequ
 
 // ReadUser - Read user
 // Read user
-func (s *auth) ReadUser(ctx context.Context, request operations.ReadUserRequest) (*operations.ReadUserResponse, error) {
+func (s *Auth) ReadUser(ctx context.Context, request operations.ReadUserRequest) (*operations.ReadUserResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/auth/users/{userId}", request, nil)
 	if err != nil {
@@ -510,7 +510,7 @@ func (s *auth) ReadUser(ctx context.Context, request operations.ReadUserRequest)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -557,7 +557,7 @@ func (s *auth) ReadUser(ctx context.Context, request operations.ReadUserRequest)
 }
 
 // UpdateClient - Update client
-func (s *auth) UpdateClient(ctx context.Context, request operations.UpdateClientRequest) (*operations.UpdateClientResponse, error) {
+func (s *Auth) UpdateClient(ctx context.Context, request operations.UpdateClientRequest) (*operations.UpdateClientResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/auth/clients/{clientId}", request, nil)
 	if err != nil {
@@ -578,7 +578,7 @@ func (s *auth) UpdateClient(ctx context.Context, request operations.UpdateClient
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

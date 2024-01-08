@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"net/http"
 )
@@ -35,7 +36,7 @@ type TestTriggerResponse struct {
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
 	// General error
-	V2Error *shared.V2Error
+	V2Error *sdkerrors.V2Error
 	// Test a trigger
 	V2TestTriggerResponse *shared.V2TestTriggerResponse
 }
@@ -61,7 +62,7 @@ func (o *TestTriggerResponse) GetRawResponse() *http.Response {
 	return o.RawResponse
 }
 
-func (o *TestTriggerResponse) GetV2Error() *shared.V2Error {
+func (o *TestTriggerResponse) GetV2Error() *sdkerrors.V2Error {
 	if o == nil {
 		return nil
 	}

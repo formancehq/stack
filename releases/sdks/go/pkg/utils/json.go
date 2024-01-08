@@ -50,7 +50,7 @@ func MarshalJSON(v interface{}, tag reflect.StructTag, topLevel bool) ([]byte, e
 				}
 			}
 
-			if isNil(field.Type, fieldVal) {
+			if isNil(field.Type, fieldVal) && field.Tag.Get("const") == "" {
 				if omitEmpty {
 					continue
 				}
@@ -66,7 +66,11 @@ func MarshalJSON(v interface{}, tag reflect.StructTag, topLevel bool) ([]byte, e
 			}
 
 			if additionalProperties == "true" {
-				if field.Type.Kind() != reflect.Map {
+				if isNil(field.Type, fieldVal) {
+					continue
+				}
+				fieldVal := trueReflectValue(fieldVal)
+				if fieldVal.Type().Kind() != reflect.Map {
 					return nil, fmt.Errorf("additionalProperties must be a map")
 				}
 
@@ -202,20 +206,33 @@ func UnmarshalJSON(b []byte, v interface{}, tag reflect.StructTag, topLevel bool
 			}
 
 			if additionalPropertiesField != nil && additionalPropertiesValue != nil {
-				if additionalPropertiesValue.Kind() != reflect.Map {
+				typeOfMap := additionalPropertiesField.Type
+				if additionalPropertiesValue.Type().Kind() == reflect.Interface {
+					typeOfMap = reflect.TypeOf(map[string]interface{}{})
+				} else if additionalPropertiesValue.Type().Kind() != reflect.Map {
 					return fmt.Errorf("additionalProperties must be a map")
 				}
 
-				additionalPropertiesValue.Set(reflect.MakeMap(additionalPropertiesField.Type))
+				mapValue := reflect.MakeMap(typeOfMap)
 
 				for key, value := range unmarhsaled {
-					val := reflect.New(additionalPropertiesField.Type.Elem())
+					val := reflect.New(typeOfMap.Elem())
 
 					if err := unmarshalValue(value, val, additionalPropertiesField.Tag, disallowUnknownFields); err != nil {
 						return err
 					}
 
-					additionalPropertiesValue.SetMapIndex(reflect.ValueOf(key), val.Elem())
+					if val.Elem().Type().String() == typeOfMap.Elem().String() {
+						mapValue.SetMapIndex(reflect.ValueOf(key), val.Elem())
+					} else {
+						mapValue.SetMapIndex(reflect.ValueOf(key), trueReflectValue(val))
+					}
+
+				}
+				if additionalPropertiesValue.Type().Kind() == reflect.Interface {
+					additionalPropertiesValue.Set(mapValue)
+				} else {
+					additionalPropertiesValue.Set(mapValue)
 				}
 			}
 		}

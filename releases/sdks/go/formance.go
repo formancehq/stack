@@ -46,9 +46,9 @@ func Float32(f float32) *float32 { return &f }
 func Float64(f float64) *float64 { return &f }
 
 type sdkConfiguration struct {
-	DefaultClient  HTTPClient
-	SecurityClient HTTPClient
-
+	DefaultClient     HTTPClient
+	SecurityClient    HTTPClient
+	Security          func(context.Context) (interface{}, error)
 	ServerURL         string
 	ServerIndex       int
 	Language          string
@@ -80,14 +80,14 @@ func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
 // and standard method from web, mobile and desktop applications.
 // <SecurityDefinitions />
 type Formance struct {
-	Auth           *auth
-	Ledger         *ledger
-	Orchestration  *orchestration
-	Payments       *payments
-	Reconciliation *reconciliation
-	Search         *search
-	Wallets        *wallets
-	Webhooks       *webhooks
+	Auth           *Auth
+	Ledger         *Ledger
+	Orchestration  *Orchestration
+	Payments       *Payments
+	Reconciliation *Reconciliation
+	Search         *Search
+	Wallets        *Wallets
+	Webhooks       *Webhooks
 
 	sdkConfiguration sdkConfiguration
 }
@@ -130,6 +130,28 @@ func WithClient(client HTTPClient) SDKOption {
 	}
 }
 
+func withSecurity(security interface{}) func(context.Context) (interface{}, error) {
+	return func(context.Context) (interface{}, error) {
+		return &security, nil
+	}
+}
+
+// WithSecurity configures the SDK to use the provided security details
+func WithSecurity(security shared.Security) SDKOption {
+	return func(sdk *Formance) {
+		sdk.sdkConfiguration.Security = withSecurity(security)
+	}
+}
+
+// WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
+func WithSecuritySource(security func(context.Context) (shared.Security, error)) SDKOption {
+	return func(sdk *Formance) {
+		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
+			return security(ctx)
+		}
+	}
+}
+
 func WithRetryConfig(retryConfig utils.RetryConfig) SDKOption {
 	return func(sdk *Formance) {
 		sdk.sdkConfiguration.RetryConfig = &retryConfig
@@ -143,8 +165,8 @@ func New(opts ...SDKOption) *Formance {
 			Language:          "go",
 			OpenAPIDocVersion: "INTERNAL",
 			SDKVersion:        "",
-			GenVersion:        "2.173.0",
-			UserAgent:         "speakeasy-sdk/go  2.173.0 INTERNAL github.com/formancehq/formance-sdk-go",
+			GenVersion:        "2.214.10",
+			UserAgent:         "speakeasy-sdk/go  2.214.10 INTERNAL github.com/formancehq/formance-sdk-go",
 		},
 	}
 	for _, opt := range opts {
@@ -156,7 +178,11 @@ func New(opts ...SDKOption) *Formance {
 		sdk.sdkConfiguration.DefaultClient = &http.Client{Timeout: 60 * time.Second}
 	}
 	if sdk.sdkConfiguration.SecurityClient == nil {
-		sdk.sdkConfiguration.SecurityClient = sdk.sdkConfiguration.DefaultClient
+		if sdk.sdkConfiguration.Security != nil {
+			sdk.sdkConfiguration.SecurityClient = utils.ConfigureSecurityClient(sdk.sdkConfiguration.DefaultClient, sdk.sdkConfiguration.Security)
+		} else {
+			sdk.sdkConfiguration.SecurityClient = sdk.sdkConfiguration.DefaultClient
+		}
 	}
 
 	sdk.Auth = newAuth(sdk.sdkConfiguration)
@@ -190,7 +216,7 @@ func (s *Formance) GetVersions(ctx context.Context) (*operations.GetVersionsResp
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -247,7 +273,7 @@ func (s *Formance) GetAPIAuthWellKnownOpenidConfiguration(ctx context.Context) (
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

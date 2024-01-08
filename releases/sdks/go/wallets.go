@@ -15,18 +15,18 @@ import (
 	"strings"
 )
 
-type wallets struct {
+type Wallets struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newWallets(sdkConfig sdkConfiguration) *wallets {
-	return &wallets{
+func newWallets(sdkConfig sdkConfiguration) *Wallets {
+	return &Wallets{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // ConfirmHold - Confirm a hold
-func (s *wallets) ConfirmHold(ctx context.Context, request operations.ConfirmHoldRequest) (*operations.ConfirmHoldResponse, error) {
+func (s *Wallets) ConfirmHold(ctx context.Context, request operations.ConfirmHoldRequest) (*operations.ConfirmHoldResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/holds/{hold_id}/confirm", request, nil)
 	if err != nil {
@@ -47,7 +47,7 @@ func (s *wallets) ConfirmHold(ctx context.Context, request operations.ConfirmHol
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -95,7 +95,7 @@ func (s *wallets) ConfirmHold(ctx context.Context, request operations.ConfirmHol
 }
 
 // CreateBalance - Create a balance
-func (s *wallets) CreateBalance(ctx context.Context, request operations.CreateBalanceRequest) (*operations.CreateBalanceResponse, error) {
+func (s *Wallets) CreateBalance(ctx context.Context, request operations.CreateBalanceRequest) (*operations.CreateBalanceResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}/balances", request, nil)
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *wallets) CreateBalance(ctx context.Context, request operations.CreateBa
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -175,7 +175,7 @@ func (s *wallets) CreateBalance(ctx context.Context, request operations.CreateBa
 }
 
 // CreateWallet - Create a new wallet
-func (s *wallets) CreateWallet(ctx context.Context, request *shared.CreateWalletRequest) (*operations.CreateWalletResponse, error) {
+func (s *Wallets) CreateWallet(ctx context.Context, request *shared.CreateWalletRequest) (*operations.CreateWalletResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/wallets/wallets"
 
@@ -193,7 +193,7 @@ func (s *wallets) CreateWallet(ctx context.Context, request *shared.CreateWallet
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -252,7 +252,7 @@ func (s *wallets) CreateWallet(ctx context.Context, request *shared.CreateWallet
 }
 
 // CreditWallet - Credit a wallet
-func (s *wallets) CreditWallet(ctx context.Context, request operations.CreditWalletRequest) (*operations.CreditWalletResponse, error) {
+func (s *Wallets) CreditWallet(ctx context.Context, request operations.CreditWalletRequest) (*operations.CreditWalletResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}/credit", request, nil)
 	if err != nil {
@@ -273,7 +273,7 @@ func (s *wallets) CreditWallet(ctx context.Context, request operations.CreditWal
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -321,7 +321,7 @@ func (s *wallets) CreditWallet(ctx context.Context, request operations.CreditWal
 }
 
 // DebitWallet - Debit a wallet
-func (s *wallets) DebitWallet(ctx context.Context, request operations.DebitWalletRequest) (*operations.DebitWalletResponse, error) {
+func (s *Wallets) DebitWallet(ctx context.Context, request operations.DebitWalletRequest) (*operations.DebitWalletResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}/debit", request, nil)
 	if err != nil {
@@ -342,7 +342,7 @@ func (s *wallets) DebitWallet(ctx context.Context, request operations.DebitWalle
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -402,7 +402,7 @@ func (s *wallets) DebitWallet(ctx context.Context, request operations.DebitWalle
 }
 
 // GetBalance - Get detailed balance
-func (s *wallets) GetBalance(ctx context.Context, request operations.GetBalanceRequest) (*operations.GetBalanceResponse, error) {
+func (s *Wallets) GetBalance(ctx context.Context, request operations.GetBalanceRequest) (*operations.GetBalanceResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}/balances/{balanceName}", request, nil)
 	if err != nil {
@@ -416,7 +416,7 @@ func (s *wallets) GetBalance(ctx context.Context, request operations.GetBalanceR
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -475,7 +475,7 @@ func (s *wallets) GetBalance(ctx context.Context, request operations.GetBalanceR
 }
 
 // GetHold - Get a hold
-func (s *wallets) GetHold(ctx context.Context, request operations.GetHoldRequest) (*operations.GetHoldResponse, error) {
+func (s *Wallets) GetHold(ctx context.Context, request operations.GetHoldRequest) (*operations.GetHoldResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/holds/{holdID}", request, nil)
 	if err != nil {
@@ -489,7 +489,7 @@ func (s *wallets) GetHold(ctx context.Context, request operations.GetHoldRequest
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -548,7 +548,7 @@ func (s *wallets) GetHold(ctx context.Context, request operations.GetHoldRequest
 }
 
 // GetHolds - Get all holds for a wallet
-func (s *wallets) GetHolds(ctx context.Context, request operations.GetHoldsRequest) (*operations.GetHoldsResponse, error) {
+func (s *Wallets) GetHolds(ctx context.Context, request operations.GetHoldsRequest) (*operations.GetHoldsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/wallets/holds"
 
@@ -563,7 +563,7 @@ func (s *wallets) GetHolds(ctx context.Context, request operations.GetHoldsReque
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -621,7 +621,7 @@ func (s *wallets) GetHolds(ctx context.Context, request operations.GetHoldsReque
 	return res, nil
 }
 
-func (s *wallets) GetTransactions(ctx context.Context, request operations.GetTransactionsRequest) (*operations.GetTransactionsResponse, error) {
+func (s *Wallets) GetTransactions(ctx context.Context, request operations.GetTransactionsRequest) (*operations.GetTransactionsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/wallets/transactions"
 
@@ -636,7 +636,7 @@ func (s *wallets) GetTransactions(ctx context.Context, request operations.GetTra
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -695,7 +695,7 @@ func (s *wallets) GetTransactions(ctx context.Context, request operations.GetTra
 }
 
 // GetWallet - Get a wallet
-func (s *wallets) GetWallet(ctx context.Context, request operations.GetWalletRequest) (*operations.GetWalletResponse, error) {
+func (s *Wallets) GetWallet(ctx context.Context, request operations.GetWalletRequest) (*operations.GetWalletResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}", request, nil)
 	if err != nil {
@@ -709,7 +709,7 @@ func (s *wallets) GetWallet(ctx context.Context, request operations.GetWalletReq
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -770,7 +770,7 @@ func (s *wallets) GetWallet(ctx context.Context, request operations.GetWalletReq
 }
 
 // GetWalletSummary - Get wallet summary
-func (s *wallets) GetWalletSummary(ctx context.Context, request operations.GetWalletSummaryRequest) (*operations.GetWalletSummaryResponse, error) {
+func (s *Wallets) GetWalletSummary(ctx context.Context, request operations.GetWalletSummaryRequest) (*operations.GetWalletSummaryResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}/summary", request, nil)
 	if err != nil {
@@ -784,7 +784,7 @@ func (s *wallets) GetWalletSummary(ctx context.Context, request operations.GetWa
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -845,7 +845,7 @@ func (s *wallets) GetWalletSummary(ctx context.Context, request operations.GetWa
 }
 
 // ListBalances - List balances of a wallet
-func (s *wallets) ListBalances(ctx context.Context, request operations.ListBalancesRequest) (*operations.ListBalancesResponse, error) {
+func (s *Wallets) ListBalances(ctx context.Context, request operations.ListBalancesRequest) (*operations.ListBalancesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}/balances", request, nil)
 	if err != nil {
@@ -859,7 +859,7 @@ func (s *wallets) ListBalances(ctx context.Context, request operations.ListBalan
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -906,7 +906,7 @@ func (s *wallets) ListBalances(ctx context.Context, request operations.ListBalan
 }
 
 // ListWallets - List all wallets
-func (s *wallets) ListWallets(ctx context.Context, request operations.ListWalletsRequest) (*operations.ListWalletsResponse, error) {
+func (s *Wallets) ListWallets(ctx context.Context, request operations.ListWalletsRequest) (*operations.ListWalletsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/wallets/wallets"
 
@@ -921,7 +921,7 @@ func (s *wallets) ListWallets(ctx context.Context, request operations.ListWallet
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -980,7 +980,7 @@ func (s *wallets) ListWallets(ctx context.Context, request operations.ListWallet
 }
 
 // UpdateWallet - Update a wallet
-func (s *wallets) UpdateWallet(ctx context.Context, request operations.UpdateWalletRequest) (*operations.UpdateWalletResponse, error) {
+func (s *Wallets) UpdateWallet(ctx context.Context, request operations.UpdateWalletRequest) (*operations.UpdateWalletResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/wallets/{id}", request, nil)
 	if err != nil {
@@ -1001,7 +1001,7 @@ func (s *wallets) UpdateWallet(ctx context.Context, request operations.UpdateWal
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1049,7 +1049,7 @@ func (s *wallets) UpdateWallet(ctx context.Context, request operations.UpdateWal
 }
 
 // VoidHold - Cancel a hold
-func (s *wallets) VoidHold(ctx context.Context, request operations.VoidHoldRequest) (*operations.VoidHoldResponse, error) {
+func (s *Wallets) VoidHold(ctx context.Context, request operations.VoidHoldRequest) (*operations.VoidHoldResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/wallets/holds/{hold_id}/void", request, nil)
 	if err != nil {
@@ -1063,7 +1063,7 @@ func (s *wallets) VoidHold(ctx context.Context, request operations.VoidHoldReque
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1111,7 +1111,7 @@ func (s *wallets) VoidHold(ctx context.Context, request operations.VoidHoldReque
 }
 
 // WalletsgetServerInfo - Get server info
-func (s *wallets) WalletsgetServerInfo(ctx context.Context) (*operations.WalletsgetServerInfoResponse, error) {
+func (s *Wallets) WalletsgetServerInfo(ctx context.Context) (*operations.WalletsgetServerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/wallets/_info"
 
@@ -1122,7 +1122,7 @@ func (s *wallets) WalletsgetServerInfo(ctx context.Context) (*operations.Wallets
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

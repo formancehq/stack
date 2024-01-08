@@ -7,9 +7,9 @@ import (
 	"math/big"
 )
 
-// ActivityStripeTransferMetadata - A set of key/value pairs that you can attach to a transfer object.
+// Metadata - A set of key/value pairs that you can attach to a transfer object.
 // It can be useful for storing additional information about the transfer in a structured format.
-type ActivityStripeTransferMetadata struct {
+type Metadata struct {
 }
 
 type ActivityStripeTransfer struct {
@@ -20,8 +20,8 @@ type ActivityStripeTransfer struct {
 	// A set of key/value pairs that you can attach to a transfer object.
 	// It can be useful for storing additional information about the transfer in a structured format.
 	//
-	Metadata          *ActivityStripeTransferMetadata `json:"metadata,omitempty"`
-	WaitingValidation *bool                           `default:"false" json:"waitingValidation"`
+	Metadata          *Metadata `json:"metadata,omitempty"`
+	WaitingValidation *bool     `default:"false" json:"waitingValidation"`
 }
 
 func (a ActivityStripeTransfer) MarshalJSON() ([]byte, error) {
@@ -63,7 +63,7 @@ func (o *ActivityStripeTransfer) GetDestination() *string {
 	return o.Destination
 }
 
-func (o *ActivityStripeTransfer) GetMetadata() *ActivityStripeTransferMetadata {
+func (o *ActivityStripeTransfer) GetMetadata() *Metadata {
 	if o == nil {
 		return nil
 	}

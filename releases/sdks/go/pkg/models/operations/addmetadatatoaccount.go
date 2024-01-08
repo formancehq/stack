@@ -3,7 +3,7 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"net/http"
 )
 
@@ -45,7 +45,7 @@ type AddMetadataToAccountResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// Error
-	ErrorResponse *shared.ErrorResponse
+	ErrorResponse *sdkerrors.ErrorResponse
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -59,7 +59,7 @@ func (o *AddMetadataToAccountResponse) GetContentType() string {
 	return o.ContentType
 }
 
-func (o *AddMetadataToAccountResponse) GetErrorResponse() *shared.ErrorResponse {
+func (o *AddMetadataToAccountResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
 	if o == nil {
 		return nil
 	}

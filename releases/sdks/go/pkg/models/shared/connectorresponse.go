@@ -2,11 +2,11 @@
 
 package shared
 
-type ConnectorResponseData struct {
+type Data struct {
 	ConnectorID string `json:"connectorID"`
 }
 
-func (o *ConnectorResponseData) GetConnectorID() string {
+func (o *Data) GetConnectorID() string {
 	if o == nil {
 		return ""
 	}
@@ -14,12 +14,12 @@ func (o *ConnectorResponseData) GetConnectorID() string {
 }
 
 type ConnectorResponse struct {
-	Data ConnectorResponseData `json:"data"`
+	Data Data `json:"data"`
 }
 
-func (o *ConnectorResponse) GetData() ConnectorResponseData {
+func (o *ConnectorResponse) GetData() Data {
 	if o == nil {
-		return ConnectorResponseData{}
+		return Data{}
 	}
 	return o.Data
 }

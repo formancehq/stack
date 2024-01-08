@@ -7,19 +7,19 @@ import (
 	"time"
 )
 
-type TaskBankingCircleDescriptor struct {
+type Descriptor struct {
 	Key  *string `json:"key,omitempty"`
 	Name *string `json:"name,omitempty"`
 }
 
-func (o *TaskBankingCircleDescriptor) GetKey() *string {
+func (o *Descriptor) GetKey() *string {
 	if o == nil {
 		return nil
 	}
 	return o.Key
 }
 
-func (o *TaskBankingCircleDescriptor) GetName() *string {
+func (o *Descriptor) GetName() *string {
 	if o == nil {
 		return nil
 	}
@@ -30,14 +30,14 @@ type TaskBankingCircleState struct {
 }
 
 type TaskBankingCircle struct {
-	ConnectorID string                      `json:"connectorID"`
-	CreatedAt   time.Time                   `json:"createdAt"`
-	Descriptor  TaskBankingCircleDescriptor `json:"descriptor"`
-	Error       *string                     `json:"error,omitempty"`
-	ID          string                      `json:"id"`
-	State       TaskBankingCircleState      `json:"state"`
-	Status      PaymentStatus               `json:"status"`
-	UpdatedAt   time.Time                   `json:"updatedAt"`
+	ConnectorID string                 `json:"connectorID"`
+	CreatedAt   time.Time              `json:"createdAt"`
+	Descriptor  Descriptor             `json:"descriptor"`
+	Error       *string                `json:"error,omitempty"`
+	ID          string                 `json:"id"`
+	State       TaskBankingCircleState `json:"state"`
+	Status      PaymentStatus          `json:"status"`
+	UpdatedAt   time.Time              `json:"updatedAt"`
 }
 
 func (t TaskBankingCircle) MarshalJSON() ([]byte, error) {
@@ -65,9 +65,9 @@ func (o *TaskBankingCircle) GetCreatedAt() time.Time {
 	return o.CreatedAt
 }
 
-func (o *TaskBankingCircle) GetDescriptor() TaskBankingCircleDescriptor {
+func (o *TaskBankingCircle) GetDescriptor() Descriptor {
 	if o == nil {
-		return TaskBankingCircleDescriptor{}
+		return Descriptor{}
 	}
 	return o.Descriptor
 }

@@ -4,12 +4,14 @@ package sdkerrors
 
 import (
 	"encoding/json"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 )
 
+// ErrorResponse - Error
 type ErrorResponse struct {
-	Details      *string    `json:"details,omitempty"`
-	ErrorCode    ErrorsEnum `json:"errorCode"`
-	ErrorMessage string     `json:"errorMessage"`
+	Details      *string           `json:"details,omitempty"`
+	ErrorCode    shared.ErrorsEnum `json:"errorCode"`
+	ErrorMessage string            `json:"errorMessage"`
 }
 
 var _ error = &ErrorResponse{}
