@@ -8,6 +8,22 @@ import (
 )
 
 func ForEachEventPublisher(ctx Context, stackName string, fn func(object client.Object) error) error {
+	ret, err := ListEventPublishers(ctx, stackName)
+	if err != nil {
+		return err
+	}
+
+	for _, object := range ret {
+		if err := fn(&object); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func ListEventPublishers(ctx Context, stackName string) ([]unstructured.Unstructured, error) {
+	ret := make([]unstructured.Unstructured, 0)
 	for gvk, rtype := range ctx.GetScheme().AllKnownTypes() {
 		object, ok := reflect.New(rtype).Interface().(client.Object)
 		if !ok {
@@ -21,17 +37,15 @@ func ForEachEventPublisher(ctx Context, stackName string, fn func(object client.
 			if err := ctx.GetClient().List(ctx, us, client.MatchingFields{
 				"stack": stackName,
 			}); err != nil {
-				return err
+				return nil, err
 			}
 
 			for _, item := range us.Items {
 				item.SetGroupVersionKind(gvk)
-				if err := fn(&item); err != nil {
-					return err
-				}
+				ret = append(ret, item)
 			}
 		}
 	}
 
-	return nil
+	return ret, nil
 }

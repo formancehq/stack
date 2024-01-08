@@ -27,9 +27,11 @@ import (
 	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -116,12 +118,21 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		return err
 	}
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
+
+	eventPublishers, err := ListEventPublishers(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	env = append(env,
 		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		Env("TEMPORAL_TASK_QUEUE", stack.Name),
 		Env("TEMPORAL_ADDRESS", orchestration.Spec.Temporal.Address),
 		Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
 		Env("WORKER", "true"),
+		Env("TOPICS", strings.Join(Map(eventPublishers, func(from unstructured.Unstructured) string {
+			return from.GetName()
+		}), " ")),
 	)
 
 	env = append(env, authclients.GetEnvVars(client)...)

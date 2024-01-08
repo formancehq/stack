@@ -10,3 +10,5 @@ metadata:
   name: webhooks0
 spec:
   stack: stack0
+  debug: true
+  version: local2

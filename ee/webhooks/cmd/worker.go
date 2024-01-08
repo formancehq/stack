@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
