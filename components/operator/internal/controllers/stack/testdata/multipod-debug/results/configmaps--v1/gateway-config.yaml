@@ -10,21 +10,8 @@ data:
         	}
         }
 
-        (auth) {
-        	auth {
-        		issuer http://gateway:8000/api/auth
-
-        		read_key_set_max_retries 10
-        	}
-        }
-
         {
         	debug
-        	# Many directives manipulate the HTTP handler chain and the order in which
-        	# those directives are evaluated matters. So the jwtauth directive must be
-        	# ordered.
-        	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
-        	order auth before basicauth
         	order versions after metrics
         }
 
@@ -55,7 +42,6 @@ data:
         				reverse_proxy ledger:8080
 
         				import cors
-        				import auth ledger
         			}
 
         			@orchestrationmatcher {
@@ -66,7 +52,6 @@ data:
         				reverse_proxy orchestration:8080
 
         				import cors
-        				import auth orchestration
         			}
         			@paymentsmatcher {
         				path /api/payments/payments*
@@ -76,7 +61,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-api:8080
         				import cors
-        				import auth payments
         			}
         			@poolsmatcher {
         				path /api/payments/pools*
@@ -86,7 +70,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-api:8080
         				import cors
-        				import auth payments
         			}
         			@accountsmatcher {
         				path /api/payments/accounts*
@@ -96,7 +79,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-api:8080
         				import cors
-        				import auth payments
         			}
         			@bank-accounts-readmatcher {
         				path /api/payments/bank-accounts*
@@ -106,7 +88,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-api:8080
         				import cors
-        				import auth payments
         			}
         			@transfer-initiations-readmatcher {
         				path /api/payments/transfer-initiations*
@@ -116,7 +97,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-api:8080
         				import cors
-        				import auth payments
         			}
 
         			@payments-apimatcher {
@@ -127,7 +107,6 @@ data:
         				reverse_proxy payments-api:8080
 
         				import cors
-        				import auth payments
         			}
         			@connectorsmatcher {
         				path /api/payments/connectors*
@@ -136,7 +115,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-connectors:8080
         				import cors
-        				import auth payments
         			}
         			@paymentWebhooksmatcher {
         				path /api/payments/connectors/webhooks*
@@ -154,7 +132,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-connectors:8080
         				import cors
-        				import auth payments
         			}
         			@transfer-initiations-writematcher {
         				path /api/payments/transfer-initiations*
@@ -164,7 +141,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-connectors:8080
         				import cors
-        				import auth payments
         			}
         			@bank-accounts-writematcher {
         				path /api/payments/bank-accounts*
@@ -174,7 +150,6 @@ data:
         				uri strip_prefix /api/payments
         				reverse_proxy payments-connectors:8080
         				import cors
-        				import auth payments
         			}
 
         			@payments-connectorsmatcher {
@@ -185,7 +160,6 @@ data:
         				reverse_proxy payments-connectors:8080
 
         				import cors
-        				import auth payments
         			}
 
         			@searchmatcher {
@@ -196,7 +170,6 @@ data:
         				reverse_proxy search:8080
 
         				import cors
-        				import auth search
         			}
 
         			@search-benthosmatcher {
@@ -207,7 +180,6 @@ data:
         				reverse_proxy search-benthos:4195
 
         				import cors
-        				import auth search
         			}
 
         			@walletsmatcher {
@@ -218,7 +190,6 @@ data:
         				reverse_proxy wallets:8080
 
         				import cors
-        				import auth wallets
         			}
 
         			@webhooksmatcher {
@@ -229,7 +200,6 @@ data:
         				reverse_proxy webhooks:8080
 
         				import cors
-        				import auth webhooks
         			}
 
         	handle /versions {
