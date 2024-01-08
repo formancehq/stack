@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
@@ -28,7 +29,13 @@ type serverHandler struct {
 	httpClient *http.Client
 }
 
-func newServerHandler(store storage.Store, httpClient *http.Client, logger logging.Logger, info ServiceInfo) http.Handler {
+func newServerHandler(
+	store storage.Store,
+	httpClient *http.Client,
+	logger logging.Logger,
+	info ServiceInfo,
+	a auth.Auth,
+) http.Handler {
 	h := &serverHandler{
 		Mux:        chi.NewRouter(),
 		store:      store,
@@ -50,15 +57,16 @@ func newServerHandler(store storage.Store, httpClient *http.Client, logger loggi
 	h.Mux.Get(PathInfo, h.getInfo(info))
 
 	h.Mux.Group(func(r chi.Router) {
+		r.Use(auth.Middleware(a))
 		r.Use(otelchi.Middleware("webhooks"))
 
-		h.Mux.Get(PathConfigs, h.getManyConfigsHandle)
-		h.Mux.Post(PathConfigs, h.insertOneConfigHandle)
-		h.Mux.Delete(PathConfigs+PathId, h.deleteOneConfigHandle)
-		h.Mux.Get(PathConfigs+PathId+PathTest, h.testOneConfigHandle)
-		h.Mux.Put(PathConfigs+PathId+PathActivate, h.activateOneConfigHandle)
-		h.Mux.Put(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
-		h.Mux.Put(PathConfigs+PathId+PathChangeSecret, h.changeSecretHandle)
+		r.Get(PathConfigs, h.getManyConfigsHandle)
+		r.Post(PathConfigs, h.insertOneConfigHandle)
+		r.Delete(PathConfigs+PathId, h.deleteOneConfigHandle)
+		r.Get(PathConfigs+PathId+PathTest, h.testOneConfigHandle)
+		r.Put(PathConfigs+PathId+PathActivate, h.activateOneConfigHandle)
+		r.Put(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
+		r.Put(PathConfigs+PathId+PathChangeSecret, h.changeSecretHandle)
 	})
 
 	return h
