@@ -91,7 +91,7 @@ var _ = Describe("OrchestrationController", func() {
 			Eventually(func() error {
 				return LoadResource(stack.Name, "orchestration", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(orchestration))
+			Expect(deployment).To(BeControlledBy(orchestration))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}

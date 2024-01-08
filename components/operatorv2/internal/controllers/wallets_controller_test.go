@@ -80,7 +80,7 @@ var _ = Describe("WalletsController", func() {
 			Eventually(func() error {
 				return LoadResource(stack.Name, "wallets", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(wallets))
+			Expect(deployment).To(BeControlledBy(wallets))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}

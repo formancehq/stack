@@ -45,7 +45,7 @@ var _ = Describe("HTTPAPI", func() {
 			Eventually(func() error {
 				return LoadResource(stack.Name, "ledger", service)
 			}).Should(BeNil())
-			Expect(service).To(BeOwnedBy(httpAPI))
+			Expect(service).To(BeControlledBy(httpAPI))
 			Expect(service.Spec.Selector).To(Equal(map[string]string{
 				"app.kubernetes.io/name": httpAPI.Spec.Name,
 			}))

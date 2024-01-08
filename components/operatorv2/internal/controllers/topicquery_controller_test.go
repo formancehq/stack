@@ -1,6 +1,7 @@
 package controllers_test
 
 import (
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
 	"github.com/formancehq/operator/v2/internal/core"
@@ -48,11 +49,11 @@ var _ = Describe("TopicQueryController", func() {
 		})
 		It("Should create a Topic", func() {
 			t := &v1beta1.Topic{}
-			Eventually(func() error {
-				return Get(core.GetResourceName(
-					core.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)
-			}).Should(BeNil())
-			Expect(t.Spec.Queries).To(ContainElement(topicQuery.Spec.QueriedBy))
+			Eventually(func(g Gomega) *v1beta1.Topic {
+				g.Expect(Get(core.GetResourceName(
+					core.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)).To(Succeed())
+				return t
+			}).Should(BeOwnedBy(topicQuery))
 		})
 		Context("Then when the Topic is ready", func() {
 			t := &v1beta1.Topic{}
@@ -97,11 +98,11 @@ var _ = Describe("TopicQueryController", func() {
 						Expect(Delete(topicQuery)).To(Succeed())
 					})
 					It("Should remove the service from the queries of the topic", func() {
-						Eventually(func(g Gomega) []string {
+						Eventually(func(g Gomega) *v1beta1.Topic {
 							topic := &v1beta1.Topic{}
 							g.Expect(Get(core.GetResourceName(core.GetObjectName(stack.Name, topicQuery.Spec.Service)), topic)).To(Succeed())
-							return topic.Spec.Queries
-						}).Should(Equal([]string{topicQuery2.Spec.QueriedBy}))
+							return topic
+						}).ShouldNot(BeControlledBy(topicQuery))
 					})
 					Context("Then removing the last TopicQuery", func() {
 						BeforeEach(func() {
@@ -109,7 +110,11 @@ var _ = Describe("TopicQueryController", func() {
 						})
 						It("Should completely remove the Topic object", func() {
 							Eventually(func(g Gomega) bool {
-								return errors.IsNotFound(Get(core.GetResourceName(core.GetObjectName(stack.Name, topicQuery.Spec.Service)), &v1beta1.Topic{}))
+								t := &v1beta1.Topic{}
+								err := Get(core.GetResourceName(core.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)
+								spew.Dump(t)
+
+								return errors.IsNotFound(err)
 							}).Should(BeTrue())
 						})
 					})

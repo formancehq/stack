@@ -43,16 +43,11 @@ spec:
           spec:
             description: TopicSpec defines the desired state of Topic
             properties:
-              queries:
-                items:
-                  type: string
-                type: array
               service:
                 type: string
               stack:
                 type: string
             required:
-            - queries
             - service
             type: object
           status:

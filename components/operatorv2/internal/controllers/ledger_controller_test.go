@@ -13,6 +13,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
 var _ = Describe("LedgerController", func() {
@@ -61,7 +62,7 @@ var _ = Describe("LedgerController", func() {
 			Eventually(func() error {
 				return LoadResource(stack.Name, "ledger", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(ledger))
+			Expect(deployment).To(BeControlledBy(ledger))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}
@@ -145,13 +146,13 @@ var _ = Describe("LedgerController", func() {
 				topic = &v1beta1.Topic{
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.TopicSpec{
-						Queries: []string{"orchestration"},
 						StackDependency: v1beta1.StackDependency{
 							Stack: stack.Name,
 						},
 						Service: "ledger",
 					},
 				}
+				Expect(controllerutil.SetOwnerReference(stack, topic, GetScheme()))
 				Expect(Create(topic)).To(Succeed())
 			})
 			It("Should start the deployment with env var defined for publishing in the event bus", deploymentShouldBeConfigured)
@@ -190,33 +191,33 @@ var _ = Describe("LedgerController", func() {
 				Eventually(func() error {
 					return LoadResource(stack.Name, "ledger-read", reader)
 				}).Should(Succeed())
-				Expect(reader).To(BeOwnedBy(ledger))
+				Expect(reader).To(BeControlledBy(ledger))
 
 				readerService := &corev1.Service{}
 				Eventually(func() error {
 					return LoadResource(stack.Name, "ledger-read", readerService)
 				}).Should(Succeed())
-				Expect(readerService).To(BeOwnedBy(ledger))
+				Expect(readerService).To(BeControlledBy(ledger))
 				Expect(readerService).To(TargetDeployment(reader))
 
 				writer := &appsv1.Deployment{}
 				Eventually(func() error {
 					return LoadResource(stack.Name, "ledger-write", writer)
 				}).Should(Succeed())
-				Expect(writer).To(BeOwnedBy(ledger))
+				Expect(writer).To(BeControlledBy(ledger))
 
 				writerService := &corev1.Service{}
 				Eventually(func() error {
 					return LoadResource(stack.Name, "ledger-write", writerService)
 				}).Should(Succeed())
-				Expect(writerService).To(BeOwnedBy(ledger))
+				Expect(writerService).To(BeControlledBy(ledger))
 				Expect(writerService).To(TargetDeployment(writer))
 
 				gateway := &appsv1.Deployment{}
 				Eventually(func() error {
 					return LoadResource(stack.Name, "ledger-gateway", gateway)
 				}).Should(Succeed())
-				Expect(gateway).To(BeOwnedBy(ledger))
+				Expect(gateway).To(BeControlledBy(ledger))
 			})
 		})
 	})

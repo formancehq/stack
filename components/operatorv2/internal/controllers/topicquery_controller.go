@@ -55,9 +55,9 @@ func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQ
 				return err
 			}
 		} else {
-			topic.Spec.Queries = Filter(topic.Spec.Queries, func(s string) bool {
-				return s != topicQuery.Spec.QueriedBy
-			})
+			if err := controllerutil.RemoveOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
+				return err
+			}
 			if err := ctx.GetClient().Update(ctx, topic); err != nil {
 				return err
 			}
@@ -84,26 +84,30 @@ func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQ
 		if !errors.IsNotFound(err) {
 			return err
 		}
-		if err := ctx.GetClient().Create(ctx, &v1beta1.Topic{
+		topic = &v1beta1.Topic{
 			ObjectMeta: ctrl.ObjectMeta{
 				Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 			},
 			Spec: v1beta1.TopicSpec{
-				Queries: []string{topicQuery.Spec.QueriedBy},
 				StackDependency: v1beta1.StackDependency{
 					Stack: topicQuery.Spec.Stack,
 				},
 				Service: topicQuery.Spec.Service,
 			},
-		}); err != nil {
+		}
+		if err := controllerutil.SetOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
+			return err
+		}
+		if err := ctx.GetClient().Create(ctx, topic); err != nil {
 			return err
 		}
 		return nil
-	}
-
-	if !Contains(topic.Spec.Queries, topicQuery.Spec.QueriedBy) {
-		topic.Spec.Queries = append(topic.Spec.Queries, topicQuery.Spec.QueriedBy)
-		if err := ctx.GetClient().Update(ctx, topic); err != nil {
+	} else {
+		patch := client.MergeFrom(topic.DeepCopy())
+		if err := controllerutil.SetOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
+			return err
+		}
+		if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
 			return err
 		}
 	}

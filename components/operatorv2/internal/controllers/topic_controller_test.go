@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
 var _ = Describe("TopicController", func() {
@@ -44,9 +45,9 @@ var _ = Describe("TopicController", func() {
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
-					Queries: []string{"orchestration"},
 				},
 			}
+			Expect(controllerutil.SetOwnerReference(stack, topic, GetScheme())).To(Succeed())
 			Expect(Create(topic)).To(Succeed())
 		})
 		It("Should be set to ready status", func() {
@@ -59,7 +60,7 @@ var _ = Describe("TopicController", func() {
 		Context("Then updating removing all queries", func() {
 			BeforeEach(func() {
 				patch := client.MergeFrom(topic.DeepCopy())
-				topic.Spec.Queries = []string{}
+				Expect(controllerutil.RemoveOwnerReference(stack, topic, GetScheme())).To(Succeed())
 				Expect(Patch(topic, patch)).To(Succeed())
 			})
 			It("Should trigger the deletion of the topic object", func() {

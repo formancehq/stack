@@ -70,7 +70,7 @@ var _ = Describe("AuthController", func() {
 			Eventually(func() error {
 				return LoadResource(stack.Name, "auth", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(auth))
+			Expect(deployment).To(BeControlledBy(auth))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}

@@ -58,33 +58,33 @@ var _ = Describe("PaymentsController", func() {
 			Eventually(func() error {
 				return LoadResource(stack.Name, "payments-read", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(payments))
+			Expect(deployment).To(BeControlledBy(payments))
 
 			service := &corev1.Service{}
 			Eventually(func() error {
 				return LoadResource(stack.Name, "payments-read", service)
 			}).Should(Succeed())
-			Expect(service).To(BeOwnedBy(payments))
+			Expect(service).To(BeControlledBy(payments))
 		})
 		It("Should create a connectors deployment with a service", func() {
 			deployment := &appsv1.Deployment{}
 			Eventually(func() error {
 				return LoadResource(stack.Name, "payments-connectors", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(payments))
+			Expect(deployment).To(BeControlledBy(payments))
 
 			service := &corev1.Service{}
 			Eventually(func() error {
 				return LoadResource(stack.Name, "payments-connectors", service)
 			}).Should(Succeed())
-			Expect(service).To(BeOwnedBy(payments))
+			Expect(service).To(BeControlledBy(payments))
 		})
 		It("Should create a gateway", func() {
 			deployment := &appsv1.Deployment{}
 			Eventually(func() error {
 				return LoadResource(stack.Name, "payments", deployment)
 			}).Should(Succeed())
-			Expect(deployment).To(BeOwnedBy(payments))
+			Expect(deployment).To(BeControlledBy(payments))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}

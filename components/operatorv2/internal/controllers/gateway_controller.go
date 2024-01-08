@@ -26,6 +26,7 @@ import (
 	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
+	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
@@ -125,7 +126,6 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	}
 
 	if gateway.Spec.EnableAudit {
-		// TODO: need to create a topic for the audit feature
 		brokerConfiguration, err := stacks.GetByLabel[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 		if err != nil {
 			return err
@@ -133,6 +133,10 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		env = append(env,
 			brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "gateway")...,
 		)
+
+		if err := topicqueries.Create(ctx, stack, "gateway", gateway); err != nil {
+			return err
+		}
 	}
 
 	image, err := GetImage(ctx, stack, "gateway", gateway.Spec.Version)

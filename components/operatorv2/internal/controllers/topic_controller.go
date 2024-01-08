@@ -30,7 +30,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 // TopicController reconciles a Topic object
@@ -42,7 +41,7 @@ type TopicController struct{}
 
 func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 
-	if len(topic.Spec.Queries) == 0 {
+	if len(topic.GetOwnerReferences()) == 0 {
 		if err := ctx.GetClient().Delete(ctx, topic); err != nil {
 			return nil
 		}
@@ -118,7 +117,7 @@ func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Topic{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		For(&v1beta1.Topic{}).
 		Watches(
 			&v1beta1.BrokerConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Topic](mgr)),
