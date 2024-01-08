@@ -142,7 +142,7 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 
 	if gateway.Spec.EnableAudit {
 		env = append(env,
-			brokerconfigurations.BrokerEnvVars(*auditTopic.Status.Configuration, "gateway")...,
+			brokerconfigurations.BrokerEnvVars(*auditTopic.Status.Configuration, stack.Name, "gateway")...,
 		)
 	}
 

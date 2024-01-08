@@ -1,6 +1,7 @@
 package brokerconfigurations
 
 import (
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
@@ -17,10 +18,10 @@ func GetEnvVars(ctx core.Context, stackName, serviceName string) ([]v1.EnvVar, e
 		return nil, stacks.ErrNotFound
 	}
 
-	return BrokerEnvVars(configuration.Spec, serviceName), nil
+	return BrokerEnvVars(configuration.Spec, stackName, serviceName), nil
 }
 
-func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, serviceName string) []v1.EnvVar {
+func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, stackName, serviceName string) []v1.EnvVar {
 	ret := make([]v1.EnvVar, 0)
 
 	if broker.Kafka != nil {
@@ -48,7 +49,7 @@ func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, serviceName string) [
 			core.Env("BROKER", "nats"),
 			core.Env("PUBLISHER_NATS_ENABLED", "true"),
 			core.Env("PUBLISHER_NATS_URL", broker.Nats.URL),
-			core.Env("PUBLISHER_NATS_CLIENT_ID", serviceName),
+			core.Env("PUBLISHER_NATS_CLIENT_ID", fmt.Sprintf("%s-%s", stackName, serviceName)),
 		)
 	}
 	return ret

@@ -10,3 +10,5 @@ metadata:
   name: stack0-ledger
 spec:
   stack: stack0
+  debug: true
+  dev: true

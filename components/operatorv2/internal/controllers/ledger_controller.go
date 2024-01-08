@@ -278,7 +278,7 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1bet
 			return nil, fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, "ledger")...)
+		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, stack.Name, "ledger")...)
 		container.Env = append(container.Env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "ledger")))
 	}
 

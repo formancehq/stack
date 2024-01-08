@@ -121,6 +121,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		Env("TEMPORAL_TASK_QUEUE", stack.Name),
 		Env("TEMPORAL_ADDRESS", orchestration.Spec.Temporal.Address),
 		Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
+		Env("WORKER", "true"),
 	)
 
 	env = append(env, authclients.GetEnvVars(client)...)

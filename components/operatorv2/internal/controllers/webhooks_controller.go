@@ -95,7 +95,7 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	}
 
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
-	env = append(env, brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "webhooks")...)
+	env = append(env, brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, stack.Name, "webhooks")...)
 	env = append(env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	env = append(env, Env("KAFKA_TOPICS", strings.Join([]string{
 		GetObjectName(stack.Name, "ledger"),

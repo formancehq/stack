@@ -164,7 +164,7 @@ func (r *PaymentsController) createConnectorsDeployment(ctx Context, stack *v1be
 			return fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, "payments")...)
+		env = append(env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
 		env = append(env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "payments")))
 	}
 

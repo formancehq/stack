@@ -222,7 +222,7 @@ var _ = Describe("GatewayController", func() {
 					g.Expect(LoadResource(stack.Name, "gateway", d)).To(Succeed())
 					return d.Spec.Template.Spec.Containers[0].Env
 				}).Should(ContainElements(
-					brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "gateway"),
+					brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, stack.Name, "gateway"),
 				))
 			})
 		})
