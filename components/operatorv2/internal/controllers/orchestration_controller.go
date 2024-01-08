@@ -17,6 +17,7 @@ limitations under the License.
 package controllers
 
 import (
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
@@ -131,7 +132,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
 		Env("WORKER", "true"),
 		Env("TOPICS", strings.Join(Map(eventPublishers, func(from unstructured.Unstructured) string {
-			return from.GetName()
+			return fmt.Sprintf("%s-%s", stack.Name, strings.ToLower(from.GetKind()))
 		}), " ")),
 	)
 

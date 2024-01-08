@@ -1,9 +1,10 @@
 package controllers_test
 
 import (
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
-	"github.com/formancehq/operator/v2/internal/core"
+	core "github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -92,6 +93,10 @@ var _ = Describe("OrchestrationController", func() {
 				return LoadResource(stack.Name, "orchestration", deployment)
 			}).Should(Succeed())
 			Expect(deployment).To(BeControlledBy(orchestration))
+			Expect(deployment.Spec.Template.Spec.Containers[0].Env).To(ContainElements(
+				core.Env("WORKER", "true"),
+				core.Env("TOPICS", fmt.Sprintf("%s-ledger", stack.Name)),
+			))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}
