@@ -59,6 +59,35 @@ dockers:
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=MIT
+  # From scratch
+  - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-amd64-scratch"]
+    goarch: amd64
+    dockerfile: scratch.Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+  - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-arm64-scratch" ]
+    goarch: arm64
+    dockerfile: scratch.Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/arm64/v8
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
 
 docker_manifests:
   - name_template: 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}'
@@ -69,3 +98,12 @@ docker_manifests:
     image_templates:
       - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-amd64'
       - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-arm64'
+  # From scratch
+  - name_template: 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-scratch'
+    image_templates:
+      - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-amd64-scratch'
+      - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-arm64-scratch'
+  - name_template: '{{ if not .IsNightly }}ghcr.io/formancehq/{{ .ProjectName }}:latest{{ end }}-scratch'
+    image_templates:
+      - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-amd64-scratch'
+      - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-arm64-scratch'
