@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -38,6 +39,7 @@ func NewAPI(
 	otlp.InitOTLPFlags(server.Flags())
 	otlptraces.InitOTLPTracesFlags(server.Flags())
 	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
+	auth.InitAuthFlags(server.Flags())
 	publish.InitCLIFlags(server)
 
 	return root

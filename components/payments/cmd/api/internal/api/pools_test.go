@@ -16,6 +16,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/google/uuid"
@@ -155,7 +156,7 @@ func TestCreatePool(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			var body []byte
 			if testCase.req != nil {
@@ -292,7 +293,7 @@ func TestAddAccountToPool(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			var body []byte
 			if testCase.req != nil {
@@ -400,7 +401,7 @@ func TestRemoveAccountFromPool(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/pools/%s/accounts/%s", testCase.poolID, testCase.accountID), nil)
 			rec := httptest.NewRecorder()
@@ -626,7 +627,7 @@ func TestListPools(t *testing.T) {
 					Return(nil, storage.PaginationDetails{}, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, "/pools", nil)
 			rec := httptest.NewRecorder()
@@ -757,7 +758,7 @@ func TestGetPool(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/pools/%s", testCase.poolID), nil)
 			rec := httptest.NewRecorder()
@@ -896,7 +897,7 @@ func TestGetPoolBalance(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/pools/%s/balances", testCase.poolID), nil)
 			rec := httptest.NewRecorder()
@@ -987,7 +988,7 @@ func TestDeletePool(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/pools/%s", testCase.poolID), nil)
 			rec := httptest.NewRecorder()

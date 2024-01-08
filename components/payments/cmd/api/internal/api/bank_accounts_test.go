@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/google/uuid"
@@ -217,7 +218,7 @@ func TestListBankAccounts(t *testing.T) {
 					Return(nil, storage.PaginationDetails{}, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, "/bank-accounts", nil)
 			rec := httptest.NewRecorder()
@@ -354,7 +355,7 @@ func TestGetBankAccount(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/bank-accounts/%s", testCase.bankAccountUUID), nil)
 			rec := httptest.NewRecorder()

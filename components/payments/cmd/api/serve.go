@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -59,6 +60,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 		options = append(options,
 			otlptraces.CLITracesModule(viper.GetViper()),
 			otlpmetrics.CLIMetricsModule(viper.GetViper()),
+			auth.CLIAuthModule(viper.GetViper()),
 			fx.Provide(fx.Annotate(noop.NewMeterProvider, fx.As(new(metric.MeterProvider)))),
 		)
 		options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
