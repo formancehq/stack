@@ -142,7 +142,8 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 		return err
 	}
 
-	if err := streams.LoadFromFileSystem(ctx, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0"); err != nil {
+	if err := streams.LoadFromFileSystem(ctx, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0",
+		WithController[*v1beta1.Stream](ctx.GetScheme(), payments)); err != nil {
 		return err
 	}
 

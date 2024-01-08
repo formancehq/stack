@@ -4,6 +4,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// +kubebuilder:object:generate=false
+type EventPublisher interface {
+	isEventPublisher()
+}
+
 type DevProperties struct {
 	// +optional
 	Debug bool `json:"debug"`
@@ -128,9 +133,4 @@ type StackDependency struct {
 
 func (d StackDependency) GetStack() string {
 	return d.Stack
-}
-
-// +kubebuilder:object:generate=false
-type EventPublisher interface {
-	isEventPublisher()
 }

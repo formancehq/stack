@@ -74,7 +74,8 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0"); err != nil {
+	if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0",
+		WithController[*v1beta1.Stream](ctx.GetScheme(), ledger)); err != nil {
 		return err
 	}
 
