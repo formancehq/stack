@@ -1,14 +1,18 @@
 package controllers_test
 
 import (
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -170,6 +174,55 @@ var _ = Describe("GatewayController", func() {
 				Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
 				Expect(cm.Data["Caddyfile"]).To(
 					MatchGoldenFile("gateway-controller", "configmap-with-ledger-and-auth.yaml"))
+			})
+		})
+		Context("With audit enabled", func() {
+			var brokerConfiguration *v1beta1.BrokerConfiguration
+			BeforeEach(func() {
+				gateway.Spec.EnableAudit = true
+				brokerConfiguration = &v1beta1.BrokerConfiguration{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: uuid.NewString(),
+						Labels: map[string]string{
+							"formance.com/stack": stack.Name,
+						},
+					},
+					Spec: v1beta1.BrokerConfigurationSpec{
+						Nats: &v1beta1.NatsConfig{
+							URL:      "nats://localhost:4321",
+							Replicas: 10,
+						},
+					},
+				}
+			})
+			JustBeforeEach(func() {
+				Expect(Create(brokerConfiguration)).To(Succeed())
+			})
+			JustAfterEach(func() {
+				Expect(Delete(brokerConfiguration)).To(Succeed())
+			})
+			It("Should create a topic", func() {
+				Eventually(func() error {
+					topic := &v1beta1.Topic{}
+					return LoadResource("", fmt.Sprintf("%s-audit", stack.GetName()), topic)
+				}).Should(Succeed())
+			})
+			It("Should adapt the Caddyfile", func() {
+				cm := &corev1.ConfigMap{}
+				Eventually(func(g Gomega) error {
+					return LoadResource(stack.Name, "gateway", cm)
+				}).Should(Succeed())
+				Expect(cm.Data["Caddyfile"]).To(
+					MatchGoldenFile("gateway-controller", "configmap-with-audit.yaml"))
+			})
+			It("Should add env vars to the deployment", func() {
+				Eventually(func(g Gomega) []corev1.EnvVar {
+					d := &appsv1.Deployment{}
+					g.Expect(LoadResource(stack.Name, "gateway", d)).To(Succeed())
+					return d.Spec.Template.Spec.Containers[0].Env
+				}).Should(ContainElements(
+					brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "gateway"),
+				))
 			})
 		})
 	})

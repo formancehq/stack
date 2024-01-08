@@ -26,7 +26,7 @@ import (
 	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/services"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
-	"github.com/formancehq/operator/v2/internal/resources/topicqueries"
+	"github.com/formancehq/operator/v2/internal/resources/topics"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sort"
@@ -69,12 +69,17 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 		return err
 	}
 
-	configMap, err := r.createConfigMap(ctx, stack, gateway, httpAPIs, authEnabled)
+	topic, err := r.createAuditTopic(ctx, stack, gateway)
 	if err != nil {
 		return err
 	}
 
-	if err := r.createDeployment(ctx, stack, gateway, configMap); err != nil {
+	configMap, err := r.createConfigMap(ctx, stack, gateway, httpAPIs, authEnabled, topic)
+	if err != nil {
+		return err
+	}
+
+	if err := r.createDeployment(ctx, stack, gateway, configMap, topic); err != nil {
 		return err
 	}
 
@@ -95,9 +100,9 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 }
 
 func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool) (*corev1.ConfigMap, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool, auditTopic *v1beta1.Topic) (*corev1.ConfigMap, error) {
 
-	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs, authEnabled)
+	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs, authEnabled, auditTopic)
 	if err != nil {
 		return nil, err
 	}
@@ -117,8 +122,22 @@ func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 	return caddyfileConfigMap, err
 }
 
+func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.Topic, error) {
+	if gateway.Spec.EnableAudit {
+		topic, err := topics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit")
+		if err != nil {
+			return nil, err
+		}
+		if !topic.Status.Ready {
+			return nil, ErrPending
+		}
+		return topic, nil
+	}
+	return nil, nil
+}
+
 func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap) error {
+	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap, auditTopic *v1beta1.Topic) error {
 
 	env, err := GetCommonServicesEnvVars(ctx, stack, "gateway", gateway.Spec)
 	if err != nil {
@@ -126,17 +145,9 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	}
 
 	if gateway.Spec.EnableAudit {
-		brokerConfiguration, err := stacks.GetByLabel[*v1beta1.BrokerConfiguration](ctx, stack.Name)
-		if err != nil {
-			return err
-		}
 		env = append(env,
-			brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, "gateway")...,
+			brokerconfigurations.BrokerEnvVars(*auditTopic.Status.Configuration, "gateway")...,
 		)
-
-		if err := topicqueries.Create(ctx, stack, "gateway", gateway); err != nil {
-			return err
-		}
 	}
 
 	image, err := GetImage(ctx, stack, "gateway", gateway.Spec.Version)
@@ -224,7 +235,7 @@ func (r *GatewayController) handleIngress(ctx Context, stack *v1beta1.Stack,
 }
 
 func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool) (string, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool, auditTopic *v1beta1.Topic) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
 		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
@@ -252,17 +263,12 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 	}
 
 	if gateway.Spec.EnableAudit {
-		brokerConfiguration, err := stacks.GetByLabel[*v1beta1.BrokerConfiguration](ctx, stack.Name)
-		if err != nil {
-			return "", err
-		}
-
 		data["EnableAudit"] = true
 		data["Broker"] = func() string {
-			if brokerConfiguration.Spec.Kafka != nil {
+			if auditTopic.Status.Configuration.Kafka != nil {
 				return "kafka"
 			}
-			if brokerConfiguration.Spec.Nats != nil {
+			if auditTopic.Status.Configuration.Nats != nil {
 				return "nats"
 			}
 			return ""
@@ -289,6 +295,11 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Owns(&corev1.Service{}).
 		Owns(&networkingv1.Ingress{}).
 		Watches(
+			&v1beta1.Topic{},
+			handler.EnqueueRequestsFromMapFunc(
+				topics.Watch[*v1beta1.Gateway](mgr, "gateway")),
+		).
+		Watches(
 			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Gateway](mgr)),
 		).
@@ -301,7 +312,6 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 			handler.EnqueueRequestsFromMapFunc(
 				stacks.WatchDependents[*v1beta1.Gateway](mgr)),
 		).
-		// WatchUsingLabels Auth object to enable authentication
 		Watches(
 			&v1beta1.Auth{},
 			handler.EnqueueRequestsFromMapFunc(
