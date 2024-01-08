@@ -103,7 +103,7 @@ docker_manifests:
     image_templates:
       - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-amd64-scratch'
       - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-arm64-scratch'
-  - name_template: '{{ if not .IsNightly }}ghcr.io/formancehq/{{ .ProjectName }}:latest{{ end }}-scratch'
+  - name_template: '{{ if not .IsNightly }}ghcr.io/formancehq/{{ .ProjectName }}:latest-scratch{{ end }}'
     image_templates:
       - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-amd64-scratch'
       - 'ghcr.io/formancehq/{{ .ProjectName }}:{{ if not .IsNightly }}v{{ end }}{{ .Version }}-arm64-scratch'
