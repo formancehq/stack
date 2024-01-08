@@ -18,7 +18,7 @@ func Module(cfg ModuleConfig) fx.Option {
 
 	options = append(options,
 		fx.Provide(func() Auth {
-			return newNoAuth()
+			return NewNoAuth()
 		}),
 	)
 

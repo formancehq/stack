@@ -8,6 +8,6 @@ func (a noAuth) Authenticate(w http.ResponseWriter, r *http.Request) (bool, erro
 	return true, nil
 }
 
-func newNoAuth() *noAuth {
+func NewNoAuth() *noAuth {
 	return &noAuth{}
 }
