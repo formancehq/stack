@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 
 	"github.com/formancehq/search/pkg/searchengine"
@@ -72,6 +73,7 @@ func NewServer() *cobra.Command {
 			options := make([]fx.Option, 0)
 			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndex))
 			options = append(options,
+				auth.CLIAuthModule(viper.GetViper()),
 				health.Module(),
 				health.ProvideHealthCheck(func(client *opensearch.Client) health.NamedCheck {
 					return health.NewNamedCheck("elasticsearch connection", health.CheckFn(func(ctx context.Context) error {
@@ -154,19 +156,24 @@ func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIn
 	return fx.Options(options...)
 }
 
-func apiModule(serviceName, bind, stack string, serviceInfo api.ServiceInfo, esIndex string) fx.Option {
+func apiModule(
+	serviceName, bind, stack string,
+	serviceInfo api.ServiceInfo,
+	esIndex string,
+) fx.Option {
 	return fx.Options(
-		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *health.HealthController) (http.Handler, error) {
+		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *health.HealthController, a auth.Auth) (http.Handler, error) {
 			router := mux.NewRouter()
 
 			router.Use(handlers.RecoveryHandler())
 			router.Handle(healthCheckPath, http.HandlerFunc(healthController.Check))
+			router.Path("/_info").Methods(http.MethodGet).Handler(api.InfoHandler(serviceInfo))
 
 			routerWithTraces := router.PathPrefix("/").Subrouter()
+			routerWithTraces.Use(auth.Middleware(a))
 			if viper.GetBool(otlptraces.OtelTracesFlag) {
 				routerWithTraces.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
 			}
-			routerWithTraces.Path("/_info").Methods(http.MethodGet).Handler(api.InfoHandler(serviceInfo))
 			routerWithTraces.PathPrefix("/").Handler(searchhttp.Handler(searchengine.NewDefaultEngine(
 				openSearchClient,
 				stack,
