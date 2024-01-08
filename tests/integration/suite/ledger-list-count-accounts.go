@@ -2,13 +2,14 @@ package suite
 
 import (
 	"fmt"
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
 	"sort"
 	"time"
+
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -97,7 +98,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				},
 			)
 			Expect(err).To(HaveOccurred())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumValidation))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumValidation))
 		})
 		It("should be countable on api", func() {
 			response, err := Client().Ledger.V2CountAccounts(

@@ -1,11 +1,12 @@
 package suite
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -170,9 +171,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 					},
 				)
 				Expect(err).To(HaveOccurred())
-				Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumConflict))
+				Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumConflict))
 			})
-			It("Should fail with "+string(sdkerrors.V2ErrorsEnumConflict)+" error code", func() {})
+			It("Should fail with "+string(shared.V2ErrorsEnumConflict)+" error code", func() {})
 		})
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
@@ -279,7 +280,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(err).To(HaveOccurred())
 
 			Expect(err).Should(Equal(&sdkerrors.V2ErrorResponse{
-				ErrorCode:    sdkerrors.V2ErrorsEnumInsufficientFund,
+				ErrorCode:    shared.V2ErrorsEnumInsufficientFund,
 				ErrorMessage: "running numscript: script execution failed: no more fund to withdraw",
 			}))
 		})
@@ -347,9 +348,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(sdkerrors.V2ErrorsEnumCompilationFailed)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).NotTo(Succeed())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumCompilationFailed))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
 			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjE1XHJcbiAgXHUwMDFiWzM0bXxcdTAwMWJbMG1cclxuXHUwMDFiWzMxbTEgfCBcdTAwMWJbMG1cdTAwMWJbOTBtc2VuZCBbQ09JTiAtMTAwXHUwMDFiWzBtXVx1MDAxYls5MG0gKFxyXG5cdTAwMWJbMG0gIFx1MDAxYlszNG18XHUwMDFiWzBtICAgICAgICAgICAgICAgIFx1MDAxYlszMW1eXHUwMDFiWzBtIG5vIHZpYWJsZSBhbHRlcm5hdGl2ZSBhdCBpbnB1dCAnW0NPSU4tMTAwXSdcclxuIn0=")))
 		})
 	})
@@ -381,9 +382,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(sdkerrors.V2ErrorsEnumCompilationFailed)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).NotTo(Succeed())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumCompilationFailed))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
 			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
 		})
 	})
@@ -407,9 +408,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(sdkerrors.V2ErrorsEnumCompilationFailed)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).NotTo(Succeed())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumCompilationFailed))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
 			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjBcclxuICBcdTAwMWJbMzRtfFx1MDAxYlswbVxyXG5cdTAwMWJbMzFtMSB8IFx1MDAxYlswbVx1MDAxYls5MG1cdTAwMWJbMG1YWFhcdTAwMWJbOTBtXHJcblx1MDAxYlswbSAgXHUwMDFiWzM0bXxcdTAwMWJbMG0gXHUwMDFiWzMxbV5eXHUwMDFiWzBtIG1pc21hdGNoZWQgaW5wdXQgJ1hYWCcgZXhwZWN0aW5nIHtORVdMSU5FLCAndmFycycsICdzZXRfdHhfbWV0YScsICdzZXRfYWNjb3VudF9tZXRhJywgJ3ByaW50JywgJ2ZhaWwnLCAnc2VuZCcsICdzYXZlJ31cclxuIn0=")))
 		})
 	})
@@ -439,9 +440,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(sdkerrors.V2ErrorsEnumNoPostings)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumNoPostings)+" code", func() {
 			Expect(err).NotTo(Succeed())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumNoPostings))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumNoPostings))
 		})
 	})
 	When("creating a transaction with metadata override", func() {
@@ -470,9 +471,9 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			)
 		})
-		It("should fail with "+string(sdkerrors.V2ErrorsEnumMetadataOverride)+" code", func() {
+		It("should fail with "+string(shared.V2ErrorsEnumMetadataOverride)+" code", func() {
 			Expect(err).NotTo(Succeed())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumMetadataOverride))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumMetadataOverride))
 		})
 	})
 })

@@ -22,7 +22,7 @@ type CreateTransactionWrapper struct {
 	// OK
 	CreateTransactionResponse *CreateTransactionResponse
 	// Error
-	ErrorResponse *shared.ErrorResponse
+	ErrorResponse *shared.Error
 	StatusCode    int
 	RawResponse   *http.Response
 }

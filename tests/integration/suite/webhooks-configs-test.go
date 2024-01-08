@@ -1,12 +1,13 @@
 package suite
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -151,7 +152,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 					},
 				)
 				Expect(err).To(HaveOccurred())
-				Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumNotFound))
+				Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(shared.WebhooksErrorsEnumNotFound))
 			})
 		})
 	})

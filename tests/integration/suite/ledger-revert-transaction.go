@@ -1,15 +1,16 @@
 package suite
 
 import (
+	"math/big"
+	"net/http"
+	"time"
+
 	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"math/big"
-	"net/http"
-	"time"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -109,7 +110,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				JustBeforeEach(revertTx)
 				It("Should fail", func() {
 					Expect(err).To(HaveOccurred())
-					Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumInsufficientFund))
+					Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumInsufficientFund))
 				})
 				Context("With forcing", func() {
 					BeforeEach(func() {
@@ -162,7 +163,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						},
 					)
 					Expect(err).NotTo(BeNil())
-					Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumAlreadyRevert))
+					Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumAlreadyRevert))
 				})
 			})
 		})
