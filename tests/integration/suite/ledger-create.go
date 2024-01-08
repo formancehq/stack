@@ -1,13 +1,17 @@
 package suite
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"net/http"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
@@ -29,6 +33,17 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumValidation))
 			})
 			It("should fail", func() {})
+		})
+	})
+	When("bucket naming convention depends on the database 63 bytes length (pg constraint)", func() {
+		It("should fail with > 63 characters in ledger or bucket name", func() {
+			_, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+				V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
+					Bucket: pointer.For(strings.Repeat("a", 64)),
+				},
+				Ledger: "default",
+			})
+			Expect(err).To(HaveOccurred())
 		})
 	})
 })
