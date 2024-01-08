@@ -17,6 +17,7 @@ var Payments = internal.NewModule("payments").
 				return []string{
 					"api",
 					"serve",
+					"--auth-enabled=false",
 					"--postgres-uri=" + test.GetDatabaseSourceName("payments"),
 					"--config-encryption-key=encryption-key",
 					"--publisher-nats-enabled",
@@ -43,6 +44,7 @@ var Payments = internal.NewModule("payments").
 				return []string{
 					"connectors",
 					"serve",
+					"--auth-enabled=false",
 					"--postgres-uri=" + test.GetDatabaseSourceName("payments"),
 					"--config-encryption-key=encryption-key",
 					"--publisher-nats-enabled",

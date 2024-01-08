@@ -2,6 +2,7 @@ package modules
 
 import (
 	"fmt"
+
 	"github.com/formancehq/orchestration/cmd"
 	"github.com/formancehq/stack/tests/integration/internal"
 )
@@ -13,6 +14,7 @@ var Orchestration = internal.NewModule("orchestration").
 			WithArgs(func(test *internal.Test) []string {
 				return []string{
 					"serve",
+					"--auth-enabled=false",
 					"--listen=0.0.0.0:0",
 					"--postgres-dsn=" + test.GetDatabaseSourceName("orchestration"),
 					"--stack-client-id=global",

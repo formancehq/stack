@@ -11,6 +11,7 @@ var Wallets = internal.NewModule("wallets").
 			WithArgs(func(test *internal.Test) []string {
 				return []string{
 					"serve",
+					"--auth-enabled=false",
 					"--stack-client-id=global",
 					"--stack-client-secret=global",
 					"--stack-url=" + test.GatewayURL(),
