@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -319,7 +320,7 @@ func TestReconciliation(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
 
 			var body []byte
 			if testCase.invalidBody {
@@ -444,7 +445,7 @@ func TestGetReconciliation(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/reconciliations/%s", testCase.id.String()), nil)
 			rec := httptest.NewRecorder()

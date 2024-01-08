@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/reconciliation/internal/api"
 	"github.com/formancehq/reconciliation/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -70,6 +71,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 		options = append(options,
 			otlptraces.CLITracesModule(viper.GetViper()),
 			otlpmetrics.CLIMetricsModule(viper.GetViper()),
+			auth.CLIAuthModule(viper.GetViper()),
 		)
 
 		options = append(options,
