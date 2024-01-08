@@ -1,14 +1,15 @@
 package suite
 
 import (
+	"math/big"
+	"net/http"
+
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"math/big"
-	"net/http"
 )
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
@@ -22,7 +23,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 
 			_, err = Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
 				RequestBody: []shared.V2BulkElement{
-					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementCreateTransaction{
 						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
 							Postings: []shared.V2Posting{{
@@ -33,7 +34,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 							}},
 						},
 					}),
-					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementCreateTransaction{
 						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
 							Postings: []shared.V2Posting{{
@@ -44,8 +45,8 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 							}},
 						},
 					}),
-					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementV2BulkElementAddMetadata{
-						Data: &shared.V2BulkElementV2BulkElementAddMetadataData{
+					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementAddMetadata{
+						Data: &shared.V2BulkElementAddMetadataData{
 							Metadata: map[string]string{
 								"category": "premium",
 							},
@@ -53,8 +54,8 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Search}, func() {
 							TargetType: shared.V2TargetTypeAccount,
 						},
 					}),
-					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementV2BulkElementAddMetadata{
-						Data: &shared.V2BulkElementV2BulkElementAddMetadataData{
+					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementAddMetadata{
+						Data: &shared.V2BulkElementAddMetadataData{
 							Metadata: map[string]string{
 								"category": "premium",
 							},

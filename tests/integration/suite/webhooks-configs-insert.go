@@ -1,10 +1,11 @@
 package suite
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
@@ -62,7 +63,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			cfg,
 		)
 		Expect(err).To(HaveOccurred())
-		Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumValidation))
+		Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(shared.WebhooksErrorsEnumValidation))
 	})
 
 	It("inserting an invalid config with invalid secret", func() {

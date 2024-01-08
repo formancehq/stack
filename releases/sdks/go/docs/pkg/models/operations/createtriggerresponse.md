@@ -1,0 +1,12 @@
+# CreateTriggerResponse
+
+
+## Fields
+
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ContentType`                                                                        | *string*                                                                             | :heavy_check_mark:                                                                   | HTTP response content type for this operation                                        |
+| `CreateTriggerResponse`                                                              | [*shared.CreateTriggerResponse](../../../pkg/models/shared/createtriggerresponse.md) | :heavy_minus_sign:                                                                   | Created trigger                                                                      |
+| `Error`                                                                              | [*shared.Error](../../../pkg/models/shared/error.md)                                 | :heavy_minus_sign:                                                                   | General error                                                                        |
+| `StatusCode`                                                                         | *int*                                                                                | :heavy_check_mark:                                                                   | HTTP response status code for this operation                                         |
+| `RawResponse`                                                                        | [*http.Response](https://pkg.go.dev/net/http#Response)                               | :heavy_check_mark:                                                                   | Raw HTTP response; suitable for custom response parsing                              |

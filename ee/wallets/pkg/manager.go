@@ -288,10 +288,10 @@ func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTra
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
 		apiErr, ok := err.(GenericOpenAPIError)
 		if ok {
-			respErr, ok := apiErr.Model().(shared.ErrorResponse)
+			respErr, ok := apiErr.Model().(shared.WalletsErrorResponse)
 			if ok {
 				switch respErr.ErrorCode {
-				case shared.ErrorsEnumInsufficientFund:
+				case shared.WalletsErrorResponseErrorCodeInsufficientFund:
 					return ErrInsufficientFundError
 				}
 			}

@@ -2,12 +2,12 @@
 
 package shared
 
-type ContractExpr struct {
+type Expr struct {
 }
 
 type Contract struct {
-	Account *string      `json:"account,omitempty"`
-	Expr    ContractExpr `json:"expr"`
+	Account *string `json:"account,omitempty"`
+	Expr    Expr    `json:"expr"`
 }
 
 func (o *Contract) GetAccount() *string {
@@ -17,9 +17,9 @@ func (o *Contract) GetAccount() *string {
 	return o.Account
 }
 
-func (o *Contract) GetExpr() ContractExpr {
+func (o *Contract) GetExpr() Expr {
 	if o == nil {
-		return ContractExpr{}
+		return Expr{}
 	}
 	return o.Expr
 }

@@ -4,12 +4,14 @@ package sdkerrors
 
 import (
 	"encoding/json"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 )
 
+// WebhooksErrorResponse - Error
 type WebhooksErrorResponse struct {
-	Details      *string            `json:"details,omitempty"`
-	ErrorCode    WebhooksErrorsEnum `json:"errorCode"`
-	ErrorMessage string             `json:"errorMessage"`
+	Details      *string                   `json:"details,omitempty"`
+	ErrorCode    shared.WebhooksErrorsEnum `json:"errorCode"`
+	ErrorMessage string                    `json:"errorMessage"`
 }
 
 var _ error = &WebhooksErrorResponse{}

@@ -7,19 +7,19 @@ import (
 	"fmt"
 )
 
-type V2ErrorErrorCode string
+type ErrorCode string
 
 const (
-	V2ErrorErrorCodeValidation V2ErrorErrorCode = "VALIDATION"
-	V2ErrorErrorCodeNotFound   V2ErrorErrorCode = "NOT_FOUND"
-	V2ErrorErrorCodeInternal   V2ErrorErrorCode = "INTERNAL"
+	ErrorCodeValidation ErrorCode = "VALIDATION"
+	ErrorCodeNotFound   ErrorCode = "NOT_FOUND"
+	ErrorCodeInternal   ErrorCode = "INTERNAL"
 )
 
-func (e V2ErrorErrorCode) ToPointer() *V2ErrorErrorCode {
+func (e ErrorCode) ToPointer() *ErrorCode {
 	return &e
 }
 
-func (e *V2ErrorErrorCode) UnmarshalJSON(data []byte) error {
+func (e *ErrorCode) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -30,16 +30,17 @@ func (e *V2ErrorErrorCode) UnmarshalJSON(data []byte) error {
 	case "NOT_FOUND":
 		fallthrough
 	case "INTERNAL":
-		*e = V2ErrorErrorCode(v)
+		*e = ErrorCode(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for V2ErrorErrorCode: %v", v)
+		return fmt.Errorf("invalid value for ErrorCode: %v", v)
 	}
 }
 
+// V2Error - General error
 type V2Error struct {
-	ErrorCode    V2ErrorErrorCode `json:"errorCode"`
-	ErrorMessage string           `json:"errorMessage"`
+	ErrorCode    ErrorCode `json:"errorCode"`
+	ErrorMessage string    `json:"errorMessage"`
 }
 
 var _ error = &V2Error{}

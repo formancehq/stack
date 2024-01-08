@@ -111,7 +111,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				},
 			)
 			Expect(err).To(HaveOccurred())
-			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(sdkerrors.WebhooksErrorsEnumNotFound))
+			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(shared.WebhooksErrorsEnumNotFound))
 		})
 	})
 })

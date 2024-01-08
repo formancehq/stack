@@ -31,16 +31,21 @@ Show stack version information
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
-    res, err := s.Formance.GetVersions(ctx)
+    res, err := s.GetVersions(ctx)
     if err != nil {
         log.Fatal(err)
     }
@@ -60,8 +65,10 @@ func main() {
 
 ### Response
 
-**[*operations.GetVersionsResponse](../../models/operations/getversionsresponse.md), error**
-
+**[*operations.GetVersionsResponse](../../pkg/models/operations/getversionsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetAPIAuthWellKnownOpenidConfiguration
 
@@ -71,16 +78,22 @@ func main() {
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
-    res, err := s.Formance.GetAPIAuthWellKnownOpenidConfiguration(ctx)
+    res, err := s.GetAPIAuthWellKnownOpenidConfiguration(ctx)
     if err != nil {
         log.Fatal(err)
     }
@@ -100,5 +113,7 @@ func main() {
 
 ### Response
 
-**[*operations.GetAPIAuthWellKnownOpenidConfigurationResponse](../../models/operations/getapiauthwellknownopenidconfigurationresponse.md), error**
-
+**[*operations.GetAPIAuthWellKnownOpenidConfigurationResponse](../../pkg/models/operations/getapiauthwellknownopenidconfigurationresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |

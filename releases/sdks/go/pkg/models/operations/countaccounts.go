@@ -3,7 +3,7 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"net/http"
 )
 
@@ -41,7 +41,7 @@ type CountAccountsResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// Error
-	ErrorResponse *shared.ErrorResponse
+	ErrorResponse *sdkerrors.ErrorResponse
 	Headers       map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
@@ -56,7 +56,7 @@ func (o *CountAccountsResponse) GetContentType() string {
 	return o.ContentType
 }
 
-func (o *CountAccountsResponse) GetErrorResponse() *shared.ErrorResponse {
+func (o *CountAccountsResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
 	if o == nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func (o *CountAccountsResponse) GetErrorResponse() *shared.ErrorResponse {
 
 func (o *CountAccountsResponse) GetHeaders() map[string][]string {
 	if o == nil {
-		return nil
+		return map[string][]string{}
 	}
 	return o.Headers
 }

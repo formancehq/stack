@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 	"net/http"
@@ -90,7 +91,7 @@ type ListLogsResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// Error
-	ErrorResponse *shared.ErrorResponse
+	ErrorResponse *sdkerrors.ErrorResponse
 	// OK
 	LogsCursorResponse *shared.LogsCursorResponse
 	// HTTP response status code for this operation
@@ -106,7 +107,7 @@ func (o *ListLogsResponse) GetContentType() string {
 	return o.ContentType
 }
 
-func (o *ListLogsResponse) GetErrorResponse() *shared.ErrorResponse {
+func (o *ListLogsResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
 	if o == nil {
 		return nil
 	}

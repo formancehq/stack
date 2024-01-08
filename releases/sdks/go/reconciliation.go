@@ -15,19 +15,19 @@ import (
 	"strings"
 )
 
-type reconciliation struct {
+type Reconciliation struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newReconciliation(sdkConfig sdkConfiguration) *reconciliation {
-	return &reconciliation{
+func newReconciliation(sdkConfig sdkConfiguration) *Reconciliation {
+	return &Reconciliation{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // CreatePolicy - Create a policy
 // Create a policy
-func (s *reconciliation) CreatePolicy(ctx context.Context, request shared.PolicyRequest) (*operations.CreatePolicyResponse, error) {
+func (s *Reconciliation) CreatePolicy(ctx context.Context, request shared.PolicyRequest) (*operations.CreatePolicyResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/reconciliation/policies"
 
@@ -48,7 +48,7 @@ func (s *reconciliation) CreatePolicy(ctx context.Context, request shared.Policy
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -108,7 +108,7 @@ func (s *reconciliation) CreatePolicy(ctx context.Context, request shared.Policy
 
 // DeletePolicy - Delete a policy
 // Delete a policy by its id.
-func (s *reconciliation) DeletePolicy(ctx context.Context, request operations.DeletePolicyRequest) (*operations.DeletePolicyResponse, error) {
+func (s *Reconciliation) DeletePolicy(ctx context.Context, request operations.DeletePolicyRequest) (*operations.DeletePolicyResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/reconciliation/policies/{policyID}", request, nil)
 	if err != nil {
@@ -122,7 +122,7 @@ func (s *reconciliation) DeletePolicy(ctx context.Context, request operations.De
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -170,7 +170,7 @@ func (s *reconciliation) DeletePolicy(ctx context.Context, request operations.De
 }
 
 // GetPolicy - Get a policy
-func (s *reconciliation) GetPolicy(ctx context.Context, request operations.GetPolicyRequest) (*operations.GetPolicyResponse, error) {
+func (s *Reconciliation) GetPolicy(ctx context.Context, request operations.GetPolicyRequest) (*operations.GetPolicyResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/reconciliation/policies/{policyID}", request, nil)
 	if err != nil {
@@ -184,7 +184,7 @@ func (s *reconciliation) GetPolicy(ctx context.Context, request operations.GetPo
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -243,7 +243,7 @@ func (s *reconciliation) GetPolicy(ctx context.Context, request operations.GetPo
 }
 
 // GetReconciliation - Get a reconciliation
-func (s *reconciliation) GetReconciliation(ctx context.Context, request operations.GetReconciliationRequest) (*operations.GetReconciliationResponse, error) {
+func (s *Reconciliation) GetReconciliation(ctx context.Context, request operations.GetReconciliationRequest) (*operations.GetReconciliationResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/reconciliation/reconciliations/{reconciliationID}", request, nil)
 	if err != nil {
@@ -257,7 +257,7 @@ func (s *reconciliation) GetReconciliation(ctx context.Context, request operatio
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -316,7 +316,7 @@ func (s *reconciliation) GetReconciliation(ctx context.Context, request operatio
 }
 
 // ListPolicies - List policies
-func (s *reconciliation) ListPolicies(ctx context.Context, request operations.ListPoliciesRequest) (*operations.ListPoliciesResponse, error) {
+func (s *Reconciliation) ListPolicies(ctx context.Context, request operations.ListPoliciesRequest) (*operations.ListPoliciesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/reconciliation/policies"
 
@@ -331,7 +331,7 @@ func (s *reconciliation) ListPolicies(ctx context.Context, request operations.Li
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -390,7 +390,7 @@ func (s *reconciliation) ListPolicies(ctx context.Context, request operations.Li
 }
 
 // ListReconciliations - List reconciliations
-func (s *reconciliation) ListReconciliations(ctx context.Context, request operations.ListReconciliationsRequest) (*operations.ListReconciliationsResponse, error) {
+func (s *Reconciliation) ListReconciliations(ctx context.Context, request operations.ListReconciliationsRequest) (*operations.ListReconciliationsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/reconciliation/reconciliations"
 
@@ -405,7 +405,7 @@ func (s *reconciliation) ListReconciliations(ctx context.Context, request operat
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -465,7 +465,7 @@ func (s *reconciliation) ListReconciliations(ctx context.Context, request operat
 
 // Reconcile using a policy
 // Reconcile using a policy
-func (s *reconciliation) Reconcile(ctx context.Context, request operations.ReconcileRequest) (*operations.ReconcileResponse, error) {
+func (s *Reconciliation) Reconcile(ctx context.Context, request operations.ReconcileRequest) (*operations.ReconcileResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/reconciliation/policies/{policyID}/reconciliation", request, nil)
 	if err != nil {
@@ -489,7 +489,7 @@ func (s *reconciliation) Reconcile(ctx context.Context, request operations.Recon
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -548,7 +548,7 @@ func (s *reconciliation) Reconcile(ctx context.Context, request operations.Recon
 }
 
 // ReconciliationgetServerInfo - Get server info
-func (s *reconciliation) ReconciliationgetServerInfo(ctx context.Context) (*operations.ReconciliationgetServerInfoResponse, error) {
+func (s *Reconciliation) ReconciliationgetServerInfo(ctx context.Context) (*operations.ReconciliationgetServerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/reconciliation/_info"
 
@@ -559,7 +559,7 @@ func (s *reconciliation) ReconciliationgetServerInfo(ctx context.Context) (*oper
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

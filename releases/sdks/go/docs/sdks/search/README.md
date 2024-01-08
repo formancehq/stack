@@ -16,70 +16,33 @@ ElasticSearch query engine
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Search.Search(ctx, shared.Query{
         After: []string{
-            "u",
-            "s",
-            "e",
-            "r",
-            "s",
-            ":",
-            "0",
-            "0",
-            "2",
+            "users:002",
         },
         Cursor: formancesdkgo.String("YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="),
         Ledgers: []string{
-            "q",
-            "u",
-            "i",
-            "c",
-            "k",
-            "s",
-            "t",
-            "a",
-            "r",
-            "t",
+            "quickstart",
         },
         Policy: formancesdkgo.String("OR"),
         Raw: &shared.QueryRaw{},
         Sort: formancesdkgo.String("id:asc"),
         Terms: []string{
-            "d",
-            "e",
-            "s",
-            "t",
-            "i",
-            "n",
-            "a",
-            "t",
-            "i",
-            "o",
-            "n",
-            "=",
-            "c",
-            "e",
-            "n",
-            "t",
-            "r",
-            "a",
-            "l",
-            "_",
-            "b",
-            "a",
-            "n",
-            "k",
-            "1",
+            "destination=central_bank1",
         },
     })
     if err != nil {
@@ -97,13 +60,15 @@ func main() {
 | Parameter                                             | Type                                                  | Required                                              | Description                                           |
 | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
 | `ctx`                                                 | [context.Context](https://pkg.go.dev/context#Context) | :heavy_check_mark:                                    | The context to use for the request.                   |
-| `request`                                             | [shared.Query](../../models/shared/query.md)          | :heavy_check_mark:                                    | The request object to use for the request.            |
+| `request`                                             | [shared.Query](../../pkg/models/shared/query.md)      | :heavy_check_mark:                                    | The request object to use for the request.            |
 
 
 ### Response
 
-**[*operations.SearchResponse](../../models/operations/searchresponse.md), error**
-
+**[*operations.SearchResponse](../../pkg/models/operations/searchresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## SearchgetServerInfo
 
@@ -115,13 +80,18 @@ Get server info
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Search.SearchgetServerInfo(ctx)
@@ -144,5 +114,7 @@ func main() {
 
 ### Response
 
-**[*operations.SearchgetServerInfoResponse](../../models/operations/searchgetserverinforesponse.md), error**
-
+**[*operations.SearchgetServerInfoResponse](../../pkg/models/operations/searchgetserverinforesponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |

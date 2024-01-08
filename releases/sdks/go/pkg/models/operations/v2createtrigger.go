@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"net/http"
 )
@@ -17,7 +18,7 @@ type V2CreateTriggerResponse struct {
 	// Created trigger
 	V2CreateTriggerResponse *shared.V2CreateTriggerResponse
 	// General error
-	V2Error *shared.V2Error
+	V2Error *sdkerrors.V2Error
 }
 
 func (o *V2CreateTriggerResponse) GetContentType() string {
@@ -48,7 +49,7 @@ func (o *V2CreateTriggerResponse) GetV2CreateTriggerResponse() *shared.V2CreateT
 	return o.V2CreateTriggerResponse
 }
 
-func (o *V2CreateTriggerResponse) GetV2Error() *shared.V2Error {
+func (o *V2CreateTriggerResponse) GetV2Error() *sdkerrors.V2Error {
 	if o == nil {
 		return nil
 	}

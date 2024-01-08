@@ -2,43 +2,43 @@
 
 package shared
 
-type ConnectorsConfigsResponseDataConnectorKey struct {
+type Key struct {
 	DataType string `json:"dataType"`
 	Required bool   `json:"required"`
 }
 
-func (o *ConnectorsConfigsResponseDataConnectorKey) GetDataType() string {
+func (o *Key) GetDataType() string {
 	if o == nil {
 		return ""
 	}
 	return o.DataType
 }
 
-func (o *ConnectorsConfigsResponseDataConnectorKey) GetRequired() bool {
+func (o *Key) GetRequired() bool {
 	if o == nil {
 		return false
 	}
 	return o.Required
 }
 
-type ConnectorsConfigsResponseDataConnector struct {
-	Key ConnectorsConfigsResponseDataConnectorKey `json:"key"`
+type ConnectorsConfigsResponseConnector struct {
+	Key Key `json:"key"`
 }
 
-func (o *ConnectorsConfigsResponseDataConnector) GetKey() ConnectorsConfigsResponseDataConnectorKey {
+func (o *ConnectorsConfigsResponseConnector) GetKey() Key {
 	if o == nil {
-		return ConnectorsConfigsResponseDataConnectorKey{}
+		return Key{}
 	}
 	return o.Key
 }
 
 type ConnectorsConfigsResponseData struct {
-	Connector ConnectorsConfigsResponseDataConnector `json:"connector"`
+	Connector ConnectorsConfigsResponseConnector `json:"connector"`
 }
 
-func (o *ConnectorsConfigsResponseData) GetConnector() ConnectorsConfigsResponseDataConnector {
+func (o *ConnectorsConfigsResponseData) GetConnector() ConnectorsConfigsResponseConnector {
 	if o == nil {
-		return ConnectorsConfigsResponseDataConnector{}
+		return ConnectorsConfigsResponseConnector{}
 	}
 	return o.Connector
 }

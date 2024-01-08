@@ -55,16 +55,20 @@ Create a new batch of transactions to a ledger
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.CreateTransactions(ctx, operations.CreateTransactionsRequest{
@@ -100,16 +104,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
-| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
-| `request`                                                                                    | [operations.CreateTransactionsRequest](../../models/operations/createtransactionsrequest.md) | :heavy_check_mark:                                                                           | The request object to use for the request.                                                   |
+| Parameter                                                                                        | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                            | [context.Context](https://pkg.go.dev/context#Context)                                            | :heavy_check_mark:                                                                               | The context to use for the request.                                                              |
+| `request`                                                                                        | [operations.CreateTransactionsRequest](../../pkg/models/operations/createtransactionsrequest.md) | :heavy_check_mark:                                                                               | The request object to use for the request.                                                       |
 
 
 ### Response
 
-**[*operations.CreateTransactionsResponse](../../models/operations/createtransactionsresponse.md), error**
-
+**[*operations.CreateTransactionsResponse](../../pkg/models/operations/createtransactionsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## AddMetadataOnTransaction
 
@@ -121,15 +127,21 @@ Set the metadata of a transaction by its ID
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.AddMetadataOnTransaction(ctx, operations.AddMetadataOnTransactionRequest{
@@ -151,16 +163,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                | Type                                                                                                     | Required                                                                                                 | Description                                                                                              |
-| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                                    | :heavy_check_mark:                                                                                       | The context to use for the request.                                                                      |
-| `request`                                                                                                | [operations.AddMetadataOnTransactionRequest](../../models/operations/addmetadataontransactionrequest.md) | :heavy_check_mark:                                                                                       | The request object to use for the request.                                                               |
+| Parameter                                                                                                    | Type                                                                                                         | Required                                                                                                     | Description                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                                        | :heavy_check_mark:                                                                                           | The context to use for the request.                                                                          |
+| `request`                                                                                                    | [operations.AddMetadataOnTransactionRequest](../../pkg/models/operations/addmetadataontransactionrequest.md) | :heavy_check_mark:                                                                                           | The request object to use for the request.                                                                   |
 
 
 ### Response
 
-**[*operations.AddMetadataOnTransactionResponse](../../models/operations/addmetadataontransactionresponse.md), error**
-
+**[*operations.AddMetadataOnTransactionResponse](../../pkg/models/operations/addmetadataontransactionresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## AddMetadataToAccount
 
@@ -172,14 +186,20 @@ Add metadata to an account
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
@@ -201,16 +221,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                        | Type                                                                                             | Required                                                                                         | Description                                                                                      |
-| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                            | [context.Context](https://pkg.go.dev/context#Context)                                            | :heavy_check_mark:                                                                               | The context to use for the request.                                                              |
-| `request`                                                                                        | [operations.AddMetadataToAccountRequest](../../models/operations/addmetadatatoaccountrequest.md) | :heavy_check_mark:                                                                               | The request object to use for the request.                                                       |
+| Parameter                                                                                            | Type                                                                                                 | Required                                                                                             | Description                                                                                          |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                                | :heavy_check_mark:                                                                                   | The context to use for the request.                                                                  |
+| `request`                                                                                            | [operations.AddMetadataToAccountRequest](../../pkg/models/operations/addmetadatatoaccountrequest.md) | :heavy_check_mark:                                                                                   | The request object to use for the request.                                                           |
 
 
 ### Response
 
-**[*operations.AddMetadataToAccountResponse](../../models/operations/addmetadatatoaccountresponse.md), error**
-
+**[*operations.AddMetadataToAccountResponse](../../pkg/models/operations/addmetadatatoaccountresponse.md), error**
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | 400,404                 | application/json        |
+| sdkerrors.SDKError      | 400-600                 | */*                     |
 
 ## CountAccounts
 
@@ -222,14 +245,20 @@ Count the accounts from a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.CountAccounts(ctx, operations.CountAccountsRequest{
@@ -251,16 +280,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
-| `request`                                                                          | [operations.CountAccountsRequest](../../models/operations/countaccountsrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
+| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
+| `request`                                                                              | [operations.CountAccountsRequest](../../pkg/models/operations/countaccountsrequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
 
 
 ### Response
 
-**[*operations.CountAccountsResponse](../../models/operations/countaccountsresponse.md), error**
-
+**[*operations.CountAccountsResponse](../../pkg/models/operations/countaccountsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## CountTransactions
 
@@ -272,21 +303,27 @@ Count the transactions from a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.CountTransactions(ctx, operations.CountTransactionsRequest{
         Account: formancesdkgo.String("users:001"),
         Destination: formancesdkgo.String("users:001"),
         Ledger: "ledger001",
-        Metadata: &operations.CountTransactionsMetadata{},
+        Metadata: &operations.Metadata{},
         Reference: formancesdkgo.String("ref:001"),
         Source: formancesdkgo.String("users:001"),
     })
@@ -302,16 +339,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                  | Type                                                                                       | Required                                                                                   | Description                                                                                |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                      | :heavy_check_mark:                                                                         | The context to use for the request.                                                        |
-| `request`                                                                                  | [operations.CountTransactionsRequest](../../models/operations/counttransactionsrequest.md) | :heavy_check_mark:                                                                         | The request object to use for the request.                                                 |
+| Parameter                                                                                      | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                          | :heavy_check_mark:                                                                             | The context to use for the request.                                                            |
+| `request`                                                                                      | [operations.CountTransactionsRequest](../../pkg/models/operations/counttransactionsrequest.md) | :heavy_check_mark:                                                                             | The request object to use for the request.                                                     |
 
 
 ### Response
 
-**[*operations.CountTransactionsResponse](../../models/operations/counttransactionsresponse.md), error**
-
+**[*operations.CountTransactionsResponse](../../pkg/models/operations/counttransactionsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## CreateTransaction
 
@@ -323,16 +362,20 @@ Create a new transaction to a ledger
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.CreateTransaction(ctx, operations.CreateTransactionRequest{
@@ -378,16 +421,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                  | Type                                                                                       | Required                                                                                   | Description                                                                                |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                      | :heavy_check_mark:                                                                         | The context to use for the request.                                                        |
-| `request`                                                                                  | [operations.CreateTransactionRequest](../../models/operations/createtransactionrequest.md) | :heavy_check_mark:                                                                         | The request object to use for the request.                                                 |
+| Parameter                                                                                      | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                          | :heavy_check_mark:                                                                             | The context to use for the request.                                                            |
+| `request`                                                                                      | [operations.CreateTransactionRequest](../../pkg/models/operations/createtransactionrequest.md) | :heavy_check_mark:                                                                             | The request object to use for the request.                                                     |
 
 
 ### Response
 
-**[*operations.CreateTransactionResponse](../../models/operations/createtransactionresponse.md), error**
-
+**[*operations.CreateTransactionResponse](../../pkg/models/operations/createtransactionresponse.md), error**
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | 400                     | application/json        |
+| sdkerrors.SDKError      | 400-600                 | */*                     |
 
 ## GetAccount
 
@@ -399,14 +445,19 @@ Get account by its address
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.GetAccount(ctx, operations.GetAccountRequest{
@@ -425,16 +476,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
-| `request`                                                                    | [operations.GetAccountRequest](../../models/operations/getaccountrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
+| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
+| `request`                                                                        | [operations.GetAccountRequest](../../pkg/models/operations/getaccountrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
 
 
 ### Response
 
-**[*operations.GetAccountResponse](../../models/operations/getaccountresponse.md), error**
-
+**[*operations.GetAccountResponse](../../pkg/models/operations/getaccountresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetBalances
 
@@ -446,14 +499,19 @@ Get the balances from a ledger's account
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.GetBalances(ctx, operations.GetBalancesRequest{
@@ -474,16 +532,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
-| `request`                                                                      | [operations.GetBalancesRequest](../../models/operations/getbalancesrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
+| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
+| `request`                                                                          | [operations.GetBalancesRequest](../../pkg/models/operations/getbalancesrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
 
 
 ### Response
 
-**[*operations.GetBalancesResponse](../../models/operations/getbalancesresponse.md), error**
-
+**[*operations.GetBalancesResponse](../../pkg/models/operations/getbalancesresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetBalancesAggregated
 
@@ -495,14 +555,19 @@ Get the aggregated balances from selected accounts
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.GetBalancesAggregated(ctx, operations.GetBalancesAggregatedRequest{
@@ -521,16 +586,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                          | Type                                                                                               | Required                                                                                           | Description                                                                                        |
-| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                              | :heavy_check_mark:                                                                                 | The context to use for the request.                                                                |
-| `request`                                                                                          | [operations.GetBalancesAggregatedRequest](../../models/operations/getbalancesaggregatedrequest.md) | :heavy_check_mark:                                                                                 | The request object to use for the request.                                                         |
+| Parameter                                                                                              | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                                  | :heavy_check_mark:                                                                                     | The context to use for the request.                                                                    |
+| `request`                                                                                              | [operations.GetBalancesAggregatedRequest](../../pkg/models/operations/getbalancesaggregatedrequest.md) | :heavy_check_mark:                                                                                     | The request object to use for the request.                                                             |
 
 
 ### Response
 
-**[*operations.GetBalancesAggregatedResponse](../../models/operations/getbalancesaggregatedresponse.md), error**
-
+**[*operations.GetBalancesAggregatedResponse](../../pkg/models/operations/getbalancesaggregatedresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetInfo
 
@@ -542,13 +609,18 @@ Show server information
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.GetInfo(ctx)
@@ -571,8 +643,10 @@ func main() {
 
 ### Response
 
-**[*operations.GetInfoResponse](../../models/operations/getinforesponse.md), error**
-
+**[*operations.GetInfoResponse](../../pkg/models/operations/getinforesponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetLedgerInfo
 
@@ -584,14 +658,19 @@ Get information about a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.GetLedgerInfo(ctx, operations.GetLedgerInfoRequest{
@@ -609,16 +688,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
-| `request`                                                                          | [operations.GetLedgerInfoRequest](../../models/operations/getledgerinforequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
+| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
+| `request`                                                                              | [operations.GetLedgerInfoRequest](../../pkg/models/operations/getledgerinforequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
 
 
 ### Response
 
-**[*operations.GetLedgerInfoResponse](../../models/operations/getledgerinforesponse.md), error**
-
+**[*operations.GetLedgerInfoResponse](../../pkg/models/operations/getledgerinforesponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetMapping
 
@@ -630,14 +711,19 @@ Get the mapping of a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.GetMapping(ctx, operations.GetMappingRequest{
@@ -655,16 +741,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
-| `request`                                                                    | [operations.GetMappingRequest](../../models/operations/getmappingrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
+| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
+| `request`                                                                        | [operations.GetMappingRequest](../../pkg/models/operations/getmappingrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
 
 
 ### Response
 
-**[*operations.GetMappingResponse](../../models/operations/getmappingresponse.md), error**
-
+**[*operations.GetMappingResponse](../../pkg/models/operations/getmappingresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetTransaction
 
@@ -676,15 +764,20 @@ Get transaction from a ledger by its ID
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.GetTransaction(ctx, operations.GetTransactionRequest{
@@ -703,16 +796,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
-| `request`                                                                            | [operations.GetTransactionRequest](../../models/operations/gettransactionrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
+| `request`                                                                                | [operations.GetTransactionRequest](../../pkg/models/operations/gettransactionrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
 
 
 ### Response
 
-**[*operations.GetTransactionResponse](../../models/operations/gettransactionresponse.md), error**
-
+**[*operations.GetTransactionResponse](../../pkg/models/operations/gettransactionresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ListAccounts
 
@@ -724,14 +819,19 @@ List accounts from a ledger, sorted by address in descending order.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.ListAccounts(ctx, operations.ListAccountsRequest{
@@ -757,16 +857,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.ListAccountsRequest](../../models/operations/listaccountsrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.ListAccountsRequest](../../pkg/models/operations/listaccountsrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
 
 
 ### Response
 
-**[*operations.ListAccountsResponse](../../models/operations/listaccountsresponse.md), error**
-
+**[*operations.ListAccountsResponse](../../pkg/models/operations/listaccountsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ListLogs
 
@@ -778,14 +880,19 @@ List the logs from a ledger, sorted by ID in descending order.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.ListLogs(ctx, operations.ListLogsRequest{
@@ -805,16 +912,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                | Type                                                                     | Required                                                                 | Description                                                              |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `ctx`                                                                    | [context.Context](https://pkg.go.dev/context#Context)                    | :heavy_check_mark:                                                       | The context to use for the request.                                      |
-| `request`                                                                | [operations.ListLogsRequest](../../models/operations/listlogsrequest.md) | :heavy_check_mark:                                                       | The request object to use for the request.                               |
+| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
+| `request`                                                                    | [operations.ListLogsRequest](../../pkg/models/operations/listlogsrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
 
 
 ### Response
 
-**[*operations.ListLogsResponse](../../models/operations/listlogsresponse.md), error**
-
+**[*operations.ListLogsResponse](../../pkg/models/operations/listlogsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ListTransactions
 
@@ -826,14 +935,19 @@ List transactions from a ledger, sorted by txid in descending order.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.ListTransactions(ctx, operations.ListTransactionsRequest{
@@ -860,16 +974,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
-| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
-| `request`                                                                                | [operations.ListTransactionsRequest](../../models/operations/listtransactionsrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
+| `request`                                                                                    | [operations.ListTransactionsRequest](../../pkg/models/operations/listtransactionsrequest.md) | :heavy_check_mark:                                                                           | The request object to use for the request.                                                   |
 
 
 ### Response
 
-**[*operations.ListTransactionsResponse](../../models/operations/listtransactionsresponse.md), error**
-
+**[*operations.ListTransactionsResponse](../../pkg/models/operations/listtransactionsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ReadStats
 
@@ -882,14 +998,19 @@ Get statistics from a ledger. (aggregate metrics on accounts and transactions)
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.ReadStats(ctx, operations.ReadStatsRequest{
@@ -907,16 +1028,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                  | Type                                                                       | Required                                                                   | Description                                                                |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `ctx`                                                                      | [context.Context](https://pkg.go.dev/context#Context)                      | :heavy_check_mark:                                                         | The context to use for the request.                                        |
-| `request`                                                                  | [operations.ReadStatsRequest](../../models/operations/readstatsrequest.md) | :heavy_check_mark:                                                         | The request object to use for the request.                                 |
+| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
+| `request`                                                                      | [operations.ReadStatsRequest](../../pkg/models/operations/readstatsrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
 
 
 ### Response
 
-**[*operations.ReadStatsResponse](../../models/operations/readstatsresponse.md), error**
-
+**[*operations.ReadStatsResponse](../../pkg/models/operations/readstatsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## RevertTransaction
 
@@ -928,15 +1051,20 @@ Revert a ledger transaction by its ID
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.RevertTransaction(ctx, operations.RevertTransactionRequest{
@@ -955,16 +1083,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                  | Type                                                                                       | Required                                                                                   | Description                                                                                |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                      | :heavy_check_mark:                                                                         | The context to use for the request.                                                        |
-| `request`                                                                                  | [operations.RevertTransactionRequest](../../models/operations/reverttransactionrequest.md) | :heavy_check_mark:                                                                         | The request object to use for the request.                                                 |
+| Parameter                                                                                      | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                          | :heavy_check_mark:                                                                             | The context to use for the request.                                                            |
+| `request`                                                                                      | [operations.RevertTransactionRequest](../../pkg/models/operations/reverttransactionrequest.md) | :heavy_check_mark:                                                                             | The request object to use for the request.                                                     |
 
 
 ### Response
 
-**[*operations.RevertTransactionResponse](../../models/operations/reverttransactionresponse.md), error**
-
+**[*operations.RevertTransactionResponse](../../pkg/models/operations/reverttransactionresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ~~RunScript~~
 
@@ -979,15 +1109,19 @@ This route is deprecated, and has been merged into `POST /{ledger}/transactions`
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.RunScript(ctx, operations.RunScriptRequest{
@@ -1023,16 +1157,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                  | Type                                                                       | Required                                                                   | Description                                                                |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `ctx`                                                                      | [context.Context](https://pkg.go.dev/context#Context)                      | :heavy_check_mark:                                                         | The context to use for the request.                                        |
-| `request`                                                                  | [operations.RunScriptRequest](../../models/operations/runscriptrequest.md) | :heavy_check_mark:                                                         | The request object to use for the request.                                 |
+| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
+| `request`                                                                      | [operations.RunScriptRequest](../../pkg/models/operations/runscriptrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
 
 
 ### Response
 
-**[*operations.RunScriptResponse](../../models/operations/runscriptresponse.md), error**
-
+**[*operations.RunScriptResponse](../../pkg/models/operations/runscriptresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## UpdateMapping
 
@@ -1044,15 +1180,19 @@ Update the mapping of a ledger
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.UpdateMapping(ctx, operations.UpdateMappingRequest{
@@ -1060,7 +1200,7 @@ func main() {
             Contracts: []shared.Contract{
                 shared.Contract{
                     Account: formancesdkgo.String("users:001"),
-                    Expr: shared.ContractExpr{},
+                    Expr: shared.Expr{},
                 },
             },
         },
@@ -1078,16 +1218,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
-| `request`                                                                          | [operations.UpdateMappingRequest](../../models/operations/updatemappingrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
+| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
+| `request`                                                                              | [operations.UpdateMappingRequest](../../pkg/models/operations/updatemappingrequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
 
 
 ### Response
 
-**[*operations.UpdateMappingResponse](../../models/operations/updatemappingresponse.md), error**
-
+**[*operations.UpdateMappingResponse](../../pkg/models/operations/updatemappingresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2AddMetadataOnTransaction
 
@@ -1099,15 +1241,21 @@ Set the metadata of a transaction by its ID
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2AddMetadataOnTransaction(ctx, operations.V2AddMetadataOnTransactionRequest{
@@ -1130,16 +1278,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                    | Type                                                                                                         | Required                                                                                                     | Description                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                                        | :heavy_check_mark:                                                                                           | The context to use for the request.                                                                          |
-| `request`                                                                                                    | [operations.V2AddMetadataOnTransactionRequest](../../models/operations/v2addmetadataontransactionrequest.md) | :heavy_check_mark:                                                                                           | The request object to use for the request.                                                                   |
+| Parameter                                                                                                        | Type                                                                                                             | Required                                                                                                         | Description                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                            | [context.Context](https://pkg.go.dev/context#Context)                                                            | :heavy_check_mark:                                                                                               | The context to use for the request.                                                                              |
+| `request`                                                                                                        | [operations.V2AddMetadataOnTransactionRequest](../../pkg/models/operations/v2addmetadataontransactionrequest.md) | :heavy_check_mark:                                                                                               | The request object to use for the request.                                                                       |
 
 
 ### Response
 
-**[*operations.V2AddMetadataOnTransactionResponse](../../models/operations/v2addmetadataontransactionresponse.md), error**
-
+**[*operations.V2AddMetadataOnTransactionResponse](../../pkg/models/operations/v2addmetadataontransactionresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400,404                   | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2AddMetadataToAccount
 
@@ -1151,14 +1302,20 @@ Add metadata to an account
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2AddMetadataToAccount(ctx, operations.V2AddMetadataToAccountRequest{
@@ -1181,16 +1338,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                            | Type                                                                                                 | Required                                                                                             | Description                                                                                          |
-| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                                | :heavy_check_mark:                                                                                   | The context to use for the request.                                                                  |
-| `request`                                                                                            | [operations.V2AddMetadataToAccountRequest](../../models/operations/v2addmetadatatoaccountrequest.md) | :heavy_check_mark:                                                                                   | The request object to use for the request.                                                           |
+| Parameter                                                                                                | Type                                                                                                     | Required                                                                                                 | Description                                                                                              |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                                    | :heavy_check_mark:                                                                                       | The context to use for the request.                                                                      |
+| `request`                                                                                                | [operations.V2AddMetadataToAccountRequest](../../pkg/models/operations/v2addmetadatatoaccountrequest.md) | :heavy_check_mark:                                                                                       | The request object to use for the request.                                                               |
 
 
 ### Response
 
-**[*operations.V2AddMetadataToAccountResponse](../../models/operations/v2addmetadatatoaccountresponse.md), error**
-
+**[*operations.V2AddMetadataToAccountResponse](../../pkg/models/operations/v2addmetadatatoaccountresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400,404                   | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2CountAccounts
 
@@ -1202,14 +1362,20 @@ Count the accounts from a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2CountAccounts(ctx, operations.V2CountAccountsRequest{
@@ -1230,16 +1396,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
-| `request`                                                                              | [operations.V2CountAccountsRequest](../../models/operations/v2countaccountsrequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
+| Parameter                                                                                  | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                      | :heavy_check_mark:                                                                         | The context to use for the request.                                                        |
+| `request`                                                                                  | [operations.V2CountAccountsRequest](../../pkg/models/operations/v2countaccountsrequest.md) | :heavy_check_mark:                                                                         | The request object to use for the request.                                                 |
 
 
 ### Response
 
-**[*operations.V2CountAccountsResponse](../../models/operations/v2countaccountsresponse.md), error**
-
+**[*operations.V2CountAccountsResponse](../../pkg/models/operations/v2countaccountsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2CountTransactions
 
@@ -1251,14 +1419,20 @@ Count the transactions from a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2CountTransactions(ctx, operations.V2CountTransactionsRequest{
@@ -1279,16 +1453,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                      | Type                                                                                           | Required                                                                                       | Description                                                                                    |
-| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                          | :heavy_check_mark:                                                                             | The context to use for the request.                                                            |
-| `request`                                                                                      | [operations.V2CountTransactionsRequest](../../models/operations/v2counttransactionsrequest.md) | :heavy_check_mark:                                                                             | The request object to use for the request.                                                     |
+| Parameter                                                                                          | Type                                                                                               | Required                                                                                           | Description                                                                                        |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                              | :heavy_check_mark:                                                                                 | The context to use for the request.                                                                |
+| `request`                                                                                          | [operations.V2CountTransactionsRequest](../../pkg/models/operations/v2counttransactionsrequest.md) | :heavy_check_mark:                                                                                 | The request object to use for the request.                                                         |
 
 
 ### Response
 
-**[*operations.V2CountTransactionsResponse](../../models/operations/v2counttransactionsresponse.md), error**
-
+**[*operations.V2CountTransactionsResponse](../../pkg/models/operations/v2counttransactionsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2CreateBulk
 
@@ -1300,24 +1476,27 @@ Bulk request
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	"math/big"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2CreateBulk(ctx, operations.V2CreateBulkRequest{
         RequestBody: []shared.V2BulkElement{
-            shared.CreateV2BulkElementV2BulkElementV2BulkElementAddMetadata(
-                shared.V2BulkElementV2BulkElementAddMetadata{
+            shared.CreateV2BulkElementV2BulkElementAddMetadata(
+                shared.V2BulkElementAddMetadata{
                     Action: "string",
-                    Data: &shared.V2BulkElementV2BulkElementAddMetadataData{
+                    Data: &shared.V2BulkElementAddMetadataData{
                         Metadata: map[string]string{
                             "key": "string",
                         },
@@ -1343,16 +1522,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.V2CreateBulkRequest](../../models/operations/v2createbulkrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.V2CreateBulkRequest](../../pkg/models/operations/v2createbulkrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
 
 
 ### Response
 
-**[*operations.V2CreateBulkResponse](../../models/operations/v2createbulkresponse.md), error**
-
+**[*operations.V2CreateBulkResponse](../../pkg/models/operations/v2createbulkresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2CreateLedger
 
@@ -1364,15 +1545,20 @@ Create a ledger
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2CreateLedger(ctx, operations.V2CreateLedgerRequest{
@@ -1391,16 +1577,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
-| `request`                                                                            | [operations.V2CreateLedgerRequest](../../models/operations/v2createledgerrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
+| `request`                                                                                | [operations.V2CreateLedgerRequest](../../pkg/models/operations/v2createledgerrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
 
 
 ### Response
 
-**[*operations.V2CreateLedgerResponse](../../models/operations/v2createledgerresponse.md), error**
-
+**[*operations.V2CreateLedgerResponse](../../pkg/models/operations/v2createledgerresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2CreateTransaction
 
@@ -1412,16 +1601,20 @@ Create a new transaction to a ledger
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2CreateTransaction(ctx, operations.V2CreateTransactionRequest{
@@ -1467,16 +1660,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                      | Type                                                                                           | Required                                                                                       | Description                                                                                    |
-| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                          | :heavy_check_mark:                                                                             | The context to use for the request.                                                            |
-| `request`                                                                                      | [operations.V2CreateTransactionRequest](../../models/operations/v2createtransactionrequest.md) | :heavy_check_mark:                                                                             | The request object to use for the request.                                                     |
+| Parameter                                                                                          | Type                                                                                               | Required                                                                                           | Description                                                                                        |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                              | :heavy_check_mark:                                                                                 | The context to use for the request.                                                                |
+| `request`                                                                                          | [operations.V2CreateTransactionRequest](../../pkg/models/operations/v2createtransactionrequest.md) | :heavy_check_mark:                                                                                 | The request object to use for the request.                                                         |
 
 
 ### Response
 
-**[*operations.V2CreateTransactionResponse](../../models/operations/v2createtransactionresponse.md), error**
-
+**[*operations.V2CreateTransactionResponse](../../pkg/models/operations/v2createtransactionresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2DeleteAccountMetadata
 
@@ -1488,14 +1684,20 @@ Delete metadata by key
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2DeleteAccountMetadata(ctx, operations.V2DeleteAccountMetadataRequest{
@@ -1515,16 +1717,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                              | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
-| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                                  | :heavy_check_mark:                                                                                     | The context to use for the request.                                                                    |
-| `request`                                                                                              | [operations.V2DeleteAccountMetadataRequest](../../models/operations/v2deleteaccountmetadatarequest.md) | :heavy_check_mark:                                                                                     | The request object to use for the request.                                                             |
+| Parameter                                                                                                  | Type                                                                                                       | Required                                                                                                   | Description                                                                                                |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                                      | :heavy_check_mark:                                                                                         | The context to use for the request.                                                                        |
+| `request`                                                                                                  | [operations.V2DeleteAccountMetadataRequest](../../pkg/models/operations/v2deleteaccountmetadatarequest.md) | :heavy_check_mark:                                                                                         | The request object to use for the request.                                                                 |
 
 
 ### Response
 
-**[*operations.V2DeleteAccountMetadataResponse](../../models/operations/v2deleteaccountmetadataresponse.md), error**
-
+**[*operations.V2DeleteAccountMetadataResponse](../../pkg/models/operations/v2deleteaccountmetadataresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2DeleteTransactionMetadata
 
@@ -1536,15 +1740,21 @@ Delete metadata by key
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2DeleteTransactionMetadata(ctx, operations.V2DeleteTransactionMetadataRequest{
@@ -1564,16 +1774,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                      | Type                                                                                                           | Required                                                                                                       | Description                                                                                                    |
-| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                          | :heavy_check_mark:                                                                                             | The context to use for the request.                                                                            |
-| `request`                                                                                                      | [operations.V2DeleteTransactionMetadataRequest](../../models/operations/v2deletetransactionmetadatarequest.md) | :heavy_check_mark:                                                                                             | The request object to use for the request.                                                                     |
+| Parameter                                                                                                          | Type                                                                                                               | Required                                                                                                           | Description                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                                              | :heavy_check_mark:                                                                                                 | The context to use for the request.                                                                                |
+| `request`                                                                                                          | [operations.V2DeleteTransactionMetadataRequest](../../pkg/models/operations/v2deletetransactionmetadatarequest.md) | :heavy_check_mark:                                                                                                 | The request object to use for the request.                                                                         |
 
 
 ### Response
 
-**[*operations.V2DeleteTransactionMetadataResponse](../../models/operations/v2deletetransactionmetadataresponse.md), error**
-
+**[*operations.V2DeleteTransactionMetadataResponse](../../pkg/models/operations/v2deletetransactionmetadataresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2GetAccount
 
@@ -1585,14 +1798,19 @@ Get account by its address
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2GetAccount(ctx, operations.V2GetAccountRequest{
@@ -1611,16 +1829,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.V2GetAccountRequest](../../models/operations/v2getaccountrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.V2GetAccountRequest](../../pkg/models/operations/v2getaccountrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
 
 
 ### Response
 
-**[*operations.V2GetAccountResponse](../../models/operations/v2getaccountresponse.md), error**
-
+**[*operations.V2GetAccountResponse](../../pkg/models/operations/v2getaccountresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2GetBalancesAggregated
 
@@ -1632,14 +1852,19 @@ Get the aggregated balances from selected accounts
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2GetBalancesAggregated(ctx, operations.V2GetBalancesAggregatedRequest{
@@ -1660,16 +1885,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                              | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
-| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                                  | :heavy_check_mark:                                                                                     | The context to use for the request.                                                                    |
-| `request`                                                                                              | [operations.V2GetBalancesAggregatedRequest](../../models/operations/v2getbalancesaggregatedrequest.md) | :heavy_check_mark:                                                                                     | The request object to use for the request.                                                             |
+| Parameter                                                                                                  | Type                                                                                                       | Required                                                                                                   | Description                                                                                                |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                                      | :heavy_check_mark:                                                                                         | The context to use for the request.                                                                        |
+| `request`                                                                                                  | [operations.V2GetBalancesAggregatedRequest](../../pkg/models/operations/v2getbalancesaggregatedrequest.md) | :heavy_check_mark:                                                                                         | The request object to use for the request.                                                                 |
 
 
 ### Response
 
-**[*operations.V2GetBalancesAggregatedResponse](../../models/operations/v2getbalancesaggregatedresponse.md), error**
-
+**[*operations.V2GetBalancesAggregatedResponse](../../pkg/models/operations/v2getbalancesaggregatedresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2GetInfo
 
@@ -1681,13 +1908,18 @@ Show server information
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2GetInfo(ctx)
@@ -1710,8 +1942,10 @@ func main() {
 
 ### Response
 
-**[*operations.V2GetInfoResponse](../../models/operations/v2getinforesponse.md), error**
-
+**[*operations.V2GetInfoResponse](../../pkg/models/operations/v2getinforesponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2GetLedger
 
@@ -1723,14 +1957,19 @@ Get a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2GetLedger(ctx, operations.V2GetLedgerRequest{
@@ -1748,16 +1987,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
-| `request`                                                                      | [operations.V2GetLedgerRequest](../../models/operations/v2getledgerrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
+| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
+| `request`                                                                          | [operations.V2GetLedgerRequest](../../pkg/models/operations/v2getledgerrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
 
 
 ### Response
 
-**[*operations.V2GetLedgerResponse](../../models/operations/v2getledgerresponse.md), error**
-
+**[*operations.V2GetLedgerResponse](../../pkg/models/operations/v2getledgerresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2GetLedgerInfo
 
@@ -1769,14 +2010,19 @@ Get information about a ledger
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2GetLedgerInfo(ctx, operations.V2GetLedgerInfoRequest{
@@ -1794,16 +2040,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
-| `request`                                                                              | [operations.V2GetLedgerInfoRequest](../../models/operations/v2getledgerinforequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
+| Parameter                                                                                  | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                      | :heavy_check_mark:                                                                         | The context to use for the request.                                                        |
+| `request`                                                                                  | [operations.V2GetLedgerInfoRequest](../../pkg/models/operations/v2getledgerinforequest.md) | :heavy_check_mark:                                                                         | The request object to use for the request.                                                 |
 
 
 ### Response
 
-**[*operations.V2GetLedgerInfoResponse](../../models/operations/v2getledgerinforesponse.md), error**
-
+**[*operations.V2GetLedgerInfoResponse](../../pkg/models/operations/v2getledgerinforesponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2GetTransaction
 
@@ -1815,15 +2063,20 @@ Get transaction from a ledger by its ID
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2GetTransaction(ctx, operations.V2GetTransactionRequest{
@@ -1842,16 +2095,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
-| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
-| `request`                                                                                | [operations.V2GetTransactionRequest](../../models/operations/v2gettransactionrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
+| `request`                                                                                    | [operations.V2GetTransactionRequest](../../pkg/models/operations/v2gettransactionrequest.md) | :heavy_check_mark:                                                                           | The request object to use for the request.                                                   |
 
 
 ### Response
 
-**[*operations.V2GetTransactionResponse](../../models/operations/v2gettransactionresponse.md), error**
-
+**[*operations.V2GetTransactionResponse](../../pkg/models/operations/v2gettransactionresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 404                       | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2ListAccounts
 
@@ -1863,14 +2119,19 @@ List accounts from a ledger, sorted by address in descending order.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2ListAccounts(ctx, operations.V2ListAccountsRequest{
@@ -1892,16 +2153,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
-| `request`                                                                            | [operations.V2ListAccountsRequest](../../models/operations/v2listaccountsrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
+| `request`                                                                                | [operations.V2ListAccountsRequest](../../pkg/models/operations/v2listaccountsrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
 
 
 ### Response
 
-**[*operations.V2ListAccountsResponse](../../models/operations/v2listaccountsresponse.md), error**
-
+**[*operations.V2ListAccountsResponse](../../pkg/models/operations/v2listaccountsresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2ListLedgers
 
@@ -1913,14 +2177,19 @@ List ledgers
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2ListLedgers(ctx, operations.V2ListLedgersRequest{
@@ -1938,16 +2207,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
-| `request`                                                                          | [operations.V2ListLedgersRequest](../../models/operations/v2listledgersrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
+| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
+| `request`                                                                              | [operations.V2ListLedgersRequest](../../pkg/models/operations/v2listledgersrequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
 
 
 ### Response
 
-**[*operations.V2ListLedgersResponse](../../models/operations/v2listledgersresponse.md), error**
-
+**[*operations.V2ListLedgersResponse](../../pkg/models/operations/v2listledgersresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2ListLogs
 
@@ -1959,14 +2230,19 @@ List the logs from a ledger, sorted by ID in descending order.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2ListLogs(ctx, operations.V2ListLogsRequest{
@@ -1988,16 +2264,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
-| `request`                                                                    | [operations.V2ListLogsRequest](../../models/operations/v2listlogsrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
+| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
+| `request`                                                                        | [operations.V2ListLogsRequest](../../pkg/models/operations/v2listlogsrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
 
 
 ### Response
 
-**[*operations.V2ListLogsResponse](../../models/operations/v2listlogsresponse.md), error**
-
+**[*operations.V2ListLogsResponse](../../pkg/models/operations/v2listlogsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2ListTransactions
 
@@ -2009,14 +2287,19 @@ List transactions from a ledger, sorted by id in descending order.
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2ListTransactions(ctx, operations.V2ListTransactionsRequest{
@@ -2038,16 +2321,19 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
-| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
-| `request`                                                                                    | [operations.V2ListTransactionsRequest](../../models/operations/v2listtransactionsrequest.md) | :heavy_check_mark:                                                                           | The request object to use for the request.                                                   |
+| Parameter                                                                                        | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                            | [context.Context](https://pkg.go.dev/context#Context)                                            | :heavy_check_mark:                                                                               | The context to use for the request.                                                              |
+| `request`                                                                                        | [operations.V2ListTransactionsRequest](../../pkg/models/operations/v2listtransactionsrequest.md) | :heavy_check_mark:                                                                               | The request object to use for the request.                                                       |
 
 
 ### Response
 
-**[*operations.V2ListTransactionsResponse](../../models/operations/v2listtransactionsresponse.md), error**
-
+**[*operations.V2ListTransactionsResponse](../../pkg/models/operations/v2listtransactionsresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400,404                   | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |
 
 ## V2ReadStats
 
@@ -2060,14 +2346,19 @@ Get statistics from a ledger. (aggregate metrics on accounts and transactions)
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2ReadStats(ctx, operations.V2ReadStatsRequest{
@@ -2085,16 +2376,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
-| `request`                                                                      | [operations.V2ReadStatsRequest](../../models/operations/v2readstatsrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
+| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
+| `request`                                                                          | [operations.V2ReadStatsRequest](../../pkg/models/operations/v2readstatsrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
 
 
 ### Response
 
-**[*operations.V2ReadStatsResponse](../../models/operations/v2readstatsresponse.md), error**
-
+**[*operations.V2ReadStatsResponse](../../pkg/models/operations/v2readstatsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## V2RevertTransaction
 
@@ -2106,15 +2399,20 @@ Revert a ledger transaction by its ID
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Ledger.V2RevertTransaction(ctx, operations.V2RevertTransactionRequest{
@@ -2133,13 +2431,16 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                      | Type                                                                                           | Required                                                                                       | Description                                                                                    |
-| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                          | :heavy_check_mark:                                                                             | The context to use for the request.                                                            |
-| `request`                                                                                      | [operations.V2RevertTransactionRequest](../../models/operations/v2reverttransactionrequest.md) | :heavy_check_mark:                                                                             | The request object to use for the request.                                                     |
+| Parameter                                                                                          | Type                                                                                               | Required                                                                                           | Description                                                                                        |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                              | :heavy_check_mark:                                                                                 | The context to use for the request.                                                                |
+| `request`                                                                                          | [operations.V2RevertTransactionRequest](../../pkg/models/operations/v2reverttransactionrequest.md) | :heavy_check_mark:                                                                                 | The request object to use for the request.                                                         |
 
 
 ### Response
 
-**[*operations.V2RevertTransactionResponse](../../models/operations/v2reverttransactionresponse.md), error**
-
+**[*operations.V2RevertTransactionResponse](../../pkg/models/operations/v2reverttransactionresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 400-600                   | */*                       |

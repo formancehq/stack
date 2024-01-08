@@ -15,19 +15,19 @@ import (
 	"strings"
 )
 
-type search struct {
+type Search struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newSearch(sdkConfig sdkConfiguration) *search {
-	return &search{
+func newSearch(sdkConfig sdkConfiguration) *Search {
+	return &Search{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // Search
 // ElasticSearch query engine
-func (s *search) Search(ctx context.Context, request shared.Query) (*operations.SearchResponse, error) {
+func (s *Search) Search(ctx context.Context, request shared.Query) (*operations.SearchResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/search/"
 
@@ -48,7 +48,7 @@ func (s *search) Search(ctx context.Context, request shared.Query) (*operations.
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -96,7 +96,7 @@ func (s *search) Search(ctx context.Context, request shared.Query) (*operations.
 }
 
 // SearchgetServerInfo - Get server info
-func (s *search) SearchgetServerInfo(ctx context.Context) (*operations.SearchgetServerInfoResponse, error) {
+func (s *Search) SearchgetServerInfo(ctx context.Context) (*operations.SearchgetServerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/search/_info"
 
@@ -107,7 +107,7 @@ func (s *search) SearchgetServerInfo(ctx context.Context) (*operations.Searchget
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

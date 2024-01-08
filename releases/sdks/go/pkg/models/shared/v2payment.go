@@ -13,34 +13,34 @@ import (
 type V2PaymentRaw struct {
 }
 
-type V2PaymentScheme string
+type Scheme string
 
 const (
-	V2PaymentSchemeVisa       V2PaymentScheme = "visa"
-	V2PaymentSchemeMastercard V2PaymentScheme = "mastercard"
-	V2PaymentSchemeAmex       V2PaymentScheme = "amex"
-	V2PaymentSchemeDiners     V2PaymentScheme = "diners"
-	V2PaymentSchemeDiscover   V2PaymentScheme = "discover"
-	V2PaymentSchemeJcb        V2PaymentScheme = "jcb"
-	V2PaymentSchemeUnionpay   V2PaymentScheme = "unionpay"
-	V2PaymentSchemeSepaDebit  V2PaymentScheme = "sepa debit"
-	V2PaymentSchemeSepaCredit V2PaymentScheme = "sepa credit"
-	V2PaymentSchemeSepa       V2PaymentScheme = "sepa"
-	V2PaymentSchemeApplePay   V2PaymentScheme = "apple pay"
-	V2PaymentSchemeGooglePay  V2PaymentScheme = "google pay"
-	V2PaymentSchemeA2a        V2PaymentScheme = "a2a"
-	V2PaymentSchemeAchDebit   V2PaymentScheme = "ach debit"
-	V2PaymentSchemeAch        V2PaymentScheme = "ach"
-	V2PaymentSchemeRtp        V2PaymentScheme = "rtp"
-	V2PaymentSchemeUnknown    V2PaymentScheme = "unknown"
-	V2PaymentSchemeOther      V2PaymentScheme = "other"
+	SchemeVisa       Scheme = "visa"
+	SchemeMastercard Scheme = "mastercard"
+	SchemeAmex       Scheme = "amex"
+	SchemeDiners     Scheme = "diners"
+	SchemeDiscover   Scheme = "discover"
+	SchemeJcb        Scheme = "jcb"
+	SchemeUnionpay   Scheme = "unionpay"
+	SchemeSepaDebit  Scheme = "sepa debit"
+	SchemeSepaCredit Scheme = "sepa credit"
+	SchemeSepa       Scheme = "sepa"
+	SchemeApplePay   Scheme = "apple pay"
+	SchemeGooglePay  Scheme = "google pay"
+	SchemeA2a        Scheme = "a2a"
+	SchemeAchDebit   Scheme = "ach debit"
+	SchemeAch        Scheme = "ach"
+	SchemeRtp        Scheme = "rtp"
+	SchemeUnknown    Scheme = "unknown"
+	SchemeOther      Scheme = "other"
 )
 
-func (e V2PaymentScheme) ToPointer() *V2PaymentScheme {
+func (e Scheme) ToPointer() *Scheme {
 	return &e
 }
 
-func (e *V2PaymentScheme) UnmarshalJSON(data []byte) error {
+func (e *Scheme) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -81,10 +81,10 @@ func (e *V2PaymentScheme) UnmarshalJSON(data []byte) error {
 	case "unknown":
 		fallthrough
 	case "other":
-		*e = V2PaymentScheme(v)
+		*e = Scheme(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for V2PaymentScheme: %v", v)
+		return fmt.Errorf("invalid value for Scheme: %v", v)
 	}
 }
 
@@ -133,7 +133,7 @@ type V2Payment struct {
 	Provider             *V2Connector          `json:"provider,omitempty"`
 	Raw                  *V2PaymentRaw         `json:"raw"`
 	Reference            string                `json:"reference"`
-	Scheme               V2PaymentScheme       `json:"scheme"`
+	Scheme               Scheme                `json:"scheme"`
 	SourceAccountID      string                `json:"sourceAccountID"`
 	Status               V2PaymentStatus       `json:"status"`
 	Type                 V2PaymentType         `json:"type"`
@@ -227,9 +227,9 @@ func (o *V2Payment) GetReference() string {
 	return o.Reference
 }
 
-func (o *V2Payment) GetScheme() V2PaymentScheme {
+func (o *V2Payment) GetScheme() Scheme {
 	if o == nil {
-		return V2PaymentScheme("")
+		return Scheme("")
 	}
 	return o.Scheme
 }

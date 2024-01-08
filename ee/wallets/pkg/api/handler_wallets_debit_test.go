@@ -42,19 +42,17 @@ type testCase struct {
 }
 
 type apiErrorMock struct {
-	ErrorCode    shared.ErrorsEnum `json:"errorCode,omitempty"`
-	ErrorMessage string            `json:"errorMessage,omitempty"`
-	Details      *string           `json:"details,omitempty"`
+	ErrorCode    shared.WalletsErrorResponseErrorCode `json:"errorCode,omitempty"`
+	ErrorMessage string                               `json:"errorMessage,omitempty"`
 }
 
 func (a *apiErrorMock) Model() any {
 	if a == nil {
 		return nil
 	}
-	return shared.ErrorResponse{
+	return shared.WalletsErrorResponse{
 		ErrorCode:    a.ErrorCode,
 		ErrorMessage: a.ErrorMessage,
-		Details:      a.Details,
 	}
 }
 
@@ -141,7 +139,7 @@ var walletDebitTestCases = []testCase{
 			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
 		postTransactionError: &apiErrorMock{
-			ErrorCode: shared.ErrorsEnumInsufficientFund,
+			ErrorCode: shared.WalletsErrorResponseErrorCodeInsufficientFund,
 		},
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  string(shared.ErrorsEnumInsufficientFund),
@@ -246,7 +244,7 @@ var walletDebitTestCases = []testCase{
 			}
 		},
 		expectedStatusCode: http.StatusBadRequest,
-		expectedErrorCode:  string(shared.ErrorErrorCodeValidation),
+		expectedErrorCode:  string(shared.WalletsErrorResponseErrorCodeValidation),
 	},
 	{
 		name: "with custom balance as destination",

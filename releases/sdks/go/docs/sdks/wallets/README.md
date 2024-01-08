@@ -30,16 +30,21 @@ Confirm a hold
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.ConfirmHold(ctx, operations.ConfirmHoldRequest{
@@ -61,16 +66,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
-| `request`                                                                      | [operations.ConfirmHoldRequest](../../models/operations/confirmholdrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
+| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
+| `request`                                                                          | [operations.ConfirmHoldRequest](../../pkg/models/operations/confirmholdrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
 
 
 ### Response
 
-**[*operations.ConfirmHoldResponse](../../models/operations/confirmholdresponse.md), error**
-
+**[*operations.ConfirmHoldResponse](../../pkg/models/operations/confirmholdresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## CreateBalance
 
@@ -82,15 +89,19 @@ Create a balance
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.CreateBalance(ctx, operations.CreateBalanceRequest{
@@ -111,16 +122,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
-| `request`                                                                          | [operations.CreateBalanceRequest](../../models/operations/createbalancerequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
+| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
+| `request`                                                                              | [operations.CreateBalanceRequest](../../pkg/models/operations/createbalancerequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
 
 
 ### Response
 
-**[*operations.CreateBalanceResponse](../../models/operations/createbalanceresponse.md), error**
-
+**[*operations.CreateBalanceResponse](../../pkg/models/operations/createbalanceresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## CreateWallet
 
@@ -132,14 +145,18 @@ Create a new wallet
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.CreateWallet(ctx, &shared.CreateWalletRequest{
@@ -160,16 +177,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                | Type                                                                     | Required                                                                 | Description                                                              |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `ctx`                                                                    | [context.Context](https://pkg.go.dev/context#Context)                    | :heavy_check_mark:                                                       | The context to use for the request.                                      |
-| `request`                                                                | [shared.CreateWalletRequest](../../models/shared/createwalletrequest.md) | :heavy_check_mark:                                                       | The request object to use for the request.                               |
+| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
+| `request`                                                                    | [shared.CreateWalletRequest](../../pkg/models/shared/createwalletrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
 
 
 ### Response
 
-**[*operations.CreateWalletResponse](../../models/operations/createwalletresponse.md), error**
-
+**[*operations.CreateWalletResponse](../../pkg/models/operations/createwalletresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## CreditWallet
 
@@ -181,16 +200,21 @@ Credit a wallet
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.CreditWallet(ctx, operations.CreditWalletRequest{
@@ -225,16 +249,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.CreditWalletRequest](../../models/operations/creditwalletrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.CreditWalletRequest](../../pkg/models/operations/creditwalletrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
 
 
 ### Response
 
-**[*operations.CreditWalletResponse](../../models/operations/creditwalletresponse.md), error**
-
+**[*operations.CreditWalletResponse](../../pkg/models/operations/creditwalletresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## DebitWallet
 
@@ -246,16 +272,20 @@ Debit a wallet
 package main
 
 import(
-	"context"
-	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"math/big"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.DebitWallet(ctx, operations.DebitWalletRequest{
@@ -291,16 +321,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
-| `request`                                                                      | [operations.DebitWalletRequest](../../models/operations/debitwalletrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
+| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
+| `request`                                                                          | [operations.DebitWalletRequest](../../pkg/models/operations/debitwalletrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
 
 
 ### Response
 
-**[*operations.DebitWalletResponse](../../models/operations/debitwalletresponse.md), error**
-
+**[*operations.DebitWalletResponse](../../pkg/models/operations/debitwalletresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetBalance
 
@@ -312,14 +344,19 @@ Get detailed balance
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.GetBalance(ctx, operations.GetBalanceRequest{
@@ -338,16 +375,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
-| `request`                                                                    | [operations.GetBalanceRequest](../../models/operations/getbalancerequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
+| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
+| `request`                                                                        | [operations.GetBalanceRequest](../../pkg/models/operations/getbalancerequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
 
 
 ### Response
 
-**[*operations.GetBalanceResponse](../../models/operations/getbalanceresponse.md), error**
-
+**[*operations.GetBalanceResponse](../../pkg/models/operations/getbalanceresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetHold
 
@@ -359,14 +398,19 @@ Get a hold
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.GetHold(ctx, operations.GetHoldRequest{
@@ -384,16 +428,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                              | Type                                                                   | Required                                                               | Description                                                            |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `ctx`                                                                  | [context.Context](https://pkg.go.dev/context#Context)                  | :heavy_check_mark:                                                     | The context to use for the request.                                    |
-| `request`                                                              | [operations.GetHoldRequest](../../models/operations/getholdrequest.md) | :heavy_check_mark:                                                     | The request object to use for the request.                             |
+| Parameter                                                                  | Type                                                                       | Required                                                                   | Description                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `ctx`                                                                      | [context.Context](https://pkg.go.dev/context#Context)                      | :heavy_check_mark:                                                         | The context to use for the request.                                        |
+| `request`                                                                  | [operations.GetHoldRequest](../../pkg/models/operations/getholdrequest.md) | :heavy_check_mark:                                                         | The request object to use for the request.                                 |
 
 
 ### Response
 
-**[*operations.GetHoldResponse](../../models/operations/getholdresponse.md), error**
-
+**[*operations.GetHoldResponse](../../pkg/models/operations/getholdresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetHolds
 
@@ -405,14 +451,19 @@ Get all holds for a wallet
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.GetHolds(ctx, operations.GetHoldsRequest{
@@ -433,16 +484,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                | Type                                                                     | Required                                                                 | Description                                                              |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `ctx`                                                                    | [context.Context](https://pkg.go.dev/context#Context)                    | :heavy_check_mark:                                                       | The context to use for the request.                                      |
-| `request`                                                                | [operations.GetHoldsRequest](../../models/operations/getholdsrequest.md) | :heavy_check_mark:                                                       | The request object to use for the request.                               |
+| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
+| `request`                                                                    | [operations.GetHoldsRequest](../../pkg/models/operations/getholdsrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
 
 
 ### Response
 
-**[*operations.GetHoldsResponse](../../models/operations/getholdsresponse.md), error**
-
+**[*operations.GetHoldsResponse](../../pkg/models/operations/getholdsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetTransactions
 
@@ -452,14 +505,19 @@ func main() {
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.GetTransactions(ctx, operations.GetTransactionsRequest{
@@ -477,16 +535,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |
-| `request`                                                                              | [operations.GetTransactionsRequest](../../models/operations/gettransactionsrequest.md) | :heavy_check_mark:                                                                     | The request object to use for the request.                                             |
+| Parameter                                                                                  | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                      | :heavy_check_mark:                                                                         | The context to use for the request.                                                        |
+| `request`                                                                                  | [operations.GetTransactionsRequest](../../pkg/models/operations/gettransactionsrequest.md) | :heavy_check_mark:                                                                         | The request object to use for the request.                                                 |
 
 
 ### Response
 
-**[*operations.GetTransactionsResponse](../../models/operations/gettransactionsresponse.md), error**
-
+**[*operations.GetTransactionsResponse](../../pkg/models/operations/gettransactionsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetWallet
 
@@ -498,14 +558,19 @@ Get a wallet
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.GetWallet(ctx, operations.GetWalletRequest{
@@ -523,16 +588,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                  | Type                                                                       | Required                                                                   | Description                                                                |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `ctx`                                                                      | [context.Context](https://pkg.go.dev/context#Context)                      | :heavy_check_mark:                                                         | The context to use for the request.                                        |
-| `request`                                                                  | [operations.GetWalletRequest](../../models/operations/getwalletrequest.md) | :heavy_check_mark:                                                         | The request object to use for the request.                                 |
+| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
+| `request`                                                                      | [operations.GetWalletRequest](../../pkg/models/operations/getwalletrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
 
 
 ### Response
 
-**[*operations.GetWalletResponse](../../models/operations/getwalletresponse.md), error**
-
+**[*operations.GetWalletResponse](../../pkg/models/operations/getwalletresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## GetWalletSummary
 
@@ -544,14 +611,19 @@ Get wallet summary
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.GetWalletSummary(ctx, operations.GetWalletSummaryRequest{
@@ -569,16 +641,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
-| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
-| `request`                                                                                | [operations.GetWalletSummaryRequest](../../models/operations/getwalletsummaryrequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
+| `request`                                                                                    | [operations.GetWalletSummaryRequest](../../pkg/models/operations/getwalletsummaryrequest.md) | :heavy_check_mark:                                                                           | The request object to use for the request.                                                   |
 
 
 ### Response
 
-**[*operations.GetWalletSummaryResponse](../../models/operations/getwalletsummaryresponse.md), error**
-
+**[*operations.GetWalletSummaryResponse](../../pkg/models/operations/getwalletsummaryresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ListBalances
 
@@ -590,14 +664,19 @@ List balances of a wallet
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.ListBalances(ctx, operations.ListBalancesRequest{
@@ -615,16 +694,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.ListBalancesRequest](../../models/operations/listbalancesrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.ListBalancesRequest](../../pkg/models/operations/listbalancesrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
 
 
 ### Response
 
-**[*operations.ListBalancesResponse](../../models/operations/listbalancesresponse.md), error**
-
+**[*operations.ListBalancesResponse](../../pkg/models/operations/listbalancesresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## ListWallets
 
@@ -636,14 +717,19 @@ List all wallets
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.ListWallets(ctx, operations.ListWalletsRequest{
@@ -664,16 +750,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |
-| `request`                                                                      | [operations.ListWalletsRequest](../../models/operations/listwalletsrequest.md) | :heavy_check_mark:                                                             | The request object to use for the request.                                     |
+| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |
+| `request`                                                                          | [operations.ListWalletsRequest](../../pkg/models/operations/listwalletsrequest.md) | :heavy_check_mark:                                                                 | The request object to use for the request.                                         |
 
 
 ### Response
 
-**[*operations.ListWalletsResponse](../../models/operations/listwalletsresponse.md), error**
-
+**[*operations.ListWalletsResponse](../../pkg/models/operations/listwalletsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## UpdateWallet
 
@@ -685,14 +773,20 @@ Update a wallet
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.UpdateWallet(ctx, operations.UpdateWalletRequest{
@@ -715,16 +809,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.UpdateWalletRequest](../../models/operations/updatewalletrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.UpdateWalletRequest](../../pkg/models/operations/updatewalletrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
 
 
 ### Response
 
-**[*operations.UpdateWalletResponse](../../models/operations/updatewalletresponse.md), error**
-
+**[*operations.UpdateWalletResponse](../../pkg/models/operations/updatewalletresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## VoidHold
 
@@ -736,14 +832,20 @@ Cancel a hold
 package main
 
 import(
-	"context"
-	"log"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"context"
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"log"
+	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.VoidHold(ctx, operations.VoidHoldRequest{
@@ -761,16 +863,18 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                | Type                                                                     | Required                                                                 | Description                                                              |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `ctx`                                                                    | [context.Context](https://pkg.go.dev/context#Context)                    | :heavy_check_mark:                                                       | The context to use for the request.                                      |
-| `request`                                                                | [operations.VoidHoldRequest](../../models/operations/voidholdrequest.md) | :heavy_check_mark:                                                       | The request object to use for the request.                               |
+| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
+| `request`                                                                    | [operations.VoidHoldRequest](../../pkg/models/operations/voidholdrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
 
 
 ### Response
 
-**[*operations.VoidHoldResponse](../../models/operations/voidholdresponse.md), error**
-
+**[*operations.VoidHoldResponse](../../pkg/models/operations/voidholdresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |
 
 ## WalletsgetServerInfo
 
@@ -782,13 +886,18 @@ Get server info
 package main
 
 import(
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	formancesdkgo "github.com/formancehq/formance-sdk-go"
 	"context"
 	"log"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
-    s := formancesdkgo.New()
+    s := formancesdkgo.New(
+        formancesdkgo.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
 
     ctx := context.Background()
     res, err := s.Wallets.WalletsgetServerInfo(ctx)
@@ -811,5 +920,7 @@ func main() {
 
 ### Response
 
-**[*operations.WalletsgetServerInfoResponse](../../models/operations/walletsgetserverinforesponse.md), error**
-
+**[*operations.WalletsgetServerInfoResponse](../../pkg/models/operations/walletsgetserverinforesponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 400-600            | */*                |

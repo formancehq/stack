@@ -15,19 +15,19 @@ import (
 	"strings"
 )
 
-type orchestration struct {
+type Orchestration struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newOrchestration(sdkConfig sdkConfiguration) *orchestration {
-	return &orchestration{
+func newOrchestration(sdkConfig sdkConfiguration) *Orchestration {
+	return &Orchestration{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // CancelEvent - Cancel a running workflow
 // Cancel a running workflow
-func (s *orchestration) CancelEvent(ctx context.Context, request operations.CancelEventRequest) (*operations.CancelEventResponse, error) {
+func (s *Orchestration) CancelEvent(ctx context.Context, request operations.CancelEventRequest) (*operations.CancelEventResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/instances/{instanceID}/abort", request, nil)
 	if err != nil {
@@ -41,7 +41,7 @@ func (s *orchestration) CancelEvent(ctx context.Context, request operations.Canc
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -90,7 +90,7 @@ func (s *orchestration) CancelEvent(ctx context.Context, request operations.Canc
 
 // CreateTrigger - Create trigger
 // Create trigger
-func (s *orchestration) CreateTrigger(ctx context.Context, request *shared.TriggerData) (*operations.CreateTriggerResponse, error) {
+func (s *Orchestration) CreateTrigger(ctx context.Context, request *shared.TriggerData) (*operations.CreateTriggerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/triggers"
 
@@ -108,7 +108,7 @@ func (s *orchestration) CreateTrigger(ctx context.Context, request *shared.Trigg
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -168,7 +168,7 @@ func (s *orchestration) CreateTrigger(ctx context.Context, request *shared.Trigg
 
 // CreateWorkflow - Create workflow
 // Create a workflow
-func (s *orchestration) CreateWorkflow(ctx context.Context, request *shared.CreateWorkflowRequest) (*operations.CreateWorkflowResponse, error) {
+func (s *Orchestration) CreateWorkflow(ctx context.Context, request *shared.CreateWorkflowRequest) (*operations.CreateWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/workflows"
 
@@ -186,7 +186,7 @@ func (s *orchestration) CreateWorkflow(ctx context.Context, request *shared.Crea
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -246,7 +246,7 @@ func (s *orchestration) CreateWorkflow(ctx context.Context, request *shared.Crea
 
 // DeleteTrigger - Delete trigger
 // Read trigger
-func (s *orchestration) DeleteTrigger(ctx context.Context, request operations.DeleteTriggerRequest) (*operations.DeleteTriggerResponse, error) {
+func (s *Orchestration) DeleteTrigger(ctx context.Context, request operations.DeleteTriggerRequest) (*operations.DeleteTriggerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/triggers/{triggerID}", request, nil)
 	if err != nil {
@@ -260,7 +260,7 @@ func (s *orchestration) DeleteTrigger(ctx context.Context, request operations.De
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -309,7 +309,7 @@ func (s *orchestration) DeleteTrigger(ctx context.Context, request operations.De
 
 // DeleteWorkflow - Delete a flow by id
 // Delete a flow by id
-func (s *orchestration) DeleteWorkflow(ctx context.Context, request operations.DeleteWorkflowRequest) (*operations.DeleteWorkflowResponse, error) {
+func (s *Orchestration) DeleteWorkflow(ctx context.Context, request operations.DeleteWorkflowRequest) (*operations.DeleteWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/workflows/{flowId}", request, nil)
 	if err != nil {
@@ -323,7 +323,7 @@ func (s *orchestration) DeleteWorkflow(ctx context.Context, request operations.D
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -372,7 +372,7 @@ func (s *orchestration) DeleteWorkflow(ctx context.Context, request operations.D
 
 // GetInstance - Get a workflow instance by id
 // Get a workflow instance by id
-func (s *orchestration) GetInstance(ctx context.Context, request operations.GetInstanceRequest) (*operations.GetInstanceResponse, error) {
+func (s *Orchestration) GetInstance(ctx context.Context, request operations.GetInstanceRequest) (*operations.GetInstanceResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/instances/{instanceID}", request, nil)
 	if err != nil {
@@ -386,7 +386,7 @@ func (s *orchestration) GetInstance(ctx context.Context, request operations.GetI
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -446,7 +446,7 @@ func (s *orchestration) GetInstance(ctx context.Context, request operations.GetI
 
 // GetInstanceHistory - Get a workflow instance history by id
 // Get a workflow instance history by id
-func (s *orchestration) GetInstanceHistory(ctx context.Context, request operations.GetInstanceHistoryRequest) (*operations.GetInstanceHistoryResponse, error) {
+func (s *Orchestration) GetInstanceHistory(ctx context.Context, request operations.GetInstanceHistoryRequest) (*operations.GetInstanceHistoryResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/instances/{instanceID}/history", request, nil)
 	if err != nil {
@@ -460,7 +460,7 @@ func (s *orchestration) GetInstanceHistory(ctx context.Context, request operatio
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -520,7 +520,7 @@ func (s *orchestration) GetInstanceHistory(ctx context.Context, request operatio
 
 // GetInstanceStageHistory - Get a workflow instance stage history
 // Get a workflow instance stage history
-func (s *orchestration) GetInstanceStageHistory(ctx context.Context, request operations.GetInstanceStageHistoryRequest) (*operations.GetInstanceStageHistoryResponse, error) {
+func (s *Orchestration) GetInstanceStageHistory(ctx context.Context, request operations.GetInstanceStageHistoryRequest) (*operations.GetInstanceStageHistoryResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/instances/{instanceID}/stages/{number}/history", request, nil)
 	if err != nil {
@@ -534,7 +534,7 @@ func (s *orchestration) GetInstanceStageHistory(ctx context.Context, request ope
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -594,7 +594,7 @@ func (s *orchestration) GetInstanceStageHistory(ctx context.Context, request ope
 
 // GetWorkflow - Get a flow by id
 // Get a flow by id
-func (s *orchestration) GetWorkflow(ctx context.Context, request operations.GetWorkflowRequest) (*operations.GetWorkflowResponse, error) {
+func (s *Orchestration) GetWorkflow(ctx context.Context, request operations.GetWorkflowRequest) (*operations.GetWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/workflows/{flowId}", request, nil)
 	if err != nil {
@@ -608,7 +608,7 @@ func (s *orchestration) GetWorkflow(ctx context.Context, request operations.GetW
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -668,7 +668,7 @@ func (s *orchestration) GetWorkflow(ctx context.Context, request operations.GetW
 
 // ListInstances - List instances of a workflow
 // List instances of a workflow
-func (s *orchestration) ListInstances(ctx context.Context, request operations.ListInstancesRequest) (*operations.ListInstancesResponse, error) {
+func (s *Orchestration) ListInstances(ctx context.Context, request operations.ListInstancesRequest) (*operations.ListInstancesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/instances"
 
@@ -683,7 +683,7 @@ func (s *orchestration) ListInstances(ctx context.Context, request operations.Li
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -743,7 +743,7 @@ func (s *orchestration) ListInstances(ctx context.Context, request operations.Li
 
 // ListTriggers - List triggers
 // List triggers
-func (s *orchestration) ListTriggers(ctx context.Context) (*operations.ListTriggersResponse, error) {
+func (s *Orchestration) ListTriggers(ctx context.Context) (*operations.ListTriggersResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/triggers"
 
@@ -754,7 +754,7 @@ func (s *orchestration) ListTriggers(ctx context.Context) (*operations.ListTrigg
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -814,7 +814,7 @@ func (s *orchestration) ListTriggers(ctx context.Context) (*operations.ListTrigg
 
 // ListTriggersOccurrences - List triggers occurrences
 // List triggers occurrences
-func (s *orchestration) ListTriggersOccurrences(ctx context.Context, request operations.ListTriggersOccurrencesRequest) (*operations.ListTriggersOccurrencesResponse, error) {
+func (s *Orchestration) ListTriggersOccurrences(ctx context.Context, request operations.ListTriggersOccurrencesRequest) (*operations.ListTriggersOccurrencesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/triggers/{triggerID}/occurrences", request, nil)
 	if err != nil {
@@ -828,7 +828,7 @@ func (s *orchestration) ListTriggersOccurrences(ctx context.Context, request ope
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -888,7 +888,7 @@ func (s *orchestration) ListTriggersOccurrences(ctx context.Context, request ope
 
 // ListWorkflows - List registered workflows
 // List registered workflows
-func (s *orchestration) ListWorkflows(ctx context.Context) (*operations.ListWorkflowsResponse, error) {
+func (s *Orchestration) ListWorkflows(ctx context.Context) (*operations.ListWorkflowsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/workflows"
 
@@ -899,7 +899,7 @@ func (s *orchestration) ListWorkflows(ctx context.Context) (*operations.ListWork
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -958,7 +958,7 @@ func (s *orchestration) ListWorkflows(ctx context.Context) (*operations.ListWork
 }
 
 // OrchestrationgetServerInfo - Get server info
-func (s *orchestration) OrchestrationgetServerInfo(ctx context.Context) (*operations.OrchestrationgetServerInfoResponse, error) {
+func (s *Orchestration) OrchestrationgetServerInfo(ctx context.Context) (*operations.OrchestrationgetServerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/_info"
 
@@ -969,7 +969,7 @@ func (s *orchestration) OrchestrationgetServerInfo(ctx context.Context) (*operat
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1029,7 +1029,7 @@ func (s *orchestration) OrchestrationgetServerInfo(ctx context.Context) (*operat
 
 // ReadTrigger - Read trigger
 // Read trigger
-func (s *orchestration) ReadTrigger(ctx context.Context, request operations.ReadTriggerRequest) (*operations.ReadTriggerResponse, error) {
+func (s *Orchestration) ReadTrigger(ctx context.Context, request operations.ReadTriggerRequest) (*operations.ReadTriggerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/triggers/{triggerID}", request, nil)
 	if err != nil {
@@ -1043,7 +1043,7 @@ func (s *orchestration) ReadTrigger(ctx context.Context, request operations.Read
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1103,7 +1103,7 @@ func (s *orchestration) ReadTrigger(ctx context.Context, request operations.Read
 
 // RunWorkflow - Run workflow
 // Run workflow
-func (s *orchestration) RunWorkflow(ctx context.Context, request operations.RunWorkflowRequest) (*operations.RunWorkflowResponse, error) {
+func (s *Orchestration) RunWorkflow(ctx context.Context, request operations.RunWorkflowRequest) (*operations.RunWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/workflows/{workflowID}/instances", request, nil)
 	if err != nil {
@@ -1128,7 +1128,7 @@ func (s *orchestration) RunWorkflow(ctx context.Context, request operations.RunW
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1188,7 +1188,7 @@ func (s *orchestration) RunWorkflow(ctx context.Context, request operations.RunW
 
 // SendEvent - Send an event to a running workflow
 // Send an event to a running workflow
-func (s *orchestration) SendEvent(ctx context.Context, request operations.SendEventRequest) (*operations.SendEventResponse, error) {
+func (s *Orchestration) SendEvent(ctx context.Context, request operations.SendEventRequest) (*operations.SendEventResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/instances/{instanceID}/events", request, nil)
 	if err != nil {
@@ -1209,7 +1209,7 @@ func (s *orchestration) SendEvent(ctx context.Context, request operations.SendEv
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1258,7 +1258,7 @@ func (s *orchestration) SendEvent(ctx context.Context, request operations.SendEv
 
 // TestTrigger - Test trigger
 // Test trigger
-func (s *orchestration) TestTrigger(ctx context.Context, request operations.TestTriggerRequest) (*operations.TestTriggerResponse, error) {
+func (s *Orchestration) TestTrigger(ctx context.Context, request operations.TestTriggerRequest) (*operations.TestTriggerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/triggers/{triggerID}/test", request, nil)
 	if err != nil {
@@ -1279,7 +1279,7 @@ func (s *orchestration) TestTrigger(ctx context.Context, request operations.Test
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1323,7 +1323,7 @@ func (s *orchestration) TestTrigger(ctx context.Context, request operations.Test
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1339,7 +1339,7 @@ func (s *orchestration) TestTrigger(ctx context.Context, request operations.Test
 
 // V2CancelEvent - Cancel a running workflow
 // Cancel a running workflow
-func (s *orchestration) V2CancelEvent(ctx context.Context, request operations.V2CancelEventRequest) (*operations.V2CancelEventResponse, error) {
+func (s *Orchestration) V2CancelEvent(ctx context.Context, request operations.V2CancelEventRequest) (*operations.V2CancelEventResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/instances/{instanceID}/abort", request, nil)
 	if err != nil {
@@ -1353,7 +1353,7 @@ func (s *orchestration) V2CancelEvent(ctx context.Context, request operations.V2
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1386,7 +1386,7 @@ func (s *orchestration) V2CancelEvent(ctx context.Context, request operations.V2
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1402,7 +1402,7 @@ func (s *orchestration) V2CancelEvent(ctx context.Context, request operations.V2
 
 // V2CreateTrigger - Create trigger
 // Create trigger
-func (s *orchestration) V2CreateTrigger(ctx context.Context, request *shared.V2TriggerData) (*operations.V2CreateTriggerResponse, error) {
+func (s *Orchestration) V2CreateTrigger(ctx context.Context, request *shared.V2TriggerData) (*operations.V2CreateTriggerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/triggers"
 
@@ -1420,7 +1420,7 @@ func (s *orchestration) V2CreateTrigger(ctx context.Context, request *shared.V2T
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1464,7 +1464,7 @@ func (s *orchestration) V2CreateTrigger(ctx context.Context, request *shared.V2T
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1480,7 +1480,7 @@ func (s *orchestration) V2CreateTrigger(ctx context.Context, request *shared.V2T
 
 // V2CreateWorkflow - Create workflow
 // Create a workflow
-func (s *orchestration) V2CreateWorkflow(ctx context.Context, request *shared.V2CreateWorkflowRequest) (*operations.V2CreateWorkflowResponse, error) {
+func (s *Orchestration) V2CreateWorkflow(ctx context.Context, request *shared.V2CreateWorkflowRequest) (*operations.V2CreateWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/workflows"
 
@@ -1498,7 +1498,7 @@ func (s *orchestration) V2CreateWorkflow(ctx context.Context, request *shared.V2
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1542,7 +1542,7 @@ func (s *orchestration) V2CreateWorkflow(ctx context.Context, request *shared.V2
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1558,7 +1558,7 @@ func (s *orchestration) V2CreateWorkflow(ctx context.Context, request *shared.V2
 
 // V2DeleteTrigger - Delete trigger
 // Read trigger
-func (s *orchestration) V2DeleteTrigger(ctx context.Context, request operations.V2DeleteTriggerRequest) (*operations.V2DeleteTriggerResponse, error) {
+func (s *Orchestration) V2DeleteTrigger(ctx context.Context, request operations.V2DeleteTriggerRequest) (*operations.V2DeleteTriggerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/triggers/{triggerID}", request, nil)
 	if err != nil {
@@ -1572,7 +1572,7 @@ func (s *orchestration) V2DeleteTrigger(ctx context.Context, request operations.
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1616,7 +1616,7 @@ func (s *orchestration) V2DeleteTrigger(ctx context.Context, request operations.
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1632,7 +1632,7 @@ func (s *orchestration) V2DeleteTrigger(ctx context.Context, request operations.
 
 // V2DeleteWorkflow - Delete a flow by id
 // Delete a flow by id
-func (s *orchestration) V2DeleteWorkflow(ctx context.Context, request operations.V2DeleteWorkflowRequest) (*operations.V2DeleteWorkflowResponse, error) {
+func (s *Orchestration) V2DeleteWorkflow(ctx context.Context, request operations.V2DeleteWorkflowRequest) (*operations.V2DeleteWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/workflows/{flowId}", request, nil)
 	if err != nil {
@@ -1646,7 +1646,7 @@ func (s *orchestration) V2DeleteWorkflow(ctx context.Context, request operations
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1692,7 +1692,7 @@ func (s *orchestration) V2DeleteWorkflow(ctx context.Context, request operations
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1708,7 +1708,7 @@ func (s *orchestration) V2DeleteWorkflow(ctx context.Context, request operations
 
 // V2GetInstance - Get a workflow instance by id
 // Get a workflow instance by id
-func (s *orchestration) V2GetInstance(ctx context.Context, request operations.V2GetInstanceRequest) (*operations.V2GetInstanceResponse, error) {
+func (s *Orchestration) V2GetInstance(ctx context.Context, request operations.V2GetInstanceRequest) (*operations.V2GetInstanceResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/instances/{instanceID}", request, nil)
 	if err != nil {
@@ -1722,7 +1722,7 @@ func (s *orchestration) V2GetInstance(ctx context.Context, request operations.V2
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1766,7 +1766,7 @@ func (s *orchestration) V2GetInstance(ctx context.Context, request operations.V2
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1782,7 +1782,7 @@ func (s *orchestration) V2GetInstance(ctx context.Context, request operations.V2
 
 // V2GetInstanceHistory - Get a workflow instance history by id
 // Get a workflow instance history by id
-func (s *orchestration) V2GetInstanceHistory(ctx context.Context, request operations.V2GetInstanceHistoryRequest) (*operations.V2GetInstanceHistoryResponse, error) {
+func (s *Orchestration) V2GetInstanceHistory(ctx context.Context, request operations.V2GetInstanceHistoryRequest) (*operations.V2GetInstanceHistoryResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/instances/{instanceID}/history", request, nil)
 	if err != nil {
@@ -1796,7 +1796,7 @@ func (s *orchestration) V2GetInstanceHistory(ctx context.Context, request operat
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1840,7 +1840,7 @@ func (s *orchestration) V2GetInstanceHistory(ctx context.Context, request operat
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1856,7 +1856,7 @@ func (s *orchestration) V2GetInstanceHistory(ctx context.Context, request operat
 
 // V2GetInstanceStageHistory - Get a workflow instance stage history
 // Get a workflow instance stage history
-func (s *orchestration) V2GetInstanceStageHistory(ctx context.Context, request operations.V2GetInstanceStageHistoryRequest) (*operations.V2GetInstanceStageHistoryResponse, error) {
+func (s *Orchestration) V2GetInstanceStageHistory(ctx context.Context, request operations.V2GetInstanceStageHistoryRequest) (*operations.V2GetInstanceStageHistoryResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/instances/{instanceID}/stages/{number}/history", request, nil)
 	if err != nil {
@@ -1870,7 +1870,7 @@ func (s *orchestration) V2GetInstanceStageHistory(ctx context.Context, request o
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1914,7 +1914,7 @@ func (s *orchestration) V2GetInstanceStageHistory(ctx context.Context, request o
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -1929,7 +1929,7 @@ func (s *orchestration) V2GetInstanceStageHistory(ctx context.Context, request o
 }
 
 // V2GetServerInfo - Get server info
-func (s *orchestration) V2GetServerInfo(ctx context.Context) (*operations.V2GetServerInfoResponse, error) {
+func (s *Orchestration) V2GetServerInfo(ctx context.Context) (*operations.V2GetServerInfoResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/_info"
 
@@ -1940,7 +1940,7 @@ func (s *orchestration) V2GetServerInfo(ctx context.Context) (*operations.V2GetS
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1984,7 +1984,7 @@ func (s *orchestration) V2GetServerInfo(ctx context.Context) (*operations.V2GetS
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2000,7 +2000,7 @@ func (s *orchestration) V2GetServerInfo(ctx context.Context) (*operations.V2GetS
 
 // V2GetWorkflow - Get a flow by id
 // Get a flow by id
-func (s *orchestration) V2GetWorkflow(ctx context.Context, request operations.V2GetWorkflowRequest) (*operations.V2GetWorkflowResponse, error) {
+func (s *Orchestration) V2GetWorkflow(ctx context.Context, request operations.V2GetWorkflowRequest) (*operations.V2GetWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/workflows/{flowId}", request, nil)
 	if err != nil {
@@ -2014,7 +2014,7 @@ func (s *orchestration) V2GetWorkflow(ctx context.Context, request operations.V2
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2058,7 +2058,7 @@ func (s *orchestration) V2GetWorkflow(ctx context.Context, request operations.V2
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2074,7 +2074,7 @@ func (s *orchestration) V2GetWorkflow(ctx context.Context, request operations.V2
 
 // V2ListInstances - List instances of a workflow
 // List instances of a workflow
-func (s *orchestration) V2ListInstances(ctx context.Context, request operations.V2ListInstancesRequest) (*operations.V2ListInstancesResponse, error) {
+func (s *Orchestration) V2ListInstances(ctx context.Context, request operations.V2ListInstancesRequest) (*operations.V2ListInstancesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/instances"
 
@@ -2089,7 +2089,7 @@ func (s *orchestration) V2ListInstances(ctx context.Context, request operations.
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2133,7 +2133,7 @@ func (s *orchestration) V2ListInstances(ctx context.Context, request operations.
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2149,7 +2149,7 @@ func (s *orchestration) V2ListInstances(ctx context.Context, request operations.
 
 // V2ListTriggers - List triggers
 // List triggers
-func (s *orchestration) V2ListTriggers(ctx context.Context) (*operations.V2ListTriggersResponse, error) {
+func (s *Orchestration) V2ListTriggers(ctx context.Context) (*operations.V2ListTriggersResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/triggers"
 
@@ -2160,7 +2160,7 @@ func (s *orchestration) V2ListTriggers(ctx context.Context) (*operations.V2ListT
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2204,7 +2204,7 @@ func (s *orchestration) V2ListTriggers(ctx context.Context) (*operations.V2ListT
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2220,7 +2220,7 @@ func (s *orchestration) V2ListTriggers(ctx context.Context) (*operations.V2ListT
 
 // V2ListTriggersOccurrences - List triggers occurrences
 // List triggers occurrences
-func (s *orchestration) V2ListTriggersOccurrences(ctx context.Context, request operations.V2ListTriggersOccurrencesRequest) (*operations.V2ListTriggersOccurrencesResponse, error) {
+func (s *Orchestration) V2ListTriggersOccurrences(ctx context.Context, request operations.V2ListTriggersOccurrencesRequest) (*operations.V2ListTriggersOccurrencesResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/triggers/{triggerID}/occurrences", request, nil)
 	if err != nil {
@@ -2234,7 +2234,7 @@ func (s *orchestration) V2ListTriggersOccurrences(ctx context.Context, request o
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2278,7 +2278,7 @@ func (s *orchestration) V2ListTriggersOccurrences(ctx context.Context, request o
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2294,7 +2294,7 @@ func (s *orchestration) V2ListTriggersOccurrences(ctx context.Context, request o
 
 // V2ListWorkflows - List registered workflows
 // List registered workflows
-func (s *orchestration) V2ListWorkflows(ctx context.Context) (*operations.V2ListWorkflowsResponse, error) {
+func (s *Orchestration) V2ListWorkflows(ctx context.Context) (*operations.V2ListWorkflowsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/workflows"
 
@@ -2305,7 +2305,7 @@ func (s *orchestration) V2ListWorkflows(ctx context.Context) (*operations.V2List
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2349,7 +2349,7 @@ func (s *orchestration) V2ListWorkflows(ctx context.Context) (*operations.V2List
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2365,7 +2365,7 @@ func (s *orchestration) V2ListWorkflows(ctx context.Context) (*operations.V2List
 
 // V2ReadTrigger - Read trigger
 // Read trigger
-func (s *orchestration) V2ReadTrigger(ctx context.Context, request operations.V2ReadTriggerRequest) (*operations.V2ReadTriggerResponse, error) {
+func (s *Orchestration) V2ReadTrigger(ctx context.Context, request operations.V2ReadTriggerRequest) (*operations.V2ReadTriggerResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/triggers/{triggerID}", request, nil)
 	if err != nil {
@@ -2379,7 +2379,7 @@ func (s *orchestration) V2ReadTrigger(ctx context.Context, request operations.V2
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2423,7 +2423,7 @@ func (s *orchestration) V2ReadTrigger(ctx context.Context, request operations.V2
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2439,7 +2439,7 @@ func (s *orchestration) V2ReadTrigger(ctx context.Context, request operations.V2
 
 // V2RunWorkflow - Run workflow
 // Run workflow
-func (s *orchestration) V2RunWorkflow(ctx context.Context, request operations.V2RunWorkflowRequest) (*operations.V2RunWorkflowResponse, error) {
+func (s *Orchestration) V2RunWorkflow(ctx context.Context, request operations.V2RunWorkflowRequest) (*operations.V2RunWorkflowResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/workflows/{workflowID}/instances", request, nil)
 	if err != nil {
@@ -2464,7 +2464,7 @@ func (s *orchestration) V2RunWorkflow(ctx context.Context, request operations.V2
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2508,7 +2508,7 @@ func (s *orchestration) V2RunWorkflow(ctx context.Context, request operations.V2
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
@@ -2524,7 +2524,7 @@ func (s *orchestration) V2RunWorkflow(ctx context.Context, request operations.V2
 
 // V2SendEvent - Send an event to a running workflow
 // Send an event to a running workflow
-func (s *orchestration) V2SendEvent(ctx context.Context, request operations.V2SendEventRequest) (*operations.V2SendEventResponse, error) {
+func (s *Orchestration) V2SendEvent(ctx context.Context, request operations.V2SendEventRequest) (*operations.V2SendEventResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url, err := utils.GenerateURL(ctx, baseURL, "/api/orchestration/v2/instances/{instanceID}/events", request, nil)
 	if err != nil {
@@ -2545,7 +2545,7 @@ func (s *orchestration) V2SendEvent(ctx context.Context, request operations.V2Se
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -2578,7 +2578,7 @@ func (s *orchestration) V2SendEvent(ctx context.Context, request operations.V2Se
 	default:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out shared.V2Error
+			var out sdkerrors.V2Error
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}

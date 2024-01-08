@@ -1,11 +1,12 @@
 package suite
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"math/big"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
@@ -77,7 +78,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				},
 			)
 			Expect(err).To(HaveOccurred())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(sdkerrors.V2ErrorsEnumNotFound))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumNotFound))
 		})
 		Then("adding a metadata", func() {
 			metadata := map[string]string{

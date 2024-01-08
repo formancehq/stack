@@ -9,18 +9,18 @@ import (
 	"time"
 )
 
-type LogType string
+type Type string
 
 const (
-	LogTypeNewTransaction LogType = "NEW_TRANSACTION"
-	LogTypeSetMetadata    LogType = "SET_METADATA"
+	TypeNewTransaction Type = "NEW_TRANSACTION"
+	TypeSetMetadata    Type = "SET_METADATA"
 )
 
-func (e LogType) ToPointer() *LogType {
+func (e Type) ToPointer() *Type {
 	return &e
 }
 
-func (e *LogType) UnmarshalJSON(data []byte) error {
+func (e *Type) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -29,10 +29,10 @@ func (e *LogType) UnmarshalJSON(data []byte) error {
 	case "NEW_TRANSACTION":
 		fallthrough
 	case "SET_METADATA":
-		*e = LogType(v)
+		*e = Type(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for LogType: %v", v)
+		return fmt.Errorf("invalid value for Type: %v", v)
 	}
 }
 
@@ -41,7 +41,7 @@ type Log struct {
 	Date time.Time              `json:"date"`
 	Hash string                 `json:"hash"`
 	ID   int64                  `json:"id"`
-	Type LogType                `json:"type"`
+	Type Type                   `json:"type"`
 }
 
 func (l Log) MarshalJSON() ([]byte, error) {
@@ -83,9 +83,9 @@ func (o *Log) GetID() int64 {
 	return o.ID
 }
 
-func (o *Log) GetType() LogType {
+func (o *Log) GetType() Type {
 	if o == nil {
-		return LogType("")
+		return Type("")
 	}
 	return o.Type
 }

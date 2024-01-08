@@ -1,6 +1,10 @@
 package suite
 
 import (
+	"math/big"
+	"net/http"
+	"time"
+
 	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -8,9 +12,6 @@ import (
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"math/big"
-	"net/http"
-	"time"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
@@ -28,7 +29,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		BeforeEach(func() {
 			_, err := Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
 				RequestBody: []shared.V2BulkElement{
-					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementCreateTransaction{
 						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
 							Postings: []shared.V2Posting{{
@@ -40,8 +41,8 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 							Timestamp: &now,
 						},
 					}),
-					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementV2BulkElementAddMetadata{
-						Data: &shared.V2BulkElementV2BulkElementAddMetadataData{
+					shared.CreateV2BulkElementAddMetadata(shared.V2BulkElementAddMetadata{
+						Data: &shared.V2BulkElementAddMetadataData{
 							Metadata: metadata.Metadata{
 								"foo":  "bar",
 								"role": "admin",
@@ -50,15 +51,15 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 							TargetType: shared.V2TargetTypeTransaction,
 						},
 					}),
-					shared.CreateV2BulkElementDeleteMetadata(shared.V2BulkElementV2BulkElementDeleteMetadata{
-						Data: &shared.V2BulkElementV2BulkElementDeleteMetadataData{
+					shared.CreateV2BulkElementDeleteMetadata(shared.V2BulkElementDeleteMetadata{
+						Data: &shared.V2BulkElementDeleteMetadataData{
 							Key:        "foo",
 							TargetID:   shared.CreateV2TargetIDBigint(big.NewInt(0)),
 							TargetType: shared.V2TargetTypeTransaction,
 						},
 					}),
-					shared.CreateV2BulkElementRevertTransaction(shared.V2BulkElementV2BulkElementRevertTransaction{
-						Data: &shared.V2BulkElementV2BulkElementRevertTransactionData{
+					shared.CreateV2BulkElementRevertTransaction(shared.V2BulkElementRevertTransaction{
+						Data: &shared.V2BulkElementRevertTransactionData{
 							ID: big.NewInt(0),
 						},
 					}),
@@ -98,7 +99,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		BeforeEach(func() {
 			bulkResponse, err = Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
 				RequestBody: []shared.V2BulkElement{
-					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementCreateTransaction{
 						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
 							Postings: []shared.V2Posting{{
@@ -110,7 +111,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 							Timestamp: &now,
 						},
 					}),
-					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementV2BulkElementCreateTransaction{
+					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementCreateTransaction{
 						Data: &shared.V2PostTransaction{
 							Metadata: map[string]string{},
 							Postings: []shared.V2Posting{{
@@ -129,7 +130,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		It("should respond with an error", func() {
 			Expect(bulkResponse.V2BulkResponse.Data[1].Type).To(Equal(shared.V2BulkElementResultType("ERROR")))
-			Expect(bulkResponse.V2BulkResponse.Data[1].V2BulkElementResultV2BulkElementResultError.ErrorCode).To(Equal("INSUFFICIENT_FUND"))
+			Expect(bulkResponse.V2BulkResponse.Data[1].V2BulkElementResultErrorSchemas.ErrorCode).To(Equal("INSUFFICIENT_FUND"))
 		})
 	})
 })

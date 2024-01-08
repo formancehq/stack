@@ -76,7 +76,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 				},
 			)
 			Expect(err).To(HaveOccurred())
-			Expect(err.(*sdkerrors.V2Error).ErrorCode).To(Equal(sdkerrors.V2ErrorErrorCodeValidation))
+			Expect(err.(*sdkerrors.V2Error).ErrorCode).To(Equal(sdkerrors.ErrorCodeValidation))
 		})
 	})
 	When("deleting a non-existing workflow", func() {
@@ -88,7 +88,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 				},
 			)
 			Expect(err).To(HaveOccurred())
-			Expect(err.(*sdkerrors.V2Error).ErrorCode).To(Equal(sdkerrors.V2ErrorErrorCodeNotFound))
+			Expect(err.(*sdkerrors.V2Error).ErrorCode).To(Equal(sdkerrors.ErrorCodeNotFound))
 		})
 	})
 })

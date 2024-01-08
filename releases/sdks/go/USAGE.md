@@ -1,20 +1,23 @@
-<!-- Start SDK Example Usage -->
-
-
+<!-- Start SDK Example Usage [usage] -->
 ```go
 package main
 
 import (
 	"context"
 	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"log"
 )
 
 func main() {
-	s := formancesdkgo.New()
+	s := formancesdkgo.New(
+		formancesdkgo.WithSecurity(shared.Security{
+			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+		}),
+	)
 
 	ctx := context.Background()
-	res, err := s.Formance.GetVersions(ctx)
+	res, err := s.GetVersions(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,4 +28,4 @@ func main() {
 }
 
 ```
-<!-- End SDK Example Usage -->
+<!-- End SDK Example Usage [usage] -->

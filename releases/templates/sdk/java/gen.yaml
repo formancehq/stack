@@ -1,15 +1,21 @@
 configVersion: 1.0.0
 generation:
+  comments: {}
   sdkClassName: SDK
   singleTagPerOp: true
+  usageSnippets:
+    optionalPropertyRendering: withExample
+  fixes:
+    nameResolutionDec2023: false
   telemetryEnabled: false
 features:
   java:
-    core: 2.85.2
+    core: 3.1.1
     deprecations: 2.81.1
     getRequestBodies: 2.81.1
-    globalSecurity: 2.81.1
-    globalServerURLs: 2.82.0
+    globalSecurity: 2.81.2
+    globalServerURLs: 2.82.1
+    ignores: 2.81.1
 java:
   version: ""
   artifactID: formance-sdk
@@ -18,6 +24,16 @@ java:
   companyURL: www.formance.com
   githubURL: github.com/formancehq/formance-sdk-java
   groupID: com.formance
+  imports:
+    option: openapi
+    paths:
+      callbacks: models/callbacks
+      errors: models/errors
+      operations: models/operations
+      shared: models/shared
+      webhooks: models/webhooks
+  inputModelSuffix: input
   maxMethodParams: 0
   ossrhURL: https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/
+  outputModelSuffix: output
   projectName: formance-sdk-java

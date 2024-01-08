@@ -7,20 +7,20 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/utils"
 )
 
-type TasksCursorCursorDataType string
+type TasksCursorDataType string
 
 const (
-	TasksCursorCursorDataTypeTaskStripe        TasksCursorCursorDataType = "TaskStripe"
-	TasksCursorCursorDataTypeTaskWise          TasksCursorCursorDataType = "TaskWise"
-	TasksCursorCursorDataTypeTaskCurrencyCloud TasksCursorCursorDataType = "TaskCurrencyCloud"
-	TasksCursorCursorDataTypeTaskDummyPay      TasksCursorCursorDataType = "TaskDummyPay"
-	TasksCursorCursorDataTypeTaskModulr        TasksCursorCursorDataType = "TaskModulr"
-	TasksCursorCursorDataTypeTaskBankingCircle TasksCursorCursorDataType = "TaskBankingCircle"
-	TasksCursorCursorDataTypeTaskMangoPay      TasksCursorCursorDataType = "TaskMangoPay"
-	TasksCursorCursorDataTypeTaskMoneycorp     TasksCursorCursorDataType = "TaskMoneycorp"
+	TasksCursorDataTypeTaskStripe        TasksCursorDataType = "TaskStripe"
+	TasksCursorDataTypeTaskWise          TasksCursorDataType = "TaskWise"
+	TasksCursorDataTypeTaskCurrencyCloud TasksCursorDataType = "TaskCurrencyCloud"
+	TasksCursorDataTypeTaskDummyPay      TasksCursorDataType = "TaskDummyPay"
+	TasksCursorDataTypeTaskModulr        TasksCursorDataType = "TaskModulr"
+	TasksCursorDataTypeTaskBankingCircle TasksCursorDataType = "TaskBankingCircle"
+	TasksCursorDataTypeTaskMangoPay      TasksCursorDataType = "TaskMangoPay"
+	TasksCursorDataTypeTaskMoneycorp     TasksCursorDataType = "TaskMoneycorp"
 )
 
-type TasksCursorCursorData struct {
+type TasksCursorData struct {
 	TaskStripe        *TaskStripe
 	TaskWise          *TaskWise
 	TaskCurrencyCloud *TaskCurrencyCloud
@@ -30,143 +30,143 @@ type TasksCursorCursorData struct {
 	TaskMangoPay      *TaskMangoPay
 	TaskMoneycorp     *TaskMoneycorp
 
-	Type TasksCursorCursorDataType
+	Type TasksCursorDataType
 }
 
-func CreateTasksCursorCursorDataTaskStripe(taskStripe TaskStripe) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskStripe
+func CreateTasksCursorDataTaskStripe(taskStripe TaskStripe) TasksCursorData {
+	typ := TasksCursorDataTypeTaskStripe
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskStripe: &taskStripe,
 		Type:       typ,
 	}
 }
 
-func CreateTasksCursorCursorDataTaskWise(taskWise TaskWise) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskWise
+func CreateTasksCursorDataTaskWise(taskWise TaskWise) TasksCursorData {
+	typ := TasksCursorDataTypeTaskWise
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskWise: &taskWise,
 		Type:     typ,
 	}
 }
 
-func CreateTasksCursorCursorDataTaskCurrencyCloud(taskCurrencyCloud TaskCurrencyCloud) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskCurrencyCloud
+func CreateTasksCursorDataTaskCurrencyCloud(taskCurrencyCloud TaskCurrencyCloud) TasksCursorData {
+	typ := TasksCursorDataTypeTaskCurrencyCloud
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskCurrencyCloud: &taskCurrencyCloud,
 		Type:              typ,
 	}
 }
 
-func CreateTasksCursorCursorDataTaskDummyPay(taskDummyPay TaskDummyPay) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskDummyPay
+func CreateTasksCursorDataTaskDummyPay(taskDummyPay TaskDummyPay) TasksCursorData {
+	typ := TasksCursorDataTypeTaskDummyPay
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskDummyPay: &taskDummyPay,
 		Type:         typ,
 	}
 }
 
-func CreateTasksCursorCursorDataTaskModulr(taskModulr TaskModulr) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskModulr
+func CreateTasksCursorDataTaskModulr(taskModulr TaskModulr) TasksCursorData {
+	typ := TasksCursorDataTypeTaskModulr
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskModulr: &taskModulr,
 		Type:       typ,
 	}
 }
 
-func CreateTasksCursorCursorDataTaskBankingCircle(taskBankingCircle TaskBankingCircle) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskBankingCircle
+func CreateTasksCursorDataTaskBankingCircle(taskBankingCircle TaskBankingCircle) TasksCursorData {
+	typ := TasksCursorDataTypeTaskBankingCircle
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskBankingCircle: &taskBankingCircle,
 		Type:              typ,
 	}
 }
 
-func CreateTasksCursorCursorDataTaskMangoPay(taskMangoPay TaskMangoPay) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskMangoPay
+func CreateTasksCursorDataTaskMangoPay(taskMangoPay TaskMangoPay) TasksCursorData {
+	typ := TasksCursorDataTypeTaskMangoPay
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskMangoPay: &taskMangoPay,
 		Type:         typ,
 	}
 }
 
-func CreateTasksCursorCursorDataTaskMoneycorp(taskMoneycorp TaskMoneycorp) TasksCursorCursorData {
-	typ := TasksCursorCursorDataTypeTaskMoneycorp
+func CreateTasksCursorDataTaskMoneycorp(taskMoneycorp TaskMoneycorp) TasksCursorData {
+	typ := TasksCursorDataTypeTaskMoneycorp
 
-	return TasksCursorCursorData{
+	return TasksCursorData{
 		TaskMoneycorp: &taskMoneycorp,
 		Type:          typ,
 	}
 }
 
-func (u *TasksCursorCursorData) UnmarshalJSON(data []byte) error {
+func (u *TasksCursorData) UnmarshalJSON(data []byte) error {
 
 	taskStripe := TaskStripe{}
 	if err := utils.UnmarshalJSON(data, &taskStripe, "", true, true); err == nil {
 		u.TaskStripe = &taskStripe
-		u.Type = TasksCursorCursorDataTypeTaskStripe
+		u.Type = TasksCursorDataTypeTaskStripe
 		return nil
 	}
 
 	taskWise := TaskWise{}
 	if err := utils.UnmarshalJSON(data, &taskWise, "", true, true); err == nil {
 		u.TaskWise = &taskWise
-		u.Type = TasksCursorCursorDataTypeTaskWise
+		u.Type = TasksCursorDataTypeTaskWise
 		return nil
 	}
 
 	taskCurrencyCloud := TaskCurrencyCloud{}
 	if err := utils.UnmarshalJSON(data, &taskCurrencyCloud, "", true, true); err == nil {
 		u.TaskCurrencyCloud = &taskCurrencyCloud
-		u.Type = TasksCursorCursorDataTypeTaskCurrencyCloud
+		u.Type = TasksCursorDataTypeTaskCurrencyCloud
 		return nil
 	}
 
 	taskDummyPay := TaskDummyPay{}
 	if err := utils.UnmarshalJSON(data, &taskDummyPay, "", true, true); err == nil {
 		u.TaskDummyPay = &taskDummyPay
-		u.Type = TasksCursorCursorDataTypeTaskDummyPay
+		u.Type = TasksCursorDataTypeTaskDummyPay
 		return nil
 	}
 
 	taskModulr := TaskModulr{}
 	if err := utils.UnmarshalJSON(data, &taskModulr, "", true, true); err == nil {
 		u.TaskModulr = &taskModulr
-		u.Type = TasksCursorCursorDataTypeTaskModulr
+		u.Type = TasksCursorDataTypeTaskModulr
 		return nil
 	}
 
 	taskBankingCircle := TaskBankingCircle{}
 	if err := utils.UnmarshalJSON(data, &taskBankingCircle, "", true, true); err == nil {
 		u.TaskBankingCircle = &taskBankingCircle
-		u.Type = TasksCursorCursorDataTypeTaskBankingCircle
+		u.Type = TasksCursorDataTypeTaskBankingCircle
 		return nil
 	}
 
 	taskMangoPay := TaskMangoPay{}
 	if err := utils.UnmarshalJSON(data, &taskMangoPay, "", true, true); err == nil {
 		u.TaskMangoPay = &taskMangoPay
-		u.Type = TasksCursorCursorDataTypeTaskMangoPay
+		u.Type = TasksCursorDataTypeTaskMangoPay
 		return nil
 	}
 
 	taskMoneycorp := TaskMoneycorp{}
 	if err := utils.UnmarshalJSON(data, &taskMoneycorp, "", true, true); err == nil {
 		u.TaskMoneycorp = &taskMoneycorp
-		u.Type = TasksCursorCursorDataTypeTaskMoneycorp
+		u.Type = TasksCursorDataTypeTaskMoneycorp
 		return nil
 	}
 
 	return errors.New("could not unmarshal into supported union types")
 }
 
-func (u TasksCursorCursorData) MarshalJSON() ([]byte, error) {
+func (u TasksCursorData) MarshalJSON() ([]byte, error) {
 	if u.TaskStripe != nil {
 		return utils.MarshalJSON(u.TaskStripe, "", true)
 	}
@@ -203,16 +203,16 @@ func (u TasksCursorCursorData) MarshalJSON() ([]byte, error) {
 }
 
 type TasksCursorCursor struct {
-	Data     []TasksCursorCursorData `json:"data"`
-	HasMore  bool                    `json:"hasMore"`
-	Next     *string                 `json:"next,omitempty"`
-	PageSize int64                   `json:"pageSize"`
-	Previous *string                 `json:"previous,omitempty"`
+	Data     []TasksCursorData `json:"data"`
+	HasMore  bool              `json:"hasMore"`
+	Next     *string           `json:"next,omitempty"`
+	PageSize int64             `json:"pageSize"`
+	Previous *string           `json:"previous,omitempty"`
 }
 
-func (o *TasksCursorCursor) GetData() []TasksCursorCursorData {
+func (o *TasksCursorCursor) GetData() []TasksCursorData {
 	if o == nil {
-		return []TasksCursorCursorData{}
+		return []TasksCursorData{}
 	}
 	return o.Data
 }
