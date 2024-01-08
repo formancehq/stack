@@ -24,5 +24,6 @@ func init() {
 		reconcilers.New[*v1beta1.Search](ForSearch()),
 		reconcilers.New[*v1beta1.StreamProcessor](ForStreamProcessor()),
 		reconcilers.New[*v1beta1.Stream](ForStream()),
+		reconcilers.New[*v1beta1.Stargate](ForStargate()),
 	)
 }

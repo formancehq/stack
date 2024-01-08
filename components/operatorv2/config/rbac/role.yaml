@@ -514,6 +514,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - stargates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - stargates/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - stargates/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - streamprocessors
   verbs:
   - create
