@@ -47,7 +47,7 @@ build-final-spec:
         SAVE ARTIFACT build/latest.json AS LOCAL releases/build/latest.json
     ELSE
         RUN sed -i 's/SDK_VERSION/'$version'/g' build/latest.json
-        SAVE ARTIFACT build/latest.json AS LOCAL releases/build/$version.json
+        SAVE ARTIFACT build/latest.json AS LOCAL releases/build/generate.json
     END
     SAVE ARTIFACT build/latest.json
 
@@ -60,7 +60,7 @@ openapi:
     END
     FOR component IN $(cd ./ee && ls -d */)
         COPY (./ee/$component+openapi/src/ee/$component) /src/ee/$component
-    END
+    ENDle
     RUN toto
     SAVE ARTIFACT /src
 
