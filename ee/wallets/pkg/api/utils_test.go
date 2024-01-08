@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	sharedhealth "github.com/formancehq/stack/libs/go-libs/health"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
@@ -84,7 +85,7 @@ func newTestEnv(opts ...Option) *testEnv {
 	manager := wallet.NewManager(ret.ledgerName, ledgerMock, ret.chart)
 	ret.router = NewRouter(manager, &sharedhealth.HealthController{}, sharedapi.ServiceInfo{
 		Version: "latest",
-	})
+	}, auth.NewNoAuth())
 	return ret
 }
 

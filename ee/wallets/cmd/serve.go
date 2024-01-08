@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -49,6 +50,7 @@ func newServeCommand() *cobra.Command {
 					Version: Version,
 				}, viper.GetString(listenFlag)),
 				otlptraces.CLITracesModule(viper.GetViper()),
+				auth.CLIAuthModule(viper.GetViper()),
 			}
 
 			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())

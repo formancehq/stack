@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	sharedhealth "github.com/formancehq/stack/libs/go-libs/health"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
@@ -15,12 +16,14 @@ func NewRouter(
 	manager *wallet.Manager,
 	healthController *sharedhealth.HealthController,
 	serviceInfo sharedapi.ServiceInfo,
+	a auth.Auth,
 ) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Get("/_healthcheck", healthController.Check)
 	r.Get("/_info", sharedapi.InfoHandler(serviceInfo))
 	r.Group(func(r chi.Router) {
+		r.Use(auth.Middleware(a))
 		r.Use(otelchi.Middleware("wallets"))
 		r.Use(middleware.AllowContentType("application/json"))
 		r.Use(func(handler http.Handler) http.Handler {
