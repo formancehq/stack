@@ -31,7 +31,7 @@ func (w module) Versions() map[string]modules.Version {
 						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
-								Env:   webhooksEnvVars(resolveContext.Configuration),
+								Env:   w.webhooksEnvVars(resolveContext),
 								Resources: modules.GetResourcesWithDefault(
 									resolveContext.Configuration.Spec.Services.Webhooks.ResourceProperties,
 									modules.ResourceSizeSmall(),
@@ -49,7 +49,7 @@ func (w module) Versions() map[string]modules.Version {
 						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
 								Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
-								Env: webhooksEnvVars(resolveContext.Configuration).Append(
+								Env: w.webhooksEnvVars(resolveContext).Append(
 									modules.Env("KAFKA_TOPICS", strings.Join([]string{
 										resolveContext.Stack.GetServiceName("ledger"),
 										resolveContext.Stack.GetServiceName("payments"),
@@ -79,7 +79,8 @@ func init() {
 	modules.Register(Module)
 }
 
-func webhooksEnvVars(configuration *stackv1beta3.Configuration) modules.ContainerEnv {
-	return modules.BrokerEnvVars(configuration.Spec.Broker, "webhooks").
-		Append(modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
+func (w module) webhooksEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
+	return modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "webhooks").
+		Append(modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)")).
+		Append(modules.AuthEnvVars(resolveContext.Stack.URL(), w.Name(), resolveContext.Configuration.Spec.Auth)...)
 }

@@ -155,6 +155,9 @@ type ConfigurationSpec struct {
 	Monitoring *MonitoringSpec `json:"monitoring,omitempty"`
 
 	// +optional
+	Auth *AuthConfig `json:"auth,omitempty"`
+
+	// +optional
 	Ingress  IngressGlobalConfig `json:"ingress,omitempty"`
 	Temporal TemporalConfig      `json:"temporal"`
 	// LightMode is experimental and indicate we want monopods

@@ -35,7 +35,7 @@ func (s module) Versions() map[string]modules.Version {
 				return jobRunner.RunJob(ctx, "create-index-mapping", nil, initMappingJob(config.ReconciliationConfig))
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return modules.Services{searchService(ctx), benthosService(ctx)}
+				return modules.Services{s.searchService(ctx), benthosService(ctx)}
 			},
 			Cron: reindexCron,
 		},
@@ -80,7 +80,7 @@ func (s module) Versions() map[string]modules.Version {
 				return true, nil
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return modules.Services{searchService(ctx), benthosService(ctx)}
+				return modules.Services{s.searchService(ctx), benthosService(ctx)}
 			},
 			Cron: reindexCron,
 		},
@@ -96,7 +96,7 @@ func (s module) Versions() map[string]modules.Version {
 				return true, nil
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return modules.Services{searchService(ctx), benthosService(ctx)}
+				return modules.Services{s.searchService(ctx), benthosService(ctx)}
 			},
 			Cron: reindexCron,
 		},
@@ -219,7 +219,7 @@ func reindexCron(ctx modules.ReconciliationConfig) []modules.Cron {
 	}
 }
 
-func searchService(ctx modules.ReconciliationConfig) *modules.Service {
+func (s module) searchService(ctx modules.ReconciliationConfig) *modules.Service {
 	return &modules.Service{
 		ListenEnvVar:       "BIND",
 		ExposeHTTP:         modules.DefaultExposeHTTP,
@@ -234,7 +234,9 @@ func searchService(ctx modules.ReconciliationConfig) *modules.Service {
 						resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.PathPrefix)),
 					modules.Env("OPEN_SEARCH_SCHEME", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Scheme),
 					modules.Env("MAPPING_INIT_DISABLED", "true"),
-				)
+				).Append(
+				modules.AuthEnvVars(resolveContext.Stack.URL(), s.Name(), resolveContext.Configuration.Spec.Auth)...,
+			)
 			if resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth != nil {
 				env = env.Append(
 					modules.Env("OPEN_SEARCH_USERNAME", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username),

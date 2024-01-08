@@ -228,10 +228,6 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			fallback = fmt.Sprintf("control:%d", servicesMap["control"].Port)
 		}
 	}
-	enableScopes := false
-	if context.ReconciliationConfig.Configuration.Spec.Services.Gateway.EnableScopes != nil {
-		enableScopes = *context.ReconciliationConfig.Configuration.Spec.Services.Gateway.EnableScopes
-	}
 
 	versionsMap := make(map[string]*versions, 0)
 	for _, service := range services {
@@ -265,7 +261,6 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 	if err := caddyFileTemplate(context).Execute(buf, map[string]any{
 		"Region":   context.Platform.Region,
 		"Env":      context.Platform.Environment,
-		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
 		"Services": services,
 		"Debug":    context.Stack.Spec.Debug,
 		"Broker": func() string {
@@ -277,12 +272,11 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 			}
 			return ""
 		}(),
-		"Port":         gatewayPort,
-		"Fallback":     fallback,
-		"Redirect":     redirect,
-		"EnableAudit":  EnableAuditPlugin(context.ReconciliationConfig),
-		"EnableScopes": enableScopes,
-		"Versions":     vs,
+		"Port":        gatewayPort,
+		"Fallback":    fallback,
+		"Redirect":    redirect,
+		"EnableAudit": EnableAuditPlugin(context.ReconciliationConfig),
+		"Versions":    vs,
 	}); err != nil {
 		panic(err)
 	}
@@ -298,18 +292,6 @@ const caddyfile = `(cors) {
 	}
 }
 
-(auth) {
-	auth {
-		issuer {{ .Issuer }}
-
-		read_key_set_max_retries 10
-
-		{{- if .EnableScopes }}
-		check_scopes yes
-		service {args[0]}
-		{{- end }}
-	}
-}
 {{- if .EnableAudit }}
 (audit) {
 	audit {
@@ -338,11 +320,6 @@ const caddyfile = `(cors) {
 
 {
 	{{ if .Debug }}debug{{ end }}
-	# Many directives manipulate the HTTP handler chain and the order in which
-	# those directives are evaluated matters. So the jwtauth directive must be
-	# ordered.
-	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
-	order auth before basicauth
 	order versions after metrics
 	{{- if .EnableAudit }}
 	order audit after encode
@@ -377,9 +354,6 @@ const caddyfile = `(cors) {
 				uri strip_prefix /api/{{ $service.RoutingPath }}
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
 				import cors
-				{{- if and (not $service.Secured) (not $path.Secured) }}
-				import auth {{ $service.Module }}
-				{{- end }}
 			}
 			{{- end }}
 
@@ -394,9 +368,6 @@ const caddyfile = `(cors) {
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
 
 				import cors
-				{{- if not $service.Secured }}
-				import auth {{ $service.Module }}
-				{{- end }}
 			}
 		{{- end }}
 	{{- end }}
@@ -444,18 +415,6 @@ const deprecatedCaddyfile = `(cors) {
 	}
 }
 
-(auth) {
-	auth {
-		issuer {{ .Issuer }}
-
-		read_key_set_max_retries 10
-
-		{{- if .EnableScopes }}
-		check_scopes yes
-		service {args[0]}
-		{{- end }}
-	}
-}
 {{- if .EnableAudit }}
 (audit) {
 	audit {
@@ -484,11 +443,6 @@ const deprecatedCaddyfile = `(cors) {
 
 {
 	{{ if .Debug }}debug{{ end }}
-	# Many directives manipulate the HTTP handler chain and the order in which
-	# those directives are evaluated matters. So the jwtauth directive must be
-	# ordered.
-	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
-	order auth before basicauth
 	order versions after metrics
 	{{- if .EnableAudit }}
 	order audit after encode
@@ -523,9 +477,6 @@ const deprecatedCaddyfile = `(cors) {
 				uri strip_prefix /api/{{ $service.RoutingPath }}
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
 				import cors
-				{{- if and (not $service.Secured) (not $path.Secured) }}
-				import auth {{ $service.Module }}
-				{{- end }}
 			}
 			{{- end }}
 
@@ -540,9 +491,6 @@ const deprecatedCaddyfile = `(cors) {
 				reverse_proxy {{ $service.Hostname }}:{{ $service.Port }}
 
 				import cors
-				{{- if not $service.Secured }}
-				import auth {{ $service.Module }}
-				{{- end }}
 			}
 		{{- end }}
 	{{- end }}

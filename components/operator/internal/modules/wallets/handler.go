@@ -176,7 +176,9 @@ func service(ctx modules.ReconciliationConfig) modules.Services {
 					modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
 					modules.Env("STACK_CLIENT_ID", resolveContext.Stack.Status.StaticAuthClients["wallets"].ID),
 					modules.Env("STACK_CLIENT_SECRET", resolveContext.Stack.Status.StaticAuthClients["wallets"].Secrets[0]),
-				},
+				}.Append(
+					modules.AuthEnvVars(resolveContext.Stack.URL(), "wallets", resolveContext.Configuration.Spec.Auth)...,
+				),
 				Image: modules.GetImage("wallets", resolveContext.Versions.Spec.Wallets),
 				Resources: modules.GetResourcesWithDefault(
 					resolveContext.Configuration.Spec.Services.Wallets.ResourceProperties,

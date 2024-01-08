@@ -36,7 +36,11 @@ func (l module) Versions() map[string]modules.Version {
 						env := modules.NewEnv().Append(
 							modules.Env("STORAGE_DRIVER", "postgres"),
 							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
-						).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger")...)
+						).Append(
+							modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger")...,
+						).Append(
+							modules.AuthEnvVars(resolveContext.Stack.URL(), l.Name(), resolveContext.Configuration.Spec.Auth)...,
+						)
 
 						if resolveContext.Configuration.Spec.Services.Ledger.AllowPastTimestamps {
 							env = env.Append(modules.Env("COMMIT_POLICY", "allow-past-timestamps"))
@@ -98,7 +102,11 @@ func (l module) Versions() map[string]modules.Version {
 						env := env.Append(
 							modules.Env("STORAGE_DRIVER", "postgres"),
 							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
-						).Append(modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...)
+						).Append(
+							modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...,
+						).Append(
+							modules.AuthEnvVars(resolveContext.Stack.URL(), l.Name(), resolveContext.Configuration.Spec.Auth)...,
+						)
 
 						return modules.Container{
 							Resources: modules.GetResourcesWithDefault(
