@@ -10,7 +10,7 @@ func TagVersion() fx.Annotation {
 
 func NewModule() fx.Option {
 	return fx.Options(
-		fx.Provide(fx.Annotate(NewRouter, fx.ParamTags(``, ``, ``, `group:"apiVersions"`))),
+		fx.Provide(fx.Annotate(NewRouter, fx.ParamTags(``, ``, ``, ``, `group:"apiVersions"`))),
 		fx.Provide(NewDefaultBackend),
 	)
 }

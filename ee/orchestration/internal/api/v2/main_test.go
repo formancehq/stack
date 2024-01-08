@@ -15,6 +15,7 @@ import (
 
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/require"
@@ -87,7 +88,7 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	expressionEvaluator := triggers.NewExpressionEvaluator(http.DefaultClient)
 	triggersManager := triggers.NewManager(db, expressionEvaluator)
 	backend := api.NewDefaultBackend(triggersManager, workflowManager)
-	router := newRouter(backend)
+	router := newRouter(backend, auth.NewNoAuth())
 	fn(router, backend, db)
 }
 

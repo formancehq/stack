@@ -4,15 +4,17 @@ import (
 	"net/http"
 
 	"github.com/formancehq/orchestration/internal/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/riandyrn/otelchi"
 )
 
-func newRouter(backend api.Backend) *chi.Mux {
+func newRouter(backend api.Backend, a auth.Auth) *chi.Mux {
 	r := chi.NewRouter()
 	r.Group(func(r chi.Router) {
 		// Plug middleware to handle traces
+		r.Use(auth.Middleware(a))
 		r.Use(otelchi.Middleware("orchestration"))
 		r.Route("/triggers", func(r chi.Router) {
 			r.Get("/", listTriggers(backend))
