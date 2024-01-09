@@ -7,17 +7,17 @@
 
 ## Conditions
 
-## Audit
-
 ## Migration system
-
-## Stargate
 
 ## Lock resources ?
 
 * Topic
 * Database
 
-## Auth scopes
+## Labels / naming
 
+## Errors handling
 
+## Tests
+
+* database finalizers

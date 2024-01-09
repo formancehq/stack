@@ -1,11 +1,13 @@
 package controllers_test
 
 import (
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	batchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -50,20 +52,28 @@ var _ = Describe("DatabaseController", func() {
 			Expect(Delete(databaseConfiguration)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
-		It("Should be set to ready status", func() {
+		shouldBeReady := func() {
 			d := &v1beta1.Database{}
 			Eventually(func(g Gomega) bool {
 				g.Expect(LoadResource("", database.Name, d)).To(Succeed())
 				return d.Status.Ready
 			}).Should(BeTrue())
-		})
+		}
+		It("Should be set to ready status", shouldBeReady)
 		Context("Then when deleting the Database object", func() {
 			BeforeEach(func() {
+				shouldBeReady()
 				Expect(Delete(database)).To(Succeed())
 			})
-			It("Should drop the underlying object", func() {
-				Eventually(LoadResource(stack.Name, database.Name, &v1beta1.Database{})).
-					Should(BeNotFound())
+			It("Should create a deletion job", func() {
+				Eventually(func() error {
+					return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.Spec.Service), &batchv1.Job{})
+				}).Should(Succeed())
+			})
+			It("Should eventually be deleted", func() {
+				Eventually(func() error {
+					return LoadResource(stack.Name, database.Name, &v1beta1.Database{})
+				}).Should(BeNotFound())
 			})
 		})
 		Context("Then when updating the DatabaseConfiguration object", func() {

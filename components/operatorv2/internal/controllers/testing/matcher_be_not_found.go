@@ -11,7 +11,7 @@ type beNotFound struct{}
 func (b beNotFound) Match(actual interface{}) (success bool, err error) {
 	err, ok := actual.(error)
 	if !ok {
-		return false, fmt.Errorf("expected error")
+		return false, fmt.Errorf("expected error type, got %T", actual)
 	}
 	return controllererrors.IsNotFound(err), nil
 }

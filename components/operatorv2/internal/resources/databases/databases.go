@@ -32,7 +32,6 @@ func Create(ctx core.Context, owner interface {
 			t.Spec.Stack = owner.GetStack()
 			t.Spec.Service = serviceName
 		},
-		core.WithController[*v1beta1.Database](ctx.GetScheme(), owner),
 	)
 	if err != nil {
 		condition.Message = err.Error()

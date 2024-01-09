@@ -23,6 +23,7 @@ import (
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -32,8 +33,13 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+)
+
+const (
+	databaseFinalizer = "finalize.databases.formance.com"
 )
 
 // DatabaseController reconciles a Database object
@@ -57,6 +63,23 @@ func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) 
 
 	selector := labels.NewSelector().Add(*serviceSelectorRequirement, *stackSelectorRequirement)
 
+	if !database.DeletionTimestamp.IsZero() {
+		job, err := r.createDeleteJob(ctx, database)
+		if err != nil {
+			return err
+		}
+
+		if job.Status.Succeeded > 0 {
+			patch := client.MergeFrom(database.DeepCopy())
+			if updated := controllerutil.RemoveFinalizer(database, databaseFinalizer); updated {
+				if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
+					return errors.Wrap(err, "removing finalizer")
+				}
+			}
+		}
+		return ErrDeleted
+	}
+
 	databaseConfigurationList := &v1beta1.DatabaseConfigurationList{}
 	if err := ctx.GetClient().List(ctx, databaseConfigurationList, &client.ListOptions{
 		LabelSelector: selector,
@@ -67,12 +90,13 @@ func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) 
 	switch len(databaseConfigurationList.Items) {
 	case 0:
 		database.Status.Error = "unable to find a database configuration"
-		database.Status.Ready = false
+		database.Status.OutOfSync = true
 	case 1:
-		if database.Status.BoundTo == "" || !database.Status.Ready {
+		switch {
+		case database.Status.BoundTo == "" || !database.Status.Ready:
 			databaseConfiguration := databaseConfigurationList.Items[0]
-			dbName := GetObjectName(database.Spec.Stack, database.Spec.Service)
 
+			dbName := GetObjectName(database.Spec.Stack, database.Spec.Service)
 			job, err := r.createJob(ctx, databaseConfiguration, database, dbName)
 			if err != nil {
 				return err
@@ -85,12 +109,20 @@ func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) 
 				Database:                  dbName,
 			}
 			database.Status.BoundTo = databaseConfiguration.Name
-		} else if !reflect.DeepEqual(database.Status.Configuration.DatabaseConfigurationSpec, databaseConfigurationList.Items[0].Spec) {
+
+			patch := client.MergeFrom(database.DeepCopy())
+			if updated := controllerutil.AddFinalizer(database, databaseFinalizer); updated {
+				if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
+					return err
+				}
+			}
+		case !reflect.DeepEqual(database.Status.Configuration.DatabaseConfigurationSpec,
+			databaseConfigurationList.Items[0].Spec):
 			database.Status.OutOfSync = true
 		}
 	default:
 		database.Status.Error = "multiple database configuration object found"
-		database.Status.Ready = false
+		database.Status.OutOfSync = true
 	}
 
 	return nil
@@ -118,6 +150,36 @@ func (r *DatabaseController) createJob(ctx Context, databaseConfiguration v1beta
 				Image: "postgres:15-alpine",
 				Args:  []string{"sh", "-c", createDBCommand},
 				Env: append(databases.PostgresEnvVars(databaseConfiguration.Spec, dbName),
+					// psql use PGPASSWORD env var
+					Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
+				),
+			}}
+		},
+		WithController[*batchv1.Job](ctx.GetScheme(), database),
+	)
+	return job, err
+}
+
+func (c DatabaseController) createDeleteJob(ctx Context, database *v1beta1.Database) (*batchv1.Job, error) {
+	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
+		Namespace: database.Spec.Stack,
+		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
+	},
+		func(t *batchv1.Job) {
+			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c 'DROP DATABASE "${POSTGRES_DATABASE}"'`
+			if database.Status.Configuration.DisableSSLMode {
+				dropDBCommand += ` "sslmode=disable"`
+			}
+
+			t.Spec.BackoffLimit = pointer.For(int32(10000))
+			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
+			t.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyOnFailure
+			t.Spec.Template.Spec.Containers = []corev1.Container{{
+				Name:  "drop-database",
+				Image: "postgres:15-alpine",
+				Args:  []string{"sh", "-c", dropDBCommand},
+				Env: append(databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec,
+					database.Status.Configuration.Database),
 					// psql use PGPASSWORD env var
 					Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
 				),
