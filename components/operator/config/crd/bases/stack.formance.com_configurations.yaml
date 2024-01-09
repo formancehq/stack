@@ -4109,6 +4109,13 @@ spec:
             type: object
           spec:
             properties:
+              auth:
+                properties:
+                  checkScopes:
+                    type: boolean
+                  readKeySetMaxRetries:
+                    type: integer
+                type: object
               broker:
                 properties:
                   kafka:
