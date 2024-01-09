@@ -289,6 +289,9 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 	return buf.String()
 }
 
+// TODO: remove auth part when everything is migrated to the new auth middleware
+// per service
+
 const caddyfile = `(cors) {
 	header {
 		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
