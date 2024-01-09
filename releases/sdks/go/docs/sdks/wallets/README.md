@@ -77,7 +77,7 @@ func main() {
 **[*operations.ConfirmHoldResponse](../../pkg/models/operations/confirmholdresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## CreateBalance
 
@@ -133,7 +133,7 @@ func main() {
 **[*operations.CreateBalanceResponse](../../pkg/models/operations/createbalanceresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## CreateWallet
 
@@ -188,7 +188,7 @@ func main() {
 **[*operations.CreateWalletResponse](../../pkg/models/operations/createwalletresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## CreditWallet
 
@@ -260,7 +260,7 @@ func main() {
 **[*operations.CreditWalletResponse](../../pkg/models/operations/creditwalletresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## DebitWallet
 
@@ -332,7 +332,7 @@ func main() {
 **[*operations.DebitWalletResponse](../../pkg/models/operations/debitwalletresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetBalance
 
@@ -386,7 +386,7 @@ func main() {
 **[*operations.GetBalanceResponse](../../pkg/models/operations/getbalanceresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetHold
 
@@ -439,7 +439,7 @@ func main() {
 **[*operations.GetHoldResponse](../../pkg/models/operations/getholdresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetHolds
 
@@ -495,7 +495,7 @@ func main() {
 **[*operations.GetHoldsResponse](../../pkg/models/operations/getholdsresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetTransactions
 
@@ -546,7 +546,7 @@ func main() {
 **[*operations.GetTransactionsResponse](../../pkg/models/operations/gettransactionsresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetWallet
 
@@ -599,7 +599,7 @@ func main() {
 **[*operations.GetWalletResponse](../../pkg/models/operations/getwalletresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetWalletSummary
 
@@ -652,7 +652,7 @@ func main() {
 **[*operations.GetWalletSummaryResponse](../../pkg/models/operations/getwalletsummaryresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ListBalances
 
@@ -705,7 +705,7 @@ func main() {
 **[*operations.ListBalancesResponse](../../pkg/models/operations/listbalancesresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ListWallets
 
@@ -761,7 +761,7 @@ func main() {
 **[*operations.ListWalletsResponse](../../pkg/models/operations/listwalletsresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## UpdateWallet
 
@@ -820,7 +820,7 @@ func main() {
 **[*operations.UpdateWalletResponse](../../pkg/models/operations/updatewalletresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## VoidHold
 
@@ -874,7 +874,7 @@ func main() {
 **[*operations.VoidHoldResponse](../../pkg/models/operations/voidholdresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## WalletsgetServerInfo
 
@@ -923,4 +923,4 @@ func main() {
 **[*operations.WalletsgetServerInfoResponse](../../pkg/models/operations/walletsgetserverinforesponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |

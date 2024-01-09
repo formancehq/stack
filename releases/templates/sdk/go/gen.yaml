@@ -1,24 +1,11 @@
-configVersion: 1.0.0
+configVersion: 2.0.0
 generation:
-  comments: {}
   sdkClassName: Formance
-  singleTagPerOp: true
   usageSnippets:
     optionalPropertyRendering: withExample
   fixes:
     nameResolutionDec2023: false
   telemetryEnabled: false
-features:
-  go:
-    constsAndDefaults: 0.1.2
-    core: 3.2.2
-    deprecations: 2.81.1
-    errors: 2.81.8
-    getRequestBodies: 2.81.1
-    globalSecurity: 2.82.3
-    globalServerURLs: 2.82.1
-    ignores: 2.81.1
-    unions: 2.85.2
 go:
   version: ""
   author: Formance

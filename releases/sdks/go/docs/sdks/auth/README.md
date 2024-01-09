@@ -7,7 +7,6 @@
 * [CreateSecret](#createsecret) - Add a secret to a client
 * [DeleteClient](#deleteclient) - Delete client
 * [DeleteSecret](#deletesecret) - Delete a secret from a client
-* [GetServerInfo](#getserverinfo) - Get server info
 * [ListClients](#listclients) - List clients
 * [ListUsers](#listusers) - List users
 * [ReadClient](#readclient) - Read client
@@ -76,7 +75,7 @@ func main() {
 **[*operations.CreateClientResponse](../../pkg/models/operations/createclientresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## CreateSecret
 
@@ -135,7 +134,7 @@ func main() {
 **[*operations.CreateSecretResponse](../../pkg/models/operations/createsecretresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## DeleteClient
 
@@ -189,7 +188,7 @@ func main() {
 **[*operations.DeleteClientResponse](../../pkg/models/operations/deleteclientresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## DeleteSecret
 
@@ -244,56 +243,7 @@ func main() {
 **[*operations.DeleteSecretResponse](../../pkg/models/operations/deletesecretresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
-
-## GetServerInfo
-
-Get server info
-
-### Example Usage
-
-```go
-package main
-
-import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"context"
-	"log"
-)
-
-func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
-        }),
-    )
-
-    ctx := context.Background()
-    res, err := s.Auth.GetServerInfo(ctx)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    if res.ServerInfo != nil {
-        // handle response
-    }
-}
-```
-
-### Parameters
-
-| Parameter                                             | Type                                                  | Required                                              | Description                                           |
-| ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
-| `ctx`                                                 | [context.Context](https://pkg.go.dev/context#Context) | :heavy_check_mark:                                    | The context to use for the request.                   |
-
-
-### Response
-
-**[*operations.GetServerInfoResponse](../../pkg/models/operations/getserverinforesponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ListClients
 
@@ -342,7 +292,7 @@ func main() {
 **[*operations.ListClientsResponse](../../pkg/models/operations/listclientsresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ListUsers
 
@@ -391,7 +341,7 @@ func main() {
 **[*operations.ListUsersResponse](../../pkg/models/operations/listusersresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ReadClient
 
@@ -444,7 +394,7 @@ func main() {
 **[*operations.ReadClientResponse](../../pkg/models/operations/readclientresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ReadUser
 
@@ -497,7 +447,7 @@ func main() {
 **[*operations.ReadUserResponse](../../pkg/models/operations/readuserresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## UpdateClient
 
@@ -565,4 +515,4 @@ func main() {
 **[*operations.UpdateClientResponse](../../pkg/models/operations/updateclientresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |

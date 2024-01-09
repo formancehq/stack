@@ -74,7 +74,6 @@ func main() {
 * [CreateSecret](docs/sdks/auth/README.md#createsecret) - Add a secret to a client
 * [DeleteClient](docs/sdks/auth/README.md#deleteclient) - Delete client
 * [DeleteSecret](docs/sdks/auth/README.md#deletesecret) - Delete a secret from a client
-* [GetServerInfo](docs/sdks/auth/README.md#getserverinfo) - Get server info
 * [ListClients](docs/sdks/auth/README.md#listclients) - List clients
 * [ListUsers](docs/sdks/auth/README.md#listusers) - List users
 * [ReadClient](docs/sdks/auth/README.md#readclient) - Read client
@@ -259,7 +258,7 @@ Handling errors in this SDK should largely match your expectations.  All operati
 | Error Object            | Status Code             | Content Type            |
 | ----------------------- | ----------------------- | ----------------------- |
 | sdkerrors.ErrorResponse | 400,404                 | application/json        |
-| sdkerrors.SDKError      | 400-600                 | */*                     |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ### Example
 

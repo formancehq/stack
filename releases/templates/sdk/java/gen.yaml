@@ -1,25 +1,16 @@
-configVersion: 1.0.0
+configVersion: 2.0.0
 generation:
   comments: {}
   sdkClassName: SDK
-  singleTagPerOp: true
   usageSnippets:
     optionalPropertyRendering: withExample
   fixes:
     nameResolutionDec2023: false
   telemetryEnabled: false
-features:
-  java:
-    core: 3.1.1
-    deprecations: 2.81.1
-    getRequestBodies: 2.81.1
-    globalSecurity: 2.81.2
-    globalServerURLs: 2.82.1
-    ignores: 2.81.1
 java:
   version: ""
   artifactID: formance-sdk
-  companyEmail: info@mycompany.com
+  companyEmail: support@formance.com
   companyName: Formance
   companyURL: www.formance.com
   githubURL: github.com/formancehq/formance-sdk-java

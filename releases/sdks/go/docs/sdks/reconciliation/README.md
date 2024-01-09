@@ -67,7 +67,7 @@ func main() {
 **[*operations.CreatePolicyResponse](../../pkg/models/operations/createpolicyresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## DeletePolicy
 
@@ -121,7 +121,7 @@ func main() {
 **[*operations.DeletePolicyResponse](../../pkg/models/operations/deletepolicyresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetPolicy
 
@@ -174,7 +174,7 @@ func main() {
 **[*operations.GetPolicyResponse](../../pkg/models/operations/getpolicyresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetReconciliation
 
@@ -227,7 +227,7 @@ func main() {
 **[*operations.GetReconciliationResponse](../../pkg/models/operations/getreconciliationresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ListPolicies
 
@@ -280,7 +280,7 @@ func main() {
 **[*operations.ListPoliciesResponse](../../pkg/models/operations/listpoliciesresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ListReconciliations
 
@@ -333,7 +333,7 @@ func main() {
 **[*operations.ListReconciliationsResponse](../../pkg/models/operations/listreconciliationsresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## Reconcile
 
@@ -391,7 +391,7 @@ func main() {
 **[*operations.ReconcileResponse](../../pkg/models/operations/reconcileresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## ReconciliationgetServerInfo
 
@@ -440,4 +440,4 @@ func main() {
 **[*operations.ReconciliationgetServerInfoResponse](../../pkg/models/operations/reconciliationgetserverinforesponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 400-600            | */*                |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |

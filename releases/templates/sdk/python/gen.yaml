@@ -1,22 +1,12 @@
-configVersion: 1.0.0
+configVersion: 2.0.0
 generation:
   comments: {}
   sdkClassName: SDK
-  singleTagPerOp: true
   usageSnippets:
     optionalPropertyRendering: withExample
   fixes:
     nameResolutionDec2023: false
   telemetryEnabled: false
-features:
-  python:
-    core: 4.3.1
-    deprecations: 2.81.1
-    errors: 2.81.8
-    getRequestBodies: 2.81.1
-    globalSecurity: 2.83.1
-    globalServerURLs: 2.82.1
-    ignores: 2.81.1
 python:
   version: ""
   author: Formance

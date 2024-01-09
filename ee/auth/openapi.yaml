@@ -32,6 +32,7 @@ paths:
       tags:
         - Auth
         - Clients
+      x-speakeasy-group: auth
       operationId: listClients
       responses:
         "200":
@@ -45,6 +46,7 @@ paths:
       tags:
         - Auth
         - Clients
+      x-speakeasy-group: auth
       operationId: createClient
       requestBody:
         content:
@@ -64,6 +66,7 @@ paths:
       tags:
         - Auth
         - Clients
+      x-speakeasy-group: auth
       operationId: readClient
       parameters:
         - description: Client ID
@@ -84,6 +87,7 @@ paths:
       tags:
         - Auth
         - Clients
+      x-speakeasy-group: auth
       operationId: updateClient
       requestBody:
         content:
@@ -109,6 +113,7 @@ paths:
       tags:
         - Auth
         - Clients
+      x-speakeasy-group: auth
       operationId: deleteClient
       parameters:
         - description: Client ID
@@ -126,6 +131,7 @@ paths:
       tags:
         - Auth
         - Clients
+      x-speakeasy-group: auth
       operationId: createSecret
       parameters:
         - description: Client ID
@@ -152,6 +158,7 @@ paths:
       tags:
         - Auth
         - Clients
+      x-speakeasy-group: auth
       operationId: deleteSecret
       parameters:
         - description: Client ID
@@ -175,6 +182,7 @@ paths:
       tags:
         - Auth
         - Users
+      x-speakeasy-group: auth
       description: List users
       operationId: listUsers
       responses:
@@ -190,6 +198,7 @@ paths:
       tags:
         - Auth
         - Users
+      x-speakeasy-group: auth
       description: Read user
       operationId: readUser
       parameters:
