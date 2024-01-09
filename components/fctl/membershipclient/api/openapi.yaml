@@ -232,7 +232,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadUserResponse'
+                $ref: '#/components/schemas/ReadOrganizationUserResponse'
           description: Read a user
       summary: Read user of organization
     put:
@@ -256,7 +256,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatableUserRole'
+              $ref: '#/components/schemas/Role'
       responses:
         "400":
           content:
@@ -451,7 +451,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StackUserAccessResponse'
-          description: Stack users access roles array
+          description: Stack users access role
         "403":
           content:
             application/json:
@@ -534,7 +534,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatableStackUserRole'
+              $ref: '#/components/schemas/Role'
       responses:
         "400":
           content:
@@ -1189,12 +1189,8 @@ components:
       - $ref: '#/components/schemas/AnyRegion_allOf'
     OrganizationData:
       example:
-        defaultOrganizationAccess:
-        - ""
-        - ""
-        defaultStackAccess:
-        - ""
-        - ""
+        defaultOrganizationAccess: null
+        defaultStackAccess: null
         domain: domain
         name: name
       properties:
@@ -1202,21 +1198,9 @@ components:
           description: Organization name
           type: string
         defaultOrganizationAccess:
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
+          $ref: '#/components/schemas/Role'
         defaultStackAccess:
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
+          $ref: '#/components/schemas/Role'
         domain:
           description: Organization domain
           type: string
@@ -1292,39 +1276,33 @@ components:
     UserData:
       allOf:
       - $ref: '#/components/schemas/UserData_allOf'
-    UpdatableUserRole:
-      deprecated: true
-      items:
-        allOf:
-        - enum:
-          - ADMIN
-          - GUEST
-          type: string
-      type: array
-    UpdatableStackUserRole:
-      deprecated: true
-      items:
-        allOf:
-        - enum:
-          - ADMIN
-          - GUEST
-          type: string
-      type: array
-    Roles:
-      deprecated: true
-      description: User roles
-      items:
-        allOf:
-        - enum:
-          - ADMIN
-          - GUEST
-          type: string
-      type: array
+    Role:
+      default: ""
+      enum:
+      - ""
+      - NONE
+      - ADMIN
+      - GUEST
+      type: string
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
       - $ref: '#/components/schemas/User_allOf'
-      - $ref: '#/components/schemas/User_allOf_1'
+    OrganizationUserArray:
+      items:
+        $ref: '#/components/schemas/OrganizationUserArray_inner'
+      type: array
+    ReadOrganizationUserResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationUser'
+      type: object
+    OrganizationUser:
+      allOf:
+      - $ref: '#/components/schemas/OrganizationUser_allOf'
+      - $ref: '#/components/schemas/User'
     OrganizationArray:
       items:
         $ref: '#/components/schemas/Organization'
@@ -1340,7 +1318,6 @@ components:
     StackUserAccess:
       allOf:
       - $ref: '#/components/schemas/StackUserAccess_allOf'
-      - $ref: '#/components/schemas/StackUserAccess_allOf_1'
     StackUserAccessResponse:
       example:
         data:
@@ -1397,7 +1374,7 @@ components:
       properties:
         data:
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/OrganizationUserArray_inner'
           type: array
       type: object
     CreateStackRequest:
@@ -1424,29 +1401,33 @@ components:
       example:
         data:
         - organizationId: organizationId
-          roles:
-          - ""
-          - ""
+          role: null
           userEmail: userEmail
           stackClaims:
-          - null
-          - null
+          - role: null
+            id: id
+          - role: null
+            id: id
           id: id
           creationDate: 2000-01-23T04:56:07.000+00:00
+          userId: userId
+          organizationAccess: null
           status: pending
-          updatedAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: updatedAt
         - organizationId: organizationId
-          roles:
-          - ""
-          - ""
+          role: null
           userEmail: userEmail
           stackClaims:
-          - null
-          - null
+          - role: null
+            id: id
+          - role: null
+            id: id
           id: id
           creationDate: 2000-01-23T04:56:07.000+00:00
+          userId: userId
+          organizationAccess: null
           status: pending
-          updatedAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: updatedAt
       properties:
         data:
           items:
@@ -1457,17 +1438,19 @@ components:
       example:
         data:
           organizationId: organizationId
-          roles:
-          - ""
-          - ""
+          role: null
           userEmail: userEmail
           stackClaims:
-          - null
-          - null
+          - role: null
+            id: id
+          - role: null
+            id: id
           id: id
           creationDate: 2000-01-23T04:56:07.000+00:00
+          userId: userId
+          organizationAccess: null
           status: pending
-          updatedAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: updatedAt
       properties:
         data:
           $ref: '#/components/schemas/Invitation'
@@ -1484,17 +1467,19 @@ components:
     Invitation:
       example:
         organizationId: organizationId
-        roles:
-        - ""
-        - ""
+        role: null
         userEmail: userEmail
         stackClaims:
-        - null
-        - null
+        - role: null
+          id: id
+        - role: null
+          id: id
         id: id
         creationDate: 2000-01-23T04:56:07.000+00:00
+        userId: userId
+        organizationAccess: null
         status: pending
-        updatedAt: 2000-01-23T04:56:07.000+00:00
+        updatedAt: updatedAt
       properties:
         id:
           type: string
@@ -1512,77 +1497,61 @@ components:
           format: date-time
           type: string
         updatedAt:
-          format: date-time
+          format: date-tim
           type: string
-        roles:
-          deprecated: true
-          description: User roles
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
+        role:
+          $ref: '#/components/schemas/Role'
         stackClaims:
           items:
-            $ref: '#/components/schemas/StackClaims_inner'
+            $ref: '#/components/schemas/StackClaim'
           type: array
+        userId:
+          type: string
+        organizationAccess:
+          $ref: '#/components/schemas/OrganizationUser'
       required:
       - creationDate
       - id
       - organizationId
+      - role
       - status
       - userEmail
       type: object
     InvitationClaim:
       example:
-        roles:
-        - ""
-        - ""
+        role: null
         stackClaims:
-        - null
-        - null
+        - role: null
+          id: id
+        - role: null
+          id: id
       properties:
-        roles:
-          deprecated: true
-          description: User roles
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
+        role:
+          $ref: '#/components/schemas/Role'
         stackClaims:
           items:
-            $ref: '#/components/schemas/StackClaims_inner'
+            $ref: '#/components/schemas/StackClaim'
           type: array
       required:
-      - roles
+      - orgClaim
       - stackClaims
       type: object
     StackClaims:
       items:
-        $ref: '#/components/schemas/StackClaims_inner'
+        $ref: '#/components/schemas/StackClaim'
       type: array
     StackClaim:
+      example:
+        role: null
+        id: id
       properties:
         id:
           type: string
-        roles:
-          deprecated: true
-          description: User roles
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
+        role:
+          $ref: '#/components/schemas/Role'
       required:
       - id
-      - roles
+      - role
       type: object
     Region:
       properties:
@@ -1745,22 +1714,6 @@ components:
         availableSandboxes:
           description: Number of available sandboxes
           type: integer
-        defaultOrganizationAccess:
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
-        defaultStackAccess:
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
       required:
       - id
       - ownerId
@@ -1809,20 +1762,6 @@ components:
       example: null
     User_allOf:
       properties:
-        roles:
-          deprecated: true
-          description: User roles
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
-      type: object
-      example: null
-    User_allOf_1:
-      properties:
         id:
           description: User ID
           type: string
@@ -1830,20 +1769,18 @@ components:
       - id
       type: object
       example: null
-    StackUserAccess_allOf:
+    OrganizationUserArray_inner:
+      allOf:
+      - $ref: '#/components/schemas/OrganizationUser'
+    OrganizationUser_allOf:
       properties:
-        roles:
-          deprecated: true
-          items:
-            allOf:
-            - enum:
-              - ADMIN
-              - GUEST
-              type: string
-          type: array
+        role:
+          $ref: '#/components/schemas/Role'
+      required:
+      - role
       type: object
       example: null
-    StackUserAccess_allOf_1:
+    StackUserAccess_allOf:
       properties:
         stackId:
           description: Stack ID
@@ -1851,7 +1788,10 @@ components:
         userId:
           description: User ID
           type: string
+        role:
+          $ref: '#/components/schemas/Role'
       required:
+      - role
       - stackId
       - userId
       type: object
@@ -1864,9 +1804,6 @@ components:
       - regionID
       type: object
       example: null
-    StackClaims_inner:
-      allOf:
-      - $ref: '#/components/schemas/StackClaim'
     ListOrganizationExpandedResponse_data_inner_allOf:
       properties:
         totalStacks:

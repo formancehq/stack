@@ -21,8 +21,8 @@ var _ MappedNullable = &ListOrganizationExpandedResponseDataInner{}
 type ListOrganizationExpandedResponseDataInner struct {
 	// Organization name
 	Name string `json:"name"`
-	DefaultOrganizationAccess []string `json:"defaultOrganizationAccess,omitempty"`
-	DefaultStackAccess []string `json:"defaultStackAccess,omitempty"`
+	DefaultOrganizationAccess *Role `json:"defaultOrganizationAccess,omitempty"`
+	DefaultStackAccess *Role `json:"defaultStackAccess,omitempty"`
 	// Organization domain
 	Domain *string `json:"domain,omitempty"`
 	// Organization ID
@@ -45,6 +45,10 @@ type ListOrganizationExpandedResponseDataInner struct {
 func NewListOrganizationExpandedResponseDataInner(name string, id string, ownerId string) *ListOrganizationExpandedResponseDataInner {
 	this := ListOrganizationExpandedResponseDataInner{}
 	this.Name = name
+	var defaultOrganizationAccess Role = EMPTY
+	this.DefaultOrganizationAccess = &defaultOrganizationAccess
+	var defaultStackAccess Role = EMPTY
+	this.DefaultStackAccess = &defaultStackAccess
 	this.Id = id
 	this.OwnerId = ownerId
 	return &this
@@ -55,6 +59,10 @@ func NewListOrganizationExpandedResponseDataInner(name string, id string, ownerI
 // but it doesn't guarantee that properties required by API are set
 func NewListOrganizationExpandedResponseDataInnerWithDefaults() *ListOrganizationExpandedResponseDataInner {
 	this := ListOrganizationExpandedResponseDataInner{}
+	var defaultOrganizationAccess Role = EMPTY
+	this.DefaultOrganizationAccess = &defaultOrganizationAccess
+	var defaultStackAccess Role = EMPTY
+	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 
@@ -83,17 +91,17 @@ func (o *ListOrganizationExpandedResponseDataInner) SetName(v string) {
 }
 
 // GetDefaultOrganizationAccess returns the DefaultOrganizationAccess field value if set, zero value otherwise.
-func (o *ListOrganizationExpandedResponseDataInner) GetDefaultOrganizationAccess() []string {
+func (o *ListOrganizationExpandedResponseDataInner) GetDefaultOrganizationAccess() Role {
 	if o == nil || IsNil(o.DefaultOrganizationAccess) {
-		var ret []string
+		var ret Role
 		return ret
 	}
-	return o.DefaultOrganizationAccess
+	return *o.DefaultOrganizationAccess
 }
 
 // GetDefaultOrganizationAccessOk returns a tuple with the DefaultOrganizationAccess field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListOrganizationExpandedResponseDataInner) GetDefaultOrganizationAccessOk() ([]string, bool) {
+func (o *ListOrganizationExpandedResponseDataInner) GetDefaultOrganizationAccessOk() (*Role, bool) {
 	if o == nil || IsNil(o.DefaultOrganizationAccess) {
 		return nil, false
 	}
@@ -109,23 +117,23 @@ func (o *ListOrganizationExpandedResponseDataInner) HasDefaultOrganizationAccess
 	return false
 }
 
-// SetDefaultOrganizationAccess gets a reference to the given []string and assigns it to the DefaultOrganizationAccess field.
-func (o *ListOrganizationExpandedResponseDataInner) SetDefaultOrganizationAccess(v []string) {
-	o.DefaultOrganizationAccess = v
+// SetDefaultOrganizationAccess gets a reference to the given Role and assigns it to the DefaultOrganizationAccess field.
+func (o *ListOrganizationExpandedResponseDataInner) SetDefaultOrganizationAccess(v Role) {
+	o.DefaultOrganizationAccess = &v
 }
 
 // GetDefaultStackAccess returns the DefaultStackAccess field value if set, zero value otherwise.
-func (o *ListOrganizationExpandedResponseDataInner) GetDefaultStackAccess() []string {
+func (o *ListOrganizationExpandedResponseDataInner) GetDefaultStackAccess() Role {
 	if o == nil || IsNil(o.DefaultStackAccess) {
-		var ret []string
+		var ret Role
 		return ret
 	}
-	return o.DefaultStackAccess
+	return *o.DefaultStackAccess
 }
 
 // GetDefaultStackAccessOk returns a tuple with the DefaultStackAccess field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListOrganizationExpandedResponseDataInner) GetDefaultStackAccessOk() ([]string, bool) {
+func (o *ListOrganizationExpandedResponseDataInner) GetDefaultStackAccessOk() (*Role, bool) {
 	if o == nil || IsNil(o.DefaultStackAccess) {
 		return nil, false
 	}
@@ -141,9 +149,9 @@ func (o *ListOrganizationExpandedResponseDataInner) HasDefaultStackAccess() bool
 	return false
 }
 
-// SetDefaultStackAccess gets a reference to the given []string and assigns it to the DefaultStackAccess field.
-func (o *ListOrganizationExpandedResponseDataInner) SetDefaultStackAccess(v []string) {
-	o.DefaultStackAccess = v
+// SetDefaultStackAccess gets a reference to the given Role and assigns it to the DefaultStackAccess field.
+func (o *ListOrganizationExpandedResponseDataInner) SetDefaultStackAccess(v Role) {
+	o.DefaultStackAccess = &v
 }
 
 // GetDomain returns the Domain field value if set, zero value otherwise.

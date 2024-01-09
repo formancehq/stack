@@ -5,8 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Organization name | 
-**DefaultOrganizationAccess** | Pointer to **[]string** |  | [optional] 
-**DefaultStackAccess** | Pointer to **[]string** |  | [optional] 
+**DefaultOrganizationAccess** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
+**DefaultStackAccess** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
 **Domain** | Pointer to **string** | Organization domain | [optional] 
 **Id** | **string** | Organization ID | 
 **OwnerId** | **string** | Owner ID | 
@@ -54,20 +54,20 @@ SetName sets Name field to given value.
 
 ### GetDefaultOrganizationAccess
 
-`func (o *Organization) GetDefaultOrganizationAccess() []string`
+`func (o *Organization) GetDefaultOrganizationAccess() Role`
 
 GetDefaultOrganizationAccess returns the DefaultOrganizationAccess field if non-nil, zero value otherwise.
 
 ### GetDefaultOrganizationAccessOk
 
-`func (o *Organization) GetDefaultOrganizationAccessOk() (*[]string, bool)`
+`func (o *Organization) GetDefaultOrganizationAccessOk() (*Role, bool)`
 
 GetDefaultOrganizationAccessOk returns a tuple with the DefaultOrganizationAccess field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDefaultOrganizationAccess
 
-`func (o *Organization) SetDefaultOrganizationAccess(v []string)`
+`func (o *Organization) SetDefaultOrganizationAccess(v Role)`
 
 SetDefaultOrganizationAccess sets DefaultOrganizationAccess field to given value.
 
@@ -79,20 +79,20 @@ HasDefaultOrganizationAccess returns a boolean if a field has been set.
 
 ### GetDefaultStackAccess
 
-`func (o *Organization) GetDefaultStackAccess() []string`
+`func (o *Organization) GetDefaultStackAccess() Role`
 
 GetDefaultStackAccess returns the DefaultStackAccess field if non-nil, zero value otherwise.
 
 ### GetDefaultStackAccessOk
 
-`func (o *Organization) GetDefaultStackAccessOk() (*[]string, bool)`
+`func (o *Organization) GetDefaultStackAccessOk() (*Role, bool)`
 
 GetDefaultStackAccessOk returns a tuple with the DefaultStackAccess field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDefaultStackAccess
 
-`func (o *Organization) SetDefaultStackAccess(v []string)`
+`func (o *Organization) SetDefaultStackAccess(v Role)`
 
 SetDefaultStackAccess sets DefaultStackAccess field to given value.
 

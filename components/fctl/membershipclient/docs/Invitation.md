@@ -9,15 +9,17 @@ Name | Type | Description | Notes
 **UserEmail** | **string** |  | 
 **Status** | **string** |  | 
 **CreationDate** | **time.Time** |  | 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**Roles** | Pointer to **[]string** | User roles | [optional] 
-**StackClaims** | Pointer to [**[]StackClaimsInner**](StackClaimsInner.md) |  | [optional] 
+**UpdatedAt** | Pointer to **string** |  | [optional] 
+**Role** | [**Role**](Role.md) |  | [default to EMPTY]
+**StackClaims** | Pointer to [**[]StackClaim**](StackClaim.md) |  | [optional] 
+**UserId** | Pointer to **string** |  | [optional] 
+**OrganizationAccess** | Pointer to [**OrganizationUser**](OrganizationUser.md) |  | [optional] 
 
 ## Methods
 
 ### NewInvitation
 
-`func NewInvitation(id string, organizationId string, userEmail string, status string, creationDate time.Time, ) *Invitation`
+`func NewInvitation(id string, organizationId string, userEmail string, status string, creationDate time.Time, role Role, ) *Invitation`
 
 NewInvitation instantiates a new Invitation object
 This constructor will assign default values to properties that have it defined,
@@ -134,20 +136,20 @@ SetCreationDate sets CreationDate field to given value.
 
 ### GetUpdatedAt
 
-`func (o *Invitation) GetUpdatedAt() time.Time`
+`func (o *Invitation) GetUpdatedAt() string`
 
 GetUpdatedAt returns the UpdatedAt field if non-nil, zero value otherwise.
 
 ### GetUpdatedAtOk
 
-`func (o *Invitation) GetUpdatedAtOk() (*time.Time, bool)`
+`func (o *Invitation) GetUpdatedAtOk() (*string, bool)`
 
 GetUpdatedAtOk returns a tuple with the UpdatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetUpdatedAt
 
-`func (o *Invitation) SetUpdatedAt(v time.Time)`
+`func (o *Invitation) SetUpdatedAt(v string)`
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
@@ -157,47 +159,42 @@ SetUpdatedAt sets UpdatedAt field to given value.
 
 HasUpdatedAt returns a boolean if a field has been set.
 
-### GetRoles
+### GetRole
 
-`func (o *Invitation) GetRoles() []string`
+`func (o *Invitation) GetRole() Role`
 
-GetRoles returns the Roles field if non-nil, zero value otherwise.
+GetRole returns the Role field if non-nil, zero value otherwise.
 
-### GetRolesOk
+### GetRoleOk
 
-`func (o *Invitation) GetRolesOk() (*[]string, bool)`
+`func (o *Invitation) GetRoleOk() (*Role, bool)`
 
-GetRolesOk returns a tuple with the Roles field if it's non-nil, zero value otherwise
+GetRoleOk returns a tuple with the Role field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetRoles
+### SetRole
 
-`func (o *Invitation) SetRoles(v []string)`
+`func (o *Invitation) SetRole(v Role)`
 
-SetRoles sets Roles field to given value.
+SetRole sets Role field to given value.
 
-### HasRoles
-
-`func (o *Invitation) HasRoles() bool`
-
-HasRoles returns a boolean if a field has been set.
 
 ### GetStackClaims
 
-`func (o *Invitation) GetStackClaims() []StackClaimsInner`
+`func (o *Invitation) GetStackClaims() []StackClaim`
 
 GetStackClaims returns the StackClaims field if non-nil, zero value otherwise.
 
 ### GetStackClaimsOk
 
-`func (o *Invitation) GetStackClaimsOk() (*[]StackClaimsInner, bool)`
+`func (o *Invitation) GetStackClaimsOk() (*[]StackClaim, bool)`
 
 GetStackClaimsOk returns a tuple with the StackClaims field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStackClaims
 
-`func (o *Invitation) SetStackClaims(v []StackClaimsInner)`
+`func (o *Invitation) SetStackClaims(v []StackClaim)`
 
 SetStackClaims sets StackClaims field to given value.
 
@@ -206,6 +203,56 @@ SetStackClaims sets StackClaims field to given value.
 `func (o *Invitation) HasStackClaims() bool`
 
 HasStackClaims returns a boolean if a field has been set.
+
+### GetUserId
+
+`func (o *Invitation) GetUserId() string`
+
+GetUserId returns the UserId field if non-nil, zero value otherwise.
+
+### GetUserIdOk
+
+`func (o *Invitation) GetUserIdOk() (*string, bool)`
+
+GetUserIdOk returns a tuple with the UserId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUserId
+
+`func (o *Invitation) SetUserId(v string)`
+
+SetUserId sets UserId field to given value.
+
+### HasUserId
+
+`func (o *Invitation) HasUserId() bool`
+
+HasUserId returns a boolean if a field has been set.
+
+### GetOrganizationAccess
+
+`func (o *Invitation) GetOrganizationAccess() OrganizationUser`
+
+GetOrganizationAccess returns the OrganizationAccess field if non-nil, zero value otherwise.
+
+### GetOrganizationAccessOk
+
+`func (o *Invitation) GetOrganizationAccessOk() (*OrganizationUser, bool)`
+
+GetOrganizationAccessOk returns a tuple with the OrganizationAccess field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetOrganizationAccess
+
+`func (o *Invitation) SetOrganizationAccess(v OrganizationUser)`
+
+SetOrganizationAccess sets OrganizationAccess field to given value.
+
+### HasOrganizationAccess
+
+`func (o *Invitation) HasOrganizationAccess() bool`
+
+HasOrganizationAccess returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -21,8 +21,8 @@ var _ MappedNullable = &OrganizationData{}
 type OrganizationData struct {
 	// Organization name
 	Name string `json:"name"`
-	DefaultOrganizationAccess []string `json:"defaultOrganizationAccess,omitempty"`
-	DefaultStackAccess []string `json:"defaultStackAccess,omitempty"`
+	DefaultOrganizationAccess *Role `json:"defaultOrganizationAccess,omitempty"`
+	DefaultStackAccess *Role `json:"defaultStackAccess,omitempty"`
 	// Organization domain
 	Domain *string `json:"domain,omitempty"`
 }
@@ -34,6 +34,10 @@ type OrganizationData struct {
 func NewOrganizationData(name string) *OrganizationData {
 	this := OrganizationData{}
 	this.Name = name
+	var defaultOrganizationAccess Role = EMPTY
+	this.DefaultOrganizationAccess = &defaultOrganizationAccess
+	var defaultStackAccess Role = EMPTY
+	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 
@@ -42,6 +46,10 @@ func NewOrganizationData(name string) *OrganizationData {
 // but it doesn't guarantee that properties required by API are set
 func NewOrganizationDataWithDefaults() *OrganizationData {
 	this := OrganizationData{}
+	var defaultOrganizationAccess Role = EMPTY
+	this.DefaultOrganizationAccess = &defaultOrganizationAccess
+	var defaultStackAccess Role = EMPTY
+	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 
@@ -70,17 +78,17 @@ func (o *OrganizationData) SetName(v string) {
 }
 
 // GetDefaultOrganizationAccess returns the DefaultOrganizationAccess field value if set, zero value otherwise.
-func (o *OrganizationData) GetDefaultOrganizationAccess() []string {
+func (o *OrganizationData) GetDefaultOrganizationAccess() Role {
 	if o == nil || IsNil(o.DefaultOrganizationAccess) {
-		var ret []string
+		var ret Role
 		return ret
 	}
-	return o.DefaultOrganizationAccess
+	return *o.DefaultOrganizationAccess
 }
 
 // GetDefaultOrganizationAccessOk returns a tuple with the DefaultOrganizationAccess field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *OrganizationData) GetDefaultOrganizationAccessOk() ([]string, bool) {
+func (o *OrganizationData) GetDefaultOrganizationAccessOk() (*Role, bool) {
 	if o == nil || IsNil(o.DefaultOrganizationAccess) {
 		return nil, false
 	}
@@ -96,23 +104,23 @@ func (o *OrganizationData) HasDefaultOrganizationAccess() bool {
 	return false
 }
 
-// SetDefaultOrganizationAccess gets a reference to the given []string and assigns it to the DefaultOrganizationAccess field.
-func (o *OrganizationData) SetDefaultOrganizationAccess(v []string) {
-	o.DefaultOrganizationAccess = v
+// SetDefaultOrganizationAccess gets a reference to the given Role and assigns it to the DefaultOrganizationAccess field.
+func (o *OrganizationData) SetDefaultOrganizationAccess(v Role) {
+	o.DefaultOrganizationAccess = &v
 }
 
 // GetDefaultStackAccess returns the DefaultStackAccess field value if set, zero value otherwise.
-func (o *OrganizationData) GetDefaultStackAccess() []string {
+func (o *OrganizationData) GetDefaultStackAccess() Role {
 	if o == nil || IsNil(o.DefaultStackAccess) {
-		var ret []string
+		var ret Role
 		return ret
 	}
-	return o.DefaultStackAccess
+	return *o.DefaultStackAccess
 }
 
 // GetDefaultStackAccessOk returns a tuple with the DefaultStackAccess field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *OrganizationData) GetDefaultStackAccessOk() ([]string, bool) {
+func (o *OrganizationData) GetDefaultStackAccessOk() (*Role, bool) {
 	if o == nil || IsNil(o.DefaultStackAccess) {
 		return nil, false
 	}
@@ -128,9 +136,9 @@ func (o *OrganizationData) HasDefaultStackAccess() bool {
 	return false
 }
 
-// SetDefaultStackAccess gets a reference to the given []string and assigns it to the DefaultStackAccess field.
-func (o *OrganizationData) SetDefaultStackAccess(v []string) {
-	o.DefaultStackAccess = v
+// SetDefaultStackAccess gets a reference to the given Role and assigns it to the DefaultStackAccess field.
+func (o *OrganizationData) SetDefaultStackAccess(v Role) {
+	o.DefaultStackAccess = &v
 }
 
 // GetDomain returns the Domain field value if set, zero value otherwise.

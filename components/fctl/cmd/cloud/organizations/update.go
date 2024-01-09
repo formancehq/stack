@@ -72,15 +72,17 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			}
 			return org.Data.Name
 		}(),
-		DefaultOrganizationAccess: func() []string {
+		DefaultOrganizationAccess: func() *membershipclient.Role {
 			if cmd.Flags().Changed("default-organization-role") {
-				return fctl.GetStringSlice(cmd, "default-organization-role")
+				s := fctl.GetString(cmd, "default-organization-role")
+				return membershipclient.Role(s).Ptr()
 			}
 			return org.Data.DefaultOrganizationAccess
 		}(),
-		DefaultStackAccess: func() []string {
+		DefaultStackAccess: func() *membershipclient.Role {
 			if cmd.Flags().Changed("default-stack-role") {
-				return fctl.GetStringSlice(cmd, "default-stack-role")
+				s := fctl.GetString(cmd, "default-stack-role")
+				return membershipclient.Role(s).Ptr()
 			}
 			return org.Data.DefaultStackAccess
 		}(),
@@ -89,7 +91,6 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			if str != "" {
 				return &str
 			}
-
 			return org.Data.Domain
 		}(),
 	}

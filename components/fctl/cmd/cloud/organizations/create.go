@@ -31,9 +31,9 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithAliases("cr", "c"),
 		fctl.WithShortDescription("Create organization"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithStringSliceFlag("default-stack-role", []string{}, "Default Stack Role roles: (ADMIN,GUEST)"),
+		fctl.WithStringFlag("default-stack-role", "", "Default Stack Role roles: (ADMIN,GUEST)"),
 		fctl.WithStringFlag("domain", "", "Organization Domain"),
-		fctl.WithStringSliceFlag("default-organization-role", []string{}, "Default Organization Role roles: (ADMIN,GUEST)"),
+		fctl.WithStringFlag("default-organization-role", "", "Default Organization Role roles: (ADMIN,GUEST)"),
 		fctl.WithConfirmFlag(),
 		fctl.WithController[*CreateStore](NewCreateController()),
 	)
@@ -59,12 +59,14 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
+	defaultStackRole := fctl.GetString(cmd, "default-stack-role")
+	defaultOrganizationRole := fctl.GetString(cmd, "default-organization-role")
 	response, _, err := apiClient.DefaultApi.
 		CreateOrganization(cmd.Context()).
 		Body(membershipclient.OrganizationData{
 			Name:                      args[0],
-			DefaultOrganizationAccess: fctl.GetStringSlice(cmd, "default-organization-role"),
-			DefaultStackAccess:        fctl.GetStringSlice(cmd, "default-stack-role"),
+			DefaultOrganizationAccess: membershipclient.Role(defaultOrganizationRole).Ptr(),
+			DefaultStackAccess:        membershipclient.Role(defaultStackRole).Ptr(),
 			Domain: func() *string {
 				str := fctl.GetString(cmd, "domain")
 				if str == "" {

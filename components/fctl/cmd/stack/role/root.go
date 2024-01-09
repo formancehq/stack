@@ -1,4 +1,4 @@
-package roles
+package role
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 func NewCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("roles",
+	return fctl.NewMembershipCommand("role",
 		fctl.WithAliases("s"),
 		fctl.WithShortDescription("Stack users management within an organization"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {

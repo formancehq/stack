@@ -20,19 +20,17 @@ var _ MappedNullable = &StackClaim{}
 // StackClaim struct for StackClaim
 type StackClaim struct {
 	Id string `json:"id"`
-	// User roles
-	// Deprecated
-	Roles []string `json:"roles"`
+	Role Role `json:"role"`
 }
 
 // NewStackClaim instantiates a new StackClaim object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackClaim(id string, roles []string) *StackClaim {
+func NewStackClaim(id string, role Role) *StackClaim {
 	this := StackClaim{}
 	this.Id = id
-	this.Roles = roles
+	this.Role = role
 	return &this
 }
 
@@ -41,6 +39,8 @@ func NewStackClaim(id string, roles []string) *StackClaim {
 // but it doesn't guarantee that properties required by API are set
 func NewStackClaimWithDefaults() *StackClaim {
 	this := StackClaim{}
+	var role Role = EMPTY
+	this.Role = role
 	return &this
 }
 
@@ -68,31 +68,28 @@ func (o *StackClaim) SetId(v string) {
 	o.Id = v
 }
 
-// GetRoles returns the Roles field value
-// Deprecated
-func (o *StackClaim) GetRoles() []string {
+// GetRole returns the Role field value
+func (o *StackClaim) GetRole() Role {
 	if o == nil {
-		var ret []string
+		var ret Role
 		return ret
 	}
 
-	return o.Roles
+	return o.Role
 }
 
-// GetRolesOk returns a tuple with the Roles field value
+// GetRoleOk returns a tuple with the Role field value
 // and a boolean to check if the value has been set.
-// Deprecated
-func (o *StackClaim) GetRolesOk() ([]string, bool) {
+func (o *StackClaim) GetRoleOk() (*Role, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return o.Roles, true
+	return &o.Role, true
 }
 
-// SetRoles sets field value
-// Deprecated
-func (o *StackClaim) SetRoles(v []string) {
-	o.Roles = v
+// SetRole sets field value
+func (o *StackClaim) SetRole(v Role) {
+	o.Role = v
 }
 
 func (o StackClaim) MarshalJSON() ([]byte, error) {
@@ -106,7 +103,7 @@ func (o StackClaim) MarshalJSON() ([]byte, error) {
 func (o StackClaim) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
-	toSerialize["roles"] = o.Roles
+	toSerialize["role"] = o.Role
 	return toSerialize, nil
 }
 

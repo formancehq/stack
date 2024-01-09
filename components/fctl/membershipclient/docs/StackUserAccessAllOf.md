@@ -4,13 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Roles** | Pointer to **[]string** |  | [optional] 
+**StackId** | **string** | Stack ID | 
+**UserId** | **string** | User ID | 
+**Role** | [**Role**](Role.md) |  | [default to EMPTY]
 
 ## Methods
 
 ### NewStackUserAccessAllOf
 
-`func NewStackUserAccessAllOf() *StackUserAccessAllOf`
+`func NewStackUserAccessAllOf(stackId string, userId string, role Role, ) *StackUserAccessAllOf`
 
 NewStackUserAccessAllOf instantiates a new StackUserAccessAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -25,30 +27,65 @@ NewStackUserAccessAllOfWithDefaults instantiates a new StackUserAccessAllOf obje
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetRoles
+### GetStackId
 
-`func (o *StackUserAccessAllOf) GetRoles() []string`
+`func (o *StackUserAccessAllOf) GetStackId() string`
 
-GetRoles returns the Roles field if non-nil, zero value otherwise.
+GetStackId returns the StackId field if non-nil, zero value otherwise.
 
-### GetRolesOk
+### GetStackIdOk
 
-`func (o *StackUserAccessAllOf) GetRolesOk() (*[]string, bool)`
+`func (o *StackUserAccessAllOf) GetStackIdOk() (*string, bool)`
 
-GetRolesOk returns a tuple with the Roles field if it's non-nil, zero value otherwise
+GetStackIdOk returns a tuple with the StackId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetRoles
+### SetStackId
 
-`func (o *StackUserAccessAllOf) SetRoles(v []string)`
+`func (o *StackUserAccessAllOf) SetStackId(v string)`
 
-SetRoles sets Roles field to given value.
+SetStackId sets StackId field to given value.
 
-### HasRoles
 
-`func (o *StackUserAccessAllOf) HasRoles() bool`
+### GetUserId
 
-HasRoles returns a boolean if a field has been set.
+`func (o *StackUserAccessAllOf) GetUserId() string`
+
+GetUserId returns the UserId field if non-nil, zero value otherwise.
+
+### GetUserIdOk
+
+`func (o *StackUserAccessAllOf) GetUserIdOk() (*string, bool)`
+
+GetUserIdOk returns a tuple with the UserId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUserId
+
+`func (o *StackUserAccessAllOf) SetUserId(v string)`
+
+SetUserId sets UserId field to given value.
+
+
+### GetRole
+
+`func (o *StackUserAccessAllOf) GetRole() Role`
+
+GetRole returns the Role field if non-nil, zero value otherwise.
+
+### GetRoleOk
+
+`func (o *StackUserAccessAllOf) GetRoleOk() (*Role, bool)`
+
+GetRoleOk returns a tuple with the Role field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRole
+
+`func (o *StackUserAccessAllOf) SetRole(v Role)`
+
+SetRole sets Role field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

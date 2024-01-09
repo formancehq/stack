@@ -43,8 +43,7 @@ func MembershipServerInfo(ctx context.Context, client *membershipclient.APIClien
 		return fmt.Sprintf("Error: %s", response.Status)
 	}
 	return serverInfo.Version
-} 
-
+}
 
 func NewStackClient(cmd *cobra.Command, cfg *Config, stack *membershipclient.Stack) (*formance.Formance, error) {
 	profile := GetCurrentProfile(cmd, cfg)

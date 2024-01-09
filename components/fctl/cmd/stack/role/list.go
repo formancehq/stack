@@ -1,8 +1,6 @@
-package roles
+package role
 
 import (
-	"strings"
-
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -33,7 +31,7 @@ func NewListController() *ListController {
 func NewListCommand() *cobra.Command {
 	return fctl.NewCommand("list <stack-id>",
 		fctl.WithAliases("usar"),
-		fctl.WithShortDescription("List Stack Access Roles within an organization by stacks"),
+		fctl.WithShortDescription("List Stack Access Role within an organization by stacks"),
 		fctl.WithArgs(cobra.MinimumNArgs(1)),
 		fctl.WithController[*ListStore](NewListController()),
 	)
@@ -79,23 +77,11 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return []string{
 			o.StackId,
 			o.UserId,
-			func() string {
-				roles := []string{}
-
-				for _, role := range o.Roles {
-					if role == "ADMIN" {
-						roles = append(roles, pterm.LightRed(role))
-					} else {
-						roles = append(roles, pterm.LightGreen(role))
-					}
-				}
-
-				return strings.Join(roles, " | ")
-			}(),
+			string(o.Role),
 		}
 	})
 
-	tableData := fctl.Prepend(stackUserAccessMap, []string{"Stack Id", "User Id", "Roles"})
+	tableData := fctl.Prepend(stackUserAccessMap, []string{"Stack Id", "User Id", "Role"})
 
 	return pterm.DefaultTable.WithHasHeader().WithWriter(cmd.OutOrStdout()).WithData(tableData).Render()
 

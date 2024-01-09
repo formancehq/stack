@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -30,7 +31,7 @@ func NewUpdateController() *UpdateController {
 }
 
 func NewUpdateCommand() *cobra.Command {
-	return fctl.NewCommand("update <user-id> <roles...>",
+	return fctl.NewCommand("update <user-id> <role>",
 		fctl.WithAliases("s"),
 		fctl.WithShortDescription("Update user roles by by id within an organization"),
 		fctl.WithArgs(cobra.MinimumNArgs(1)),
@@ -57,14 +58,10 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	if err != nil {
 		return nil, err
 	}
-
-	roles := []string{}
-	roles = append(roles, args[1:]...)
-
 	response, err := apiClient.DefaultApi.UpsertOrganizationUser(
 		cmd.Context(),
 		organizationID,
-		args[0]).RequestBody(roles).Execute()
+		args[0]).Body(string(membershipclient.Role(args[1]))).Execute()
 	if err != nil {
 		return nil, err
 	}
