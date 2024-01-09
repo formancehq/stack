@@ -85,6 +85,8 @@ spec:
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka1:1234 kafka2:1234
+                    - name: AUTH_ENABLED
+                      value: "true"
                     - name: AUTH_ISSUER
                       value: http://gateway:8000/api/auth
                     - name: STORAGE_POSTGRES_CONN_STRING

@@ -289,6 +289,8 @@ spec:
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
+                    - name: AUTH_ENABLED
+                      value: "true"
                     - name: AUTH_ISSUER
                       value: http://gateway:8000/api/auth
                     - name: POSTGRES_DATABASE_NAME
@@ -374,6 +376,8 @@ spec:
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
+                    - name: AUTH_ENABLED
+                      value: "true"
                     - name: AUTH_ISSUER
                       value: http://gateway:8000/api/auth
                     - name: POSTGRES_DATABASE_NAME
@@ -458,6 +462,8 @@ spec:
                     - name: OPEN_SEARCH_SCHEME
                       value: http
                     - name: MAPPING_INIT_DISABLED
+                      value: "true"
+                    - name: AUTH_ENABLED
                       value: "true"
                     - name: AUTH_ISSUER
                       value: http://gateway:8000/api/auth
@@ -690,6 +696,8 @@ spec:
                       value: wallets
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: AUTH_ENABLED
+                      value: "true"
                     - name: AUTH_ISSUER
                       value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/wallets:latest
@@ -769,6 +777,8 @@ spec:
                       value: kafka:1234
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
+                    - name: AUTH_ENABLED
+                      value: "true"
                     - name: AUTH_ISSUER
                       value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/webhooks:latest
@@ -850,6 +860,8 @@ spec:
                       value: kafka:1234
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
+                    - name: AUTH_ENABLED
+                      value: "true"
                     - name: AUTH_ISSUER
                       value: http://gateway:8000/api/auth
                     - name: KAFKA_TOPICS
