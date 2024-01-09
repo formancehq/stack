@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Roles** | **[]string** | User roles | 
-**StackClaims** | [**[]StackClaimsInner**](StackClaimsInner.md) |  | 
+**Role** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
+**StackClaims** | [**[]StackClaim**](StackClaim.md) |  | 
 
 ## Methods
 
 ### NewInvitationClaim
 
-`func NewInvitationClaim(roles []string, stackClaims []StackClaimsInner, ) *InvitationClaim`
+`func NewInvitationClaim(stackClaims []StackClaim, ) *InvitationClaim`
 
 NewInvitationClaim instantiates a new InvitationClaim object
 This constructor will assign default values to properties that have it defined,
@@ -26,42 +26,47 @@ NewInvitationClaimWithDefaults instantiates a new InvitationClaim object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetRoles
+### GetRole
 
-`func (o *InvitationClaim) GetRoles() []string`
+`func (o *InvitationClaim) GetRole() Role`
 
-GetRoles returns the Roles field if non-nil, zero value otherwise.
+GetRole returns the Role field if non-nil, zero value otherwise.
 
-### GetRolesOk
+### GetRoleOk
 
-`func (o *InvitationClaim) GetRolesOk() (*[]string, bool)`
+`func (o *InvitationClaim) GetRoleOk() (*Role, bool)`
 
-GetRolesOk returns a tuple with the Roles field if it's non-nil, zero value otherwise
+GetRoleOk returns a tuple with the Role field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetRoles
+### SetRole
 
-`func (o *InvitationClaim) SetRoles(v []string)`
+`func (o *InvitationClaim) SetRole(v Role)`
 
-SetRoles sets Roles field to given value.
+SetRole sets Role field to given value.
 
+### HasRole
+
+`func (o *InvitationClaim) HasRole() bool`
+
+HasRole returns a boolean if a field has been set.
 
 ### GetStackClaims
 
-`func (o *InvitationClaim) GetStackClaims() []StackClaimsInner`
+`func (o *InvitationClaim) GetStackClaims() []StackClaim`
 
 GetStackClaims returns the StackClaims field if non-nil, zero value otherwise.
 
 ### GetStackClaimsOk
 
-`func (o *InvitationClaim) GetStackClaimsOk() (*[]StackClaimsInner, bool)`
+`func (o *InvitationClaim) GetStackClaimsOk() (*[]StackClaim, bool)`
 
 GetStackClaimsOk returns a tuple with the StackClaims field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStackClaims
 
-`func (o *InvitationClaim) SetStackClaims(v []StackClaimsInner)`
+`func (o *InvitationClaim) SetStackClaims(v []StackClaim)`
 
 SetStackClaims sets StackClaims field to given value.
 

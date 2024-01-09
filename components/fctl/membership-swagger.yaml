@@ -189,7 +189,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadUserResponse'
+                $ref: '#/components/schemas/ReadOrganizationUserResponse'
     put:
       summary: Update user role within an organization
       operationId: upsertOrganizationUser
@@ -197,7 +197,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatableUserRole'
+              $ref: '#/components/schemas/Role'
       responses:
         400:
           description: Error
@@ -388,7 +388,7 @@ paths:
           required: true
       responses:
         200:
-          description: Stack users access roles array
+          description: Stack users access role
           content:
             application/json:
               schema:
@@ -463,7 +463,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatableStackUserRole'
+              $ref: '#/components/schemas/Role'
       responses:
         400:
           description: Error
@@ -1100,17 +1100,9 @@ components:
           type: string
           description: Organization name
         defaultOrganizationAccess:
-          type: array
-          items:
-            allOf:
-              - type: string
-                enum: [ADMIN, GUEST]
+          $ref: '#/components/schemas/Role'
         defaultStackAccess:
-          type: array
-          items:
-            allOf:
-              - type: string
-                enum: [ADMIN, GUEST]
+          $ref: '#/components/schemas/Role'
         domain:
           type: string
           description: Organization domain
@@ -1134,18 +1126,6 @@ components:
             availableSandboxes:
               type: integer
               description: Number of available sandboxes
-            defaultOrganizationAccess:
-              type: array
-              items:
-                allOf:
-                  - type: string
-                    enum: [ADMIN, GUEST]
-            defaultStackAccess:
-              type: array
-              items:
-                allOf:
-                  - type: string
-                    enum: [ADMIN, GUEST]
     StackData:
       type: object
       required:
@@ -1246,37 +1226,17 @@ components:
               type: string
           required:
             - email
-    UpdatableUserRole:
-      deprecated: true
-      type: array
-      items:
-        allOf:
-          - type: string
-            enum: [ADMIN, GUEST]
-    UpdatableStackUserRole:
-      deprecated: true
-      type: array
-      items:
-        allOf:
-          - type: string
-            enum: [ADMIN, GUEST]
-    Roles:
-      type: array
-      deprecated: true
-      description: User roles
-      items:
-        allOf:
-          - type: string
-            enum:
-              - ADMIN
-              - GUEST
+    Role:
+      type: string
+      default: ""
+      enum:
+        - ""
+        - NONE
+        - ADMIN
+        - GUEST
     User:
       allOf:
         - $ref: '#/components/schemas/UserData'
-        - type: object
-          properties:
-            roles:
-              $ref: '#/components/schemas/Roles'
         - type: object
           required:
             - id
@@ -1284,7 +1244,25 @@ components:
             id:
               type: string
               description: User ID
-
+    OrganizationUserArray:
+      type: array
+      items:
+        allOf:
+        - $ref: '#/components/schemas/OrganizationUser'
+    ReadOrganizationUserResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationUser'
+    OrganizationUser:
+      allOf:
+        - type: object
+          required:
+            - role
+          properties:
+            role:
+              $ref: '#/components/schemas/Role'
+        - $ref: '#/components/schemas/User'
     OrganizationArray:
       type: array
       items:
@@ -1300,13 +1278,10 @@ components:
     StackUserAccess:
       allOf:
         - type: object
-          properties:
-            roles:
-              $ref: '#/components/schemas/UpdatableStackUserRole'
-        - type: object
           required:
             - stackId
             - userId
+            - role
           properties:
             stackId:
               type: string
@@ -1314,6 +1289,8 @@ components:
             userId:
               type: string
               description: User ID
+            role:
+              $ref: '#/components/schemas/Role'
     StackUserAccessResponse:
       type: object
       properties:
@@ -1346,7 +1323,7 @@ components:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/UserArray'
+          $ref: '#/components/schemas/OrganizationUserArray'
     CreateStackRequest:
       allOf:
         - $ref: '#/components/schemas/StackData'
@@ -1409,42 +1386,46 @@ components:
           format: date-time
         updatedAt:
           type: string
-          format: date-time
-        roles:
-          $ref: '#/components/schemas/Roles'
+          format: date-tim
+        role:
+          $ref: '#/components/schemas/Role'
         stackClaims:
           $ref: '#/components/schemas/StackClaims'
+        userId:
+          type: string
+        organizationAccess:
+          $ref: '#/components/schemas/OrganizationUser'
       required:
         - creationDate
         - status
+        - role
         - userEmail
         - organizationId
         - id
     InvitationClaim:
       type: object
       properties:
-        roles:
-          $ref: '#/components/schemas/Roles'
+        role:
+          $ref: '#/components/schemas/Role'
         stackClaims:
           $ref: '#/components/schemas/StackClaims'
       required:
-        - roles
+        - orgClaim
         - stackClaims
     StackClaims:
       type: array
       items:
-        allOf:
-          - $ref: '#/components/schemas/StackClaim'
+        $ref: '#/components/schemas/StackClaim'
     StackClaim:
       type: object
       required:
         - id
-        - roles
+        - role
       properties:
         id:
           type: string
-        roles:
-          $ref: '#/components/schemas/Roles'
+        role:
+          $ref: '#/components/schemas/Role'
     Region:
       type: object
       required:
@@ -1493,7 +1474,6 @@ components:
             $ref: '#/components/schemas/AnyRegion'
       required:
         - data
-
     GetRegionResponse:
       type: object
       properties:

@@ -19,17 +19,17 @@ var _ MappedNullable = &UserAllOf{}
 
 // UserAllOf struct for UserAllOf
 type UserAllOf struct {
-	// User roles
-	// Deprecated
-	Roles []string `json:"roles,omitempty"`
+	// User ID
+	Id string `json:"id"`
 }
 
 // NewUserAllOf instantiates a new UserAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUserAllOf() *UserAllOf {
+func NewUserAllOf(id string) *UserAllOf {
 	this := UserAllOf{}
+	this.Id = id
 	return &this
 }
 
@@ -41,39 +41,28 @@ func NewUserAllOfWithDefaults() *UserAllOf {
 	return &this
 }
 
-// GetRoles returns the Roles field value if set, zero value otherwise.
-// Deprecated
-func (o *UserAllOf) GetRoles() []string {
-	if o == nil || IsNil(o.Roles) {
-		var ret []string
+// GetId returns the Id field value
+func (o *UserAllOf) GetId() string {
+	if o == nil {
+		var ret string
 		return ret
 	}
-	return o.Roles
+
+	return o.Id
 }
 
-// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-// Deprecated
-func (o *UserAllOf) GetRolesOk() ([]string, bool) {
-	if o == nil || IsNil(o.Roles) {
+func (o *UserAllOf) GetIdOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Roles, true
+	return &o.Id, true
 }
 
-// HasRoles returns a boolean if a field has been set.
-func (o *UserAllOf) HasRoles() bool {
-	if o != nil && !IsNil(o.Roles) {
-		return true
-	}
-
-	return false
-}
-
-// SetRoles gets a reference to the given []string and assigns it to the Roles field.
-// Deprecated
-func (o *UserAllOf) SetRoles(v []string) {
-	o.Roles = v
+// SetId sets field value
+func (o *UserAllOf) SetId(v string) {
+	o.Id = v
 }
 
 func (o UserAllOf) MarshalJSON() ([]byte, error) {
@@ -86,9 +75,7 @@ func (o UserAllOf) MarshalJSON() ([]byte, error) {
 
 func (o UserAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Roles) {
-		toSerialize["roles"] = o.Roles
-	}
+	toSerialize["id"] = o.Id
 	return toSerialize, nil
 }
 

@@ -1,6 +1,7 @@
-package roles
+package role
 
 import (
+	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -28,9 +29,9 @@ func NewUpsertController() *UpsertController {
 }
 
 func NewUpsertCommand() *cobra.Command {
-	return fctl.NewCommand("upsert <stack-id> <user-id> <stack-roles...>",
+	return fctl.NewCommand("upsert <stack-id> <user-id> <stack-role>",
 		fctl.WithAliases("usar"),
-		fctl.WithShortDescription("Update Stack Access Roles within an organization (ADMIN, GUEST, \"\")"),
+		fctl.WithShortDescription("Update Stack Access Roles within an organization (ADMIN, GUEST, NONE)"),
 		fctl.WithArgs(cobra.MinimumNArgs(3)),
 		fctl.WithController[*UpsertStore](NewUpsertController()),
 	)
@@ -57,8 +58,8 @@ func (c *UpsertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	_, err = apiClient.DefaultApi.UpsertStackUserAccess(cmd.Context(), organizationID, args[0], args[1]).
-		RequestBody(args[2:]).Execute()
+	_, err = apiClient.DefaultApi.
+		UpsertStackUserAccess(cmd.Context(), organizationID, args[0], args[1]).Body(`"` + string(membershipclient.Role(args[2])) + `"`).Execute()
 	if err != nil {
 		return nil, err
 	}

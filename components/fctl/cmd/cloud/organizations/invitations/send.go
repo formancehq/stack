@@ -10,9 +10,9 @@ import (
 )
 
 type InvitationSend struct {
-	Email       string                              `json:"email"`
-	StackClaims []membershipclient.StackClaimsInner `json:"stackClaims"`
-	OrgClaim    string                              `json:"orgClaim"`
+	Email       string                        `json:"email"`
+	StackClaims []membershipclient.StackClaim `json:"stackClaims"`
+	OrgClaim    membershipclient.Role         `json:"orgClaim"`
 }
 
 type SendStore struct {
@@ -42,7 +42,7 @@ func NewSendCommand() *cobra.Command {
 		fctl.WithShortDescription("Invite a user by email"),
 		fctl.WithAliases("s"),
 		fctl.WithStringFlag("org-claim", "", "Pre assign organization role e.g. 'ADMIN'"),
-		fctl.WithStringFlag("stack-claims", "", "Pre assign stack roles e.g. '[{stackId: <stackId>, roles:[]},...]'"),
+		fctl.WithStringFlag("stack-claims", "", "Pre assign stack roles e.g. '[{stackId: <stackId>, role:<ADMIN,GUEST,NONE>},...]'"),
 		fctl.WithConfirmFlag(),
 		fctl.WithController[*SendStore](NewSendController()),
 	)
@@ -75,12 +75,12 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	invitationClaim := membershipclient.InvitationClaim{}
 	orgClaimString := fctl.GetString(cmd, "org-claim")
 	if orgClaimString != "" {
-		invitationClaim.Roles = []string{orgClaimString}
+		invitationClaim.Role = membershipclient.Role(orgClaimString).Ptr()
 	}
 
 	stackClaimsStrings := fctl.GetString(cmd, "stack-claims")
 	if stackClaimsStrings != "" {
-		stackClaims := make([]membershipclient.StackClaimsInner, 0)
+		stackClaims := make([]membershipclient.StackClaim, 0)
 		err := json.Unmarshal([]byte(stackClaimsStrings), &stackClaims)
 		if err != nil {
 			return nil, err
@@ -97,12 +97,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	c.store.Invitation.Email = invitations.Data.UserEmail
 	c.store.Invitation.StackClaims = invitations.Data.StackClaims
-	c.store.Invitation.OrgClaim = func() string {
-		if len(invitations.Data.Roles) != 0 {
-			return ""
-		}
-		return invitations.Data.Roles[0]
-	}()
+	c.store.Invitation.OrgClaim = invitations.Data.Role
 
 	return c, nil
 }

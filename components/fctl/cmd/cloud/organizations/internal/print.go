@@ -1,8 +1,6 @@
 package internal
 
 import (
-	"strings"
-
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pterm/pterm"
 )
@@ -14,16 +12,10 @@ func PrintOrganization(organization *membershipclient.Organization) error {
 		{"ID", organization.Id},
 		{"Name", organization.Name},
 		{"Default Stack Role", func() string {
-			if len(organization.DefaultStackAccess) == 0 {
-				return "None"
-			}
-			return strings.Join(organization.DefaultStackAccess, ", ")
+			return string(*organization.DefaultStackAccess)
 		}()},
 		{"Default Organization Role", func() string {
-			if len(organization.DefaultOrganizationAccess) == 0 {
-				return "None"
-			}
-			return strings.Join(organization.DefaultOrganizationAccess, ", ")
+			return string(*organization.DefaultOrganizationAccess)
 		}()},
 		{"Domain", func() string {
 			if organization.Domain == nil {

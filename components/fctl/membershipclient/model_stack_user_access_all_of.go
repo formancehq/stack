@@ -19,16 +19,22 @@ var _ MappedNullable = &StackUserAccessAllOf{}
 
 // StackUserAccessAllOf struct for StackUserAccessAllOf
 type StackUserAccessAllOf struct {
-	// Deprecated
-	Roles []string `json:"roles,omitempty"`
+	// Stack ID
+	StackId string `json:"stackId"`
+	// User ID
+	UserId string `json:"userId"`
+	Role Role `json:"role"`
 }
 
 // NewStackUserAccessAllOf instantiates a new StackUserAccessAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackUserAccessAllOf() *StackUserAccessAllOf {
+func NewStackUserAccessAllOf(stackId string, userId string, role Role) *StackUserAccessAllOf {
 	this := StackUserAccessAllOf{}
+	this.StackId = stackId
+	this.UserId = userId
+	this.Role = role
 	return &this
 }
 
@@ -37,42 +43,81 @@ func NewStackUserAccessAllOf() *StackUserAccessAllOf {
 // but it doesn't guarantee that properties required by API are set
 func NewStackUserAccessAllOfWithDefaults() *StackUserAccessAllOf {
 	this := StackUserAccessAllOf{}
+	var role Role = EMPTY
+	this.Role = role
 	return &this
 }
 
-// GetRoles returns the Roles field value if set, zero value otherwise.
-// Deprecated
-func (o *StackUserAccessAllOf) GetRoles() []string {
-	if o == nil || IsNil(o.Roles) {
-		var ret []string
+// GetStackId returns the StackId field value
+func (o *StackUserAccessAllOf) GetStackId() string {
+	if o == nil {
+		var ret string
 		return ret
 	}
-	return o.Roles
+
+	return o.StackId
 }
 
-// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
+// GetStackIdOk returns a tuple with the StackId field value
 // and a boolean to check if the value has been set.
-// Deprecated
-func (o *StackUserAccessAllOf) GetRolesOk() ([]string, bool) {
-	if o == nil || IsNil(o.Roles) {
+func (o *StackUserAccessAllOf) GetStackIdOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Roles, true
+	return &o.StackId, true
 }
 
-// HasRoles returns a boolean if a field has been set.
-func (o *StackUserAccessAllOf) HasRoles() bool {
-	if o != nil && !IsNil(o.Roles) {
-		return true
+// SetStackId sets field value
+func (o *StackUserAccessAllOf) SetStackId(v string) {
+	o.StackId = v
+}
+
+// GetUserId returns the UserId field value
+func (o *StackUserAccessAllOf) GetUserId() string {
+	if o == nil {
+		var ret string
+		return ret
 	}
 
-	return false
+	return o.UserId
 }
 
-// SetRoles gets a reference to the given []string and assigns it to the Roles field.
-// Deprecated
-func (o *StackUserAccessAllOf) SetRoles(v []string) {
-	o.Roles = v
+// GetUserIdOk returns a tuple with the UserId field value
+// and a boolean to check if the value has been set.
+func (o *StackUserAccessAllOf) GetUserIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.UserId, true
+}
+
+// SetUserId sets field value
+func (o *StackUserAccessAllOf) SetUserId(v string) {
+	o.UserId = v
+}
+
+// GetRole returns the Role field value
+func (o *StackUserAccessAllOf) GetRole() Role {
+	if o == nil {
+		var ret Role
+		return ret
+	}
+
+	return o.Role
+}
+
+// GetRoleOk returns a tuple with the Role field value
+// and a boolean to check if the value has been set.
+func (o *StackUserAccessAllOf) GetRoleOk() (*Role, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Role, true
+}
+
+// SetRole sets field value
+func (o *StackUserAccessAllOf) SetRole(v Role) {
+	o.Role = v
 }
 
 func (o StackUserAccessAllOf) MarshalJSON() ([]byte, error) {
@@ -85,9 +130,9 @@ func (o StackUserAccessAllOf) MarshalJSON() ([]byte, error) {
 
 func (o StackUserAccessAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Roles) {
-		toSerialize["roles"] = o.Roles
-	}
+	toSerialize["stackId"] = o.StackId
+	toSerialize["userId"] = o.UserId
+	toSerialize["role"] = o.Role
 	return toSerialize, nil
 }
 

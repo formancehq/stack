@@ -1,52 +1,52 @@
-# ListUsersResponse
+# ReadOrganizationUserResponse
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**[]OrganizationUserArrayInner**](OrganizationUserArrayInner.md) |  | [optional] 
+**Data** | Pointer to [**OrganizationUser**](OrganizationUser.md) |  | [optional] 
 
 ## Methods
 
-### NewListUsersResponse
+### NewReadOrganizationUserResponse
 
-`func NewListUsersResponse() *ListUsersResponse`
+`func NewReadOrganizationUserResponse() *ReadOrganizationUserResponse`
 
-NewListUsersResponse instantiates a new ListUsersResponse object
+NewReadOrganizationUserResponse instantiates a new ReadOrganizationUserResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewListUsersResponseWithDefaults
+### NewReadOrganizationUserResponseWithDefaults
 
-`func NewListUsersResponseWithDefaults() *ListUsersResponse`
+`func NewReadOrganizationUserResponseWithDefaults() *ReadOrganizationUserResponse`
 
-NewListUsersResponseWithDefaults instantiates a new ListUsersResponse object
+NewReadOrganizationUserResponseWithDefaults instantiates a new ReadOrganizationUserResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ListUsersResponse) GetData() []OrganizationUserArrayInner`
+`func (o *ReadOrganizationUserResponse) GetData() OrganizationUser`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ListUsersResponse) GetDataOk() (*[]OrganizationUserArrayInner, bool)`
+`func (o *ReadOrganizationUserResponse) GetDataOk() (*OrganizationUser, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ListUsersResponse) SetData(v []OrganizationUserArrayInner)`
+`func (o *ReadOrganizationUserResponse) SetData(v OrganizationUser)`
 
 SetData sets Data field to given value.
 
 ### HasData
 
-`func (o *ListUsersResponse) HasData() bool`
+`func (o *ReadOrganizationUserResponse) HasData() bool`
 
 HasData returns a boolean if a field has been set.
 

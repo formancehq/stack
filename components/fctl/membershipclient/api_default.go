@@ -3600,7 +3600,7 @@ type ApiReadUserOfOrganizationRequest struct {
 	userId string
 }
 
-func (r ApiReadUserOfOrganizationRequest) Execute() (*ReadUserResponse, *http.Response, error) {
+func (r ApiReadUserOfOrganizationRequest) Execute() (*ReadOrganizationUserResponse, *http.Response, error) {
 	return r.ApiService.ReadUserOfOrganizationExecute(r)
 }
 
@@ -3622,13 +3622,13 @@ func (a *DefaultApiService) ReadUserOfOrganization(ctx context.Context, organiza
 }
 
 // Execute executes the request
-//  @return ReadUserResponse
-func (a *DefaultApiService) ReadUserOfOrganizationExecute(r ApiReadUserOfOrganizationRequest) (*ReadUserResponse, *http.Response, error) {
+//  @return ReadOrganizationUserResponse
+func (a *DefaultApiService) ReadUserOfOrganizationExecute(r ApiReadUserOfOrganizationRequest) (*ReadOrganizationUserResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ReadUserResponse
+		localVarReturnValue  *ReadOrganizationUserResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ReadUserOfOrganization")
@@ -3981,11 +3981,11 @@ type ApiUpsertOrganizationUserRequest struct {
 	ApiService *DefaultApiService
 	organizationId string
 	userId string
-	requestBody *[]string
+	body *string
 }
 
-func (r ApiUpsertOrganizationUserRequest) RequestBody(requestBody []string) ApiUpsertOrganizationUserRequest {
-	r.requestBody = &requestBody
+func (r ApiUpsertOrganizationUserRequest) Body(body string) ApiUpsertOrganizationUserRequest {
+	r.body = &body
 	return r
 }
 
@@ -4049,7 +4049,7 @@ func (a *DefaultApiService) UpsertOrganizationUserExecute(r ApiUpsertOrganizatio
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.requestBody
+	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err
@@ -4117,11 +4117,11 @@ type ApiUpsertStackUserAccessRequest struct {
 	organizationId string
 	stackId string
 	userId string
-	requestBody *[]string
+	body *string
 }
 
-func (r ApiUpsertStackUserAccessRequest) RequestBody(requestBody []string) ApiUpsertStackUserAccessRequest {
-	r.requestBody = &requestBody
+func (r ApiUpsertStackUserAccessRequest) Body(body string) ApiUpsertStackUserAccessRequest {
+	r.body = &body
 	return r
 }
 
@@ -4188,7 +4188,7 @@ func (a *DefaultApiService) UpsertStackUserAccessExecute(r ApiUpsertStackUserAcc
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.requestBody
+	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err

@@ -129,7 +129,7 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     email := "email_example" // string | 
-    invitationClaim := *openapiclient.NewInvitationClaim([]string{"Roles_example"}, []openapiclient.StackClaimsInner{*openapiclient.NewStackClaimsInner("Id_example", []string{"Roles_example"})}) // InvitationClaim |  (optional)
+    invitationClaim := *openapiclient.NewInvitationClaim([]openapiclient.StackClaim{*openapiclient.NewStackClaim("Id_example", openapiclient.Role(""))}) // InvitationClaim |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -2076,7 +2076,7 @@ Name | Type | Description  | Notes
 
 ## ReadUserOfOrganization
 
-> ReadUserResponse ReadUserOfOrganization(ctx, organizationId, userId).Execute()
+> ReadOrganizationUserResponse ReadUserOfOrganization(ctx, organizationId, userId).Execute()
 
 Read user of organization
 
@@ -2103,7 +2103,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadUserOfOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ReadUserOfOrganization`: ReadUserResponse
+    // response from `ReadUserOfOrganization`: ReadOrganizationUserResponse
     fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadUserOfOrganization`: %v\n", resp)
 }
 ```
@@ -2129,7 +2129,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ReadUserResponse**](ReadUserResponse.md)
+[**ReadOrganizationUserResponse**](ReadOrganizationUserResponse.md)
 
 ### Authorization
 
@@ -2288,7 +2288,7 @@ Name | Type | Description  | Notes
 
 ## UpsertOrganizationUser
 
-> UpsertOrganizationUser(ctx, organizationId, userId).RequestBody(requestBody).Execute()
+> UpsertOrganizationUser(ctx, organizationId, userId).Body(body).Execute()
 
 Update user role within an organization
 
@@ -2307,11 +2307,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     userId := "userId_example" // string | 
-    requestBody := []string{"Property_example"} // []string |  (optional)
+    body := string(987) // string |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpsertOrganizationUser(context.Background(), organizationId, userId).RequestBody(requestBody).Execute()
+    r, err := apiClient.DefaultApi.UpsertOrganizationUser(context.Background(), organizationId, userId).Body(body).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertOrganizationUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -2337,7 +2337,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **requestBody** | **[]string** |  | 
+ **body** | **string** |  | 
 
 ### Return type
 
@@ -2359,7 +2359,7 @@ Name | Type | Description  | Notes
 
 ## UpsertStackUserAccess
 
-> UpsertStackUserAccess(ctx, organizationId, stackId, userId).RequestBody(requestBody).Execute()
+> UpsertStackUserAccess(ctx, organizationId, stackId, userId).Body(body).Execute()
 
 Update stack user access role within an organization
 
@@ -2379,11 +2379,11 @@ func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
     userId := "userId_example" // string | 
-    requestBody := []string{"Property_example"} // []string |  (optional)
+    body := string(987) // string |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpsertStackUserAccess(context.Background(), organizationId, stackId, userId).RequestBody(requestBody).Execute()
+    r, err := apiClient.DefaultApi.UpsertStackUserAccess(context.Background(), organizationId, stackId, userId).Body(body).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertStackUserAccess``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -2411,7 +2411,7 @@ Name | Type | Description  | Notes
 
 
 
- **requestBody** | **[]string** |  | 
+ **body** | **string** |  | 
 
 ### Return type
 

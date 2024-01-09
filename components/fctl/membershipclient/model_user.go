@@ -20,9 +20,6 @@ var _ MappedNullable = &User{}
 // User struct for User
 type User struct {
 	Email string `json:"email"`
-	// User roles
-	// Deprecated
-	Roles []string `json:"roles,omitempty"`
 	// User ID
 	Id string `json:"id"`
 }
@@ -70,41 +67,6 @@ func (o *User) SetEmail(v string) {
 	o.Email = v
 }
 
-// GetRoles returns the Roles field value if set, zero value otherwise.
-// Deprecated
-func (o *User) GetRoles() []string {
-	if o == nil || IsNil(o.Roles) {
-		var ret []string
-		return ret
-	}
-	return o.Roles
-}
-
-// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-// Deprecated
-func (o *User) GetRolesOk() ([]string, bool) {
-	if o == nil || IsNil(o.Roles) {
-		return nil, false
-	}
-	return o.Roles, true
-}
-
-// HasRoles returns a boolean if a field has been set.
-func (o *User) HasRoles() bool {
-	if o != nil && !IsNil(o.Roles) {
-		return true
-	}
-
-	return false
-}
-
-// SetRoles gets a reference to the given []string and assigns it to the Roles field.
-// Deprecated
-func (o *User) SetRoles(v []string) {
-	o.Roles = v
-}
-
 // GetId returns the Id field value
 func (o *User) GetId() string {
 	if o == nil {
@@ -140,9 +102,6 @@ func (o User) MarshalJSON() ([]byte, error) {
 func (o User) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["email"] = o.Email
-	if !IsNil(o.Roles) {
-		toSerialize["roles"] = o.Roles
-	}
 	toSerialize["id"] = o.Id
 	return toSerialize, nil
 }

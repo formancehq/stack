@@ -1,7 +1,7 @@
 package stack
 
 import (
-	"github.com/formancehq/fctl/cmd/stack/roles"
+	"github.com/formancehq/fctl/cmd/stack/role"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -18,7 +18,7 @@ func NewCommand() *cobra.Command {
 			NewDisableCommand(),
 			NewEnableCommand(),
 			NewRestoreStackCommand(),
-			roles.NewCommand(),
+			role.NewCommand(),
 		),
 	)
 }

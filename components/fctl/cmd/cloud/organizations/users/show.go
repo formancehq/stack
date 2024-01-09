@@ -1,15 +1,16 @@
 package users
 
 import (
+	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type ShowStore struct {
-	Id    string   `json:"id"`
-	Email string   `json:"email"`
-	Roles []string `json:"roles"`
+	Id    string                `json:"id"`
+	Email string                `json:"email"`
+	Role  membershipclient.Role `json:"role"`
 }
 type ShowController struct {
 	store *ShowStore
@@ -63,7 +64,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	c.store.Id = userResponse.Data.Id
 	c.store.Email = userResponse.Data.Email
-	c.store.Roles = userResponse.Data.Roles
+	c.store.Role = userResponse.Data.Role
 
 	return c, nil
 }
@@ -73,19 +74,8 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Id})
 	tableData = append(tableData, []string{pterm.LightCyan("Email"), c.store.Email})
 	tableData = append(tableData, []string{
-		pterm.LightCyan("Roles"),
-		func() string {
-			roles := ""
-			for _, role := range c.store.Roles {
-				if role == "ADMIN" {
-					roles += pterm.LightRed(role) + " | "
-				} else {
-					roles += pterm.LightGreen(role) + " | "
-				}
-			}
-
-			return roles
-		}(),
+		pterm.LightCyan("Role"),
+		pterm.LightCyan(c.store.Role),
 	})
 
 	return pterm.DefaultTable.

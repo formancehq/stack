@@ -1,8 +1,6 @@
 package users
 
 import (
-	"strings"
-
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -10,9 +8,9 @@ import (
 )
 
 type User struct {
-	ID    string   `json:"id"`
-	Email string   `json:"email"`
-	Roles []string `json:"roles"`
+	ID    string                `json:"id"`
+	Email string                `json:"email"`
+	Role  membershipclient.Role `json:"role"`
 }
 
 type ListStore struct {
@@ -67,11 +65,11 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	c.store.Users = fctl.Map(usersResponse.Data, func(i membershipclient.User) User {
+	c.store.Users = fctl.Map(usersResponse.Data, func(i membershipclient.OrganizationUserArrayInner) User {
 		return User{
 			i.Id,
 			i.Email,
-			i.Roles,
+			i.Role,
 		}
 	})
 
@@ -84,23 +82,11 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		return []string{
 			i.ID,
 			i.Email,
-			func() string {
-				roles := []string{}
-
-				for _, role := range i.Roles {
-					if role == "ADMIN" {
-						roles = append(roles, pterm.LightRed(role))
-					} else {
-						roles = append(roles, pterm.LightGreen(role))
-					}
-				}
-
-				return strings.Join(roles, " | ")
-			}(),
+			string(i.Role),
 		}
 	})
 
-	tableData := fctl.Prepend(usersRow, []string{"ID", "Email", "Roles"})
+	tableData := fctl.Prepend(usersRow, []string{"ID", "Email", "Role"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

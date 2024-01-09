@@ -19,19 +19,18 @@ var _ MappedNullable = &InvitationClaim{}
 
 // InvitationClaim struct for InvitationClaim
 type InvitationClaim struct {
-	// User roles
-	// Deprecated
-	Roles []string `json:"roles"`
-	StackClaims []StackClaimsInner `json:"stackClaims"`
+	Role *Role `json:"role,omitempty"`
+	StackClaims []StackClaim `json:"stackClaims"`
 }
 
 // NewInvitationClaim instantiates a new InvitationClaim object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInvitationClaim(roles []string, stackClaims []StackClaimsInner) *InvitationClaim {
+func NewInvitationClaim(stackClaims []StackClaim) *InvitationClaim {
 	this := InvitationClaim{}
-	this.Roles = roles
+	var role Role = EMPTY
+	this.Role = &role
 	this.StackClaims = stackClaims
 	return &this
 }
@@ -41,40 +40,47 @@ func NewInvitationClaim(roles []string, stackClaims []StackClaimsInner) *Invitat
 // but it doesn't guarantee that properties required by API are set
 func NewInvitationClaimWithDefaults() *InvitationClaim {
 	this := InvitationClaim{}
+	var role Role = EMPTY
+	this.Role = &role
 	return &this
 }
 
-// GetRoles returns the Roles field value
-// Deprecated
-func (o *InvitationClaim) GetRoles() []string {
-	if o == nil {
-		var ret []string
+// GetRole returns the Role field value if set, zero value otherwise.
+func (o *InvitationClaim) GetRole() Role {
+	if o == nil || IsNil(o.Role) {
+		var ret Role
 		return ret
 	}
-
-	return o.Roles
+	return *o.Role
 }
 
-// GetRolesOk returns a tuple with the Roles field value
+// GetRoleOk returns a tuple with the Role field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// Deprecated
-func (o *InvitationClaim) GetRolesOk() ([]string, bool) {
-	if o == nil {
+func (o *InvitationClaim) GetRoleOk() (*Role, bool) {
+	if o == nil || IsNil(o.Role) {
 		return nil, false
 	}
-	return o.Roles, true
+	return o.Role, true
 }
 
-// SetRoles sets field value
-// Deprecated
-func (o *InvitationClaim) SetRoles(v []string) {
-	o.Roles = v
+// HasRole returns a boolean if a field has been set.
+func (o *InvitationClaim) HasRole() bool {
+	if o != nil && !IsNil(o.Role) {
+		return true
+	}
+
+	return false
+}
+
+// SetRole gets a reference to the given Role and assigns it to the Role field.
+func (o *InvitationClaim) SetRole(v Role) {
+	o.Role = &v
 }
 
 // GetStackClaims returns the StackClaims field value
-func (o *InvitationClaim) GetStackClaims() []StackClaimsInner {
+func (o *InvitationClaim) GetStackClaims() []StackClaim {
 	if o == nil {
-		var ret []StackClaimsInner
+		var ret []StackClaim
 		return ret
 	}
 
@@ -83,7 +89,7 @@ func (o *InvitationClaim) GetStackClaims() []StackClaimsInner {
 
 // GetStackClaimsOk returns a tuple with the StackClaims field value
 // and a boolean to check if the value has been set.
-func (o *InvitationClaim) GetStackClaimsOk() ([]StackClaimsInner, bool) {
+func (o *InvitationClaim) GetStackClaimsOk() ([]StackClaim, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -91,7 +97,7 @@ func (o *InvitationClaim) GetStackClaimsOk() ([]StackClaimsInner, bool) {
 }
 
 // SetStackClaims sets field value
-func (o *InvitationClaim) SetStackClaims(v []StackClaimsInner) {
+func (o *InvitationClaim) SetStackClaims(v []StackClaim) {
 	o.StackClaims = v
 }
 
@@ -105,7 +111,9 @@ func (o InvitationClaim) MarshalJSON() ([]byte, error) {
 
 func (o InvitationClaim) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["roles"] = o.Roles
+	if !IsNil(o.Role) {
+		toSerialize["role"] = o.Role
+	}
 	toSerialize["stackClaims"] = o.StackClaims
 	return toSerialize, nil
 }

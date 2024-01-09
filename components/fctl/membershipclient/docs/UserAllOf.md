@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Roles** | Pointer to **[]string** | User roles | [optional] 
+**Id** | **string** | User ID | 
 
 ## Methods
 
 ### NewUserAllOf
 
-`func NewUserAllOf() *UserAllOf`
+`func NewUserAllOf(id string, ) *UserAllOf`
 
 NewUserAllOf instantiates a new UserAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -25,30 +25,25 @@ NewUserAllOfWithDefaults instantiates a new UserAllOf object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetRoles
+### GetId
 
-`func (o *UserAllOf) GetRoles() []string`
+`func (o *UserAllOf) GetId() string`
 
-GetRoles returns the Roles field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetRolesOk
+### GetIdOk
 
-`func (o *UserAllOf) GetRolesOk() (*[]string, bool)`
+`func (o *UserAllOf) GetIdOk() (*string, bool)`
 
-GetRolesOk returns a tuple with the Roles field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetRoles
+### SetId
 
-`func (o *UserAllOf) SetRoles(v []string)`
+`func (o *UserAllOf) SetId(v string)`
 
-SetRoles sets Roles field to given value.
+SetId sets Id field to given value.
 
-### HasRoles
-
-`func (o *UserAllOf) HasRoles() bool`
-
-HasRoles returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
