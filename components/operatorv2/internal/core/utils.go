@@ -58,6 +58,14 @@ func WithController[T client.Object](scheme *runtime.Scheme, owner client.Object
 	}
 }
 
+func WithOwner[T client.Object](scheme *runtime.Scheme, owner client.Object) ObjectMutator[T] {
+	return func(t T) {
+		if err := controllerutil.SetOwnerReference(owner, t, scheme); err != nil {
+			panic(err)
+		}
+	}
+}
+
 func WithAnnotations[T client.Object](newAnnotations map[string]string) ObjectMutator[T] {
 	return func(t T) {
 		annotations := t.GetAnnotations()

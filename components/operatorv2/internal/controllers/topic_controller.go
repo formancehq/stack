@@ -87,17 +87,11 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 			return err
 		}
 
-		fmt.Println("add finalizer")
-		fmt.Println("add finalizer")
-		fmt.Println("add finalizer")
-		fmt.Println("add finalizer")
-		fmt.Println("add finalizer")
 		patch := client.MergeFrom(topic.DeepCopy())
 		if controllerutil.AddFinalizer(topic, topicFinalizer) {
 			if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
 				return err
 			}
-			fmt.Println("updated")
 		}
 
 		if job.Status.Succeeded == 0 {
@@ -155,7 +149,8 @@ func (r *TopicController) createDeleteJob(ctx Context, topic *v1beta1.Topic) (*b
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Image: "natsio/nats-box:0.14.1",
 				Name:  "create-topic",
-				Args:  []string{"nats", "stream", "rm", topic.Name},
+				Args: []string{"nats", "stream", "rm", "-f", "--server",
+					fmt.Sprintf("nats://%s", topic.Status.Configuration.Nats.URL), topic.Name},
 			}}
 		},
 		WithController[*batchv1.Job](ctx.GetScheme(), topic),

@@ -166,7 +166,7 @@ func (c DatabaseController) createDeleteJob(ctx Context, database *v1beta1.Datab
 		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
 	},
 		func(t *batchv1.Job) {
-			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c 'DROP DATABASE "${POSTGRES_DATABASE}"'`
+			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c "DROP DATABASE \"${POSTGRES_DATABASE}\""`
 			if database.Status.Configuration.DisableSSLMode {
 				dropDBCommand += ` "sslmode=disable"`
 			}
