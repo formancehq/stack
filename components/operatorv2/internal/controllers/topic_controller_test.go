@@ -1,12 +1,14 @@
 package controllers_test
 
 import (
+	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -34,7 +36,9 @@ var _ = Describe("TopicController", func() {
 						"formance.com/stack": stack.Name,
 					},
 				},
-				Spec: v1beta1.BrokerConfigurationSpec{},
+				Spec: v1beta1.BrokerConfigurationSpec{
+					Nats: &v1beta1.NatsConfig{},
+				},
 			}
 			Expect(Create(brokerConfiguration)).To(Succeed())
 			topic = &v1beta1.Topic{
@@ -45,6 +49,7 @@ var _ = Describe("TopicController", func() {
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
+					Service: "ledger",
 				},
 			}
 			Expect(controllerutil.SetOwnerReference(stack, topic, GetScheme())).To(Succeed())
@@ -57,7 +62,12 @@ var _ = Describe("TopicController", func() {
 				return t.Status.Ready
 			}).Should(BeTrue())
 		})
-		Context("Then updating removing all queries", func() {
+		It("Should create a topic creation job", func() {
+			Eventually(func() error {
+				return LoadResource(stack.Name, fmt.Sprintf("%s-create-topic", topic.Spec.Service), &batchv1.Job{})
+			}).Should(Succeed())
+		})
+		Context("Then updating removing all owner references", func() {
 			BeforeEach(func() {
 				patch := client.MergeFrom(topic.DeepCopy())
 				Expect(controllerutil.RemoveOwnerReference(stack, topic, GetScheme())).To(Succeed())
@@ -67,6 +77,11 @@ var _ = Describe("TopicController", func() {
 				Eventually(func(g Gomega) error {
 					return LoadResource("", topic.Name, topic)
 				}).Should(BeNotFound())
+			})
+			It("Should create a topic deletion job", func() {
+				Eventually(func() error {
+					return LoadResource(stack.Name, fmt.Sprintf("%s-delete-topic", topic.Spec.Service), &batchv1.Job{})
+				}).Should(Succeed())
 			})
 		})
 	})

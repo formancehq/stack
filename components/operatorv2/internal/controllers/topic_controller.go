@@ -23,13 +23,19 @@ import (
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+)
+
+const (
+	topicFinalizer = "finalize.topics.formance.com"
 )
 
 // TopicController reconciles a Topic object
@@ -40,6 +46,23 @@ type TopicController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=topics/finalizers,verbs=update
 
 func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
+
+	if !topic.DeletionTimestamp.IsZero() {
+		job, err := r.createDeleteJob(ctx, topic)
+		if err != nil {
+			return err
+		}
+
+		if job.Status.Succeeded > 0 {
+			patch := client.MergeFrom(topic.DeepCopy())
+			if updated := controllerutil.RemoveFinalizer(topic, topicFinalizer); updated {
+				if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
+					return errors.Wrap(err, "removing finalizer")
+				}
+			}
+		}
+		return ErrDeleted
+	}
 
 	if len(topic.GetOwnerReferences()) == 0 {
 		if err := ctx.GetClient().Delete(ctx, topic); err != nil {
@@ -63,6 +86,20 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 		if err != nil {
 			return err
 		}
+
+		fmt.Println("add finalizer")
+		fmt.Println("add finalizer")
+		fmt.Println("add finalizer")
+		fmt.Println("add finalizer")
+		fmt.Println("add finalizer")
+		patch := client.MergeFrom(topic.DeepCopy())
+		if controllerutil.AddFinalizer(topic, topicFinalizer) {
+			if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
+				return err
+			}
+			fmt.Println("updated")
+		}
+
 		if job.Status.Succeeded == 0 {
 			return ErrPending
 		}
@@ -99,6 +136,26 @@ func (r *TopicController) createJob(ctx Context,
 				Image: "natsio/nats-box:0.14.1",
 				Name:  "create-topic",
 				Args:  args,
+			}}
+		},
+		WithController[*batchv1.Job](ctx.GetScheme(), topic),
+	)
+	return job, err
+}
+
+func (r *TopicController) createDeleteJob(ctx Context, topic *v1beta1.Topic) (*batchv1.Job, error) {
+	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
+		Namespace: topic.Spec.Stack,
+		Name:      fmt.Sprintf("%s-delete-topic", topic.Spec.Service),
+	},
+		func(t *batchv1.Job) {
+			t.Spec.BackoffLimit = pointer.For(int32(10000))
+			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
+			t.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyOnFailure
+			t.Spec.Template.Spec.Containers = []corev1.Container{{
+				Image: "natsio/nats-box:0.14.1",
+				Name:  "create-topic",
+				Args:  []string{"nats", "stream", "rm", topic.Name},
 			}}
 		},
 		WithController[*batchv1.Job](ctx.GetScheme(), topic),
