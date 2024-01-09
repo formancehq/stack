@@ -5,6 +5,7 @@
 domain: com
 layout:
 - go.kubebuilder.io/v4
+multigroup: true
 projectName: operatorv2
 repo: github.com/formancehq/operator/v2
 resources:
