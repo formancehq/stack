@@ -48,20 +48,22 @@ type TopicController struct{}
 func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 
 	if !topic.DeletionTimestamp.IsZero() {
-		job, err := r.createDeleteJob(ctx, topic)
-		if err != nil {
-			return err
-		}
+		if controllerutil.ContainsFinalizer(topic, topicFinalizer) {
+			job, err := r.createDeleteJob(ctx, topic)
+			if err != nil {
+				return err
+			}
 
-		if job.Status.Succeeded > 0 {
-			patch := client.MergeFrom(topic.DeepCopy())
-			if updated := controllerutil.RemoveFinalizer(topic, topicFinalizer); updated {
-				if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
-					return errors.Wrap(err, "removing finalizer")
+			if job.Status.Succeeded > 0 {
+				patch := client.MergeFrom(topic.DeepCopy())
+				if updated := controllerutil.RemoveFinalizer(topic, topicFinalizer); updated {
+					if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
+						return errors.Wrap(err, "removing finalizer")
+					}
 				}
 			}
 		}
-		return ErrDeleted
+		return nil
 	}
 
 	if len(topic.GetOwnerReferences()) == 0 {
@@ -94,12 +96,11 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 			}
 		}
 
+		topic.Status.Configuration = &brokerConfiguration.Spec
 		if job.Status.Succeeded == 0 {
 			return ErrPending
 		}
 	}
-
-	topic.Status.Configuration = &brokerConfiguration.Spec
 
 	return nil
 }
